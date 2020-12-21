@@ -60,6 +60,7 @@ target_link_libraries(${PROJECT_NAME}
     IMGUI
 )
 
+# More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
 target_precompile_headers(${PROJECT_NAME} PRIVATE
     # libraries
     <imgui/imgui.h>
@@ -70,8 +71,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <SDL2/SDL.h>
     # Cool
     <Cool/Log/Log.h>
-    <Cool/Framework/GLCall.h>
-    <Cool/Utility/Cereal4glm.h>
     # std
     <functional>
 )
