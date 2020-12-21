@@ -1,11 +1,12 @@
 #include "Cool/App/AppManager.h"
 
+#include "Cool/App/IApp.h"
+#include "Cool/App/RenderState.h"
+#include "Cool/App/Input.h"
+
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include "imgui/imgui_internal.h"
-
-#include "Cool/Framework/RenderState.h"
-#include "Cool/Framework/Input.h"
 
 namespace Cool {
 

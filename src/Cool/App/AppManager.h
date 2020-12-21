@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Cool/App/IApp.h"
-#include "Cool/App/internal/GLWindow.h"
 #include "Cool/App/internal/SDLOpenGLWrapper.h"
+#include "Cool/App/internal/GLWindow.h"
+
 struct ImGuiDockNode;
 
 namespace Cool {
+class Iapp;
 
 /// <summary>
 /// Wrapper for an App. Handles the window and the UI layout.
