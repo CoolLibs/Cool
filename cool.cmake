@@ -59,3 +59,19 @@ target_link_libraries(${PROJECT_NAME}
     GLAD
     IMGUI
 )
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    # libraries
+    <imgui/imgui.h>
+    <imgui/misc/cpp/imgui_stdlib.h>
+    <glm/glm.hpp>
+    <glm/gtc/type_ptr.hpp>
+    <glad/glad.h>
+    <SDL2/SDL.h>
+    # Cool
+    <Cool/Log/Log.h>
+    <Cool/Framework/GLCall.h>
+    <Cool/Utility/Cereal4glm.h>
+    # std
+    <functional>
+)
