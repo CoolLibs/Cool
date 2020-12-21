@@ -6,7 +6,10 @@ namespace Cool {
 
 class RenderState {
 public:
-	// Size that should be used for rendering
+	/// <summary>
+	/// The actual size that you should use for rendering (takes into account whether you are rendering on screen or exporting an image etc.)
+	/// </summary>
+	/// <returns></returns>
 	static RectSize Size();
 	static inline bool IsExporting() { return m_bIsExporting; }
 

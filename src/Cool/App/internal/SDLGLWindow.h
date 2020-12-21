@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// An SDL window and its OpenGL context
+/// </summary>
 struct SDLGLWindow {
 	SDLGLWindow(SDL_Window* _window)
 		: window(_window) 
@@ -9,6 +12,9 @@ struct SDLGLWindow {
 			Log::Error("Failed to create OpenGL context : {}", SDL_GetError());
 		}
 	}
+	/// <summary>
+	/// Cleanup and free the memory
+	/// </summary>
 	inline void destroy() { SDL_DestroyWindow(window); }
 
 	SDL_Window* window;

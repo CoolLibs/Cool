@@ -21,7 +21,12 @@ public:
 	/// <param name="windowDefaultHeight">The initial height of the window. Note that in Release builds, the window will open as maximized anyways.</param>
 	AppManager(const char* windowName, int windowDefaultWidth = 1280, int windowDefaultHeight = 720);
 	~AppManager();
-
+	
+	/// <summary>
+	/// Run the app's update loop continuously
+	/// </summary>
+	/// <param name="app">An instance of an App class that you have to implement, deriving from Cool::IApp</param>
+	/// <returns></returns>
 	int run(Cool::IApp& app);
 
 private:
