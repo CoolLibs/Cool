@@ -11,6 +11,8 @@ if (WIN32)
 else()
     find_package(SDL2 REQUIRED)
 endif()
+# Prevent SDL from being sad because we don't use SDL_main()
+add_compile_definitions(SDL_MAIN_HANDLED)
 
 # Include glad
 add_library(GLAD STATIC ${PATH_TO_COOL}/lib/glad/src/glad.c)
