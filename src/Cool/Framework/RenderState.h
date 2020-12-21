@@ -2,6 +2,8 @@
 
 #include "../Utility/RectSizePos.h"
 
+namespace Cool {
+
 class RenderState {
 public:
 	// Size that should be used for rendering
@@ -44,3 +46,5 @@ private:
 	static bool m_bConstrainInAppRenderAreaRatio;
 	static float m_inAppRenderAreaConstrainedRatio;
 };
+
+} // namespace Cool

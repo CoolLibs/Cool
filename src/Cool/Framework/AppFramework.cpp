@@ -7,6 +7,8 @@
 #include "RenderState.h"
 #include "Input.h"
 
+namespace Cool {
+
 AppFramework::AppFramework(GLWindow& glWindow, App& app)
 	: m_glWindow(glWindow), m_app(app)
 {
@@ -138,9 +140,9 @@ void AppFramework::update() {
 void AppFramework::ImGuiDockspace() {
 	const ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoBackground
-									| ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
-									| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus
-									| ImGuiWindowFlags_NoNavFocus;
+								  | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
+								  | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus
+								  | ImGuiWindowFlags_NoNavFocus;
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->GetWorkPos());
@@ -153,7 +155,7 @@ void AppFramework::ImGuiDockspace() {
 	bool bopen = true;
 	ImGui::Begin("MyMainDockSpace", &bopen, window_flags);
 	ImGui::PopStyleVar(3);
-	
+
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 	{
@@ -167,3 +169,5 @@ void AppFramework::ImGuiDockspace() {
 	}
 	ImGui::End();
 }
+
+} // namespace Cool

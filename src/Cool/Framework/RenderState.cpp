@@ -1,5 +1,7 @@
 #include "RenderState.h"
 
+namespace Cool {
+
 std::function<void()> RenderState::OnRenderAreaResized = []() {};
 RectSizePos RenderState::m_Window;
 RectSizePos RenderState::m_AvailableSpace;
@@ -73,3 +75,5 @@ void RenderState::ImGuiConstrainInAppRenderAreaRatio() {
 		}
 	}
 }
+
+} // namespace Cool

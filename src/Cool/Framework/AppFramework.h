@@ -4,6 +4,8 @@
 #include "GLWindow.h"
 struct ImGuiDockNode;
 
+namespace Cool {
+
 class AppFramework {
 public:
 	AppFramework(GLWindow& glWindow, App& app);
@@ -26,3 +28,5 @@ private:
 	App& m_app;
 	bool m_bShouldClose = false;
 };
+
+} // namespace Cool

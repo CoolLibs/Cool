@@ -3,8 +3,9 @@
 #include <spdlog/spdlog.h>
 
 namespace Log {
-	inline void Initialize() {
-		spdlog::set_pattern("%^[%e] %n: %v%$");
+	/// Sets the log messages pattern ; see here to configure it : https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
+	inline void Initialize(const char* spdlogPattern) {
+		spdlog::set_pattern(spdlogPattern);
 	}
 	// 
 	template<typename ...Args> inline void Info(Args&& ...args) {

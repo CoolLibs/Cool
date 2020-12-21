@@ -2,6 +2,8 @@
 
 #include "RenderState.h"
 
+namespace Cool {
+
 glm::vec2 Input::s_DPCM;
 static constexpr float INCH_TO_CM = 2.54f;
 #ifndef NDEBUG
@@ -49,3 +51,5 @@ glm::vec2 Input::MouseInNormalizedRatioSpace() {
 	pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
 	return pos;
 }
+
+} // namespace Cool

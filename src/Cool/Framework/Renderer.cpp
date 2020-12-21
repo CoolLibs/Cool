@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "RenderState.h"
 
+namespace Cool {
+
 Renderer::Renderer() {
 	GLCall(glGenVertexArrays(1, &m_dummyVaoID));
 }
@@ -25,3 +27,5 @@ void Renderer::dummyDrawCallForFullscreen() {
 void Renderer::onRenderAreaResized() {
 	m_renderBuffer.setSize(RenderState::Size().size());
 }
+
+} // namespace Cool

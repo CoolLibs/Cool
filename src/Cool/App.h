@@ -2,6 +2,7 @@
 
 #include "Cool/Framework/Renderer.h"
 #include "Cool/OpenGL/Shader.h"
+namespace Cool {
 
 class App {
 public:
@@ -23,3 +24,5 @@ private:
 	bool m_bShow_ImGuiDemo = false;
 #endif
 };
+
+}

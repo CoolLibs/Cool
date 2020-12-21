@@ -2,6 +2,8 @@
 
 #include "../OpenGL/RenderBufferFB.h"
 
+namespace Cool {
+
 class Renderer {
 public:
 	Renderer();
@@ -22,3 +24,5 @@ private:
 	RenderBufferFB m_renderBuffer;
 	GLuint m_dummyVaoID;
 };
+
+} // namespace Cool

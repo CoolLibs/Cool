@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Cool {
+
 class Input {
 public:
 	static bool KeyIsDown(SDL_Scancode key);
@@ -26,3 +28,5 @@ private:
 	static bool s_initialized;
 #endif
 };
+
+} // namespace Cool

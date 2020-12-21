@@ -3,6 +3,7 @@
 #include "Cool/Framework/RenderState.h"
 #include "Cool/Framework/Input.h"
 
+namespace Cool {
 App::App()
 	: m_shader("shaders/fullscreen.vert", "shaders/test.frag")
 {
@@ -110,3 +111,5 @@ void App::onEvent(const SDL_Event& e) {
 void App::onRenderAreaResized() {
 	m_renderer.onRenderAreaResized();
 }
+
+} // namespace Cool
