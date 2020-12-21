@@ -7,9 +7,18 @@
 
 namespace Cool {
 
+#ifndef NDEBUG
+	bool SDLOpenGLWrapper::s_bInitialized = false;
+#endif
+
 SDLOpenGLWrapper::SDLOpenGLWrapper() {
 	initializeSDLandOpenGL();
 	initializeImGui();
+#ifndef NDEBUG
+	if (s_bInitialized)
+		Log::Error("You are creating an SDLOpenGLWrapper twice !");
+	s_bInitialized = true;
+#endif
 }
 
 SDLOpenGLWrapper::~SDLOpenGLWrapper() {

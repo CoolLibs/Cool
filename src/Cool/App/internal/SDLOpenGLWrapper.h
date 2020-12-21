@@ -29,6 +29,11 @@ private:
 	void initializeImGui();
 	void setupGLDebugging();
 	void setupImGui(SDLGLWindow& sdlglWindow);
+
+private:
+#ifndef NDEBUG
+	static bool s_bInitialized;
+#endif
 };
 
 } // namespace Cool
