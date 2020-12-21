@@ -22,13 +22,13 @@ AppManager::~AppManager() {
 }
 
 int AppManager::run(Cool::IApp& app) {
-	RenderState::setRenderAreaResizedCallback([&app]() {app.onRenderAreaResized(); });
+	RenderState::setRenderAreaResizedCallback([&app]() {app.onRenderAreaResized();});
 	onWindowMove();
 	onWindowResize();
 	while (!shouldClose()) {
 		update(app);
 	}
-	return 0;
+	return 0; // TODO return another exit code if something goes wrong (even though I don't think anyone cares about this nowadays)
 }
 
 void AppManager::onWindowMove() {

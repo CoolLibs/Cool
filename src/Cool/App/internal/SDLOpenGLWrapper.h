@@ -23,11 +23,12 @@ public:
 	/// <param name="defaultHeight"></param>
 	/// <returns></returns>
 	SDLGLWindow createWindow(const char* name, int defaultWidth, int defaultHeight);
-	void setupImGui(SDLGLWindow& sdlglWindow);
 
 private:
 	void initializeSDLandOpenGL();
+	void initializeImGui();
 	void setupGLDebugging();
+	void setupImGui(SDLGLWindow& sdlglWindow);
 };
 
 } // namespace Cool

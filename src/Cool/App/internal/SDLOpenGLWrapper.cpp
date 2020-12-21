@@ -7,6 +7,18 @@
 
 namespace Cool {
 
+SDLOpenGLWrapper::SDLOpenGLWrapper() {
+	initializeSDLandOpenGL();
+	initializeImGui();
+}
+
+SDLOpenGLWrapper::~SDLOpenGLWrapper() {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	SDL_Quit();
+}
+
 void SDLOpenGLWrapper::initializeSDLandOpenGL() {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
 		Log::Error("Failed to initialize SDL : {}", SDL_GetError());
@@ -27,6 +39,24 @@ void SDLOpenGLWrapper::initializeSDLandOpenGL() {
 #ifndef NDEBUG
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
+}
+
+void SDLOpenGLWrapper::initializeImGui() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsClassic();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 }
 
 SDLGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, int defaultHeight) {
@@ -67,41 +97,9 @@ void SDLOpenGLWrapper::setupGLDebugging() {
 #endif
 }
 
-SDLOpenGLWrapper::SDLOpenGLWrapper() {
-	initializeSDLandOpenGL();
-
-	// ------- Initialize ImGUI ------------
-
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsClassic();
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
-
-}
-
 void SDLOpenGLWrapper::setupImGui(SDLGLWindow& sdlglWindow) {
 	ImGui_ImplSDL2_InitForOpenGL(sdlglWindow.window, sdlglWindow.glContext);
 	ImGui_ImplOpenGL3_Init("#version 430");
-}
-
-
-SDLOpenGLWrapper::~SDLOpenGLWrapper() {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-	SDL_Quit();
 }
 
 } // namespace Cool
