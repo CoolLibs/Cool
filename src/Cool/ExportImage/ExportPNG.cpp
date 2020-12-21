@@ -2,11 +2,11 @@
 
 #include <stb_image/stb_image_write.h>
 
-namespace Cool {
+namespace Cool::ExportImage {
 
-void ExportPng(const char* filepath, int width, int height, void* data, bool bFlipVertically) {
+void AsPNG(const char* filepath, int width, int height, void* data, bool bFlipVertically) {
 	stbi_flip_vertically_on_write(bFlipVertically ? 1 : 0);
 	stbi_write_png(filepath, width, height, 4, data, 0);
 }
 
-} // namespace Cool
+} // namespace Cool::ExportImage
