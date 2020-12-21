@@ -11,7 +11,7 @@ public:
 	static inline bool IsExporting() { return m_bIsExporting; }
 
 private:
-	friend class AppFramework;
+	friend class AppManager;
 	friend class Renderer;
 	friend class Input;
 	// Size and position that should be used for showing rendered images inside the window

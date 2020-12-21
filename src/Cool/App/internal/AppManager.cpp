@@ -1,36 +1,48 @@
-#include "AppFramework.h"
+#include "Cool/App/AppManager.h"
 
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include "imgui/imgui_internal.h"
 
-#include "RenderState.h"
-#include "Input.h"
+#include "Cool/Framework/RenderState.h"
+#include "Cool/Framework/Input.h"
 
 namespace Cool {
 
-AppFramework::AppFramework(GLWindow& glWindow, App& app)
-	: m_glWindow(glWindow), m_app(app)
+AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
+	: m_SDLOpenGLWrapper(),
+	  m_glWindow(m_SDLOpenGLWrapper.createGLWindow(windowName, windowDefaultWidth, windowDefaultHeight))
 {
 	Input::Initialize();
+}
+
+AppManager::~AppManager() {
+	m_glWindow.destroy();
+}
+
+int AppManager::run(Cool::IApp& app) {
 	RenderState::setRenderAreaResizedCallback([&app]() {app.onRenderAreaResized(); });
 	onWindowMove();
 	onWindowResize();
+	while (!shouldClose()) {
+		update(app);
+	}
+	return 0;
 }
 
-void AppFramework::onWindowMove() {
+void AppManager::onWindowMove() {
 	int x, y;
 	SDL_GetWindowPosition(m_glWindow.window, &x, &y);
 	RenderState::setWindowTopLeft(x, y);
 }
 
-void AppFramework::onWindowResize() {
+void AppManager::onWindowResize() {
 	int w, h;
 	SDL_GetWindowSize(m_glWindow.window, &w, &h);
 	RenderState::setWindowSize(w, h);
 }
 
-void AppFramework::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
+void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 	// Position
 	RenderState::setAvailableSpaceTopLeft(
 		static_cast<int>(node->Pos.x) - RenderState::getWindowTopLeft().x,
@@ -43,7 +55,7 @@ void AppFramework::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) 
 	}
 }
 
-bool AppFramework::onEvent(const SDL_Event& e) {
+bool AppManager::onEvent(const SDL_Event& e) {
 	if (m_glWindow.checkForFullscreenToggles(e)) {
 		onWindowResize();
 		return false;
@@ -88,13 +100,13 @@ bool AppFramework::onEvent(const SDL_Event& e) {
 	}
 }
 
-void AppFramework::update() {
+void AppManager::update(Cool::IApp& app) {
 	// Events
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		ImGui_ImplSDL2_ProcessEvent(&e);
 		if (!onEvent(e))
-			m_app.onEvent(e);
+			app.onEvent(e);
 	}
 	// Clear screen
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -105,7 +117,7 @@ void AppFramework::update() {
 	ImGui::NewFrame();
 	ImGuiDockspace();
 	// Actual application code
-	m_app.update();
+	app.update();
 	if (m_bShowUI) {
 		// Menu bar
 		ImGui::BeginMainMenuBar();
@@ -113,10 +125,10 @@ void AppFramework::update() {
 			RenderState::ImGuiConstrainInAppRenderAreaRatio();
 			ImGui::EndMenu();
 		}
-		m_app.ImGuiMenus();
+		app.ImGuiMenus();
 		ImGui::EndMainMenuBar();
 		// Windows
-		m_app.ImGuiWindows();
+		app.ImGuiWindows();
 	}
 	// Render ImGui
 	ImGuiIO& io = ImGui::GetIO();
@@ -137,7 +149,7 @@ void AppFramework::update() {
 	SDL_GL_SwapWindow(m_glWindow.window);
 }
 
-void AppFramework::ImGuiDockspace() {
+void AppManager::ImGuiDockspace() {
 	const ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoBackground
 								  | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse

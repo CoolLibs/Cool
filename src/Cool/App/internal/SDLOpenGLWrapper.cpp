@@ -1,7 +1,5 @@
-#include "AppManager.h"
+#include "SDLOpenGLWrapper.h"
 
-#include "Cool/App.h"
-#include "Cool/Framework/AppFramework.h"
 #include "Cool/Framework/GLDebugCallback.h"
 
 #include <imgui_impl_sdl.h>
@@ -9,14 +7,7 @@
 
 namespace Cool {
 
-AppManager::AppManager() {
-	// OpenGL version
-	constexpr int glMajorVersion = 4;
-	constexpr int glMinorVersion = 3;
-	constexpr char* glslVersion = "#version 430";
-
-	// ------- Initialize SDL and OpenGL ------------
-
+void SDLOpenGLWrapper::initializeSDLandOpenGL() {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
 		Log::Error("Failed to initialize SDL : {}", SDL_GetError());
 	}
@@ -27,8 +18,8 @@ AppManager::AppManager() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 #endif
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glMajorVersion);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glMinorVersion);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
@@ -36,28 +27,32 @@ AppManager::AppManager() {
 #ifndef NDEBUG
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
-	// Window
-	SDL_Window* window = SDL_CreateWindow(
-		"Template Project",
+}
+
+GLWindow SDLOpenGLWrapper::createGLWindow(const char* name, int defaultWidth, int defaultHeight) {
+	SDL_Window* sdlWindow = SDL_CreateWindow(
+		name,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		1280, 720,
+		defaultWidth, defaultHeight,
 		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
 #ifdef NDEBUG
 		| SDL_WINDOW_MAXIMIZED
 #endif
 	);
-	if (window == nullptr) {
-		Log::Error("Failed to create window : {}", SDL_GetError());
+	if (sdlWindow == nullptr) {
+		Log::Error("Failed to create window :\n{}", SDL_GetError());
 	}
-	m_glWindows.emplace_back(window);
-	m_glWindows[0].makeCurrent();
-	//
+	GLWindow glWindow(sdlWindow);
+	glWindow.makeCurrent();
 	SDL_GL_SetSwapInterval(1);
-
-	if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 		Log::Error("Failed to initialize Glad");
-	}
+	setupGLDebugging();
+	setupImGui(glWindow);
+	return glWindow;
+}
 
+void SDLOpenGLWrapper::setupGLDebugging() {
 #ifndef NDEBUG
 	int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -70,6 +65,11 @@ AppManager::AppManager() {
 		Log::Warn("Couldn't setup OpenGL Debugging");
 	}
 #endif
+}
+
+SDLOpenGLWrapper::SDLOpenGLWrapper() {
+	initializeSDLandOpenGL();
+
 	// ------- Initialize ImGUI ------------
 
 	IMGUI_CHECKVERSION();
@@ -89,23 +89,19 @@ AppManager::AppManager() {
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	ImGui_ImplSDL2_InitForOpenGL(m_glWindows[0].window, m_glWindows[0].glContext);
-	ImGui_ImplOpenGL3_Init(glslVersion);
 }
 
-int AppManager::run(Cool::App& app) {
-	AppFramework appFramework(m_glWindows[0], app);
-	while (!appFramework.shouldClose()) {
-		appFramework.update();
-	}
-	return 0;
+void SDLOpenGLWrapper::setupImGui(GLWindow& glWindow) {
+	ImGui_ImplSDL2_InitForOpenGL(glWindow.window, glWindow.glContext);
+	ImGui_ImplOpenGL3_Init("#version 430");
 }
 
-AppManager::~AppManager() {
+
+SDLOpenGLWrapper::~SDLOpenGLWrapper() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	m_glWindows[0].destroy();
+	//m_glWindows[0].destroy();
 	SDL_Quit();
 }
 

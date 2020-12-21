@@ -18,7 +18,7 @@ public:
 	static glm::vec2  MouseInNormalizedRatioSpace();
 
 private:
-friend class AppFramework;
+friend class AppManager;
 	static void Initialize();
 
 private:
