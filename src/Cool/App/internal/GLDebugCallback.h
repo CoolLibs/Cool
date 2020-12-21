@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+namespace Cool {
+
 void APIENTRY GLDebugCallback(GLenum source,
     GLenum type,
     unsigned int id,
@@ -54,5 +56,7 @@ void APIENTRY GLDebugCallback(GLenum source,
 
     assert(false);
 }
+
+} // namespace Cool
 
 #endif

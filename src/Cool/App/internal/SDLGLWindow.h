@@ -1,11 +1,13 @@
 #pragma once
 
+namespace Cool {
+
 /// <summary>
 /// An SDL window and its OpenGL context
 /// </summary>
 struct SDLGLWindow {
 	SDLGLWindow(SDL_Window* _window)
-		: window(_window) 
+		: window(_window)
 	{
 		glContext = SDL_GL_CreateContext(window);
 		if (glContext == nullptr) {
@@ -28,3 +30,5 @@ struct SDLGLWindow {
 private:
 	bool m_bIsFullScreen = false;
 };
+
+} // namespace Cool

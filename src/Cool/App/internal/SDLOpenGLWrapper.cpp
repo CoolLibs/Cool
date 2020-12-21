@@ -1,6 +1,6 @@
 #include "SDLOpenGLWrapper.h"
 
-#include "Cool/Framework/GLDebugCallback.h"
+#include "Cool/App/internal/GLDebugCallback.h"
 
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>

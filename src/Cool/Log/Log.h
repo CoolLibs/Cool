@@ -2,9 +2,12 @@
 
 #include <spdlog/spdlog.h>
 
-namespace Log {
-	/// Sets the log messages pattern ; see here to configure it : https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
-	inline void Initialize(const char* spdlogPattern) {
+namespace Cool::Log {
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="spdlogPattern">: Sets the log messages pattern ; see here to configure it : https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags</param>
+	inline void Initialize(const char* spdlogPattern = "%^[%e] %n: %v%$") {
 		spdlog::set_pattern(spdlogPattern);
 	}
 	// 
