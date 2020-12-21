@@ -29,7 +29,7 @@ void SDLOpenGLWrapper::initializeSDLandOpenGL() {
 #endif
 }
 
-GLWindow SDLOpenGLWrapper::createGLWindow(const char* name, int defaultWidth, int defaultHeight) {
+SDLGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, int defaultHeight) {
 	SDL_Window* sdlWindow = SDL_CreateWindow(
 		name,
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -42,14 +42,14 @@ GLWindow SDLOpenGLWrapper::createGLWindow(const char* name, int defaultWidth, in
 	if (sdlWindow == nullptr) {
 		Log::Error("Failed to create window :\n{}", SDL_GetError());
 	}
-	GLWindow glWindow(sdlWindow);
-	glWindow.makeCurrent();
+	SDLGLWindow sdlglWindow(sdlWindow);
+	sdlglWindow.makeCurrent();
 	SDL_GL_SetSwapInterval(1);
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 		Log::Error("Failed to initialize Glad");
 	setupGLDebugging();
-	setupImGui(glWindow);
-	return glWindow;
+	setupImGui(sdlglWindow);
+	return sdlglWindow;
 }
 
 void SDLOpenGLWrapper::setupGLDebugging() {
@@ -91,8 +91,8 @@ SDLOpenGLWrapper::SDLOpenGLWrapper() {
 
 }
 
-void SDLOpenGLWrapper::setupImGui(GLWindow& glWindow) {
-	ImGui_ImplSDL2_InitForOpenGL(glWindow.window, glWindow.glContext);
+void SDLOpenGLWrapper::setupImGui(SDLGLWindow& sdlglWindow) {
+	ImGui_ImplSDL2_InitForOpenGL(sdlglWindow.window, sdlglWindow.glContext);
 	ImGui_ImplOpenGL3_Init("#version 430");
 }
 
@@ -101,7 +101,6 @@ SDLOpenGLWrapper::~SDLOpenGLWrapper() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
-	//m_glWindows[0].destroy();
 	SDL_Quit();
 }
 

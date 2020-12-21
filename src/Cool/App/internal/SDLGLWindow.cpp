@@ -1,6 +1,6 @@
-#include "GLWindow.h"
+#include "SDLGLWindow.h"
 
-bool GLWindow::checkForFullscreenToggles(const SDL_Event& e) {
+bool SDLGLWindow::checkForFullscreenToggles(const SDL_Event& e) {
 	if (e.type == SDL_KEYDOWN && e.window.windowID == SDL_GetWindowID(window)) {
 		if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
 			switchFullScreen();
@@ -14,7 +14,7 @@ bool GLWindow::checkForFullscreenToggles(const SDL_Event& e) {
 	return false;
 }
 
-void GLWindow::switchFullScreen() {
+void SDLGLWindow::switchFullScreen() {
 	if (m_bIsFullScreen)
 		SDL_SetWindowFullscreen(window, 0);
 	else
@@ -22,7 +22,7 @@ void GLWindow::switchFullScreen() {
 	m_bIsFullScreen = !m_bIsFullScreen;
 }
 
-void GLWindow::escapeFullScreen() {
+void SDLGLWindow::escapeFullScreen() {
 	SDL_SetWindowFullscreen(window, 0);
 	m_bIsFullScreen = false;
 }

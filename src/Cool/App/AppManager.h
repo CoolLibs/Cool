@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Cool/App/internal/SDLOpenGLWrapper.h"
-#include "Cool/App/internal/GLWindow.h"
+#include "Cool/App/internal/SDLGLWindow.h"
 
 struct ImGuiDockNode;
 
@@ -36,7 +36,7 @@ private:
 
 private:
 	SDLOpenGLWrapper m_SDLOpenGLWrapper; // We keep this as a member so that it will be destroyed on App shutdown and will shutdown SDL
-	GLWindow m_glWindow;
+	SDLGLWindow m_sdlglWindow;
 	bool m_bShowUI = true;
 	bool m_bShouldClose = false;
 };

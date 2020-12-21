@@ -12,13 +12,13 @@ namespace Cool {
 
 AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
 	: m_SDLOpenGLWrapper(),
-	  m_glWindow(m_SDLOpenGLWrapper.createGLWindow(windowName, windowDefaultWidth, windowDefaultHeight))
+	  m_sdlglWindow(m_SDLOpenGLWrapper.createWindow(windowName, windowDefaultWidth, windowDefaultHeight))
 {
 	Input::Initialize();
 }
 
 AppManager::~AppManager() {
-	m_glWindow.destroy();
+	m_sdlglWindow.destroy();
 }
 
 int AppManager::run(Cool::IApp& app) {
@@ -33,13 +33,13 @@ int AppManager::run(Cool::IApp& app) {
 
 void AppManager::onWindowMove() {
 	int x, y;
-	SDL_GetWindowPosition(m_glWindow.window, &x, &y);
+	SDL_GetWindowPosition(m_sdlglWindow.window, &x, &y);
 	RenderState::setWindowTopLeft(x, y);
 }
 
 void AppManager::onWindowResize() {
 	int w, h;
-	SDL_GetWindowSize(m_glWindow.window, &w, &h);
+	SDL_GetWindowSize(m_sdlglWindow.window, &w, &h);
 	RenderState::setWindowSize(w, h);
 }
 
@@ -57,7 +57,7 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 }
 
 bool AppManager::onEvent(const SDL_Event& e) {
-	if (m_glWindow.checkForFullscreenToggles(e)) {
+	if (m_sdlglWindow.checkForFullscreenToggles(e)) {
 		onWindowResize();
 		return false;
 	}
@@ -71,7 +71,7 @@ bool AppManager::onEvent(const SDL_Event& e) {
 			return false;
 
 		case SDL_WINDOWEVENT_CLOSE:
-			if (e.window.windowID == SDL_GetWindowID(m_glWindow.window)) {
+			if (e.window.windowID == SDL_GetWindowID(m_sdlglWindow.window)) {
 				closeApp();
 				return false;
 			}
@@ -114,7 +114,7 @@ void AppManager::update(Cool::IApp& app) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	// Start ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(m_glWindow.window);
+	ImGui_ImplSDL2_NewFrame(m_sdlglWindow.window);
 	ImGui::NewFrame();
 	ImGuiDockspace();
 	// Actual application code
@@ -147,7 +147,7 @@ void AppManager::update(Cool::IApp& app) {
 	}
 
 	// End frame
-	SDL_GL_SwapWindow(m_glWindow.window);
+	SDL_GL_SwapWindow(m_sdlglWindow.window);
 }
 
 void AppManager::ImGuiDockspace() {

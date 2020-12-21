@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLWindow.h"
+#include "SDLGLWindow.h"
 
 namespace Cool {
 
@@ -14,8 +14,8 @@ public:
 	SDLOpenGLWrapper();
 	~SDLOpenGLWrapper();
 
-	GLWindow createGLWindow(const char* name, int defaultWidth, int defaultHeight);
-	void setupImGui(GLWindow& glWindow);
+	SDLGLWindow createWindow(const char* name, int defaultWidth, int defaultHeight);
+	void setupImGui(SDLGLWindow& sdlglWindow);
 
 private:
 	void initializeSDLandOpenGL();

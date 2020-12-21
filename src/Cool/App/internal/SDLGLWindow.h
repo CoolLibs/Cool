@@ -1,7 +1,7 @@
 #pragma once
 
-struct GLWindow {
-	GLWindow(SDL_Window* _window)
+struct SDLGLWindow {
+	SDLGLWindow(SDL_Window* _window)
 		: window(_window) 
 	{
 		glContext = SDL_GL_CreateContext(window);
