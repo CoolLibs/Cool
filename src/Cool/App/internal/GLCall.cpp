@@ -1,24 +1,22 @@
-#include "GLCall.h"
-
-namespace Cool {
-
 #ifndef NDEBUG
 
-void glDebug::clearFromPreviousErrors() {
+#include "GLCall.h"
+
+void CoolGlDebug::clearFromPreviousErrors() {
 	while (glGetError() != GL_NO_ERROR);
 }
 
-bool glDebug::checkForErrors(const char *functionName, const char *filename, int line) {
+bool CoolGlDebug::checkForErrors(const char *functionName, const char *filename, int line) {
 	GLenum error;
 	bool bFoundErrors = false;
 	while ((error = glGetError()) != GL_NO_ERROR) {
-		Log::ErrorWithoutBreakpoint("[OpenGL Error] {} : {} {} {}", glErrorString(error), functionName, filename, line);
+		Cool::Log::ErrorWithoutBreakpoint("[OpenGL Error] {} : {} {} {}", glErrorString(error), functionName, filename, line);
 		bFoundErrors = true;
 	}
 	return bFoundErrors;
 }
 
-char const* glDebug::glErrorString(GLenum const err) {
+char const* CoolGlDebug::glErrorString(GLenum const err) {
 	switch (err) {
 	case GL_NO_ERROR:
 		return "GL_NO_ERROR";
@@ -44,5 +42,3 @@ char const* glDebug::glErrorString(GLenum const err) {
 }
 
 #endif
-
-} // namespace Cool
