@@ -33,8 +33,8 @@ std::string WhithoutFileExtension(const std::string& filepath);
 /// </summary>
 std::string WhithoutFileName(const std::string& filepath);
 /// <summary>
-/// Loads the content of a file into a std::string. Should be used like this : \c "std::string myString Cool::File::ToString(filepath, &myString)".
-/// We use this ugly API for performance reasons.
+/// Loads the content of a file into a std::string.
+/// (NB : We use this ugly API instead of returning a string for performance reasons.)
 /// </summary>
 /// <param name="filepath">Path to the file to be loaded</param>
 /// <param name="dst">Pointer to the string to be filled with the content of the file</param>
