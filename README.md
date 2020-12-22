@@ -1,1 +1,5 @@
 # Camera
+
+Requires :
+  - Log
+  - App
