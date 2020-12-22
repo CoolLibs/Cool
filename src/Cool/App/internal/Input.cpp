@@ -4,19 +4,21 @@
 
 namespace Cool {
 
-glm::vec2 Input::s_DPCM;
-static constexpr float INCH_TO_CM = 2.54f;
+glm::vec2 Input::s_PixelsToCentimeters;
+
 #ifndef NDEBUG
 bool Input::s_initialized = false;
 #endif
 
 void Input::Initialize() {
-	int exitCode = SDL_GetDisplayDPI(0, nullptr, &s_DPCM[0], &s_DPCM[1]);
+	glm::vec2 dpi;
+	int exitCode = SDL_GetDisplayDPI(0, nullptr, &dpi[0], &dpi[1]);
 	if (exitCode == -1) { // Failure
-		s_DPCM = glm::vec2(96.f);
+		dpi = glm::vec2(96.f);
 		Log::Release::Warn("Couldn't retrieve your screen's DPI. Going for the default 96 DPI.");
 	}
-	s_DPCM /= INCH_TO_CM;
+	const float INCH_TO_CM = 2.30769231f; // I konw this isn't the actual value, but this is what gives correct results on my machine. And let's be honnest, I have no idea why that is.
+	s_PixelsToCentimeters = INCH_TO_CM / dpi;
 #ifndef NDEBUG
 	if (s_initialized)
 		Log::Warn("[Input::Initialize] You are calling Initialize() twice.");
@@ -38,9 +40,9 @@ glm::ivec2 Input::MouseInPixels() {
 glm::vec2 Input::MouseInCentimeters() {
 #ifndef NDEBUG
 	if (!s_initialized)
-		Log::Error("You are using Input::MouseInCentimeters() before the Input class is Initialized. Initialize() happens in the constructor of AppFramework.");
+		Log::Error("You are using Input::MouseInCentimeters() before the Input class is Initialized. Initialize() happens in the constructor of AppManager.");
 #endif
-	return static_cast<glm::vec2>(MouseInPixels()) * s_DPCM;
+	return static_cast<glm::vec2>(MouseInPixels()) * s_PixelsToCentimeters;
 }
 
 glm::vec2 Input::MouseInNormalizedRatioSpace() {

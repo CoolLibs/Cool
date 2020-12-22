@@ -22,8 +22,8 @@ friend class AppManager;
 	static void Initialize();
 
 private:
-	/// Dots per Centimeter ; like DPI but in a sensible unit
-	static glm::vec2 s_DPCM;
+	/// Multiply a vec2 expressed in pixels by this to get a vec2 expressed in centimeters
+	static glm::vec2 s_PixelsToCentimeters;
 #ifndef NDEBUG
 	static bool s_initialized;
 #endif
