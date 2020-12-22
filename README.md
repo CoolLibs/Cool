@@ -1,1 +1,4 @@
-Cool
+# App
+
+Requires
+  - Log
