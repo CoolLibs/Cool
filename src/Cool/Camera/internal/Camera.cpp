@@ -12,6 +12,7 @@ Camera::Camera() {
 	setState<CameraState_Idle>();
 	onTransformChanged();
 	computeProjectionMatrix();
+	RenderState::SubscribeToSizeChanges([this]() { computeProjectionMatrix(); });
 }
 
 void Camera::onTransformChanged() {
