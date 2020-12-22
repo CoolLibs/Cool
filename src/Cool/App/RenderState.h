@@ -17,9 +17,22 @@ public:
 	/// <param name="onSizeChangeCB">A callback function called when the size changes</param>
 	static inline void SubscribeToSizeChanges(std::function<void()> onSizeChangeCB) { m_onRenderAreaResizedCallbacks.push_back(onSizeChangeCB); }
 	/// <summary>
-	/// Returns whether we are currently exporting an image or image sequence
+	/// Returns whether we are currently exporting an image or not ; if true it means that the size returned by Size() is the one set with setExportSize().
+	/// Otherwise it means that Size() returns the size of the current viewing area inside the window.
 	/// </summary>
 	static inline bool IsExporting() { return m_bIsExporting; }
+	/// <summary>
+	/// If bIsExporting is true, the size returned by Size() is the one set with setExportSize().
+	/// Otherwise, Size() returns the size of the current viewing area inside the window.
+	/// </summary>
+	/// <param name="bIsExporting"></param>
+	static void setIsExporting(bool bIsExporting);
+	/// <summary>
+	/// Set a size that will be used while exporting.
+	/// </summary>
+	/// <param name="width"></param>
+	/// <param name="height"></param>
+	static void setExportSize(int width, int height);
 
 private:
 	friend class AppManager;
@@ -29,8 +42,6 @@ private:
 	static RectSizePos InAppRenderArea();
 	inline static glm::ivec2 SwapYConvention(const glm::ivec2& p) { return { p.x, m_Window.height() - p.y }; }
 
-	static void setIsExporting(bool bIsExporting);
-	static void setExportSize        (int width, int height);
 	static void setWindowSize        (int width, int height);
 	static void setAvailableSpaceSize(int width, int height, bool bCanTriggerResizeEvent = true);
 	static inline void setWindowTopLeft        (int x, int y) { m_Window .setTopLeft(x, y); }
