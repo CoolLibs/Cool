@@ -4,6 +4,7 @@
 namespace Cool {
 
 Renderer::Renderer() {
+	RenderState::SubscribeToSizeChanges([this]() { onRenderAreaResized(); });
 	GLCall(glGenVertexArrays(1, &m_dummyVaoID));
 }
 Renderer::~Renderer() {
