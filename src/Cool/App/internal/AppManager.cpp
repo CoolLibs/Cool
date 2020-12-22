@@ -22,7 +22,6 @@ AppManager::~AppManager() {
 }
 
 int AppManager::run(Cool::IApp& app) {
-	RenderState::setRenderAreaResizedCallback([&app]() {app.onRenderAreaResized();});
 	onWindowMove();
 	onWindowResize();
 	while (!shouldClose()) {

@@ -23,10 +23,6 @@ public:
 	/// </summary>
 	/// <param name="e">An SDL event. See here for the full range of available events : https://wiki.libsdl.org/SDL_Event</param>
 	virtual void onEvent(const SDL_Event& e) {};
-	/// <summary>
-	/// Called whenever RenderState::Size() changes. Allows you to resize buffers, recompute a cached aspectRatio or what not.
-	/// </summary>
-	virtual void onRenderAreaResized() {};
 };
 
 } // namespace Cool

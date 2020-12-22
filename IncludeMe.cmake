@@ -72,4 +72,5 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <Cool/App/internal/GLCall.h>
     # std
     <functional>
+    <vector>
 )

@@ -2,7 +2,7 @@
 
 namespace Cool {
 
-std::function<void()> RenderState::OnRenderAreaResized = []() {};
+std::vector<std::function<void()>> RenderState::m_onRenderAreaResizedCallbacks;
 RectSizePos RenderState::m_Window;
 RectSizePos RenderState::m_AvailableSpace;
 RectSize RenderState::m_Export;
@@ -15,6 +15,12 @@ RectSize RenderState::Size() {
 		return m_Export;
 	else
 		return InAppRenderArea();
+}
+
+void RenderState::OnRenderAreaResized() {
+	for (auto& cb : m_onRenderAreaResizedCallbacks) {
+		cb();
+	}
 }
 
 void RenderState::setIsExporting(bool bIsExporting) {

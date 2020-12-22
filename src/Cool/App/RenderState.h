@@ -11,11 +11,18 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	static RectSize Size();
+	/// <summary>
+	/// Subscribe to the event triggered whenever the size used for rendering changes. Typically required to update things that depend on the size or aspect ratio of the render area.
+	/// </summary>
+	/// <param name="onSizeChangeCB">A callback function called when the size changes</param>
+	static inline void SubscribeToSizeChanges(std::function<void()> onSizeChangeCB) { m_onRenderAreaResizedCallbacks.push_back(onSizeChangeCB); }
+	/// <summary>
+	/// Returns whether we are currently exporting an image or image sequence
+	/// </summary>
 	static inline bool IsExporting() { return m_bIsExporting; }
 
 private:
 	friend class AppManager;
-	friend class Renderer;
 	friend class Input;
 	// Size and position that should be used for showing rendered images inside the window
 	static RectSizePos InAppRenderArea();
@@ -35,10 +42,11 @@ private:
 
 	static void ImGuiConstrainInAppRenderAreaRatio();
 
-	static inline void setRenderAreaResizedCallback(const std::function<void()>& callback) { OnRenderAreaResized = callback; }
+	static void OnRenderAreaResized();
 
 private:
-	static std::function<void()> OnRenderAreaResized; // Function pointer to be used as a callback
+	/// Function pointers to be used as a callback when the render area is resized
+	static std::vector<std::function<void()>> m_onRenderAreaResizedCallbacks;
 
 	static RectSizePos m_Window;         // Size of the window, and it's position inside the screen
 	static RectSizePos m_AvailableSpace; // Size of the available space inside the window (excludes the docked ImGui windows), and its position inside the window
