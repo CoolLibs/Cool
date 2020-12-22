@@ -3,7 +3,7 @@
 #ifndef NDEBUG
 
 namespace Cool {
-    /// Wrap all you OpenGL calls with this macro : it will add debug checks.
+    /// Wrap all you OpenGL calls in this macro : it will add debug checks. Something like : GLCall(GLuint programID = glCreateProgram())
     /// It is not strictly necessary though because modern OpenGL debugging is enabled too. It's only to help those who don't have the advandced debugging available on their machine.
     #define GLCall(x) CoolGlDebug::clearFromPreviousErrors(); x; assert(!CoolGlDebug::checkForErrors(#x, __FILE__, __LINE__))
 }
