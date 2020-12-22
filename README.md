@@ -1,1 +1,1 @@
-Cool_Log
+Requites *nothing*
