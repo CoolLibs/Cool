@@ -42,6 +42,7 @@ private:
 private:
 	SDLOpenGLWrapper m_SDLOpenGLWrapper; // We keep this as a member so that it will be destroyed on App shutdown and will shutdown SDL
 	SDLGLWindow m_sdlglWindow;
+	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
 	bool m_bShouldClose = false;
 };

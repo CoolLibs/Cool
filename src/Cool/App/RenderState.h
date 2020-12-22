@@ -32,7 +32,7 @@ private:
 	static void setIsExporting(bool bIsExporting);
 	static void setExportSize        (int width, int height);
 	static void setWindowSize        (int width, int height);
-	static void setAvailableSpaceSize(int width, int height);
+	static void setAvailableSpaceSize(int width, int height, bool bCanTriggerResizeEvent = true);
 	static inline void setWindowTopLeft        (int x, int y) { m_Window .setTopLeft(x, y); }
 	static inline void setAvailableSpaceTopLeft(int x, int y) { m_AvailableSpace.setTopLeft(x, y); }
 

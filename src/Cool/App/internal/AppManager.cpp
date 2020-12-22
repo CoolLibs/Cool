@@ -51,7 +51,7 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 	// Size
 	glm::ivec2 size = { static_cast<int>(node->Size.x), static_cast<int>(node->Size.y) };
 	if (size.x != RenderState::getAvailableSpaceSize().x || size.y != RenderState::getAvailableSpaceSize().y) {
-		RenderState::setAvailableSpaceSize(size.x, size.y);
+		RenderState::setAvailableSpaceSize(size.x, size.y, !m_bFirstFrame);
 	}
 }
 
@@ -117,7 +117,8 @@ void AppManager::update(Cool::IApp& app) {
 	ImGui::NewFrame();
 	ImGuiDockspace();
 	// Actual application code
-	app.update();
+	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+		app.update();
 	if (m_bShowUI) {
 		// Menu bar
 		ImGui::BeginMainMenuBar();
@@ -147,6 +148,7 @@ void AppManager::update(Cool::IApp& app) {
 
 	// End frame
 	SDL_GL_SwapWindow(m_sdlglWindow.window);
+	m_bFirstFrame = false;
 }
 
 void AppManager::ImGuiDockspace() {

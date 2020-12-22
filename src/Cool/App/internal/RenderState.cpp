@@ -33,9 +33,9 @@ void RenderState::setWindowSize(int width, int height) {
 	// No need to call OnRenderAreaResized() because it will be called by setAvailableSpaceSize() once the ImGui dockspace realizes its size has changed
 }
 
-void RenderState::setAvailableSpaceSize(int width, int height) {
+void RenderState::setAvailableSpaceSize(int width, int height, bool bCanTriggerResizeEvent) {
 	m_AvailableSpace.setSize(width, height);
-	if (!m_bIsExporting)
+	if (!m_bIsExporting && bCanTriggerResizeEvent)
 		OnRenderAreaResized();
 }
 
