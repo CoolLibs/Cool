@@ -1,1 +1,3 @@
-Cool_CMake-Helpers
+# CMake-Helpers
+
+Requires *nothing*
