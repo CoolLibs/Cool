@@ -1,6 +1,7 @@
 #pragma once
 
 #include "internal/CameraState.h"
+#include "Ray.h"
 
 namespace Cool {
 
@@ -14,11 +15,18 @@ public:
 
 	inline const glm::mat4& transformMatrix() const { return m_transformMatrix; }
 	inline const glm::mat4& viewMatrix() const { return m_viewMatrix; }
+	inline const glm::mat4& projMatrix() const { return m_projMatrix; }
 	glm::vec3 xAxis() const;
 	glm::vec3 yAxis() const;
 	glm::vec3 zAxis() const;
 	glm::vec3 position() const;
 	inline float focalLength() const { return m_focalLength; }
+
+	/// <summary>
+	/// Returns a Ray passing through the given pixel and starting at the camera position.
+	/// Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : rayThroughPixel(Input::MouseInPixels())
+	/// </summary>
+	Ray rayThroughPixel(const glm::vec2& positionInPixels);
 
 	inline void update() { m_state->update(); }
 	inline void onWheelDown() { m_state->onWheelDown(); }
@@ -27,6 +35,7 @@ public:
 
 private:
 	void onTransformChanged();
+	void computeProjectionMatrix();
 
 	template <typename T, typename ...Args>
 	inline void setState(Args&& ...args) {
@@ -41,6 +50,7 @@ private:
 
 	glm::mat4 m_transformMatrix;
 	glm::mat4 m_viewMatrix;
+	glm::mat4 m_projMatrix;
 
 	float m_focalLength = 1.0f;
 
