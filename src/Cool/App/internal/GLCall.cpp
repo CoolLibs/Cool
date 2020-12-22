@@ -2,6 +2,8 @@
 
 namespace Cool {
 
+#ifndef NDEBUG
+
 void glDebug::clearFromPreviousErrors() {
 	while (glGetError() != GL_NO_ERROR);
 }
@@ -40,5 +42,7 @@ char const* glDebug::glErrorString(GLenum const err) {
 		return "UNKNOWN_ERROR_TYPE";
 	}
 }
+
+#endif
 
 } // namespace Cool
