@@ -68,6 +68,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <glm/gtc/type_ptr.hpp>
     <glad/glad.h>
     <SDL2/SDL.h>
+    # Cool
+    <Cool/App/internal/GLCall.h>
     # std
     <functional>
 )
