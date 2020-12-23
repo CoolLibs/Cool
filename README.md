@@ -1,1 +1,5 @@
 # Image
+
+Requires :
+  - File
+  - ExportImage
