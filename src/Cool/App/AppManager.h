@@ -10,6 +10,7 @@ class Iapp;
 
 /// <summary>
 /// Wrapper for an App. Handles the window and the UI layout.
+/// /!\ SDL and OpenGL are only initialized after AppManager has been constructed !
 /// </summary>
 class AppManager {
 public:
