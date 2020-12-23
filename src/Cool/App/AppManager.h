@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Cool/App/internal/SDLOpenGLWrapper.h"
-#include "Cool/App/internal/SDLGLWindow.h"
+#include "internal/SDLOpenGLWrapper.h"
+#include "internal/SDLGLWindow.h"
 
 struct ImGuiDockNode;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cool/App/internal/RectSizePos.h"
+#include "internal/RectSizePos.h"
 
 namespace Cool {
 

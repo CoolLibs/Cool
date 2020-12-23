@@ -1,6 +1,6 @@
-#include "Cool/App/Input.h"
+#include "../Input.h"
 
-#include "Cool/App/RenderState.h"
+#include "../RenderState.h"
 
 namespace Cool {
 

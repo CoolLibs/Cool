@@ -1,8 +1,8 @@
-#include "Cool/App/AppManager.h"
+#include "../AppManager.h"
 
-#include "Cool/App/IApp.h"
-#include "Cool/App/RenderState.h"
-#include "Cool/App/Input.h"
+#include "../IApp.h"
+#include "../RenderState.h"
+#include "../Input.h"
 
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
