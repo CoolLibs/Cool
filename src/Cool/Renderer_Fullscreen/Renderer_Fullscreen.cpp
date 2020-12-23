@@ -1,4 +1,5 @@
 #include "Renderer_Fullscreen.h"
+
 #include <Cool/App/RenderState.h>
 
 namespace Cool {
@@ -7,6 +8,7 @@ Renderer_Fullscreen::Renderer_Fullscreen() {
 	RenderState::SubscribeToSizeChanges([this]() { onRenderAreaResized(); });
 	GLCall(glGenVertexArrays(1, &m_dummyVaoID));
 }
+
 Renderer_Fullscreen::~Renderer_Fullscreen() {
 	GLCall(glDeleteVertexArrays(1, &m_dummyVaoID));
 }
