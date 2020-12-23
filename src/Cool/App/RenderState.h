@@ -36,7 +36,7 @@ public:
 
 private:
 	friend class AppManager;
-	friend class Renderer;
+	friend class Renderer_Fullscreen;
 	friend class Input;
 	// Size and position that should be used for showing rendered images inside the window
 	static RectSizePos InAppRenderArea();
