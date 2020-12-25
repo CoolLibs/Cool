@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Cool {
+
 class Texture {
 public:
 	Texture() = default;
@@ -19,4 +21,9 @@ public:
 
 private:
 	GLuint m_textureID = -1;
+#ifndef NDEBUG
+	bool m_bDataUploaded = false;
+#endif
 };
+
+} // namespace Cool
