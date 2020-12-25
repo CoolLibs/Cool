@@ -53,9 +53,4 @@ void Texture::bindToSlot(int slot) {
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_textureID));
 }
 
-void Texture::unbind() {
-	GLCall(glActiveTexture(GL_TEXTURE0));
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
 } // namespace Cool
