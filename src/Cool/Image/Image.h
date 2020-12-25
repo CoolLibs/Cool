@@ -31,14 +31,14 @@ public:
 	/// </summary>
 	inline float aspectRatio() { return m_aspectRatio; }
 	/// <summary>
-	/// Returns the Color of a given pixel
-	/// </summary>
-	inline Color& colorAt(unsigned int x, unsigned int y) { return m_pixelColors[x + y * m_width]; }
-	/// <summary>
 	/// Returns the full array of unsigned chars representing the image, with four channels per pixel.
 	/// Follows the OpenGL convention : the first pixel in the array is the bottom left of the image, the second pixel is on the first row second column etc.
 	/// </summary>
 	inline unsigned char* data() { return (unsigned char*)m_pixelColors.data(); }
+	/// <summary>
+	/// Returns the Color of a given pixel
+	/// </summary>
+	inline Color& colorAt(unsigned int x, unsigned int y) { return m_pixelColors[x + y * m_width]; }
 
 	ImageIterator begin();
 	ImageIterator end();
