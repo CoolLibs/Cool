@@ -14,10 +14,12 @@ public:
 	Image(unsigned int width, unsigned int height);
 	~Image() = default;
 
+#if defined(__COOL_EXPORT_IMAGE) && defined(__COOL_FILE)
 	/// <summary>
 	/// Saves the image as a PNG. If the folders present in the path don't exist, they will be created.
 	/// </summary>
 	void saveAs(const char* filepath);
+#endif // __COOL_EXPORT_IMAGE && __COOL_FILE
 	/// <summary>
 	/// Returns the width in pixels
 	/// </summary>
