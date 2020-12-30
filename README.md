@@ -1,5 +1,4 @@
 # FileWatcher
 
 Requires :
-  - App
   - File
