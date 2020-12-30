@@ -1,5 +1,8 @@
 # NB : You need to set PATH_TO_COOL before including this file
 
+add_compile_definitions(__COOL_APP)
+add_compile_definitions(__COOL_GLM)
+
 # Include OpenGL
 find_package(OpenGL REQUIRED)
 
