@@ -16,6 +16,12 @@ public:
 	/// Takes values in the range [0, 1] (values outside are clamped to 0 or 1)
 	/// </summary>
 	void set(float r, float g, float b);
+#ifdef __COOL_GLM
+	/// <summary>
+	/// Takes values in the range [0, 1] (values outside are clamped to 0 or 1)
+	/// </summary>
+	inline void set(const glm::vec3& color) { set(color.r, color.g, color.b); }
+#endif // __COOL_GLM
 
 private:
 	unsigned char m_channels[4];
