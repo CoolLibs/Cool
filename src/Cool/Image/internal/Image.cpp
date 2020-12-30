@@ -2,7 +2,7 @@
 
 
 #if defined(__COOL_EXPORT_IMAGE) && defined(__COOL_FILE)
-#include <Cool/ExportImage/ExportPNG.h>
+#include <Cool/ExportImage/AsPNG.h>
 #include <Cool/File/File.h>
 #endif // __COOL_EXPORT_IMAGE && __COOL_FILE
 
