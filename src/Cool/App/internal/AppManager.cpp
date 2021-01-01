@@ -122,8 +122,8 @@ void AppManager::update(Cool::IApp& app) {
 	if (m_bShowUI) {
 		// Menu bar
 		ImGui::BeginMainMenuBar();
-		if (ImGui::BeginMenu("RenderArea")) {
-			RenderState::ImGuiConstrainInAppRenderAreaRatio();
+		if (ImGui::BeginMenu("Preview")) {
+			RenderState::ImGuiPreviewControls();
 			ImGui::EndMenu();
 		}
 		app.ImGuiMenus();

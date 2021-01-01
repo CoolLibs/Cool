@@ -6,15 +6,18 @@ std::vector<std::function<void()>> RenderState::m_onRenderAreaResizedCallbacks;
 RectSizePos RenderState::m_Window;
 RectSizePos RenderState::m_AvailableSpace;
 RectSize RenderState::m_Export;
+RectSize RenderState::m_PreviewWithControlledNbPixels;
 bool RenderState::m_bIsExporting = false;
-bool RenderState::m_bConstrainInAppRenderAreaRatio = false;
-float RenderState::m_inAppRenderAreaConstrainedRatio = 16.0f / 9.0f;
+bool RenderState::m_bControlPreviewRatio = false;
+float RenderState::m_previewRatio = 16.f / 9.f;
+bool RenderState::m_bControlPreviewNbPixels = false;
+int RenderState::m_previewNbPixels = 250000;
 
 RectSize RenderState::Size() {
 	if (m_bIsExporting)
 		return m_Export;
 	else
-		return InAppRenderArea();
+		return PreviewSize();
 }
 
 void RenderState::OnRenderAreaResized() {
@@ -25,6 +28,28 @@ void RenderState::OnRenderAreaResized() {
 
 void RenderState::setIsExporting(bool bIsExporting) {
 	m_bIsExporting = bIsExporting;
+	OnRenderAreaResized();
+}
+
+void RenderState::setAspectRatioOfPreviewIfControlled(float aspectRatio) {
+	m_previewRatio = aspectRatio;
+	if (m_bControlPreviewRatio)
+		OnRenderAreaResized();
+}
+
+void RenderState::setIsControllingAspectRatioOfPreview(bool bControl) {
+	m_bControlPreviewRatio = bControl;
+	OnRenderAreaResized();
+}
+
+void RenderState::setNbOfPixelsInPreviewIfControlled(int nbPixels) {
+	m_previewNbPixels = nbPixels;
+	if (m_bControlPreviewNbPixels)
+		OnRenderAreaResized();
+}
+
+void RenderState::setIsControllingNbPixelsInPreview(bool bControl) {
+	m_bControlPreviewNbPixels = bControl;
 	OnRenderAreaResized();
 }
 
@@ -46,7 +71,7 @@ void RenderState::setExportSize(int width, int height) {
 }
 
 RectSizePos RenderState::InAppRenderArea() {
-	if (!m_bIsExporting && !m_bConstrainInAppRenderAreaRatio)
+	if (!m_bIsExporting && !m_bControlPreviewRatio)
 		return m_AvailableSpace;
 	else {
 		// Get aspect ratios
@@ -55,7 +80,7 @@ RectSizePos RenderState::InAppRenderArea() {
 		if (m_bIsExporting)
 			desiredAspectRatio = m_Export.aspectRatio();
 		else
-			desiredAspectRatio = m_inAppRenderAreaConstrainedRatio;
+			desiredAspectRatio = m_previewRatio;
 		// Compute size
 		RectSizePos res;
 		if (desiredAspectRatio > availableSpaceRatio)
@@ -71,13 +96,38 @@ RectSizePos RenderState::InAppRenderArea() {
 	}
 }
 
-void RenderState::ImGuiConstrainInAppRenderAreaRatio() {
-	if (ImGui::Checkbox("Constrain aspect ratio", &m_bConstrainInAppRenderAreaRatio)) {
-		OnRenderAreaResized();
+RectSize RenderState::PreviewSize() {
+	if (!m_bControlPreviewNbPixels)
+		return InAppRenderArea();
+	else {
+		float ratio = m_bControlPreviewRatio ? m_previewRatio : m_AvailableSpace.aspectRatio();
+		int w = static_cast<int>(std::round(sqrt(m_previewNbPixels * ratio)));
+		int h = static_cast<int>(std::round(sqrt(m_previewNbPixels / ratio)));
+		return RectSize(w, h);
 	}
-	if (m_bConstrainInAppRenderAreaRatio) {
-		if (ImGui::SliderFloat("Aspect ratio", &m_inAppRenderAreaConstrainedRatio, 0.5f, 2.0f)) {
-			OnRenderAreaResized();
+}
+
+void RenderState::ImGuiPreviewControls() {
+	// Aspect Ratio
+	bool bControlPreviewRatio = m_bControlPreviewRatio;
+	if (ImGui::Checkbox("Control aspect ratio", &bControlPreviewRatio)) {
+		setIsControllingAspectRatioOfPreview(bControlPreviewRatio);
+	}
+	if (m_bControlPreviewRatio) {
+		float previewRatio = m_previewRatio;
+		if (ImGui::SliderFloat("Aspect ratio", &previewRatio, 0.5f, 2.0f)) {
+			setAspectRatioOfPreviewIfControlled(previewRatio);
+		}
+	}
+	// Nb Pixels
+	bool bControlPreviewNbPixels = m_bControlPreviewNbPixels;
+	if (ImGui::Checkbox("Control number of pixels", &bControlPreviewNbPixels)) {
+		setIsControllingNbPixelsInPreview(bControlPreviewNbPixels);
+	}
+	if (m_bControlPreviewNbPixels) {
+		int previewNbPixels = m_previewNbPixels;
+		if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 1000000)) {
+			setNbOfPixelsInPreviewIfControlled(previewNbPixels);
 		}
 	}
 }

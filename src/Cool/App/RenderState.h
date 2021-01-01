@@ -33,6 +33,27 @@ public:
 	/// <param name="width"></param>
 	/// <param name="height"></param>
 	static void setExportSize(int width, int height);
+	/// <summary>
+	/// Sets the aspect ratio used by the preview. You also need to setIsControllingAspectRatioOfPreview(true).
+	/// Otherwise we just render at the available space's aspectRatio.
+	/// </summary>
+	static void setAspectRatioOfPreviewIfControlled(float aspectRatio);
+	/// <summary>
+	/// If bControl is true, we use the aspect ratio set by setAspectRatioOfPreviewIfControlled to render our preview image.
+	/// If bControl is false, we instead render our preview to match the aspect ratio of the previewing area.
+	/// </summary>
+	static void setIsControllingAspectRatioOfPreview(bool bControl);
+	/// <summary>
+	/// Sets the number of pixels used in the preview. You also need to setIsControllingNbPixelsInPreview(true) to use this number of pixels.
+	/// Otherwise we just render at the available space size.
+	/// <param name="nbPixels">Desired number of pixels in the preview render. It will not be matched exactly but will be approximated while also respecting the target aspect ratio.</param>
+	/// </summary>
+	static void setNbOfPixelsInPreviewIfControlled(int nbPixels);
+	/// <summary>
+	/// If bControl is true, we use the number of pixels set by setNbOfPixelsInPreviewIfControlled to render our preview image.
+	/// If bControl is false, we instead render our preview to match the size of the previewing area.
+	/// </summary>
+	static void setIsControllingNbPixelsInPreview(bool bControl);
 
 private:
 	friend class AppManager;
@@ -40,6 +61,8 @@ private:
 	friend class Input;
 	// Size and position that should be used for showing rendered images inside the window
 	static RectSizePos InAppRenderArea();
+	// Size that should be used for rendering preview images (then shown in the InAppRenderArea)
+	static RectSize PreviewSize();
 	inline static glm::ivec2 SwapYConvention(const glm::ivec2& p) { return { p.x, m_Window.height() - p.y }; }
 
 	static void setWindowSize        (int width, int height);
@@ -52,7 +75,7 @@ private:
 	static inline const glm::ivec2& getAvailableSpaceSize() { return m_AvailableSpace.size(); }
 	static inline       glm::ivec2  getWindowTopLeft()      { return m_Window.topLeft(); }
 
-	static void ImGuiConstrainInAppRenderAreaRatio();
+	static void ImGuiPreviewControls();
 
 	static void OnRenderAreaResized();
 
@@ -60,14 +83,21 @@ private:
 	/// Function pointers to be used as a callback when the render area is resized
 	static std::vector<std::function<void()>> m_onRenderAreaResizedCallbacks;
 
-	static RectSizePos m_Window;         // Size of the window, and it's position inside the screen
-	static RectSizePos m_AvailableSpace; // Size of the available space inside the window (excludes the docked ImGui windows), and its position inside the window
-	static RectSize m_Export;            // Size of the exported images
+	// Size of the window, and it's position inside the screen
+	static RectSizePos m_Window;
+	// Size of the available space inside the window (excludes the docked ImGui windows), and its position inside the window
+	static RectSizePos m_AvailableSpace;
+	// Size of the exported images
+	static RectSize m_Export;
+	// Size of the images while we preview and control the number of pixels
+	static RectSize m_PreviewWithControlledNbPixels;
 
 	static bool m_bIsExporting; // Owned by RenderState because it needs to know it when deciding what the rendered size should be
 
-	static bool m_bConstrainInAppRenderAreaRatio;
-	static float m_inAppRenderAreaConstrainedRatio;
+	static bool m_bControlPreviewRatio;
+	static float m_previewRatio;
+	static bool m_bControlPreviewNbPixels;
+	static int m_previewNbPixels;
 };
 
 } // namespace Cool
