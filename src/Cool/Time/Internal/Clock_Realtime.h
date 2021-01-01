@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Clock.h"
+#include <chrono>
 
 namespace Cool {
 
 class Clock_Realtime : public Clock {
 public:
 	Clock_Realtime();
-	static void Initialize();
 	~Clock_Realtime() = default;
 
 	float deltaTime() const override;
@@ -20,11 +20,11 @@ public:
 	void pause() override;
 
 private:
-	Uint64 m_lastTime;
-	Uint64 m_currentTime;
-	Uint64 m_SDLTimeWhenPaused = 0;
-	float m_offsetWithSDLTime; // Allows us to setTime as we wish
-	static float SDLPerformanceCounter2Seconds;
+	std::chrono::steady_clock::time_point m_initialTime;
+	std::chrono::steady_clock::time_point m_lastTime;
+	std::chrono::steady_clock::time_point m_currentTime;
+	std::chrono::steady_clock::time_point m_timeWhenPaused;
+	float m_offsetWithSTDTime = 0.f; // Allows us to setTime as we wish
 };
 
 } // namespace Cool
