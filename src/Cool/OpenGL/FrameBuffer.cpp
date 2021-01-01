@@ -68,15 +68,15 @@ void FrameBuffer::unbind() {
 	GLCall(glViewport(m_prevViewport[0], m_prevViewport[1], m_prevViewport[2], m_prevViewport[3]));
 }
 
-void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID) {
+void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID, GLint interpolationMode) {
 	GLCall(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBufferID));
 	GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId));
-	GLCall(glBlitFramebuffer(0, 0, width(), height(), botLeft.x, botLeft.y, topRight.x, topRight.y, GL_COLOR_BUFFER_BIT, GL_LINEAR));
+	GLCall(glBlitFramebuffer(0, 0, width(), height(), botLeft.x, botLeft.y, topRight.x, topRight.y, GL_COLOR_BUFFER_BIT, interpolationMode));
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void FrameBuffer::blitTo(FrameBuffer& frameBuffer) {
-	blitTo({ 0, 0 }, frameBuffer.size(), frameBuffer.frameBufferId());
+void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode) {
+	blitTo({ 0, 0 }, frameBuffer.size(), frameBuffer.frameBufferId(), interpolationMode);
 }
 
 void FrameBuffer::createAttachments(int width, int height) {

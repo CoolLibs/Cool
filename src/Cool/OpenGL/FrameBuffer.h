@@ -13,8 +13,25 @@ public:
 
 	void bind();
 	void unbind();
-	void blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID = SCREEN_FRAMEBUFFER_ID);
-	void blitTo(FrameBuffer& frameBuffer);
+	/// <summary>
+	/// Copies the content of this framebuffer to another framebuffer
+	/// </summary>
+	/// <param name="botLeft">Coordinates of the bottom left corner of the area to copy (in pixels)</param>
+	/// <param name="topRight">Coordinates of the top right corner of the area to copy (in pixels)</param>
+	/// <param name="dstFrameBufferID">OpenGL ID of the target framebuffer</param>
+	/// <param name="interpolationMode">The OpenGL interpolation mode (how the image will be resized if needed).
+	/// The default value is GL_LINEAR.
+	/// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
+	/// </param>
+	void blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID = SCREEN_FRAMEBUFFER_ID, GLint interpolationMode = GL_LINEAR);
+	/// <summary>
+	/// Copies the content of this framebuffer to another framebuffer
+	/// </summary>
+	/// <param name="interpolationMode">The OpenGL interpolation mode (how the image will be resized if needed).
+	/// The default value is GL_LINEAR.
+	/// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
+	/// </param>
+	void blitTo(FrameBuffer& frameBuffer, GLint interpolationMode = GL_LINEAR);
 
 	inline int width()  const { return m_size.x; }
 	inline int height() const { return m_size.y; }
