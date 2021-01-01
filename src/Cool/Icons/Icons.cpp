@@ -2,22 +2,22 @@
 
 #include <stb_image/stb_image.h>
 
-using namespace Cool;
+namespace Cool {
 
-GLuint Textures::m_playID  = -1;
-GLuint Textures::m_pauseID = -1;
+GLuint Icons::m_playID  = -1;
+GLuint Icons::m_pauseID = -1;
 
-void Textures::_LoadAll() {
+void Icons::_LoadAll() {
 	m_playID  = LoadTexture("Cool/Icons/icons/play.png");
 	m_pauseID = LoadTexture("Cool/Icons/icons/pause.png");
 }
 
-void Textures::_DestroyAll() {
+void Icons::_DestroyAll() {
 	DestroyTexture(m_playID);
 	DestroyTexture(m_pauseID);
 }
 
-GLuint Textures::LoadTexture(const std::string& filepath) {
+GLuint Icons::LoadTexture(const std::string& filepath) {
 	// Load image
 	stbi_set_flip_vertically_on_load(0);
 	int width, height;
@@ -42,6 +42,8 @@ GLuint Textures::LoadTexture(const std::string& filepath) {
 	return texID;
 }
 
-void Textures::DestroyTexture(unsigned int texID) {
+void Icons::DestroyTexture(unsigned int texID) {
 	GLCall(glDeleteTextures(1, &texID));
 }
+
+} // namespace Cool

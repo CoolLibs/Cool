@@ -1,6 +1,8 @@
 #pragma once
 
-class Textures {
+namespace Cool {
+
+class Icons {
 public:
 	static inline GLuint Play()  { return m_playID; }
 	static inline GLuint Pause() { return m_pauseID; }
@@ -16,3 +18,5 @@ private:
 	static GLuint m_playID;
 	static GLuint m_pauseID;
 };
+
+} // namespace Cool
