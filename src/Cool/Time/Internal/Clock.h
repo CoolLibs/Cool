@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Cool {
+
 class Clock {
 public:
 	Clock() = default;
@@ -19,3 +21,5 @@ public:
 private:
 	bool m_bPlaying = true;
 };
+
+} // namespace Cool

@@ -1,5 +1,7 @@
 #include "Clock_Realtime.h"
 
+namespace Cool {
+
 float Clock_Realtime::SDLPerformanceCounter2Seconds;
 
 void Clock_Realtime::Initialize() {
@@ -42,3 +44,5 @@ void Clock_Realtime::pause() {
     Clock::pause();
     m_SDLTimeWhenPaused = SDL_GetPerformanceCounter();
 }
+
+} // namespace Cool

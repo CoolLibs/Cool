@@ -4,6 +4,8 @@
 //#include "Constants/Textures.h"
 //#include <Cool/ImGui/ImGui.h>
 
+namespace Cool {
+
 std::unique_ptr<Clock> Time::m_clock = nullptr;
 
 void Time::Initialize() {
@@ -37,3 +39,5 @@ void Time::setTime(float t) {
 //        setTime(t);
 //    }
 //}
+
+} // namespace Cool

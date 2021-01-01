@@ -1,5 +1,7 @@
 #include "Clock.h"
 
+namespace Cool {
+
 void Clock::play() {
     assert(!m_bPlaying);
     m_bPlaying = true;
@@ -16,3 +18,5 @@ void Clock::togglePlayPause() {
     else
         play();
 }
+
+} // namespace Cool

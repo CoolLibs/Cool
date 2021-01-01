@@ -1,5 +1,7 @@
 #include "Clock_FixedTimestep.h"
 
+namespace Cool {
+
 Clock_FixedTimestep::Clock_FixedTimestep(float fps, float initialTime)
     : m_dt(1.0f / fps)
 {
@@ -25,3 +27,5 @@ void Clock_FixedTimestep::update() {
     if (Clock::isPlaying())
         m_framesCount++;
 }
+
+} // namespace Cool

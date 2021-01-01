@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Cool {
+
 class Clock;
 
 class Time {
@@ -16,3 +18,5 @@ public:
 private:
 	static std::unique_ptr<Clock> m_clock;
 };
+
+} // namespace Cool

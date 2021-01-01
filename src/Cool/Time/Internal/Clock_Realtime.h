@@ -2,6 +2,8 @@
 
 #include "Clock.h"
 
+namespace Cool {
+
 class Clock_Realtime : public Clock {
 public:
 	Clock_Realtime();
@@ -24,3 +26,5 @@ private:
 	float m_offsetWithSDLTime; // Allows us to setTime as we wish
 	static float SDLPerformanceCounter2Seconds;
 };
+
+} // namespace Cool
