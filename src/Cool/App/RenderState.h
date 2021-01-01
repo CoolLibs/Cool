@@ -34,26 +34,26 @@ public:
 	/// <param name="height"></param>
 	static void setExportSize(int width, int height);
 	/// <summary>
-	/// Sets the aspect ratio used by the preview. You also need to setIsControllingAspectRatioOfPreview(true).
+	/// Sets the aspect ratio used by the preview. You also need to setPreviewAspectRatioControl(true).
 	/// Otherwise we just render at the available space's aspectRatio.
 	/// </summary>
-	static void setAspectRatioOfPreviewIfControlled(float aspectRatio);
+	static void setPreviewAspectRatio(float aspectRatio);
 	/// <summary>
-	/// If bControl is true, we use the aspect ratio set by setAspectRatioOfPreviewIfControlled to render our preview image.
+	/// If bControl is true, we use the aspect ratio set by setPreviewAspectRatio to render our preview image.
 	/// If bControl is false, we instead render our preview to match the aspect ratio of the previewing area.
 	/// </summary>
-	static void setIsControllingAspectRatioOfPreview(bool bControl);
+	static void setPreviewAspectRatioControl(bool bControl);
 	/// <summary>
-	/// Sets the number of pixels used in the preview. You also need to setIsControllingNbPixelsInPreview(true) to use this number of pixels.
+	/// Sets the number of pixels used in the preview. You also need to setPreviewNbPixelsControl(true) to use this number of pixels.
 	/// Otherwise we just render at the available space size.
-	/// <param name="nbPixels">Desired number of pixels in the preview render. It will not be matched exactly but will be approximated while also respecting the target aspect ratio.</param>
+	/// <param name="nbPixels">Desired number of pixels in the preview render. It will not be matched exactly but will be approximated while also respecting the preview aspect ratio.</param>
 	/// </summary>
-	static void setNbOfPixelsInPreviewIfControlled(int nbPixels);
+	static void setPreviewNbPixels(int nbPixels);
 	/// <summary>
-	/// If bControl is true, we use the number of pixels set by setNbOfPixelsInPreviewIfControlled to render our preview image.
+	/// If bControl is true, we use the number of pixels set by setPreviewNbPixels to render our preview image.
 	/// If bControl is false, we instead render our preview to match the size of the previewing area.
 	/// </summary>
-	static void setIsControllingNbPixelsInPreview(bool bControl);
+	static void setPreviewNbPixelsControl(bool bControl);
 
 private:
 	friend class AppManager;

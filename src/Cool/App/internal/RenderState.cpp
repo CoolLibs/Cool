@@ -31,24 +31,24 @@ void RenderState::setIsExporting(bool bIsExporting) {
 	OnRenderAreaResized();
 }
 
-void RenderState::setAspectRatioOfPreviewIfControlled(float aspectRatio) {
+void RenderState::setPreviewAspectRatio(float aspectRatio) {
 	m_previewRatio = aspectRatio;
 	if (m_bControlPreviewRatio)
 		OnRenderAreaResized();
 }
 
-void RenderState::setIsControllingAspectRatioOfPreview(bool bControl) {
+void RenderState::setPreviewAspectRatioControl(bool bControl) {
 	m_bControlPreviewRatio = bControl;
 	OnRenderAreaResized();
 }
 
-void RenderState::setNbOfPixelsInPreviewIfControlled(int nbPixels) {
+void RenderState::setPreviewNbPixels(int nbPixels) {
 	m_previewNbPixels = nbPixels;
 	if (m_bControlPreviewNbPixels)
 		OnRenderAreaResized();
 }
 
-void RenderState::setIsControllingNbPixelsInPreview(bool bControl) {
+void RenderState::setPreviewNbPixelsControl(bool bControl) {
 	m_bControlPreviewNbPixels = bControl;
 	OnRenderAreaResized();
 }
@@ -111,23 +111,23 @@ void RenderState::ImGuiPreviewControls() {
 	// Aspect Ratio
 	bool bControlPreviewRatio = m_bControlPreviewRatio;
 	if (ImGui::Checkbox("Control aspect ratio", &bControlPreviewRatio)) {
-		setIsControllingAspectRatioOfPreview(bControlPreviewRatio);
+		setPreviewAspectRatioControl(bControlPreviewRatio);
 	}
 	if (m_bControlPreviewRatio) {
 		float previewRatio = m_previewRatio;
 		if (ImGui::SliderFloat("Aspect ratio", &previewRatio, 0.5f, 2.0f)) {
-			setAspectRatioOfPreviewIfControlled(previewRatio);
+			setPreviewAspectRatio(previewRatio);
 		}
 	}
 	// Nb Pixels
 	bool bControlPreviewNbPixels = m_bControlPreviewNbPixels;
 	if (ImGui::Checkbox("Control number of pixels", &bControlPreviewNbPixels)) {
-		setIsControllingNbPixelsInPreview(bControlPreviewNbPixels);
+		setPreviewNbPixelsControl(bControlPreviewNbPixels);
 	}
 	if (m_bControlPreviewNbPixels) {
 		int previewNbPixels = m_previewNbPixels;
 		if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 1000000)) {
-			setNbOfPixelsInPreviewIfControlled(previewNbPixels);
+			setPreviewNbPixels(previewNbPixels);
 		}
 	}
 }
