@@ -1,6 +1,7 @@
 #pragma once
 
 #include "internal/RectSizePos.h"
+#include <Cool/AspectRatio.h>
 
 namespace Cool {
 
@@ -69,6 +70,7 @@ private:
 	static void setAvailableSpaceSize(int width, int height, bool bCanTriggerResizeEvent = true);
 	static inline void setWindowTopLeft        (int x, int y) { m_Window .setTopLeft(x, y); }
 	static inline void setAvailableSpaceTopLeft(int x, int y) { m_AvailableSpace.setTopLeft(x, y); }
+	static void afterSettingPreviewAspectRatio();
 
 	static inline const glm::ivec2& getExportSize()         { return m_Export.size(); }
 	static inline const glm::ivec2& getWindowSize()         { return m_Window.size(); }
@@ -95,7 +97,7 @@ private:
 	static bool m_bIsExporting; // Owned by RenderState because it needs to know it when deciding what the rendered size should be
 
 	static bool m_bControlPreviewRatio;
-	static float m_previewRatio;
+	static AspectRatio m_previewRatio;
 	static bool m_bControlPreviewNbPixels;
 	static int m_previewNbPixels;
 };

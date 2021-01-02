@@ -9,7 +9,7 @@ RectSize RenderState::m_Export;
 RectSize RenderState::m_PreviewWithControlledNbPixels;
 bool RenderState::m_bIsExporting = false;
 bool RenderState::m_bControlPreviewRatio = false;
-float RenderState::m_previewRatio = 16.f / 9.f;
+AspectRatio RenderState::m_previewRatio;
 bool RenderState::m_bControlPreviewNbPixels = false;
 int RenderState::m_previewNbPixels = 250000;
 
@@ -33,6 +33,10 @@ void RenderState::setIsExporting(bool bIsExporting) {
 
 void RenderState::setPreviewAspectRatio(float aspectRatio) {
 	m_previewRatio = aspectRatio;
+	afterSettingPreviewAspectRatio();
+}
+
+void RenderState::afterSettingPreviewAspectRatio() {
 	if (m_bControlPreviewRatio)
 		OnRenderAreaResized();
 }
@@ -114,9 +118,8 @@ void RenderState::ImGuiPreviewControls() {
 		setPreviewAspectRatioControl(bControlPreviewRatio);
 	}
 	if (m_bControlPreviewRatio) {
-		float previewRatio = m_previewRatio;
-		if (ImGui::SliderFloat("Aspect ratio", &previewRatio, 0.5f, 2.0f)) {
-			setPreviewAspectRatio(previewRatio);
+		if (m_previewRatio.ImGuiPicker("Aspect Ratio")) {
+			afterSettingPreviewAspectRatio();
 		}
 	}
 	// Nb Pixels
