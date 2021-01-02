@@ -1,4 +1,6 @@
 
+add_compile_definitions(__COOL_FILEWATCHER)
+
 include_directories(
     ${PATH_TO_COOL}/FileWatcher/src
 )
