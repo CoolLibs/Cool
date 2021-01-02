@@ -8,7 +8,9 @@ class Time {
 public:
 	static void Initialize();
 	static void Update();
-	//static void ImGui();
+#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+	static void ImGuiTimeline();
+#endif
 	// In seconds
 	static float time();
 	static float deltaTime();
