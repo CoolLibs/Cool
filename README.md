@@ -1,1 +1,3 @@
-# Icons
+Requires :
+  - App
+  - OpenGL
