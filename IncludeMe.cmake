@@ -1,4 +1,6 @@
 
+add_compile_definitions(__COOL_RENDERER_FULLSCREEN)
+
 include_directories(
     ${PATH_TO_COOL}/Renderer_Fullscreen/src
 )
