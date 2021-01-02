@@ -14,6 +14,20 @@ public:
 	Texture& operator=(const Texture&) = delete; // Non-copyable
 
 	/// <summary>
+	/// Creates an OpenGL texture. You are then responsible for destroying it.
+	/// </summary>
+	/// <param name="interpolationMode">The OpenGL interpolation mode (how the texture will be resized if needed).
+	/// The default value is GL_LINEAR.
+	/// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
+	/// </param>
+	/// <param name="wrapMode">The OpenGL wrap mode (how the texture will be sampled if you look at coordinates outside the [0, 1] range).
+	/// The default value is GL_CLAMP_TO_EDGE.
+	/// Can be either GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE (one repetition and then we clamp) or GL_CLAMP_TO_BORDER (like clamp, but uses a fixed color instead of the color at the edge of the texture)
+	/// </param>
+	/// <returns>The OpenGL ID of the texture.</returns>
+	static GLuint CreateTextureID(GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
+
+	/// <summary>
 	/// Actually constructs the OpenGL texture.
 	/// We don't do this in the constructor to allow the use of static textures (those would fail because OpenGL is only initialized once AppManager has been constructed)
 	/// </summary>
