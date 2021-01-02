@@ -118,7 +118,7 @@ void RenderState::ImGuiPreviewControls() {
 		setPreviewAspectRatioControl(bControlPreviewRatio);
 	}
 	if (m_bControlPreviewRatio) {
-		if (m_previewRatio.ImGuiPicker("Aspect Ratio")) {
+		if (m_previewRatio.ImGuiPicker(168492224155754)) {
 			afterSettingPreviewAspectRatio();
 		}
 	}
