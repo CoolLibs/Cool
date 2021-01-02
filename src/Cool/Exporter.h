@@ -19,6 +19,9 @@ public:
 	void ImGuiMenuItems();
 	bool ImGuiExportImageWindow();
 
+	inline void setIsExportImageWindowOpen(bool bOpen) { m_bOpenImageExport = bOpen; }
+	inline void setIsExportImageSequenceWindowOpen(bool bOpen) { m_bOpenImageSequenceExport = bOpen; }
+
 private:
 	std::string m_folderPath;
 	std::string m_fileName = "test";
