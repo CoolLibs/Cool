@@ -11,7 +11,7 @@ public:
 	static void _DestroyAll();
 
 private:
-	static GLuint LoadTexture(const std::string& filepath);
+	static GLuint LoadTexture(const char* filepath);
 	static void DestroyTexture(unsigned int texID);
 
 private:

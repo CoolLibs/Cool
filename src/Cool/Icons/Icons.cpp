@@ -1,6 +1,7 @@
 #include "Icons.h"
 
-#include <stb_image/stb_image.h>
+#include <Cool/LoadImage/LoadImage.h>
+#include <Cool/OpenGL/Texture.h>
 
 namespace Cool {
 
@@ -17,27 +18,17 @@ void Icons::_DestroyAll() {
 	DestroyTexture(m_pauseID);
 }
 
-GLuint Icons::LoadTexture(const std::string& filepath) {
+GLuint Icons::LoadTexture(const char* filepath) {
 	// Load image
-	stbi_set_flip_vertically_on_load(0);
 	int width, height;
-	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, nullptr, 4);
-	if (!data) {
-		Log::Error("Couldn't open file '{}'", filepath);
-		return -1;
-	}
+	unsigned char* data = LoadImage::Load(filepath, &width, &height, false);
 	// Create texture
-	GLuint texID;
-	GLCall(glGenTextures(1, &texID));
+	GLuint texID = Texture::CreateTextureID(GL_LINEAR, GL_CLAMP_TO_EDGE);
+	// Upload data
 	GLCall(glBindTexture(GL_TEXTURE_2D, texID));
 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	// Cleanup
-	stbi_image_free(data);
+	LoadImage::Free(data);
 	//
 	return texID;
 }
