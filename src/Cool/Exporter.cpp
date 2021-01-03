@@ -35,10 +35,18 @@ std::string Exporter::imageOutputPath() {
 	return m_folderPath + "/" + m_fileName + ".png";
 }
 
+void Exporter::findAvailableFileName() {
+	int k = 1;
+	while (File::Exists(imageOutputPath().c_str())) {
+		m_fileName = "img(" + std::to_string(k) + ")";
+		k++;
+	}
+}
+
 void Exporter::setIsExportImageWindowOpen(bool bOpen) {
 	m_bOpenImageExport = bOpen;
 	if (bOpen)
-		m_bShowFileExistsWarning = File::Exists(imageOutputPath().c_str());
+		findAvailableFileName();
 }
 
 void Exporter::ImGuiMenuItems() {

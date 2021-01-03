@@ -46,6 +46,7 @@ public:
 
 private:
 	std::string imageOutputPath();
+	void findAvailableFileName();
 
 private:
 	std::string m_folderPath;
