@@ -168,6 +168,14 @@ void Exporter::ImGuiExportImageSequenceWindow() {
 		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
 		ImGuiResolutionWidget();
 		ImGui::InputText("Path", &m_folderPathForImageSequence);
+		ImGui::InputFloat("FPS", &m_fps);
+		ImGui::PushItemWidth(50);
+		ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
+		ImGui::DragFloat("", &m_sequenceBeginTimeInS); ImGui::PopID(); ImGui::SameLine();
+		ImGui::Text("To"); ImGui::SameLine(); ImGui::PushID(14540);
+		ImGui::DragFloat("", &m_sequenceEndTimeInS); ImGui::PopID(); ImGui::SameLine();
+		ImGui::Text("seconds");
+		ImGui::PopItemWidth();
 		// Validation
 		m_bIsExportingImageSequence = ImGui::Button("Start exporting");
 		if (m_bIsExportingImageSequence) {
