@@ -5,6 +5,7 @@
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGui.h>
+#include <Cool/App/RenderState.h>
 #endif
 
 namespace Cool {
@@ -43,13 +44,18 @@ void Time::SetAsFixedTimestep(float fps) {
 
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
 void Time::ImGuiTimeline() {
-    if (CoolImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
-        m_clock->togglePlayPause();
+    if (!RenderState::IsExporting()) {
+        if (CoolImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
+            m_clock->togglePlayPause();
+        }
+        ImGui::SameLine();
+        float t = time();
+        if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
+            setTime(t);
+        }
     }
-    ImGui::SameLine();
-    float t = time();
-    if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
-        setTime(t);
+    else {
+        ImGui::Text("%.2f seconds", time());
     }
 }
 #endif
