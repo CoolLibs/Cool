@@ -9,7 +9,7 @@
 namespace Cool {
 
 Exporter::Exporter()
-	: m_folderPath(File::RootDir + "/out")
+	: m_folderPathForImage(File::RootDir + "/out"), m_folderPathForImageSequence(File::RootDir + "/exports")
 {}
 
 void Exporter::beginImageExport() {
@@ -24,7 +24,7 @@ void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data);
 	frameBuffer.unbind();
 	// Write png
-	File::CreateFoldersIfDoesntExist(m_folderPath.c_str());
+	File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str());
 	ExportImage::AsPNG(imageOutputPath().c_str(), size.width(), size.height(), data);
 	delete[] data;
 	//
@@ -32,7 +32,7 @@ void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 }
 
 std::string Exporter::imageOutputPath() {
-	return m_folderPath + "/" + m_fileName + ".png";
+	return m_folderPathForImage + "/" + m_fileName + ".png";
 }
 
 void Exporter::findAvailableFileName() {
@@ -98,7 +98,7 @@ bool Exporter::ImGuiExportImageWindow() {
 		// File and Folders
 		bool bPathChanged = false;
 		bPathChanged |= ImGui::InputText("File Name", &m_fileName);
-		bPathChanged |= ImGui::InputText("Path", &m_folderPath);
+		bPathChanged |= ImGui::InputText("Path", &m_folderPathForImage);
 		if (bPathChanged) {
 			m_bShowFileExistsWarning = File::Exists(imageOutputPath().c_str());
 		}
@@ -121,7 +121,7 @@ void Exporter::ImGuiExportImageSequenceWindow() {
 	if (m_bOpenImageSequenceExport) {
 		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
 		ImGuiResolutionWidget();
-		ImGui::InputText("Path", &m_folderPath);
+		ImGui::InputText("Path", &m_folderPathForImageSequence);
 		// Validation
 		m_bIsExportingImageSequence = ImGui::Button("Start exporting");
 		if (m_bIsExportingImageSequence)

@@ -54,9 +54,11 @@ private:
 	void ImGuiResolutionWidget();
 
 private:
-	std::string m_folderPath;
+	std::string m_folderPathForImage;
 	std::string m_fileName = "img";
 
+
+	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
 	// In seconds
