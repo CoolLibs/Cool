@@ -41,7 +41,7 @@ public:
 	/// </summary>
 	void beginImageSequenceExport();
 	/// <summary>
-	/// Call this after your rendering code. It will export the current frame and decide if the export should continue.
+	/// Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue.
 	/// </summary>
 	/// <param name="frameBuffer">The frame buffer that your renderer has just rendered to.</param>
 	void update(FrameBuffer& frameBuffer);
