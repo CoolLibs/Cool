@@ -6,8 +6,9 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
-#ifdef __COOL_TIME
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 #include <Cool/Time/Time.h>
+#include <Cool/String/String.h>
 #endif
 
 namespace Cool {
@@ -21,6 +22,12 @@ void Exporter::beginImageExport() {
 }
 
 void Exporter::endImageExport(FrameBuffer& frameBuffer) {
+	File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str());
+	exportImage(frameBuffer, imageOutputPath().c_str());
+	RenderState::setIsExporting(false);
+}
+
+void Exporter::exportImage(FrameBuffer& frameBuffer, const char* filepath) {
 	// Get data
 	frameBuffer.bind();
 	RectSize size = RenderState::Size();
@@ -28,11 +35,9 @@ void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data);
 	frameBuffer.unbind();
 	// Write png
-	File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str());
-	ExportImage::AsPNG(imageOutputPath().c_str(), size.width(), size.height(), data);
-	delete[] data;
+	ExportImage::AsPNG(filepath, size.width(), size.height(), data);
 	//
-	RenderState::setIsExporting(false);
+	delete[] data;
 }
 
 std::string Exporter::imageOutputPath() {
@@ -121,7 +126,7 @@ bool Exporter::ImGuiExportImageWindow() {
 	return bMustExport;
 }
 
-#ifdef __COOL_TIME
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 
 void Exporter::beginImageSequenceExport() {
 	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {
@@ -140,10 +145,11 @@ void Exporter::beginImageSequenceExport() {
 	}
 }
 
-void Exporter::update() {
+void Exporter::update(FrameBuffer& frameBuffer) {
 	if (m_bIsExportingImageSequence) {
 		if (Time::time() < m_sequenceEndTimeInS) {
-			Log::Info(Time::deltaTime());
+			exportImage(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
+			m_frameCount++;
 		}
 		else {
 			endImageSequenceExport();

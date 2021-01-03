@@ -35,7 +35,7 @@ public:
 	/// <param name="bOpen"></param>
 	void setIsExportImageWindowOpen(bool bOpen);
 
-#ifdef __COOL_TIME
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 	/// <summary>
 	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
 	/// </summary>
@@ -43,7 +43,8 @@ public:
 	/// <summary>
 	/// Call this after your rendering code. It will export the current frame and decide if the export should continue.
 	/// </summary>
-	void update();
+	/// <param name="frameBuffer">The frame buffer that your renderer has just rendered to.</param>
+	void update(FrameBuffer& frameBuffer);
 	/// <summary>
 	/// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached.
 	/// </summary>
@@ -63,6 +64,7 @@ private:
 	std::string imageOutputPath();
 	void findAvailableFileName();
 	void ImGuiResolutionWidget();
+	void exportImage(FrameBuffer& frameBuffer, const char* filepath);
 
 private:
 	std::string m_folderPathForImage;
@@ -70,7 +72,7 @@ private:
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
 
-#ifdef __COOL_TIME
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
