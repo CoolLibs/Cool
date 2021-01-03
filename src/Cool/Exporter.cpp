@@ -6,9 +6,11 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
+#include <Cool/ImGui/ImGui.h>
+#include <chrono>
 #endif
 
 namespace Cool {
@@ -126,7 +128,7 @@ bool Exporter::ImGuiExportImageWindow() {
 	return bMustExport;
 }
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
 
 void Exporter::beginImageSequenceExport() {
 	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {
@@ -134,11 +136,12 @@ void Exporter::beginImageSequenceExport() {
 		RenderState::setIsExporting(true);
 		m_frameCount = 0;
 		float totalExportDuration = m_sequenceEndTimeInS - m_sequenceBeginTimeInS;
-		unsigned int totalNbFrames = static_cast<unsigned int>(std::ceil(totalExportDuration * m_fps));
-		m_maxNbDigitsOfFrameCount = static_cast<int>(std::ceil(std::log10(totalNbFrames)));
+		m_totalNbOfFramesInSequence = static_cast<unsigned int>(std::ceil(totalExportDuration * m_fps));
+		m_maxNbDigitsOfFrameCount = static_cast<int>(std::ceil(std::log10(m_totalNbOfFramesInSequence)));
 		Time::SetAsFixedTimestep(m_fps);
 		Time::setTime(m_sequenceBeginTimeInS);
-		//m_frameAverageTime.clear();
+		m_averageFrameTime.clear();
+		m_lastExportTime = std::chrono::steady_clock::now();
 	}
 	else {
 		Log::Release::Warn("[Exporter::beginImageSequenceExport] Couldn't start exporting because folder creation failed !");
@@ -150,6 +153,10 @@ void Exporter::update(FrameBuffer& frameBuffer) {
 		if (Time::time() < m_sequenceEndTimeInS) {
 			exportImage(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
 			m_frameCount++;
+			auto now = std::chrono::steady_clock::now();
+			std::chrono::duration<float> deltaTime = now - m_lastExportTime;
+			m_averageFrameTime.push(deltaTime.count());
+			m_lastExportTime = now;
 		}
 		else {
 			endImageSequenceExport();
@@ -161,28 +168,39 @@ void Exporter::endImageSequenceExport() {
 	m_bIsExportingImageSequence = false;
 	RenderState::setIsExporting(false);
 	Time::SetAsRealtime();
+	m_bOpenImageSequenceExport = false;
 }
 
 void Exporter::ImGuiExportImageSequenceWindow() {
 	if (m_bOpenImageSequenceExport) {
 		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
-		ImGuiResolutionWidget();
-		ImGui::InputText("Path", &m_folderPathForImageSequence);
-		ImGui::InputFloat("FPS", &m_fps);
-		ImGui::PushItemWidth(50);
-		ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
-		ImGui::DragFloat("", &m_sequenceBeginTimeInS); ImGui::PopID(); ImGui::SameLine();
-		ImGui::Text("To"); ImGui::SameLine(); ImGui::PushID(14540);
-		ImGui::DragFloat("", &m_sequenceEndTimeInS); ImGui::PopID(); ImGui::SameLine();
-		ImGui::Text("seconds");
-		ImGui::PopItemWidth();
-		// Validation
-		m_bIsExportingImageSequence = ImGui::Button("Start exporting");
-		if (m_bIsExportingImageSequence) {
-			m_bOpenImageSequenceExport = false;
-			beginImageSequenceExport();
+		// Not exporting
+		if (!m_bIsExportingImageSequence) {
+			ImGuiResolutionWidget();
+			ImGui::InputText("Path", &m_folderPathForImageSequence);
+			ImGui::InputFloat("FPS", &m_fps);
+			ImGui::PushItemWidth(50);
+			ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
+			ImGui::DragFloat("", &m_sequenceBeginTimeInS); ImGui::PopID(); ImGui::SameLine();
+			ImGui::Text("To"); ImGui::SameLine(); ImGui::PushID(14540);
+			ImGui::DragFloat("", &m_sequenceEndTimeInS); ImGui::PopID(); ImGui::SameLine();
+			ImGui::Text("seconds");
+			ImGui::PopItemWidth();
+			// Validation
+			m_bIsExportingImageSequence = ImGui::Button("Start exporting");
+			if (m_bIsExportingImageSequence) {
+				beginImageSequenceExport();
+			}
 		}
-		//
+		// Exporting
+		else {
+			ImGui::Text(("Exported " + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + " / " + std::to_string(m_totalNbOfFramesInSequence) + " frames").c_str());
+			CoolImGui::TimeFormatedHMS((m_totalNbOfFramesInSequence - m_frameCount) * m_averageFrameTime); ImGui::SameLine();
+			ImGui::Text("remaining");
+			if (ImGui::Button("Stop exporting")) {
+				endImageSequenceExport();
+			}
+		}
 		ImGui::End();
 	}
 }

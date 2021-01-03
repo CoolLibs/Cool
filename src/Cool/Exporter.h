@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#include "internal/Averager.h"
+#endif
+
 namespace Cool {
 
 class FrameBuffer;
@@ -35,7 +39,7 @@ public:
 	/// <param name="bOpen"></param>
 	void setIsExportImageWindowOpen(bool bOpen);
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
 	/// <summary>
 	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
 	/// </summary>
@@ -72,7 +76,7 @@ private:
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
 	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
@@ -82,7 +86,10 @@ private:
 	float m_sequenceEndTimeInS = 10.f;
 	bool m_bOpenImageSequenceExport = false;
 	int m_frameCount;
+	int m_totalNbOfFramesInSequence;
 	int m_maxNbDigitsOfFrameCount;
+	Averager<float> m_averageFrameTime;
+	std::chrono::steady_clock::time_point m_lastExportTime;
 #endif
 };
 
