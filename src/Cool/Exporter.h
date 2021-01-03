@@ -16,10 +16,12 @@ public:
 	//void update();
 	//void endImageSequenceExport();
 
+	std::string imageOutputPath();
+
 	void ImGuiMenuItems();
 	bool ImGuiExportImageWindow();
 
-	inline void setIsExportImageWindowOpen(bool bOpen) { m_bOpenImageExport = bOpen; }
+	void setIsExportImageWindowOpen(bool bOpen);
 	inline void setIsExportImageSequenceWindowOpen(bool bOpen) { m_bOpenImageSequenceExport = bOpen; }
 
 private:
@@ -27,6 +29,7 @@ private:
 	std::string m_fileName = "test";
 
 	bool m_bOpenImageExport = false;
+	bool m_bShowFileExistsWarning = false;
 	bool m_bOpenImageSequenceExport = false;
 };
 

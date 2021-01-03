@@ -25,15 +25,25 @@ void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 	frameBuffer.unbind();
 	// Write png
 	File::CreateFoldersIfDoesntExist(m_folderPath.c_str());
-	ExportImage::AsPNG((m_folderPath + "/" + m_fileName + ".png").c_str(), size.width(), size.height(), data);
+	ExportImage::AsPNG(imageOutputPath().c_str(), size.width(), size.height(), data);
 	delete[] data;
 	//
 	RenderState::setIsExporting(false);
 }
 
+std::string Exporter::imageOutputPath() {
+	return m_folderPath + "/" + m_fileName + ".png";
+}
+
+void Exporter::setIsExportImageWindowOpen(bool bOpen) {
+	m_bOpenImageExport = bOpen;
+	if (bOpen)
+		m_bShowFileExistsWarning = File::Exists(imageOutputPath().c_str());
+}
+
 void Exporter::ImGuiMenuItems() {
 	if (ImGui::Button("Image")) {
-		m_bOpenImageExport = true;
+		setIsExportImageWindowOpen(true);
 	}
 	if (ImGui::Button("Image Sequence")) {
 		m_bOpenImageSequenceExport = true;
@@ -56,10 +66,18 @@ bool Exporter::ImGuiExportImageWindow() {
 		if (bUsed)
 			RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
 		// File and Folders
-		ImGui::InputText("File Name", &m_fileName);
-		ImGui::InputText("Path", &m_folderPath);
-		// Validation
+		bool bPathChanged = false;
+		bPathChanged |= ImGui::InputText("File Name", &m_fileName);
+		bPathChanged |= ImGui::InputText("Path", &m_folderPath);
+		if (bPathChanged) {
+			m_bShowFileExistsWarning = File::Exists(imageOutputPath().c_str());
+		}
+		// Warning file exists
 		ImGui::NewLine();
+		if (m_bShowFileExistsWarning) {
+			CoolImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
+		}
+		// Validation
 		bMustExport = ImGui::Button("Export as PNG");
 		if (bMustExport)
 			m_bOpenImageExport = false;
