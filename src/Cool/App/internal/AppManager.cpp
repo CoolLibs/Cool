@@ -121,13 +121,15 @@ void AppManager::update(Cool::IApp& app) {
 		app.update();
 	if (m_bShowUI) {
 		// Menu bar
-		ImGui::BeginMainMenuBar();
-		if (ImGui::BeginMenu("Preview")) {
-			RenderState::ImGuiPreviewControls();
-			ImGui::EndMenu();
+		if (!RenderState::IsExporting()) {
+			ImGui::BeginMainMenuBar();
+			if (ImGui::BeginMenu("Preview")) {
+				RenderState::ImGuiPreviewControls();
+				ImGui::EndMenu();
+			}
+			app.ImGuiMenus();
+			ImGui::EndMainMenuBar();
 		}
-		app.ImGuiMenus();
-		ImGui::EndMainMenuBar();
 		// Windows
 		app.ImGuiWindows();
 	}
