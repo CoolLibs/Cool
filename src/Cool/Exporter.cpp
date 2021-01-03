@@ -6,6 +6,10 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
+#ifdef __COOL_TIME
+#include <Cool/Time/Time.h>
+#endif
+
 namespace Cool {
 
 Exporter::Exporter()
@@ -117,6 +121,42 @@ bool Exporter::ImGuiExportImageWindow() {
 	return bMustExport;
 }
 
+#ifdef __COOL_TIME
+
+void Exporter::beginImageSequenceExport() {
+	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {
+		m_bIsExportingImageSequence = true;
+		RenderState::setIsExporting(true);
+		m_frameCount = 0;
+		float totalExportDuration = m_sequenceEndTimeInS - m_sequenceBeginTimeInS;
+		unsigned int totalNbFrames = static_cast<unsigned int>(std::ceil(totalExportDuration * m_fps));
+		m_maxNbDigitsOfFrameCount = static_cast<int>(std::ceil(std::log10(totalNbFrames)));
+		Time::SetAsFixedTimestep(m_fps);
+		Time::setTime(m_sequenceBeginTimeInS);
+		//m_frameAverageTime.clear();
+	}
+	else {
+		Log::Release::Warn("[Exporter::beginImageSequenceExport] Couldn't start exporting because folder creation failed !");
+	}
+}
+
+void Exporter::update() {
+	if (m_bIsExportingImageSequence) {
+		if (Time::time() < m_sequenceEndTimeInS) {
+			Log::Info(Time::deltaTime());
+		}
+		else {
+			endImageSequenceExport();
+		}
+	}
+}
+
+void Exporter::endImageSequenceExport() {
+	m_bIsExportingImageSequence = false;
+	RenderState::setIsExporting(false);
+	Time::SetAsRealtime();
+}
+
 void Exporter::ImGuiExportImageSequenceWindow() {
 	if (m_bOpenImageSequenceExport) {
 		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
@@ -124,11 +164,15 @@ void Exporter::ImGuiExportImageSequenceWindow() {
 		ImGui::InputText("Path", &m_folderPathForImageSequence);
 		// Validation
 		m_bIsExportingImageSequence = ImGui::Button("Start exporting");
-		if (m_bIsExportingImageSequence)
+		if (m_bIsExportingImageSequence) {
 			m_bOpenImageSequenceExport = false;
+			beginImageSequenceExport();
+		}
 		//
 		ImGui::End();
 	}
 }
+
+#endif
 
 } // namespace Cool

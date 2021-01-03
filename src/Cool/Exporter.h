@@ -19,10 +19,6 @@ public:
 	/// <param name="frameBuffer">The frame buffer that your renderer has just rendered to.</param>
 	void endImageExport(FrameBuffer& frameBuffer);
 
-	//void beginImageSequenceExport();
-	//void update();
-	//void endImageSequenceExport();
-
 	/// <summary>
 	/// The buttons to open the different export windows.
 	/// </summary>
@@ -32,21 +28,36 @@ public:
 	/// </summary>
 	/// <returns>true iff you should then export an image. (By calling beginImageExport(), then your rendering code, then endImageExport()</returns>
 	bool ImGuiExportImageWindow();
-	/// <summary>
-	/// The window with the image sequence export parameters
-	/// </summary>
-	void ImGuiExportImageSequenceWindow();
 
 	/// <summary>
 	/// Open or closes the window with the image export parameters.
 	/// </summary>
 	/// <param name="bOpen"></param>
 	void setIsExportImageWindowOpen(bool bOpen);
+
+#ifdef __COOL_TIME
+	/// <summary>
+	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
+	/// </summary>
+	void beginImageSequenceExport();
+	/// <summary>
+	/// Call this after your rendering code. It will export the current frame and decide if the export should continue.
+	/// </summary>
+	void update();
+	/// <summary>
+	/// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached.
+	/// </summary>
+	void endImageSequenceExport();
+	/// <summary>
+	/// The window with the image sequence export parameters
+	/// </summary>
+	void ImGuiExportImageSequenceWindow();
 	/// <summary>
 	/// Open or closes the window with the image sequence export parameters.
 	/// </summary>
 	/// <param name="bOpen"></param>
 	inline void setIsExportImageSequenceWindowOpen(bool bOpen) { m_bOpenImageSequenceExport = bOpen; }
+#endif
 
 private:
 	std::string imageOutputPath();
@@ -56,8 +67,10 @@ private:
 private:
 	std::string m_folderPathForImage;
 	std::string m_fileName = "img";
+	bool m_bOpenImageExport = false;
+	bool m_bShowFileExistsWarning = false;
 
-
+#ifdef __COOL_TIME
 	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
@@ -65,10 +78,10 @@ private:
 	float m_sequenceBeginTimeInS = 0.f;
 	// In seconds
 	float m_sequenceEndTimeInS = 10.f;
-
-	bool m_bOpenImageExport = false;
-	bool m_bShowFileExistsWarning = false;
 	bool m_bOpenImageSequenceExport = false;
+	int m_frameCount;
+	int m_maxNbDigitsOfFrameCount;
+#endif
 };
 
 } // namespace Cool
