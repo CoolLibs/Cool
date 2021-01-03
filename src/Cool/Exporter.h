@@ -50,7 +50,7 @@ private:
 
 private:
 	std::string m_folderPath;
-	std::string m_fileName = "test";
+	std::string m_fileName = "img";
 
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
