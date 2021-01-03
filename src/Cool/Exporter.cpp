@@ -150,6 +150,7 @@ void Exporter::beginImageSequenceExport() {
 
 void Exporter::update(FrameBuffer& frameBuffer) {
 	if (m_bIsExportingImageSequence) {
+		m_bOpenImageSequenceExport = true;
 		if (Time::time() < m_sequenceEndTimeInS) {
 			exportImage(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
 			m_frameCount++;
