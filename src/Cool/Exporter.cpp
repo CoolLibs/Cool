@@ -76,21 +76,25 @@ void Exporter::ImGuiMenuItems() {
 	}
 }
 
+void Exporter::ImGuiResolutionWidget() {
+	bool bUsed = false;
+	ImGui::Text("Resolution : "); ImGui::SameLine();
+	ImGui::PushItemWidth(50);
+	unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
+	unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
+	bUsed |= CoolImGui::InputUInt("W", &w); ImGui::SameLine();
+	bUsed |= CoolImGui::InputUInt("H", &h);
+	ImGui::PopItemWidth();
+	if (bUsed)
+		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
+}
+
 bool Exporter::ImGuiExportImageWindow() {
 	bool bMustExport = false;
 	if (m_bOpenImageExport) {
 		ImGui::Begin("Export an Image", &m_bOpenImageExport);
 		// Resolution
-		bool bUsed = false;
-		ImGui::Text("Resolution : "); ImGui::SameLine();
-		ImGui::PushItemWidth(50);
-		unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
-		unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
-		bUsed |= CoolImGui::InputUInt("W", &w); ImGui::SameLine();
-		bUsed |= CoolImGui::InputUInt("H", &h);
-		ImGui::PopItemWidth();
-		if (bUsed)
-			RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
+		ImGuiResolutionWidget();
 		// File and Folders
 		bool bPathChanged = false;
 		bPathChanged |= ImGui::InputText("File Name", &m_fileName);
@@ -111,6 +115,20 @@ bool Exporter::ImGuiExportImageWindow() {
 		ImGui::End();
 	}
 	return bMustExport;
+}
+
+void Exporter::ImGuiExportImageSequenceWindow() {
+	if (m_bOpenImageSequenceExport) {
+		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
+		ImGuiResolutionWidget();
+		ImGui::InputText("Path", &m_folderPath);
+		// Validation
+		m_bIsExportingImageSequence = ImGui::Button("Start exporting");
+		if (m_bIsExportingImageSequence)
+			m_bOpenImageSequenceExport = false;
+		//
+		ImGui::End();
+	}
 }
 
 } // namespace Cool

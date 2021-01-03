@@ -32,6 +32,10 @@ public:
 	/// </summary>
 	/// <returns>true iff you should then export an image. (By calling beginImageExport(), then your rendering code, then endImageExport()</returns>
 	bool ImGuiExportImageWindow();
+	/// <summary>
+	/// The window with the image sequence export parameters
+	/// </summary>
+	void ImGuiExportImageSequenceWindow();
 
 	/// <summary>
 	/// Open or closes the window with the image export parameters.
@@ -47,10 +51,18 @@ public:
 private:
 	std::string imageOutputPath();
 	void findAvailableFileName();
+	void ImGuiResolutionWidget();
 
 private:
 	std::string m_folderPath;
 	std::string m_fileName = "img";
+
+	bool m_bIsExportingImageSequence = false;
+	float m_fps = 30.f;
+	// In seconds
+	float m_sequenceBeginTimeInS = 0.f;
+	// In seconds
+	float m_sequenceEndTimeInS = 10.f;
 
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
