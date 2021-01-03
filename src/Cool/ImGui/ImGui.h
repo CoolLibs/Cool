@@ -67,5 +67,9 @@ namespace CoolImGui {
 	/// <param name="value_p"></param>
 	/// <returns></returns>
 	bool InputUInt(const char* label, unsigned int* value_p);
+	/// <summary>
+	/// Writes some red text
+	/// </summary>
+	void WarningText(const char* text);
 
 } // namespace Cool::ImGui

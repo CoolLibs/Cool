@@ -130,4 +130,8 @@ bool InputUInt(const char* label, unsigned int* value_p) {
 	return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
 }
 
+void WarningText(const char* text) {
+	ImGui::TextColored(ImVec4(0.95f, 0.1f, 0.2f, 1.0f), text);
+}
+
 } // namespace CoolImGui
