@@ -60,6 +60,7 @@ private:
 	friend class AppManager;
 	friend class Renderer_Fullscreen;
 	friend class Input;
+	friend class Exporter;
 	// Size and position that should be used for showing rendered images inside the window
 	static RectSizePos InAppRenderArea();
 	// Size that should be used for rendering preview images (then shown in the InAppRenderArea)
