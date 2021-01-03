@@ -11,11 +11,12 @@ public:
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
 	static void ImGuiTimeline();
 #endif
-	// In seconds
 	static float time();
 	static float deltaTime();
-	// In seconds
 	static void setTime(float t);
+
+	static void SetAsRealtime();
+	static void SetAsFixedTimestep(float fps);
 
 private:
 	static std::unique_ptr<Clock> m_clock;

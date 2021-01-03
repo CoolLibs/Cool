@@ -1,6 +1,7 @@
 #include "../Time.h"
 
 #include "Clock_Realtime.h"
+#include "Clock_FixedTimestep.h"
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGui.h>
@@ -28,6 +29,16 @@ float Time::time() {
 
 void Time::setTime(float t) {
     m_clock->setTime(t);
+}
+
+void Time::SetAsRealtime() {
+    float t = time();
+    m_clock = std::make_unique<Clock_Realtime>();
+    m_clock->setTime(t);
+}
+
+void Time::SetAsFixedTimestep(float fps) {
+    m_clock = std::make_unique<Clock_FixedTimestep>(fps, time());
 }
 
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
