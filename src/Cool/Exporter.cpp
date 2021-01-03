@@ -36,10 +36,19 @@ std::string Exporter::imageOutputPath() {
 }
 
 void Exporter::findAvailableFileName() {
-	int k = 1;
-	while (File::Exists(imageOutputPath().c_str())) {
-		m_fileName = "img(" + std::to_string(k) + ")";
-		k++;
+	if (File::Exists(imageOutputPath().c_str())) {
+		int k = 1;
+		std::string baseName = m_fileName;
+		size_t pos = m_fileName.find_last_of("(");
+		if (pos != std::string::npos) {
+			baseName = m_fileName.substr(0, pos);
+			size_t endPos = m_fileName.find_last_of(")");
+			k = std::stoi(m_fileName.substr(pos+1, endPos - pos));
+		}
+		while (File::Exists(imageOutputPath().c_str())) {
+			m_fileName = baseName + "(" + std::to_string(k) + ")";
+			k++;
+		}
 	}
 }
 
