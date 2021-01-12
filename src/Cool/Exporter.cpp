@@ -6,17 +6,19 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
-#include <Cool/ImGui/ImGui.h>
 #include <chrono>
 #endif
 
 namespace Cool {
 
 Exporter::Exporter()
-	: m_folderPathForImage(File::RootDir + "/out"), m_folderPathForImageSequence(File::RootDir + "/exports")
+	: m_folderPathForImage(File::RootDir + "/out")
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
+	,m_folderPathForImageSequence(File::RootDir + "/exports")
+#endif
 {}
 
 void Exporter::beginImageExport() {
@@ -82,9 +84,11 @@ void Exporter::ImGuiMenuItems() {
 	if (ImGui::Button("Image")) {
 		setIsExportImageWindowOpen(true);
 	}
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 	if (ImGui::Button("Image Sequence")) {
 		m_bOpenImageSequenceExport = true;
 	}
+#endif
 }
 
 void Exporter::ImGuiResolutionWidget() {
@@ -128,7 +132,7 @@ bool Exporter::ImGuiExportImageWindow() {
 	return bMustExport;
 }
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 
 void Exporter::beginImageSequenceExport() {
 	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {

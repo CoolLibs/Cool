@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 #include "internal/Averager.h"
 #endif
 
@@ -39,7 +39,7 @@ public:
 	/// <param name="bOpen"></param>
 	void setIsExportImageWindowOpen(bool bOpen);
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 	/// <summary>
 	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
 	/// </summary>
@@ -76,7 +76,7 @@ private:
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_IMGUI)
+#if defined(__COOL_TIME) && defined(__COOL_STRING)
 	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
