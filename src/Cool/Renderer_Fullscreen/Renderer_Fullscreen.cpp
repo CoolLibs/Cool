@@ -34,7 +34,9 @@ void Renderer_Fullscreen::render() {
 }
 
 void Renderer_Fullscreen::onRenderAreaResized() {
-	m_renderBuffer.setSize(RenderState::Size().size());
+	const glm::ivec2& size = RenderState::Size().size();
+	if (size.x != 0 && size.y != 0)
+		m_renderBuffer.setSize(size);
 }
 
 } // namespace Cool
