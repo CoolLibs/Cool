@@ -2,4 +2,3 @@
 
 Requires
   - Log
-  - AspectRatio
