@@ -4,9 +4,9 @@ namespace Cool {
 
 template <typename T>
 /// <summary>
-/// A SSBO (Shader Storage Buffer Object) is a buffer that lives on the GPU.
+/// A SSBO (Shader Storage Buffer Object) is a buffer that lives on the GPU and that you can access from your shaders, either to read or write.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">The type of the elements stored in the buffer, like float.</typeparam>
 class SSBO {
 public:
 	SSBO(unsigned int binding)
@@ -39,6 +39,11 @@ public:
 		uploadData(v.size(), v.data(), usage);
 	}
 
+	/// <summary>
+	/// Retrieves the data from the GPU (your shader code) back to the CPU (your C++ code) and writes it in the given array.
+	/// </summary>
+	/// <param name="nbOfT">Number of elements in the array</param>
+	/// <param name="data">Pointer to the beginning of the array</param>
 	void downloadData(size_t nbOfT, T* data) {
 		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
 		GLCall(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
@@ -46,6 +51,10 @@ public:
 		GLCall(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
 	}
 
+	/// <summary>
+	/// Retrieves the data from the GPU (your shader code) back to the CPU (your C++ code) and writes it in the given std::vector.
+	/// </summary>
+	/// <param name="v">The vector that will receive the data. Please make sure that it already has the right size !</param>
 	void downloadData(std::vector<T>& v) {
 		downloadData(v.size(), v.data());
 	}
