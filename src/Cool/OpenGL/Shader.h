@@ -10,7 +10,7 @@ enum class ShaderType {
 
 struct ShaderCode {
 	ShaderType type;
-	const char* sourceCode;
+	std::string sourceCode;
 
 	/// <summary>
 	/// Constructs a ShaderCode by reading sourceCode from a file.
@@ -26,7 +26,7 @@ struct ShaderCode {
 	/// <param name="type">An enum representing the type of the shader (Vertex, Fragment, etc.)</param>
 	/// <param name="sourceCode">The source code of the shader.</param>
 	/// <returns>A ShaderCode.</returns>
-	static ShaderCode FromCode(ShaderType type, const char* sourceCode);
+	static ShaderCode FromCode(ShaderType type, const std::string& sourceCode);
 };
 
 class Shader {

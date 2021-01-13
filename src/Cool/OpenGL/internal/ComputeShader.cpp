@@ -25,7 +25,7 @@ void ComputeShader::createProgramFromFile(const char* filePath) {
     });
 }
 
-void ComputeShader::createProgramFromCode(const char* sourceCode) {
+void ComputeShader::createProgramFromCode(const std::string& sourceCode) {
     m_shader.createProgram({ ShaderCode::FromCode(
         ShaderType::Compute,
         sourceCode

@@ -13,7 +13,7 @@ public:
 	void operator=(ComputeShader&& o);
 
 	void createProgramFromFile(const char* filePath);
-	void createProgramFromCode(const char* sourceCode);
+	void createProgramFromCode(const std::string& sourceCode);
 
 	void compute(unsigned int nbComputations);
 	inline Shader& get() { return m_shader; }

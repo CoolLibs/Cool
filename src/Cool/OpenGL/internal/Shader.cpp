@@ -13,12 +13,10 @@ namespace Cool {
 ShaderCode::ShaderCode(ShaderType type, const char* filePath)
 	: type(type)
 {
-	std::string sourceCodeStr;
-	File::ToString(filePath, &sourceCodeStr);
-	sourceCode = sourceCodeStr.c_str();
+	File::ToString(filePath, &sourceCode);
 }
 
-ShaderCode ShaderCode::FromCode(ShaderType type, const char* sourceCode) {
+ShaderCode ShaderCode::FromCode(ShaderType type, const std::string& sourceCode) {
 	ShaderCode shader;
 	shader.type = type;
 	shader.sourceCode = sourceCode;
@@ -84,7 +82,8 @@ GLuint Shader::CreateShader(const ShaderCode& shaderCode) {
 	// Create
 	GLCall(GLuint shaderID = glCreateShader(shaderType));
 	// Compile
-	GLCall(glShaderSource(shaderID, 1, &shaderCode.sourceCode, nullptr));
+	const char* src = shaderCode.sourceCode.c_str();
+	GLCall(glShaderSource(shaderID, 1, &src, nullptr));
 	GLCall(glCompileShader(shaderID));
 	// Debug
 #ifndef NDEBUG
