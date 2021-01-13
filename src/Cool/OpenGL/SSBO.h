@@ -3,10 +3,14 @@
 namespace Cool {
 
 template <typename T>
+/// <summary>
+/// A SSBO (Shader Storage Buffer Object) is a buffer that lives on the GPU.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 class SSBO {
 public:
-	SSBO(unsigned int binding, GLenum usageHint)
-		: m_binding(binding), m_hint(usageHint)
+	SSBO(unsigned int binding)
+		: m_binding(binding)
 	{
 		GLCall(glGenBuffers(1, &m_id));
 		GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_binding, m_id));
@@ -15,9 +19,9 @@ public:
 		GLCall(glDeleteBuffers(1, &m_id));
 	}
 
-	void uploadData(size_t nbOfT, T* data) {
+	void uploadData(size_t nbOfT, T* data, GLenum usage = GL_STREAM_READ) {
 		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
-		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nbOfT * sizeof(T), data, m_hint));
+		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nbOfT * sizeof(T), data, usage));
 	}
 
 	void uploadData(std::vector<T>& v) {
@@ -37,7 +41,6 @@ public:
 
 private:
 	unsigned int m_binding;
-	GLuint m_hint;
 	unsigned int m_id;
 };
 
