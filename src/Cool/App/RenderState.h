@@ -1,7 +1,7 @@
 #pragma once
 
 #include "internal/RectSizePos.h"
-#include <Cool/AspectRatio.h>
+#include "internal/AspectRatio.h"
 
 namespace Cool {
 
