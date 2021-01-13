@@ -9,6 +9,15 @@ namespace Cool {
 template <typename T>
 class SSBO {
 public:
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="binding">The "id" that the buffer will be referenced by in the shaders. Make sure that it matches the "binding=xxx" when you declare the buffer in the shader.
+	/// To declare your SSBO in a shader, simply write "layout(std430, binding=xxx) buffer myBuffer { float data[]; };" 
+	/// After that, data will be available as a regular variable in your shader.
+	/// Note that myBuffer and data are arbitrary names and you can change them as you please.
+	/// Also, the layout doesn't need to use floats, you can basically use any type you want (kind of, vec3 doesn't work) : float, vec2, vec4, a struct, etc.
+	/// </param>
 	SSBO(unsigned int binding)
 		: m_binding(binding)
 	{
