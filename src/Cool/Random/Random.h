@@ -21,8 +21,8 @@ private:
 	static std::uniform_real_distribution<float> distribution_0to1;
 	static std::uniform_real_distribution<float> distribution_minus1to1;
 
-	MyRand() = delete;
-	~MyRand() = delete;
+	Random() = delete;
+	~Random() = delete;
 };
 
 } // namespace Cool
