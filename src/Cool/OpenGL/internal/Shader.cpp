@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "../Shader.h"
 
 #include <Cool/File/File.h>
 
