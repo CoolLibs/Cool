@@ -2,11 +2,11 @@
 
 namespace Cool {
 
-template <typename T>
 /// <summary>
 /// A SSBO (Shader Storage Buffer Object) is a buffer that lives on the GPU and that you can access from your shaders, either to read or write.
 /// </summary>
 /// <typeparam name="T">The type of the elements stored in the buffer, like float.</typeparam>
+template <typename T>
 class SSBO {
 public:
 	SSBO(unsigned int binding)
