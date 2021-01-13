@@ -24,7 +24,7 @@ public:
 	/// </summary>
 	/// <param name="nbOfT">Number of elements in the array</param>
 	/// <param name="data">Pointer to the beginning of the array</param>
-	/// <param name="usage">A hint that allows OpenGL to optimize our buffer. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
+	/// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
 	void uploadData(size_t nbOfT, T* data, GLenum usage = GL_STREAM_READ) {
 		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
 		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nbOfT * sizeof(T), data, usage));
@@ -34,7 +34,7 @@ public:
 	/// Sends some data from the CPU (your C++ code) to the GPU (your shader code).
 	/// </summary>
 	/// <param name="v">The vector containing the data.</param>
-	/// <param name="usage">A hint that allows OpenGL to optimize our buffer. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
+	/// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
 	void uploadData(std::vector<T>& v, GLenum usage = GL_STREAM_READ) {
 		uploadData(v.size(), v.data(), usage);
 	}
