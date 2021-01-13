@@ -20,6 +20,21 @@ public:
 		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nbOfT * sizeof(T), data, m_hint));
 	}
 
+	void uploadData(std::vector<T>& v) {
+		uploadData(v.size(), v.data());
+	}
+
+	void downloadData(size_t nbOfT, T* data) {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
+		GLCall(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
+		memcpy(data, p, nbOfT * sizeof(T));
+		GLCall(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
+	}
+
+	void downloadData(std::vector<T>& v) {
+		downloadData(v.size(), v.data());
+	}
+
 private:
 	unsigned int m_binding;
 	GLuint m_hint;
