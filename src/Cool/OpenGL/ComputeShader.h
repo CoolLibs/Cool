@@ -5,7 +5,6 @@
 
 namespace Cool {
 
-
 /// <summary>
 /// A wrapper for an OpenGL compute shader.
 /// </summary>
