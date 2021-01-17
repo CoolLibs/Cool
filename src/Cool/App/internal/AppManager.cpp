@@ -8,6 +8,12 @@
 #include <imgui_impl_opengl3.h>
 #include "imgui/imgui_internal.h"
 
+// Hide console in release builds
+// msvc version
+#if defined(_MSC_VER) && defined(NDEBUG)
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 namespace Cool {
 
 AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
