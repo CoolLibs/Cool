@@ -3,8 +3,11 @@
 #ifndef NDEBUG
 
 #include <iostream>
-
+#include <vector>
+#include <algorithm>
 namespace Cool {
+
+static std::vector<unsigned int> AlreadydisplayedIds;
 
 void APIENTRY GLDebugCallback(GLenum source,
     GLenum type,
@@ -13,11 +16,11 @@ void APIENTRY GLDebugCallback(GLenum source,
     GLsizei length,
     const char* message,
     const void* userParam)
-{
-    // Ignore non-significant error/warning codes
-    if (
-        id == 8 // FBO already bound performance warning
-    ) return;
+{   
+    if(std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end()) {
+        return;
+    }
+    AlreadydisplayedIds.push_back(id);
 
     std::cerr << "---------------" << std::endl;
     std::cerr << "Debug message (" << id << "): " << message << std::endl;
@@ -54,7 +57,10 @@ void APIENTRY GLDebugCallback(GLenum source,
     } std::cerr << std::endl;
     std::cerr << std::endl;
 
-    assert(false);
+    // assert if needed
+    if(type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
+        assert(false);
+    }
 }
 
 } // namespace Cool
