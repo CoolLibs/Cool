@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
 namespace Cool {
 
 static std::vector<unsigned int> AlreadydisplayedIds;
@@ -14,52 +15,59 @@ void APIENTRY GLDebugCallback(GLenum source,
     unsigned int id,
     GLenum severity,
     GLsizei length,
-    const char* message,
+    const char* openGLMessage,
     const void* userParam)
 {   
-    if(std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end()) {
+    // Check if we have already seen the message
+    if (std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end()) {
         return;
     }
     AlreadydisplayedIds.push_back(id);
 
-    std::cerr << "---------------" << std::endl;
-    std::cerr << "Debug message (" << id << "): " << message << std::endl;
+    // Make message
+    std::string message;
+    message += "OpenGL Debug message (id=" + std::to_string(id) + ")\n" + openGLMessage;
 
     switch (source)
     {
-    case GL_DEBUG_SOURCE_API:             std::cerr << "Source: API"; break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cerr << "Source: Window System"; break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cerr << "Source: Shader Compiler"; break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cerr << "Source: Third Party"; break;
-    case GL_DEBUG_SOURCE_APPLICATION:     std::cerr << "Source: Application"; break;
-    case GL_DEBUG_SOURCE_OTHER:           std::cerr << "Source: Other"; break;
-    } std::cerr << std::endl;
+        case GL_DEBUG_SOURCE_API:             message += "\n\nSource: API"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   message += "\n\nSource: Window System"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: message += "\n\nSource: Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     message += "\n\nSource: Third Party"; break;
+        case GL_DEBUG_SOURCE_APPLICATION:     message += "\n\nSource: Application"; break;
+        case GL_DEBUG_SOURCE_OTHER:           message += "\n\nSource: Other"; break;
+    }
 
     switch (type)
     {
-    case GL_DEBUG_TYPE_ERROR:               std::cerr << "Type: Error"; break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cerr << "Type: Deprecated Behaviour"; break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cerr << "Type: Undefined Behaviour"; break;
-    case GL_DEBUG_TYPE_PORTABILITY:         std::cerr << "Type: Portability"; break;
-    case GL_DEBUG_TYPE_PERFORMANCE:         std::cerr << "Type: Performance"; break;
-    case GL_DEBUG_TYPE_MARKER:              std::cerr << "Type: Marker"; break;
-    case GL_DEBUG_TYPE_PUSH_GROUP:          std::cerr << "Type: Push Group"; break;
-    case GL_DEBUG_TYPE_POP_GROUP:           std::cerr << "Type: Pop Group"; break;
-    case GL_DEBUG_TYPE_OTHER:               std::cerr << "Type: Other"; break;
-    } std::cerr << std::endl;
+        case GL_DEBUG_TYPE_ERROR:               message += "\nType: Error"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: message += "\nType: Deprecated Behaviour"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  message += "\nType: Undefined Behaviour"; break;
+        case GL_DEBUG_TYPE_PORTABILITY:         message += "\nType: Portability"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         message += "\nType: Performance"; break;
+        case GL_DEBUG_TYPE_MARKER:              message += "\nType: Marker"; break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          message += "\nType: Push Group"; break;
+        case GL_DEBUG_TYPE_POP_GROUP:           message += "\nType: Pop Group"; break;
+        case GL_DEBUG_TYPE_OTHER:               message += "\nType: Other"; break;
+    }
 
     switch (severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH:         std::cerr << "Severity: high"; break;
-    case GL_DEBUG_SEVERITY_MEDIUM:       std::cerr << "Severity: medium"; break;
-    case GL_DEBUG_SEVERITY_LOW:          std::cerr << "Severity: low"; break;
-    case GL_DEBUG_SEVERITY_NOTIFICATION: std::cerr << "Severity: notification"; break;
-    } std::cerr << std::endl;
-    std::cerr << std::endl;
+        case GL_DEBUG_SEVERITY_HIGH:         message += "\nSeverity: high"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       message += "\nSeverity: medium"; break;
+        case GL_DEBUG_SEVERITY_LOW:          message += "\nSeverity: low"; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: message += "\nSeverity: notification"; break;
+    }
 
-    // assert if needed
-    if(type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
-        assert(false);
+    // Log
+    if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
+        Log::Error(message);
+    }
+    else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY || severity == GL_DEBUG_SEVERITY_MEDIUM) {
+        Log::Warn(message);
+    }
+    else {
+        Log::Info(message);
     }
 }
 
