@@ -83,7 +83,11 @@ SDLGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, i
 	}
 	SDLGLWindow sdlglWindow(sdlWindow);
 	sdlglWindow.makeCurrent();
+#ifndef NDEBUG
+	SDL_GL_SetSwapInterval(0);
+#else
 	SDL_GL_SetSwapInterval(1);
+#endif
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 		Log::Error("Failed to initialize Glad");
 	setupGLDebugging();
