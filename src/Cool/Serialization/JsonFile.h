@@ -6,7 +6,7 @@
 namespace Cool::Serialization {
 
 template <typename T>
-void ToJSON(const T& data, const char* filePath) {
+void ToJSON(T& data, const char* filePath) {
 	if (File::Exists(filePath)) {
 		std::ifstream is(filePath);
 		//{
