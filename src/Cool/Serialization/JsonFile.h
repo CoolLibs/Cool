@@ -17,7 +17,7 @@ void FromJSON(T& data, const char* filePath) {
 				);
 			}
 			catch (std::exception e) {
-				Log::Release::Warn("Corrupted {} file. Starting with default values instead. \n{}", filePath, e.what());
+				Log::Release::Warn("Invalid {} file. Starting with default values instead. \n{}", filePath, e.what());
 			}
 		//}
 	}
