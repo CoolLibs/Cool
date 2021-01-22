@@ -6,7 +6,7 @@
 namespace Cool::Serialization {
 
 template <typename T>
-void ToJSON(T& data, const char* filePath) {
+void FromJSON(T& data, const char* filePath) {
 	if (File::Exists(filePath)) {
 		std::ifstream is(filePath);
 		//{
@@ -27,7 +27,7 @@ void ToJSON(T& data, const char* filePath) {
 }
 
 template <typename T>
-void FromJSON(T& data, const char* filePath) {
+void ToJSON(T& data, const char* filePath) {
 	File::CreateFoldersForFileIfDoesntExist(filePath);
 	std::ofstream os(filePath);
 	{
