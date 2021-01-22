@@ -1,1 +1,3 @@
-# Serialization
+Requires:
+  - Log
+  - File
