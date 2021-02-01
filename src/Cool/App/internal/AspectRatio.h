@@ -8,7 +8,7 @@ public:
 	AspectRatio(float aspectRatio);
 	~AspectRatio() = default;
 
-	inline operator float() { return m_ratio; }
+	inline float asFloat() const { return m_ratio; }
 
 	bool ImGuiPicker(int uniqueID);
 

@@ -84,7 +84,7 @@ RectSizePos RenderState::InAppRenderArea() {
 		if (m_bIsExporting)
 			desiredAspectRatio = m_Export.aspectRatio();
 		else
-			desiredAspectRatio = m_previewRatio;
+			desiredAspectRatio = m_previewRatio.asFloat();
 		// Compute size
 		RectSizePos res;
 		if (desiredAspectRatio > availableSpaceRatio)
@@ -104,7 +104,7 @@ RectSize RenderState::PreviewSize() {
 	if (!m_bControlPreviewNbPixels)
 		return InAppRenderArea();
 	else {
-		float ratio = m_bControlPreviewRatio ? m_previewRatio : m_AvailableSpace.aspectRatio();
+		float ratio = m_bControlPreviewRatio ? m_previewRatio.asFloat() : m_AvailableSpace.aspectRatio();
 		int w = static_cast<int>(std::round(sqrt(m_previewNbPixels * ratio)));
 		int h = static_cast<int>(std::round(sqrt(m_previewNbPixels / ratio)));
 		return RectSize(w, h);
