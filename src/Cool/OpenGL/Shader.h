@@ -32,11 +32,16 @@ struct ShaderCode {
 class Shader {
 public:
 	Shader() = default;
-	/// <summary>
+
 	/// Creates and compiles a full shader pipeline from the shader codes.
 	/// </summary>
-	/// <param name="shaderCodes">A list of the shaders : for example a vertex and a framgent shader.</param>
+	/// <param name="shaderCodes">A list of the shaders : for example a vertex and a fragment shader.</param>
 	Shader(const std::vector<ShaderCode>& shaderCodes);
+
+	/// Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
+	/// <param name="vertexShaderFilePath">Path to the vertex shader file</param>
+	/// <param name="fragmentShaderFilePath">Path to the fragment shader file</param>
+	Shader(const char* vertexShaderFilePath, const char* fragmentShaderFilePath);
 	~Shader();
 	Shader(Shader&& o) noexcept;
 	void operator=(Shader&& o);

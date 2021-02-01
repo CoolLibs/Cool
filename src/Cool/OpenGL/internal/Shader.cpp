@@ -27,6 +27,10 @@ Shader::Shader(const std::vector<ShaderCode>& shaderCodes) {
 	createProgram(shaderCodes);
 }
 
+Shader::Shader(const char* vertexShaderFilePath, const char* fragmentShaderFilePath) 
+	: Shader({ShaderCode(ShaderType::Vertex, vertexShaderFilePath), ShaderCode(ShaderType::Fragment, fragmentShaderFilePath)})
+{}
+
 Shader::Shader(Shader&& o) noexcept
 	: m_programID(o.m_programID)
 {
