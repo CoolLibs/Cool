@@ -67,6 +67,10 @@ void Shader::createProgram(const std::vector<ShaderCode>& shaderCodes) {
 	}
 }
 
+void Shader::createProgram(const char* vertexShaderFilePath, const char* fragmentShaderFilePath) {
+	createProgram({ ShaderCode(ShaderType::Vertex, vertexShaderFilePath), ShaderCode(ShaderType::Fragment, fragmentShaderFilePath) });
+}
+
 GLuint Shader::CreateShader(const ShaderCode& shaderCode) {
 	// Get shader type
 	GLenum shaderType;

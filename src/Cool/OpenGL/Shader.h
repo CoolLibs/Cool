@@ -47,11 +47,17 @@ public:
 	void operator=(Shader&& o);
 
 	/// <summary>
-	/// Creates and compiles a shader program. You don't need to call this if you used the constructor that takes in shaderCodes.
+	/// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.
 	/// It can also be used to recompile the shader with different sources as often as you would like.
 	/// </summary>
 	/// <param name="shaderCodes"></param>
 	void createProgram(const std::vector<ShaderCode>& shaderCodes);
+
+	/// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.
+	/// It can also be used to recompile the shader with different sources as often as you would like.
+	/// <param name="vertexShaderFilePath">Path to the vertex shader file</param>
+	/// <param name="fragmentShaderFilePath">Path to the fragment shader file</param>
+	void createProgram(const char* vertexShaderFilePath, const char* fragmentShaderFilePath);
 
 	/// <summary>
 	/// Binds the shader pipeline.
