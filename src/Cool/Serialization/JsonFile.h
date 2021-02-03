@@ -2,6 +2,7 @@
 
 #include <Cool/Log/Log.h>
 #include <Cool/File/File.h>
+#include <cereal/archives/json.hpp>
 
 namespace Cool::Serialization {
 
