@@ -79,14 +79,11 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
 	appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
 }
 
 bool AppManager::onEvent(const SDL_Event& e) {
-	//if (m_sdlglWindow.checkForFullscreenToggles(e)) {
-	//	onWindowResize();
-	//	return false;
-	//}
 	/*
 	switch (e.type) {
 
