@@ -42,6 +42,53 @@ void AppManager::run() {
 	}
 }
 
+void AppManager::update() {
+	// Clear screen
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// Start ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	ImGuiDockspace();
+	// Actual application code
+	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+		m_app.update();
+	// UI
+	if (m_bShowUI) {
+		// Menu bar
+		if (!RenderState::IsExporting()) {
+			ImGui::BeginMainMenuBar();
+			if (ImGui::BeginMenu("Preview")) {
+				RenderState::ImGuiPreviewControls();
+				ImGui::EndMenu();
+			}
+			m_app.ImGuiMenus();
+			ImGui::EndMainMenuBar();
+		}
+		// Windows
+		m_app.ImGuiWindows();
+	}
+	// Render ImGui
+	ImGui::Render();
+	ImGuiIO& io = ImGui::GetIO();
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	// Update and Render additional Platform Windows
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
+	// End frame
+	m_bFirstFrame = false;
+	glfwSwapBuffers(m_mainWindow.get());
+	// Events
+	glfwPollEvents();
+}
+
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	// Fullscreen
@@ -99,56 +146,6 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 	if (size.x != RenderState::getAvailableSpaceSize().x || size.y != RenderState::getAvailableSpaceSize().y) {
 		RenderState::setAvailableSpaceSize(size.x, size.y, !m_bFirstFrame);
 	}
-}
-
-void AppManager::update() {
-	// if (!onEvent(e))
-	// 	app.onEvent(e);
-	// Clear screen
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	// Start ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	ImGuiDockspace();
-	// Actual application code
-	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-		m_app.update();
-	if (m_bShowUI) {
-		// Menu bar
-		if (!RenderState::IsExporting()) {
-			ImGui::BeginMainMenuBar();
-			if (ImGui::BeginMenu("Preview")) {
-				RenderState::ImGuiPreviewControls();
-				ImGui::EndMenu();
-			}
-			m_app.ImGuiMenus();
-			ImGui::EndMainMenuBar();
-		}
-		// Windows
-		m_app.ImGuiWindows();
-	}
-	// Render ImGui
-	ImGui::Render();
-	ImGuiIO& io = ImGui::GetIO();
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	// Update and Render additional Platform Windows
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
-	}
-	
-	//// End frame
-	m_bFirstFrame = false;
-	glfwSwapBuffers(m_mainWindow.get());
-	// Events
-	glfwPollEvents();
 }
 
 void AppManager::ImGuiDockspace() {
