@@ -32,7 +32,7 @@ public:
 	/// <param name="scancode">The scancode is unique for every key, regardless of whether it has a key token. Scancodes are platform-specific but consistent over time, so keys will have different scancodes depending on the platform but they are safe to save to disk. You can query the scancode for any named key on the current platform with glfwGetKeyScancode.</param>
 	/// <param name="action">The action is one of GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE</param>
 	/// <param name="mods">Flags indicating whether modifier keys are being pressed at the same time.
-	/// The first bit corresponds to SHIFT, the second to CTRL and the third to ALT (and there might be more)</param>
+	/// For example call (mods &amp; GLFW_MOD_SHIFT) to check if SHIFT is pressed</param>
 	virtual void onKeyboardEvent(int key, int scancode, int action, int mods) {};
 };
 
