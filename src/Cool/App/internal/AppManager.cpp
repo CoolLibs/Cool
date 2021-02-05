@@ -42,8 +42,8 @@ static void window_pos_callback(GLFWwindow* window, int x, int y)
 	appManager->update();
 }
 
-AppManager::AppManager(OpenGLWindow& mainWindow)
-	: m_mainWindow(mainWindow)
+AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
+	: m_mainWindow(mainWindow), m_app(app)
 {
 	Input::Initialize();
 	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
@@ -56,12 +56,10 @@ AppManager::AppManager(OpenGLWindow& mainWindow)
 	onWindowResize(w, h);
 }
 
-int AppManager::run(Cool::IApp& _app) {
-	app = &_app;
+void AppManager::run() {
 	while (!shouldClose()) {
 		update();
 	}
-	return 0; // TODO return another exit code if something goes wrong (even though I don't think anyone cares about this nowadays)
 }
 
 void AppManager::onWindowMove(int x, int y) {
@@ -146,7 +144,7 @@ void AppManager::update() {
 	ImGuiDockspace();
 	// Actual application code
 	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-		app->update();
+		m_app.update();
 	if (m_bShowUI) {
 		// Menu bar
 		if (!RenderState::IsExporting()) {
@@ -155,11 +153,11 @@ void AppManager::update() {
 				RenderState::ImGuiPreviewControls();
 				ImGui::EndMenu();
 			}
-			app->ImGuiMenus();
+			m_app.ImGuiMenus();
 			ImGui::EndMainMenuBar();
 		}
 		// Windows
-		app->ImGuiWindows();
+		m_app.ImGuiWindows();
 	}
 	// Render ImGui
 	ImGui::Render();

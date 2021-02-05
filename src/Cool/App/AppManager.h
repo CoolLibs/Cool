@@ -8,20 +8,16 @@ struct ImGuiDockNode;
 namespace Cool {
 class Iapp;
 
-/// <summary>
-/// Wrapper for an App. Handles the main window and the UI layout.
-/// </summary>
+/// Wrapper for an App. Handles the main window and the UI layout and docking.
 class AppManager {
 public:
-	AppManager(OpenGLWindow& mainWindow);
+	/// <param name="mainWindow">The main window where your app will be rendered to, created by the OpenGLWindowingSystem</param>
+	/// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
+	AppManager(OpenGLWindow& mainWindow, IApp& app);
 	~AppManager() = default;
 	
-	/// <summary>
 	/// Run the app's update loop continuously
-	/// </summary>
-	/// <param name="app">An instance of an App class that you have to implement, deriving from Cool::IApp</param>
-	/// <returns></returns>
-	int run(Cool::IApp& app);
+	void run();
 
 	void onWindowMove(int x, int y);
 	void onWindowResize(int w, int h);
@@ -36,10 +32,10 @@ private:
 
 private:
 	OpenGLWindow& m_mainWindow;
+	IApp& m_app;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
 	bool m_bShouldClose = false;
-	Cool::IApp* app;
 };
 
 } // namespace Cool
