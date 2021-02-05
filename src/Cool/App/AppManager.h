@@ -16,22 +16,23 @@ public:
 	AppManager(OpenGLWindow& mainWindow, IApp& app);
 	~AppManager() = default;
 	
-	/// Run the app's update loop continuously
+	/// Runs the app's update loop continuously, until the user closes the main window
 	void run();
 
+private:
+	void update();
 	void onWindowMove(int x, int y);
 	void onWindowResize(int w, int h);
-	void update();
 
-private:
-	void updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node);
-	bool onEvent(const SDL_Event& e); // Returns true iff the event has been handled and must not be forwarded to the app
 	void ImGuiDockspace();
+	void updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node);
 
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+	static void window_size_callback(GLFWwindow* window, int w, int h);
+	static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
 	OpenGLWindow& m_mainWindow;
