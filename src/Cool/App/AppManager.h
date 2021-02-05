@@ -24,18 +24,15 @@ public:
 	void update();
 
 private:
-	inline bool shouldClose() const { return m_bShouldClose; }
 	void updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node);
 	bool onEvent(const SDL_Event& e); // Returns true iff the event has been handled and must not be forwarded to the app
 	void ImGuiDockspace();
-	inline void closeApp() { m_bShouldClose = true; }
 
 private:
 	OpenGLWindow& m_mainWindow;
 	IApp& m_app;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
-	bool m_bShouldClose = false;
 };
 
 } // namespace Cool

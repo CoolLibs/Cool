@@ -57,7 +57,7 @@ AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
 }
 
 void AppManager::run() {
-	while (!shouldClose()) {
+	while (!glfwWindowShouldClose(m_mainWindow.get())) {
 		update();
 	}
 }
