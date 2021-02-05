@@ -16,36 +16,65 @@
 
 namespace Cool {
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+
+	}
+}
+
+static void character_callback(GLFWwindow* window, unsigned int codepoint)
+{
+
+}
+
+static void window_size_callback(GLFWwindow* window, int w, int h)
+{
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->onWindowResize(w, h);
+	appManager->update();
+}
+
+static void window_pos_callback(GLFWwindow* window, int x, int y)
+{
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->onWindowMove(x, y);
+	appManager->update();
+}
+
 AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
 	: m_SDLOpenGLWrapper(),
 	  m_openGLWindow(m_SDLOpenGLWrapper.createWindow("blab leé", windowDefaultWidth, windowDefaultHeight))
 {
 	Input::Initialize();
+	glfwSetWindowSizeCallback(m_openGLWindow.window, window_size_callback);
+	glfwSetWindowPosCallback(m_openGLWindow.window, window_pos_callback);
+	glfwSetWindowUserPointer(m_openGLWindow.window, reinterpret_cast<void*>(this));
+	int x, y, w, h;
+	glfwGetWindowPos(m_openGLWindow.window, &x, &y);
+	glfwGetWindowSize(m_openGLWindow.window, &w, &h);
+	onWindowMove(x, y);
+	onWindowResize(w, h);
 }
 
 AppManager::~AppManager() {
 	m_openGLWindow.destroy();
 }
 
-int AppManager::run(Cool::IApp& app) {
-	onWindowMove();
-	onWindowResize();
+int AppManager::run(Cool::IApp& _app) {
+	app = &_app;
 	while (!shouldClose()) {
-		update(app);
+		update();
 	}
 	return 0; // TODO return another exit code if something goes wrong (even though I don't think anyone cares about this nowadays)
 }
 
-void AppManager::onWindowMove() {
-	int x, y;
-	//SDL_GetWindowPosition(m_sdlglWindow.window, &x, &y);
-	//RenderState::setWindowTopLeft(x, y);
+void AppManager::onWindowMove(int x, int y) {
+	RenderState::setWindowTopLeft(x, y);
 }
 
-void AppManager::onWindowResize() {
-	int w, h;
-	//SDL_GetWindowSize(m_sdlglWindow.window, &w, &h);
-	//RenderState::setWindowSize(w, h);
+void AppManager::onWindowResize(int w, int h) {
+	RenderState::setWindowSize(w, h);
 }
 
 void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
@@ -66,6 +95,7 @@ bool AppManager::onEvent(const SDL_Event& e) {
 	//	onWindowResize();
 	//	return false;
 	//}
+	/*
 	switch (e.type) {
 
 	case SDL_WINDOWEVENT:
@@ -103,12 +133,11 @@ bool AppManager::onEvent(const SDL_Event& e) {
 
 	default:
 		return false;
-	}
+	}*/
+	return false;
 }
 
-void AppManager::update(Cool::IApp& app) {
-	// Events
-	glfwPollEvents();
+void AppManager::update() {
 	// if (!onEvent(e))
 	// 	app.onEvent(e);
 	// Clear screen
@@ -119,17 +148,10 @@ void AppManager::update(Cool::IApp& app) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("Hello ImGui");
-	ImGui::Text("Dear");
-	ImGui::End();
-
-	glClearColor(1, 1, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	ImGuiDockspace();
 	// Actual application code
 	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-		app.update();
+		app->update();
 	if (m_bShowUI) {
 		// Menu bar
 		if (!RenderState::IsExporting()) {
@@ -138,18 +160,17 @@ void AppManager::update(Cool::IApp& app) {
 				RenderState::ImGuiPreviewControls();
 				ImGui::EndMenu();
 			}
-			app.ImGuiMenus();
+			app->ImGuiMenus();
 			ImGui::EndMainMenuBar();
 		}
 		// Windows
-		app.ImGuiWindows();
+		app->ImGuiWindows();
 	}
 	// Render ImGui
 	ImGui::Render();
 	ImGuiIO& io = ImGui::GetIO();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	//
 	// Update and Render additional Platform Windows
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -162,6 +183,8 @@ void AppManager::update(Cool::IApp& app) {
 	//// End frame
 	m_bFirstFrame = false;
 	glfwSwapBuffers(m_openGLWindow.window);
+	// Events
+	glfwPollEvents();
 }
 
 void AppManager::ImGuiDockspace() {
