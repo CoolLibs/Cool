@@ -1,4 +1,4 @@
-#include "SDLOpenGLWrapper.h"
+#include "../OpenGLWindowingSystem.h"
 
 #include "GLDebugCallback.h"
 
@@ -8,10 +8,10 @@
 namespace Cool {
 
 #ifndef NDEBUG
-	bool SDLOpenGLWrapper::s_bInitialized = false;
+bool OpenGLWindowingSystem::s_bInitialized = false;
 #endif
 
-SDLOpenGLWrapper::SDLOpenGLWrapper() {
+OpenGLWindowingSystem::OpenGLWindowingSystem() {
 	initializeSDLandOpenGL();
 	initializeGLFW();
 	initializeImGui();
@@ -22,21 +22,21 @@ SDLOpenGLWrapper::SDLOpenGLWrapper() {
 #endif
 }
 
-SDLOpenGLWrapper::~SDLOpenGLWrapper() {
+OpenGLWindowingSystem::~OpenGLWindowingSystem() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 	glfwTerminate();
 }
 
-void SDLOpenGLWrapper::initializeGLFW() {
-	glfwSetErrorCallback(SDLOpenGLWrapper::GlfwErrorCallback);
+void OpenGLWindowingSystem::initializeGLFW() {
+	glfwSetErrorCallback(OpenGLWindowingSystem::GlfwErrorCallback);
 	if (!glfwInit()) {
 		Log::Error("Glfw initialization failed");
 	}
 }
 
-void SDLOpenGLWrapper::initializeSDLandOpenGL() {
+void OpenGLWindowingSystem::initializeSDLandOpenGL() {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
 		Log::Error("Failed to initialize SDL : {}", SDL_GetError());
 	}
@@ -58,7 +58,7 @@ void SDLOpenGLWrapper::initializeSDLandOpenGL() {
 #endif
 }
 
-void SDLOpenGLWrapper::initializeImGui() {
+void OpenGLWindowingSystem::initializeImGui() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsClassic();
@@ -76,7 +76,7 @@ void SDLOpenGLWrapper::initializeImGui() {
 	}
 }
 
-OpenGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, int defaultHeight) {
+OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWidth, int defaultHeight) {
 #ifdef __APPLE__
 	// GL 3.2 + GLSL 150
 	const char* glsl_version = "#version 150";
@@ -105,7 +105,7 @@ OpenGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, 
 	return openGlWindow;
 }
 
-void SDLOpenGLWrapper::setupGLDebugging() {
+void OpenGLWindowingSystem::setupGLDebugging() {
 #ifndef NDEBUG
 	int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -120,7 +120,7 @@ void SDLOpenGLWrapper::setupGLDebugging() {
 #endif
 }
 
-void SDLOpenGLWrapper::setupImGui(OpenGLWindow& openGLWindow) {
+void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -165,7 +165,7 @@ void SDLOpenGLWrapper::setupImGui(OpenGLWindow& openGLWindow) {
 }
 
 
-void SDLOpenGLWrapper::GlfwErrorCallback(int error, const char* description) {
+void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description) {
 	Log::Error("[Glfw] {}", description);
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "internal/SDLOpenGLWrapper.h"
-#include "internal/SDLGLWindow.h"
+#include "OpenGLWindow.h"
+#include "IApp.h"
 
 struct ImGuiDockNode;
 
@@ -9,19 +9,12 @@ namespace Cool {
 class Iapp;
 
 /// <summary>
-/// Wrapper for an App. Handles the window and the UI layout.
-/// /!\ SDL and OpenGL are only initialized after AppManager has been constructed !
+/// Wrapper for an App. Handles the main window and the UI layout.
 /// </summary>
 class AppManager {
 public:
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="windowName">The name that will be displayed in the top bar of the window</param>
-	/// <param name="windowDefaultWidth">The initial width of the window. Note that in Release builds, the window will open as maximized anyways.</param>
-	/// <param name="windowDefaultHeight">The initial height of the window. Note that in Release builds, the window will open as maximized anyways.</param>
-	AppManager(const char* windowName, int windowDefaultWidth = 1280, int windowDefaultHeight = 720);
-	~AppManager();
+	AppManager(OpenGLWindow& mainWindow);
+	~AppManager() = default;
 	
 	/// <summary>
 	/// Run the app's update loop continuously
@@ -42,9 +35,7 @@ private:
 	inline void closeApp() { m_bShouldClose = true; }
 
 private:
-	SDLOpenGLWrapper m_SDLOpenGLWrapper; // We keep this as a member so that it will be destroyed on App shutdown and will shutdown SDL
-	OpenGLWindow m_openGLWindow;
-	//SDLGLWindow m_sdlglWindow;
+	OpenGLWindow& m_mainWindow;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
 	bool m_bShouldClose = false;
