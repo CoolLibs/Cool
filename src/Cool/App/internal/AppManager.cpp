@@ -16,11 +16,6 @@
 
 namespace Cool {
 
-static void character_callback(GLFWwindow* window, unsigned int codepoint)
-{
-
-}
-
 static void window_size_callback(GLFWwindow* window, int w, int h)
 {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));

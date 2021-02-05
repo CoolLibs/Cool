@@ -4,6 +4,12 @@ namespace Cool {
 
 class Input {
 public:
+	/// <summary>
+	/// Checks if a glfw key code corresponds to a given character in the current keyboard layout
+	/// </summary>
+	/// <param name="character">A const char* containing the single character that you want to check against</param>
+	/// <param name="key">The key code that you want to check</param>
+	static bool MatchesChar(const char* character, int key);
 	static bool KeyIsDown(SDL_Scancode key);
 	/// Relative to the viewing area, not the whole window !
 	/// (0, 0) is in the top-left corner

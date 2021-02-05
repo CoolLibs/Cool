@@ -26,6 +26,11 @@ void Input::Initialize() {
 #endif
 }
 
+bool Input::MatchesChar(const char* character, int key) {
+	const char* name = glfwGetKeyName(key, 0);
+	return name && strcmp(name, character) == 0;
+}
+
 bool Input::KeyIsDown(SDL_Scancode key) {
 	const Uint8* state = SDL_GetKeyboardState(NULL);
 	return state[key];
