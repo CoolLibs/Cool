@@ -74,7 +74,12 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	// Fullscreen
 	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
+	// CTRL + H
+	if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
+		appManager->m_bShowUI = !appManager->m_bShowUI;
+	//
 	appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
 }
 
@@ -89,13 +94,6 @@ bool AppManager::onEvent(const SDL_Event& e) {
 			onWindowResize();
 			return false;
 
-		case SDL_WINDOWEVENT_CLOSE:
-			//if (e.window.windowID == SDL_GetWindowID(m_sdlglWindow.window)) {
-			//	closeApp();
-			//	return false;
-			//}
-			return false;
-
 		case SDL_WINDOWEVENT_MOVED:
 			onWindowMove();
 			return false;
@@ -104,16 +102,6 @@ bool AppManager::onEvent(const SDL_Event& e) {
 			return false;
 		}
 
-	case SDL_KEYDOWN:
-		if (e.key.keysym.sym == 'h' && Input::KeyIsDown(SDL_SCANCODE_LCTRL)) {
-			m_bShowUI = !m_bShowUI;
-			return true;
-		}
-		return false;
-
-	case SDL_QUIT:
-		closeApp();
-		return false;
 
 	default:
 		return false;
