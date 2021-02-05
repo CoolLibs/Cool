@@ -32,21 +32,22 @@ bool OpenGLWindow::checkForFullscreenToggles(int key, int scancode, int action, 
 }
 
 void OpenGLWindow::switchFullScreen() {
-	GLFWmonitor* monitor = getCurrentMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
 	if (m_bIsFullScreen)
-		glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
+		escapeFullScreen();
 	else {
+		GLFWmonitor* monitor = getCurrentMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 		glfwGetWindowPos(m_window, &m_posXBeforeFullscreen, &m_posYBeforeFullscreen);
 		glfwGetWindowSize(m_window, &m_widthBeforeFullscreen, &m_heightBeforeFullscreen);
 		glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		m_bIsFullScreen = true;
 	}
-	m_bIsFullScreen = !m_bIsFullScreen;
 }
 
 void OpenGLWindow::escapeFullScreen() {
-	glfwSetWindowMonitor(m_window, NULL, 0, 0, 100, 100, 60);
+	GLFWmonitor* monitor = getCurrentMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
 	m_bIsFullScreen = false;
 }
 
