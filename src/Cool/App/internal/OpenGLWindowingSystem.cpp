@@ -1,7 +1,6 @@
 #include "../OpenGLWindowingSystem.h"
 
 #include "GLDebugCallback.h"
-
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
@@ -19,7 +18,7 @@ OpenGLWindowingSystem::OpenGLWindowingSystem(int openGLMajorVersion, int openGLM
 	assert(openGLMinorVersion >= 3);
 #ifndef NDEBUG
 	if (s_bInitialized)
-		Log::Error("You are creating an SDLOpenGLWrapper twice !");
+		Log::Error("You are creating an OpenGLWindowingSystem twice !");
 	s_bInitialized = true;
 #endif
 	// Init
@@ -36,11 +35,18 @@ OpenGLWindowingSystem::~OpenGLWindowingSystem() {
 void OpenGLWindowingSystem::initializeGLFW() {
 	glfwSetErrorCallback(OpenGLWindowingSystem::GlfwErrorCallback);
 	if (!glfwInit()) {
-		Log::Error("Glfw initialization failed");
+		const char* errorDescription;
+		glfwGetError(&errorDescription);
+		Log::Error("Glfw initialization failed :\n{}", errorDescription);
 	}
 }
 
+void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description) {
+	Log::Error("[Glfw] {}", description);
+}
+
 OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWidth, int defaultHeight) {
+	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
 #ifndef NDEBUG
@@ -51,16 +57,19 @@ OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWi
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+	// Create window
 	OpenGLWindow openGlWindow(glfwCreateWindow(defaultWidth, defaultHeight, name, NULL, NULL));
 	if (!openGlWindow.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
-		Log::Error("[Glfw] Window or OpenGL context creation failed {}", errorDescription);
+		Log::Error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
 	}
 	openGlWindow.makeCurrent();
 	openGlWindow.enableVSync();
+	// Load Glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		Log::Error("Failed to initialize Glad");
+	//
 	setupGLDebugging();
 	setupImGui(openGlWindow);
 	return openGlWindow;
@@ -97,7 +106,6 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 
 	// Setup style
 	ImGui::StyleColorsClassic();
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -124,11 +132,6 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
-}
-
-
-void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description) {
-	Log::Error("[Glfw] {}", description);
 }
 
 } // namespace Cool
