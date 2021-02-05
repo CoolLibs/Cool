@@ -35,6 +35,7 @@ AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
 {
 	Input::Initialize();
 	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
+	glfwSetCursorPosCallback(m_mainWindow.get(), AppManager::cursor_position_callback);
 	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
 	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
 	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
@@ -81,6 +82,11 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
 		appManager->m_bShowUI = !appManager->m_bShowUI;
 	//
 	appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+}
+
+void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onMouseMoveEvent(xpos, ypos);
 }
 
 bool AppManager::onEvent(const SDL_Event& e) {

@@ -34,6 +34,13 @@ public:
 	/// <param name="mods">Flags indicating whether modifier keys are being pressed at the same time.
 	/// For example call (mods &amp; GLFW_MOD_SHIFT) to check if SHIFT is pressed</param>
 	virtual void onKeyboardEvent(int key, int scancode, int action, int mods) {};
+
+	/// <summary>
+	/// This is where you receive and handle mouse move events.
+	/// </summary>
+	/// <param name="xpos">Current x position of the mouse, in pixels, relative to the top-left of the window.</param>
+	/// <param name="ypos">Current y position of the mouse, in pixels, relative to the top-left of the window.</param>
+	virtual void onMouseMoveEvent(double xpos, double ypos);
 };
 
 } // namespace Cool
