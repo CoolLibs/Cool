@@ -36,11 +36,20 @@ public:
 	virtual void onKeyboardEvent(int key, int scancode, int action, int mods) {};
 
 	/// <summary>
+	/// This is where you receive and handle mouse button events.
+	/// </summary>
+	/// <param name="button">Can be GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_RIGHT, GLFW_MOUSE_BUTTON_MIDDLE and some more that you can check at https://www.glfw.org/docs/latest/group__buttons.html</param>
+	/// <param name="action">Can be GLFW_PRESS or GLFW_RELEASE</param>
+	/// <param name="mods">Flags indicating whether modifier keys are being pressed at the same time.
+	/// For example call (mods &amp; GLFW_MOD_SHIFT) to check if SHIFT is pressed</param>
+	virtual void onMouseButtonEvent(int button, int action, int mods) {};
+
+	/// <summary>
 	/// This is where you receive and handle mouse move events.
 	/// </summary>
 	/// <param name="xpos">Current x position of the mouse, in pixels, relative to the top-left of the window.</param>
 	/// <param name="ypos">Current y position of the mouse, in pixels, relative to the top-left of the window.</param>
-	virtual void onMouseMoveEvent(double xpos, double ypos);
+	virtual void onMouseMoveEvent(double xpos, double ypos) {};
 };
 
 } // namespace Cool
