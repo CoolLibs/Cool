@@ -16,13 +16,6 @@
 
 namespace Cool {
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-
-	}
-}
-
 static void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
 
@@ -46,6 +39,7 @@ AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
 	: m_mainWindow(mainWindow), m_app(app)
 {
 	Input::Initialize();
+	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
 	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
 	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
 	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
@@ -81,6 +75,11 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 	if (size.x != RenderState::getAvailableSpaceSize().x || size.y != RenderState::getAvailableSpaceSize().y) {
 		RenderState::setAvailableSpaceSize(size.x, size.y, !m_bFirstFrame);
 	}
+}
+
+void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
 }
 
 bool AppManager::onEvent(const SDL_Event& e) {

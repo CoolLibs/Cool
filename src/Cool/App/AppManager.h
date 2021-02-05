@@ -28,6 +28,8 @@ private:
 	bool onEvent(const SDL_Event& e); // Returns true iff the event has been handled and must not be forwarded to the app
 	void ImGuiDockspace();
 
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 private:
 	OpenGLWindow& m_mainWindow;
 	IApp& m_app;
