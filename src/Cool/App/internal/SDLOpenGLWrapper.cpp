@@ -13,6 +13,7 @@ namespace Cool {
 
 SDLOpenGLWrapper::SDLOpenGLWrapper() {
 	initializeSDLandOpenGL();
+	initializeGLFW();
 	initializeImGui();
 #ifndef NDEBUG
 	if (s_bInitialized)
@@ -22,10 +23,18 @@ SDLOpenGLWrapper::SDLOpenGLWrapper() {
 }
 
 SDLOpenGLWrapper::~SDLOpenGLWrapper() {
+	glfwTerminate();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 	SDL_Quit();
+}
+
+void SDLOpenGLWrapper::initializeGLFW() {
+	glfwSetErrorCallback(SDLOpenGLWrapper::GlfwErrorCallback);
+	if (!glfwInit()) {
+		Log::Error("Glfw initialization failed");
+	}
 }
 
 void SDLOpenGLWrapper::initializeSDLandOpenGL() {
@@ -66,6 +75,19 @@ void SDLOpenGLWrapper::initializeImGui() {
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
+}
+
+OpenGLWindow SDLOpenGLWrapper::createWindow2(const char* name, int defaultWidth, int defaultHeight) {
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	OpenGLWindow openGlWindow(glfwCreateWindow(defaultWidth, defaultHeight, name, NULL, NULL));
+	if (!openGlWindow.window) {
+		Log::Error("[Glfw] Window or OpenGL context creation failed");
+	}
+	openGlWindow.makeCurrent();
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		Log::Error("Failed to initialize Glad");
+	return openGlWindow;
 }
 
 SDLGLWindow SDLOpenGLWrapper::createWindow(const char* name, int defaultWidth, int defaultHeight) {
@@ -109,6 +131,11 @@ void SDLOpenGLWrapper::setupGLDebugging() {
 void SDLOpenGLWrapper::setupImGui(SDLGLWindow& sdlglWindow) {
 	ImGui_ImplSDL2_InitForOpenGL(sdlglWindow.window, sdlglWindow.glContext);
 	ImGui_ImplOpenGL3_Init("#version 430");
+}
+
+
+void SDLOpenGLWrapper::GlfwErrorCallback(int error, const char* description) {
+	Log::Error("[Glfw] {}", description);
 }
 
 } // namespace Cool

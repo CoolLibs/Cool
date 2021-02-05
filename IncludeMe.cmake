@@ -17,6 +17,12 @@ endif()
 # Prevent SDL from being sad because we don't use SDL_main()
 add_compile_definitions(SDL_MAIN_HANDLED)
 
+add_subdirectory(${PATH_TO_COOL}/App/lib/glfw)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+target_link_libraries(${PROJECT_NAME} glfw)
+
 # Include glad
 add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
 
@@ -71,6 +77,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <glm/gtc/type_ptr.hpp>
     <glad/glad.h>
     <SDL2/SDL.h>
+    <GLFW/glfw3.h>
     # Cool
     <Cool/App/internal/GLCall.h>
     # std
