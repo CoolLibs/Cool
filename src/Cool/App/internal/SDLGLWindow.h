@@ -45,6 +45,8 @@ struct OpenGLWindow {
 	GLFWwindow* window;
 
 	inline void makeCurrent() { glfwMakeContextCurrent(window); }
+	inline void enableVSync() { glfwSwapInterval(1); }
+	inline void disableVSync() { glfwSwapInterval(0); }
 	bool checkForFullscreenToggles(const SDL_Event& e);
 	void switchFullScreen();
 	void escapeFullScreen();

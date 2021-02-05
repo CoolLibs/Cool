@@ -4,9 +4,9 @@
 #include "../RenderState.h"
 #include "../Input.h"
 
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_opengl3.h>
-#include "imgui/imgui_internal.h"
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/imgui_internal.h>
 
 // Hide console in release builds
 // msvc version
@@ -18,14 +18,12 @@ namespace Cool {
 
 AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
 	: m_SDLOpenGLWrapper(),
-	  m_openGLWindow(m_SDLOpenGLWrapper.createWindow2("blab leé", windowDefaultWidth, windowDefaultHeight))
-	  //_sdlglWindow(m_SDLOpenGLWrapper.createWindow(windowName, windowDefaultWidth, windowDefaultHeight))
+	  m_openGLWindow(m_SDLOpenGLWrapper.createWindow("blab leé", windowDefaultWidth, windowDefaultHeight))
 {
 	Input::Initialize();
 }
 
 AppManager::~AppManager() {
-	// m_sdlglWindow.destroy();
 	m_openGLWindow.destroy();
 }
 
@@ -109,63 +107,61 @@ bool AppManager::onEvent(const SDL_Event& e) {
 }
 
 void AppManager::update(Cool::IApp& app) {
-	//// Events
-	//SDL_Event e;
-	//while (SDL_PollEvent(&e)) {
-	//	ImGui_ImplSDL2_ProcessEvent(&e);
-	//	if (!onEvent(e))
-	//		app.onEvent(e);
-	//}
-	//// Clear screen
-	//glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	//// Start ImGui frame
-	//ImGui_ImplOpenGL3_NewFrame();
-	//ImGui_ImplSDL2_NewFrame(m_sdlglWindow.window);
-	//ImGui::NewFrame();
-	//ImGuiDockspace();
-	//// Actual application code
-	//if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-	//	app.update();
-	//if (m_bShowUI) {
-	//	// Menu bar
-	//	if (!RenderState::IsExporting()) {
-	//		ImGui::BeginMainMenuBar();
-	//		if (ImGui::BeginMenu("Preview")) {
-	//			RenderState::ImGuiPreviewControls();
-	//			ImGui::EndMenu();
-	//		}
-	//		app.ImGuiMenus();
-	//		ImGui::EndMainMenuBar();
-	//	}
-	//	// Windows
-	//	app.ImGuiWindows();
-	//}
-	//// Render ImGui
-	//ImGuiIO& io = ImGui::GetIO();
-	//ImGui::Render();
-	//glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	//
-	//// Update and Render additional Platform Windows
-	//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-	//	SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-	//	SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-	//	ImGui::UpdatePlatformWindows();
-	//	ImGui::RenderPlatformWindowsDefault();
-	//	SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-	//}
-	//
-	//// End frame
-	//SDL_GL_SwapWindow(m_sdlglWindow.window);
-	//m_bFirstFrame = false;
-	int width, height;
-	glfwGetFramebufferSize(m_openGLWindow.window, &width, &height);
-	glViewport(0, 0, width, height);
+	// Events
+	glfwPollEvents();
+	// if (!onEvent(e))
+	// 	app.onEvent(e);
+	// Clear screen
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// Start ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Hello ImGui");
+	ImGui::Text("Dear");
+	ImGui::End();
+
 	glClearColor(1, 1, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	ImGuiDockspace();
+	// Actual application code
+	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+		app.update();
+	if (m_bShowUI) {
+		// Menu bar
+		if (!RenderState::IsExporting()) {
+			ImGui::BeginMainMenuBar();
+			if (ImGui::BeginMenu("Preview")) {
+				RenderState::ImGuiPreviewControls();
+				ImGui::EndMenu();
+			}
+			app.ImGuiMenus();
+			ImGui::EndMainMenuBar();
+		}
+		// Windows
+		app.ImGuiWindows();
+	}
+	// Render ImGui
+	ImGui::Render();
+	ImGuiIO& io = ImGui::GetIO();
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	//
+	// Update and Render additional Platform Windows
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
+	
+	//// End frame
+	m_bFirstFrame = false;
 	glfwSwapBuffers(m_openGLWindow.window);
-	glfwPollEvents();
 }
 
 void AppManager::ImGuiDockspace() {
