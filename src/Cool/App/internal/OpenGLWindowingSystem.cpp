@@ -11,14 +11,19 @@ namespace Cool {
 bool OpenGLWindowingSystem::s_bInitialized = false;
 #endif
 
-OpenGLWindowingSystem::OpenGLWindowingSystem() {
-	initializeSDLandOpenGL();
-	initializeGLFW();
+OpenGLWindowingSystem::OpenGLWindowingSystem(int openGLMajorVersion, int openGLMinorVersion)
+	: m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
+{
+	// Debug checks
+	assert(openGLMajorVersion >= 3);
+	assert(openGLMinorVersion >= 3);
 #ifndef NDEBUG
 	if (s_bInitialized)
 		Log::Error("You are creating an SDLOpenGLWrapper twice !");
 	s_bInitialized = true;
 #endif
+	// Init
+	initializeGLFW();
 }
 
 OpenGLWindowingSystem::~OpenGLWindowingSystem() {
@@ -35,47 +40,22 @@ void OpenGLWindowingSystem::initializeGLFW() {
 	}
 }
 
-void OpenGLWindowingSystem::initializeSDLandOpenGL() {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
-		Log::Error("Failed to initialize SDL : {}", SDL_GetError());
-	}
-	SDL_GL_LoadLibrary(NULL);
-#if __APPLE__
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
-#else
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-#endif
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
-#ifndef NDEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-}
-
 OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWidth, int defaultHeight) {
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
+#ifndef NDEBUG
+	if (m_openGLVersion >= 430)
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+#endif
 #ifdef __APPLE__
-	// GL 3.2 + GLSL 150
-	const char* glsl_version = "#version 150";
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-#else
-	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 130";
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	OpenGLWindow openGlWindow(glfwCreateWindow(defaultWidth, defaultHeight, name, NULL, NULL));
 	if (!openGlWindow.get()) {
-		Log::Error("[Glfw] Window or OpenGL context creation failed");
+		const char* errorDescription;
+		glfwGetError(&errorDescription);
+		Log::Error("[Glfw] Window or OpenGL context creation failed {}", errorDescription);
 	}
 	openGlWindow.makeCurrent();
 	openGlWindow.enableVSync();
@@ -88,15 +68,17 @@ OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWi
 
 void OpenGLWindowingSystem::setupGLDebugging() {
 #ifndef NDEBUG
-	int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(GLDebugCallback, nullptr);
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-	}
-	else {
-		Log::Warn("Couldn't setup OpenGL Debugging");
+	if (m_openGLVersion >= 430) {
+		int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(GLDebugCallback, nullptr);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+		}
+		else {
+			Log::Warn("Couldn't setup OpenGL Debugging");
+		}
 	}
 #endif
 }
@@ -125,7 +107,8 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(openGLWindow.get(), true);
-	ImGui_ImplOpenGL3_Init("#version 430");
+	std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
+	ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 
 	// Load Fonts
 	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.

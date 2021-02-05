@@ -2,7 +2,6 @@
 
 #ifndef NDEBUG
 
-#include <iostream>
 #include <vector>
 #include <algorithm>
 
@@ -10,7 +9,8 @@ namespace Cool {
 
 static std::vector<unsigned int> AlreadydisplayedIds;
 
-void APIENTRY GLDebugCallback(GLenum source,
+void APIENTRY GLDebugCallback(
+    GLenum source,
     GLenum type,
     unsigned int id,
     GLenum severity,
