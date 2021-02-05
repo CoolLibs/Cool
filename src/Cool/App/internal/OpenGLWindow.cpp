@@ -32,7 +32,7 @@ bool OpenGLWindow::checkForFullscreenToggles(int key, int scancode, int action, 
 }
 
 void OpenGLWindow::switchFullScreen() {
-	auto* monitor = glfwGetPrimaryMonitor();
+	GLFWmonitor* monitor = getCurrentMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 	if (m_bIsFullScreen)
@@ -48,6 +48,45 @@ void OpenGLWindow::switchFullScreen() {
 void OpenGLWindow::escapeFullScreen() {
 	glfwSetWindowMonitor(m_window, NULL, 0, 0, 100, 100, 60);
 	m_bIsFullScreen = false;
+}
+
+static int mini(int x, int y) { return x < y ? x : y; }
+static int maxi(int x, int y) { return x > y ? x : y; }
+
+GLFWmonitor* OpenGLWindow::getCurrentMonitor() {
+	// Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
+	int nmonitors, i;
+	int wx, wy, ww, wh;
+	int mx, my, mw, mh;
+	int overlap, bestoverlap;
+	GLFWmonitor* bestmonitor;
+	GLFWmonitor** monitors;
+	const GLFWvidmode* mode;
+
+	bestoverlap = 0;
+	bestmonitor = NULL;
+
+	glfwGetWindowPos(m_window, &wx, &wy);
+	glfwGetWindowSize(m_window, &ww, &wh);
+	monitors = glfwGetMonitors(&nmonitors);
+
+	for (i = 0; i < nmonitors; i++) {
+		mode = glfwGetVideoMode(monitors[i]);
+		glfwGetMonitorPos(monitors[i], &mx, &my);
+		mw = mode->width;
+		mh = mode->height;
+
+		overlap =
+			maxi(0, mini(wx + ww, mx + mw) - maxi(wx, mx)) *
+			maxi(0, mini(wy + wh, my + mh) - maxi(wy, my));
+
+		if (bestoverlap < overlap) {
+			bestoverlap = overlap;
+			bestmonitor = monitors[i];
+		}
+	}
+
+	return bestmonitor;
 }
 
 } // namespace Cool

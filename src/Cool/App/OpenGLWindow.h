@@ -17,6 +17,10 @@ public:
 	/// Returns the underlying glfw window pointer
 	/// </summary>
 	inline GLFWwindow* get() { return  m_window; }
+	/// <summary>
+	/// Returns the monitor that the window is mostly displayed in
+	/// </summary>
+	GLFWmonitor* getCurrentMonitor();
 
 	inline void makeCurrent() { glfwMakeContextCurrent(m_window); }
 	inline void enableVSync() { glfwSwapInterval(1); }
