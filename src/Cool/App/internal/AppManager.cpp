@@ -35,8 +35,9 @@ AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
 {
 	Input::Initialize();
 	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
-	glfwSetCursorPosCallback(m_mainWindow.get(), AppManager::cursor_position_callback);
 	glfwSetMouseButtonCallback(m_mainWindow.get(), AppManager::mouse_button_callback);
+	glfwSetScrollCallback(m_mainWindow.get(), AppManager::scroll_callback);
+	glfwSetCursorPosCallback(m_mainWindow.get(), AppManager::cursor_position_callback);
 	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
 	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
 	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
@@ -93,6 +94,11 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	appManager->m_app.onMouseButtonEvent(button, action, mods);
+}
+
+void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onScrollEvent(xoffset, yoffset);
 }
 
 bool AppManager::onEvent(const SDL_Event& e) {
