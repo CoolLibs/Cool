@@ -46,12 +46,12 @@ AppManager::AppManager(OpenGLWindow& mainWindow)
 	: m_mainWindow(mainWindow)
 {
 	Input::Initialize();
-	glfwSetWindowSizeCallback(m_mainWindow.window, window_size_callback);
-	glfwSetWindowPosCallback(m_mainWindow.window, window_pos_callback);
-	glfwSetWindowUserPointer(m_mainWindow.window, reinterpret_cast<void*>(this));
+	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
+	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
+	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
 	int x, y, w, h;
-	glfwGetWindowPos(m_mainWindow.window, &x, &y);
-	glfwGetWindowSize(m_mainWindow.window, &w, &h);
+	glfwGetWindowPos(m_mainWindow.get(), &x, &y);
+	glfwGetWindowSize(m_mainWindow.get(), &w, &h);
 	onWindowMove(x, y);
 	onWindowResize(w, h);
 }
@@ -177,7 +177,7 @@ void AppManager::update() {
 	
 	//// End frame
 	m_bFirstFrame = false;
-	glfwSwapBuffers(m_mainWindow.window);
+	glfwSwapBuffers(m_mainWindow.get());
 	// Events
 	glfwPollEvents();
 }

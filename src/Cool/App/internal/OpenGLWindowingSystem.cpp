@@ -93,7 +93,7 @@ OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWi
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 	OpenGLWindow openGlWindow(glfwCreateWindow(defaultWidth, defaultHeight, name, NULL, NULL));
-	if (!openGlWindow.window) {
+	if (!openGlWindow.get()) {
 		Log::Error("[Glfw] Window or OpenGL context creation failed");
 	}
 	openGlWindow.makeCurrent();
@@ -145,7 +145,7 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 	}
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(openGLWindow.window, true);
+	ImGui_ImplGlfw_InitForOpenGL(openGLWindow.get(), true);
 	ImGui_ImplOpenGL3_Init("#version 430");
 
 	// Load Fonts

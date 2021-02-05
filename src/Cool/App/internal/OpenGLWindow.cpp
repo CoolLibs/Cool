@@ -2,6 +2,21 @@
 
 namespace Cool {
 
+OpenGLWindow::OpenGLWindow(GLFWwindow* window)
+	: m_window(window) 
+{}
+
+OpenGLWindow::OpenGLWindow(OpenGLWindow&& o) noexcept 
+	: m_window(o.m_window)
+{
+	o.m_window = nullptr;
+}
+
+OpenGLWindow::~OpenGLWindow() {
+	if (m_window != nullptr) // Could have been moved
+		glfwDestroyWindow(m_window);
+}
+
 //bool OpenGLWindow::checkForFullscreenToggles(const SDL_Event& e) {
 //	if (e.type == SDL_KEYDOWN && e.window.windowID == SDL_GetWindowID(window)) {
 //		if (e.key.keysym.scancode == SDL_SCANCODE_F11) {
