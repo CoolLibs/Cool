@@ -4,21 +4,13 @@
 
 namespace Cool {
 
-glm::vec2 Input::s_PixelsToCentimeters;
-
+GLFWwindow* Input::s_mainWindow;
 #ifndef NDEBUG
 bool Input::s_initialized = false;
 #endif
 
-void Input::Initialize() {
-	glm::vec2 dpi;
-	int exitCode = SDL_GetDisplayDPI(0, nullptr, &dpi[0], &dpi[1]);
-	if (exitCode == -1) { // Failure
-		dpi = glm::vec2(96.f);
-		Log::Release::Warn("Couldn't retrieve your screen's DPI. Going for the default 96 DPI.");
-	}
-	const float INCH_TO_CM = 2.30769231f; // I konw this isn't the actual value, but this is what gives correct results on my machine. And let's be honnest, I have no idea why that is.
-	s_PixelsToCentimeters = INCH_TO_CM / dpi;
+void Input::Initialize(GLFWwindow* mainWindow) {
+	s_mainWindow = mainWindow;
 #ifndef NDEBUG
 	if (s_initialized)
 		Log::Warn("[Input::Initialize] You are calling Initialize() twice.");
@@ -31,27 +23,18 @@ bool Input::MatchesChar(const char* character, int key) {
 	return name && strcmp(name, character) == 0;
 }
 
-bool Input::KeyIsDown(SDL_Scancode key) {
-	const Uint8* state = SDL_GetKeyboardState(NULL);
-	return state[key];
+bool Input::KeyIsDown(int glfwKeyCode) {
+	return glfwGetKey(s_mainWindow, glfwKeyCode) == GLFW_PRESS;
 }
 
-glm::ivec2 Input::MouseInPixels() {
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	return glm::ivec2(x, y) - RenderState::InAppRenderArea().topLeft();
-}
-
-glm::vec2 Input::MouseInCentimeters() {
-#ifndef NDEBUG
-	if (!s_initialized)
-		Log::Error("You are using Input::MouseInCentimeters() before the Input class is Initialized. Initialize() happens in the constructor of AppManager.");
-#endif
-	return static_cast<glm::vec2>(MouseInPixels()) * s_PixelsToCentimeters;
+glm::vec2 Input::MouseInScreenCoordinates() {
+	double x, y;
+	glfwGetCursorPos(s_mainWindow, &x, &y);
+	return glm::vec2(x, y) - glm::vec2(RenderState::InAppRenderArea().topLeft());
 }
 
 glm::vec2 Input::MouseInNormalizedRatioSpace() {
-	glm::vec2 pos = MouseInPixels();
+	glm::vec2 pos = MouseInScreenCoordinates();
 	pos /= RenderState::InAppRenderArea().height();
 	pos.y = 1.0f - pos.y;
 	pos *= 2.0f;

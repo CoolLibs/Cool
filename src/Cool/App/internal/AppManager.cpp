@@ -19,7 +19,7 @@ namespace Cool {
 AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
 	: m_mainWindow(mainWindow), m_app(app)
 {
-	Input::Initialize();
+	Input::Initialize(mainWindow.get());
 	// Set callbacks
 	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
 	glfwSetMouseButtonCallback(m_mainWindow.get(), AppManager::mouse_button_callback);
