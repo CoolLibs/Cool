@@ -20,11 +20,12 @@ public:
 	/// <summary>
 	/// Returns the monitor that the window is mostly displayed in
 	/// </summary>
-	GLFWmonitor* getCurrentMonitor();
+	GLFWmonitor* getCurrentMonitor() const;
 
 	inline void makeCurrent() { glfwMakeContextCurrent(m_window); }
-	inline void enableVSync() { glfwSwapInterval(1); }
-	inline void disableVSync() { glfwSwapInterval(0); }
+	void enableVSync();
+	void disableVSync();
+	inline bool isVSyncEnabled() const { return m_bIsVSyncEnabled; }
 	/// <summary>
 	/// You have to forward the parameters of the IApp::onKeyboardEvent() function (a.k.a. glfw key callback) and it will turn fullscreen on / off appropriately.
 	/// </summary>
@@ -40,6 +41,7 @@ private:
 	int m_posYBeforeFullscreen;
 	int m_widthBeforeFullscreen;
 	int m_heightBeforeFullscreen;
+	bool m_bIsVSyncEnabled = true;
 };
 
 } // namespace Cool

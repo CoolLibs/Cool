@@ -40,6 +40,8 @@ void OpenGLWindow::switchFullScreen() {
 		glfwGetWindowPos(m_window, &m_posXBeforeFullscreen, &m_posYBeforeFullscreen);
 		glfwGetWindowSize(m_window, &m_widthBeforeFullscreen, &m_heightBeforeFullscreen);
 		glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		if (m_bIsVSyncEnabled)
+			glfwSwapInterval(1);
 		m_bIsFullScreen = true;
 	}
 }
@@ -48,13 +50,24 @@ void OpenGLWindow::escapeFullScreen() {
 	GLFWmonitor* monitor = getCurrentMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 	glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
+	if (m_bIsVSyncEnabled)
+		glfwSwapInterval(1);
 	m_bIsFullScreen = false;
+}
+
+void OpenGLWindow::enableVSync() { 
+	glfwSwapInterval(1);
+	m_bIsVSyncEnabled = true;
+}
+void OpenGLWindow::disableVSync() { 
+	glfwSwapInterval(0);
+	m_bIsVSyncEnabled = false;
 }
 
 static int mini(int x, int y) { return x < y ? x : y; }
 static int maxi(int x, int y) { return x > y ? x : y; }
 
-GLFWmonitor* OpenGLWindow::getCurrentMonitor() {
+GLFWmonitor* OpenGLWindow::getCurrentMonitor() const {
 	// Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
 	int nmonitors, i;
 	int wx, wy, ww, wh;
