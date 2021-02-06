@@ -45,7 +45,7 @@ void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description
 	Log::Error("[Glfw] {}", description);
 }
 
-OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWidth, int defaultHeight) {
+OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int width, int height) {
 	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
@@ -58,7 +58,9 @@ OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int defaultWi
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	// Create window
-	OpenGLWindow openGlWindow(glfwCreateWindow(defaultWidth, defaultHeight, name, NULL, NULL));
+	OpenGLWindow openGlWindow(
+		glfwCreateWindow(width, height, name, NULL, NULL)
+	);
 	if (!openGlWindow.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
