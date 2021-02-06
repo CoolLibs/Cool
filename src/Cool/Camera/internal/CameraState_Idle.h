@@ -9,7 +9,7 @@ public:
 	CameraState_Idle(Camera& camera);
 	~CameraState_Idle() = default;
 
-	void onWheelDown() override;
+	void onWheelDown(int mods) override;
 	void onWheelScroll(float dl) override;
 };
 

@@ -10,8 +10,8 @@ CameraState_Idle::CameraState_Idle(Camera& camera)
 	: CameraState(camera)
 {}
 
-void CameraState_Idle::onWheelDown() {
-	if (Input::KeyIsDown(SDL_SCANCODE_LSHIFT)){
+void CameraState_Idle::onWheelDown(int mods) {
+	if (mods & GLFW_MOD_SHIFT){
 		m_camera.setState<CameraState_Translation>();
 	}
 	else {

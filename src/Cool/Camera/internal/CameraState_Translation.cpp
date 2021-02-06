@@ -8,11 +8,11 @@ namespace Cool {
 CameraState_Translation::CameraState_Translation(Camera& camera)
 	: CameraState(camera),
 	  m_initialLookAt(camera.m_lookAt),
-	  m_initialMousePos(Input::MouseInCentimeters())
+	  m_initialMousePos(Input::MouseInScreenCoordinates())
 {}
 
 void CameraState_Translation::update() {
-	glm::vec2 delta = (m_initialMousePos - Input::MouseInCentimeters()) * 0.3f;
+	glm::vec2 delta = (m_initialMousePos - Input::MouseInScreenCoordinates()) * 0.01f;
 	m_camera.m_lookAt = m_initialLookAt + m_camera.xAxis() * delta.x - m_camera.yAxis() * delta.y;
 	m_camera.onTransformChanged();
 }

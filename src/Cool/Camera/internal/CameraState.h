@@ -12,7 +12,7 @@ public:
 	~CameraState() = default;
 
 	virtual void update() {};
-	virtual void onWheelDown() {};
+	virtual void onWheelDown(int mods) {};
 	virtual void onWheelUp() {};
 	virtual void onWheelScroll(float dl) {};
 

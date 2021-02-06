@@ -29,8 +29,8 @@ public:
 	Ray rayThroughPixel(const glm::vec2& positionInPixels);
 
 	inline void update() { m_state->update(); }
-	inline void onWheelDown() { m_state->onWheelDown(); }
-	inline void onWheelUp()   { m_state->onWheelUp();   }
+	inline void onWheelDown(int mods) { m_state->onWheelDown(mods); }
+	inline void onWheelUp() { m_state->onWheelUp();   }
 	inline void onWheelScroll(float dl) { m_state->onWheelScroll(dl); }
 
 private:
