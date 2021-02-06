@@ -4,9 +4,9 @@
 #include "../RenderState.h"
 #include "../Input.h"
 
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_opengl3.h>
-#include "imgui/imgui_internal.h"
+#include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/imgui_internal.h>
 
 // Hide console in release builds
 // msvc version
@@ -16,35 +16,122 @@
 
 namespace Cool {
 
-AppManager::AppManager(const char* windowName, int windowDefaultWidth, int windowDefaultHeight)
-	: m_SDLOpenGLWrapper(),
-	  m_sdlglWindow(m_SDLOpenGLWrapper.createWindow(windowName, windowDefaultWidth, windowDefaultHeight))
+AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
+	: m_mainWindow(mainWindow), m_app(app)
 {
-	Input::Initialize();
+	Input::Initialize(mainWindow.get());
+	// Set callbacks
+	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
+	glfwSetMouseButtonCallback(m_mainWindow.get(), AppManager::mouse_button_callback);
+	glfwSetScrollCallback(m_mainWindow.get(), AppManager::scroll_callback);
+	glfwSetCursorPosCallback(m_mainWindow.get(), AppManager::cursor_position_callback);
+	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
+	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
+	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
+	// Trigger window size / position event once
+	int x, y, w, h;
+	glfwGetWindowPos(m_mainWindow.get(), &x, &y);
+	glfwGetWindowSize(m_mainWindow.get(), &w, &h);
+	onWindowMove(x, y);
+	onWindowResize(w, h);
 }
 
-AppManager::~AppManager() {
-	m_sdlglWindow.destroy();
-}
-
-int AppManager::run(Cool::IApp& app) {
-	onWindowMove();
-	onWindowResize();
-	while (!shouldClose()) {
-		update(app);
+void AppManager::run() {
+	while (!glfwWindowShouldClose(m_mainWindow.get())) {
+		update();
 	}
-	return 0; // TODO return another exit code if something goes wrong (even though I don't think anyone cares about this nowadays)
 }
 
-void AppManager::onWindowMove() {
-	int x, y;
-	SDL_GetWindowPosition(m_sdlglWindow.window, &x, &y);
+void AppManager::update() {
+	// Clear screen
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// Start ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	ImGuiDockspace();
+	// Actual application code
+	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+		m_app.update();
+	// UI
+	if (m_bShowUI) {
+		// Menu bar
+		if (!RenderState::IsExporting()) {
+			ImGui::BeginMainMenuBar();
+			if (ImGui::BeginMenu("Preview")) {
+				RenderState::ImGuiPreviewControls();
+				ImGui::EndMenu();
+			}
+			m_app.ImGuiMenus();
+			ImGui::EndMainMenuBar();
+		}
+		// Windows
+		m_app.ImGuiWindows();
+	}
+	// Render ImGui
+	ImGui::Render();
+	ImGuiIO& io = ImGui::GetIO();
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	// Update and Render additional Platform Windows
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
+	// End frame
+	m_bFirstFrame = false;
+	glfwSwapBuffers(m_mainWindow.get());
+	// Events
+	glfwPollEvents();
+}
+
+void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	// Fullscreen
+	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
+	// CTRL + H
+	if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
+		appManager->m_bShowUI = !appManager->m_bShowUI;
+	//
+	appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+}
+
+void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onMouseButtonEvent(button, action, mods);
+}
+
+void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onScrollEvent(xoffset, yoffset);
+}
+
+void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->m_app.onMouseMoveEvent(xpos, ypos);
+}
+
+void AppManager::window_size_callback(GLFWwindow* window, int w, int h) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->onWindowResize(w, h);
+	appManager->update();
+}
+
+void AppManager::window_pos_callback(GLFWwindow* window, int x, int y) {
+	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	appManager->onWindowMove(x, y);
+	appManager->update();
+}
+
+void AppManager::onWindowMove(int x, int y) {
 	RenderState::setWindowTopLeft(x, y);
 }
 
-void AppManager::onWindowResize() {
-	int w, h;
-	SDL_GetWindowSize(m_sdlglWindow.window, &w, &h);
+void AppManager::onWindowResize(int w, int h) {
 	RenderState::setWindowSize(w, h);
 }
 
@@ -59,104 +146,6 @@ void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node) {
 	if (size.x != RenderState::getAvailableSpaceSize().x || size.y != RenderState::getAvailableSpaceSize().y) {
 		RenderState::setAvailableSpaceSize(size.x, size.y, !m_bFirstFrame);
 	}
-}
-
-bool AppManager::onEvent(const SDL_Event& e) {
-	if (m_sdlglWindow.checkForFullscreenToggles(e)) {
-		onWindowResize();
-		return false;
-	}
-	switch (e.type) {
-
-	case SDL_WINDOWEVENT:
-		switch (e.window.event) {
-
-		case SDL_WINDOWEVENT_RESIZED:
-			onWindowResize();
-			return false;
-
-		case SDL_WINDOWEVENT_CLOSE:
-			if (e.window.windowID == SDL_GetWindowID(m_sdlglWindow.window)) {
-				closeApp();
-				return false;
-			}
-			return false;
-
-		case SDL_WINDOWEVENT_MOVED:
-			onWindowMove();
-			return false;
-
-		default:
-			return false;
-		}
-
-	case SDL_KEYDOWN:
-		if (e.key.keysym.sym == 'h' && Input::KeyIsDown(SDL_SCANCODE_LCTRL)) {
-			m_bShowUI = !m_bShowUI;
-			return true;
-		}
-		return false;
-
-	case SDL_QUIT:
-		closeApp();
-		return false;
-
-	default:
-		return false;
-	}
-}
-
-void AppManager::update(Cool::IApp& app) {
-	// Events
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		ImGui_ImplSDL2_ProcessEvent(&e);
-		if (!onEvent(e))
-			app.onEvent(e);
-	}
-	// Clear screen
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	// Start ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame(m_sdlglWindow.window);
-	ImGui::NewFrame();
-	ImGuiDockspace();
-	// Actual application code
-	if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-		app.update();
-	if (m_bShowUI) {
-		// Menu bar
-		if (!RenderState::IsExporting()) {
-			ImGui::BeginMainMenuBar();
-			if (ImGui::BeginMenu("Preview")) {
-				RenderState::ImGuiPreviewControls();
-				ImGui::EndMenu();
-			}
-			app.ImGuiMenus();
-			ImGui::EndMainMenuBar();
-		}
-		// Windows
-		app.ImGuiWindows();
-	}
-	// Render ImGui
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui::Render();
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	// Update and Render additional Platform Windows
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-		SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-	}
-
-	// End frame
-	SDL_GL_SwapWindow(m_sdlglWindow.window);
-	m_bFirstFrame = false;
 }
 
 void AppManager::ImGuiDockspace() {

@@ -6,16 +6,12 @@ add_compile_definitions(__COOL_GLM)
 # Include OpenGL
 find_package(OpenGL REQUIRED)
 
-# Include SDL
-if (WIN32) 
-    set(SDL2_INCLUDE_DIRS ${PATH_TO_COOL}/App/lib/SDL2-2.0.10/include)
-    set(SDL2_LIBRARIES ${PATH_TO_COOL}/App/lib/SDL2-2.0.10/lib/x64/SDL2.lib;
-                       ${PATH_TO_COOL}/App/lib/SDL2-2.0.10/lib/x64/SDL2main.lib)
-else()
-    find_package(SDL2 REQUIRED)
-endif()
-# Prevent SDL from being sad because we don't use SDL_main()
-add_compile_definitions(SDL_MAIN_HANDLED)
+# Include Glfw
+add_subdirectory(${PATH_TO_COOL}/App/lib/glfw)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+target_link_libraries(${PROJECT_NAME} glfw)
 
 # Include glad
 add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
@@ -42,22 +38,9 @@ add_custom_command(
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/imgui.ini
 )
 
-# Add a post build operation to copy the SDL dll to the output folder (where the executable is created)
-if (WIN32)
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PATH_TO_COOL}/App/lib/SDL2-2.0.10/lib/x64/SDL2.dll"
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    )
-else()
-    target_link_libraries(${PROJECT_NAME} -ldl)
-endif()
-
 # Add libraries to the project
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
-    ${SDL2_LIBRARIES}
     GLAD
     IMGUI
 )
@@ -70,7 +53,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
     <glad/glad.h>
-    <SDL2/SDL.h>
+    <GLFW/glfw3.h>
     # Cool
     <Cool/App/internal/GLCall.h>
     # std
