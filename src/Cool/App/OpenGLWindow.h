@@ -7,7 +7,6 @@ namespace Cool {
 /// </summary>
 class OpenGLWindow {
 public:
-	OpenGLWindow(GLFWwindow* m_window);
 	OpenGLWindow(OpenGLWindow&&) noexcept;
 	OpenGLWindow(const OpenGLWindow&) = delete;			   // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
 	OpenGLWindow& operator=(const OpenGLWindow&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
@@ -33,6 +32,13 @@ public:
 	bool checkForFullscreenToggles(int key, int scancode, int action, int mods);
 	void switchFullScreen();
 	void escapeFullScreen();
+
+private:
+	friend class OpenGLWindowingSystem;
+	/// <summary>
+	/// Please use OpenGLWindowingSystem::createWindow() to create an OpenGLWindow
+	/// </summary>
+	OpenGLWindow(GLFWwindow* m_window); 
 
 private:
 	GLFWwindow* m_window;
