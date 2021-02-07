@@ -142,7 +142,7 @@ void RenderState::ImGuiPreviewControls() {
 		ImGui::TextDisabled(m_bReasonForDisablingPreviewUIControl.c_str());
 	}
 	// Empty space color
-	ImGui::ColorEdit3("Empty space Color", glm::value_ptr(m_emptySpaceColor));
+	ImGui::ColorEdit3("Empty space Color", glm::value_ptr(m_emptySpaceColor), ImGuiColorEditFlags_NoInputs);
 }
 
 void RenderState::enablePreviewControlThroughUI() {
