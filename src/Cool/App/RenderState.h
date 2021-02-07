@@ -56,6 +56,15 @@ public:
 	/// </summary>
 	static void setPreviewNbPixelsControl(bool bControl);
 
+	/// <summary>
+	/// Allows user to control the preview size through the "Preview" menu. It is enabled by default.
+	/// </summary>
+	static void enablePreviewControlThroughUI();
+	/// <summary>
+	/// Prevents user from controlling the preview size through the "Preview" menu.
+	/// </summary>
+	static void disablePreviewControlThroughUI(const char* reasonForDisabling = "");
+
 private:
 	friend class AppManager;
 	friend class Renderer_Fullscreen;
@@ -101,6 +110,8 @@ private:
 	static AspectRatio m_previewRatio;
 	static bool m_bControlPreviewNbPixels;
 	static int m_previewNbPixels;
+	static bool m_bPreviewControlThroughUIEnabled;
+	static std::string m_bReasonForDisablingPreviewUIControl;
 };
 
 } // namespace Cool

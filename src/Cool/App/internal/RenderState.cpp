@@ -12,6 +12,8 @@ bool RenderState::m_bControlPreviewRatio = false;
 AspectRatio RenderState::m_previewRatio;
 bool RenderState::m_bControlPreviewNbPixels = false;
 int RenderState::m_previewNbPixels = 250000;
+bool RenderState::m_bPreviewControlThroughUIEnabled = true;
+std::string RenderState::m_bReasonForDisablingPreviewUIControl = "Currently disabled";
 
 RectSize RenderState::Size() {
 	if (m_bIsExporting)
@@ -112,27 +114,41 @@ RectSize RenderState::PreviewSize() {
 }
 
 void RenderState::ImGuiPreviewControls() {
-	// Aspect Ratio
-	bool bControlPreviewRatio = m_bControlPreviewRatio;
-	if (ImGui::Checkbox("Control aspect ratio", &bControlPreviewRatio)) {
-		setPreviewAspectRatioControl(bControlPreviewRatio);
-	}
-	if (m_bControlPreviewRatio) {
-		if (m_previewRatio.ImGuiPicker(168492224155754)) {
-			afterSettingPreviewAspectRatio();
+	if (m_bPreviewControlThroughUIEnabled) {
+		// Aspect Ratio
+		bool bControlPreviewRatio = m_bControlPreviewRatio;
+		if (ImGui::Checkbox("Control aspect ratio", &bControlPreviewRatio)) {
+			setPreviewAspectRatioControl(bControlPreviewRatio);
+		}
+		if (m_bControlPreviewRatio) {
+			if (m_previewRatio.ImGuiPicker(168492224155754)) {
+				afterSettingPreviewAspectRatio();
+			}
+		}
+		// Nb Pixels
+		bool bControlPreviewNbPixels = m_bControlPreviewNbPixels;
+		if (ImGui::Checkbox("Control number of pixels", &bControlPreviewNbPixels)) {
+			setPreviewNbPixelsControl(bControlPreviewNbPixels);
+		}
+		if (m_bControlPreviewNbPixels) {
+			int previewNbPixels = m_previewNbPixels;
+			if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 1000000)) {
+				setPreviewNbPixels(previewNbPixels);
+			}
 		}
 	}
-	// Nb Pixels
-	bool bControlPreviewNbPixels = m_bControlPreviewNbPixels;
-	if (ImGui::Checkbox("Control number of pixels", &bControlPreviewNbPixels)) {
-		setPreviewNbPixelsControl(bControlPreviewNbPixels);
+	else {
+		ImGui::TextDisabled(m_bReasonForDisablingPreviewUIControl.c_str());
 	}
-	if (m_bControlPreviewNbPixels) {
-		int previewNbPixels = m_previewNbPixels;
-		if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 1000000)) {
-			setPreviewNbPixels(previewNbPixels);
-		}
-	}
+}
+
+void RenderState::enablePreviewControlThroughUI() {
+	m_bPreviewControlThroughUIEnabled = true;
+}
+
+void RenderState::disablePreviewControlThroughUI(const char* reasonForDisabling) {
+	m_bPreviewControlThroughUIEnabled = false;
+	m_bReasonForDisablingPreviewUIControl = reasonForDisabling;
 }
 
 } // namespace Cool
