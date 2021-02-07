@@ -27,6 +27,18 @@ bool Input::KeyIsDown(int glfwKeyCode) {
 	return glfwGetKey(s_mainWindow, glfwKeyCode) == GLFW_PRESS;
 }
 
+bool Input::CtrlOrCmdIsDown() {
+	return KeyIsDown(GLFW_KEY_LEFT_CONTROL) || KeyIsDown(GLFW_KEY_RIGHT_CONTROL);
+}
+
+bool Input::ShiftIsDown() {
+	return KeyIsDown(GLFW_KEY_LEFT_SHIFT) || KeyIsDown(GLFW_KEY_RIGHT_SHIFT);
+}
+
+bool Input::AltIsDown() {
+	return KeyIsDown(GLFW_KEY_LEFT_ALT) || KeyIsDown(GLFW_KEY_RIGHT_ALT);
+}
+
 glm::vec2 Input::MouseInScreenCoordinates() {
 	double x, y;
 	glfwGetCursorPos(s_mainWindow, &x, &y);
