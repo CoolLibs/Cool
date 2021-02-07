@@ -47,12 +47,14 @@ void OpenGLWindow::switchFullScreen() {
 }
 
 void OpenGLWindow::escapeFullScreen() {
-	GLFWmonitor* monitor = getCurrentMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
-	if (m_bIsVSyncEnabled)
-		glfwSwapInterval(1);
-	m_bIsFullScreen = false;
+	if (m_bIsFullScreen) {
+		GLFWmonitor* monitor = getCurrentMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
+		if (m_bIsVSyncEnabled)
+			glfwSwapInterval(1);
+		m_bIsFullScreen = false;
+	}
 }
 
 void OpenGLWindow::enableVSync() { 
