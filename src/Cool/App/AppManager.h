@@ -19,6 +19,17 @@ public:
 	/// Runs the app's update loop continuously, until the user closes the main window
 	void run();
 
+	/// <summary>
+	/// Will prevent ImGui from reacting to key events (NB : doesn't affect text inputs, only things like moving in a list with up / down arrows).
+	/// This is off by default;
+	/// </summary>
+	inline void DontForwardKeyEventsToImGui() { m_bDoForwardKeyEventsToImGui = false; }
+	/// <summary>
+	/// Will allow ImGui to react to key events (NB : doesn't affect text inputs, only things like moving in a list with up / down arrows).
+	/// This is on by default;
+	/// </summary>
+	inline void DoForwardKeyEventsToImGui() { m_bDoForwardKeyEventsToImGui = true; }
+
 private:
 	void update();
 	void onWindowMove(int x, int y);
@@ -39,6 +50,7 @@ private:
 	IApp& m_app;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
+	bool m_bDoForwardKeyEventsToImGui = true;
 };
 
 } // namespace Cool

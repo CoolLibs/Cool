@@ -91,9 +91,9 @@ void AppManager::update() {
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (ImGui::GetIO().WantTextInput)
-		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+	if (appManager->m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput)
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	// Fullscreen
 	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
 	// CTRL + H
