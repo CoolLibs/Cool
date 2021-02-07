@@ -13,7 +13,8 @@ AspectRatio RenderState::m_previewRatio;
 bool RenderState::m_bControlPreviewNbPixels = false;
 int RenderState::m_previewNbPixels = 250000;
 bool RenderState::m_bPreviewControlThroughUIEnabled = true;
-std::string RenderState::m_bReasonForDisablingPreviewUIControl = "Currently disabled";
+std::string RenderState::m_bReasonForDisablingPreviewUIControl = "Controlling the size is currently disabled.";
+glm::vec3 RenderState::m_emptySpaceColor = glm::vec3(0.5f);
 
 RectSize RenderState::Size() {
 	if (m_bIsExporting)
@@ -140,6 +141,8 @@ void RenderState::ImGuiPreviewControls() {
 	else {
 		ImGui::TextDisabled(m_bReasonForDisablingPreviewUIControl.c_str());
 	}
+	// Empty space color
+	ImGui::ColorEdit3("Empty space Color", glm::value_ptr(m_emptySpaceColor));
 }
 
 void RenderState::enablePreviewControlThroughUI() {

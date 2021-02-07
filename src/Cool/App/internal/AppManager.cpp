@@ -44,7 +44,8 @@ void AppManager::run() {
 
 void AppManager::update() {
 	// Clear screen
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	const glm::vec3& emptySpaceColor = RenderState::getEmptySpaceColor();
+	glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// Start ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();

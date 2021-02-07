@@ -87,6 +87,8 @@ private:
 	static inline const glm::ivec2& getAvailableSpaceSize() { return m_AvailableSpace.size(); }
 	static inline       glm::ivec2  getWindowTopLeft()      { return m_Window.topLeft(); }
 
+	static inline const glm::vec3& getEmptySpaceColor() { return m_emptySpaceColor; }
+
 	static void ImGuiPreviewControls();
 
 	static void OnRenderAreaResized();
@@ -112,6 +114,7 @@ private:
 	static int m_previewNbPixels;
 	static bool m_bPreviewControlThroughUIEnabled;
 	static std::string m_bReasonForDisablingPreviewUIControl;
+	static glm::vec3 m_emptySpaceColor;
 };
 
 } // namespace Cool
