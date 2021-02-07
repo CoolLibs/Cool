@@ -34,6 +34,7 @@ public:
 	void escapeFullScreen();
 
 private:
+	void setSwapInterval(int value);
 	friend class OpenGLWindowingSystem;
 	/// <summary>
 	/// Please use OpenGLWindowingSystem::createWindow() to create an OpenGLWindow

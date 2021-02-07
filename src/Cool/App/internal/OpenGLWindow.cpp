@@ -41,7 +41,7 @@ void OpenGLWindow::switchFullScreen() {
 		glfwGetWindowSize(m_window, &m_widthBeforeFullscreen, &m_heightBeforeFullscreen);
 		glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 		if (m_bIsVSyncEnabled)
-			glfwSwapInterval(1);
+			setSwapInterval(GLFW_TRUE);
 		m_bIsFullScreen = true;
 	}
 }
@@ -52,18 +52,26 @@ void OpenGLWindow::escapeFullScreen() {
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
 		if (m_bIsVSyncEnabled)
-			glfwSwapInterval(1);
+			setSwapInterval(GLFW_TRUE);
 		m_bIsFullScreen = false;
 	}
 }
 
-void OpenGLWindow::enableVSync() { 
-	glfwSwapInterval(1);
+void OpenGLWindow::enableVSync() {
+	setSwapInterval(GLFW_TRUE);
 	m_bIsVSyncEnabled = true;
 }
-void OpenGLWindow::disableVSync() { 
-	glfwSwapInterval(0);
+
+void OpenGLWindow::disableVSync() {
+	setSwapInterval(GLFW_FALSE);
 	m_bIsVSyncEnabled = false;
+}
+
+void OpenGLWindow::setSwapInterval(int value) {
+	GLFWwindow* currentWindow = glfwGetCurrentContext();
+	glfwMakeContextCurrent(m_window);
+	glfwSwapInterval(value);
+	glfwMakeContextCurrent(currentWindow);
 }
 
 static int mini(int x, int y) { return x < y ? x : y; }
