@@ -91,6 +91,7 @@ void AppManager::update() {
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	// Fullscreen
 	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
@@ -102,11 +103,13 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
 }
 
 void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	appManager->m_app.onMouseButtonEvent(button, action, mods);
 }
 
 void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	appManager->m_app.onScrollEvent(xoffset, yoffset);
 }
