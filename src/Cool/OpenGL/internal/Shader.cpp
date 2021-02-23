@@ -48,8 +48,10 @@ Shader::~Shader() {
 
 void Shader::createProgram(const std::vector<ShaderCode>& shaderCodes) {
 	// Create program
-	if (m_programID != 0)
+	if (m_programID != 0) {
 		GLCall(glDeleteProgram(m_programID));
+		m_uniformLocationCache.clear();
+	}
 	GLCall(m_programID = glCreateProgram());
 	// Compile shaders
 	std::vector<GLuint> shaderIDs;
