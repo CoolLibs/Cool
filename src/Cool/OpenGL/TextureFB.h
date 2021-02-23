@@ -10,6 +10,7 @@ public:
 	~TextureFB();
 
 	void attachTextureToSlot(unsigned int slot);
+	inline GLuint textureID() { return m_colorTextureId; }
 
 private:
 	void createAttachments(int width, int height) override;
