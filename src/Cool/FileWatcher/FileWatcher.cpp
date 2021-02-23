@@ -35,6 +35,7 @@ void FileWatcher::update() {
 
 void FileWatcher::setPath(std::string_view path) {
 	m_path = path;
+	m_bPathIsValid = false; // Forces checkAndUpdatePathValidity() to trigger an update (if the new path is valid)
 	checkAndUpdatePathValidity();
 	if (!m_bPathIsValid) {
 		Log::Release::Warn("[FileWatcher::setPath] Invalid file path : \"{}\"", path);
