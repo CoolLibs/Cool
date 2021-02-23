@@ -57,10 +57,10 @@ public:
 	/// The OpenGL convention is that the first pixel in the array is the bottom-left of the image, then the second is on the first row second column and so on.</param>
 	void uploadRGBA(int width, int height, unsigned char* data = nullptr);
 	/// <summary>
-	/// Bind your texture to a slot, so that it is ready to be read by a shader.
+	/// Attaches your texture to a slot, so that it is ready to be read by a shader.
 	/// </summary>
 	/// <param name="slot">The slot. This should match the "uniform sampler2D u_TextureSlot" in your shader that is set through setUniform1i(slot)</param>
-	void bindToSlot(int slot);
+	void attachToSlot(int slot);
 
 	/// <summary>
 	/// The OpenGL ID of the texture.

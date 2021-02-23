@@ -48,12 +48,12 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data) {
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture::bindToSlot(int slot) {
+void Texture::attachToSlot(int slot) {
 #ifndef NDEBUG
 	if (m_textureID == -1)
-		Log::Error("[Texture::bindToSlot] You haven't generated that texture yet !");
+		Log::Error("[Texture::attachToSlot] You haven't generated that texture yet !");
 	if (!m_bDataUploaded)
-		Log::Error("[Texture::bindToSlot] You must upload some data (at least a width and height) before using the texture.");
+		Log::Error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
 #endif
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_textureID));
