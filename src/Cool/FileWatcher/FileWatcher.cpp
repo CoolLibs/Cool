@@ -5,12 +5,9 @@
 
 namespace Cool {
 
-FileWatcher::FileWatcher(std::string_view path, std::function<void(const char*)> onFileChanged, float delayBetweenChecks)
-	: m_onFileChanged(onFileChanged), m_delayBetweenChecks(delayBetweenChecks),
-	  m_timeOfLastChange(std::filesystem::last_write_time(path))
-{
-	setPath(path);
-}
+FileWatcher::FileWatcher(std::function<void(const char*)> onFileChanged, float delayBetweenChecks)
+	: m_onFileChanged(onFileChanged), m_delayBetweenChecks(delayBetweenChecks)
+{}
 
 void FileWatcher::update() {
 	// Init static variable (it is static so that we don't need to include chrono in the header file)
@@ -34,8 +31,14 @@ void FileWatcher::update() {
 }
 
 void FileWatcher::setPath(std::string_view path) {
-	m_path = path;
-	m_onFileChanged(m_path.string().c_str());
+	try {
+		m_timeOfLastChange = std::filesystem::last_write_time(path); // Do this first, because it will throw if the path is invalid and it will prevent us to actually trying to set an invalid path.
+		m_path = path;
+		m_onFileChanged(m_path.string().c_str());
+	}
+	catch (std::exception e) {
+		Log::Release::Warn("[FileWatcher::setPath] Invalid file path : \"{}\"\n{}", path, e.what());
+	}
 }
 
 } // namespace Cool

@@ -10,12 +10,11 @@ namespace Cool {
 class FileWatcher {
 public:
 	/// <summary>
-	/// Regularily looks for updates of a file and triggers the callback when the file changes. The callback is also called at the creation of the FileWatcher.
+	/// Regularily looks for updates of a file and triggers the callback when the file changes. The callback is also called when the path is set.
 	/// </summary>
-	/// <param name="path">Path of the file to watch</param>
 	/// <param name="onFileChanged">Callback function called whenever the file changes. Receives the path as parameter, just for convenience.</param>
 	/// <param name="delayBetweenChecks"> In seconds : time between two checks. The smaller the delay the bigger the performance cost.</param>
-	FileWatcher(std::string_view path, std::function<void(const char*)> onFileChanged, float delayBetweenChecks = 0.5f);
+	FileWatcher(std::function<void(const char*)> onFileChanged, float delayBetweenChecks = 0.5f);
 	~FileWatcher() = default;
 
 	/// <summary>
@@ -28,6 +27,10 @@ public:
 	/// </summary>
 	inline const std::filesystem::path& path() const { return m_path; }
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="path">Path of the file to watch</param>
 	void setPath(std::string_view path);
 
 private:
