@@ -5,11 +5,11 @@
 
 namespace Cool {
 
-FileWatcher::FileWatcher(const char* path, std::function<void(const char*)> onFileChanged, float delayBetweenChecks)
-	: m_path(path), m_onFileChanged(onFileChanged), m_delayBetweenChecks(delayBetweenChecks),
-	  m_timeOfLastChange(std::filesystem::last_write_time(m_path))
+FileWatcher::FileWatcher(std::string_view path, std::function<void(const char*)> onFileChanged, float delayBetweenChecks)
+	: m_onFileChanged(onFileChanged), m_delayBetweenChecks(delayBetweenChecks),
+	  m_timeOfLastChange(std::filesystem::last_write_time(path))
 {
-	m_onFileChanged(m_path.string().c_str());
+	setPath(path);
 }
 
 void FileWatcher::update() {
@@ -31,6 +31,11 @@ void FileWatcher::update() {
 			}
 		}
 	}
+}
+
+void FileWatcher::setPath(std::string_view path) {
+	m_path = path;
+	m_onFileChanged(m_path.string().c_str());
 }
 
 } // namespace Cool
