@@ -18,7 +18,7 @@ public:
 	/// <param name="width">Initial width of the window</param>
 	/// <param name="height">Initial height of the window</param>
 	/// <param name="windowToShareContextWith">Optional window. If set, the created window will share the same OpenGL context as this one.</param>
-	OpenGLWindow createWindow(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
+	OpenGLWindow [[nodiscard]] createWindow(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
 
 private:
 	void initializeGLFW();
