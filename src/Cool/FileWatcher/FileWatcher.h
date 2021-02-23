@@ -28,13 +28,23 @@ public:
 	inline const std::filesystem::path& path() const { return m_path; }
 
 	/// <summary>
-	/// 
+	/// Sets the path to watch, and calls the onFileChanged callback if the path is valid.
 	/// </summary>
 	/// <param name="path">Path of the file to watch</param>
 	void setPath(std::string_view path);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns>true iff we are currently watching a valid file path (meaning the file exists and we are allowed to read it)</returns>
+	inline bool pathIsValid() const { return m_bPathIsValid; }
+
 private:
-	std::filesystem::path m_path;
+	void checkAndUpdatePathValidity();
+
+private:
+	std::filesystem::path m_path = "";
+	bool m_bPathIsValid = false;
 	std::function<void(const char*)> m_onFileChanged;
 	float m_delayBetweenChecks;
 	std::filesystem::file_time_type m_timeOfLastChange;
