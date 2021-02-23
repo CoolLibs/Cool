@@ -6,12 +6,12 @@
 
 namespace Cool::File {
 
-bool Exists(const char* filepath) {
+bool Exists(std::string_view filepath) {
     struct stat buffer;
-    return (stat(filepath, &buffer) == 0);
+    return (stat(filepath.data(), &buffer) == 0);
 }
 
-std::string AbsolutePath(const char* filepath) {
+std::string AbsolutePath(std::string_view filepath) {
     return std::filesystem::absolute(filepath).string();
 }
 
@@ -47,7 +47,7 @@ std::string WhithoutFileName(const std::string& filepath) {
     return filepath;
 }
 
-void ToString(const char* filepath, std::string* dst) {
+void ToString(std::string_view filepath, std::string* dst) {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(filepath);
     if (!stream.is_open()) {
@@ -64,7 +64,7 @@ void ToString(const char* filepath, std::string* dst) {
     stream.close();
 }
 
-bool CreateFoldersIfDoesntExist(const char* folderPath) {
+bool CreateFoldersIfDoesntExist(std::string_view folderPath) {
     if (!Exists(folderPath)) {
         try {
             std::filesystem::create_directories(folderPath);
@@ -78,7 +78,7 @@ bool CreateFoldersIfDoesntExist(const char* folderPath) {
     return true;
 }
 
-bool CreateFoldersForFileIfDoesntExist(const char* folderAndFilePath) {
+bool CreateFoldersForFileIfDoesntExist(std::string_view folderAndFilePath) {
     return CreateFoldersIfDoesntExist(WhithoutFileName(std::string(folderAndFilePath)).c_str());
 }
 
