@@ -10,7 +10,7 @@ namespace Cool::String {
 	/// </summary>
 	bool StartsWith(const char* toFind, const std::string& str);
 	/// <summary>
-	/// Returns a new string with all occurences of "from" in "str" replaced with "to"
+	/// Modifies "str" and replaces all occurences of "from" with "to"
 	/// </summary>
 	void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
 	/// <summary>
