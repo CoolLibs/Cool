@@ -58,14 +58,20 @@ public:
     /// <param name="nbComputationsY">The Y dimension of the call cube. If you didn't set a WorkGroupSizeY, this should be 1</param>
     /// <param name="nbComputationsZ">The Z dimension of the call cube. If you didn't set a WorkGroupSizeZ, this should be 1</param>
     void compute(unsigned int nbComputationsX, unsigned int nbComputationsY = 1, unsigned int nbComputationsZ = 1) {
+        assert(nbComputationsX != 0);
+        assert(nbComputationsY != 0);
+        assert(nbComputationsZ != 0);
+        assert(WorkGroupSizeX != 0);
+        assert(WorkGroupSizeY != 0);
+        assert(WorkGroupSizeZ != 0);
         m_shader.bind();
         m_shader.setUniform1i("NumberOfComputationsX", nbComputationsX);
         m_shader.setUniform1i("NumberOfComputationsY", nbComputationsY);
         m_shader.setUniform1i("NumberOfComputationsZ", nbComputationsZ);
         GLCall(glDispatchCompute(
-            nbComputationsX / WorkGroupSizeX + ((nbComputationsX % WorkGroupSizeX == 0) ? 0 : 1),
-            nbComputationsY / WorkGroupSizeY + ((nbComputationsY % WorkGroupSizeY == 0) ? 0 : 1),
-            nbComputationsZ / WorkGroupSizeZ + ((nbComputationsZ % WorkGroupSizeZ == 0) ? 0 : 1)
+            (nbComputationsX - 1) / WorkGroupSizeX + 1,
+            (nbComputationsY - 1) / WorkGroupSizeY + 1,
+            (nbComputationsZ - 1) / WorkGroupSizeZ + 1
         ));
         GLCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
     }
