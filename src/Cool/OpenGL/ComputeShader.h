@@ -73,7 +73,6 @@ public:
             (nbComputationsY - 1) / WorkGroupSizeY + 1,
             (nbComputationsZ - 1) / WorkGroupSizeZ + 1
         ));
-        GLCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
     }
 
 private:
