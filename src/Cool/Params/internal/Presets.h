@@ -184,25 +184,17 @@ private:
 		_rename_popup_open_this_frame = false;
 		if (_rename_popup_open_last_frame) {
 			if (_new_preset_name.find(".") == std::string::npos) {
-				// compute_current_preset_idx(); // Could have been changed
-				if (_current_preset_idx != -1) {
-					const std::string new_path = full_path(_new_preset_name);
-					if (!File::Exists(new_path)) {
-						std::filesystem::rename(
-							full_path(current_name()),
-							new_path
-						);
-						_presets[_current_preset_idx].name = _new_preset_name;
-						sort();
-					}
-					else {
-						boxer::show(("\"" + _new_preset_name + "\" already exists.").c_str(), "Renaming failed", boxer::Style::Warning);
-					}
+				const std::string new_path = full_path(_new_preset_name);
+				if (!File::Exists(new_path)) {
+					std::filesystem::rename(
+						full_path(current_name()),
+						new_path
+					);
+					_presets[_current_preset_idx].name = _new_preset_name;
+					sort();
 				}
 				else {
-					boxer::show("Actually this preset isn't saved on your computer.\nYou will now be able to \"Save settings\" if you want to.", "Renaming failed", boxer::Style::Info);
-					find_placeholder_name();
-					set_to_placeholder_setting();
+					boxer::show(("\"" + _new_preset_name + "\" already exists.").c_str(), "Renaming failed", boxer::Style::Warning);
 				}
 			}
 			else {
