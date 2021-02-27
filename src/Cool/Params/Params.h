@@ -10,8 +10,9 @@ namespace Cool {
 template <typename ParamValues>
 class Params {
 public:
-	Params(const std::string& file_extension, const std::string& folder_path)
-		: _presets(file_extension, folder_path)
+	template <typename... Args>
+	Params(const std::string& file_extension, const std::string& folder_path, Args&& ...args)
+		: _values(std::forward<Args>(args)...), _presets(file_extension, folder_path)
 	{}
 	bool ImGui() {
 		bool b = false;
