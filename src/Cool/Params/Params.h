@@ -1,6 +1,7 @@
 #pragma once
 
 #include "internal/Presets.h"
+#include "ParamsHistory.h"
 // Include all Param types so that people only need to include this one file
 #include "internal/Param_Color.h"
 

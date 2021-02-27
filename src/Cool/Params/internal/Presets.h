@@ -30,10 +30,28 @@ public:
 		if (ImGui::BeginCombo(label, _current_preset_name.c_str(), 0)) {
 			for (size_t i = 0; i < _presets.size(); i++) {
 				if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
-					b = true;
-					_current_preset_name = _presets[i].name;
+					const auto cur_current_preset_name = _current_preset_name;
+					const auto new_current_preset_name = _presets[i].name;
+					const auto cur_setting_values = *setting_values;
+					const auto new_setting_values = _presets[i].values;
+					const Action action = {
+						[&, setting_values, new_current_preset_name, new_setting_values]() {
+							_current_preset_name = new_current_preset_name;
+							*setting_values = new_setting_values;
+							compute_current_preset_idx();
+						},
+						[&, setting_values, cur_current_preset_name, cur_setting_values]() {
+							_current_preset_name = cur_current_preset_name;
+							*setting_values = cur_setting_values;
+							compute_current_preset_idx();
+						}
+					};
+					action.Do();
 					_current_preset_idx = i;
-					*setting_values = _presets[i].values;
+					ParamsHistory::Get().begin_undo_group();
+					ParamsHistory::Get().add_action(action);
+					ParamsHistory::Get().end_undo_group();
+					b = true;
 				}
 			}
 			ImGui::EndCombo();
@@ -92,9 +110,6 @@ public:
 						if (_current_preset_idx != -1) {
 							std::filesystem::remove(full_path(_current_preset_name));
 							_presets.erase(_current_preset_idx + _presets.begin());
-						}
-						else {
-							boxer::show("Actually this preset isn't saved on your computer, it was just set by a record.\nYou will now be able to \"Save settings\" if you want to.", "Deleting failed", boxer::Style::Info);
 						}
 						find_placeholder_name();
 						set_to_placeholder_setting();
@@ -158,7 +173,7 @@ private:
 					}
 				}
 				else {
-					boxer::show("Actually this preset isn't saved on your computer, it was just set by a record.\nYou will now be able to \"Save settings\" if you want to.", "Renaming failed", boxer::Style::Info);
+					boxer::show("Actually this preset isn't saved on your computer.\nYou will now be able to \"Save settings\" if you want to.", "Renaming failed", boxer::Style::Info);
 					find_placeholder_name();
 					set_to_placeholder_setting();
 				}
@@ -170,6 +185,7 @@ private:
 	}
 
 	void compute_current_preset_idx() {
+		_current_preset_idx = -1;
 		for (size_t i = 0; i < _presets.size(); ++i) {
 			if (!_presets[i].name.compare(_current_preset_name)) {
 				_current_preset_idx = i;
