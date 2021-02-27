@@ -89,4 +89,6 @@ namespace CoolImGui {
 	/// <returns></returns>
 	bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_flags = ImGuiPopupFlags_None);
 
+	void InvisibleWrapperAroundPreviousLine(const char* label);
+
 } // namespace Cool::ImGui

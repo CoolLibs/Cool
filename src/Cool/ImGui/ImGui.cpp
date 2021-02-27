@@ -146,4 +146,9 @@ bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_fl
 	return BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
 }
 
+void InvisibleWrapperAroundPreviousLine(const char* label) {
+	ImGui::SetCursorPos(ImGui::GetCursorPos() - ImVec2(0, 2 * ImGui::GetTextLineHeight()));
+	ImGui::InvisibleButton(label, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
+}
+
 } // namespace CoolImGui
