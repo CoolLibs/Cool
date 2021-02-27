@@ -2,9 +2,8 @@
 
 #include <Cool/File/File.h>
 #include <Cool/String/String.h>
-#include <fstream>
-#include <Cool/Serialization/JsonFile.h>
 #include <Cool/ImGui/ImGui.h>
+#include <Cool/Serialization/JsonFile.h>
 
 namespace Cool {
 
@@ -22,7 +21,7 @@ public:
 		  _folder_path(folder_path),
 		  m_savePresetAs(findPlaceholderName())
 	{
-		loadPresetsFrom(_folder_path);
+		loadPresets();
 	}
 	~Presets() = default;
 
@@ -53,7 +52,7 @@ public:
 			if (m_nameAvailable) {
 				if (!m_nameContainsDots) {
 					if (ImGui::Button("Save settings")) {
-						savePresetTo(*settingValues, _folder_path);
+						savePreset(*settingValues);
 					}
 					ImGui::SameLine();
 					ImGui::Text("as");
@@ -188,35 +187,31 @@ private:
 		return name;
 	}
 
-	void loadPresetsFrom(const std::string& folderPath) {
-		if (File::Exists(folderPath)) {
-			for (const auto& file : std::filesystem::directory_iterator(folderPath)) {
+	void loadPresets() { 
+		if (File::Exists(_folder_path)) {
+			for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
 				if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
 					std::string name = file.path().filename().replace_extension("").extension().string().erase(0, 1);
 					T values;
 					std::ifstream is(file.path());
-					{
+					try {
 						cereal::JSONInputArchive archive(is);
 						archive(
 							values
 						);
+						m_presets.push_back({ name, values });
 					}
-					m_presets.push_back({ name, values });
+					catch (std::exception e) {
+						Log::Release::Warn("Invalid file {}.\n{}", file.path().string(), e.what());
+					}
 				}
 			}
 			sort();
 		}
 	}
 
-	void savePresetTo(T& settingValues, const std::string& folderPath) {
-		File::CreateFoldersIfDoesntExist(folderPath);
-		std::ofstream os(full_path(m_savePresetAs));
-		{
-			cereal::JSONOutputArchive archive(os);
-			archive(
-				settingValues
-			);
-		}
+	void savePreset(T& settingValues) {
+		Serialization::ToJSON(settingValues, full_path(m_savePresetAs));
 		// Add it to current list
 		m_presets.push_back({ m_savePresetAs, settingValues });
 		// Give the name to the selected preset
