@@ -6,6 +6,8 @@
 #include <Cool/Serialization/JsonFile.h>
 #include <Cool/ImGui/ImGui.h>
 
+namespace Cool {
+
 template <typename T>
 struct Preset {
 	std::string name;
@@ -246,3 +248,5 @@ private:
 		computeCurrentPresetIdx();
 	}
 };
+
+} // namespace Cool
