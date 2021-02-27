@@ -68,7 +68,7 @@ public:
 			ImGui::SameLine();
 			ImGui::PushID(138571);
 			if (ImGui::InputText("", &m_savePresetAs)) {
-				m_nameAvailable = !File::Exists(_folder_path + "/" + _file_extension + m_savePresetAs + ".json") && m_savePresetAs.compare("Unsaved settings...");
+				m_nameAvailable = !File::Exists(full_path(m_savePresetAs)) && m_savePresetAs.compare("Unsaved settings...");
 				m_nameContainsDots = m_savePresetAs.find(".") != std::string::npos;
 			}
 			ImGui::PopID();
@@ -95,9 +95,7 @@ public:
 					if (boxer::show(("\"" + m_currentPresetName + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
 						computeCurrentPresetIdx(); // Could have been changed by playing a record
 						if (m_currentPresetIdx != -1) {
-							std::filesystem::remove(
-								_folder_path + "/" + _file_extension + m_currentPresetName + ".json"
-							);
+							std::filesystem::remove(full_path(m_currentPresetName));
 							m_presets.erase(m_currentPresetIdx + m_presets.begin());
 						}
 						else {
@@ -123,6 +121,9 @@ public:
 	}
 
 private:
+	std::string full_path(const std::string& file_name) {
+		return _folder_path + "/" + _file_extension + file_name + ".json";
+	}
 	void sort() {
 		// Case insensitive alphabetical sort
 		std::sort(m_presets.begin(), m_presets.end(), [](const Preset<T>& l, const Preset<T>& r) {
@@ -146,10 +147,10 @@ private:
 		if (m_bRenamePopupOpenLastFrame) {
 			computeCurrentPresetIdx(); // Could have been changed by playing a record
 			if (m_currentPresetIdx != -1) {
-				const std::string newPath = _folder_path + "/" + _file_extension + m_newPresetName + ".json";
+				const std::string newPath = full_path(m_newPresetName);
 				if (!File::Exists(newPath)) {
 					std::filesystem::rename(
-						_folder_path + "/" + _file_extension + m_currentPresetName + ".json",
+						full_path(m_currentPresetName),
 						newPath
 					);
 					m_currentPresetName = m_newPresetName;
@@ -180,7 +181,7 @@ private:
 	std::string findPlaceholderName() {
 		int i = 1;
 		std::string name = "MyPreset";
-		while (File::Exists(_folder_path + "/" + _file_extension + name + ".json")) {
+		while (File::Exists(full_path(name))) {
 			name = "MyPreset(" + std::to_string(i) + ")";
 			i++;
 		}
@@ -209,7 +210,7 @@ private:
 
 	void savePresetTo(T& settingValues, const std::string& folderPath) {
 		File::CreateFoldersIfDoesntExist(folderPath);
-		std::ofstream os(folderPath + "/" + _file_extension + m_savePresetAs + ".json");
+		std::ofstream os(full_path(m_savePresetAs));
 		{
 			cereal::JSONOutputArchive archive(os);
 			archive(
