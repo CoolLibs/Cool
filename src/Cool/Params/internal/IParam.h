@@ -2,30 +2,23 @@
 
 namespace Cool {
 
+template <typename T>
 class IParam {
 public:
-	IParam(std::string_view name)
-		: _name(name)
+	IParam(std::string_view name, const T& default_value = T(0))
+		: _name(name), _value(default_value)
 	{}
 	virtual bool ImGui() = 0;
 
-	[[nodiscard]] inline const std::string& name() const { return _name; }
-
-private:
-	std::string _name = "";
-};
-
-template <typename T>
-class Param : public IParam {
-public:
-	Param(std::string_view name, const T& default_value = T(0))
-		: IParam(name), _value(default_value)
-	{}
 	inline T& operator* () { return  _value; }
 	inline T* operator->() { return &_value; }
+	[[nodiscard]] inline const std::string& name() const { return _name; }
 
 protected:
 	T _value;
+
+private:
+	std::string _name = "";
 
 private:
 	//Serialization

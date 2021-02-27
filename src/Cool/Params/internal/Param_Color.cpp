@@ -3,7 +3,7 @@
 namespace Cool {
 
 Param_Color::Param_Color(std::string_view name, const glm::vec3& default_value) 
-	: Param(name, default_value)
+	: IParam(name, default_value)
 {}
 
 bool Param_Color::ImGui() {
