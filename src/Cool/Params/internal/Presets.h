@@ -4,13 +4,47 @@
 #include <Cool/String/String.h>
 #include <Cool/ImGui/ImGui.h>
 #include <Cool/Serialization/JsonFile.h>
+#include <Cool/Random/Random.h>
 
 namespace Cool {
 
 template <typename T>
+struct ValuesWithUUID {
+	T values;
+	long int uuid;
+
+	ValuesWithUUID()
+	{}
+
+	ValuesWithUUID(const T& values, long int uuid)
+		: values(values), uuid(uuid)
+	{}
+
+private:
+	//Serialization
+	friend class cereal::access;
+	template<class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(
+			cereal::make_nvp("Values", values),
+			cereal::make_nvp("uuid", uuid)
+		);
+	}
+};
+
+template <typename T>
 struct Preset {
 	std::string name;
-	T values;
+	ValuesWithUUID<T> valuesWithUUID;
+
+	Preset(const std::string& name, const T& values)
+		: name(name), valuesWithUUID(values, Random::getAnyLongInt())
+	{}
+
+	Preset(const std::string& name, const T& values, long int uuid)
+		: name(name), valuesWithUUID(values, uuid)
+	{}
 };
 
 template <typename T>
@@ -33,7 +67,7 @@ public:
 					const auto cur_current_preset_name = _current_preset_name;
 					const auto new_current_preset_name = _presets[i].name;
 					const auto cur_setting_values = *setting_values;
-					const auto new_setting_values = _presets[i].values;
+					const auto new_setting_values = _presets[i].valuesWithUUID.values;
 					const Action action = {
 						[&, setting_values, new_current_preset_name, new_setting_values]() {
 							_current_preset_name = new_current_preset_name;
@@ -209,14 +243,14 @@ private:
 			for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
 				if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
 					std::string name = file.path().filename().replace_extension("").extension().string().erase(0, 1);
-					T values;
+					ValuesWithUUID<T> valuesWithUUID;
 					std::ifstream is(file.path());
 					try {
 						cereal::JSONInputArchive archive(is);
 						archive(
-							values
+							valuesWithUUID
 						);
-						_presets.push_back({ name, values });
+						_presets.push_back({ name, valuesWithUUID.values, valuesWithUUID.uuid });
 					}
 					catch (std::exception e) {
 						Log::Release::Warn("Invalid file {}.\n{}", file.path().string(), e.what());
@@ -228,7 +262,6 @@ private:
 	}
 
 	void save_preset(T& settingValues) {
-		Serialization::ToJSON(settingValues, full_path(_save_preset_as));
 		// Add it to current list
 		_presets.push_back({ _save_preset_as, settingValues });
 		// Give the name to the selected preset
@@ -237,6 +270,8 @@ private:
 		sort();
 		// Find new placeholder name
 		_save_preset_as = find_placeholder_name();
+		// Save to file
+		Serialization::ToJSON(_presets.back().valuesWithUUID, full_path(_save_preset_as));
 	}
 
 private:
