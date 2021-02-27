@@ -11,4 +11,5 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <cereal/types/vector.hpp>
     <cereal/types/string.hpp>
     <cereal/types/memory.hpp>
+    <Cool/Serialization/internal/GlmSerialization.h>
 )
