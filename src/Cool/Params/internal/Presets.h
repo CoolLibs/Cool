@@ -42,7 +42,6 @@ public:
 	}
 
 	bool ImGui(T* setting_values) {
-		ImGui::Separator();
 		bool b = ImGui_dropdown("Presets", setting_values);
 		// Save preset
 		if (!_current_preset_name.compare("Unsaved settings...")) {

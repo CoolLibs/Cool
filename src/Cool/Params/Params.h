@@ -1,7 +1,7 @@
 #pragma once
 
 #include "internal/Presets.h"
-// Include all Para types so that people only need to include this one file
+// Include all Param types so that people only need to include this one file
 #include "internal/Param_Color.h"
 
 namespace Cool {
@@ -18,6 +18,7 @@ public:
 			_presets.set_to_placeholder_setting();
 			b = true;
 		}
+		ImGui::Separator();
 		b |= _presets.ImGui(&_values);
 		return b;
 	}
