@@ -61,27 +61,24 @@ public:
 
 	bool ImGui_dropdown(const char* label, T* setting_values) {
 		bool b = false;
-		if (ImGui::BeginCombo(label, _current_preset_name.c_str(), 0)) {
+		if (ImGui::BeginCombo(label, current_name().c_str(), 0)) {
 			for (size_t i = 0; i < _presets.size(); i++) {
 				if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
-					const auto cur_current_preset_name = _current_preset_name;
-					const auto new_current_preset_name = _presets[i].name;
 					const auto cur_setting_values = *setting_values;
 					const auto new_setting_values = _presets[i].valuesWithUUID.values;
+					const auto cur_uuid = current_uuid();
+					const auto new_uuid = _presets[i].valuesWithUUID.uuid;
 					const Action action = {
-						[&, setting_values, new_current_preset_name, new_setting_values]() {
-							_current_preset_name = new_current_preset_name;
+						[&, setting_values, new_setting_values, new_uuid]() {
 							*setting_values = new_setting_values;
-							compute_current_preset_idx();
+							compute_current_preset_idx(new_uuid);
 						},
-						[&, setting_values, cur_current_preset_name, cur_setting_values]() {
-							_current_preset_name = cur_current_preset_name;
+						[&, setting_values, cur_setting_values, cur_uuid]() {
 							*setting_values = cur_setting_values;
-							compute_current_preset_idx();
+							compute_current_preset_idx(cur_uuid);
 						}
 					};
 					action.Do();
-					_current_preset_idx = i;
 					ParamsHistory::Get().begin_undo_group();
 					ParamsHistory::Get().add_action(action);
 					ParamsHistory::Get().end_undo_group();
@@ -96,7 +93,7 @@ public:
 	bool ImGui(T* setting_values) {
 		bool b = ImGui_dropdown("Presets", setting_values);
 		// Save preset
-		if (!_current_preset_name.compare("Unsaved settings...")) {
+		if (_current_preset_idx == -1) {
 			if (_name_available) {
 				if (!_name_contains_dots) {
 					if (ImGui::Button("Save settings")) {
@@ -127,7 +124,7 @@ public:
 			if (ImGui::BeginPopupContextItem()) {
 				if (CoolImGui::BeginPopupContextMenuFromButton("Rename")) {
 					if (!_rename_popup_open_last_frame) {
-						_new_preset_name = _current_preset_name;
+						_new_preset_name = current_name();
 					}
 					ImGui::PushID(16879654123594);
 					ImGui::InputText("", &_new_preset_name);
@@ -139,12 +136,9 @@ public:
 					on_rename_popup_close();
 				}
 				if (ImGui::Button("Delete")) {
-					if (boxer::show(("\"" + _current_preset_name + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
-						compute_current_preset_idx(); // Could have been changed by playing a record
-						if (_current_preset_idx != -1) {
-							std::filesystem::remove(full_path(_current_preset_name));
-							_presets.erase(_current_preset_idx + _presets.begin());
-						}
+					if (boxer::show(("\"" + current_name() + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
+						std::filesystem::remove(full_path(current_name()));
+						_presets.erase(_current_preset_idx + _presets.begin());
 						find_placeholder_name();
 						set_to_placeholder_setting();
 					}
@@ -160,7 +154,6 @@ public:
 	}
 
 	void set_to_placeholder_setting() {
-		_current_preset_name = "Unsaved settings...";
 		_current_preset_idx = -1;
 	}
 
@@ -169,6 +162,7 @@ private:
 		return _folder_path + "/" + _file_extension + file_name + ".json";
 	}
 	void sort() {
+		const auto uuid = current_uuid();
 		// Case insensitive alphabetical sort
 		std::sort(_presets.begin(), _presets.end(), [](const Preset<T>& l, const Preset<T>& r) {
 			return String::ToLower(l.name) < String::ToLower(r.name);
@@ -183,22 +177,21 @@ private:
 			}
 		}
 		//
-		compute_current_preset_idx();
+		compute_current_preset_idx(uuid);
 	}
 
 	void on_rename_popup_close() {
 		_rename_popup_open_this_frame = false;
 		if (_rename_popup_open_last_frame) {
 			if (_new_preset_name.find(".") == std::string::npos) {
-				compute_current_preset_idx(); // Could have been changed
+				// compute_current_preset_idx(); // Could have been changed
 				if (_current_preset_idx != -1) {
 					const std::string new_path = full_path(_new_preset_name);
 					if (!File::Exists(new_path)) {
 						std::filesystem::rename(
-							full_path(_current_preset_name),
+							full_path(current_name()),
 							new_path
 						);
-						_current_preset_name = _new_preset_name;
 						_presets[_current_preset_idx].name = _new_preset_name;
 						sort();
 					}
@@ -218,10 +211,10 @@ private:
 		}
 	}
 
-	void compute_current_preset_idx() {
+	void compute_current_preset_idx(long int uuid) {
 		_current_preset_idx = -1;
 		for (size_t i = 0; i < _presets.size(); ++i) {
-			if (!_presets[i].name.compare(_current_preset_name)) {
+			if (_presets[i].valuesWithUUID.uuid == uuid) {
 				_current_preset_idx = i;
 				break;
 			}
@@ -264,20 +257,27 @@ private:
 	void save_preset(T& settingValues) {
 		// Add it to current list
 		_presets.push_back({ _save_preset_as, settingValues });
-		// Give the name to the selected preset
-		_current_preset_name = _save_preset_as;
-		//
+		// Set as selected preset
+		_current_preset_idx = _presets.size() - 1;
+		// Save to file
+		Serialization::ToJSON(_presets.back().valuesWithUUID, full_path(_save_preset_as));
+		// Sort
 		sort();
 		// Find new placeholder name
 		_save_preset_as = find_placeholder_name();
-		// Save to file
-		Serialization::ToJSON(_presets.back().valuesWithUUID, full_path(_save_preset_as));
+	}
+
+	const std::string& current_name() const {
+		return _current_preset_idx != -1 ? _presets[_current_preset_idx].name : _placeholder_name;
+	}
+
+	long int current_uuid() const {
+		return _current_preset_idx != -1 ? _presets[_current_preset_idx].valuesWithUUID.uuid : 0;
 	}
 
 private:
 	const std::string _file_extension;
 	const std::string _folder_path; // Must be declared before _save_preset_as
-	std::string _current_preset_name = "Unsaved settings...";
 	size_t _current_preset_idx = -1;
 	std::vector<Preset<T>> _presets;
 	std::string _save_preset_as;
@@ -286,6 +286,7 @@ private:
 	std::string _new_preset_name;
 	bool _rename_popup_open_last_frame = false;
 	bool _rename_popup_open_this_frame = false;
+	static inline const std::string _placeholder_name = "Unsaved settings...";
 
 private:
 	// Serialization
@@ -294,16 +295,17 @@ private:
 	void save(Archive& archive, std::uint32_t const version) const
 	{
 		archive(
-			CEREAL_NVP(_current_preset_name)
+			cereal::make_nvp("Current Preset uuid", current_uuid())
 		);
 	}
 	template <class Archive>
 	void load(Archive& archive, std::uint32_t const version)
 	{
+		long int preset_uuid;
 		archive(
-			CEREAL_NVP(_current_preset_name)
+			preset_uuid
 		);
-		compute_current_preset_idx();
+		compute_current_preset_idx(preset_uuid);
 	}
 };
 
