@@ -15,7 +15,7 @@ public:
 	bool ImGui() {
 		bool b = false;
 		if (_values.ImGui()) {
-			_presets.setToPlaceholderSetting();
+			_presets.set_to_placeholder_setting();
 			b = true;
 		}
 		b |= _presets.ImGui(&_values);

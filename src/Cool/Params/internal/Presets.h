@@ -19,24 +19,21 @@ public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
 		: _file_extension(file_extension + std::string(".")),
 		  _folder_path(folder_path),
-		  m_savePresetAs(findPlaceholderName())
+		  _save_preset_as(find_placeholder_name())
 	{
-		loadPresets();
+		load_presets();
 	}
 	~Presets() = default;
 
-	inline const std::string& getPresetName() { return m_currentPresetName; }
-	inline void setPresetName(const std::string& newName) { m_currentPresetName = newName; }
-
-	bool ImGuiDropdown(const char* label, T* settingValues) {
+	bool ImGui_dropdown(const char* label, T* setting_values) {
 		bool b = false;
-		if (ImGui::BeginCombo(label, m_currentPresetName.c_str(), 0)) {
-			for (size_t i = 0; i < m_presets.size(); i++) {
-				if (ImGui::Selectable(m_presets[i].name.c_str(), false)) {
+		if (ImGui::BeginCombo(label, _current_preset_name.c_str(), 0)) {
+			for (size_t i = 0; i < _presets.size(); i++) {
+				if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
 					b = true;
-					m_currentPresetName = m_presets[i].name;
-					m_currentPresetIdx = i;
-					*settingValues = m_presets[i].values;
+					_current_preset_name = _presets[i].name;
+					_current_preset_idx = i;
+					*setting_values = _presets[i].values;
 				}
 			}
 			ImGui::EndCombo();
@@ -44,15 +41,15 @@ public:
 		return b;
 	}
 
-	bool ImGui(T* settingValues) {
+	bool ImGui(T* setting_values) {
 		ImGui::Separator();
-		bool b = ImGuiDropdown("Presets", settingValues);
+		bool b = ImGui_dropdown("Presets", setting_values);
 		// Save preset
-		if (!m_currentPresetName.compare("Unsaved settings...")) {
-			if (m_nameAvailable) {
-				if (!m_nameContainsDots) {
+		if (!_current_preset_name.compare("Unsaved settings...")) {
+			if (_name_available) {
+				if (!_name_contains_dots) {
 					if (ImGui::Button("Save settings")) {
-						savePreset(*settingValues);
+						save_preset(*setting_values);
 					}
 					ImGui::SameLine();
 					ImGui::Text("as");
@@ -66,57 +63,57 @@ public:
 			}
 			ImGui::SameLine();
 			ImGui::PushID(138571);
-			if (ImGui::InputText("", &m_savePresetAs)) {
-				m_nameAvailable = !File::Exists(full_path(m_savePresetAs)) && m_savePresetAs.compare("Unsaved settings...");
-				m_nameContainsDots = m_savePresetAs.find(".") != std::string::npos;
+			if (ImGui::InputText("", &_save_preset_as)) {
+				_name_available = !File::Exists(full_path(_save_preset_as)) && _save_preset_as.compare("Unsaved settings...");
+				_name_contains_dots = _save_preset_as.find(".") != std::string::npos;
 			}
 			ImGui::PopID();
-			m_bRenamePopupOpenThisFrame = false;
+			_rename_popup_open_this_frame = false;
 		}
 		// Rename / Delete preset
 		else {
 			CoolImGui::InvisibleWrapperAroundPreviousLine("ovsidhsdh"); // Necessary otherwise we can't open a context menu on the dropdown
 			if (ImGui::BeginPopupContextItem()) {
 				if (CoolImGui::BeginPopupContextMenuFromButton("Rename")) {
-					if (!m_bRenamePopupOpenLastFrame) {
-						m_newPresetName = m_currentPresetName;
+					if (!_rename_popup_open_last_frame) {
+						_new_preset_name = _current_preset_name;
 					}
 					ImGui::PushID(16879654123594);
-					ImGui::InputText("", &m_newPresetName);
+					ImGui::InputText("", &_new_preset_name);
 					ImGui::PopID();
 					ImGui::EndPopup();
-					m_bRenamePopupOpenThisFrame = true;
+					_rename_popup_open_this_frame = true;
 				}
 				else {
-					onRenamePopupClose();
+					on_rename_popup_close();
 				}
 				if (ImGui::Button("Delete")) {
-					if (boxer::show(("\"" + m_currentPresetName + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
-						computeCurrentPresetIdx(); // Could have been changed by playing a record
-						if (m_currentPresetIdx != -1) {
-							std::filesystem::remove(full_path(m_currentPresetName));
-							m_presets.erase(m_currentPresetIdx + m_presets.begin());
+					if (boxer::show(("\"" + _current_preset_name + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
+						compute_current_preset_idx(); // Could have been changed by playing a record
+						if (_current_preset_idx != -1) {
+							std::filesystem::remove(full_path(_current_preset_name));
+							_presets.erase(_current_preset_idx + _presets.begin());
 						}
 						else {
 							boxer::show("Actually this preset isn't saved on your computer, it was just set by a record.\nYou will now be able to \"Save settings\" if you want to.", "Deleting failed", boxer::Style::Info);
 						}
-						findPlaceholderName();
-						setToPlaceholderSetting();
+						find_placeholder_name();
+						set_to_placeholder_setting();
 					}
 				}
 			ImGui::EndPopup();
 			}
 			else {
-				onRenamePopupClose();
+				on_rename_popup_close();
 			}
 		}
-		m_bRenamePopupOpenLastFrame = m_bRenamePopupOpenThisFrame;
+		_rename_popup_open_last_frame = _rename_popup_open_this_frame;
 		return b;
 	}
 
-	void setToPlaceholderSetting() {
-		m_currentPresetName = "Unsaved settings...";
-		m_currentPresetIdx = -1;
+	void set_to_placeholder_setting() {
+		_current_preset_name = "Unsaved settings...";
+		_current_preset_idx = -1;
 	}
 
 private:
@@ -125,59 +122,59 @@ private:
 	}
 	void sort() {
 		// Case insensitive alphabetical sort
-		std::sort(m_presets.begin(), m_presets.end(), [](const Preset<T>& l, const Preset<T>& r) {
+		std::sort(_presets.begin(), _presets.end(), [](const Preset<T>& l, const Preset<T>& r) {
 			return String::ToLower(l.name) < String::ToLower(r.name);
 			});
 		// Put Default first
-		for (size_t i = 0; i < m_presets.size(); ++i) {
-			if (!m_presets[i].name.compare("Default")) {
-				Preset<T> prst = m_presets[i];
-				std::copy_backward(m_presets.begin(), i + m_presets.begin(), i + 1 + m_presets.begin());
-				m_presets[0] = prst;
+		for (size_t i = 0; i < _presets.size(); ++i) {
+			if (!_presets[i].name.compare("Default")) {
+				Preset<T> prst = _presets[i];
+				std::copy_backward(_presets.begin(), i + _presets.begin(), i + 1 + _presets.begin());
+				_presets[0] = prst;
 				break;
 			}
 		}
 		//
-		computeCurrentPresetIdx();
+		compute_current_preset_idx();
 	}
 
-	void onRenamePopupClose() {
-		m_bRenamePopupOpenThisFrame = false;
-		if (m_bRenamePopupOpenLastFrame) {
-			computeCurrentPresetIdx(); // Could have been changed by playing a record
-			if (m_currentPresetIdx != -1) {
-				const std::string newPath = full_path(m_newPresetName);
-				if (!File::Exists(newPath)) {
+	void on_rename_popup_close() {
+		_rename_popup_open_this_frame = false;
+		if (_rename_popup_open_last_frame) {
+			compute_current_preset_idx(); // Could have been changed by playing a record
+			if (_current_preset_idx != -1) {
+				const std::string new_path = full_path(_new_preset_name);
+				if (!File::Exists(new_path)) {
 					std::filesystem::rename(
-						full_path(m_currentPresetName),
-						newPath
+						full_path(_current_preset_name),
+						new_path
 					);
-					m_currentPresetName = m_newPresetName;
-					m_presets[m_currentPresetIdx].name = m_newPresetName;
+					_current_preset_name = _new_preset_name;
+					_presets[_current_preset_idx].name = _new_preset_name;
 					sort();
 				}
 				else {
-					boxer::show(("\"" + m_newPresetName + "\" already exists.").c_str(), "Renaming failed", boxer::Style::Warning);
+					boxer::show(("\"" + _new_preset_name + "\" already exists.").c_str(), "Renaming failed", boxer::Style::Warning);
 				}
 			}
 			else {
 				boxer::show("Actually this preset isn't saved on your computer, it was just set by a record.\nYou will now be able to \"Save settings\" if you want to.", "Renaming failed", boxer::Style::Info);
-				findPlaceholderName();
-				setToPlaceholderSetting();
+				find_placeholder_name();
+				set_to_placeholder_setting();
 			}
 		}
 	}
 
-	void computeCurrentPresetIdx() {
-		for (size_t i = 0; i < m_presets.size(); ++i) {
-			if (!m_presets[i].name.compare(m_currentPresetName)) {
-				m_currentPresetIdx = i;
+	void compute_current_preset_idx() {
+		for (size_t i = 0; i < _presets.size(); ++i) {
+			if (!_presets[i].name.compare(_current_preset_name)) {
+				_current_preset_idx = i;
 				break;
 			}
 		}
 	}
 
-	std::string findPlaceholderName() {
+	std::string find_placeholder_name() {
 		int i = 1;
 		std::string name = "MyPreset";
 		while (File::Exists(full_path(name))) {
@@ -187,7 +184,7 @@ private:
 		return name;
 	}
 
-	void loadPresets() { 
+	void load_presets() { 
 		if (File::Exists(_folder_path)) {
 			for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
 				if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
@@ -199,7 +196,7 @@ private:
 						archive(
 							values
 						);
-						m_presets.push_back({ name, values });
+						_presets.push_back({ name, values });
 					}
 					catch (std::exception e) {
 						Log::Release::Warn("Invalid file {}.\n{}", file.path().string(), e.what());
@@ -210,30 +207,30 @@ private:
 		}
 	}
 
-	void savePreset(T& settingValues) {
-		Serialization::ToJSON(settingValues, full_path(m_savePresetAs));
+	void save_preset(T& settingValues) {
+		Serialization::ToJSON(settingValues, full_path(_save_preset_as));
 		// Add it to current list
-		m_presets.push_back({ m_savePresetAs, settingValues });
+		_presets.push_back({ _save_preset_as, settingValues });
 		// Give the name to the selected preset
-		m_currentPresetName = m_savePresetAs;
+		_current_preset_name = _save_preset_as;
 		//
 		sort();
 		// Find new placeholder name
-		m_savePresetAs = findPlaceholderName();
+		_save_preset_as = find_placeholder_name();
 	}
 
 private:
 	const std::string _file_extension;
-	const std::string _folder_path; // Must be declared before m_savePresetAs
-	std::string m_currentPresetName = "Unsaved settings...";
-	size_t m_currentPresetIdx = -1;
-	std::vector<Preset<T>> m_presets;
-	std::string m_savePresetAs;
-	bool m_nameAvailable = true;
-	bool m_nameContainsDots = false;
-	std::string m_newPresetName;
-	bool m_bRenamePopupOpenLastFrame = false;
-	bool m_bRenamePopupOpenThisFrame = false;
+	const std::string _folder_path; // Must be declared before _save_preset_as
+	std::string _current_preset_name = "Unsaved settings...";
+	size_t _current_preset_idx = -1;
+	std::vector<Preset<T>> _presets;
+	std::string _save_preset_as;
+	bool _name_available = true;
+	bool _name_contains_dots = false;
+	std::string _new_preset_name;
+	bool _rename_popup_open_last_frame = false;
+	bool _rename_popup_open_this_frame = false;
 
 private:
 	// Serialization
@@ -242,16 +239,16 @@ private:
 	void save(Archive& archive, std::uint32_t const version) const
 	{
 		archive(
-			CEREAL_NVP(m_currentPresetName)
+			CEREAL_NVP(_current_preset_name)
 		);
 	}
 	template <class Archive>
 	void load(Archive& archive, std::uint32_t const version)
 	{
 		archive(
-			CEREAL_NVP(m_currentPresetName)
+			CEREAL_NVP(_current_preset_name)
 		);
-		computeCurrentPresetIdx();
+		compute_current_preset_idx();
 	}
 };
 
