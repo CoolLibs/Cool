@@ -4,3 +4,9 @@
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw
+[submodule "lib/Boxer"]
+	path = lib/Boxer
+	url = https://github.com/aaronmjacobs/Boxer
+[submodule "lib/nfd"]
+	path = lib/nfd
+	url = https://github.com/JulesFouchy/nativefiledialog-extended

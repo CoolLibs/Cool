@@ -20,12 +20,19 @@ add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
 file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
 add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
+#Include Boxer
+add_subdirectory(${PATH_TO_COOL}/App/lib/Boxer)
+
+#Include Native File Dialog
+add_subdirectory(${PATH_TO_COOL}/App/lib/nfd/src)
+
 include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIRS}
     ${PATH_TO_COOL}/App/lib/glad/include
     ${PATH_TO_COOL}/App/lib/imgui
     ${PATH_TO_COOL}/App/lib/glm
+    ${PATH_TO_COOL}/App/lib/nfd/src/include
     ${PATH_TO_COOL}/App/lib
     ${PATH_TO_COOL}/App/src
 )
@@ -43,6 +50,8 @@ target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
     GLAD
     IMGUI
+    Boxer
+    nfd
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
@@ -54,6 +63,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <glm/gtc/type_ptr.hpp>
     <glad/glad.h>
     <GLFW/glfw3.h>
+    <boxer/boxer.h>
+    <nfd.hpp>
     # Cool
     <Cool/App/internal/GLCall.h>
     # std
