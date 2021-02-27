@@ -1,7 +1,8 @@
 #pragma once
 
-#include "internal/Param.h" // So that people only need to include this one file
 #include "internal/Presets.h"
+// Include all Para types so that people only need to include this one file
+#include "internal/Param_Color.h"
 
 namespace Cool {
 

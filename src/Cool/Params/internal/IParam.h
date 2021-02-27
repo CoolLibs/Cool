@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Cool {
+namespace Cool::Internal {
 
 class IParam {
 public:
@@ -39,4 +39,4 @@ private:
 	}
 };
 
-} // namespace Cool
+} // namespace Cool::Internal

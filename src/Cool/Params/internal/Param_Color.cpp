@@ -1,12 +1,12 @@
 #include "Param_Color.h"
 
-namespace Cool {
+namespace Cool::Param {
 
-Param_Color::Param_Color(std::string_view name, const glm::vec3& default_value) 
+Color::Color(std::string_view name, const glm::vec3& default_value)
 	: Param(name, default_value)
 {}
 
-bool Param_Color::ImGui() {
+bool Color::ImGui() {
 	return ImGui::ColorEdit3(name().c_str(), glm::value_ptr(_value), ImGuiColorEditFlags_NoInputs);
 }
 
