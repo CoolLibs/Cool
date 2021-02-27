@@ -15,4 +15,17 @@ private:
 	std::string _name = "";
 };
 
+template <typename T>
+class Param : public IParam {
+public:
+	Param(std::string_view name, const T& default_value = T(0))
+		: IParam(name), _value(default_value)
+	{}
+	inline T& operator* () { return  _value; }
+	inline T* operator->() { return &_value; }
+
+protected:
+	T _value;
+};
+
 } // namespace Cool
