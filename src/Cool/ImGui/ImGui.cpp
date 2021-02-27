@@ -134,4 +134,16 @@ void WarningText(const char* text) {
 	ImGui::TextColored(ImVec4(0.95f, 0.1f, 0.2f, 1.0f), text);
 }
 
+bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_flags) {
+	using namespace ImGui;
+	ImGuiWindow* window = GImGui->CurrentWindow;
+	if (window->SkipItems)
+		return false;
+	ImGuiID id = label ? window->GetID(label) : window->DC.LastItemId; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
+	IM_ASSERT(id != 0);                                                // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
+	if (ImGui::Button(label))
+		OpenPopupEx(id, popup_flags);
+	return BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
+}
+
 } // namespace CoolImGui

@@ -6,6 +6,7 @@ namespace CoolImGui {
 	/// A small "?" that displays some text when hovered.
 	/// </summary>
 	void HelpMarker(const char* text);
+
 	/// <summary>
 	/// A widget to pick an angle (in radians), displayed as a direction on a wheel.
 	/// </summary>
@@ -16,6 +17,7 @@ namespace CoolImGui {
 	/// <param name="circleNbSegments">Number of segments used to render the wheel (which is actually a polygon with a huge number of sides)</param>
 	/// <returns>true iff the widget was just used</returns>
 	bool AngleWheel(const char* label, float* value_p, float thickness = 2.0f, float radius = 25.0f, int circleNbSegments = 26);
+	
 	/// <summary>
 	/// Writes some ImGui text : time is displayed as [hours]:[minutes]:[seconds]. hours and minutes might not be displayed if they are 0 for both timeInSec and totalDuration.
 	/// </summary>
@@ -26,16 +28,19 @@ namespace CoolImGui {
 	/// Leave as 0.0f if you don't want or need this behaviour.
 	/// </param>
 	void TimeFormatedHMS(float timeInSec, float totalDuration = 0.0f);
+	
 	/// <summary>
 	/// Displays some text on hover for the previously declared widget.
 	/// </summary>
 	void Tooltip(const char* text);
+	
 	/// <summary>
 	/// A greyed out button that you can't click on.
 	/// </summary>
 	/// <param name="label">The text inside the button</param>
 	/// <param name="reasonForDisabling">An explanation that will be shown on hover</param>
 	void ButtonDisabled(const char* label, const char* reasonForDisabling = "Currently disabled");
+	
 	/// <summary>
 	/// A button that uses an image instead of text
 	/// </summary>
@@ -44,12 +49,14 @@ namespace CoolImGui {
 	/// <param name="backgroundColor">Color that will appear in places where your image is transparent</param>
 	/// <returns>true iff the button was just pressed</returns>
 	bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor = ImVec4(1, 1, 1, 1), const ImVec4& backgroundColor = ImVec4(0, 0, 0, 1));
+	
 	/// <summary>
 	/// A button that uses an image instead of text, but greyed out
 	/// </summary>
 	/// <param name="texID">OpenGL texture ID of the image</param>
 	/// <param name="reasonForDisabling">An explanation that will be shown on hover</param>
 	void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling = "Currently disabled");
+	
 	/// <summary>
 	/// Displays an image with a frame around it
 	/// </summary>
@@ -60,6 +67,7 @@ namespace CoolImGui {
 	/// <param name="backgroundColor">Color that will appear in places where your image is transparent</param>
 	/// <param name="tintColor">You can tint your image</param>
 	void ImageFramed(GLuint texID, const ImVec2& size, int frameThickness = -1, const ImVec4& frameColor = ImVec4(0, 0, 0, 0), const ImVec4& backgroundColor = ImVec4(0, 0, 0, 1), const ImVec4& tintColor = ImVec4(1, 1, 1, 1));
+	
 	/// <summary>
 	/// Like ImGui::InputInt, but for an unsigned int
 	/// </summary>
@@ -67,9 +75,18 @@ namespace CoolImGui {
 	/// <param name="value_p"></param>
 	/// <returns></returns>
 	bool InputUInt(const char* label, unsigned int* value_p);
+	
 	/// <summary>
 	/// Writes some red text
 	/// </summary>
 	void WarningText(const char* text);
+
+	/// <summary>
+	/// Opens a context menu when you click on the button
+	/// </summary>
+	/// <param name="label">The text displayed inside the button</param>
+	/// <param name="popup_flags">The ImGui flags of the context menu</param>
+	/// <returns></returns>
+	bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_flags = ImGuiPopupFlags_None);
 
 } // namespace Cool::ImGui
