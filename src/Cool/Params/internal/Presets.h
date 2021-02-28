@@ -308,14 +308,14 @@ private:
 	// Serialization
 	friend class cereal::access;
 	template <class Archive>
-	void save(Archive& archive, std::uint32_t const version) const
+	void save(Archive& archive) const
 	{
 		archive(
 			cereal::make_nvp("Current Preset uuid", current_uuid())
 		);
 	}
 	template <class Archive>
-	void load(Archive& archive, std::uint32_t const version)
+	void load(Archive& archive)
 	{
 		long int preset_uuid;
 		archive(
