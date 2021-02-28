@@ -31,13 +31,12 @@ public:
 	inline T& operator* () { return  _value; }
 	inline T* operator->() { return &_value; }
 
-	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) override {
-		if (ImGuiWidget()) {
+	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change) override {
+		bool b = ImGuiWidget();
+		push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
+		if (b)
 			on_value_change();
-			push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
-			return true;
-		}
-		return false;
+		return b;
 	}
 
 protected:

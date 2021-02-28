@@ -61,7 +61,7 @@ public:
 	}
 	~Presets() = default;
 
-	bool ImGui_dropdown(const char* label, T* setting_values) {
+	bool ImGui_dropdown(const char* label, T* setting_values, std::function<void()> on_value_change) {
 		bool b = false;
 		if (ImGui::BeginCombo(label, current_name().c_str(), 0)) {
 			for (size_t i = 0; i < _presets.size(); i++) {
@@ -71,14 +71,14 @@ public:
 					const auto cur_uuid = current_uuid();
 					const auto new_uuid = _presets[i].valuesWithUUID.uuid;
 					const Action action = {
-						[&, setting_values, new_setting_values, new_uuid]() {
+						[&, setting_values, new_setting_values, new_uuid, on_value_change]() {
 							*setting_values = new_setting_values;
-							setting_values->on_all_values_change();
+							on_value_change();
 							compute_current_preset_idx(new_uuid);
 						},
-						[&, setting_values, cur_setting_values, cur_uuid]() {
+						[&, setting_values, cur_setting_values, cur_uuid, on_value_change]() {
 							*setting_values = cur_setting_values;
-							setting_values->on_all_values_change();
+							on_value_change();
 							compute_current_preset_idx(cur_uuid);
 						}
 					};
@@ -94,8 +94,8 @@ public:
 		return b;
 	}
 
-	bool ImGui(T* setting_values) {
-		bool b = ImGui_dropdown("Presets", setting_values);
+	bool ImGui(T* setting_values, std::function<void()> on_value_change) {
+		bool b = ImGui_dropdown("Presets", setting_values, on_value_change);
 		// Save preset
 		if (_current_preset_idx == -1) {
 			if (_name_available) {
