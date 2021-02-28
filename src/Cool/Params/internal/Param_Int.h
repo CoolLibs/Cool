@@ -6,14 +6,29 @@ namespace Cool::Param {
 
 class Int : public Internal::Param<int> {
 public:
-	Int(std::string_view name, int default_value = 0)
-		: Param(name, default_value)
+	Int(std::string_view name, int default_value = 0, int min_value = 0, int max_value = 20)
+		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:
 	bool ImGuiWidget() override {
-		return ImGui::DragInt(name().c_str(), &_value);
+		bool b = ImGui::SliderInt(name().c_str(), &_value, _min_value, _max_value);
+		ImGui::PushID(this);
+		if (ImGui::BeginPopupContextItem()) {
+			ImGui::DragInt("", &_min_value);
+			ImGui::SameLine();
+			ImGui::Text("to");
+			ImGui::SameLine();
+			ImGui::DragInt(" ", &_max_value);
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
+		return b;
 	}
+
+private:
+	int _min_value;
+	int _max_value;
 };
 
 } // namespace Cool::Param
