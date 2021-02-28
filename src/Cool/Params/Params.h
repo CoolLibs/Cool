@@ -30,7 +30,8 @@ public:
 			b = true;
 		}
 		ImGui::Separator();
-		b |= _presets.ImGui(&_values);
+		if (b |= _presets.ImGui(&_values))
+			_values.on_all_values_change();
 		return b;
 	}
 	inline ParamValues& operator* () { return  _values; }

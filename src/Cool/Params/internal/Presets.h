@@ -73,10 +73,12 @@ public:
 					const Action action = {
 						[&, setting_values, new_setting_values, new_uuid]() {
 							*setting_values = new_setting_values;
+							setting_values->on_all_values_change();
 							compute_current_preset_idx(new_uuid);
 						},
 						[&, setting_values, cur_setting_values, cur_uuid]() {
 							*setting_values = cur_setting_values;
+							setting_values->on_all_values_change();
 							compute_current_preset_idx(cur_uuid);
 						}
 					};

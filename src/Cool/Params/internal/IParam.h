@@ -11,7 +11,7 @@ public:
 	{}
 	virtual ~IParam() = default;
 
-	virtual bool ImGui(Action on_edit_ended) = 0;
+	virtual bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
 
 	[[nodiscard]] inline const std::string& name() const { return _name; }
 
@@ -31,10 +31,13 @@ public:
 	inline T& operator* () { return  _value; }
 	inline T* operator->() { return &_value; }
 
-	bool ImGui(Action on_edit_ended) override {
-		bool b = ImGuiWidget();
-		push_change_in_history_if_edit_ended(on_edit_ended);
-		return b;
+	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) override {
+		if (ImGuiWidget()) {
+			on_value_change();
+			push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
+			return true;
+		}
+		return false;
 	}
 
 protected:
@@ -42,26 +45,28 @@ protected:
 	T _value_before_edit;
 
 protected:
-	void push_change_in_history_if_edit_ended(Action on_edit_ended) {
+	void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change) {
 		if (ImGui::IsItemDeactivatedAfterEdit()) {
-			push_change_in_history(on_edit_ended);
+			push_change_in_history(on_edit_ended, on_value_change);
 			_value_before_edit = _value; // ready for next edit
 		}
 	}
 
 private:
-	void push_change_in_history(Action on_edit_ended) {
+	void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change) {
 		ParamsHistory::Get().begin_undo_group();
 		T val = _value;
 		T prev_val = _value_before_edit;
 		ParamsHistory::Get().add_action({
-			[&, val]()
+			[&, val, on_value_change]()
 			{
 				_value = val;
+				on_value_change();
 			},
-			[&, prev_val]()
+			[&, prev_val, on_value_change]()
 			{
 				_value = prev_val;
+				on_value_change();
 			}
 		});
 		ParamsHistory::Get().add_action(on_edit_ended);
