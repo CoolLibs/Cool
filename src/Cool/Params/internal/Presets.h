@@ -49,6 +49,8 @@ struct Preset {
 
 template <typename T>
 class Presets {
+	template <typename T>
+	friend class Params;
 public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
 		: _file_extension(file_extension + std::string(".")),
@@ -155,6 +157,7 @@ public:
 
 	void set_to_placeholder_setting() {
 		_current_preset_idx = -1;
+		_last_uuid = 0;
 	}
 
 private:
@@ -204,6 +207,7 @@ private:
 	}
 
 	void compute_current_preset_idx(long int uuid) {
+		_last_uuid = uuid;
 		_current_preset_idx = -1;
 		for (size_t i = 0; i < _presets.size(); ++i) {
 			if (_presets[i].valuesWithUUID.uuid == uuid) {
@@ -267,10 +271,15 @@ private:
 		return _current_preset_idx != -1 ? _presets[_current_preset_idx].valuesWithUUID.uuid : 0;
 	}
 
+	long int last_uuid() const {
+		return _last_uuid;
+	}
+
 private:
 	const std::string _file_extension;
 	const std::string _folder_path; // Must be declared before _save_preset_as
 	size_t _current_preset_idx = -1;
+	long int _last_uuid = 0;
 	std::vector<Preset<T>> _presets;
 	std::string _save_preset_as;
 	bool _name_available = true;

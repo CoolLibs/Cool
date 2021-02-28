@@ -15,8 +15,17 @@ public:
 		: _values(std::forward<Args>(args)...), _presets(file_extension, folder_path)
 	{}
 	bool ImGui() {
+		const auto uuid = _presets.last_uuid();
+		const Action action = {
+			[&]() {
+				_presets.set_to_placeholder_setting();
+			},
+			[&, uuid]() {
+				_presets.compute_current_preset_idx(uuid);
+			},
+		};
 		bool b = false;
-		if (_values.ImGui()) {
+		if (_values.ImGui(action)) {
 			_presets.set_to_placeholder_setting();
 			b = true;
 		}
