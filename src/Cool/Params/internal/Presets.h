@@ -70,16 +70,19 @@ public:
 					const auto new_setting_values = _presets[i].valuesWithUUID.values;
 					const auto cur_uuid = current_uuid();
 					const auto new_uuid = _presets[i].valuesWithUUID.uuid;
+					const auto last_uuid_copy = last_uuid();
 					const Action action = {
 						[&, setting_values, new_setting_values, new_uuid, on_value_change]() {
 							*setting_values = new_setting_values;
 							on_value_change();
 							compute_current_preset_idx(new_uuid);
+							_last_uuid = new_uuid;
 						},
-						[&, setting_values, cur_setting_values, cur_uuid, on_value_change]() {
+						[&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
 							*setting_values = cur_setting_values;
 							on_value_change();
 							compute_current_preset_idx(cur_uuid);
+							_last_uuid = last_uuid_copy;
 						}
 					};
 					action.Do();
@@ -159,7 +162,6 @@ public:
 
 	void set_to_placeholder_setting() {
 		_current_preset_idx = -1;
-		_last_uuid = 0;
 	}
 
 private:
@@ -209,7 +211,6 @@ private:
 	}
 
 	void compute_current_preset_idx(long int uuid) {
-		_last_uuid = uuid;
 		_current_preset_idx = -1;
 		for (size_t i = 0; i < _presets.size(); ++i) {
 			if (_presets[i].valuesWithUUID.uuid == uuid) {
@@ -257,6 +258,8 @@ private:
 		_presets.push_back({ _save_preset_as, settingValues });
 		// Set as selected preset
 		_current_preset_idx = _presets.size() - 1;
+		// Set as last uuid
+		set_last_uuid(_presets.back().valuesWithUUID.uuid);
 		// Save to file
 		Serialization::ToJSON(_presets.back().valuesWithUUID, full_path(_save_preset_as));
 		// Sort
@@ -275,6 +278,14 @@ private:
 
 	long int last_uuid() const {
 		return _last_uuid;
+	}
+
+	void discard_last_uuid() {
+		_last_uuid = 0;
+	}
+
+	void set_last_uuid(long int uuid) {
+		_last_uuid = uuid;
 	}
 
 private:
@@ -309,6 +320,7 @@ private:
 			preset_uuid
 		);
 		compute_current_preset_idx(preset_uuid);
+		_last_uuid = preset_uuid;
 	}
 };
 

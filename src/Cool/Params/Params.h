@@ -18,9 +18,11 @@ public:
 		const Action action = {
 			[&]() {
 				_presets.set_to_placeholder_setting();
+				_presets.discard_last_uuid();
 			},
 			[&, uuid]() {
 				_presets.compute_current_preset_idx(uuid);
+				_presets.set_last_uuid(uuid);
 			},
 		};
 		bool b = false;
