@@ -66,30 +66,32 @@ public:
 		if (ImGui::BeginCombo(label, current_name().c_str(), 0)) {
 			for (size_t i = 0; i < _presets.size(); i++) {
 				if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
-					const auto cur_setting_values = *setting_values;
-					const auto new_setting_values = _presets[i].valuesWithUUID.values;
-					const auto cur_uuid = current_uuid();
-					const auto new_uuid = _presets[i].valuesWithUUID.uuid;
-					const auto last_uuid_copy = last_uuid();
-					const Action action = {
-						[&, setting_values, new_setting_values, new_uuid, on_value_change]() {
-							*setting_values = new_setting_values;
-							on_value_change();
-							compute_current_preset_idx(new_uuid);
-							_last_uuid = new_uuid;
-						},
-						[&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
-							*setting_values = cur_setting_values;
-							on_value_change();
-							compute_current_preset_idx(cur_uuid);
-							_last_uuid = last_uuid_copy;
-						}
-					};
-					action.Do();
-					ParamsHistory::Get().begin_undo_group();
-					ParamsHistory::Get().add_action(action);
-					ParamsHistory::Get().end_undo_group();
-					b = true;
+					if (i != _current_preset_idx) {
+						const auto cur_setting_values = *setting_values;
+						const auto new_setting_values = _presets[i].valuesWithUUID.values;
+						const auto cur_uuid = current_uuid();
+						const auto new_uuid = _presets[i].valuesWithUUID.uuid;
+						const auto last_uuid_copy = last_uuid();
+						const Action action = {
+							[&, setting_values, new_setting_values, new_uuid, on_value_change]() {
+								*setting_values = new_setting_values;
+								on_value_change();
+								compute_current_preset_idx(new_uuid);
+								_last_uuid = new_uuid;
+							},
+							[&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
+								*setting_values = cur_setting_values;
+								on_value_change();
+								compute_current_preset_idx(cur_uuid);
+								_last_uuid = last_uuid_copy;
+							}
+						};
+						action.Do();
+						ParamsHistory::Get().begin_undo_group();
+						ParamsHistory::Get().add_action(action);
+						ParamsHistory::Get().end_undo_group();
+						b = true;
+					}
 				}
 			}
 			ImGui::EndCombo();
