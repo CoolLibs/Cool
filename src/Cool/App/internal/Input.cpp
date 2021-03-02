@@ -54,4 +54,13 @@ glm::vec2 Input::MouseInNormalizedRatioSpace() {
 	return pos;
 }
 
+glm::vec2 Input::ToNormalizedRatioSpace(double xPos, double yPos) {
+	glm::vec2 pos = glm::vec2(xPos, yPos) - glm::vec2(RenderState::InAppRenderArea().topLeft());
+	pos /= RenderState::InAppRenderArea().height();
+	pos.y = 1.0f - pos.y;
+	pos *= 2.0f;
+	pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
+	return pos;
+}
+
 } // namespace Cool

@@ -30,7 +30,14 @@ public:
 	/// (0, 0) is in the middle
 	/// x is in the range [-aspectRatio, +aspectRatio] Axis pointing right
 	/// y is in the range [-1, 1] Axis poiting up
-	static glm::vec2  MouseInNormalizedRatioSpace();
+	static glm::vec2 MouseInNormalizedRatioSpace();
+
+	/// Converts coordinates returned by glfw to the proper space.
+	/// Relative to the viewing area, not the whole window !
+	/// (0, 0) is in the middle
+	/// x is in the range [-aspectRatio, +aspectRatio] Axis pointing right
+	/// y is in the range [-1, 1] Axis poiting up
+	static glm::vec2 ToNormalizedRatioSpace(double xPos, double yPos);
 
 private:
 friend class AppManager;
