@@ -2,6 +2,12 @@
 
 #include "../ParamsHistory.h"
 
+#ifdef __COOL_OPENGL
+namespace Cool {
+	class Shader;
+}
+#endif
+
 namespace Cool::Internal {
 
 class IParam {
@@ -12,6 +18,10 @@ public:
 	virtual ~IParam() = default;
 
 	virtual bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
+
+#ifdef __COOL_OPENGL
+	virtual void set_uniform_in_shader(Shader& shader) = 0;
+#endif
 
 	[[nodiscard]] inline const std::string& name() const { return _name; }
 
@@ -38,6 +48,10 @@ public:
 			on_value_change();
 		return b;
 	}
+
+#ifdef __COOL_OPENGL
+	void set_uniform_in_shader(Shader& shader) override;
+#endif
 
 protected:
 	T _value;
