@@ -20,7 +20,7 @@ void CameraState_Idle::onWheelDown(int mods) {
 }
 
 void CameraState_Idle::onWheelScroll(float dl){
-	m_camera.m_distToLookAt = std::max(m_camera.m_distToLookAt - dl, 0.00001f);
+	m_camera.m_distToLookAt *= pow(0.93f, dl);
 	m_camera.onTransformChanged();
 }
 
