@@ -85,6 +85,9 @@ private:
 
 private:
 	GLuint m_programID = 0; // 0 is an invalid value for an OpenGL shader ID
+
+	template <unsigned int, unsigned int, unsigned int>
+	friend class ComputeShader;
 };
 
 } // namespace Cool

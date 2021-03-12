@@ -5,6 +5,12 @@
 
 namespace Cool {
 
+#ifndef NDEBUG
+#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == m_shader.m_programID && "You must call compute_shader->bind() before calling compute()");
+#else 
+#define ASSERT_SHADER_IS_BOUND
+#endif
+
 /// <summary>
 /// A wrapper for an OpenGL compute shader.
 /// </summary>
@@ -68,7 +74,7 @@ public:
         assert(WorkGroupSizeX != 0);
         assert(WorkGroupSizeY != 0);
         assert(WorkGroupSizeZ != 0);
-        m_shader.bind();
+        ASSERT_SHADER_IS_BOUND
         m_shader.setUniform1i("NumberOfComputationsX", nbComputationsX);
         m_shader.setUniform1i("NumberOfComputationsY", nbComputationsY);
         m_shader.setUniform1i("NumberOfComputationsZ", nbComputationsZ);
