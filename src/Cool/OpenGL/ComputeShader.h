@@ -75,9 +75,9 @@ public:
         assert(WorkGroupSizeY != 0);
         assert(WorkGroupSizeZ != 0);
         ASSERT_SHADER_IS_BOUND
-        m_shader.setUniform1i("NumberOfComputationsX", nbComputationsX);
-        m_shader.setUniform1i("NumberOfComputationsY", nbComputationsY);
-        m_shader.setUniform1i("NumberOfComputationsZ", nbComputationsZ);
+        m_shader.setUniform("NumberOfComputationsX", nbComputationsX);
+        m_shader.setUniform("NumberOfComputationsY", nbComputationsY);
+        m_shader.setUniform("NumberOfComputationsZ", nbComputationsZ);
         GLCall(glDispatchCompute(
             (nbComputationsX - 1) / WorkGroupSizeX + 1,
             (nbComputationsY - 1) / WorkGroupSizeY + 1,

@@ -124,35 +124,41 @@ GLint Shader::getUniformLocation(const char* uniformName) {
 	return location;
 }
 
-void Shader::setUniform1i(const char* uniformName, int v) {
+void Shader::setUniform(const char* uniformName, int v) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniform1i(getUniformLocation(uniformName), v));
 }
-void Shader::setUniform1f(const char* uniformName, float v) {
+void Shader::setUniform(const char* uniformName, unsigned int v) {
+	setUniform(uniformName, static_cast<int>(v));
+}
+void Shader::setUniform(const char* uniformName, bool v) {
+	setUniform(uniformName, v ? 1 : 0);
+}
+void Shader::setUniform(const char* uniformName, float v) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniform1f(getUniformLocation(uniformName), v));
 }
-void Shader::setUniform2f(const char* uniformName, const glm::vec2& v) {
+void Shader::setUniform(const char* uniformName, const glm::vec2& v) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniform2f(getUniformLocation(uniformName), v.x, v.y));
 }
-void Shader::setUniform3f(const char* uniformName, const glm::vec3& v) {
+void Shader::setUniform(const char* uniformName, const glm::vec3& v) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniform3f(getUniformLocation(uniformName), v.x, v.y, v.z));
 }
-void Shader::setUniform4f(const char* uniformName, const glm::vec4& v) {
+void Shader::setUniform(const char* uniformName, const glm::vec4& v) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniform4f(getUniformLocation(uniformName), v.x, v.y, v.z, v.w));
 }
-void Shader::setUniformMat2f(const char* uniformName, const glm::mat2& mat) {
+void Shader::setUniform(const char* uniformName, const glm::mat2& mat) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniformMatrix2fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
 }
-void Shader::setUniformMat3f(const char* uniformName, const glm::mat3& mat) {
+void Shader::setUniform(const char* uniformName, const glm::mat3& mat) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
 }
-void Shader::setUniformMat4f(const char* uniformName, const glm::mat4& mat) {
+void Shader::setUniform(const char* uniformName, const glm::mat4& mat) {
 	ASSERT_SHADER_IS_BOUND;
 	GLCall(glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
 }
