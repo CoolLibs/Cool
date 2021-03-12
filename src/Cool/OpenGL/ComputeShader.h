@@ -29,7 +29,11 @@ public:
     /// <summary>
     /// Returns the underlying Cool::Shader that is managed by this ComputeShader
     /// </summary>
-    inline Shader& get() { return m_shader; }
+    inline Shader* operator->() { return &m_shader; }
+    /// <summary>
+    /// Returns the underlying Cool::Shader that is managed by this ComputeShader
+    /// </summary>
+    inline Shader& operator*() { return m_shader; }
 
     /// <summary>
     /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
