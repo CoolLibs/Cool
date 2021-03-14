@@ -80,7 +80,7 @@ private:
 	bool _should_show_file_exists_warning = false;
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-	ThreadPool _thread_pool{ 8 };
+	ThreadPool _thread_pool;
 	std::string _folder_path_for_image_sequence;
 	bool _is_exporting_image_sequence = false;
 	float _fps = 30.f;
