@@ -38,7 +38,7 @@ public:
 	/// Opens or closes the window with the image export parameters.
 	/// </summary>
 	/// <param name="open">true iff the window should open, and false iff it should close</param>
-	void open_window_export_image(bool open);
+	void open_window_export_image(bool open = true);
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 	/// <summary>
@@ -62,7 +62,7 @@ public:
 	/// Opens or closes the window with the image sequence export parameters.
 	/// </summary>
 	/// <param name="open">true iff the window should open, and false iff it should close</param>
-	inline void open_window_export_image_sequence(bool open) { _is_window_open_image_sequence_export = open; }
+	inline void open_window_export_image_sequence(bool open = true) { _is_window_open_image_sequence_export = open; }
 #endif
 
 private:
