@@ -22,6 +22,12 @@ public:
 	/// <summary>
 	/// 
 	/// </summary>
+	/// <returns>The number of threads in the pool</returns>
+	inline size_t size() { return _nb_threads; }
+
+	/// <summary>
+	/// 
+	/// </summary>
 	/// <returns>true iff some threads are idle and can accept a job</returns>
 	bool has_idle_threads();
 
