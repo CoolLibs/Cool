@@ -6,4 +6,4 @@ Requires :
   - ImGui
 
 Optional :
-  - Time and String to export image sequences
+  - Time, String and MultiThread to export image sequences
