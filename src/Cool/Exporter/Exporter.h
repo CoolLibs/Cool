@@ -75,7 +75,7 @@ private:
 
 private:
 	std::string _folder_path_for_image;
-	std::string _file_name = "img";
+	std::string _file_name = "img(0)";
 	bool _is_window_open_image_export = false;
 	bool _should_show_file_exists_warning = false;
 
