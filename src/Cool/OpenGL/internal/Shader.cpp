@@ -75,20 +75,21 @@ void Shader::createProgram(const char* vertexShaderFilePath, const char* fragmen
 
 GLuint Shader::CreateShader(const ShaderCode& shaderCode) {
 	// Get shader type
-	GLenum shaderType;
-	switch (shaderCode.type) {
-	case ShaderType::Vertex:
-		shaderType = GL_VERTEX_SHADER;
-		break;
-	case ShaderType::Fragment:
-		shaderType = GL_FRAGMENT_SHADER;
-		break;
-	case ShaderType::Compute:
-		shaderType = GL_COMPUTE_SHADER;
-		break;
-	default:
-		Log::Error("Unknown shader type !");
-	}
+	const GLenum shaderType = [&]() {
+		switch (shaderCode.type) {
+		case ShaderType::Vertex:
+			return GL_VERTEX_SHADER;
+		case ShaderType::Fragment:
+			return GL_FRAGMENT_SHADER;
+		case ShaderType::Geometry:
+			return GL_GEOMETRY_SHADER;
+		case ShaderType::Compute:
+			return GL_COMPUTE_SHADER;
+		default:
+			Log::Error("Unknown shader type !");
+			return 0;
+		}
+	}();
 	// Create
 	GLCall(GLuint shaderID = glCreateShader(shaderType));
 	// Compile
