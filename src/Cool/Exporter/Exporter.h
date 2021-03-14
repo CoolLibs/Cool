@@ -87,11 +87,11 @@ private:
 	float _sequence_begin_time_in_sec = 0.f;
 	float _sequence_end_time_in_sec = 10.f;
 	bool _is_window_open_image_sequence_export = false;
-	int _frame_count;
+	int _nb_frames_sent_to_thread_pool;
+	std::atomic<int> _nb_frames_which_finished_exporting;
 	int _total_nb_of_frames_in_sequence;
 	int _max_nb_digits_of_frame_count;
 	Averager<float> _frame_time_average;
-	std::chrono::steady_clock::time_point _last_export_date;
 #endif
 };
 

@@ -17,18 +17,23 @@ namespace Cool {
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 class ExportImage_Functor {
 public:
-	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data)
-		: _filepath(filepath), _width(width), _height(height), _data(data)
+	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
+		: _filepath(filepath), _width(width), _height(height), _data(data), _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
 	{}
 	ExportImage_Functor(ExportImage_Functor&& o) noexcept
-		: _filepath(std::move(o._filepath)), _width(o._width), _height(o._height), _data(std::move(o._data))
+		: _filepath(std::move(o._filepath)), _width(o._width), _height(o._height), _data(std::move(o._data)), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
 	{}
 	ExportImage_Functor(const ExportImage_Functor& o) noexcept
-		: _filepath(o._filepath), _width(o._width), _height(o._height), _data(o._data)
+		: _filepath(o._filepath), _width(o._width), _height(o._height), _data(o._data), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
 	{}
 
 	void operator()() {
+		auto begin = std::chrono::steady_clock::now();
 		ExportImage::AsPNG(_filepath, _width, _height, _data.data());
+		auto end = std::chrono::steady_clock::now();
+		std::chrono::duration<float> delta_time = end - begin;
+		_frame_time_average.push(delta_time.count());
+		_nb_frames_which_finished_exporting++;
 	}
 
 private:
@@ -36,6 +41,8 @@ private:
 	int _width;
 	int _height;
 	std::vector<unsigned char> _data;
+	Averager<float>& _frame_time_average;
+	std::atomic<int>& _nb_frames_which_finished_exporting;
 };
 #endif
 
@@ -78,7 +85,7 @@ void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frame_buffer.unbind();
 	// Write png
-	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data))));
+	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data), _frame_time_average, _nb_frames_which_finished_exporting)));
 }
 #endif
 
@@ -176,14 +183,14 @@ void Exporter::begin_image_sequence_export() {
 		_thread_pool.start();
 		_is_exporting_image_sequence = true;
 		RenderState::setIsExporting(true);
-		_frame_count = 0;
+		_nb_frames_sent_to_thread_pool = 0;
+		_nb_frames_which_finished_exporting = 0;
 		float total_export_duration = _sequence_end_time_in_sec - _sequence_begin_time_in_sec;
 		_total_nb_of_frames_in_sequence = static_cast<unsigned int>(std::ceil(total_export_duration * _fps));
 		_max_nb_digits_of_frame_count = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
 		Time::SetAsFixedTimestep(_fps);
 		Time::setTime(_sequence_begin_time_in_sec);
 		_frame_time_average.clear();
-		_last_export_date = std::chrono::steady_clock::now();
 	}
 	else {
 		Log::Release::Warn("[Exporter::begin_image_sequence_export] Couldn't start exporting because folder creation failed !");
@@ -193,13 +200,9 @@ void Exporter::begin_image_sequence_export() {
 void Exporter::update(FrameBuffer& frameBuffer) {
 	if (_is_exporting_image_sequence) {
 		_is_window_open_image_sequence_export = true;
-		if (_frame_count < _total_nb_of_frames_in_sequence) {
-			export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_frame_count, _max_nb_digits_of_frame_count) + ".png").c_str());
-			_frame_count++;
-			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<float> deltaTime = now - _last_export_date;
-			_frame_time_average.push(deltaTime.count());
-			_last_export_date = now;
+		if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
+			export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png").c_str());
+			_nb_frames_sent_to_thread_pool++;
 		}
 		else {
 			end_image_sequence_export();
@@ -238,8 +241,9 @@ void Exporter::ImGui_window_export_image_sequence() {
 		}
 		// Exporting
 		else {
-			ImGui::Text(("Exported " + String::ToString(_frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
-			CoolImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - _frame_count) * _frame_time_average); ImGui::SameLine();
+			int frame_count = _nb_frames_which_finished_exporting.load();
+			ImGui::Text(("Exported " + String::ToString(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
+			CoolImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
 			ImGui::Text("remaining");
 			if (ImGui::Button("Stop exporting")) {
 				end_image_sequence_export();
