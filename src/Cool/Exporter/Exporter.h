@@ -1,7 +1,8 @@
 #pragma once
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 #include "internal/Averager.h"
+#include <Cool/MultiThread/ThreadPool.h>
 #endif
 
 namespace Cool {
@@ -17,6 +18,7 @@ public:
 	/// Call this before your rendering code.
 	/// </summary>
 	void beginImageExport();
+
 	/// <summary>
 	/// Call this after your rendering code.
 	/// </summary>
@@ -27,6 +29,7 @@ public:
 	/// The buttons to open the different export windows.
 	/// </summary>
 	void ImGuiMenuItems();
+
 	/// <summary>
 	/// The window with the image export parameters
 	/// </summary>
@@ -39,7 +42,7 @@ public:
 	/// <param name="bOpen"></param>
 	void setIsExportImageWindowOpen(bool bOpen);
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 	/// <summary>
 	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
 	/// </summary>
@@ -68,7 +71,10 @@ private:
 	std::string imageOutputPath();
 	void findAvailableFileName();
 	void ImGuiResolutionWidget();
-	void exportImage(FrameBuffer& frameBuffer, const char* filepath);
+	void export_image(FrameBuffer& frameBuffer, const char* filepath);
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+	void export_image_multithreaded(FrameBuffer& frameBuffer, const char* filepath);
+#endif
 
 private:
 	std::string m_folderPathForImage;
@@ -76,14 +82,15 @@ private:
 	bool m_bOpenImageExport = false;
 	bool m_bShowFileExistsWarning = false;
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+	ThreadPool _thread_pool{ 8 };
 	std::string m_folderPathForImageSequence;
 	bool m_bIsExportingImageSequence = false;
 	float m_fps = 30.f;
 	// In seconds
 	float m_sequenceBeginTimeInS = 0.f;
 	// In seconds
-	float m_sequenceEndTimeInS = 10.f;
+	float m_sequenceEndTimeInS = 1.f;
 	bool m_bOpenImageSequenceExport = false;
 	int m_frameCount;
 	int m_totalNbOfFramesInSequence;

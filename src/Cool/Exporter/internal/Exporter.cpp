@@ -6,7 +6,7 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
 #include <chrono>
@@ -14,10 +14,28 @@
 
 namespace Cool {
 
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+class ImageDataToExport {
+public:
+	ImageDataToExport(std::string_view filepath, int w, int h, std::vector<unsigned char>&& data)
+		: filepath(filepath), w(w), h(h), data(data)
+	{}
+
+	void operator()() {
+		ExportImage::AsPNG(filepath, w, h, data.data());
+	}
+
+private:
+	std::string filepath;
+	int w, h;
+	std::vector<unsigned char> data;
+};
+#endif
+
 Exporter::Exporter()
 	: m_folderPathForImage(File::RootDir + "/out")
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
-	,m_folderPathForImageSequence(File::RootDir + "/exports")
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+	, m_folderPathForImageSequence(File::RootDir + "/exports")
 #endif
 {}
 
@@ -27,11 +45,11 @@ void Exporter::beginImageExport() {
 
 void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 	File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str());
-	exportImage(frameBuffer, imageOutputPath().c_str());
+	export_image(frameBuffer, imageOutputPath().c_str());
 	RenderState::setIsExporting(false);
 }
 
-void Exporter::exportImage(FrameBuffer& frameBuffer, const char* filepath) {
+void Exporter::export_image(FrameBuffer& frameBuffer, const char* filepath) {
 	// Get data
 	frameBuffer.bind();
 	auto size = RenderState::Size();
@@ -41,6 +59,22 @@ void Exporter::exportImage(FrameBuffer& frameBuffer, const char* filepath) {
 	// Write png
 	ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
 }
+
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+void Exporter::export_image_multithreaded(FrameBuffer& frameBuffer, const char* filepath) {
+	// Wait for a thread to be available
+	while (!_thread_pool.has_idle_threads()) {}
+	// Get data
+	frameBuffer.bind();
+	auto size = RenderState::Size();
+	std::vector<unsigned char> data(4 * size.width() * size.height());
+	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+	frameBuffer.unbind();
+	// Write png
+	ImageDataToExport img(filepath, size.width(), size.height(), std::move(data));
+	_thread_pool.push_job(img);
+}
+#endif
 
 std::string Exporter::imageOutputPath() {
 	return m_folderPathForImage + "/" + m_fileName + ".png";
@@ -130,10 +164,11 @@ bool Exporter::ImGuiExportImageWindow() {
 	return bMustExport;
 }
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 
 void Exporter::beginImageSequenceExport() {
 	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {
+		_thread_pool.start();
 		m_bIsExportingImageSequence = true;
 		RenderState::setIsExporting(true);
 		m_frameCount = 0;
@@ -153,8 +188,8 @@ void Exporter::beginImageSequenceExport() {
 void Exporter::update(FrameBuffer& frameBuffer) {
 	if (m_bIsExportingImageSequence) {
 		m_bOpenImageSequenceExport = true;
-		if (Time::time() < m_sequenceEndTimeInS) {
-			exportImage(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
+		if (m_frameCount < m_totalNbOfFramesInSequence) {
+			export_image_multithreaded(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
 			m_frameCount++;
 			auto now = std::chrono::steady_clock::now();
 			std::chrono::duration<float> deltaTime = now - m_lastExportTime;
@@ -168,6 +203,7 @@ void Exporter::update(FrameBuffer& frameBuffer) {
 }
 
 void Exporter::endImageSequenceExport() {
+	_thread_pool.stop();
 	m_bIsExportingImageSequence = false;
 	RenderState::setIsExporting(false);
 	Time::SetAsRealtime();
