@@ -39,17 +39,10 @@ Exporter::Exporter()
 #endif
 {}
 
-void Exporter::beginImageExport() {
+void Exporter::export_image(std::function<void()> render, FrameBuffer& frameBuffer, const char* filepath) {
+	// Render
 	RenderState::setIsExporting(true);
-}
-
-void Exporter::endImageExport(FrameBuffer& frameBuffer) {
-	File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str());
-	export_image(frameBuffer, imageOutputPath().c_str());
-	RenderState::setIsExporting(false);
-}
-
-void Exporter::export_image(FrameBuffer& frameBuffer, const char* filepath) {
+	render();
 	// Get data
 	frameBuffer.bind();
 	auto size = RenderState::Size();
@@ -57,7 +50,14 @@ void Exporter::export_image(FrameBuffer& frameBuffer, const char* filepath) {
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frameBuffer.unbind();
 	// Write png
-	ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
+	if (File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str())) {
+		ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
+	}
+	else {
+		Log::Warn("[Exporter::export_image] Failed to create folder '{}'", m_folderPathForImage);
+	}
+	//
+	RenderState::setIsExporting(false);
 }
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
@@ -136,8 +136,7 @@ void Exporter::ImGuiResolutionWidget() {
 		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
 }
 
-bool Exporter::ImGuiExportImageWindow() {
-	bool bMustExport = false;
+void Exporter::ImGuiExportImageWindow(std::function<void()> render, FrameBuffer& frameBuffer) {
 	if (m_bOpenImageExport) {
 		ImGui::Begin("Export an Image", &m_bOpenImageExport);
 		// Resolution
@@ -155,13 +154,13 @@ bool Exporter::ImGuiExportImageWindow() {
 			CoolImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
 		}
 		// Validation
-		bMustExport = ImGui::Button("Export as PNG");
-		if (bMustExport)
+		if (ImGui::Button("Export as PNG")) {
 			m_bOpenImageExport = false;
+			export_image(render, frameBuffer, imageOutputPath().c_str());
+		}
 		//
 		ImGui::End();
 	}
-	return bMustExport;
 }
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)

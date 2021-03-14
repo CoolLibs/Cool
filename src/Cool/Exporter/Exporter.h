@@ -15,15 +15,12 @@ public:
 	~Exporter() = default;
 
 	/// <summary>
-	/// Call this before your rendering code.
+	/// Exports an image as PNG
 	/// </summary>
-	void beginImageExport();
-
-	/// <summary>
-	/// Call this after your rendering code.
-	/// </summary>
-	/// <param name="frameBuffer">The frame buffer that your renderer has just rendered to.</param>
-	void endImageExport(FrameBuffer& frameBuffer);
+	/// <param name="render">The function that renders the desired image</param>
+	/// <param name="frameBuffer">The frame buffer that your render function has just rendered to</param>
+	/// <param name="filepath">The name of the image file that you want to write</param>
+	void export_image(std::function<void()> render, FrameBuffer& frameBuffer, const char* filepath);
 
 	/// <summary>
 	/// The buttons to open the different export windows.
@@ -33,8 +30,9 @@ public:
 	/// <summary>
 	/// The window with the image export parameters
 	/// </summary>
-	/// <returns>true iff you should then export an image. (By calling beginImageExport(), then your rendering code, then endImageExport()</returns>
-	bool ImGuiExportImageWindow();
+	/// <param name="render">The function that renders the desired image</param>
+	/// <param name="frameBuffer">The frame buffer that your render function has just rendered to</param>
+	void ImGuiExportImageWindow(std::function<void()> render, FrameBuffer& frameBuffer);
 
 	/// <summary>
 	/// Open or closes the window with the image export parameters.
@@ -71,7 +69,6 @@ private:
 	std::string imageOutputPath();
 	void findAvailableFileName();
 	void ImGuiResolutionWidget();
-	void export_image(FrameBuffer& frameBuffer, const char* filepath);
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 	void export_image_multithreaded(FrameBuffer& frameBuffer, const char* filepath);
 #endif
