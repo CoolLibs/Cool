@@ -20,14 +20,13 @@ ThreadPool::~ThreadPool() {
 
 void ThreadPool::wait_for_available_thread() {
 	assert(_running && "You must call start() before working with the thread pool.");
-	while (_queue.size() > _nb_threads) {
-		volatile int a = 0; // Prevent compiler from optimizing away the while
-	}
+	std::unique_lock<std::mutex> lock(_queue_mutex);
+	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _queue.size() < _nb_threads; });
 }
 
-bool ThreadPool::has_finished_all_jobs() {
-	assert(_running && "You must call start() before working with the thread pool.");
-	return _queue.empty();
+void ThreadPool::wait_for_all_jobs_to_finish() {
+	std::unique_lock<std::mutex> lock(_queue_mutex);
+	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _queue.empty(); });
 }
 
 void ThreadPool::start() {
@@ -42,11 +41,9 @@ void ThreadPool::start() {
 void ThreadPool::stop() {
 	assert(_running && "You already called stop or you forgot to call start.");
 	// Wait for the jobs queue to be empty
-	while (!has_finished_all_jobs()) {
-		volatile int a = 0; // Prevent compiler from optimizing away the while
-	}
+	wait_for_all_jobs_to_finish();
 	_running = false;
-	_condition.notify_all(); // Wake up all threads and let them realize that _running == false
+	_condition_to_pop_from_queue.notify_all(); // Wake up all threads and let them realize that _running == false
 	for (std::thread& thread : _threads) {
 		thread.join();
 	}
@@ -59,7 +56,7 @@ void ThreadPool::push_job(std::function<void()> job) {
 		std::unique_lock<std::mutex> lock(_queue_mutex);
 		_queue.emplace_back(std::move(job));
 	}
-	_condition.notify_one();
+	_condition_to_pop_from_queue.notify_one();
 }
 
 void ThreadPool::check_for_jobs() {
@@ -67,13 +64,14 @@ void ThreadPool::check_for_jobs() {
 	while (true) {
 		{
 			std::unique_lock<std::mutex> lock(_queue_mutex);
-			_condition.wait(lock, [this] {return !_queue.empty() || !_running; });
+			_condition_to_pop_from_queue.wait(lock, [this] {return !_queue.empty() || !_running; });
 			if (!_running)
 				break;
 			job = std::move(_queue.front());
 			_queue.pop_front();
 		}
 		job();
+		_condition_to_check_queue_size_is_small_enough.notify_all();
 	}
 }
 

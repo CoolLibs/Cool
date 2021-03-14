@@ -49,12 +49,13 @@ public:
 
 private:
 	void check_for_jobs();
-	bool has_finished_all_jobs();
+	void wait_for_all_jobs_to_finish();
 
 private:
 	size_t _nb_threads;
 	std::vector<std::thread> _threads;
-	std::condition_variable _condition;
+	std::condition_variable _condition_to_pop_from_queue;
+	std::condition_variable _condition_to_check_queue_size_is_small_enough;
 	std::deque<std::function<void()>> _queue;
 	std::mutex _queue_mutex;
 	bool _running = false;
