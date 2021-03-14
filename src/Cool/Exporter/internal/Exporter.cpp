@@ -200,9 +200,11 @@ void Exporter::begin_image_sequence_export() {
 void Exporter::update(FrameBuffer& frameBuffer) {
 	if (_is_exporting_image_sequence) {
 		_is_window_open_image_sequence_export = true;
-		if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-			export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png").c_str());
-			_nb_frames_sent_to_thread_pool++;
+		if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
+			if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
+				export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png").c_str());
+				_nb_frames_sent_to_thread_pool++;
+			}
 		}
 		else {
 			end_image_sequence_export();
