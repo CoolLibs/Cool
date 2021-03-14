@@ -15,20 +15,27 @@
 namespace Cool {
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-class ImageDataToExport {
+class ExportImage_Functor {
 public:
-	ImageDataToExport(std::string_view filepath, int w, int h, std::vector<unsigned char>&& data)
-		: filepath(filepath), w(w), h(h), data(data)
+	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data)
+		: _filepath(filepath), _width(width), _height(height), _data(data)
+	{}
+	ExportImage_Functor(ExportImage_Functor&& o) noexcept
+		: _filepath(std::move(o._filepath)), _width(o._width), _height(o._height), _data(std::move(o._data))
+	{}
+	ExportImage_Functor(const ExportImage_Functor& o) noexcept
+		: _filepath(o._filepath), _width(o._width), _height(o._height), _data(o._data)
 	{}
 
 	void operator()() {
-		ExportImage::AsPNG(filepath, w, h, data.data());
+		ExportImage::AsPNG(_filepath, _width, _height, _data.data());
 	}
 
 private:
-	std::string filepath;
-	int w, h;
-	std::vector<unsigned char> data;
+	std::string _filepath;
+	int _width;
+	int _height;
+	std::vector<unsigned char> _data;
 };
 #endif
 
@@ -71,8 +78,7 @@ void Exporter::export_image_multithreaded(FrameBuffer& frameBuffer, const char* 
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frameBuffer.unbind();
 	// Write png
-	ImageDataToExport img(filepath, size.width(), size.height(), std::move(data));
-	_thread_pool.push_job(img);
+	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data))));
 }
 #endif
 
