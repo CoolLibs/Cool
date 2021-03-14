@@ -11,6 +11,6 @@ namespace Cool::ExportImage {
 /// <param name="data">An array of unsigned char representing the image. We expect 4 channels per pixel (RGBA) and the pixels should be written sequentially, row after row.
 /// Something like [255, 200, 100, 255, 120, 30, 80, 255, ...] where (255, 200, 100, 255) would be the pixel on 1st row and 1st column and (120, 30, 80, 255) the pixel on 1st row and 2nd column and so on.</param>.
 /// <param name="bFlipVertically">By default we use the OpenGL convention : the first row should be the bottom of the image. You can set bFlipVertically to false if your first row is at the top of the image.</param>
-void AsPNG(const char* filepath, int width, int height, void* data, bool bFlipVertically = true);
+void AsPNG(std::string_view filepath, int width, int height, void* data, bool bFlipVertically = true);
 
 } // namespace Cool::ExportImage
