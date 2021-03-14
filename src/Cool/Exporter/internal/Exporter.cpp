@@ -34,14 +34,12 @@ void Exporter::endImageExport(FrameBuffer& frameBuffer) {
 void Exporter::exportImage(FrameBuffer& frameBuffer, const char* filepath) {
 	// Get data
 	frameBuffer.bind();
-	RectSize size = RenderState::Size();
-	unsigned char* data = new unsigned char[4 * size.width() * size.height()];
-	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data);
+	auto size = RenderState::Size();
+	std::vector<unsigned char> data(4 * size.width() * size.height());
+	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frameBuffer.unbind();
 	// Write png
-	ExportImage::AsPNG(filepath, size.width(), size.height(), data);
-	//
-	delete[] data;
+	ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
 }
 
 std::string Exporter::imageOutputPath() {
