@@ -2,9 +2,15 @@
 
 namespace Cool {
 
+ThreadPool::ThreadPool()
+	: ThreadPool(std::thread::hardware_concurrency() != 0 ? std::thread::hardware_concurrency() : 1)
+{}
+
 ThreadPool::ThreadPool(size_t nb_threads)
 	: _nb_threads(nb_threads)
-{}
+{
+	Log::Info("Using {} threads in the thread pool", nb_threads);
+}
 
 ThreadPool::~ThreadPool() {
 	if (_running) {

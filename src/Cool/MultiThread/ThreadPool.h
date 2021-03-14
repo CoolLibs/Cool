@@ -8,6 +8,11 @@ namespace Cool {
 class ThreadPool {
 public:	
 	/// <summary>
+	/// Creates a thread pool using the maximum number of concurrent threads supported by the machine
+	/// </summary>
+	ThreadPool();
+
+	/// <summary>
 	/// 
 	/// </summary>
 	/// <param name="nb_threads">Number of threads to create in the pool</param>
