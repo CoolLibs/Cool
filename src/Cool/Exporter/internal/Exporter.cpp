@@ -220,7 +220,7 @@ void Exporter::end_image_sequence_export() {
 
 void Exporter::ImGui_window_export_image_sequence() {
 	if (_is_window_open_image_sequence_export) {
-		ImGui::Begin("Export an Image Sequence", &_is_window_open_image_sequence_export);
+		ImGui::Begin("Export an Image Sequence", _is_exporting_image_sequence ? nullptr : &_is_window_open_image_sequence_export);
 		// Not exporting
 		if (!_is_exporting_image_sequence) {
 			ImGui_resolution_widget();
