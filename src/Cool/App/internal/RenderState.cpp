@@ -5,7 +5,7 @@ namespace Cool {
 std::vector<std::function<void()>> RenderState::m_onRenderAreaResizedCallbacks;
 RectSizePos RenderState::m_Window;
 RectSizePos RenderState::m_AvailableSpace;
-RectSize RenderState::m_Export;
+RectSize RenderState::m_Export{ 1920, 1080 };
 RectSize RenderState::m_PreviewWithControlledNbPixels;
 bool RenderState::m_bIsExporting = false;
 bool RenderState::m_bControlPreviewRatio = false;
