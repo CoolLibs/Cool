@@ -87,7 +87,7 @@ private:
 	// In seconds
 	float m_sequenceBeginTimeInS = 0.f;
 	// In seconds
-	float m_sequenceEndTimeInS = 1.f;
+	float m_sequenceEndTimeInS = 10.f;
 	bool m_bOpenImageSequenceExport = false;
 	int m_frameCount;
 	int m_totalNbOfFramesInSequence;
