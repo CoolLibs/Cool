@@ -20,7 +20,7 @@ public:
 	/// <param name="render">The function that renders the desired image</param>
 	/// <param name="frame_buffer">The frame buffer that your render function has just rendered to</param>
 	/// <param name="filepath">The name of the image file that you want to write</param>
-	void export_image(std::function<void()> render, FrameBuffer& frameBuffer, const char* filepath);
+	void export_image(std::function<void()> render, FrameBuffer& frameBuffer, std::string_view filepath);
 
 	/// <summary>
 	/// The buttons to open the different export windows.
@@ -70,7 +70,7 @@ private:
 	void find_available_file_name();
 	void ImGui_resolution_widget();
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-	void export_image_multithreaded(FrameBuffer& frame_buffer, const char* filepath);
+	void export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath);
 #endif
 
 private:

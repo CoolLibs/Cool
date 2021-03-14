@@ -46,7 +46,7 @@ Exporter::Exporter()
 #endif
 {}
 
-void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, const char* filepath) {
+void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view filepath) {
 	// Render
 	RenderState::setIsExporting(true);
 	render();
@@ -68,7 +68,7 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 }
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, const char* filepath) {
+void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath) {
 	// Wait for a thread to be available
 	while (!_thread_pool.has_idle_threads()) {}
 	// Get data
