@@ -3,7 +3,7 @@
 namespace Cool {
 
 ThreadPool::ThreadPool()
-	: ThreadPool(std::thread::hardware_concurrency() != 0 ? std::thread::hardware_concurrency() : 1)
+	: ThreadPool(std::thread::hardware_concurrency() != 0 ? std::thread::hardware_concurrency() - 1 : 1)
 {}
 
 ThreadPool::ThreadPool(size_t nb_threads)
