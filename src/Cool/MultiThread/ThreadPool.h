@@ -26,16 +26,10 @@ public:
 	inline size_t size() { return _nb_threads; }
 
 	/// <summary>
-	/// 
+	/// Blocks the calling thread until a thread is available to accept a job.
+	/// Using this function is not mandatory but makes sure that the queue of jobs waiting for a worker thread doesn't get too big.
 	/// </summary>
-	/// <returns>true iff some threads are idle and can accept a job</returns>
-	bool has_idle_threads();
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns>true iff all threads are idle</returns>
-	bool has_finished_all_jobs();
+	void wait_for_available_thread();
 
 	/// <summary>
 	/// Starts the pool : creates the threads
@@ -55,6 +49,7 @@ public:
 
 private:
 	void check_for_jobs();
+	bool has_finished_all_jobs();
 
 private:
 	size_t _nb_threads;

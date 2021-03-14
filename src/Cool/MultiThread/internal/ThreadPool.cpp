@@ -18,14 +18,16 @@ ThreadPool::~ThreadPool() {
 	}
 }
 
-bool ThreadPool::has_idle_threads() {;
+void ThreadPool::wait_for_available_thread() {
 	assert(_running && "You must call start() before working with the thread pool.");
-	return _queue.size() < _nb_threads;
+	while (_queue.size() > _nb_threads) {
+		volatile int a = 0; // Prevent compiler from optimizing away the while
+	}
 }
 
 bool ThreadPool::has_finished_all_jobs() {
 	assert(_running && "You must call start() before working with the thread pool.");
-	return _queue.size() == 0;
+	return _queue.empty();
 }
 
 void ThreadPool::start() {
@@ -39,7 +41,10 @@ void ThreadPool::start() {
 
 void ThreadPool::stop() {
 	assert(_running && "You already called stop or you forgot to call start.");
-	while (!has_finished_all_jobs()) {} // Wait for the jobs queue to be empty
+	// Wait for the jobs queue to be empty
+	while (!has_finished_all_jobs()) {
+		volatile int a = 0; // Prevent compiler from optimizing away the while
+	}
 	_running = false;
 	_condition.notify_all(); // Wake up all threads and let them realize that _running == false
 	for (std::thread& thread : _threads) {
