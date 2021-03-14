@@ -56,8 +56,8 @@ private:
 	std::vector<std::thread> _threads;
 	std::condition_variable _condition_to_pop_from_queue;
 	std::condition_variable _condition_to_check_queue_size_is_small_enough;
-	std::deque<std::function<void()>> _queue;
-	std::mutex _queue_mutex;
+	std::deque<std::function<void()>> _jobs_queue;
+	std::mutex _jobs_queue_mutex;
 	bool _running = false;
 };
 

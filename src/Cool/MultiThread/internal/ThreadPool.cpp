@@ -20,13 +20,13 @@ ThreadPool::~ThreadPool() {
 
 void ThreadPool::wait_for_available_thread() {
 	assert(_running && "You must call start() before working with the thread pool.");
-	std::unique_lock<std::mutex> lock(_queue_mutex);
-	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _queue.size() < _nb_threads; });
+	std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
+	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _jobs_queue.size() < _nb_threads; });
 }
 
 void ThreadPool::wait_for_all_jobs_to_finish() {
-	std::unique_lock<std::mutex> lock(_queue_mutex);
-	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _queue.empty(); });
+	std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
+	_condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _jobs_queue.empty(); });
 }
 
 void ThreadPool::start() {
@@ -53,8 +53,8 @@ void ThreadPool::stop() {
 void ThreadPool::push_job(std::function<void()> job) {
 	assert(_running && "You must call start() before working with the thread pool.");
 	{
-		std::unique_lock<std::mutex> lock(_queue_mutex);
-		_queue.emplace_back(std::move(job));
+		std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
+		_jobs_queue.emplace_back(std::move(job));
 	}
 	_condition_to_pop_from_queue.notify_one();
 }
@@ -63,12 +63,12 @@ void ThreadPool::check_for_jobs() {
 	std::function<void()> job;
 	while (true) {
 		{
-			std::unique_lock<std::mutex> lock(_queue_mutex);
-			_condition_to_pop_from_queue.wait(lock, [this] {return !_queue.empty() || !_running; });
+			std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
+			_condition_to_pop_from_queue.wait(lock, [this] {return !_jobs_queue.empty() || !_running; });
 			if (!_running)
 				break;
-			job = std::move(_queue.front());
-			_queue.pop_front();
+			job = std::move(_jobs_queue.front());
+			_jobs_queue.pop_front();
 		}
 		job();
 		_condition_to_check_queue_size_is_small_enough.notify_all();
