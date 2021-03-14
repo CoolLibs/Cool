@@ -220,7 +220,8 @@ void Exporter::end_image_sequence_export() {
 	_is_window_open_image_sequence_export = false;
 }
 
-void Exporter::ImGui_window_export_image_sequence() {
+bool Exporter::ImGui_window_export_image_sequence() {
+	bool has_started = false;
 	if (_is_window_open_image_sequence_export) {
 		ImGui::Begin("Export an Image Sequence", _is_exporting_image_sequence ? nullptr : &_is_window_open_image_sequence_export);
 		// Not exporting
@@ -236,8 +237,9 @@ void Exporter::ImGui_window_export_image_sequence() {
 			ImGui::Text("seconds");
 			ImGui::PopItemWidth();
 			// Validation
-			_is_exporting_image_sequence = ImGui::Button("Start exporting");
-			if (_is_exporting_image_sequence) {
+			if (ImGui::Button("Start exporting")) {
+				_is_exporting_image_sequence = true;
+				has_started = true;
 				begin_image_sequence_export();
 			}
 		}
@@ -253,6 +255,7 @@ void Exporter::ImGui_window_export_image_sequence() {
 		}
 		ImGui::End();
 	}
+	return has_started;
 }
 
 #endif

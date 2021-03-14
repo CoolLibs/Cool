@@ -57,7 +57,8 @@ public:
 	/// <summary>
 	/// The window with the image sequence export parameters
 	/// </summary>
-	void ImGui_window_export_image_sequence();
+	/// <returns>true iff the export has just started</returns>
+	bool ImGui_window_export_image_sequence();
 	/// <summary>
 	/// Opens or closes the window with the image sequence export parameters.
 	/// </summary>
