@@ -40,129 +40,129 @@ private:
 #endif
 
 Exporter::Exporter()
-	: m_folderPathForImage(File::RootDir + "/out")
+	: _folder_path_for_image(File::RootDir + "/out")
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-	, m_folderPathForImageSequence(File::RootDir + "/exports")
+	, _folder_path_for_image_sequence(File::RootDir + "/exports")
 #endif
 {}
 
-void Exporter::export_image(std::function<void()> render, FrameBuffer& frameBuffer, const char* filepath) {
+void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, const char* filepath) {
 	// Render
 	RenderState::setIsExporting(true);
 	render();
 	// Get data
-	frameBuffer.bind();
+	frame_buffer.bind();
 	auto size = RenderState::Size();
 	std::vector<unsigned char> data(4 * size.width() * size.height());
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
-	frameBuffer.unbind();
+	frame_buffer.unbind();
 	// Write png
-	if (File::CreateFoldersIfDoesntExist(m_folderPathForImage.c_str())) {
+	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image.c_str())) {
 		ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
 	}
 	else {
-		Log::Warn("[Exporter::export_image] Failed to create folder '{}'", m_folderPathForImage);
+		Log::Warn("[Exporter::export_image] Failed to create folder '{}'", _folder_path_for_image);
 	}
 	//
 	RenderState::setIsExporting(false);
 }
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-void Exporter::export_image_multithreaded(FrameBuffer& frameBuffer, const char* filepath) {
+void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, const char* filepath) {
 	// Wait for a thread to be available
 	while (!_thread_pool.has_idle_threads()) {}
 	// Get data
-	frameBuffer.bind();
+	frame_buffer.bind();
 	auto size = RenderState::Size();
 	std::vector<unsigned char> data(4 * size.width() * size.height());
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
-	frameBuffer.unbind();
+	frame_buffer.unbind();
 	// Write png
 	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data))));
 }
 #endif
 
-std::string Exporter::imageOutputPath() {
-	return m_folderPathForImage + "/" + m_fileName + ".png";
+std::string Exporter::output_path() {
+	return _folder_path_for_image + "/" + _file_name + ".png";
 }
 
-void Exporter::findAvailableFileName() {
-	if (File::Exists(imageOutputPath().c_str())) {
-		// Find baseName and k
+void Exporter::find_available_file_name() {
+	if (File::Exists(output_path().c_str())) {
+		// Find base_name and k
 		int k = 1;
-		std::string baseName = m_fileName;
-		size_t pos = m_fileName.find_last_of("(");
+		std::string base_name = _file_name;
+		size_t pos = _file_name.find_last_of("(");
 		if (pos != std::string::npos) {
 			// Find number in parenthesis
-			baseName = m_fileName.substr(0, pos);
-			size_t endPos = m_fileName.find_last_of(")");
+			base_name = _file_name.substr(0, pos);
+			size_t end_pos = _file_name.find_last_of(")");
 			try {
-				k = std::stoi(m_fileName.substr(pos + 1, endPos - pos));
+				k = std::stoi(_file_name.substr(pos + 1, end_pos - pos));
 			}
 			catch (std::exception e) {
 				k = 1;
-				baseName = m_fileName;
+				base_name = _file_name;
 			}
 		}
 		// Find available name
-		while (File::Exists(imageOutputPath().c_str())) {
-			m_fileName = baseName + "(" + std::to_string(k) + ")";
+		while (File::Exists(output_path().c_str())) {
+			_file_name = base_name + "(" + std::to_string(k) + ")";
 			k++;
 		}
 	}
 }
 
-void Exporter::setIsExportImageWindowOpen(bool bOpen) {
-	m_bOpenImageExport = bOpen;
-	if (bOpen)
-		findAvailableFileName();
+void Exporter::open_window_export_image(bool open) {
+	_is_window_open_image_export = open;
+	if (_is_window_open_image_export)
+		find_available_file_name();
 }
 
-void Exporter::ImGuiMenuItems() {
+void Exporter::ImGui_menu_items() {
 	if (ImGui::Button("Image")) {
-		setIsExportImageWindowOpen(true);
+		open_window_export_image(true);
 	}
 #if defined(__COOL_TIME) && defined(__COOL_STRING)
 	if (ImGui::Button("Image Sequence")) {
-		m_bOpenImageSequenceExport = true;
+		_is_window_open_image_sequence_export = true;
 	}
 #endif
 }
 
-void Exporter::ImGuiResolutionWidget() {
-	bool bUsed = false;
+void Exporter::ImGui_resolution_widget() {
+	bool _was_used = false;
 	ImGui::Text("Resolution : "); ImGui::SameLine();
 	ImGui::PushItemWidth(50);
 	unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
 	unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
-	bUsed |= CoolImGui::InputUInt("W", &w); ImGui::SameLine();
-	bUsed |= CoolImGui::InputUInt("H", &h);
+	_was_used |= CoolImGui::InputUInt("W", &w); ImGui::SameLine();
+	_was_used |= CoolImGui::InputUInt("H", &h);
 	ImGui::PopItemWidth();
-	if (bUsed)
+	if (_was_used)
 		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
 }
 
-void Exporter::ImGuiExportImageWindow(std::function<void()> render, FrameBuffer& frameBuffer) {
-	if (m_bOpenImageExport) {
-		ImGui::Begin("Export an Image", &m_bOpenImageExport);
+void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuffer& frameBuffer) {
+	if (_is_window_open_image_export) {
+		ImGui::Begin("Export an Image", &_is_window_open_image_export);
 		// Resolution
-		ImGuiResolutionWidget();
+		ImGui_resolution_widget();
 		// File and Folders
-		bool bPathChanged = false;
-		bPathChanged |= ImGui::InputText("File Name", &m_fileName);
-		bPathChanged |= ImGui::InputText("Path", &m_folderPathForImage);
-		if (bPathChanged) {
-			m_bShowFileExistsWarning = File::Exists(imageOutputPath().c_str());
+		bool _path_has_changed = false;
+		_path_has_changed |= ImGui::InputText("File Name", &_file_name);
+		_path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
+		if (_path_has_changed) {
+			_should_show_file_exists_warning = File::Exists(output_path().c_str());
 		}
 		// Warning file exists
 		ImGui::NewLine();
-		if (m_bShowFileExistsWarning) {
+		if (_should_show_file_exists_warning) {
 			CoolImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
 		}
 		// Validation
 		if (ImGui::Button("Export as PNG")) {
-			m_bOpenImageExport = false;
-			export_image(render, frameBuffer, imageOutputPath().c_str());
+			_is_window_open_image_export = false;
+			export_image(render, frameBuffer, output_path().c_str());
 		}
 		//
 		ImGui::End();
@@ -171,78 +171,78 @@ void Exporter::ImGuiExportImageWindow(std::function<void()> render, FrameBuffer&
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 
-void Exporter::beginImageSequenceExport() {
-	if (File::CreateFoldersIfDoesntExist(m_folderPathForImageSequence.c_str())) {
+void Exporter::begin_image_sequence_export() {
+	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image_sequence.c_str())) {
 		_thread_pool.start();
-		m_bIsExportingImageSequence = true;
+		_is_exporting_image_sequence = true;
 		RenderState::setIsExporting(true);
-		m_frameCount = 0;
-		float totalExportDuration = m_sequenceEndTimeInS - m_sequenceBeginTimeInS;
-		m_totalNbOfFramesInSequence = static_cast<unsigned int>(std::ceil(totalExportDuration * m_fps));
-		m_maxNbDigitsOfFrameCount = static_cast<int>(std::ceil(std::log10(m_totalNbOfFramesInSequence)));
-		Time::SetAsFixedTimestep(m_fps);
-		Time::setTime(m_sequenceBeginTimeInS);
-		m_averageFrameTime.clear();
-		m_lastExportTime = std::chrono::steady_clock::now();
+		_frame_count = 0;
+		float total_export_duration = _sequence_end_time_in_sec - _sequence_begin_time_in_sec;
+		_total_nb_of_frames_in_sequence = static_cast<unsigned int>(std::ceil(total_export_duration * _fps));
+		_max_nb_digits_of_frame_count = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
+		Time::SetAsFixedTimestep(_fps);
+		Time::setTime(_sequence_begin_time_in_sec);
+		_frame_time_average.clear();
+		_last_export_date = std::chrono::steady_clock::now();
 	}
 	else {
-		Log::Release::Warn("[Exporter::beginImageSequenceExport] Couldn't start exporting because folder creation failed !");
+		Log::Release::Warn("[Exporter::begin_image_sequence_export] Couldn't start exporting because folder creation failed !");
 	}
 }
 
 void Exporter::update(FrameBuffer& frameBuffer) {
-	if (m_bIsExportingImageSequence) {
-		m_bOpenImageSequenceExport = true;
-		if (m_frameCount < m_totalNbOfFramesInSequence) {
-			export_image_multithreaded(frameBuffer, (m_folderPathForImageSequence + "/" + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + ".png").c_str());
-			m_frameCount++;
+	if (_is_exporting_image_sequence) {
+		_is_window_open_image_sequence_export = true;
+		if (_frame_count < _total_nb_of_frames_in_sequence) {
+			export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_frame_count, _max_nb_digits_of_frame_count) + ".png").c_str());
+			_frame_count++;
 			auto now = std::chrono::steady_clock::now();
-			std::chrono::duration<float> deltaTime = now - m_lastExportTime;
-			m_averageFrameTime.push(deltaTime.count());
-			m_lastExportTime = now;
+			std::chrono::duration<float> deltaTime = now - _last_export_date;
+			_frame_time_average.push(deltaTime.count());
+			_last_export_date = now;
 		}
 		else {
-			endImageSequenceExport();
+			end_image_sequence_export();
 		}
 	}
 }
 
-void Exporter::endImageSequenceExport() {
+void Exporter::end_image_sequence_export() {
 	_thread_pool.stop();
-	m_bIsExportingImageSequence = false;
+	_is_exporting_image_sequence = false;
 	RenderState::setIsExporting(false);
 	Time::SetAsRealtime();
-	m_bOpenImageSequenceExport = false;
+	_is_window_open_image_sequence_export = false;
 }
 
-void Exporter::ImGuiExportImageSequenceWindow() {
-	if (m_bOpenImageSequenceExport) {
-		ImGui::Begin("Export an Image Sequence", &m_bOpenImageSequenceExport);
+void Exporter::ImGui_window_export_image_sequence() {
+	if (_is_window_open_image_sequence_export) {
+		ImGui::Begin("Export an Image Sequence", &_is_window_open_image_sequence_export);
 		// Not exporting
-		if (!m_bIsExportingImageSequence) {
-			ImGuiResolutionWidget();
-			ImGui::InputText("Path", &m_folderPathForImageSequence);
-			ImGui::InputFloat("FPS", &m_fps);
+		if (!_is_exporting_image_sequence) {
+			ImGui_resolution_widget();
+			ImGui::InputText("Path", &_folder_path_for_image_sequence);
+			ImGui::InputFloat("FPS", &_fps);
 			ImGui::PushItemWidth(50);
 			ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
-			ImGui::DragFloat("", &m_sequenceBeginTimeInS); ImGui::PopID(); ImGui::SameLine();
+			ImGui::DragFloat("", &_sequence_begin_time_in_sec); ImGui::PopID(); ImGui::SameLine();
 			ImGui::Text("To"); ImGui::SameLine(); ImGui::PushID(14540);
-			ImGui::DragFloat("", &m_sequenceEndTimeInS); ImGui::PopID(); ImGui::SameLine();
+			ImGui::DragFloat("", &_sequence_end_time_in_sec); ImGui::PopID(); ImGui::SameLine();
 			ImGui::Text("seconds");
 			ImGui::PopItemWidth();
 			// Validation
-			m_bIsExportingImageSequence = ImGui::Button("Start exporting");
-			if (m_bIsExportingImageSequence) {
-				beginImageSequenceExport();
+			_is_exporting_image_sequence = ImGui::Button("Start exporting");
+			if (_is_exporting_image_sequence) {
+				begin_image_sequence_export();
 			}
 		}
 		// Exporting
 		else {
-			ImGui::Text(("Exported " + String::ToString(m_frameCount, m_maxNbDigitsOfFrameCount) + " / " + std::to_string(m_totalNbOfFramesInSequence) + " frames").c_str());
-			CoolImGui::TimeFormatedHMS((m_totalNbOfFramesInSequence - m_frameCount) * m_averageFrameTime); ImGui::SameLine();
+			ImGui::Text(("Exported " + String::ToString(_frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
+			CoolImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - _frame_count) * _frame_time_average); ImGui::SameLine();
 			ImGui::Text("remaining");
 			if (ImGui::Button("Stop exporting")) {
-				endImageSequenceExport();
+				end_image_sequence_export();
 			}
 		}
 		ImGui::End();
