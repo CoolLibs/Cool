@@ -1,9 +1,13 @@
 #include "../Texture.h"
 
+#ifdef __COOL_LOAD_IMAGE
+#include <Cool/LoadImage/LoadImage.h>
+#endif
+
 namespace Cool {
 
 Texture::~Texture() {
-	GLCall(glDeleteTextures(1, &m_textureID));
+	DestroyTexture(m_textureID);
 }
 
 GLuint Texture::CreateTextureID(GLint interpolationMode, GLint wrapMode) {
@@ -17,6 +21,37 @@ GLuint Texture::CreateTextureID(GLint interpolationMode, GLint wrapMode) {
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	return textureID;
 }
+
+void Texture::DestroyTexture(GLuint texID) {
+	GLCall(glDeleteTextures(1, &texID));
+}
+
+#ifdef __COOL_LOAD_IMAGE
+
+Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapMode) 
+	: m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
+{
+#ifndef NDEBUG
+	m_bDataUploaded = true;
+#endif
+}
+
+GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode) {
+	// Load image
+	int width, height;
+	unsigned char* data = LoadImage::Load(filepath, &width, &height);
+	// Create texture
+	GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
+	// Upload data
+	GLCall(glBindTexture(GL_TEXTURE_2D, texID));
+	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
+	// Cleanup
+	free(data);
+	//
+	return texID;
+}
+
+#endif
 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode) {
 #ifndef DEBUG
