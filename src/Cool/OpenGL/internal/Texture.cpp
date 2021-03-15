@@ -39,14 +39,12 @@ Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapM
 GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode) {
 	// Load image
 	int width, height;
-	unsigned char* data = LoadImage::Load(filepath, &width, &height);
+	std::unique_ptr<unsigned char> data = LoadImage::Load(filepath, &width, &height);
 	// Create texture
 	GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
 	// Upload data
 	GLCall(glBindTexture(GL_TEXTURE_2D, texID));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
-	// Cleanup
-	free(data);
+	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.get()));
 	//
 	return texID;
 }
