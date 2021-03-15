@@ -11,10 +11,6 @@ public:
 	static void _DestroyAll();
 
 private:
-	static GLuint LoadTexture(const char* filepath);
-	static void DestroyTexture(unsigned int texID);
-
-private:
 	static GLuint m_playID;
 	static GLuint m_pauseID;
 };
