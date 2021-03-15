@@ -1,3 +1,4 @@
 Requires :
   - App
   - OpenGL
+  - LoadImage
