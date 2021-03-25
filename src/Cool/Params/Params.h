@@ -38,8 +38,8 @@ public:
 			_on_value_change();
 		return b;
 	}
-	inline ParamValues& operator* () { return  _values; }
-	inline ParamValues* operator->() { return &_values; }
+	inline const ParamValues& operator* () const { return  _values; }
+	inline const ParamValues* const operator->() const { return &_values; }
 
 private:
 	ParamValues _values;

@@ -38,8 +38,8 @@ public:
 	Param(std::string_view name, const T& default_value = T(0))
 		: IParam(name), _value(default_value), _value_before_edit(default_value)
 	{}
-	inline T& operator* () { return  _value; }
-	inline T* operator->() { return &_value; }
+	inline const T& operator* () const { return  _value; }
+	inline const T* const operator->() const { return &_value; }
 
 	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change) override {
 		bool b = ImGuiWidget();
