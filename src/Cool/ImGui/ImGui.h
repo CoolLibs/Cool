@@ -17,6 +17,8 @@ namespace CoolImGui {
 	/// <param name="circleNbSegments">Number of segments used to render the wheel (which is actually a polygon with a huge number of sides)</param>
 	/// <returns>true iff the widget was just used</returns>
 	bool AngleWheel(const char* label, float* value_p, float thickness = 2.0f, float radius = 25.0f, int circleNbSegments = 26);
+
+	bool Direction3D(const char* label, float* value_p1, float* value_p2);
 	
 	/// <summary>
 	/// Writes some ImGui text : time is displayed as [hours]:[minutes]:[seconds]. hours and minutes might not be displayed if they are 0 for both timeInSec and totalDuration.

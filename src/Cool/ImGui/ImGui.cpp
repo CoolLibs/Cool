@@ -50,7 +50,24 @@ bool AngleWheel(const char* label, float* value_p, float thickness, float radius
 	draw_list->AddLine(center, ImVec2(x2, y2), col32line, thickness);
 	draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
+	const ImGuiID id = window->GetID(label);
+	if (is_active)
+		ImGui::MarkItemEdited(id);
 	return is_active;
+}
+
+bool Direction3D(const char* label, float* value_p1, float* value_p2) {
+	ImGui::BeginGroup(); // Group the two wheels so that things like IsItemDeactivatedAfterEdit() work properly
+	ImGui::PushID(label);
+	bool b = false;
+
+	ImGui::Text("%s :", label);
+	b |= CoolImGui::AngleWheel("Angle Ground", value_p1);
+	b |= CoolImGui::AngleWheel("Angle Up", value_p2);
+
+	ImGui::PopID();
+	ImGui::EndGroup();
+	return b;
 }
 
 void TimeFormatedHMS(float timeInSec, float totalDuration) {
