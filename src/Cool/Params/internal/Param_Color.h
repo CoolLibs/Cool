@@ -4,10 +4,10 @@
 
 namespace Cool::Param {
 
-class Color : public Internal::Param<glm::vec3> {
+class Color : public Internal::ParamForPrimitiveType<glm::vec3> {
 public:
 	Color(std::string_view name, const glm::vec3& default_value = glm::vec3(0.f))
-		: Param(name, default_value)
+		: ParamForPrimitiveType(name, default_value)
 	{}
 
 protected:

@@ -4,10 +4,10 @@
 
 namespace Cool::Param {
 
-class Float : public Internal::Param<float> {
+class Float : public Internal::ParamForPrimitiveType<float> {
 public:
 	Float(std::string_view name, float default_value = 0.f, float min_value = 0.f, float max_value = 1.f)
-		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
+		: ParamForPrimitiveType(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:

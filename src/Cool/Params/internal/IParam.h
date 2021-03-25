@@ -33,9 +33,9 @@ private:
 };
 
 template <typename T>
-class Param : public IParam {
+class ParamForPrimitiveType : public IParam {
 public:
-	Param(std::string_view name, const T& default_value = T(0))
+	ParamForPrimitiveType(std::string_view name, const T& default_value = T(0))
 		: IParam(name), _value(default_value), _value_before_edit(default_value)
 	{}
 	inline const T& operator* () const { return  _value; }
