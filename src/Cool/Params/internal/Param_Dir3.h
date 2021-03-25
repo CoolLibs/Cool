@@ -12,13 +12,7 @@ public:
 	{}
 
 	bool ImGuiWidget() override {
-		ImGui::PushID(this);
-		bool b = false;
-		ImGui::Text("%s :", name().c_str());
-		b |= CoolImGui::AngleWheel("Angle Ground", &_value[0]);
-		b |= CoolImGui::AngleWheel("Angle Up", &_value[1]);
-		ImGui::PopID();
-		return b;
+		return CoolImGui::Direction3D(name().c_str(), &_value.x, &_value.y);
 	}
 };
 
