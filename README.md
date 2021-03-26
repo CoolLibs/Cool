@@ -1,1 +1,2 @@
-Requites *nothing*
+Requires :
+  - String
