@@ -142,8 +142,8 @@ void Exporter::ImGui_resolution_widget() {
 	ImGui::PushItemWidth(50);
 	unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
 	unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
-	_was_used |= CoolImGui::InputUInt("W", &w); ImGui::SameLine();
-	_was_used |= CoolImGui::InputUInt("H", &h);
+	_was_used |= ImGui::InputUInt("W", &w); ImGui::SameLine();
+	_was_used |= ImGui::InputUInt("H", &h);
 	ImGui::PopItemWidth();
 	if (_was_used)
 		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
@@ -164,7 +164,7 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		// Warning file exists
 		ImGui::NewLine();
 		if (_should_show_file_exists_warning) {
-			CoolImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
+			ImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
 		}
 		// Validation
 		if (ImGui::Button("Export as PNG")) {
@@ -247,7 +247,7 @@ bool Exporter::ImGui_window_export_image_sequence() {
 		else {
 			int frame_count = _nb_frames_which_finished_exporting.load();
 			ImGui::Text(("Exported " + String::ToString(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
-			CoolImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
+			ImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
 			ImGui::Text("remaining");
 			if (ImGui::Button("Stop exporting")) {
 				end_image_sequence_export();
