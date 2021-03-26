@@ -45,7 +45,7 @@ void Time::SetAsFixedTimestep(float fps) {
 #if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
 void Time::ImGuiTimeline() {
     if (!RenderState::IsExporting()) {
-        if (CoolImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
+        if (ImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
             m_clock->togglePlayPause();
         }
         ImGui::SameLine();
