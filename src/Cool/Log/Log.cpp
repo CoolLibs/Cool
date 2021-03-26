@@ -22,7 +22,7 @@ void Release::Message(std::string_view message) {
 
 void Release::Show_Console() {
 	if (_open) {
-		ImGui::Begin("Console", &_open);
+		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
 		ImGui::Text(_message.c_str());
 		if (_scroll_to_bottom) {
 			ImGui::SetScrollHereY(1.f);
