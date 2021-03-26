@@ -31,17 +31,29 @@ namespace Cool::Log {
 		spdlog::error(std::forward<Args>(args)...);
 #endif
 	}
-	//
-	namespace Release {
-		template<typename ...Args> inline void Info(Args&& ...args) {
-			spdlog::info(std::forward<Args>(args)...);
-		}
-		template<typename ...Args> inline void Warn(Args&& ...args) {
-			spdlog::warn(std::forward<Args>(args)...);
-		}
-		template<typename ...Args> inline void Error(Args&& ...args) {
-			spdlog::error(std::forward<Args>(args)...);
-			assert(false);
-		}
+
+class Release {
+public:
+	template<typename ...Args> static inline void Info(Args&& ...args) {
+		Message(fmt::format(std::forward<Args>(args)...));
 	}
-}
+	template<typename ...Args> static inline void Warn(Args&& ...args) {
+		Message(fmt::format(std::forward<Args>(args)...));
+	}
+	template<typename ...Args> static inline void Error(Args&& ...args) {
+		Message(fmt::format(std::forward<Args>(args)...));
+	}
+	static void Show_Console();
+	static void ImGui_Toggle_Console();
+
+private:
+	static void Message(std::string_view message);
+
+private:
+	static std::string _message;
+	static bool _open;
+	static int _messages_count;
+	static bool _scroll_to_bottom;
+};
+
+} // namespace Cool::Log
