@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CoolImGui {
+namespace ImGui {
 
 	/// <summary>
 	/// A small "?" that displays some text when hovered.
@@ -91,6 +91,10 @@ namespace CoolImGui {
 	/// <returns></returns>
 	bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_flags = ImGuiPopupFlags_None);
 
-	void InvisibleWrapperAroundPreviousLine(const char* label);
+	/// <summary>
+	/// Can be useful for example to open a context menu on a dropdown, which would fail without this wrapper.
+	/// </summary>
+	/// <param name="strID">A label that won't be displayed but is used as an ID</param>
+	void InvisibleWrapperAroundPreviousLine(const char* strID);
 
-} // namespace Cool::ImGui
+} // namespace ImGui

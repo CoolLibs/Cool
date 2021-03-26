@@ -5,68 +5,68 @@
 #endif
 #include <imgui/imgui_internal.h>
 
-namespace CoolImGui {
+namespace ImGui {
 
 void HelpMarker(const char* text) {
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered())
+	TextDisabled("(?)");
+    if (IsItemHovered())
     {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(text);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
+        BeginTooltip();
+        PushTextWrapPos(GetFontSize() * 35.0f);
+        TextUnformatted(text);
+        PopTextWrapPos();
+        EndTooltip();
     }
 }
 
 bool AngleWheel(const char* label, float* value_p, float thickness, float radius, int circleNbSegments) {
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGuiWindow* window = GetCurrentWindow();
 	if (window->SkipItems)
 		return false;
 	//
-	ImGuiStyle& style = ImGui::GetStyle();
-	float line_height = ImGui::GetTextLineHeight();
+	ImGuiStyle& style = GetStyle();
+	float line_height = GetTextLineHeight();
 	//
-	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImVec2 p = GetCursorScreenPos();
 	ImVec2 center = ImVec2(p.x + radius, p.y + radius);
 	// Detect clic
-	ImGui::InvisibleButton(label, ImVec2(radius * 2.0f, radius * 2.0f));
-	bool is_active = ImGui::IsItemActive();
-	bool is_hovered = ImGui::IsItemHovered();
+	InvisibleButton(label, ImVec2(radius * 2.0f, radius * 2.0f));
+	bool is_active = IsItemActive();
+	bool is_hovered = IsItemHovered();
 
 	if (is_active) {
-		ImVec2 mp = ImGui::GetIO().MousePos;
+		ImVec2 mp = GetIO().MousePos;
 		*value_p = atan2f(center.y - mp.y, mp.x - center.x);
 	}
 
 	float x2 = cosf(*value_p) * radius + center.x;
 	float y2 = -sinf(*value_p) * radius + center.y;
 
-	ImU32 col32 = ImGui::GetColorU32(is_active ? ImGuiCol_FrameBgActive : is_hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
-	ImU32 col32line = ImGui::GetColorU32(ImGuiCol_SliderGrabActive);
-	ImU32 col32text = ImGui::GetColorU32(ImGuiCol_Text);
-	ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	ImU32 col32 = GetColorU32(is_active ? ImGuiCol_FrameBgActive : is_hovered ? ImGuiCol_FrameBgHovered : ImGuiCol_FrameBg);
+	ImU32 col32line = GetColorU32(ImGuiCol_SliderGrabActive);
+	ImU32 col32text = GetColorU32(ImGuiCol_Text);
+	ImDrawList* draw_list = GetWindowDrawList();
 	draw_list->AddCircleFilled(center, radius, col32, circleNbSegments);
 	draw_list->AddLine(center, ImVec2(x2, y2), col32line, thickness);
 	draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
 	const ImGuiID id = window->GetID(label);
 	if (is_active)
-		ImGui::MarkItemEdited(id);
+		MarkItemEdited(id);
 	return is_active;
 }
 
 bool Direction3D(const char* label, float* value_p1, float* value_p2) {
-	ImGui::BeginGroup(); // Group the two wheels so that things like IsItemDeactivatedAfterEdit() work properly
-	ImGui::PushID(label);
+	BeginGroup(); // Group the two wheels so that things like IsItemDeactivatedAfterEdit() work properly
+	PushID(label);
 	bool b = false;
 
-	ImGui::Text("%s :", label);
-	b |= CoolImGui::AngleWheel("Angle Ground", value_p1);
-	b |= CoolImGui::AngleWheel("Angle Up", value_p2);
+	Text("%s :", label);
+	b |= AngleWheel("Angle Ground", value_p1);
+	b |= AngleWheel("Angle Up", value_p2);
 
-	ImGui::PopID();
-	ImGui::EndGroup();
+	PopID();
+	EndGroup();
 	return b;
 }
 
@@ -75,29 +75,29 @@ void TimeFormatedHMS(float timeInSec, float totalDuration) {
 		totalDuration = timeInSec;
 	uint32_t t = static_cast<uint32_t>(timeInSec);
 	if (totalDuration < 60.0f) {
-		ImGui::Text("%us", t);
+		Text("%us", t);
 	}
 	else if (totalDuration < 3600.0f) {
-		ImGui::Text("%um %02us", t / 60, t % 60);
+		Text("%um %02us", t / 60, t % 60);
 	}
 	else {
-		ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
+		Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
 	}
 }
 
 void Tooltip(const char* text) {
-	if (ImGui::IsItemHovered()) {
-		ImGui::BeginTooltip();
-		ImGui::Text(text);
-		ImGui::EndTooltip();
+	if (IsItemHovered()) {
+		BeginTooltip();
+		Text(text);
+		EndTooltip();
 	}
 }
 
 void ButtonDisabled(const char* label, const char* reasonForDisabling) {
-	ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
-	ImGui::PushStyleColor(ImGuiCol_Text,   ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-	ImGui::ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
-	ImGui::PopStyleColor(2);
+	PushStyleColor(ImGuiCol_Button, GetStyle().Colors[ImGuiCol_FrameBg]);
+	PushStyleColor(ImGuiCol_Text,   GetStyle().Colors[ImGuiCol_TextDisabled]);
+	ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
+	PopStyleColor(2);
 	Tooltip(reasonForDisabling);
 }
 
@@ -105,7 +105,7 @@ static constexpr int BUTTON_ICON_SIZE = 18;
 static constexpr int BUTTON_FRAME_PADDING = 1;
 
 bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor, const ImVec4& backgroundColor) {
-	return ImGui::ImageButton(reinterpret_cast<ImTextureID>(texID), ImVec2(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), BUTTON_FRAME_PADDING, backgroundColor, tintColor);
+	return ImageButton(reinterpret_cast<ImTextureID>(texID), ImVec2(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), BUTTON_FRAME_PADDING, backgroundColor, tintColor);
 }
 
 void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling) {
@@ -115,7 +115,7 @@ void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling) {
 }
 
 void ImageFramed(GLuint texID, const ImVec2& size, int frameThickness, const ImVec4& frameColor, const ImVec4& backgroundColor, const ImVec4& tintColor) {
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	ImGuiWindow* window = GetCurrentWindow();
 	if (window->SkipItems)
 		return;
 
@@ -124,48 +124,47 @@ void ImageFramed(GLuint texID, const ImVec2& size, int frameThickness, const ImV
 
 	// Default to using texture ID as ID. User can still push string/integer prefixes.
 	// We could hash the size/uv to create a unique ID but that would prevent the user from animating UV.
-	ImGui::PushID((void*)(intptr_t)texID);
+	PushID((void*)(intptr_t)texID);
 	const ImGuiID id = window->GetID("#image");
-	ImGui::PopID();
+	PopID();
 
 	const ImVec2 padding = (frameThickness >= 0) ? ImVec2((float)frameThickness, (float)frameThickness) : style.FramePadding;
 	const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
 	const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
-	ImGui::ItemSize(bb);
-	if (!ImGui::ItemAdd(bb, id))
+	ItemSize(bb);
+	if (!ItemAdd(bb, id))
 		return;
 
 	// Render
-	const ImU32 frameCol = frameColor.w > 0.0f ? ImGui::GetColorU32(frameColor) : ImGui::GetColorU32(ImGuiCol_Button);
-	ImGui::RenderNavHighlight(bb, id);
-	ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-	ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(backgroundColor), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-	window->DrawList->AddImage(reinterpret_cast<ImTextureID>(texID), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tintColor));
+	const ImU32 frameCol = frameColor.w > 0.0f ? GetColorU32(frameColor) : GetColorU32(ImGuiCol_Button);
+	RenderNavHighlight(bb, id);
+	RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+	RenderFrame(image_bb.Min, image_bb.Max, GetColorU32(backgroundColor), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+	window->DrawList->AddImage(reinterpret_cast<ImTextureID>(texID), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), GetColorU32(tintColor));
 }
 
 bool InputUInt(const char* label, unsigned int* value_p) {
-	return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
+	return InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
 }
 
 void WarningText(const char* text) {
-	ImGui::TextColored(ImVec4(0.95f, 0.1f, 0.2f, 1.0f), text);
+	TextColored(ImVec4(0.95f, 0.1f, 0.2f, 1.0f), text);
 }
 
 bool BeginPopupContextMenuFromButton(const char* label, ImGuiPopupFlags popup_flags) {
-	using namespace ImGui;
 	ImGuiWindow* window = GImGui->CurrentWindow;
 	if (window->SkipItems)
 		return false;
 	ImGuiID id = label ? window->GetID(label) : window->DC.LastItemId; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
 	IM_ASSERT(id != 0);                                                // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
-	if (ImGui::Button(label))
+	if (Button(label))
 		OpenPopupEx(id, popup_flags);
 	return BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
 }
 
 void InvisibleWrapperAroundPreviousLine(const char* label) {
-	ImGui::SetCursorPos(ImGui::GetCursorPos() - ImVec2(0, 2 * ImGui::GetTextLineHeight()));
-	ImGui::InvisibleButton(label, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
+	SetCursorPos(GetCursorPos() - ImVec2(0, 2 * GetTextLineHeight()));
+	InvisibleButton(label, ImVec2(GetWindowWidth(), 2 * GetTextLineHeight()));
 }
 
-} // namespace CoolImGui
+} // namespace ImGui
