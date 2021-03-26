@@ -19,6 +19,7 @@ void Input::Initialize(GLFWwindow* mainWindow) {
 }
 
 bool Input::MatchesChar(const char* character, int key) {
+	if (key == -1) return false;
 	const char* name = glfwGetKeyName(key, 0);
 	return name && strcmp(name, character) == 0;
 }
