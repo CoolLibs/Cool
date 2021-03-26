@@ -129,9 +129,9 @@ public:
 		}
 		// Rename / Delete preset
 		else {
-			CoolImGui::InvisibleWrapperAroundPreviousLine("ovsidhsdh"); // Necessary otherwise we can't open a context menu on the dropdown
+			ImGui::InvisibleWrapperAroundPreviousLine("ovsidhsdh"); // Necessary otherwise we can't open a context menu on the dropdown
 			if (ImGui::BeginPopupContextItem()) {
-				if (CoolImGui::BeginPopupContextMenuFromButton("Rename")) {
+				if (ImGui::BeginPopupContextMenuFromButton("Rename")) {
 					if (!_rename_popup_open_last_frame) {
 						_new_preset_name = current_name();
 					}

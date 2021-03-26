@@ -12,7 +12,7 @@ public:
 	{}
 
 	bool ImGuiWidget() override {
-		return CoolImGui::Direction3D(name().c_str(), &_value.x, &_value.y);
+		return ImGui::Direction3D(name().c_str(), &_value.x, &_value.y);
 	}
 };
 
