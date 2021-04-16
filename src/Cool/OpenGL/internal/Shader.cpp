@@ -5,78 +5,78 @@
 namespace Cool {
 
 #ifndef NDEBUG
-#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == m_programID && "The shader must be bound before setting any uniform");
+#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == _program_id && "The shader must be bound before setting any uniform");
 #else 
 #define ASSERT_SHADER_IS_BOUND
 #endif
 
-ShaderCode::ShaderCode(ShaderType type, const char* filePath)
+ShaderCode::ShaderCode(ShaderType type, std::string_view filePath)
 	: type(type)
 {
-	File::ToString(filePath, &sourceCode);
+	File::ToString(filePath, &source_code);
 }
 
-ShaderCode ShaderCode::FromCode(ShaderType type, const std::string& sourceCode) {
+ShaderCode ShaderCode::FromCode(ShaderType type, std::string_view source_code) {
 	ShaderCode shader;
 	shader.type = type;
-	shader.sourceCode = sourceCode;
+	shader.source_code = source_code;
 	return shader;
 }
 
-Shader::Shader(const std::vector<ShaderCode>& shaderCodes) {
-	createProgram(shaderCodes);
+Shader::Shader(const std::vector<ShaderCode>& shader_codes) {
+	create_program(shader_codes);
 }
 
-Shader::Shader(const char* vertexShaderFilePath, const char* fragmentShaderFilePath) 
-	: Shader({ShaderCode(ShaderType::Vertex, vertexShaderFilePath), ShaderCode(ShaderType::Fragment, fragmentShaderFilePath)})
+Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
+	: Shader({ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path)})
 {}
 
 Shader::Shader(Shader&& o) noexcept
-	: m_programID(o.m_programID)
+	: _program_id(o._program_id)
 {
-	o.m_programID = 0;
+	o._program_id = 0;
 }
 
 void Shader::operator=(Shader&& o) {
-	m_programID = o.m_programID;
-	o.m_programID = 0;
+	_program_id = o._program_id;
+	o._program_id = 0;
 }
 
 Shader::~Shader() {
-	glDeleteProgram(m_programID);
+	glDeleteProgram(_program_id);
 }
 
-void Shader::createProgram(const std::vector<ShaderCode>& shaderCodes) {
+void Shader::create_program(const std::vector<ShaderCode>& shader_codes) {
 	// Create program
-	if (m_programID != 0) {
-		GLCall(glDeleteProgram(m_programID));
-		m_uniformLocationCache.clear();
+	if (_program_id != 0) {
+		GLCall(glDeleteProgram(_program_id));
+		_uniform_locations.clear();
 	}
-	GLCall(m_programID = glCreateProgram());
+	GLCall(_program_id = glCreateProgram());
 	// Compile shaders
-	std::vector<GLuint> shaderIDs;
-	shaderIDs.reserve(shaderCodes.size());
-	for (const auto& shaderCode : shaderCodes) {
-		shaderIDs.push_back(CreateShader(shaderCode));
-		GLCall(glAttachShader(m_programID, shaderIDs.back()));
+	std::vector<GLuint> shader_ids;
+	shader_ids.reserve(shader_codes.size());
+	for (const auto& shader_code : shader_codes) {
+		shader_ids.push_back(CreateShader(shader_code));
+		GLCall(glAttachShader(_program_id, shader_ids.back()));
 	}
 	// Link
-	GLCall(glLinkProgram(m_programID));
-	GLCall(glValidateProgram(m_programID));
+	GLCall(glLinkProgram(_program_id));
+	GLCall(glValidateProgram(_program_id));
 	// Delete shaders
-	for (auto shaderID : shaderIDs) {
-		glDeleteShader(shaderID);
+	for (auto shader_id : shader_ids) {
+		glDeleteShader(shader_id);
 	}
 }
 
-void Shader::createProgram(const char* vertexShaderFilePath, const char* fragmentShaderFilePath) {
-	createProgram({ ShaderCode(ShaderType::Vertex, vertexShaderFilePath), ShaderCode(ShaderType::Fragment, fragmentShaderFilePath) });
+void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path) {
+	create_program({ ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path) });
 }
 
-GLuint Shader::CreateShader(const ShaderCode& shaderCode) {
+GLuint Shader::CreateShader(const ShaderCode& shader_code) {
 	// Get shader type
-	const GLenum shaderType = [&]() {
-		switch (shaderCode.type) {
+	const GLenum shader_type = [&]() {
+		switch (shader_code.type) {
 		case ShaderType::Vertex:
 			return GL_VERTEX_SHADER;
 		case ShaderType::Fragment:
@@ -91,77 +91,77 @@ GLuint Shader::CreateShader(const ShaderCode& shaderCode) {
 		}
 	}();
 	// Create
-	GLCall(GLuint shaderID = glCreateShader(shaderType));
+	GLCall(GLuint shader_id = glCreateShader(shader_type));
 	// Compile
-	const char* src = shaderCode.sourceCode.c_str();
-	GLCall(glShaderSource(shaderID, 1, &src, nullptr));
-	GLCall(glCompileShader(shaderID));
+	const char* src = shader_code.source_code.c_str();
+	GLCall(glShaderSource(shader_id, 1, &src, nullptr));
+	GLCall(glCompileShader(shader_id));
 	// Debug
 #ifndef NDEBUG
 	int result;
-	GLCall(glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result));
+	GLCall(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE) {
 		int length;
-		GLCall(glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length));
+		GLCall(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)alloca(length * sizeof(char));
-		GLCall(glGetShaderInfoLog(shaderID, length, &length, message));
+		GLCall(glGetShaderInfoLog(shader_id, length, &length, message));
 		Log::Error("Shader compilation failed :\n{}", message);
-		GLCall(glDeleteShader(shaderID));
+		GLCall(glDeleteShader(shader_id));
 	}
 #endif
-	return shaderID;
+	return shader_id;
 }
 
 void Shader::bind() {
-	GLCall(glUseProgram(m_programID));
+	GLCall(glUseProgram(_program_id));
 }
 
-GLint Shader::getUniformLocation(const char* uniformName) {
-	if (m_uniformLocationCache.find(uniformName) != m_uniformLocationCache.end()) {
-		return m_uniformLocationCache[uniformName];
+GLint Shader::uniform_location(const char* uniform_name) {
+	if (_uniform_locations.find(uniform_name) != _uniform_locations.end()) {
+		return _uniform_locations[uniform_name];
 	}
-	GLCall(GLint location = glGetUniformLocation(m_programID, uniformName));
-	m_uniformLocationCache[uniformName] = location;
+	GLCall(GLint location = glGetUniformLocation(_program_id, uniform_name));
+	_uniform_locations[uniform_name] = location;
 	return location;
 }
 
-void Shader::setUniform(const char* uniformName, int v) {
+void Shader::set_uniform(std::string_view uniform_name, int v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform1i(getUniformLocation(uniformName), v));
+	GLCall(glUniform1i(uniform_location(uniform_name.data()), v));
 }
-void Shader::setUniform(const char* uniformName, unsigned int v) {
-	setUniform(uniformName, static_cast<int>(v));
+void Shader::set_uniform(std::string_view uniform_name, unsigned int v) {
+	set_uniform(uniform_name, static_cast<int>(v));
 }
-void Shader::setUniform(const char* uniformName, bool v) {
-	setUniform(uniformName, v ? 1 : 0);
+void Shader::set_uniform(std::string_view uniform_name, bool v) {
+	set_uniform(uniform_name, v ? 1 : 0);
 }
-void Shader::setUniform(const char* uniformName, float v) {
+void Shader::set_uniform(std::string_view uniform_name, float v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform1f(getUniformLocation(uniformName), v));
+	GLCall(glUniform1f(uniform_location(uniform_name.data()), v));
 }
-void Shader::setUniform(const char* uniformName, const glm::vec2& v) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform2f(getUniformLocation(uniformName), v.x, v.y));
+	GLCall(glUniform2f(uniform_location(uniform_name.data()), v.x, v.y));
 }
-void Shader::setUniform(const char* uniformName, const glm::vec3& v) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::vec3& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform3f(getUniformLocation(uniformName), v.x, v.y, v.z));
+	GLCall(glUniform3f(uniform_location(uniform_name.data()), v.x, v.y, v.z));
 }
-void Shader::setUniform(const char* uniformName, const glm::vec4& v) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform4f(getUniformLocation(uniformName), v.x, v.y, v.z, v.w));
+	GLCall(glUniform4f(uniform_location(uniform_name.data()), v.x, v.y, v.z, v.w));
 }
-void Shader::setUniform(const char* uniformName, const glm::mat2& mat) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix2fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLCall(glUniformMatrix2fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
-void Shader::setUniform(const char* uniformName, const glm::mat3& mat) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::mat3& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix3fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLCall(glUniformMatrix3fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
-void Shader::setUniform(const char* uniformName, const glm::mat4& mat) {
+void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLCall(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
 

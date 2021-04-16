@@ -6,7 +6,7 @@
 namespace Cool {
 
 #ifndef NDEBUG
-#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == m_shader.m_programID && "You must call compute_shader->bind() before calling compute()");
+#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == m_shader._program_id && "You must call compute_shader->bind() before calling compute()");
 #else 
 #define ASSERT_SHADER_IS_BOUND
 #endif
@@ -46,19 +46,19 @@ public:
     /// </summary>
     /// <param name="filePath">Path to the file containing the code of the compute shader.</param>
     void createProgramFromFile(const char* filePath) {
-        std::string sourceCode;
-        File::ToString(filePath, &sourceCode);
-        createProgramFromCode(sourceCode);
+        std::string source_code;
+        File::ToString(filePath, &source_code);
+        createProgramFromCode(source_code);
     }
 
     /// <summary>
     /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
     /// </summary>
-    /// <param name="sourceCode">The source code of the compute shader.</param>
-    void createProgramFromCode(const std::string& sourceCode) {
-        m_shader.createProgram({ ShaderCode::FromCode(
+    /// <param name="source_code">The source code of the compute shader.</param>
+    void createProgramFromCode(const std::string& source_code) {
+        m_shader.create_program({ ShaderCode::FromCode(
             ShaderType::Compute,
-            s_boilerplateSourceCode + sourceCode
+            s_boilerplateSourceCode + source_code
         )});
     }
     /// <summary>
@@ -75,9 +75,9 @@ public:
         assert(WorkGroupSizeY != 0);
         assert(WorkGroupSizeZ != 0);
         ASSERT_SHADER_IS_BOUND
-        m_shader.setUniform("NumberOfComputationsX", nbComputationsX);
-        m_shader.setUniform("NumberOfComputationsY", nbComputationsY);
-        m_shader.setUniform("NumberOfComputationsZ", nbComputationsZ);
+        m_shader.set_uniform("NumberOfComputationsX", nbComputationsX);
+        m_shader.set_uniform("NumberOfComputationsY", nbComputationsY);
+        m_shader.set_uniform("NumberOfComputationsZ", nbComputationsZ);
         GLCall(glDispatchCompute(
             (nbComputationsX - 1) / WorkGroupSizeX + 1,
             (nbComputationsY - 1) / WorkGroupSizeY + 1,
