@@ -55,10 +55,10 @@ public:
     /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
     /// </summary>
     /// <param name="source_code">The source code of the compute shader.</param>
-    void create_program_from_code(const std::string& source_code) {
+    void create_program_from_code(std::string_view source_code) {
         _shader.create_program({ ShaderCode::FromCode(
             ShaderType::Compute,
-            _boilerplate_source_code + source_code
+            _boilerplate_source_code + std::string(source_code)
         )});
     }
     /// <summary>
