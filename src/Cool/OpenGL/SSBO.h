@@ -19,24 +19,24 @@ public:
 	/// Also, the layout doesn't need to use floats, you can basically use any type you want (kind of, vec3 doesn't work) : float, vec2, vec4, a struct, etc.
 	/// </param>
 	SSBO(unsigned int binding)
-		: m_binding(binding)
+		: _binding(binding)
 	{
-		GLCall(glGenBuffers(1, &m_id));
-		GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_binding, m_id));
+		GLCall(glGenBuffers(1, &_id));
+		GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _binding, _id));
 	}
 	~SSBO() {
-		GLCall(glDeleteBuffers(1, &m_id));
+		GLCall(glDeleteBuffers(1, &_id));
 	}
 
 	/// <summary>
 	/// Sends some data (an array of T) from the CPU (your C++ code) to the GPU (your shader code).
 	/// </summary>
-	/// <param name="nbOfT">Number of elements in the array</param>
+	/// <param name="nb_of_elements">Number of elements in the array</param>
 	/// <param name="data">Pointer to the beginning of the array</param>
 	/// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
-	void uploadData(size_t nbOfT, T* data, GLenum usage = GL_STREAM_READ) {
-		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
-		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nbOfT * sizeof(T), data, usage));
+	void upload_data(size_t nb_of_elements, T* data, GLenum usage = GL_STREAM_READ) {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
+		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
 	}
 
 	/// <summary>
@@ -44,19 +44,19 @@ public:
 	/// </summary>
 	/// <param name="v">The vector containing the data.</param>
 	/// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
-	void uploadData(std::vector<T>& v, GLenum usage = GL_STREAM_READ) {
-		uploadData(v.size(), v.data(), usage);
+	void upload_data(std::vector<T>& v, GLenum usage = GL_STREAM_READ) {
+		upload_data(v.size(), v.data(), usage);
 	}
 
 	/// <summary>
 	/// Retrieves the data from the GPU (your shader code) back to the CPU (your C++ code) and writes it in the given array.
 	/// </summary>
-	/// <param name="nbOfT">Number of elements in the array</param>
+	/// <param name="nb_of_elements">Number of elements in the array</param>
 	/// <param name="data">Pointer to the beginning of the array</param>
-	void downloadData(size_t nbOfT, T* data) {
-		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id));
+	void download_data(size_t nb_of_elements, T* data) {
+		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
 		GLCall(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
-		memcpy(data, p, nbOfT * sizeof(T));
+		memcpy(data, p, nb_of_elements * sizeof(T));
 		GLCall(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
 	}
 
@@ -64,13 +64,13 @@ public:
 	/// Retrieves the data from the GPU (your shader code) back to the CPU (your C++ code) and writes it in the given std::vector.
 	/// </summary>
 	/// <param name="v">The vector that will receive the data. Please make sure that it already has the right size !</param>
-	void downloadData(std::vector<T>& v) {
-		downloadData(v.size(), v.data());
+	void download_data(std::vector<T>& v) {
+		download_data(v.size(), v.data());
 	}
 
 private:
-	unsigned int m_binding;
-	unsigned int m_id;
+	unsigned int _binding;
+	unsigned int _id;
 };
 
 } // namespace Cool
