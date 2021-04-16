@@ -6,7 +6,7 @@
 namespace Cool {
 
 #ifndef NDEBUG
-#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == m_shader._program_id && "You must call compute_shader->bind() before calling compute()");
+#define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == _shader._program_id && "You must call compute_shader->bind() before calling compute()");
 #else 
 #define ASSERT_SHADER_IS_BOUND
 #endif
@@ -22,74 +22,74 @@ public:
     /// </summary>
     /// <param name="filePath">The path to the file containing the compute shader source code.
     /// Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp</param>
-    ComputeShader(const char* filePath) {
-        createProgramFromFile(filePath);
+    ComputeShader(std::string_view file_path) {
+        create_program_from_file(file_path);
     }
     ComputeShader(ComputeShader&& o) noexcept
-        : m_shader(std::move(o.m_shader))
+        : _shader(std::move(o._shader))
     {}
     void operator=(ComputeShader&& o) {
-        m_shader = std::move(o.m_shader);
+        _shader = std::move(o._shader);
     }
 
     /// <summary>
     /// Returns the underlying Cool::Shader that is managed by this ComputeShader
     /// </summary>
-    inline Shader* operator->() { return &m_shader; }
+    inline Shader* operator->() { return &_shader; }
     /// <summary>
     /// Returns the underlying Cool::Shader that is managed by this ComputeShader
     /// </summary>
-    inline Shader& operator*() { return m_shader; }
+    inline Shader& operator*() { return _shader; }
 
     /// <summary>
     /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
     /// </summary>
     /// <param name="filePath">Path to the file containing the code of the compute shader.</param>
-    void createProgramFromFile(const char* filePath) {
+    void create_program_from_file(std::string_view file_path) {
         std::string source_code;
-        File::ToString(filePath, &source_code);
-        createProgramFromCode(source_code);
+        File::ToString(file_path, &source_code);
+        create_program_from_code(source_code);
     }
 
     /// <summary>
     /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
     /// </summary>
     /// <param name="source_code">The source code of the compute shader.</param>
-    void createProgramFromCode(const std::string& source_code) {
-        m_shader.create_program({ ShaderCode::FromCode(
+    void create_program_from_code(const std::string& source_code) {
+        _shader.create_program({ ShaderCode::FromCode(
             ShaderType::Compute,
-            s_boilerplateSourceCode + source_code
+            _boilerplate_source_code + source_code
         )});
     }
     /// <summary>
     /// Calls the compute shader.
     /// </summary>
-    /// <param name="nbComputationsX">The X dimension of the call cube (Equivalent to the number of times the shader will be called if NumberOfComputationsY == NumberOfComputationsZ == 1)</param>
-    /// <param name="nbComputationsY">The Y dimension of the call cube. If you didn't set a WorkGroupSizeY, this should be 1</param>
-    /// <param name="nbComputationsZ">The Z dimension of the call cube. If you didn't set a WorkGroupSizeZ, this should be 1</param>
-    void compute(unsigned int nbComputationsX, unsigned int nbComputationsY = 1, unsigned int nbComputationsZ = 1) {
-        assert(nbComputationsX != 0);
-        assert(nbComputationsY != 0);
-        assert(nbComputationsZ != 0);
+    /// <param name="nb_computations_x">The X dimension of the call cube (Equivalent to the number of times the shader will be called if NumberOfComputationsY == NumberOfComputationsZ == 1)</param>
+    /// <param name="nb_computations_y">The Y dimension of the call cube. If you didn't set a WorkGroupSizeY, this should be 1</param>
+    /// <param name="nb_computations_z">The Z dimension of the call cube. If you didn't set a WorkGroupSizeZ, this should be 1</param>
+    void compute(unsigned int nb_computations_x, unsigned int nb_computations_y = 1, unsigned int nb_computations_z = 1) {
+        assert(nb_computations_x != 0);
+        assert(nb_computations_y != 0);
+        assert(nb_computations_z != 0);
         assert(WorkGroupSizeX != 0);
         assert(WorkGroupSizeY != 0);
         assert(WorkGroupSizeZ != 0);
         ASSERT_SHADER_IS_BOUND
-        m_shader.set_uniform("NumberOfComputationsX", nbComputationsX);
-        m_shader.set_uniform("NumberOfComputationsY", nbComputationsY);
-        m_shader.set_uniform("NumberOfComputationsZ", nbComputationsZ);
+        _shader.set_uniform("NumberOfComputationsX", nb_computations_x);
+        _shader.set_uniform("NumberOfComputationsY", nb_computations_y);
+        _shader.set_uniform("NumberOfComputationsZ", nb_computations_z);
         GLCall(glDispatchCompute(
-            (nbComputationsX - 1) / WorkGroupSizeX + 1,
-            (nbComputationsY - 1) / WorkGroupSizeY + 1,
-            (nbComputationsZ - 1) / WorkGroupSizeZ + 1
+            (nb_computations_x - 1) / WorkGroupSizeX + 1,
+            (nb_computations_y - 1) / WorkGroupSizeY + 1,
+            (nb_computations_z - 1) / WorkGroupSizeZ + 1
         ));
         GLCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
     }
 
 private:
-	Shader m_shader;
+	Shader _shader;
 
-    static inline std::string s_boilerplateSourceCode =
+    static inline std::string _boilerplate_source_code =
 std::string(R"V0G0N(
 #version 430
 
