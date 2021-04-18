@@ -129,7 +129,7 @@ void Exporter::ImGui_menu_items() {
 	if (ImGui::Button("Image")) {
 		open_window_export_image(true);
 	}
-#if defined(__COOL_TIME) && defined(__COOL_STRING)
+#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 	if (ImGui::Button("Image Sequence")) {
 		_is_window_open_image_sequence_export = true;
 	}
