@@ -327,7 +327,9 @@ static void ImGui_ImplGlfw_UpdateMousePosAndButtons()
 #else
         const bool focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) != 0;
 #endif
-        if (focused)
+        // This "if" is annoying because it means WantCaptureMouse isn't properly updated on the frame when the focus comes back to our app
+        // See https://github.com/ocornut/imgui/issues/2445
+        //if (focused)
         {
             if (io.WantSetMousePos)
             {
