@@ -3,3 +3,6 @@ Additional usefull functions extending the amazing **Dear ImGui** library ([gith
 
 Requires :
   - App
+
+Optional :
+  - Icons for a File and Folder dialog
