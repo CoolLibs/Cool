@@ -5,17 +5,30 @@
 
 namespace Cool {
 
-GLuint Icons::m_playID  = -1;
-GLuint Icons::m_pauseID = -1;
+std::unordered_map<std::string_view, GLuint> Icons::_map;
 
-void Icons::_LoadAll() {
-	m_playID  = Texture::LoadTexture("Cool/Icons/icons/play.png");
-	m_pauseID = Texture::LoadTexture("Cool/Icons/icons/pause.png");
+GLuint Icons::Get(std::string_view image_path) {
+	auto res = _map.find(image_path);
+	if (res == _map.end()) {
+		Log::Info("[Icons::Get] Generating texture for {}", image_path);
+		GLuint tex_id = Texture::LoadTexture(image_path);
+		_map[image_path] = tex_id;
+		return tex_id;
+	}
+	else {
+		return res->second;
+	}
 }
 
-void Icons::_DestroyAll() {
-	Texture::DestroyTexture(m_playID);
-	Texture::DestroyTexture(m_pauseID);
+void Icons::CleanupTexture(std::string_view image_path) {
+	auto res = _map.find(image_path);
+	if (res == _map.end()) {
+		Log::Warn("[Icons::CleanupTexture] The texture you want to clean up doesn't exist ! {}", image_path);
+	}
+	else {
+		Texture::DestroyTexture(res->second);
+		_map.erase(image_path);
+	}
 }
 
 } // namespace Cool

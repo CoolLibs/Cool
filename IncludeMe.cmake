@@ -11,3 +11,7 @@ add_custom_command(
         ${PATH_TO_COOL}/Icons/icons
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/Icons/icons
 )
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <unordered_map>
+)
