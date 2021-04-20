@@ -8,10 +8,13 @@ class Icons {
 public:
 	/// <summary></summary>
 	/// <returns>The OpenGL texture ID of the "Play" icon</returns>
-	static inline GLuint Play()  { return Get(File::RootDir + "/Cool/Icons/icons/play.png"); }
+	static inline GLuint Play()    { return Get(File::RootDir + "/Cool/Icons/icons/play.png"); }
 	/// <summary></summary>
 	/// <returns>The OpenGL texture ID of the "Pause" icon</returns>
-	static inline GLuint Pause() { return Get(File::RootDir + "/Cool/Icons/icons/pause.png"); }
+	static inline GLuint Pause()   { return Get(File::RootDir + "/Cool/Icons/icons/pause.png"); }
+	/// <summary></summary>
+	/// <returns>The OpenGL texture ID of the "Folder" icon</returns>
+	static inline GLuint Folder() { return Get(File::RootDir + "/Cool/Icons/icons/folder.png"); }
 
 	/// <summary>
 	/// Returns the OpenGL texture ID of the image. The first time Get is called for a given image path, the file is read and a texture is generated. Subsequent calls to Get for this same file will serve the texture ID from a cache (i.e. really fast).
