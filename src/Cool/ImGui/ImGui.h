@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __COOL_ICONS
+#define __COOL_IMGUI_FILE_DIALOG_BUTTON
+#endif
+
 namespace ImGui {
 
 	/// <summary>
@@ -50,14 +54,14 @@ namespace ImGui {
 	/// <param name="tintColor">You can tint your image</param>
 	/// <param name="backgroundColor">Color that will appear in places where your image is transparent</param>
 	/// <returns>true iff the button was just pressed</returns>
-	bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor = ImVec4(1, 1, 1, 1), const ImVec4& backgroundColor = ImVec4(0, 0, 0, 1));
+	bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor = ImVec4(1, 1, 1, 1), const ImVec4& backgroundColor = ImVec4(0, 0, 0, 1), float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 	
 	/// <summary>
 	/// A button that uses an image instead of text, but greyed out
 	/// </summary>
 	/// <param name="texID">OpenGL texture ID of the image</param>
 	/// <param name="reasonForDisabling">An explanation that will be shown on hover</param>
-	void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling = "Currently disabled");
+	void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 	
 	/// <summary>
 	/// Displays an image with a frame around it
@@ -96,5 +100,10 @@ namespace ImGui {
 	/// </summary>
 	/// <param name="strID">A label that won't be displayed but is used as an ID</param>
 	void InvisibleWrapperAroundPreviousLine(const char* strID);
+
+#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
+	bool OpenFolderDialog(std::string* out_path, std::string_view base_folder = "");
+	bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> filterItem = {}, std::string_view base_folder = "");
+#endif
 
 } // namespace ImGui

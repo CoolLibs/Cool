@@ -5,6 +5,11 @@
 #endif
 #include <imgui/imgui_internal.h>
 
+
+#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
+#include <Cool/Icons/Icons.h>
+#endif
+
 namespace ImGui {
 
 void HelpMarker(const char* text) {
@@ -101,16 +106,13 @@ void ButtonDisabled(const char* label, const char* reasonForDisabling) {
 	Tooltip(reasonForDisabling);
 }
 
-static constexpr int BUTTON_ICON_SIZE = 18;
-static constexpr int BUTTON_FRAME_PADDING = 1;
-
-bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor, const ImVec4& backgroundColor) {
-	return ImageButton(reinterpret_cast<ImTextureID>(texID), ImVec2(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), BUTTON_FRAME_PADDING, backgroundColor, tintColor);
+bool ButtonWithIcon(GLuint texID, const ImVec4& tintColor, const ImVec4& backgroundColor, float button_width, float button_height, int frame_padding) {
+	return ImageButton(reinterpret_cast<ImTextureID>(texID), ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, backgroundColor, tintColor);
 }
 
-void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling) {
+void ButtonWithIconDisabled(GLuint texID, const char* reasonForDisabling, float button_width, float button_height, int frame_padding) {
 	const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
-	ImageFramed(texID, ImVec2(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE), BUTTON_FRAME_PADDING, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
+	ImageFramed(texID, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
 	Tooltip(reasonForDisabling);
 }
 
@@ -166,5 +168,50 @@ void InvisibleWrapperAroundPreviousLine(const char* label) {
 	SetCursorPos(GetCursorPos() - ImVec2(0, 2 * GetTextLineHeight()));
 	InvisibleButton(label, ImVec2(GetWindowWidth(), 2 * GetTextLineHeight()));
 }
+
+#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
+bool OpenFolderDialog(std::string* out_path, std::string_view base_folder) {
+	if (ButtonWithIcon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+		NFD::UniquePath outPath;
+		nfdresult_t result;
+		if (Cool::File::Exists(base_folder))
+			result = NFD::PickFolder(outPath, base_folder.data());
+		else
+			result = NFD::PickFolder(outPath);
+		if (result == NFD_OKAY) {
+			*out_path = outPath.get();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
+bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> filterItem, std::string_view base_folder) {
+	if (ButtonWithIcon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+		NFD::UniquePath outPath;
+		nfdresult_t result;
+		if (Cool::File::Exists(base_folder)) {
+			result = NFD::OpenDialog(outPath, filterItem.data(), filterItem.size(), base_folder.data());
+		}
+		else
+			result = NFD::OpenDialog(outPath, nullptr, 0);
+		if (result == NFD_OKAY) {
+			*out_path = outPath.get();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+#endif
 
 } // namespace ImGui
