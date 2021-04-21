@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef __COOL_ICONS
-#define __COOL_IMGUI_FILE_DIALOG_BUTTON
-#endif
-
 namespace ImGui {
 
 	/// <summary>
@@ -101,9 +97,9 @@ namespace ImGui {
 	/// <param name="strID">A label that won't be displayed but is used as an ID</param>
 	void InvisibleWrapperAroundPreviousLine(const char* strID);
 
-#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
 	/// <summary>
 	/// Adds a button that opens a folder dialog.
+	/// (NB : if you want an icon for that button, add the Cool::Icons module to your project)
 	/// </summary>
 	/// <param name="out_path">A pointer to the variable where the resulting path should be stored.</param>
 	/// <param name="base_folder">The folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour. (By the way please note that setting base_folder may have no effect on some plateforms).</param>
@@ -112,12 +108,12 @@ namespace ImGui {
 
 	/// <summary>
 	/// Adds a button that opens a file dialog.
+	/// (NB : if you want an icon for that button, add the Cool::Icons module to your project)
 	/// </summary>
 	/// <param name="out_path">A pointer to the variable where the resulting path should be stored.</param>
 	/// <param name="file_type_filter">A set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in the Cool/App/NfdFileFilter.h header.</param>
 	/// <param name="base_folder">The folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour. (By the way please note that setting base_folder may have no effect on some plateforms).</param>
 	/// <returns>true iff the button was clicked AND out_path was modified (i.e. the dialog was not canceled)</returns>
 	bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters = {}, std::string_view base_folder = "");
-#endif
 
 } // namespace ImGui

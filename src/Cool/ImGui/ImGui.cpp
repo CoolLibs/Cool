@@ -6,7 +6,7 @@
 #include <imgui/imgui_internal.h>
 
 
-#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
+#ifdef __COOL_ICONS
 #include <Cool/Icons/Icons.h>
 #endif
 
@@ -169,9 +169,12 @@ void InvisibleWrapperAroundPreviousLine(const char* label) {
 	InvisibleButton(label, ImVec2(GetWindowWidth(), 2 * GetTextLineHeight()));
 }
 
-#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
 bool OpenFolderDialog(std::string* out_path, std::string_view base_folder) {
+#ifdef __COOL_ICONS
 	if (ButtonWithIcon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+#else
+	if (ImGui::Button("Folder Picker")) {
+#endif
 		NFD::UniquePath outPath;
 		nfdresult_t result;
 		if (Cool::File::Exists(base_folder))
@@ -192,7 +195,11 @@ bool OpenFolderDialog(std::string* out_path, std::string_view base_folder) {
 }
 
 bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder) {
+#ifdef __COOL_ICONS
 	if (ButtonWithIcon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+#else
+	if (ImGui::Button("File Picker")) {
+#endif
 		NFD::UniquePath outPath;
 		nfdresult_t result;
 		if (Cool::File::Exists(base_folder)) {
@@ -212,6 +219,5 @@ bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_typ
 		return false;
 	}
 }
-#endif
 
 } // namespace ImGui
