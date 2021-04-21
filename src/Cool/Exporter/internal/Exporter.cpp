@@ -158,10 +158,8 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		bool _path_has_changed = false;
 		_path_has_changed |= ImGui::InputText("File Name", &_file_name);
 		_path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
-#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
 		ImGui::SameLine();
 		_path_has_changed |= ImGui::OpenFolderDialog(&_folder_path_for_image, _folder_path_for_image);
-#endif
 		if (_path_has_changed) {
 			_should_show_file_exists_warning = File::Exists(output_path().c_str());
 		}
@@ -232,10 +230,8 @@ bool Exporter::ImGui_window_export_image_sequence() {
 		if (!_is_exporting_image_sequence) {
 			ImGui_resolution_widget();
 			ImGui::InputText("Path", &_folder_path_for_image_sequence);
-#ifdef __COOL_IMGUI_FILE_DIALOG_BUTTON
 			ImGui::SameLine();
 			ImGui::OpenFolderDialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
-#endif
 			ImGui::InputFloat("FPS", &_fps);
 			ImGui::PushItemWidth(50);
 			ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
