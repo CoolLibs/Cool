@@ -6,7 +6,7 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
 #include <chrono>
@@ -14,7 +14,7 @@
 
 namespace Cool {
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 class ExportImage_Functor {
 public:
 	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
@@ -48,7 +48,7 @@ private:
 
 Exporter::Exporter()
 	: _folder_path_for_image(File::RootDir + "/out")
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	, _folder_path_for_image_sequence(File::RootDir + "/exports")
 #endif
 {}
@@ -74,7 +74,7 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 	RenderState::setIsExporting(false);
 }
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath) {
 	// Wait for a thread to be available
 	_thread_pool.wait_for_available_thread();
@@ -129,7 +129,7 @@ void Exporter::ImGui_menu_items() {
 	if (ImGui::Button("Image")) {
 		open_window_export_image(true);
 	}
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	if (ImGui::Button("Image Sequence")) {
 		_is_window_open_image_sequence_export = true;
 	}
@@ -176,7 +176,7 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 	}
 }
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 
 void Exporter::begin_image_sequence_export() {
 	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image_sequence.c_str())) {

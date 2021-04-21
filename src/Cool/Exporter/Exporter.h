@@ -1,6 +1,10 @@
 #pragma once
 
 #if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#define __COOL_EXPORTER_IMAGE_SEQUENCE
+#endif
+
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 #include "internal/Averager.h"
 #include <Cool/MultiThread/ThreadPool.h>
 #endif
@@ -70,7 +74,7 @@ private:
 	std::string output_path();
 	void find_available_file_name();
 	void ImGui_resolution_widget();
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	void export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath);
 #endif
 
@@ -80,7 +84,7 @@ private:
 	bool _is_window_open_image_export = false;
 	bool _should_show_file_exists_warning = false;
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	ThreadPool _thread_pool;
 	std::string _folder_path_for_image_sequence;
 	bool _is_exporting_image_sequence = false;
