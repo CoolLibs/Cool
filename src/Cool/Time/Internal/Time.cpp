@@ -2,7 +2,7 @@
 
 #include "Clock_Realtime.h"
 #include "Clock_FixedTimestep.h"
-#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+#ifdef __COOL_TIME_TIMELINE
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGui.h>
 #include <Cool/App/RenderState.h>
@@ -42,7 +42,7 @@ void Time::SetAsFixedTimestep(float fps) {
     m_clock = std::make_unique<Clock_FixedTimestep>(fps, time());
 }
 
-#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+#ifdef __COOL_TIME_TIMELINE
 void Time::ImGuiTimeline() {
     if (!RenderState::IsExporting()) {
         if (ImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {

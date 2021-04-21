@@ -3,6 +3,9 @@
 namespace Cool {
 
 class Clock;
+#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+#define __COOL_TIME_TIMELINE
+#endif
 
 /// <summary>
 /// The current local time of the app. Be default it elapses at the same speed as real time, but you can set it to use a fixed timestep (usefull when exporting images)
@@ -17,7 +20,7 @@ public:
 	/// Must be called on every frame.
 	/// </summary>
 	static void Update();
-#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+#ifdef __COOL_TIME_TIMELINE
 	/// <summary>
 	/// Shows the current time on a timeline, with a few controls.
 	/// </summary>
