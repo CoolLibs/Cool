@@ -191,12 +191,12 @@ bool OpenFolderDialog(std::string* out_path, std::string_view base_folder) {
 	}
 }
 
-bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> filterItem, std::string_view base_folder) {
+bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder) {
 	if (ButtonWithIcon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
 		NFD::UniquePath outPath;
 		nfdresult_t result;
 		if (Cool::File::Exists(base_folder)) {
-			result = NFD::OpenDialog(outPath, filterItem.data(), filterItem.size(), base_folder.data());
+			result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size(), base_folder.data());
 		}
 		else
 			result = NFD::OpenDialog(outPath, nullptr, 0);
