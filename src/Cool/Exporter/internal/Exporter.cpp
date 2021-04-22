@@ -126,14 +126,25 @@ void Exporter::open_window_export_image(bool open) {
 }
 
 void Exporter::ImGui_menu_items() {
-	if (ImGui::Button("Image")) {
+	// Calculate max button width
+	const char* longuest_text =
+#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
+		"Image Sequence";
+#else
+		"Image";
+#endif
+	float button_width = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
+	// Draw buttons
+	//ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
+	if (ImGui::Button("Image", ImVec2(button_width, 0.0f))) {
 		open_window_export_image(true);
 	}
 #ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
-	if (ImGui::Button("Image Sequence")) {
+	if (ImGui::Button("Image Sequence", ImVec2(button_width, 0.0f))) {
 		_is_window_open_image_sequence_export = true;
 	}
 #endif
+	//ImGui::PopStyleVar();
 }
 
 void Exporter::ImGui_resolution_widget() {
