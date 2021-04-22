@@ -3,7 +3,7 @@
 namespace Cool {
 
 class Clock;
-#if defined(__COOL_IMGUI) && defined(__COOL_ICONS)
+#if defined(__COOL_IMGUI)
 #define __COOL_TIME_TIMELINE
 #endif
 

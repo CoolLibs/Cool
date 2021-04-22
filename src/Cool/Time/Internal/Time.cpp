@@ -3,9 +3,11 @@
 #include "Clock_Realtime.h"
 #include "Clock_FixedTimestep.h"
 #ifdef __COOL_TIME_TIMELINE
-#include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGui.h>
 #include <Cool/App/RenderState.h>
+#ifdef __COOL_ICONS
+#include <Cool/Icons/Icons.h>
+#endif
 #endif
 
 namespace Cool {
@@ -45,7 +47,11 @@ void Time::SetAsFixedTimestep(float fps) {
 #ifdef __COOL_TIME_TIMELINE
 void Time::ImGuiTimeline() {
     if (!RenderState::IsExporting()) {
+#ifdef __COOL_ICONS
         if (ImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
+#else
+        if (ImGui::Button(m_clock->isPlaying() ? "Pause" : "Play")) {
+#endif
             m_clock->togglePlayPause();
         }
         ImGui::SameLine();
