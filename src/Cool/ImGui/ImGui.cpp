@@ -5,7 +5,6 @@
 #endif
 #include <imgui/imgui_internal.h>
 
-
 #ifdef __COOL_ICONS
 #include <Cool/Icons/Icons.h>
 #endif
