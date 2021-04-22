@@ -41,7 +41,7 @@ std::string WhithoutFileExtension(const std::string& filepath) {
 
 std::string WhithoutFileName(const std::string& filepath) {
     if (filepath.find_last_of(".") < filepath.size()) { // There is a "." of an extension, so the thing after the last "/" must be a file name
-        auto pos = filepath.find_last_of("/");
+        auto pos = filepath.find_last_of("/\\");
         return filepath.substr(0, pos);
     }
     return filepath;
