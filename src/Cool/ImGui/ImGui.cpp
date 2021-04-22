@@ -177,10 +177,7 @@ bool OpenFolderDialog(std::string* out_path, std::string_view base_folder) {
 #endif
 		NFD::UniquePath outPath;
 		nfdresult_t result;
-		if (Cool::File::Exists(base_folder))
-			result = NFD::PickFolder(outPath, base_folder.data());
-		else
-			result = NFD::PickFolder(outPath);
+		result = NFD::PickFolder(outPath, base_folder.data());
 		if (result == NFD_OKAY) {
 			*out_path = outPath.get();
 			return true;
@@ -202,11 +199,7 @@ bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_typ
 #endif
 		NFD::UniquePath outPath;
 		nfdresult_t result;
-		if (Cool::File::Exists(base_folder)) {
-			result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size(), base_folder.data());
-		}
-		else
-			result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size());
+		result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size(), base_folder.data());
 		if (result == NFD_OKAY) {
 			*out_path = outPath.get();
 			return true;
