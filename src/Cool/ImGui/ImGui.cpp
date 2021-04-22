@@ -206,7 +206,7 @@ bool OpenFileDialog(std::string* out_path, std::vector<nfdfilteritem_t> file_typ
 			result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size(), base_folder.data());
 		}
 		else
-			result = NFD::OpenDialog(outPath, nullptr, 0);
+			result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size());
 		if (result == NFD_OKAY) {
 			*out_path = outPath.get();
 			return true;
