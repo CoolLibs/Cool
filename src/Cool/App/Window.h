@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __COOL_APP_VULKAN
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#endif
 #include <GLFW/glfw3.h>
 
 namespace Cool {
@@ -34,6 +38,8 @@ public:
 	bool checkForFullscreenToggles(int key, int scancode, int action, int mods);
 	void switchFullScreen();
 	void escapeFullScreen();
+
+	void check_for_swapchain_rebuild();
 
 private:
 	void setSwapInterval(int value);

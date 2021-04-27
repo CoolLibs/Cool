@@ -113,4 +113,19 @@ GLFWmonitor* Window::getCurrentMonitor() const {
 	return bestmonitor;
 }
 
+void Window::check_for_swapchain_rebuild() {
+	if (g_SwapChainRebuild)
+	{
+		int width, height;
+		glfwGetFramebufferSize(window.get(), &width, &height);
+		if (width > 0 && height > 0)
+		{
+			ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
+			ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData, g_QueueFamily, g_Allocator, width, height, g_MinImageCount);
+			g_MainWindowData.FrameIndex = 0;
+			g_SwapChainRebuild = false;
+		}
+	}
+}
+
 } // namespace Cool

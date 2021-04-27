@@ -48,6 +48,11 @@ void AppManager::run() {
 }
 
 void AppManager::update() {
+	// Events
+	glfwPollEvents();
+#ifdef __COOL_APP_VULKAN
+	m_mainWindow.check_for_swapchain_rebuild();
+#endif
 	// Clear screen
 	const glm::vec3& emptySpaceColor = RenderState::getEmptySpaceColor();
 	glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
@@ -82,12 +87,30 @@ void AppManager::update() {
 	}
 	// Render ImGui
 	ImGui::Render();
-	ImGuiIO& io = ImGui::GetIO();
-	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 #ifdef __COOL_APP_VULKAN
-	// TODO render draw data
+	ImDrawData* main_draw_data = ImGui::GetDrawData();
+	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+	wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
+	wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
+	wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
+	wd->ClearValue.color.float32[3] = clear_color.w;
+	if (!main_is_minimized)
+		FrameRender(wd, main_draw_data);
+
+	// Update and Render additional Platform Windows
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
+	// Present Main Platform Window
+	if (!main_is_minimized)
+		FramePresent(wd);
 #endif
 #ifdef __COOL_APP_OPENGL
+	ImGuiIO& io = ImGui::GetIO();
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
 	// Update and Render additional Platform Windows
@@ -101,8 +124,6 @@ void AppManager::update() {
 	// End frame
 	m_bFirstFrame = false;
 	glfwSwapBuffers(m_mainWindow.get());
-	// Events
-	glfwPollEvents();
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
