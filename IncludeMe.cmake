@@ -3,34 +3,38 @@
 add_compile_definitions(__COOL_APP)
 add_compile_definitions(__COOL_GLM)
 
-# Include OpenGL
+# OpenGL
 find_package(OpenGL REQUIRED)
 
-# Include Glfw
-add_subdirectory(${PATH_TO_COOL}/App/lib/glfw)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-target_link_libraries(${PROJECT_NAME} glfw)
+# GLFW
+set(GLFW_DIR ${PATH_TO_COOL}/App/lib/glfw)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+add_subdirectory(${GLFW_DIR} binary_dir EXCLUDE_FROM_ALL)
+include_directories(${GLFW_DIR}/include)
+include_directories(${GLFW_DIR}/deps)
 
-# Include glad
+# Dear ImGui
+set(IMGUI_DIR ${PATH_TO_COOL}/App/lib/imgui)
+add_library(IMGUI STATIC ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+
+# glad
 add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
 
-# Include DearImGui
-file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
-add_library(IMGUI STATIC ${IMGUI_SOURCES})
-
-#Include Boxer
+# Boxer
 add_subdirectory(${PATH_TO_COOL}/App/lib/Boxer)
 
-#Include Native File Dialog
+# Native File Dialog
 add_subdirectory(${PATH_TO_COOL}/App/lib/nfd/src)
 
 include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIRS}
+    ${IMGUI_DIR}
     ${PATH_TO_COOL}/App/lib/glad/include
-    ${PATH_TO_COOL}/App/lib/imgui
     ${PATH_TO_COOL}/App/lib/glm
     ${PATH_TO_COOL}/App/lib/nfd/src/include
     ${PATH_TO_COOL}/App/lib
@@ -52,6 +56,8 @@ target_link_libraries(${PROJECT_NAME}
     IMGUI
     Boxer
     nfd
+    glfw
+    Vulkan::Vulkan
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
@@ -62,7 +68,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
     <glad/glad.h>
-    <GLFW/glfw3.h>
     <boxer/boxer.h>
     <nfd.hpp>
     # Cool
