@@ -52,7 +52,7 @@ void OpenGLWindowingSystem::initializeGLFW() {
 }
 
 void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description) {
-	Log::Error("[Glfw] {}", description);
+	Log::Error("[Glfw] Error {} :\n{}", error, description);
 }
 
 OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
