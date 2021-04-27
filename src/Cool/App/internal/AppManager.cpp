@@ -21,7 +21,7 @@
 
 namespace Cool {
 
-AppManager::AppManager(OpenGLWindow& mainWindow, IApp& app)
+AppManager::AppManager(Window& mainWindow, IApp& app)
 	: m_mainWindow(mainWindow), m_app(app)
 {
 	Input::Initialize(mainWindow.get());

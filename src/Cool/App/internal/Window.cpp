@@ -1,23 +1,23 @@
-#include "../OpenGLWindow.h"
+#include "../Window.h"
 
 namespace Cool {
 
-OpenGLWindow::OpenGLWindow(GLFWwindow* window)
+Window::Window(GLFWwindow* window)
 	: m_window(window) 
 {}
 
-OpenGLWindow::OpenGLWindow(OpenGLWindow&& o) noexcept 
+Window::Window(Window&& o) noexcept
 	: m_window(o.m_window)
 {
 	o.m_window = nullptr;
 }
 
-OpenGLWindow::~OpenGLWindow() {
+Window::~Window() {
 	if (m_window != nullptr) // Could have been moved
 		glfwDestroyWindow(m_window);
 }
 
-bool OpenGLWindow::checkForFullscreenToggles(int key, int scancode, int action, int mods) {
+bool Window::checkForFullscreenToggles(int key, int scancode, int action, int mods) {
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_F11) {
 			switchFullScreen();
@@ -31,7 +31,7 @@ bool OpenGLWindow::checkForFullscreenToggles(int key, int scancode, int action, 
 	return false;
 }
 
-void OpenGLWindow::switchFullScreen() {
+void Window::switchFullScreen() {
 	if (m_bIsFullScreen)
 		escapeFullScreen();
 	else {
@@ -46,7 +46,7 @@ void OpenGLWindow::switchFullScreen() {
 	}
 }
 
-void OpenGLWindow::escapeFullScreen() {
+void Window::escapeFullScreen() {
 	if (m_bIsFullScreen) {
 		GLFWmonitor* monitor = getCurrentMonitor();
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -57,17 +57,17 @@ void OpenGLWindow::escapeFullScreen() {
 	}
 }
 
-void OpenGLWindow::enableVSync() {
+void Window::enableVSync() {
 	setSwapInterval(GLFW_TRUE);
 	m_bIsVSyncEnabled = true;
 }
 
-void OpenGLWindow::disableVSync() {
+void Window::disableVSync() {
 	setSwapInterval(GLFW_FALSE);
 	m_bIsVSyncEnabled = false;
 }
 
-void OpenGLWindow::setSwapInterval(int value) {
+void Window::setSwapInterval(int value) {
 	GLFWwindow* currentWindow = glfwGetCurrentContext();
 	glfwMakeContextCurrent(m_window);
 	glfwSwapInterval(value);
@@ -77,7 +77,7 @@ void OpenGLWindow::setSwapInterval(int value) {
 static int mini(int x, int y) { return x < y ? x : y; }
 static int maxi(int x, int y) { return x > y ? x : y; }
 
-GLFWmonitor* OpenGLWindow::getCurrentMonitor() const {
+GLFWmonitor* Window::getCurrentMonitor() const {
 	// Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
 	int nmonitors, i;
 	int wx, wy, ww, wh;

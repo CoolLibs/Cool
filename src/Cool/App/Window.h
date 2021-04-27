@@ -7,12 +7,12 @@ namespace Cool {
 /// <summary>
 /// A window and its OpenGL context
 /// </summary>
-class OpenGLWindow {
+class Window {
 public:
-	OpenGLWindow(OpenGLWindow&&) noexcept;
-	OpenGLWindow(const OpenGLWindow&) = delete;			   // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-	OpenGLWindow& operator=(const OpenGLWindow&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-	~OpenGLWindow();
+	Window(Window&&) noexcept;
+	Window(const Window&) = delete;			   // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
+	Window& operator=(const Window&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
+	~Window();
 
 	/// <summary>
 	/// Returns the underlying glfw window pointer
@@ -37,11 +37,11 @@ public:
 
 private:
 	void setSwapInterval(int value);
-	friend class OpenGLWindowingSystem;
+	friend class WindowFactory;
 	/// <summary>
-	/// Please use OpenGLWindowingSystem::createWindow() to create an OpenGLWindow
+	/// Please use WindowFactory::create() to create a Window
 	/// </summary>
-	OpenGLWindow(GLFWwindow* m_window); 
+	Window(GLFWwindow* m_window);
 
 private:
 	GLFWwindow* m_window;

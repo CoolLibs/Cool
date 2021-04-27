@@ -1,4 +1,4 @@
-#include "../OpenGLWindowingSystem.h"
+#include "../WindowFactory.h"
 
 #include "GLDebugCallback.h"
 #include <imgui/backends/imgui_impl_glfw.h>
@@ -12,10 +12,10 @@
 namespace Cool {
 
 #ifndef NDEBUG
-bool OpenGLWindowingSystem::s_bInitialized = false;
+bool WindowFactory::s_bInitialized = false;
 #endif
 
-OpenGLWindowingSystem::OpenGLWindowingSystem(int openGLMajorVersion, int openGLMinorVersion)
+WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	: m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
 {
 	// Debug checks
@@ -30,7 +30,7 @@ OpenGLWindowingSystem::OpenGLWindowingSystem(int openGLMajorVersion, int openGLM
 	initializeGLFW();
 }
 
-OpenGLWindowingSystem::~OpenGLWindowingSystem() {
+WindowFactory::~WindowFactory() {
 #ifdef __COOL_APP_VULKAN
 	ImGui_ImplVulkan_Shutdown();
 #endif
@@ -42,8 +42,8 @@ OpenGLWindowingSystem::~OpenGLWindowingSystem() {
 	glfwTerminate();
 }
 
-void OpenGLWindowingSystem::initializeGLFW() {
-	glfwSetErrorCallback(OpenGLWindowingSystem::GlfwErrorCallback);
+void WindowFactory::initializeGLFW() {
+	glfwSetErrorCallback(WindowFactory::GlfwErrorCallback);
 	if (!glfwInit()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
@@ -51,11 +51,11 @@ void OpenGLWindowingSystem::initializeGLFW() {
 	}
 }
 
-void OpenGLWindowingSystem::GlfwErrorCallback(int error, const char* description) {
+void WindowFactory::GlfwErrorCallback(int error, const char* description) {
 	Log::Error("[Glfw] Error {} :\n{}", error, description);
 }
 
-OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
+Window WindowFactory::create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
 	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
@@ -68,26 +68,26 @@ OpenGLWindow OpenGLWindowingSystem::createWindow(const char* name, int width, in
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	// Create window
-	OpenGLWindow openGlWindow(
+	Window window(
 		glfwCreateWindow(width, height, name, NULL, windowToShareContextWith)
 	);
-	if (!openGlWindow.get()) {
+	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
 		Log::Error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
 	}
-	openGlWindow.makeCurrent();
-	openGlWindow.enableVSync();
+	window.makeCurrent();
+	window.enableVSync();
 	// Load Glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		Log::Error("Failed to initialize Glad");
 	//
 	setupGLDebugging();
-	setupImGui(openGlWindow);
-	return openGlWindow;
+	setupImGui(window);
+	return window;
 }
 
-void OpenGLWindowingSystem::setupGLDebugging() {
+void WindowFactory::setupGLDebugging() {
 #ifndef NDEBUG
 	if (m_openGLVersion >= 430) {
 		int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -104,7 +104,7 @@ void OpenGLWindowingSystem::setupGLDebugging() {
 #endif
 }
 
-void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
+void WindowFactory::setupImGui(Window& window) {
 	// Setup context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -127,7 +127,7 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 
 	// Setup Platform/Renderer backends
 #ifdef __COOL_APP_VULKAN
-	ImGui_ImplGlfw_InitForVulkan(openGLWindow.get(), true);
+	ImGui_ImplGlfw_InitForVulkan(window.get(), true);
 	// TODO
 	// ImGui_ImplVulkan_InitInfo init_info = {};
 	// init_info.Instance = g_Instance;

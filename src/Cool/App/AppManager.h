@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenGLWindow.h"
+#include "Window.h"
 #include "IApp.h"
 
 struct ImGuiDockNode;
@@ -11,9 +11,9 @@ class Iapp;
 /// Wrapper for an App. Handles the main window and the UI layout and docking.
 class AppManager {
 public:
-	/// <param name="mainWindow">The main window where your app will be rendered to, created by the OpenGLWindowingSystem</param>
+	/// <param name="mainWindow">The main window where your app will be rendered to, created by the WindowFactory</param>
 	/// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
-	AppManager(OpenGLWindow& mainWindow, IApp& app);
+	AppManager(Window& mainWindow, IApp& app);
 	~AppManager() = default;
 	
 	/// Runs the app's update loop continuously, until the user closes the main window
@@ -46,7 +46,7 @@ private:
 	static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
-	OpenGLWindow& m_mainWindow;
+	Window& m_mainWindow;
 	IApp& m_app;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;
