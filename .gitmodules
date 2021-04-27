@@ -10,3 +10,6 @@
 [submodule "lib/nfd"]
 	path = lib/nfd
 	url = https://github.com/JulesFouchy/nativefiledialog-extended
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/JulesFouchy/imgui/
