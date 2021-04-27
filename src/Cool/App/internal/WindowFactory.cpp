@@ -23,7 +23,7 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	assert(openGLMinorVersion >= 3);
 #ifndef NDEBUG
 	if (s_bInitialized)
-		Log::Error("You are creating an OpenGLWindowingSystem twice !");
+		Log::Error("You are creating a WindowFactory twice !");
 	s_bInitialized = true;
 #endif
 	// Init
@@ -55,6 +55,27 @@ void WindowFactory::GlfwErrorCallback(int error, const char* description) {
 	Log::Error("[Glfw] Error {} :\n{}", error, description);
 }
 
+#ifdef __COOL_APP_VULKAN
+Window WindowFactory::create(const char* name, int width, int height) {
+	// Window flags
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	// Create window
+	Window window(
+		glfwCreateWindow(width, height, name, NULL, NULL)
+	);
+	if (!window.get()) {
+		const char* errorDescription;
+		glfwGetError(&errorDescription);
+		Log::Error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
+	}
+	// TODO remove / adapt ?
+	// window.makeCurrent();
+	// window.enableVSync();
+	setupImGui(window);
+	return window;
+}
+#endif
+#ifdef __COOL_APP_OPENGL
 Window WindowFactory::create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
 	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
@@ -103,6 +124,7 @@ void WindowFactory::setupGLDebugging() {
 	}
 #endif
 }
+#endif
 
 void WindowFactory::setupImGui(Window& window) {
 	// Setup context

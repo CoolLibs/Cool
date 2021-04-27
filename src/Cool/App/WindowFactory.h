@@ -13,16 +13,24 @@ public:
 	WindowFactory(int openGLMajorVersion, int openGLMinorVersion);
 	~WindowFactory();
 
+	// TODO update doc to talk about vulkan
 	/// Creates a window and its OpenGL context. /!\ If you want to create multiple windows, make sure you create the main one last ! (the one you hand to AppManager)
 	/// <param name="name">The name that will be displayed in the title bar of the window</param>
 	/// <param name="width">Initial width of the window</param>
 	/// <param name="height">Initial height of the window</param>
 	/// <param name="windowToShareContextWith">Optional window. If set, the created window will share the same OpenGL context as this one.</param>
-	Window [[nodiscard]] create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
+#ifdef __COOL_APP_VULKAN
+	Window create(const char* name, int width, int height);
+#endif
+#ifdef __COOL_APP_OPENGL
+	Window create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
+#endif
 
 private:
 	void initializeGLFW();
+#ifdef __COOL_APP_OPENGL
 	void setupGLDebugging();
+#endif
 	void setupImGui(Window& window);
 	static void GlfwErrorCallback(int error, const char* description);
 
