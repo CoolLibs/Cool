@@ -1,3 +1,5 @@
+# Thanks to https://github.com/PacktPublishing/Learning-Vulkan
+
 # AUTO_LOCATE_VULKAN - accepted value ON or OFF
 # ON  - Use CMake to auto locate the Vulkan SDK.
 # OFF - Vulkan SDK path can be specified manually. This is helpful to test the build on various Vulkan version.
@@ -24,8 +26,9 @@ if(AUTO_LOCATE_VULKAN)
 		if(EXISTS "${VULKAN_PATH}")
 			message(STATUS "Successfully located the Vulkan SDK: ${VULKAN_PATH}")
 		else()
-			message("Error: Unable to locate Vulkan SDK. Please turn off auto locate option by specifying 'AUTO_LOCATE_VULKAN' as 'OFF'")
-			message("and specify manually path using 'VULKAN_SDK' and 'VULKAN_VERSION' variables in the CMakeLists.txt.")
+			message("Error: Unable to locate Vulkan SDK. Make sure you have installed the Vulkan SDK from https://vulkan.lunarg.com/sdk/home")
+			message("If you have but it still doesn't work, please turn off auto locate option by specifying 'AUTO_LOCATE_VULKAN' as 'OFF' in Cool/CMake-Helpers/vulkan_pre_add_executable.cmake")
+			message("and specify the path manually using 'VULKAN_SDK' and 'VULKAN_VERSION' variables")
 			return()
 		endif()
 	endif()
