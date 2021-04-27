@@ -2,7 +2,12 @@
 
 #include "GLDebugCallback.h"
 #include <imgui/backends/imgui_impl_glfw.h>
+#ifdef __COOL_APP_VULKAN
+#include <imgui/backends/imgui_impl_vulkan.h>
+#endif
+#ifdef __COOL_APP_OPENGL
 #include <imgui/backends/imgui_impl_opengl3.h>
+#endif
 
 namespace Cool {
 
@@ -26,7 +31,12 @@ OpenGLWindowingSystem::OpenGLWindowingSystem(int openGLMajorVersion, int openGLM
 }
 
 OpenGLWindowingSystem::~OpenGLWindowingSystem() {
+#ifdef __COOL_APP_VULKAN
+	ImGui_ImplVulkan_Shutdown();
+#endif
+#ifdef __COOL_APP_OPENGL
 	ImGui_ImplOpenGL3_Shutdown();
+#endif
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 	glfwTerminate();
@@ -116,9 +126,28 @@ void OpenGLWindowingSystem::setupImGui(OpenGLWindow& openGLWindow) {
 	}
 
 	// Setup Platform/Renderer backends
+#ifdef __COOL_APP_VULKAN
+	ImGui_ImplGlfw_InitForVulkan(openGLWindow.get(), true);
+	// TODO
+	// ImGui_ImplVulkan_InitInfo init_info = {};
+	// init_info.Instance = g_Instance;
+	// init_info.PhysicalDevice = g_PhysicalDevice;
+	// init_info.Device = g_Device;
+	// init_info.QueueFamily = g_QueueFamily;
+	// init_info.Queue = g_Queue;
+	// init_info.PipelineCache = g_PipelineCache;
+	// init_info.DescriptorPool = g_DescriptorPool;
+	// init_info.Allocator = g_Allocator;
+	// init_info.MinImageCount = g_MinImageCount;
+	// init_info.ImageCount = wd->ImageCount;
+	// init_info.CheckVkResultFn = check_vk_result;
+	// ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+#endif
+#ifdef __COOL_APP_OPENGL
 	ImGui_ImplGlfw_InitForOpenGL(openGLWindow.get(), true);
 	std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
 	ImGui_ImplOpenGL3_Init(glslVersion.c_str());
+#endif
 
 	// Load Fonts
 	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.

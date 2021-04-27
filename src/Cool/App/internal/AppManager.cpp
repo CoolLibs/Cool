@@ -5,7 +5,12 @@
 #include "../Input.h"
 
 #include <imgui/backends/imgui_impl_glfw.h>
+#ifdef __COOL_APP_VULKAN
+#include <imgui/backends/imgui_impl_vulkan.h>
+#endif
+#ifdef __COOL_APP_OPENGL
 #include <imgui/backends/imgui_impl_opengl3.h>
+#endif
 #include <imgui/imgui_internal.h>
 
 // Hide console in release builds
@@ -48,7 +53,12 @@ void AppManager::update() {
 	glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// Start ImGui frame
+#ifdef __COOL_APP_VULKAN
+	ImGui_ImplVulkan_NewFrame();
+#endif
+#ifdef __COOL_APP_OPENGL
 	ImGui_ImplOpenGL3_NewFrame();
+#endif
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	ImGuiDockspace();
@@ -74,7 +84,12 @@ void AppManager::update() {
 	ImGui::Render();
 	ImGuiIO& io = ImGui::GetIO();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+#ifdef __COOL_APP_VULKAN
+	// TODO render draw data
+#endif
+#ifdef __COOL_APP_OPENGL
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 	// Update and Render additional Platform Windows
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -161,8 +176,8 @@ void AppManager::ImGuiDockspace() {
 								  | ImGuiWindowFlags_NoNavFocus;
 
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->GetWorkPos());
-	ImGui::SetNextWindowSize(viewport->GetWorkSize());
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
 	ImGui::SetNextWindowViewport(viewport->ID);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
