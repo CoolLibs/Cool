@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_OPENGL
 
 #include <Cool/OpenGL/RenderBufferFB.h>
 
@@ -44,3 +45,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

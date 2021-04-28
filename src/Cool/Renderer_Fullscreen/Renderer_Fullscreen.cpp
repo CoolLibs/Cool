@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_OPENGL
+
 #include "Renderer_Fullscreen.h"
 
 #include <Cool/App/RenderState.h>
@@ -40,3 +42,5 @@ void Renderer_Fullscreen::onRenderAreaResized() {
 }
 
 } // namespace Cool
+
+#endif
