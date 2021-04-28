@@ -12,19 +12,13 @@
 #include "GLDebugCallback.h"
 #endif
 
-// [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
-// To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
-// Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-#pragma comment(lib, "legacy_stdio_definitions")
-#endif
-
 namespace Cool {
 
 #ifndef NDEBUG
 bool WindowFactory::s_bInitialized = false;
 #endif
 
+#ifdef __COOL_APP_VULKAN
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
 // Your real engine/app may not use them.
 static void SetupVulkanWindow(const VulkanContext& vulkan_context, VulkanWindowState& vulkan_window_state, VkSurfaceKHR surface, int width, int height)
@@ -59,7 +53,7 @@ static void SetupVulkanWindow(const VulkanContext& vulkan_context, VulkanWindowS
     IM_ASSERT(vulkan_window_state.g_MinImageCount >= 2);
     ImGui_ImplVulkanH_CreateOrResizeWindow(vulkan_context.g_Instance, vulkan_context.g_PhysicalDevice, vulkan_context.g_Device, wd, vulkan_context.g_QueueFamily, vulkan_context.g_Allocator, width, height, vulkan_window_state.g_MinImageCount);
 }
-
+#endif
 
 WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	: m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
@@ -74,14 +68,15 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 #endif
 	// Init
 	initializeGLFW();    
+#ifdef __COOL_APP_VULKAN
 	// Setup Vulkan
-	if (!glfwVulkanSupported())
-	{
-		printf("GLFW: Vulkan Not Supported\n");
+	if (!glfwVulkanSupported()) {
+		Log::Release::Error("GLFW : Vulkan Not Supported");
 	}
 	uint32_t extensions_count = 0;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
 	_vulkan_contexts.emplace_back(extensions, extensions_count);
+#endif
 }
 
 WindowFactory::~WindowFactory() {
@@ -241,57 +236,57 @@ void WindowFactory::setupImGui(Window& window) {
     init_info.ImageCount = window._vulkan_window_state.g_MainWindowData.ImageCount;
     init_info.CheckVkResultFn = check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, window._vulkan_window_state.g_MainWindowData.RenderPass);
+
+	// Load Fonts
+		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+		// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+		// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+		// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+		// - Read 'docs/FONTS.md' for more instructions and details.
+		// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+		//io.Fonts->AddFontDefault();
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+		//IM_ASSERT(font != NULL);
+
+		// Upload Fonts
+	{
+		// Use any command queue
+		VkCommandPool command_pool = window._vulkan_window_state.g_MainWindowData.Frames[window._vulkan_window_state.g_MainWindowData.FrameIndex].CommandPool;
+		VkCommandBuffer command_buffer = window._vulkan_window_state.g_MainWindowData.Frames[window._vulkan_window_state.g_MainWindowData.FrameIndex].CommandBuffer;
+
+		VkResult err = vkResetCommandPool(window._vulkan_context.g_Device, command_pool, 0);
+		check_vk_result(err);
+		VkCommandBufferBeginInfo begin_info = {};
+		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		err = vkBeginCommandBuffer(command_buffer, &begin_info);
+		check_vk_result(err);
+
+		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+
+		VkSubmitInfo end_info = {};
+		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		end_info.commandBufferCount = 1;
+		end_info.pCommandBuffers = &command_buffer;
+		err = vkEndCommandBuffer(command_buffer);
+		check_vk_result(err);
+		err = vkQueueSubmit(window._vulkan_context.g_Queue, 1, &end_info, VK_NULL_HANDLE);
+		check_vk_result(err);
+
+		err = vkDeviceWaitIdle(window._vulkan_context.g_Device);
+		check_vk_result(err);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
 #endif
 #ifdef __COOL_APP_OPENGL
-	ImGui_ImplGlfw_InitForOpenGL(openGLWindow.get(), true);
+	ImGui_ImplGlfw_InitForOpenGL(window.get(), true);
 	std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
 	ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 #endif
-
-    // Load Fonts
-        // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-        // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-        // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-        // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-        // - Read 'docs/FONTS.md' for more instructions and details.
-        // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-        //io.Fonts->AddFontDefault();
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-        //IM_ASSERT(font != NULL);
-
-        // Upload Fonts
-    {
-        // Use any command queue
-        VkCommandPool command_pool = window._vulkan_window_state.g_MainWindowData.Frames[window._vulkan_window_state.g_MainWindowData.FrameIndex].CommandPool;
-        VkCommandBuffer command_buffer = window._vulkan_window_state.g_MainWindowData.Frames[window._vulkan_window_state.g_MainWindowData.FrameIndex].CommandBuffer;
-
-        VkResult err = vkResetCommandPool(window._vulkan_context.g_Device, command_pool, 0);
-        check_vk_result(err);
-        VkCommandBufferBeginInfo begin_info = {};
-        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        err = vkBeginCommandBuffer(command_buffer, &begin_info);
-        check_vk_result(err);
-
-        ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-
-        VkSubmitInfo end_info = {};
-        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        end_info.commandBufferCount = 1;
-        end_info.pCommandBuffers = &command_buffer;
-        err = vkEndCommandBuffer(command_buffer);
-        check_vk_result(err);
-        err = vkQueueSubmit(window._vulkan_context.g_Queue, 1, &end_info, VK_NULL_HANDLE);
-        check_vk_result(err);
-
-        err = vkDeviceWaitIdle(window._vulkan_context.g_Device);
-        check_vk_result(err);
-        ImGui_ImplVulkan_DestroyFontUploadObjects();
-    }
 }
 
 } // namespace Cool

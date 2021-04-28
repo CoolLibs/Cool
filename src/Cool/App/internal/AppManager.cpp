@@ -104,19 +104,27 @@ void AppManager::update() {
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+	// Present Main Platform Window
+	if (!main_is_minimized)
+		m_mainWindow.FramePresent();
 
 #endif
 #ifdef __COOL_APP_OPENGL
 	ImGuiIO& io = ImGui::GetIO();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	// Update and Render additional Platform Windows
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backup_current_context);
+	}
+	glfwSwapBuffers(m_mainWindow.get());
 #endif
-	// Present Main Platform Window
-	if (!main_is_minimized)
-		m_mainWindow.FramePresent();
 	// End frame
 	m_bFirstFrame = false;
-	//glfwSwapBuffers(m_mainWindow.get());
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
