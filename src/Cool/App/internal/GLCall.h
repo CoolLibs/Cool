@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef __COOL_APP_OPENGL
 #ifndef NDEBUG
 
 namespace Cool {
@@ -18,4 +19,5 @@ namespace CoolGlDebug {
 namespace Cool {
     #define GLCall(x) x
 }
+#endif
 #endif

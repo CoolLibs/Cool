@@ -1,3 +1,4 @@
+#ifdef __COOL_APP_OPENGL
 #ifndef NDEBUG
 
 #include "GLCall.h"
@@ -41,4 +42,5 @@ char const* CoolGlDebug::glErrorString(GLenum const err) {
 	}
 }
 
+#endif
 #endif
