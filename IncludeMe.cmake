@@ -18,8 +18,8 @@ include_directories(${GLFW_DIR}/include)
 include_directories(${GLFW_DIR}/deps)
 
 # Dear ImGui
-set(IMGUI_DIR ${PATH_TO_COOL}/App/lib/imgui)
-add_library(IMGUI STATIC ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp ${IMGUI_DIR}/misc/cpp/imgui_stdlib.h)
+file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
+add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
 # glad
 add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
@@ -33,7 +33,7 @@ add_subdirectory(${PATH_TO_COOL}/App/lib/nfd/src)
 include_directories(
     ${OPENGL_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIRS}
-    ${IMGUI_DIR}
+    ${PATH_TO_COOL}/App/lib/imgui
     ${PATH_TO_COOL}/App/lib/glad/include
     ${PATH_TO_COOL}/App/lib/glm
     ${PATH_TO_COOL}/App/lib/nfd/src/include
