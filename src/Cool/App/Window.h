@@ -15,15 +15,20 @@ namespace Cool {
 /// </summary>
 class Window {
 public:
+	/// <summary>
+	/// Please use WindowFactory::create() to create a Window
+	/// </summary>
 #ifdef __COOL_APP_VULKAN
-	Window(Window&&) noexcept;
+	Window(GLFWwindow* m_window, VulkanContext& vulkan_context);
 #endif
 #ifdef __COOL_APP_OPENGL
-	Window(Window&&) noexcept;
+	Window(GLFWwindow* m_window);
 #endif
+	Window(Window&&) noexcept;
 	Window(const Window&) = delete;			   // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
 	Window& operator=(const Window&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-	~Window();
+	~Window() = default; 
+	void destroy();
 
 	/// <summary>
 	/// Returns the underlying glfw window pointer
@@ -55,15 +60,6 @@ public:
 private:
 	void setSwapInterval(int value);
 	friend class WindowFactory;
-	/// <summary>
-	/// Please use WindowFactory::create() to create a Window
-	/// </summary>
-#ifdef __COOL_APP_VULKAN
-	Window(GLFWwindow* m_window, VulkanContext& vulkan_context);
-#endif
-#ifdef __COOL_APP_OPENGL
-	Window(GLFWwindow* m_window);
-#endif
 
 private:
 	GLFWwindow* m_window;

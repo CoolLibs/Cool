@@ -157,16 +157,18 @@ VulkanContext::VulkanContext(const char** extensions, uint32_t extensions_count)
     }
 }
 
-void VulkanContext::destroy() {
+void VulkanContext::destroy0() {
     VkResult err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
-    //
+}
+
+void VulkanContext::destroy1() {
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
     // Remove the debug report callback
     auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
     vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
-#endif // IMGUI_VULKAN_DEBUG_REPORT
+#endif
     vkDestroyDevice(g_Device, g_Allocator);
     vkDestroyInstance(g_Instance, g_Allocator);
 }

@@ -30,8 +30,10 @@ Window::Window(Window && o) noexcept
 }
 #endif
 
-Window::~Window() {
-	// TODO ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &g_MainWindowData, g_Allocator);
+void Window::destroy() {
+#ifdef __COOL_APP_VULKAN
+	ImGui_ImplVulkanH_DestroyWindow(_vulkan_context.g_Instance, _vulkan_context.g_Device, &_vulkan_window_state.g_MainWindowData, _vulkan_context.g_Allocator);
+#endif
 	if (m_window != nullptr) // Could have been moved
 		glfwDestroyWindow(m_window);
 }

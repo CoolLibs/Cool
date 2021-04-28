@@ -24,10 +24,10 @@ public:
 	/// <param name="height">Initial height of the window</param>
 	/// <param name="windowToShareContextWith">Optional window. If set, the created window will share the same OpenGL context as this one.</param>
 #ifdef __COOL_APP_VULKAN
-	Window create(const char* name, int width, int height);
+	Window& create(const char* name, int width, int height);
 #endif
 #ifdef __COOL_APP_OPENGL
-	Window create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
+	Window& create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith = NULL);
 #endif
 
 private:
@@ -45,6 +45,7 @@ private:
 #ifndef NDEBUG
 	static bool s_bInitialized;
 #endif
+	std::list<Window> _windows;
 #ifdef __COOL_APP_VULKAN
 	std::vector<VulkanContext> _vulkan_contexts;
 #endif

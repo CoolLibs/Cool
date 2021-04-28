@@ -7,7 +7,8 @@ namespace Cool {
 struct VulkanContext {
 	VulkanContext(const char** extensions, uint32_t extensions_count);
 	~VulkanContext() = default;
-	void destroy();
+	void destroy0();
+	void destroy1();
 
 	VkAllocationCallbacks*   g_Allocator = NULL;
 	VkInstance               g_Instance = VK_NULL_HANDLE;

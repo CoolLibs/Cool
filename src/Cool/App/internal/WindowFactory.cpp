@@ -86,20 +86,25 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 
 WindowFactory::~WindowFactory() {
 #ifdef __COOL_APP_VULKAN
-    // Cleanup
-    // VkResult err = vkDeviceWaitIdle(g_Device);
-    // check_vk_result(err);
-    for (auto& context : _vulkan_contexts) {
-        context.destroy();
-    }
+    for (auto& context : _vulkan_contexts)
+        context.destroy0();
     ImGui_ImplVulkan_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+	for (auto& window : _windows)
+		window.destroy();
+	for (auto& context : _vulkan_contexts)
+		context.destroy1();
+	glfwTerminate();
 #endif
 #ifdef __COOL_APP_OPENGL
 	ImGui_ImplOpenGL3_Shutdown();
-#endif
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+	for (auto& window : _windows)
+		window.destroy();
 	glfwTerminate();
+#endif
 }
 
 void WindowFactory::initializeGLFW() {
@@ -116,15 +121,16 @@ void WindowFactory::GlfwErrorCallback(int error, const char* description) {
 }
 
 #ifdef __COOL_APP_VULKAN
-Window WindowFactory::create(const char* name, int width, int height) {
+Window& WindowFactory::create(const char* name, int width, int height) {
 	VulkanContext& vk_context = _vulkan_contexts[0];
 	// Window flags
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	// Create window
-	Window window(
+	_windows.emplace_back(
 		glfwCreateWindow(width, height, name, NULL, NULL),
 		vk_context
 	);
+	Window& window = _windows.back();
 	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
@@ -147,7 +153,7 @@ Window WindowFactory::create(const char* name, int width, int height) {
 }
 #endif
 #ifdef __COOL_APP_OPENGL
-Window WindowFactory::create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
+Window& WindowFactory::create(const char* name, int width, int height, GLFWwindow* windowToShareContextWith) {
 	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
@@ -160,9 +166,10 @@ Window WindowFactory::create(const char* name, int width, int height, GLFWwindow
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	// Create window
-	Window window(
+	_windows.emplace_back(
 		glfwCreateWindow(width, height, name, NULL, windowToShareContextWith)
 	);
+	Window& window = _windows.back();
 	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
