@@ -48,13 +48,6 @@ else()
 	endif()
 endif()
 
-
-# Add any required preprocessor definitions here
-add_definitions(-DVK_USE_PLATFORM_WIN32_KHR)
-# vulkan-1 library for build Vulkan application.
-set(VULKAN_LIB_LIST "vulkan-1")
-
-
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	# Include Vulkan header files from Vulkan SDK
 	include_directories(AFTER ${VULKAN_PATH}/Include)
@@ -62,3 +55,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	# Link directory for vulkan-1
 	link_directories(${VULKAN_PATH}/Bin;${VULKAN_PATH}/Lib;)
 endif()
+
+# Link the debug and release libraries to the project
+target_link_libraries( ${PROJECT_NAME} ${VULKAN_LIB_LIST} )
