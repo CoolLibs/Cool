@@ -2,6 +2,8 @@
 
 #include "RectSize.h"
 
+namespace Cool {
+
 class RectSizePos : public RectSize {
 public:
 	RectSizePos(int width = 0, int height = 0, int topLeftX = 0, int topLeftY = 0)
@@ -18,3 +20,5 @@ public:
 private:
 	glm::ivec2 m_topLeft; // y-axis points down
 };
+
+} // namespace Cool

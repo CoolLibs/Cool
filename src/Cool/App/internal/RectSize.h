@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Cool {
+
 class RectSize {
 public:
 	RectSize(int width = 0, int height = 0)
@@ -25,3 +27,5 @@ private:
 	glm::ivec2 m_size;
 	float m_aspectRatio;
 };
+
+} // namespace Cool

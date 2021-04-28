@@ -55,8 +55,8 @@ void AppManager::update() {
 #endif
 	// Clear screen
 	const glm::vec3& emptySpaceColor = RenderState::getEmptySpaceColor();
-	glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	// Start ImGui frame
 #ifdef __COOL_APP_VULKAN
 	ImGui_ImplVulkan_NewFrame();
@@ -90,40 +90,33 @@ void AppManager::update() {
 #ifdef __COOL_APP_VULKAN
 	ImDrawData* main_draw_data = ImGui::GetDrawData();
 	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-	wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-	wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-	wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-	wd->ClearValue.color.float32[3] = clear_color.w;
+	auto& wd = m_mainWindow._vulkan_window_state.g_MainWindowData;
+	wd.ClearValue.color.float32[0] = 0.8;
+	wd.ClearValue.color.float32[1] = 0.3;
+	wd.ClearValue.color.float32[2] = 0.95;
+	wd.ClearValue.color.float32[3] = 1.f;
 	if (!main_is_minimized)
-		FrameRender(wd, main_draw_data);
+		m_mainWindow.FrameRender(main_draw_data);
 
 	// Update and Render additional Platform Windows
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
 
-	// Present Main Platform Window
-	if (!main_is_minimized)
-		FramePresent(wd);
 #endif
 #ifdef __COOL_APP_OPENGL
 	ImGuiIO& io = ImGui::GetIO();
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
-	// Update and Render additional Platform Windows
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
-	}
+	// Present Main Platform Window
+	if (!main_is_minimized)
+		m_mainWindow.FramePresent();
 	// End frame
 	m_bFirstFrame = false;
-	glfwSwapBuffers(m_mainWindow.get());
+	//glfwSwapBuffers(m_mainWindow.get());
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
