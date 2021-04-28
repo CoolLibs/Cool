@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_OPENGL
 
 namespace Cool {
 
@@ -115,3 +116,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

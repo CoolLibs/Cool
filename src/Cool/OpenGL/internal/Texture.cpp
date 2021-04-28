@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_OPENGL
+
 #include "../Texture.h"
 
 #ifdef __COOL_LOAD_IMAGE
@@ -93,3 +95,5 @@ void Texture::attachToSlot(int slot) {
 }
 
 } // namespace Cool
+
+#endif

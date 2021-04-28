@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_OPENGL
 
 #include "FrameBuffer.h"
 
@@ -22,3 +23,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

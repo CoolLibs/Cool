@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_OPENGL
+
 #include "../Shader.h"
 
 #include <Cool/File/File.h>
@@ -164,5 +166,6 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat) {
 	GLCall(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
-
 } // namespace Cool
+
+#endif

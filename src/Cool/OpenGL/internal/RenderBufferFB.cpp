@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_OPENGL
+
 #include "../RenderBufferFB.h"
 
 namespace Cool {
@@ -27,3 +29,5 @@ void RenderBufferFB::attachAttachments() {
 }
 
 } // namespace Cool
+
+#endif

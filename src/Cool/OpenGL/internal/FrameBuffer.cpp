@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_OPENGL
+
 #include "../FrameBuffer.h"
 
 namespace Cool {
@@ -97,3 +99,5 @@ void FrameBuffer::attachAttachments() {
 }
 
 } // namespace Cool
+
+#endif

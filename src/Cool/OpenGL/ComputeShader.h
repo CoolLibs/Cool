@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_OPENGL
 
 #include "Shader.h"
 #include <Cool/File/File.h>
@@ -114,3 +115,5 @@ void main() {
 };
 
 } // namespace Cool
+
+#endif

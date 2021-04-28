@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef __COOL_APP_OPENGL
+
 namespace Cool {
 
 static constexpr GLuint SCREEN_FRAMEBUFFER_ID = 0;
@@ -53,3 +55,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

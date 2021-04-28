@@ -1,3 +1,4 @@
+#ifdef __COOL_APP_OPENGL
 #include "../TextureFB.h"
 
 namespace Cool {
@@ -37,3 +38,5 @@ void TextureFB::attachTextureToSlot(unsigned int slot) {
 }
 
 } // namespace Cool
+
+#endif
