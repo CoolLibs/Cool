@@ -30,6 +30,12 @@ include_directories(${GLFW_DIR}/deps)
 
 # Dear ImGui
 file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
+if (COOL_USE_VULKAN)
+    list(REMOVE_ITEM IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/backends/imgui_impl_opengl3.cpp)
+endif()
+if (COOL_USE_OPENGL)
+    list(REMOVE_ITEM IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/backends/imgui_impl_vulkan.cpp)
+endif()
 add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
 # Boxer
