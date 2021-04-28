@@ -3,8 +3,19 @@
 add_compile_definitions(__COOL_APP)
 add_compile_definitions(__COOL_GLM)
 
-# OpenGL
-find_package(OpenGL REQUIRED)
+if (COOL_USE_VULKAN)
+    add_compile_definitions(__COOL_APP_VULKAN)
+    include("${PATH_TO_COOL}/CMake-Helpers/vulkan.cmake")
+endif()
+if (COOL_USE_OPENGL)
+    add_compile_definitions(__COOL_APP_OPENGL)
+    find_package(OpenGL REQUIRED)
+    add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
+    include_directories(
+        ${OPENGL_INCLUDE_DIR}
+        ${PATH_TO_COOL}/App/lib/glad/include
+    )
+endif()
 
 # GLFW
 set(GLFW_DIR ${PATH_TO_COOL}/App/lib/glfw)
@@ -21,9 +32,6 @@ include_directories(${GLFW_DIR}/deps)
 file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
 add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
-# glad
-add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
-
 # Boxer
 add_subdirectory(${PATH_TO_COOL}/App/lib/Boxer)
 
@@ -31,10 +39,7 @@ add_subdirectory(${PATH_TO_COOL}/App/lib/Boxer)
 add_subdirectory(${PATH_TO_COOL}/App/lib/nfd/src)
 
 include_directories(
-    ${OPENGL_INCLUDE_DIR}
-    ${SDL2_INCLUDE_DIRS}
     ${PATH_TO_COOL}/App/lib/imgui
-    ${PATH_TO_COOL}/App/lib/glad/include
     ${PATH_TO_COOL}/App/lib/glm
     ${PATH_TO_COOL}/App/lib/nfd/src/include
     ${PATH_TO_COOL}/App/lib
@@ -51,28 +56,39 @@ add_custom_command(
 
 # Add libraries to the project
 target_link_libraries(${PROJECT_NAME}
-    ${OPENGL_LIBRARIES}
-    GLAD
     IMGUI
     Boxer
     nfd
     glfw
-    Vulkan::Vulkan
 )
+
+if (COOL_USE_VULKAN)
+    target_link_libraries(${PROJECT_NAME}
+        Vulkan::Vulkan
+    )
+endif()
+if (COOL_USE_OPENGL)
+    target_link_libraries(${PROJECT_NAME}
+        ${OPENGL_LIBRARIES}
+        GLAD
+    )
+endif()
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
 target_precompile_headers(${PROJECT_NAME} PRIVATE
-    # libraries
     <imgui/imgui.h>
     <imgui/misc/cpp/imgui_stdlib.h>
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
-    <glad/glad.h>
     <boxer/boxer.h>
     <nfd.hpp>
-    # Cool
-    <Cool/App/internal/GLCall.h>
-    # std
     <functional>
     <vector>
 )
+
+if (COOL_USE_OPENGL)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE
+        <glad/glad.h>
+        <Cool/App/internal/GLCall.h>
+    )
+endif()
