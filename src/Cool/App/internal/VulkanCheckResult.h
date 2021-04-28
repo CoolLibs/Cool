@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_VULKAN
 
 #include <vulkan/vulkan.h>
 
@@ -14,3 +15,5 @@ inline void check_vk_result(VkResult err)
 }
 
 } // namespace Cool
+
+#endif

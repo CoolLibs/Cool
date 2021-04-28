@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_VULKAN
 
 #include <imgui/backends/imgui_impl_vulkan.h>
 
@@ -11,3 +12,5 @@ struct VulkanWindowState {
 };
 
 }  // namespace Cool
+
+#endif

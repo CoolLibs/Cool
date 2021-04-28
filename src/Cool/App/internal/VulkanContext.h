@@ -1,4 +1,5 @@
 #pragma once
+#ifdef __COOL_APP_VULKAN
 
 #include <vulkan/vulkan.h>
 
@@ -22,3 +23,5 @@ struct VulkanContext {
 };
 
 }  // namespace Cool
+
+#endif

@@ -1,3 +1,5 @@
+#ifdef __COOL_APP_VULKAN
+
 #include "VulkanContext.h"
 #include "VulkanCheckResult.h"
 
@@ -174,3 +176,5 @@ void VulkanContext::destroy1() {
 }
 
 } // namespace Cool
+
+#endif
