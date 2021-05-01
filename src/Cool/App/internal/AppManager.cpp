@@ -3,6 +3,7 @@
 #include "../IApp.h"
 #include "../RenderState.h"
 #include "../Input.h"
+#include <Cool/Gpu/Renderer.h>
 
 #include <imgui/backends/imgui_impl_glfw.h>
 #ifdef __COOL_APP_VULKAN
@@ -54,9 +55,8 @@ void AppManager::update() {
 	m_mainWindow.check_for_swapchain_rebuild();
 #endif
 	// Clear screen
-	const glm::vec3& emptySpaceColor = RenderState::getEmptySpaceColor();
-	//glClearColor(emptySpaceColor.r, emptySpaceColor.g, emptySpaceColor.b, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT);
+	Renderer::set_render_target(m_mainWindow);
+	Renderer::clear_background(RenderState::getEmptySpaceColor());
 	// Start ImGui frame
 #ifdef __COOL_APP_VULKAN
 	ImGui_ImplVulkan_NewFrame();
@@ -90,11 +90,6 @@ void AppManager::update() {
 #ifdef __COOL_APP_VULKAN
 	ImDrawData* main_draw_data = ImGui::GetDrawData();
 	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-	auto& wd = m_mainWindow._vulkan_window_state.g_MainWindowData;
-	wd.ClearValue.color.float32[0] = 0.8;
-	wd.ClearValue.color.float32[1] = 0.3;
-	wd.ClearValue.color.float32[2] = 0.95;
-	wd.ClearValue.color.float32[3] = 1.f;
 	if (!main_is_minimized)
 		m_mainWindow.FrameRender(main_draw_data);
 

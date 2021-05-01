@@ -129,7 +129,7 @@ Window& WindowFactory::create(const char* name, int width, int height) {
 	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
-		Log::Error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
+		Log::Error("[Glfw] Window creation failed :\n{}", errorDescription);
 	}
 	// TODO remove / adapt ?
 	// window.makeCurrent();
