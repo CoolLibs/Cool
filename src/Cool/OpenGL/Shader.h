@@ -46,7 +46,7 @@ public:
 	Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path);
 	~Shader();
 	Shader(Shader&& o) noexcept;
-	void operator=(Shader&& o);
+	void operator=(Shader&& o) noexcept;
 
 	/// <summary>
 	/// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.

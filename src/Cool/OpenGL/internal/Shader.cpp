@@ -39,7 +39,7 @@ Shader::Shader(Shader&& o) noexcept
 	o._program_id = 0;
 }
 
-void Shader::operator=(Shader&& o) {
+void Shader::operator=(Shader&& o) noexcept {
 	_program_id = o._program_id;
 	o._program_id = 0;
 }
