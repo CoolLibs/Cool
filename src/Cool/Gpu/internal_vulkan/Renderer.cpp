@@ -20,6 +20,11 @@ void Renderer::set_render_target(Window& window) {
 	_window = &window;
 }
 
+VkDevice Renderer::device() {
+	assert(_window != nullptr);
+	return _window->_vulkan_context.g_Device;
+}
+
 } // namespace Cool
 
 #endif

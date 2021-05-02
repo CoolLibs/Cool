@@ -1,7 +1,4 @@
 #pragma once
-#ifdef __COOL_APP_VULKAN
-#include <vulkan/vulkan.h>
-#endif
 
 namespace Cool {
 
@@ -12,10 +9,8 @@ public:
 	static void clear_background(const glm::vec3& clear_color);
 	static void set_render_target(Window& window);
 
-#ifdef __COOL_APP_VULKAN
-	static VkDevice device();
-
 private:
+#ifdef __COOL_APP_VULKAN
 	static Window* _window;
 #endif
 };
