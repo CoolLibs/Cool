@@ -42,7 +42,7 @@ public:
 
 #ifdef __COOL_OPENGL
 	void set_uniform_in_shader(Shader& shader) override {
-		shader.setUniform(name().c_str(), operator*());
+		shader.set_uniform(name().c_str(), operator*());
 	}
 #endif
 
