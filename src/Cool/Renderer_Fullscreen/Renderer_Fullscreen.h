@@ -23,10 +23,10 @@ public:
 	/// Call this after all your rendering code. It displays in the viewing area what we have rendered.
 	/// </summary>
 	/// <param name="interpolationMode">The OpenGL interpolation mode (how the image will be resized if needed).
-	/// The default value is GL_LINEAR.
-	/// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
+	/// The default value is GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
+	/// Can be either GL_LINEAR or GL_NEAREST
 	/// </param>
-	void end(GLint interpolationMode = GL_LINEAR);
+	void end(GLint interpolationMode = GL_NEAREST);
 	/// <summary>
 	/// Draws on the whole screen : your fragment shader will be called for every pixel of the screen / render area.
 	/// </summary>
