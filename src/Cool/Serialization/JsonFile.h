@@ -41,7 +41,7 @@ void FromJSON(T& data, std::string_view filePath) {
 /// <param name="filePath">The path to the JSON file. It will be created if it doesn't exist already.</param>
 /// <param name="fieldName">An optional name that will be given to data inside the JSON file (for readability purposes).</param>
 template <typename T>
-void ToJSON(T& data, std::string_view filePath, std::string_view fieldName = "value0") {
+void ToJSON(const T& data, std::string_view filePath, std::string_view fieldName = "value0") {
 	File::CreateFoldersForFileIfDoesntExist(filePath);
 	std::ofstream os(filePath);
 	{
