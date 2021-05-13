@@ -12,11 +12,11 @@ namespace Cool::Serialization {
 /// </summary>
 /// <typeparam name="T">Any type that implements the Cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html </typeparam>
 /// <param name="data">A reference to the data to initialize</param>
-/// <param name="filePath">The path to the JSON file. If it doesn't exist this function will do nothing.</param>
+/// <param name="file_path">The path to the JSON file. If it doesn't exist this function will do nothing.</param>
 template <typename T>
-void FromJSON(T& data, std::string_view filePath) {
-	if (File::Exists(filePath)) {
-		std::ifstream is(filePath);
+void from_json(T& data, std::string_view file_path) {
+	if (File::Exists(file_path)) {
+		std::ifstream is(file_path);
 		try {
 			cereal::JSONInputArchive archive(is);
 			archive(
@@ -24,11 +24,11 @@ void FromJSON(T& data, std::string_view filePath) {
 			);
 		}
 		catch (std::exception e) {
-			Log::Release::Warn("Invalid {} file. Starting with default values instead.\n{}", filePath, e.what());
+			Log::Release::Warn("Invalid {} file. Starting with default values instead.\n{}", file_path, e.what());
 		}
 	}
 	else {
-		Log::Release::Warn("{} not found. Starting with default values instead.", filePath);
+		Log::Release::Warn("{} not found. Starting with default values instead.", file_path);
 	}
 }
 
@@ -38,16 +38,16 @@ void FromJSON(T& data, std::string_view filePath) {
 /// </summary>
 /// <typeparam name="T">Any type that implements the Cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html </typeparam>
 /// <param name="data">The data to save</param>
-/// <param name="filePath">The path to the JSON file. It will be created if it doesn't exist already.</param>
-/// <param name="fieldName">An optional name that will be given to data inside the JSON file (for readability purposes).</param>
+/// <param name="file_path">The path to the JSON file. It will be created if it doesn't exist already.</param>
+/// <param name="field_name">An optional name that will be given to data inside the JSON file (for readability purposes).</param>
 template <typename T>
-void ToJSON(const T& data, std::string_view filePath, std::string_view fieldName = "value0") {
-	File::CreateFoldersForFileIfDoesntExist(filePath);
-	std::ofstream os(filePath);
+void to_json(const T& data, std::string_view file_path, std::string_view field_name = "value0") {
+	File::CreateFoldersForFileIfDoesntExist(file_path);
+	std::ofstream os(file_path);
 	{
 		cereal::JSONOutputArchive archive(os);
 		archive(
-			cereal::make_nvp(fieldName.data(), data)
+			cereal::make_nvp(field_name.data(), data)
 		);
 	}
 }
