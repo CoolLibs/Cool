@@ -263,7 +263,7 @@ private:
 		// Set as last uuid
 		set_last_uuid(_presets.back().valuesWithUUID.uuid);
 		// Save to file
-		Serialization::ToJSON(_presets.back().valuesWithUUID, full_path(_save_preset_as));
+		Serialization::to_json(_presets.back().valuesWithUUID, full_path(_save_preset_as));
 		// Sort
 		sort();
 		// Find new placeholder name
