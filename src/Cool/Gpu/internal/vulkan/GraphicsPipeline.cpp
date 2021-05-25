@@ -1,8 +1,8 @@
 #pragma once
 #ifdef __COOL_APP_VULKAN
 
-#include "../GraphicsPipeline.h"
-#include "../Renderer.h"
+#include "../../GraphicsPipeline.h"
+#include "../../Renderer.h"
 #include <Cool/File/File.h>
 #include <Cool/App/RenderState.h>
 

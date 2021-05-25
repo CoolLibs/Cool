@@ -1,6 +1,6 @@
 #ifdef __COOL_APP_OPENGL
 
-#include "../Renderer.h"
+#include "../../Renderer.h"
 #include <Cool/App/Window.h>
 
 namespace Cool {
