@@ -47,9 +47,9 @@ private:
 #endif
 
 Exporter::Exporter()
-	: _folder_path_for_image(File::RootDir + "/out")
+	: _folder_path_for_image(File::root_dir() + "/out")
 #ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
-	, _folder_path_for_image_sequence(File::RootDir + "/exports")
+	, _folder_path_for_image_sequence(File::root_dir() + "/exports")
 #endif
 {}
 
