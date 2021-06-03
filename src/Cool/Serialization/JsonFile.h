@@ -24,11 +24,11 @@ void from_json(T& data, std::string_view file_path) {
 			);
 		}
 		catch (std::exception e) {
-			Log::Release::Warn("Invalid {} file. Starting with default values instead.\n{}", file_path, e.what());
+			Log::ToUser::Warn("Invalid {} file. Starting with default values instead.\n{}", file_path, e.what());
 		}
 	}
 	else {
-		Log::Release::Warn("{} not found. Starting with default values instead.", file_path);
+		Log::ToUser::Warn("{} not found. Starting with default values instead.", file_path);
 	}
 }
 
