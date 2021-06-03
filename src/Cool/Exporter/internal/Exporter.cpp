@@ -206,7 +206,7 @@ void Exporter::begin_image_sequence_export() {
 		_frame_time_average.clear();
 	}
 	else {
-		Log::Release::Warn("[Exporter::begin_image_sequence_export] Couldn't start exporting because folder creation failed !");
+		Log::ToUser::Warn("[Exporter::begin_image_sequence_export] Couldn't start exporting because folder creation failed !");
 	}
 }
 
