@@ -247,7 +247,7 @@ private:
 						_presets.push_back({ name, valuesWithUUID.values, valuesWithUUID.uuid });
 					}
 					catch (std::exception e) {
-						Log::Release::Warn("[Load Preset] Invalid file '{}'\n{}", file.path().string(), e.what());
+						Log::ToUser::Warn("[Load Preset] Invalid file '{}'\n{}", file.path().string(), e.what());
 					}
 				}
 			}
