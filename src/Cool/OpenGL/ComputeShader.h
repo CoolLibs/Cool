@@ -79,12 +79,12 @@ public:
         _shader.set_uniform("NumberOfComputationsX", nb_computations_x);
         _shader.set_uniform("NumberOfComputationsY", nb_computations_y);
         _shader.set_uniform("NumberOfComputationsZ", nb_computations_z);
-        GLCall(glDispatchCompute(
+        GLDebug(glDispatchCompute(
             (nb_computations_x - 1) / WorkGroupSizeX + 1,
             (nb_computations_y - 1) / WorkGroupSizeY + 1,
             (nb_computations_z - 1) / WorkGroupSizeZ + 1
         ));
-        GLCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
+        GLDebug(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
     }
 
 private:

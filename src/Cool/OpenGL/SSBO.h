@@ -22,11 +22,11 @@ public:
 	SSBO(unsigned int binding)
 		: _binding(binding)
 	{
-		GLCall(glGenBuffers(1, &_id));
-		GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _binding, _id));
+		GLDebug(glGenBuffers(1, &_id));
+		GLDebug(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _binding, _id));
 	}
 	~SSBO() {
-		GLCall(glDeleteBuffers(1, &_id));
+		GLDebug(glDeleteBuffers(1, &_id));
 	}
 
 	/// <summary>
@@ -36,8 +36,8 @@ public:
 	/// <param name="data">Pointer to the beginning of the array</param>
 	/// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
 	void upload_data(size_t nb_of_elements, T* data, GLenum usage = GL_STREAM_READ) {
-		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
-		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
+		GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
+		GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
 	}
 
 	/// <summary>
@@ -55,10 +55,10 @@ public:
 	/// <param name="nb_of_elements">Number of elements in the array</param>
 	/// <param name="data">Pointer to the beginning of the array</param>
 	void download_data(size_t nb_of_elements, T* data) {
-		GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
-		GLCall(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
+		GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
+		GLDebug(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
 		memcpy(data, p, nb_of_elements * sizeof(T));
-		GLCall(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
+		GLDebug(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
 	}
 
 	/// <summary>

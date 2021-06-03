@@ -51,20 +51,20 @@ Shader::~Shader() {
 void Shader::create_program(const std::vector<ShaderCode>& shader_codes) {
 	// Create program
 	if (_program_id != 0) {
-		GLCall(glDeleteProgram(_program_id));
+		GLDebug(glDeleteProgram(_program_id));
 		_uniform_locations.clear();
 	}
-	GLCall(_program_id = glCreateProgram());
+	GLDebug(_program_id = glCreateProgram());
 	// Compile shaders
 	std::vector<GLuint> shader_ids;
 	shader_ids.reserve(shader_codes.size());
 	for (const auto& shader_code : shader_codes) {
 		shader_ids.push_back(CreateShader(shader_code));
-		GLCall(glAttachShader(_program_id, shader_ids.back()));
+		GLDebug(glAttachShader(_program_id, shader_ids.back()));
 	}
 	// Link
-	GLCall(glLinkProgram(_program_id));
-	GLCall(glValidateProgram(_program_id));
+	GLDebug(glLinkProgram(_program_id));
+	GLDebug(glValidateProgram(_program_id));
 	// Delete shaders
 	for (auto shader_id : shader_ids) {
 		glDeleteShader(shader_id);
@@ -93,43 +93,43 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code) {
 		}
 	}();
 	// Create
-	GLCall(GLuint shader_id = glCreateShader(shader_type));
+	GLDebug(GLuint shader_id = glCreateShader(shader_type));
 	// Compile
 	const char* src = shader_code.source_code.c_str();
-	GLCall(glShaderSource(shader_id, 1, &src, nullptr));
-	GLCall(glCompileShader(shader_id));
+	GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
+	GLDebug(glCompileShader(shader_id));
 	// Debug
 #ifndef NDEBUG
 	int result;
-	GLCall(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
+	GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE) {
 		int length;
-		GLCall(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
+		GLDebug(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)alloca(length * sizeof(char));
-		GLCall(glGetShaderInfoLog(shader_id, length, &length, message));
+		GLDebug(glGetShaderInfoLog(shader_id, length, &length, message));
 		Log::Error("Shader compilation failed :\n{}", message);
-		GLCall(glDeleteShader(shader_id));
+		GLDebug(glDeleteShader(shader_id));
 	}
 #endif
 	return shader_id;
 }
 
 void Shader::bind() {
-	GLCall(glUseProgram(_program_id));
+	GLDebug(glUseProgram(_program_id));
 }
 
 GLint Shader::uniform_location(const char* uniform_name) {
 	if (_uniform_locations.find(uniform_name) != _uniform_locations.end()) {
 		return _uniform_locations[uniform_name];
 	}
-	GLCall(GLint location = glGetUniformLocation(_program_id, uniform_name));
+	GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name));
 	_uniform_locations[uniform_name] = location;
 	return location;
 }
 
 void Shader::set_uniform(std::string_view uniform_name, int v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform1i(uniform_location(uniform_name.data()), v));
+	GLDebug(glUniform1i(uniform_location(uniform_name.data()), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, unsigned int v) {
 	set_uniform(uniform_name, static_cast<int>(v));
@@ -139,31 +139,31 @@ void Shader::set_uniform(std::string_view uniform_name, bool v) {
 }
 void Shader::set_uniform(std::string_view uniform_name, float v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform1f(uniform_location(uniform_name.data()), v));
+	GLDebug(glUniform1f(uniform_location(uniform_name.data()), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform2f(uniform_location(uniform_name.data()), v.x, v.y));
+	GLDebug(glUniform2f(uniform_location(uniform_name.data()), v.x, v.y));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec3& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform3f(uniform_location(uniform_name.data()), v.x, v.y, v.z));
+	GLDebug(glUniform3f(uniform_location(uniform_name.data()), v.x, v.y, v.z));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniform4f(uniform_location(uniform_name.data()), v.x, v.y, v.z, v.w));
+	GLDebug(glUniform4f(uniform_location(uniform_name.data()), v.x, v.y, v.z, v.w));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix2fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLDebug(glUniformMatrix2fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat3& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix3fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLDebug(glUniformMatrix3fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat) {
 	ASSERT_SHADER_IS_BOUND;
-	GLCall(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+	GLDebug(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
 } // namespace Cool

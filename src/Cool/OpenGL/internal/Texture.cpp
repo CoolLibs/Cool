@@ -14,18 +14,18 @@ Texture::~Texture() {
 
 GLuint Texture::CreateTextureID(GLint interpolationMode, GLint wrapMode) {
 	GLuint textureID;
-	GLCall(glGenTextures(1, &textureID));
-	GLCall(glBindTexture(GL_TEXTURE_2D, textureID));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolationMode));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolationMode));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	GLDebug(glGenTextures(1, &textureID));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, textureID));
+	GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolationMode));
+	GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolationMode));
+	GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode));
+	GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 	return textureID;
 }
 
 void Texture::DestroyTexture(GLuint texID) {
-	GLCall(glDeleteTextures(1, &texID));
+	GLDebug(glDeleteTextures(1, &texID));
 }
 
 #ifdef __COOL_LOAD_IMAGE
@@ -45,8 +45,8 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 	// Create texture
 	GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
 	// Upload data
-	GLCall(glBindTexture(GL_TEXTURE_2D, texID));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.get()));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
+	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.get()));
 	//
 	return texID;
 }
@@ -67,9 +67,9 @@ void Texture::uploadRGB(int width, int height, unsigned char* data) {
 	if (m_textureID == -1)
 		Log::Error("[Texture::uploadRGB] You haven't generated that texture yet !");
 #endif
-	GLCall(glBindTexture(GL_TEXTURE_2D, m_textureID));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
+	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void Texture::uploadRGBA(int width, int height, unsigned char* data) {
@@ -78,9 +78,9 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data) {
 	if (m_textureID == -1)
 		Log::Error("[Texture::uploadRGBA] You haven't generated that texture yet !");
 #endif
-	GLCall(glBindTexture(GL_TEXTURE_2D, m_textureID));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
+	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void Texture::attachToSlot(int slot) {
@@ -90,8 +90,8 @@ void Texture::attachToSlot(int slot) {
 	if (!m_bDataUploaded)
 		Log::Error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
 #endif
-	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-	GLCall(glBindTexture(GL_TEXTURE_2D, m_textureID));
+	GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
 }
 
 } // namespace Cool

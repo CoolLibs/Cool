@@ -6,12 +6,12 @@ namespace Cool {
 
 FrameBuffer::FrameBuffer()
 {
-	GLCall(glGenFramebuffers(1, &m_frameBufferId));
+	GLDebug(glGenFramebuffers(1, &m_frameBufferId));
 }
 
 FrameBuffer::~FrameBuffer() {
 	destroyAttachments();
-	GLCall(glDeleteFramebuffers(1, &m_frameBufferId));
+	GLDebug(glDeleteFramebuffers(1, &m_frameBufferId));
 }
 
 void FrameBuffer::setSize(const glm::ivec2& size) {
@@ -21,7 +21,7 @@ void FrameBuffer::setSize(const glm::ivec2& size) {
 	attachAttachments();
 #ifndef NDEBUG
 	bind();
-	GLCall(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
+	GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	if (status != GL_FRAMEBUFFER_COMPLETE) {
 		const char* statusStr;
 		switch (status) {
@@ -60,21 +60,21 @@ void FrameBuffer::setSize(const glm::ivec2& size) {
 }
 
 void FrameBuffer::bind() {
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferId));
-	GLCall(glGetIntegerv(GL_VIEWPORT, m_prevViewport)); // Store viewport settings to restore them when unbinding
-	GLCall(glViewport(0, 0, width(), height()));                // Only usefull if we plan on using this frame buffer at a different resolution than the screen's
+	GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferId));
+	GLDebug(glGetIntegerv(GL_VIEWPORT, m_prevViewport)); // Store viewport settings to restore them when unbinding
+	GLDebug(glViewport(0, 0, width(), height()));                // Only usefull if we plan on using this frame buffer at a different resolution than the screen's
 }
 
 void FrameBuffer::unbind() {
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, SCREEN_FRAMEBUFFER_ID));
-	GLCall(glViewport(m_prevViewport[0], m_prevViewport[1], m_prevViewport[2], m_prevViewport[3]));
+	GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, SCREEN_FRAMEBUFFER_ID));
+	GLDebug(glViewport(m_prevViewport[0], m_prevViewport[1], m_prevViewport[2], m_prevViewport[3]));
 }
 
 void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID, GLint interpolationMode) {
-	GLCall(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBufferID));
-	GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId));
-	GLCall(glBlitFramebuffer(0, 0, width(), height(), botLeft.x, botLeft.y, topRight.x, topRight.y, GL_COLOR_BUFFER_BIT, interpolationMode));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GLDebug(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBufferID));
+	GLDebug(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId));
+	GLDebug(glBlitFramebuffer(0, 0, width(), height(), botLeft.x, botLeft.y, topRight.x, topRight.y, GL_COLOR_BUFFER_BIT, interpolationMode));
+	GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode) {
@@ -82,20 +82,20 @@ void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode) {
 }
 
 void FrameBuffer::createAttachments(int width, int height) {
-	GLCall(glGenRenderbuffers(1, &m_depthRenderBufferId));
-	GLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId));
-	GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height));
-	GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+	GLDebug(glGenRenderbuffers(1, &m_depthRenderBufferId));
+	GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId));
+	GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height));
+	GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 }
 
 void FrameBuffer::destroyAttachments() {
-	GLCall(glDeleteRenderbuffers(1, &m_depthRenderBufferId));
+	GLDebug(glDeleteRenderbuffers(1, &m_depthRenderBufferId));
 }
 
 void FrameBuffer::attachAttachments() {
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId()));
-	GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId()));
+	GLDebug(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId));
+	GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 } // namespace Cool
