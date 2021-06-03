@@ -4,12 +4,12 @@
 
 namespace Cool::Log {
 
-std::string Release::_message = "";
-bool Release::_open = false;
-int Release::_messages_count = 0;
-bool Release::_scroll_to_bottom = false;
+std::string ToUser::_message = "";
+bool ToUser::_open = false;
+int ToUser::_messages_count = 0;
+bool ToUser::_scroll_to_bottom = false;
 
-void Release::Message(std::string_view message) {
+void ToUser::Message(std::string_view message) {
 	if (!_open)
 		_message.clear();
 	_message += "\n[";
@@ -20,7 +20,7 @@ void Release::Message(std::string_view message) {
 	_scroll_to_bottom = true;
 }
 
-void Release::Show_Console() {
+void ToUser::Show_Console() {
 	if (_open) {
 		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
 		ImGui::Text(_message.c_str());
@@ -32,7 +32,7 @@ void Release::Show_Console() {
 	}
 }
 
-void Release::ImGui_Toggle_Console() {
+void ToUser::ImGui_Toggle_Console() {
 	ImGui::Checkbox("Console", &_open);
 }
 

@@ -32,7 +32,7 @@ namespace Cool::Log {
 #endif
 	}
 
-class Release {
+class ToUser {
 public:
 	template<typename ...Args> static inline void Info(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
