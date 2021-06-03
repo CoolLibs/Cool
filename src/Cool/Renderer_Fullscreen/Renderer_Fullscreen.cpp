@@ -8,11 +8,11 @@ namespace Cool {
 
 Renderer_Fullscreen::Renderer_Fullscreen() {
 	RenderState::SubscribeToSizeChanges([this]() { onRenderAreaResized(); });
-	GLCall(glGenVertexArrays(1, &m_dummyVaoID));
+	GLDebug(glGenVertexArrays(1, &m_dummyVaoID));
 }
 
 Renderer_Fullscreen::~Renderer_Fullscreen() {
-	GLCall(glDeleteVertexArrays(1, &m_dummyVaoID));
+	GLDebug(glDeleteVertexArrays(1, &m_dummyVaoID));
 }
 
 void Renderer_Fullscreen::begin() {
@@ -31,8 +31,8 @@ void Renderer_Fullscreen::end(GLint interpolationMode) {
 
 void Renderer_Fullscreen::render() {
 	// We use a smart trick to render fullscreen, as explained here : https://stackoverflow.com/a/59739538
-	GLCall(glBindVertexArray(m_dummyVaoID));
-	GLCall(glDrawArrays(GL_TRIANGLES, 0, 3));
+	GLDebug(glBindVertexArray(m_dummyVaoID));
+	GLDebug(glDrawArrays(GL_TRIANGLES, 0, 3));
 }
 
 void Renderer_Fullscreen::onRenderAreaResized() {
