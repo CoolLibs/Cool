@@ -95,6 +95,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
 if (COOL_USE_OPENGL)
     target_precompile_headers(${PROJECT_NAME} PRIVATE
         <glad/glad.h>
-        <Cool/App/internal/GLCall.h>
+        <Cool/App/internal/GLDebug.h>
     )
 endif()

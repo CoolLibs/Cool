@@ -1,7 +1,7 @@
 #ifdef __COOL_APP_OPENGL
 #ifndef NDEBUG
 
-#include "GLCall.h"
+#include "GLDebug.h"
 
 void CoolGlDebug::clearFromPreviousErrors() {
 	while (glGetError() != GL_NO_ERROR);
