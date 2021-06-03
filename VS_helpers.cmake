@@ -10,9 +10,3 @@ function(VS_RegisterFiles _FILES)
         source_group("${_group_path}" FILES "${_file}")
     endforeach()
 endfunction()
-
-# Set the working directory (in order to access all ressources that are at the root of the project) :
-set_target_properties(
-    ${PROJECT_NAME} PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-)
