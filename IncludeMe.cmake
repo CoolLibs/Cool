@@ -2,6 +2,7 @@
 
 add_compile_definitions(__COOL_APP)
 add_compile_definitions(__COOL_GLM)
+add_compile_definitions(__COOL_IMGUI_LIB)
 
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
