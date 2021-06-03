@@ -58,10 +58,9 @@ static void SetupVulkanWindow(const VulkanContext& vulkan_context, VulkanWindowS
 WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	: m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
 {
-	// Debug checks
+#ifndef NDEBUG
 	assert(openGLMajorVersion >= 3);
 	assert(openGLMinorVersion >= 3);
-#ifndef NDEBUG
 	if (s_bInitialized)
 		Log::Error("You are creating a WindowFactory twice !");
 	s_bInitialized = true;
@@ -71,7 +70,7 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 #ifdef __COOL_APP_VULKAN
 	// Setup Vulkan
 	if (!glfwVulkanSupported()) {
-		Log::Release::Error("GLFW : Vulkan Not Supported");
+		Log::ToUser::Error("GLFW : Vulkan Not Supported");
 	}
 	uint32_t extensions_count = 0;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
