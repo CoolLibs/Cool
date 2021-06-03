@@ -6,8 +6,8 @@ namespace Cool {
 
 class Camera {
 public:
-	inline const glm::mat4& transform_matrix() const { return _transform_matrix; }
-	inline const glm::mat4& view_matrix() const { return glm::inverse(_transform_matrix); }
+	inline const glm::mat4& transform_matrix()  const { return _transform_matrix; }
+	inline       glm::mat4  view_matrix()       const { return glm::inverse(_transform_matrix); }
 	inline const glm::mat4& projection_matrix() const { return _projection_matrix; }
 	glm::vec3 right_axis() const;
 	glm::vec3 up_axis() const;
