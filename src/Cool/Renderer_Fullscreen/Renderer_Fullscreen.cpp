@@ -19,12 +19,12 @@ void Renderer_Fullscreen::begin() {
 	m_renderBuffer.bind();
 }
 
-void Renderer_Fullscreen::end(GLint interpolationMode) {
+void Renderer_Fullscreen::end() {
 	m_renderBuffer.blitTo(
 		RenderState::SwapYConvention(RenderState::InAppRenderArea().botLeft()),
 		RenderState::SwapYConvention(RenderState::InAppRenderArea().topRight()),
 		SCREEN_FRAMEBUFFER_ID,
-		interpolationMode
+		RenderState::preview_interpolation_mode()
 	);
 	m_renderBuffer.unbind();
 }
