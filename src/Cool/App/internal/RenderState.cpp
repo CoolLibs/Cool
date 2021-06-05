@@ -8,6 +8,7 @@ RectSizePos RenderState::m_AvailableSpace;
 RectSize RenderState::m_Export{ 1920, 1080 };
 RectSize RenderState::m_PreviewWithControlledNbPixels;
 bool RenderState::m_bIsExporting = false;
+InterpolationMode RenderState::_preview_interpolation_mode = InterpolationMode::Nearest;
 bool RenderState::m_bControlPreviewRatio = false;
 AspectRatio RenderState::m_previewRatio;
 bool RenderState::m_bControlPreviewNbPixels = false;
@@ -136,6 +137,8 @@ void RenderState::ImGuiPreviewControls() {
 			if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, InAppRenderArea().area())) {
 				setPreviewNbPixels(previewNbPixels);
 			}
+			// Interpolation mode
+			ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_preview_interpolation_mode), "Nearest\0Linear\0\0");
 		}
 	}
 	else {

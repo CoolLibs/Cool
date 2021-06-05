@@ -5,6 +5,11 @@
 
 namespace Cool {
 
+enum class InterpolationMode {
+	Nearest = 0,
+	Linear = 1,
+};
+
 class RenderState {
 public:
 	/// <summary>
@@ -55,6 +60,22 @@ public:
 	/// If bControl is false, we instead render our preview to match the size of the previewing area.
 	/// </summary>
 	static void setPreviewNbPixelsControl(bool bControl);
+
+	/**
+	 * @brief 
+	 * 
+	 * @return The interpolation mode that should be used to blit the final render target to the screen.
+	 */
+	static inline GLint preview_interpolation_mode() { 
+		switch (_preview_interpolation_mode) {
+			case InterpolationMode::Nearest:
+				return GL_NEAREST;
+			case InterpolationMode::Linear:
+				return GL_LINEAR;
+			default:
+				Log::Error("[RenderState::preview_interpolation_mode] Unknown interpolation mode");
+		}
+	};
 
 	/// <summary>
 	/// Allows user to control the preview size through the "Preview" menu. It is enabled by default.
@@ -107,7 +128,7 @@ private:
 	static RectSize m_PreviewWithControlledNbPixels;
 
 	static bool m_bIsExporting; // Owned by RenderState because it needs to know it when deciding what the rendered size should be
-
+	static InterpolationMode _preview_interpolation_mode;
 	static bool m_bControlPreviewRatio;
 	static AspectRatio m_previewRatio;
 	static bool m_bControlPreviewNbPixels;
