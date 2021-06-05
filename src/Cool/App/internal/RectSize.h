@@ -11,10 +11,11 @@ public:
 	}
 	~RectSize() = default;
 
-	inline int width() const              { return m_size.x; }
-	inline int height() const             { return m_size.y; }
+	inline int width()              const { return m_size.x; }
+	inline int height()             const { return m_size.y; }
 	inline const glm::ivec2& size() const { return m_size; }
-	inline float aspectRatio() const      { return m_aspectRatio; }
+	inline int area()               const { return width() * height(); }
+	inline float aspectRatio()      const { return m_aspectRatio; }
 
 	inline void setSize(int width, int height) { m_size.x = width; m_size.y = height; computeAspectRatio(); }
 

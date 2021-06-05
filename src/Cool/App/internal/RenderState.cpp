@@ -133,7 +133,7 @@ void RenderState::ImGuiPreviewControls() {
 		}
 		if (m_bControlPreviewNbPixels) {
 			int previewNbPixels = m_previewNbPixels;
-			if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 1000000)) {
+			if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, InAppRenderArea().area())) {
 				setPreviewNbPixels(previewNbPixels);
 			}
 		}
