@@ -1,4 +1,10 @@
 
+add_compile_definitions(__COOL_TIME)
+
+include_directories(
+    ${PATH_TO_COOL}/Time/src
+)
+
 add_compile_definitions(__COOL_IMGUI)
 
 include_directories(
