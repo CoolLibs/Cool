@@ -6,19 +6,25 @@ namespace Cool {
 
 class Random {
 public:
-	/// <summary>
-	/// Returns a random float between 0 and 1
-	/// </summary>
+	/**
+	 * @brief 
+	 * 
+	 * @return A random float between 0 and 1 
+	 */
 	static float get0to1();
 
-	/// <summary>
-	/// Returns a random float between -1 and 1
-	/// </summary>
+	/**
+	 * @brief
+	 * 
+	 * @return A random float between -1 and 1 
+	 */
 	static float getMinus1to1();
 
-	/// <summary>
-	/// Returns a random long int
-	/// </summary>
+	/**
+	 * @brief
+	 * 
+	 * @return A random long int
+	 */
 	static long int getAnyLongInt();
 
 private:
