@@ -1,0 +1,15 @@
+[submodule "lib/glm"]
+	path = lib/glm
+	url = https://github.com/g-truc/glm
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw
+[submodule "lib/Boxer"]
+	path = lib/Boxer
+	url = https://github.com/aaronmjacobs/Boxer
+[submodule "lib/nfd"]
+	path = lib/nfd
+	url = https://github.com/JulesFouchy/nativefiledialog-extended
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/JulesFouchy/imgui/
