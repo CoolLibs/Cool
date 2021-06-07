@@ -158,3 +158,10 @@ add_custom_command(
         ${PATH_TO_COOL}/Renderer_Fullscreen/fullscreen.vert
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/Renderer_Fullscreen/fullscreen.vert
 )
+
+
+add_compile_definitions(__COOL_PARAMS)
+
+include_directories(
+    ${PATH_TO_COOL}/Params/src
+)
