@@ -1,3 +1,6 @@
+Requires :
+  - Log
+
 # MultiThread
 
 Requires *nothing*
