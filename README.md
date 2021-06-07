@@ -1,3 +1,7 @@
+# String
+
+Requires *nothing*
+
 # ExportImage
 
 Requires *nothing*
