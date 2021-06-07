@@ -2,12 +2,9 @@
 
 #include "Clock_Realtime.h"
 #include "Clock_FixedTimestep.h"
-#ifdef __COOL_TIME_TIMELINE
-#include <Cool/ImGui/ImGui.h>
-#include <Cool/App/RenderState.h>
-#ifdef __COOL_ICONS
-#include <Cool/Icons/Icons.h>
-#endif
+#include "ImGui/ImGui.h"
+#include "App/RenderState.h"
+#include "Icons/Icons.h"
 #endif
 
 namespace Cool {
@@ -44,14 +41,9 @@ void Time::SetAsFixedTimestep(float fps) {
     m_clock = std::make_unique<Clock_FixedTimestep>(fps, time());
 }
 
-#ifdef __COOL_TIME_TIMELINE
 void Time::ImGuiTimeline() {
     if (!RenderState::IsExporting()) {
-#ifdef __COOL_ICONS
         if (ImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
-#else
-        if (ImGui::Button(m_clock->isPlaying() ? "Pause" : "Play")) {
-#endif
             m_clock->togglePlayPause();
         }
         ImGui::SameLine();
@@ -64,6 +56,5 @@ void Time::ImGuiTimeline() {
         ImGui::Text("%.2f seconds", time());
     }
 }
-#endif
 
 } // namespace Cool
