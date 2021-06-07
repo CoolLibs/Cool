@@ -1,171 +1,66 @@
 
-add_compile_definitions(__COOL_SERIALIZATION)
-
 include_directories(
-    ${PATH_TO_COOL}/Serialization/src
-    ${PATH_TO_COOL}/Serialization/lib/cereal/include/
-)
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <cereal/access.hpp>
-    <cereal/types/vector.hpp>
-    <cereal/types/string.hpp>
-    <cereal/types/memory.hpp>
-    <Cool/Serialization/internal/GlmSerialization.h>
-)
-
-add_compile_definitions(__COOL_IMAGE)
-
-include_directories(
-    ${PATH_TO_COOL}/Image/src
-)
-
-
-add_compile_definitions(__COOL_STRING)
-
-include_directories(
-    ${PATH_TO_COOL}/String/src
-)
-
-
-add_compile_definitions(__COOL_HISTORY)
-
-include_directories(
-    ${PATH_TO_COOL}/History/src
-)
-
-
-add_compile_definitions(__COOL_EXPORT_IMAGE)
-
-add_library(STB_IMAGE_WRITE STATIC "${PATH_TO_COOL}/ExportImage/lib/stb_image/stb_image_write.cpp")
-
-target_link_libraries(${PROJECT_NAME}
-    STB_IMAGE_WRITE
-)
-
-include_directories(
-    ${PATH_TO_COOL}/ExportImage/lib/
-    ${PATH_TO_COOL}/ExportImage/src
-)
-
-add_compile_definitions(__COOL_LOAD_IMAGE)
-
-add_library(STB_IMAGE STATIC "${PATH_TO_COOL}/LoadImage/lib/stb_image/stb_image.cpp")
-
-target_link_libraries(${PROJECT_NAME}
-    STB_IMAGE
-)
-
-include_directories(
-    ${PATH_TO_COOL}/LoadImage/lib/
-    ${PATH_TO_COOL}/LoadImage/src
-)
-
-add_compile_definitions(__COOL_ICONS)
-
-include_directories(
-    ${PATH_TO_COOL}/Icons/src
-)
-
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PATH_TO_COOL}/Icons/icons
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/Icons/icons
-)
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <unordered_map>
-)
-
-add_compile_definitions(__COOL_EXPORTER)
-
-include_directories(
-    ${PATH_TO_COOL}/Exporter/src
-)
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <string>
-)
-
-add_compile_definitions(__COOL_FILEWATCHER)
-
-include_directories(
-    ${PATH_TO_COOL}/FileWatcher/src
+    Cool/src
+    Cool/lib
+    Cool/lib/imgui
+    Cool/lib/glm
+    Cool/lib/nfd/src/include
+    Cool/lib/cereal/include
+    Cool/lib/spdlog/include
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
 target_precompile_headers(${PROJECT_NAME} PRIVATE
+    <vector>
+    <string>
+    <memory>
     <functional>
+    <unordered_map>
+    <deque>
+    <thread>
+    
+    <Cool/Log/Log.h>
+    <Cool/Serialization/internal/GlmSerialization.h>
+    
+    <imgui/imgui.h>
+    <imgui/misc/cpp/imgui_stdlib.h>
+    
+    <glm/glm.hpp>
+    <glm/gtc/type_ptr.hpp>
+
+    <cereal/access.hpp>
+    <cereal/types/vector.hpp>
+    <cereal/types/string.hpp>
+    <cereal/types/memory.hpp>
+    
+    <boxer/boxer.h>
+    
+    <nfd.hpp>
 )
+if (COOL_USE_OPENGL)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE
+        <glad/glad.h>
+        <Cool/App/internal/GLDebug.h>
+    )
+endif()
 
-
-add_compile_definitions(__COOL_GPU)
-
-include_directories(
-    ${PATH_TO_COOL}/Gpu/src
-)
-
-add_compile_definitions(__COOL_OPENGL)
-
-include_directories(
-    ${PATH_TO_COOL}/OpenGL/src
-)
-
-
-add_compile_definitions(__COOL_CAMERA)
-
-include_directories(
-    ${PATH_TO_COOL}/Camera/src
-)
-
-
-add_compile_definitions(__COOL_TIME)
-
-include_directories(
-    ${PATH_TO_COOL}/Time/src
-)
-
-add_compile_definitions(__COOL_IMGUI)
-
-include_directories(
-    ${PATH_TO_COOL}/ImGui/src
-)
-
-add_compile_definitions(__COOL_FILE)
-
-include_directories(
-    ${PATH_TO_COOL}/File/src
-)
-
-add_compile_definitions(__COOL_RANDOM)
-
-include_directories(
-    ${PATH_TO_COOL}/Random/src
-)
-
-# NB : You need to set PATH_TO_COOL before including this file
-
-add_compile_definitions(__COOL_APP)
-add_compile_definitions(__COOL_GLM)
-add_compile_definitions(__COOL_IMGUI_LIB)
-
+# Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
-    include("${PATH_TO_COOL}/CMake-Helpers/vulkan.cmake")
+    include("Cool/vulkan.cmake")
 endif()
 if (COOL_USE_OPENGL)
     add_compile_definitions(__COOL_APP_OPENGL)
     find_package(OpenGL REQUIRED)
-    add_library(GLAD STATIC ${PATH_TO_COOL}/App/lib/glad/src/glad.c)
+    add_library(GLAD STATIC Cool/lib/glad/src/glad.c)
     include_directories(
         ${OPENGL_INCLUDE_DIR}
-        ${PATH_TO_COOL}/App/lib/glad/include
+        Cool/lib/glad/include
     )
 endif()
 
 # GLFW
-set(GLFW_DIR ${PATH_TO_COOL}/App/lib/glfw)
+set(GLFW_DIR Cool/lib/glfw)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
@@ -176,35 +71,29 @@ include_directories(${GLFW_DIR}/include)
 include_directories(${GLFW_DIR}/deps)
 
 # Dear ImGui
-file(GLOB_RECURSE IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/*)
+file(GLOB_RECURSE IMGUI_SOURCES Cool/lib/imgui/*)
 if (COOL_USE_VULKAN)
-    list(REMOVE_ITEM IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/backends/imgui_impl_opengl3.cpp)
+    list(REMOVE_ITEM IMGUI_SOURCES "${CMAKE_SOURCE_DIR}/Cool/lib/imgui/backends/imgui_impl_opengl3.cpp")
 endif()
 if (COOL_USE_OPENGL)
-    list(REMOVE_ITEM IMGUI_SOURCES ${PATH_TO_COOL}/App/lib/imgui/backends/imgui_impl_vulkan.cpp)
+    list(REMOVE_ITEM IMGUI_SOURCES "${CMAKE_SOURCE_DIR}/Cool/lib/imgui/backends/imgui_impl_vulkan.cpp")
 endif()
 add_library(IMGUI STATIC ${IMGUI_SOURCES})
 
 # Boxer
-add_subdirectory(${PATH_TO_COOL}/App/lib/Boxer)
+add_subdirectory(Cool/lib/Boxer)
 
 # Native File Dialog
-add_subdirectory(${PATH_TO_COOL}/App/lib/nfd/src)
+add_subdirectory(Cool/lib/nfd/src)
 
-include_directories(
-    ${PATH_TO_COOL}/App/lib/imgui
-    ${PATH_TO_COOL}/App/lib/glm
-    ${PATH_TO_COOL}/App/lib/nfd/src/include
-    ${PATH_TO_COOL}/App/lib
-    ${PATH_TO_COOL}/App/src
+# Stb image
+add_library(STB_IMAGE STATIC "Cool/lib/stb_image/stb_image.cpp")
+target_link_libraries(${PROJECT_NAME}
+    STB_IMAGE
 )
-
-# Add a post build operation to copy IMGUI.ini to the output folder (where the executable is created)
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/imgui.ini
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/imgui.ini
+add_library(STB_IMAGE_WRITE STATIC "Cool/lib/stb_image/stb_image_write.cpp")
+target_link_libraries(${PROJECT_NAME}
+    STB_IMAGE_WRITE
 )
 
 # Add libraries to the project
@@ -214,7 +103,6 @@ target_link_libraries(${PROJECT_NAME}
     nfd
     glfw
 )
-
 if (COOL_USE_VULKAN)
     target_link_libraries(${PROJECT_NAME}
         Vulkan::Vulkan
@@ -227,65 +115,25 @@ if (COOL_USE_OPENGL)
     )
 endif()
 
-# More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <imgui/imgui.h>
-    <imgui/misc/cpp/imgui_stdlib.h>
-    <glm/glm.hpp>
-    <glm/gtc/type_ptr.hpp>
-    <boxer/boxer.h>
-    <nfd.hpp>
-    <functional>
-    <vector>
-)
-
-if (COOL_USE_OPENGL)
-    target_precompile_headers(${PROJECT_NAME} PRIVATE
-        <glad/glad.h>
-        <Cool/App/internal/GLDebug.h>
-    )
-endif()
-
-add_compile_definitions(__COOL_RENDERER_FULLSCREEN)
-
-include_directories(
-    ${PATH_TO_COOL}/Renderer_Fullscreen/src
-)
-
-# Add a post build operation to copy fullscreen.vert to the output folder (where the executable is created)
+# Post build : copy some files and folder to the output folder (where the executable is generated)
+# imgui.ini 
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-        ${PATH_TO_COOL}/Renderer_Fullscreen/fullscreen.vert
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/Renderer_Fullscreen/fullscreen.vert
+        ${CMAKE_SOURCE_DIR}/imgui.ini
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/imgui.ini
 )
-
-
-add_compile_definitions(__COOL_PARAMS)
-
-include_directories(
-    ${PATH_TO_COOL}/Params/src
+# icons
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        Cool/icons
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/icons
 )
-
-add_compile_definitions(__COOL_MULTITHREAD)
-
-include_directories(
-    ${PATH_TO_COOL}/MultiThread/src
-)
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <thread>
-    <functional>
-    <vector>
-    <deque>
-)
-add_compile_definitions(__COOL_LOG)
-
-include_directories(
-    ${PATH_TO_COOL}/Log/lib/spdlog/include
-    ${PATH_TO_COOL}/Log/src
-)
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-    <Cool/Log/Log.h>
+# fullscreen.vert
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        Cool/fullscreen.vert
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/fullscreen.vert
 )

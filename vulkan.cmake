@@ -17,7 +17,7 @@ if(AUTO_LOCATE_VULKAN)
 		set(VULKAN_PATH ${Vulkan_INCLUDE_DIRS})
 		STRING(REGEX REPLACE "/Include" "" VULKAN_PATH ${VULKAN_PATH})
 	endif()
-			 
+
 	if(NOT Vulkan_FOUND)
 		# CMake may fail to locate the libraries but could be able to 
 		# provide some path in Vulkan SDK include directory variable
@@ -44,7 +44,7 @@ else()
 		message("Error: Unable to locate this Vulkan SDK path VULKAN_PATH: ${VULKAN_PATH}, please specify correct path.
 		For more information on correct installation process, please refer to subsection 'Getting started with Lunar-G SDK'
 		and 'Setting up first project with CMake' in Chapter 3, 'Shaking hands with the device' in this book 'Learning Vulkan', ISBN - 9781786469809.")
-	   return()
+		return()
 	endif()
 endif()
 
