@@ -3,51 +3,63 @@
 namespace Cool {
 
 class Clock;
-#if defined(__COOL_IMGUI)
-#define __COOL_TIME_TIMELINE
-#endif
 
-/// <summary>
-/// The current local time of the app. Be default it elapses at the same speed as real time, but you can set it to use a fixed timestep (usefull when exporting images)
-/// </summary>
+/**
+ * @brief The current time of the app. By default it elapses at the same speed as real time, but you can set it to use a fixed timestep (useful when exporting images).
+ * 
+ */
 class Time {
 public:
-	/// <summary>
-	/// Must be called before the beginning of the app
-	/// </summary>
+	/**
+	 * @brief Must be called before the beginning of the app
+	 * 
+	 */
 	static void Initialize();
-	/// <summary>
-	/// Must be called on every frame.
-	/// </summary>
+
+	/**
+	 * @brief Must be called on every frame.
+	 * 
+	 */
 	static void Update();
-#ifdef __COOL_TIME_TIMELINE
-	/// <summary>
-	/// Shows the current time on a timeline, with a few controls.
-	/// </summary>
+
+	/**
+	 * @brief Shows the current time on a timeline, with a few controls.
+	 * 
+	 */
 	static void ImGuiTimeline();
-#endif
-	/// <summary>
-	/// Returns the current time in seconds.
-	/// </summary>
+
+	/**
+	 * @brief 
+	 * 
+	 * @return The current time in seconds. 
+	 */
 	static float time();
-	/// <summary>
-	/// Returns the timestep between two frames, in seconds.
-	/// </summary>
+
+	/**
+	 * @brief 
+	 * 
+	 * @return The time between two frames, in seconds. (More precisely : the time ellapsed between the last two calls of Update)
+	 */
 	static float deltaTime();
-	/// <summary>
-	/// Sets the current time.
-	/// </summary>
-	/// <param name="t">New time in seconds</param>
+
+	/**
+	 * @brief Sets the current time.
+	 * 
+	 * @param t New time in seconds
+	 */
 	static void setTime(float t);
 
-	/// <summary>
-	/// Makes the time elapse as fast as real time.
-	/// </summary>
+	/**
+	 * @brief Makes the time elapse at real time speed. Counteracts SetAsFixedTimestep().
+	 * 
+	 */
 	static void SetAsRealtime();
-	/// <summary>
-	/// Makes the time elapse at a constant rate between two frames, independantly of how much real time has actually elapsed.
-	/// </summary>
-	/// <param name="fps">The framerate at which the time should elapse.</param>
+
+	/**
+	 * @brief Makes the time elapse at a constant rate between two frames, independantly of how much real time has actually elapsed. Counteracts SetAsRealtime().
+	 * 
+	 * @param fps The framerate at which the time should elapse.
+	 */
 	static void SetAsFixedTimestep(float fps = 60.f);
 
 private:
