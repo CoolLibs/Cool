@@ -1,3 +1,9 @@
+# Camera
+
+Requires :
+  - Log
+  - App
+
 # Renderer_Fullscreen
 
 Requires :
