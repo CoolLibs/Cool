@@ -1,6 +1,12 @@
 Requires :
   - App
   - OpenGL
+  - LoadImage
+  - File
+
+Requires :
+  - App
+  - OpenGL
   - File
   - ExportImage
   - ImGui
