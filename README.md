@@ -1,3 +1,8 @@
+# FileWatcher
+
+Requires :
+  - File
+
 # Params
 
 Requires :
