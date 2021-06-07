@@ -1,3 +1,7 @@
+Requires:
+  - Log
+  - File
+
 # Image
 
 Requires *nothing*.
