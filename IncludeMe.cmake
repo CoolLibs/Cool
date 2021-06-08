@@ -15,6 +15,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <string>
     <memory>
     <functional>
+    <algorithm>
     <unordered_map>
     <deque>
     <thread>

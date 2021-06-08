@@ -2,9 +2,6 @@
 
 #ifndef NDEBUG
 
-#include <vector>
-#include <algorithm>
-
 namespace Cool {
 
 static std::vector<unsigned int> AlreadydisplayedIds;
@@ -63,11 +60,11 @@ void APIENTRY GLDebugCallback(
     if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
         Log::Error(message);
     }
-    else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY || severity == GL_DEBUG_SEVERITY_MEDIUM) {
+    else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY) {
         Log::Warn(message);
     }
     else {
-        Log::Info(message);
+        // Log::Info(message);
     }
 }
 
