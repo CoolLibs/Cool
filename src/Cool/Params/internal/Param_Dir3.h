@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IParam.h"
-#include <Cool/ImGui/ImGui.h>
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
 
 namespace Cool::Internal {
 

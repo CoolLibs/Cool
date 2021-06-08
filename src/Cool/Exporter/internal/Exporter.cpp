@@ -4,7 +4,7 @@
 #include <Cool/OpenGL/FrameBuffer.h>
 #include <Cool/File/File.h>
 #include <Cool/ExportImage/AsPNG.h>
-#include <Cool/ImGui/ImGui.h>
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
 #include <chrono>

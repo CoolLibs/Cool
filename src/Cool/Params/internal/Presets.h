@@ -2,7 +2,7 @@
 
 #include <Cool/File/File.h>
 #include <Cool/String/String.h>
-#include <Cool/ImGui/ImGui.h>
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Serialization/JsonFile.h>
 #include <Cool/Random/Random.h>
 

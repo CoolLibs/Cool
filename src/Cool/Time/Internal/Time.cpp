@@ -2,7 +2,7 @@
 
 #include "Clock_Realtime.h"
 #include "Clock_FixedTimestep.h"
-#include <Cool/ImGui/ImGui.h>
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/App/RenderState.h>
 #include <Cool/Icons/Icons.h>
 

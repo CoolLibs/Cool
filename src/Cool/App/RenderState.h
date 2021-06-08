@@ -74,6 +74,7 @@ public:
 				return GL_LINEAR;
 			default:
 				Log::Error("[RenderState::preview_interpolation_mode] Unknown interpolation mode");
+				return GL_NEAREST;
 		}
 	};
 
