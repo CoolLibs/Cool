@@ -2,9 +2,7 @@
 
 #include "../Texture.h"
 
-#ifdef __COOL_LOAD_IMAGE
 #include <Cool/LoadImage/LoadImage.h>
-#endif
 
 namespace Cool {
 
@@ -28,8 +26,6 @@ void Texture::DestroyTexture(GLuint texID) {
 	GLDebug(glDeleteTextures(1, &texID));
 }
 
-#ifdef __COOL_LOAD_IMAGE
-
 Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapMode) 
 	: m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
 {
@@ -51,10 +47,8 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 	return texID;
 }
 
-#endif
-
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode) {
-#ifndef DEBUG
+#ifndef NDEBUG
 	if (m_textureID != -1)
 		Log::Error("[Texture::genTexture] You have already generated that texture !");
 #endif

@@ -14,7 +14,6 @@ public:
 	Texture(Texture&&) = delete;				 // Non-copyable
 	Texture& operator=(const Texture&) = delete; // Non-copyable
 
-#ifdef __COOL_LOAD_IMAGE
 	/// <summary>
 	/// Constructs a texture from an image.
 	/// </summary>
@@ -43,7 +42,6 @@ public:
 	/// </param>
 	/// <returns></returns>
 	static GLuint LoadTexture(std::string_view filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
-#endif
 
 	/// <summary>
 	/// Creates an OpenGL texture. You are then responsible for destroying it with Texture::DestroyTexture()

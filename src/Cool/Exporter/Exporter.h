@@ -1,13 +1,7 @@
 #pragma once
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
-#define __COOL_EXPORTER_IMAGE_SEQUENCE
-#endif
-
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 #include "internal/Averager.h"
 #include <Cool/MultiThread/ThreadPool.h>
-#endif
 
 namespace Cool {
 
@@ -44,7 +38,6 @@ public:
 	/// <param name="open">true iff the window should open, and false iff it should close</param>
 	void open_window_export_image(bool open = true);
 
-#if defined(__COOL_TIME) && defined(__COOL_STRING) && defined(__COOL_MULTITHREAD)
 	/// <summary>
 	/// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
 	/// </summary>
@@ -68,15 +61,12 @@ public:
 	/// </summary>
 	/// <param name="open">true iff the window should open, and false iff it should close</param>
 	inline void open_window_export_image_sequence(bool open = true) { _is_window_open_image_sequence_export = open; }
-#endif
 
 private:
 	std::string output_path();
 	void find_available_file_name();
 	void ImGui_resolution_widget();
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	void export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath);
-#endif
 
 private:
 	std::string _folder_path_for_image;
@@ -84,7 +74,6 @@ private:
 	bool _is_window_open_image_export = false;
 	bool _should_show_file_exists_warning = false;
 
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	ThreadPool _thread_pool;
 	std::string _folder_path_for_image_sequence;
 	bool _is_exporting_image_sequence = false;
@@ -97,7 +86,6 @@ private:
 	int _total_nb_of_frames_in_sequence;
 	int _max_nb_digits_of_frame_count;
 	Averager<float> _frame_time_average;
-#endif
 };
 
 } // namespace Cool

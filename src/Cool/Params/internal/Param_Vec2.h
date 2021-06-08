@@ -17,7 +17,7 @@ protected:
 		bool b = ImGui::SliderFloat("",             &_value.x, _min_value.x, _max_value.x);
 		ImGui::PopID();
 		ImGui::SameLine();
-		    b |= ImGui::SliderFloat(name().c_str(), &_value.y, _min_value.y, _max_value.y);
+			b |= ImGui::SliderFloat(name().c_str(), &_value.y, _min_value.y, _max_value.y);
 		ImGui::PopItemWidth();
 		//ImGui::PushID(this);
 		//if (ImGui::BeginPopupContextItem()) {

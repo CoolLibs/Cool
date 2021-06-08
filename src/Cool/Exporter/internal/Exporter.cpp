@@ -5,16 +5,12 @@
 #include <Cool/File/File.h>
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/ImGui/ImGui.h>
-
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
 #include <chrono>
-#endif
 
 namespace Cool {
 
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 class ExportImage_Functor {
 public:
 	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
@@ -44,13 +40,10 @@ private:
 	Averager<float>& _frame_time_average;
 	std::atomic<int>& _nb_frames_which_finished_exporting;
 };
-#endif
 
 Exporter::Exporter()
 	: _folder_path_for_image(File::root_dir() + "/out")
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	, _folder_path_for_image_sequence(File::root_dir() + "/exports")
-#endif
 {}
 
 void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view filepath) {
@@ -74,7 +67,6 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 	RenderState::setIsExporting(false);
 }
 
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath) {
 	// Wait for a thread to be available
 	_thread_pool.wait_for_available_thread();
@@ -87,7 +79,6 @@ void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string
 	// Write png
 	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data), _frame_time_average, _nb_frames_which_finished_exporting)));
 }
-#endif
 
 std::string Exporter::output_path() {
 	return _folder_path_for_image + "/" + _file_name + ".png";
@@ -127,23 +118,16 @@ void Exporter::open_window_export_image(bool open) {
 
 void Exporter::ImGui_menu_items() {
 	// Calculate max button width
-	const char* longuest_text =
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
-		"Image Sequence";
-#else
-		"Image";
-#endif
+	const char* longuest_text = "Image Sequence";
 	float button_width = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
 	// Draw buttons
 	//ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
 	if (ImGui::Button("Image", ImVec2(button_width, 0.0f))) {
 		open_window_export_image(true);
 	}
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 	if (ImGui::Button("Image Sequence", ImVec2(button_width, 0.0f))) {
 		_is_window_open_image_sequence_export = true;
 	}
-#endif
 	//ImGui::PopStyleVar();
 }
 
@@ -188,8 +172,6 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		ImGui::End();
 	}
 }
-
-#ifdef __COOL_EXPORTER_IMAGE_SEQUENCE
 
 void Exporter::begin_image_sequence_export() {
 	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image_sequence.c_str())) {
@@ -272,7 +254,5 @@ bool Exporter::ImGui_window_export_image_sequence() {
 	}
 	return has_started;
 }
-
-#endif
 
 } // namespace Cool

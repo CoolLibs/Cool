@@ -40,11 +40,9 @@ public:
 		return _angles.ImGui(on_edit_ended, on_value_change);
 	}
 
-#ifdef __COOL_OPENGL
 	void set_uniform_in_shader(Shader& shader) override {
 		shader.set_uniform(name().c_str(), operator*());
 	}
-#endif
 
 	inline const std::string& name() const override { return _angles.name(); }
 

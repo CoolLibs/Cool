@@ -1,10 +1,7 @@
 #pragma once
 
 #include "../ParamsHistory.h"
-
-#ifdef __COOL_OPENGL
 #include <Cool/OpenGL/Shader.h>
-#endif
 
 namespace Cool::Internal {
 
@@ -14,9 +11,7 @@ public:
 
 	virtual inline const std::string& name() const = 0;
 	virtual bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
-#ifdef __COOL_OPENGL
 	virtual void set_uniform_in_shader(Shader& shader) = 0;
-#endif
 
 protected:
 	virtual bool ImGuiWidget() = 0;
@@ -41,11 +36,9 @@ public:
 
 	inline const std::string& name() const override { return _name; }
 
-#ifdef __COOL_OPENGL
 	void set_uniform_in_shader(Shader& shader) override {
 		shader.set_uniform(name().c_str(), _value);
 	}
-#endif
 
 protected:
 	void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change) {
