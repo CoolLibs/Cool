@@ -1,30 +1,44 @@
 #pragma once
 
 namespace Cool::String {
-	/// <summary>
-	/// Returns a new string with all characters converted to lower case
-	/// </summary>
-	std::string ToLower(const std::string& str);
-	/// <summary>
-	/// Returns true iff str starts with the string toFind
-	/// </summary>
-	bool StartsWith(const char* toFind, const std::string& str);
-	/// <summary>
-	/// Modifies "str" and replaces all occurences of "from" with "to"
-	/// </summary>
-	void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
-	/// <summary>
-	/// Converts a number to a string.
-	/// Adds 0s to the left until we reach minNbChars (if the latter isn't -1)
-	/// </summary>
+	/**
+	 * @brief 
+	 * 
+	 * @param str 
+	 * @return A new string with all characters converted to lower case
+	 */
+	std::string to_lower(const std::string& str);
+
+	/**
+	 * @brief 
+	 * 
+	 * @param to_find 
+	 * @param str 
+	 * @return true iff *str* starts with *to_find*
+	 */
+	bool starts_with(const char* to_find, const std::string& str);
+
+	/**
+	 * @brief Modifies *str* by replacing all occurences of *from* with *to*
+	 * 
+	 * @param str 
+	 * @param from 
+	 * @param to 
+	 */
+	void replace_all(std::string& str, const std::string& from, const std::string& to);
+
+	/**
+	 * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
+	 * 
+	 * @param val The number to convert to a string.
+	 * @param min_nb_of_characters The minimum number of characters that will be present in the output string.
+	 */
 	template<typename T>
-	std::string ToString(T val, int minNbChars = -1) {
+	std::string to_string(T val, int min_nb_of_characters = 0) {
 		std::string str = std::to_string(val);
-		if (minNbChars != -1) {
-			int dn = minNbChars - static_cast<int>(str.size());
-			if (dn > 0) {
-				str = std::string(dn, '0') + str;
-			}
+		int dn = min_nb_of_characters - static_cast<int>(str.size());
+		if (dn > 0) {
+			str = std::string(dn, '0') + str;
 		}
 		return str;
 	}

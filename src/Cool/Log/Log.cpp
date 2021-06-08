@@ -14,7 +14,7 @@ void ToUser::Message(std::string_view message) {
 	if (!_open)
 		_message.clear();
 	_message += "\n[";
-	_message += String::ToString(_messages_count, 3) + "] ";
+	_message += String::to_string(_messages_count, 3) + "] ";
 	_message += message;
 	_open = true;
 	_messages_count = (_messages_count + 1) % 1000;

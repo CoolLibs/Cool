@@ -174,7 +174,7 @@ private:
 		const auto uuid = current_uuid();
 		// Case insensitive alphabetical sort
 		std::sort(_presets.begin(), _presets.end(), [](const Preset<T>& l, const Preset<T>& r) {
-			return String::ToLower(l.name) < String::ToLower(r.name);
+			return String::to_lower(l.name) < String::to_lower(r.name);
 			});
 		// Put Default first
 		for (size_t i = 0; i < _presets.size(); ++i) {

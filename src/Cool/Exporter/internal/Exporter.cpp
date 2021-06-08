@@ -215,7 +215,7 @@ void Exporter::update(FrameBuffer& frameBuffer) {
 		_is_window_open_image_sequence_export = true;
 		if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
 			if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-				export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::ToString(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png").c_str());
+				export_image_multithreaded(frameBuffer, (_folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png").c_str());
 				_nb_frames_sent_to_thread_pool++;
 			}
 		}
@@ -261,7 +261,7 @@ bool Exporter::ImGui_window_export_image_sequence() {
 		// Exporting
 		else {
 			int frame_count = _nb_frames_which_finished_exporting.load();
-			ImGui::Text(("Exported " + String::ToString(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
+			ImGui::Text(("Exported " + String::to_string(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
 			ImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
 			ImGui::Text("remaining");
 			if (ImGui::Button("Stop exporting")) {
