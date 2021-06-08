@@ -123,17 +123,10 @@ add_custom_command(
         ${CMAKE_SOURCE_DIR}/imgui.ini
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/imgui.ini
 )
-# icons
+# res
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        Cool/icons
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/icons
-)
-# fullscreen.vert
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        Cool/fullscreen.vert
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/fullscreen.vert
+        ${CMAKE_SOURCE_DIR}/Cool/res
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/res
 )
