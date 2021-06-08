@@ -2,30 +2,33 @@
 
 namespace Cool {
 
-Clock_FixedTimestep::Clock_FixedTimestep(float fps, float initialTime)
-    : m_dt(1.0f / fps)
+Clock_FixedTimestep::Clock_FixedTimestep(float fps, float initial_time)
+    : _dt(1.f / fps)
 {
-    m_framesCount = static_cast<unsigned int>(std::round(initialTime * fps));
+    _frames_count = static_cast<unsigned int>(std::round(initial_time * fps));
 }
 
-float Clock_FixedTimestep::deltaTime() const {
-    if (Clock::isPlaying())
-        return m_dt;
-    else
+float Clock_FixedTimestep::delta_time() const {
+    if (is_playing()) {
+        return _dt;
+    }
+    else {
         return 0.f;
+    }
 }
 
 float Clock_FixedTimestep::time() const {
-    return m_framesCount * m_dt;
+    return static_cast<float>(_frames_count) * _dt;
 }
 
-void Clock_FixedTimestep::setTime(float newTime) {
-    m_framesCount = static_cast<unsigned int>(round(newTime / m_dt));
+void Clock_FixedTimestep::set_time(float new_time) {
+    _frames_count = static_cast<unsigned int>(std::round(new_time / _dt));
 }
 
 void Clock_FixedTimestep::update() {
-    if (Clock::isPlaying())
-        m_framesCount++;
+    if (is_playing()) {
+        _frames_count++;
+    }
 }
 
 } // namespace Cool

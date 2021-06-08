@@ -3,17 +3,17 @@
 namespace Cool {
 
 void Clock::play() {
-    assert(!m_bPlaying);
-    m_bPlaying = true;
+    assert(!_is_playing);
+    _is_playing = true;
 }
 
 void Clock::pause() {
-    assert(m_bPlaying);
-    m_bPlaying = false;
+    assert(_is_playing);
+    _is_playing = false;
 }
 
-void Clock::togglePlayPause() {
-    if (m_bPlaying)
+void Clock::toggle_play_pause() {
+    if (_is_playing)
         pause();
     else
         play();

@@ -2,54 +2,53 @@
 
 #include "Clock_Realtime.h"
 #include "Clock_FixedTimestep.h"
-#include "ImGui/ImGui.h"
-#include "App/RenderState.h"
-#include "Icons/Icons.h"
-#endif
+#include <Cool/ImGui/ImGui.h>
+#include <Cool/App/RenderState.h>
+#include <Cool/Icons/Icons.h>
 
 namespace Cool {
 
-std::unique_ptr<Clock> Time::m_clock = nullptr;
+std::unique_ptr<Clock> Time::_clock = nullptr;
 
-void Time::Initialize() {
-    m_clock = std::make_unique<Clock_Realtime>();
+void Time::initialize() {
+    _clock = std::make_unique<Clock_Realtime>();
 }
 
-void Time::Update() {
-    m_clock->update();
+void Time::update() {
+    _clock->update();
 }
 
-float Time::deltaTime() {
-    return m_clock->deltaTime();
+float Time::delta_time() {
+    return _clock->delta_time();
 }
 
 float Time::time() {
-    return m_clock->time();
+    return _clock->time();
 }
 
-void Time::setTime(float t) {
-    m_clock->setTime(t);
+void Time::set_time(float new_time) {
+    _clock->set_time(new_time);
 }
 
-void Time::SetAsRealtime() {
+void Time::set_elapse_mode_as_realtime() {
     float t = time();
-    m_clock = std::make_unique<Clock_Realtime>();
-    m_clock->setTime(t);
+    _clock = std::make_unique<Clock_Realtime>();
+    _clock->set_time(t);
 }
 
-void Time::SetAsFixedTimestep(float fps) {
-    m_clock = std::make_unique<Clock_FixedTimestep>(fps, time());
+void Time::set_elapse_mode_as_fixed_timestep(float fps) {
+    _clock = std::make_unique<Clock_FixedTimestep>(fps, time());
 }
 
-void Time::ImGuiTimeline() {
+void Time::imgui_timeline() {
     if (!RenderState::IsExporting()) {
-        if (ImGui::ButtonWithIcon(m_clock->isPlaying() ? Icons::Pause() : Icons::Play())) {
-            m_clock->togglePlayPause();
+        if (ImGui::ButtonWithIcon(_clock->is_playing() ? Icons::Pause() : Icons::Play())) {
+            _clock->toggle_play_pause();
         }
         ImGui::SameLine();
         float t = time();
         if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
-            setTime(t);
+            set_time(t);
         }
     }
     else {

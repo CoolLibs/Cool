@@ -201,8 +201,8 @@ void Exporter::begin_image_sequence_export() {
 		float total_export_duration = _sequence_end_time_in_sec - _sequence_begin_time_in_sec;
 		_total_nb_of_frames_in_sequence = static_cast<unsigned int>(std::ceil(total_export_duration * _fps));
 		_max_nb_digits_of_frame_count = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
-		Time::SetAsFixedTimestep(_fps);
-		Time::setTime(_sequence_begin_time_in_sec);
+		Time::set_elapse_mode_as_fixed_timestep(_fps);
+		Time::set_time(_sequence_begin_time_in_sec);
 		_frame_time_average.clear();
 	}
 	else {
@@ -229,7 +229,7 @@ void Exporter::end_image_sequence_export() {
 	_thread_pool.stop();
 	_is_exporting_image_sequence = false;
 	RenderState::setIsExporting(false);
-	Time::SetAsRealtime();
+	Time::set_elapse_mode_as_realtime();
 	_is_window_open_image_sequence_export = false;
 }
 

@@ -3,44 +3,45 @@
 namespace Cool {
 
 Clock_Realtime::Clock_Realtime()
-    : m_initialTime(std::chrono::steady_clock::now()), m_lastTime(m_initialTime), m_currentTime(m_lastTime)
+    : _initial_time(std_time()), _last_time(std_time()), _current_time(std_time())
 {}
 
-float Clock_Realtime::deltaTime() const {
-    if (Clock::isPlaying()) {
-        std::chrono::duration<float> dt = m_currentTime - m_lastTime;
+float Clock_Realtime::delta_time() const {
+    if (is_playing()) {
+        std::chrono::duration<float> dt = _current_time - _last_time;
         return dt.count();
     }
-    else
+    else {
         return 0.f;
+    }
 }
 
 float Clock_Realtime::time() const {
-    std::chrono::duration<float> delta = m_currentTime - m_initialTime;
-	return delta.count() - m_offsetWithSTDTime;
+    std::chrono::duration<float> delta = _current_time - _initial_time;
+	return delta.count() - _offset_with_std_time;
 }
 
-void Clock_Realtime::setTime(float newTime) {
-    m_offsetWithSTDTime += time() - newTime;
+void Clock_Realtime::set_time(float new_time) {
+    _offset_with_std_time += time() - new_time;
 }
 
 void Clock_Realtime::update() {
-    if (Clock::isPlaying()) {
-        m_lastTime = m_currentTime;
-        m_currentTime = std::chrono::steady_clock::now();
+    if (is_playing()) {
+        _last_time = _current_time;
+        _current_time = std_time();
     }
 }
 
 void Clock_Realtime::play() {
     Clock::play();
-    std::chrono::duration<float> delta = std::chrono::steady_clock::now() - m_timeWhenPaused;
-    m_offsetWithSTDTime += delta.count();
+    std::chrono::duration<float> delta = std_time() - _time_when_paused;
+    _offset_with_std_time += delta.count();
     update();
 }
 
 void Clock_Realtime::pause() {
     Clock::pause();
-    m_timeWhenPaused = std::chrono::steady_clock::now();
+    _time_when_paused = std_time();
 }
 
 } // namespace Cool
