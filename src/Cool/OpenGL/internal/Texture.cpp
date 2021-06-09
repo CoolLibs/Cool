@@ -37,7 +37,7 @@ Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapM
 GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode) {
 	// Load image
 	int width, height;
-	std::unique_ptr<unsigned char> data = LoadImage::Load(filepath, &width, &height);
+	std::unique_ptr<unsigned char> data = LoadImage::load(filepath, &width, &height);
 	// Create texture
 	GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
 	// Upload data
