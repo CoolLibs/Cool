@@ -12,40 +12,101 @@ namespace Cool::Log {
 		spdlog::set_pattern(std::string(spdlog_pattern));
 	}
 	
+	/**
+	 * @brief Displays a green message to the console in debug mode (in release mode this function does nothing).
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> inline void info(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::info(std::forward<Args>(args)...);
 #endif
 	}
+
+	/**
+	 * @brief Displays a yellow message to the console in debug mode (in release mode this function does nothing).
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> inline void warn(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::warn(std::forward<Args>(args)...);
 #endif
 	}
+
+	/**
+	 * @brief Displays a red message to the console and triggers a breakpoint in debug mode (in release mode this function does nothing).
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> inline void error(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::error(std::forward<Args>(args)...);
 		assert(false);
 #endif
 	}
+
+	/**
+	 * @brief Displays a red message to the console in debug mode (in release mode this function does nothing).
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> inline void error_without_breakpoint(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::error(std::forward<Args>(args)...);
 #endif
 	}
 
+/**
+ * @brief If you want your end user to see a message, use these functions. The messages pop-up in an ImGui window called the console.
+ * 
+ */
 class ToUser {
 public:
+	/**
+	 * @brief Displays a message in the ImGui console.
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> static inline void info(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
+
+	/**
+	 * @brief Displays a message in the ImGui console.
+	 * 
+	 * @tparam Args 
+	 * @param args 
+	 */
 	template<typename ...Args> static inline void warn(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
+
+	/**
+	 * @brief Displays a message in the ImGui console.
+	 * 
+	 * @tparam Args 
+	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
+	 */
 	template<typename ...Args> static inline void error(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
+
+	/**
+	 * @brief If the console is open, shows the console with all the messages.
+	 * 
+	 */
 	static void imgui_console_window();
+
+	/**
+	 * @brief Shows a checkbox to open or close the console.
+	 * 
+	 */
 	static void imgui_toggle_console();
 
 private:
