@@ -3,30 +3,32 @@
 #include <spdlog/spdlog.h>
 
 namespace Cool::Log {
-	/// <summary>
-	/// </summary>
-	/// <param name="spdlogPattern">: Sets the log messages pattern ; see here to configure it : https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags</param>
-	inline void Initialize(const char* spdlogPattern = "%^[%e] %n: %v%$") {
-		spdlog::set_pattern(spdlogPattern);
+	/**
+	 * @brief Sets the log messages pattern.
+	 * 
+	 * @param spdlog_pattern The pattern to use. See https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
+	 */
+	inline void initialize(std::string_view spdlog_pattern = "%^[%e] %n: %v%$") {
+		spdlog::set_pattern(std::string(spdlog_pattern));
 	}
-	// 
-	template<typename ...Args> inline void Info(Args&& ...args) {
+	
+	template<typename ...Args> inline void info(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::info(std::forward<Args>(args)...);
 #endif
 	}
-	template<typename ...Args> inline void Warn(Args&& ...args) {
+	template<typename ...Args> inline void warn(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::warn(std::forward<Args>(args)...);
 #endif
 	}
-	template<typename ...Args> inline void Error(Args&& ...args) {
+	template<typename ...Args> inline void error(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::error(std::forward<Args>(args)...);
 		assert(false);
 #endif
 	}
-	template<typename ...Args> inline void ErrorWithoutBreakpoint(Args&& ...args) {
+	template<typename ...Args> inline void error_without_breakpoint(Args&& ...args) {
 #ifndef NDEBUG
 		spdlog::error(std::forward<Args>(args)...);
 #endif
@@ -34,17 +36,17 @@ namespace Cool::Log {
 
 class ToUser {
 public:
-	template<typename ...Args> static inline void Info(Args&& ...args) {
+	template<typename ...Args> static inline void info(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
-	template<typename ...Args> static inline void Warn(Args&& ...args) {
+	template<typename ...Args> static inline void warn(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
-	template<typename ...Args> static inline void Error(Args&& ...args) {
+	template<typename ...Args> static inline void error(Args&& ...args) {
 		Message(fmt::format(std::forward<Args>(args)...));
 	}
-	static void Show_Console();
-	static void ImGui_Toggle_Console();
+	static void imgui_console_window();
+	static void imgui_toggle_console();
 
 private:
 	static void Message(std::string_view message);

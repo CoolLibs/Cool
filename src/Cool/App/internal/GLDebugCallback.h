@@ -58,13 +58,13 @@ void APIENTRY GLDebugCallback(
 
     // Log
     if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
-        Log::Error(message);
+        Log::error(message);
     }
     else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY) {
-        Log::Warn(message);
+        Log::warn(message);
     }
     else {
-        // Log::Info(message);
+        // Log::info(message);
     }
 }
 

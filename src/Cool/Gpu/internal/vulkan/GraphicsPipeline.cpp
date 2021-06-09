@@ -34,7 +34,7 @@ ShaderModule ShaderModule::from_spirv_code(ShaderType type, std::string_view spi
 	create_info.codeSize = spirv_code.size();
 	create_info.pCode = reinterpret_cast<const uint32_t*>(spirv_code.data());
 	if (vkCreateShaderModule(Renderer::device(), &create_info, nullptr, &shader_module.shader_module) != VK_SUCCESS) {
-		Log::ErrorWithoutBreakpoint("[ShaderModule::from_spirv_code] Failed to create shader module");
+		Log::error_without_breakpoint("[ShaderModule::from_spirv_code] Failed to create shader module");
 	}
 	return shader_module;
 }
@@ -65,7 +65,7 @@ static VkPipelineShaderStageCreateInfo shader_stage_create_info(const ShaderModu
 		create_info.stage = VK_SHADER_STAGE_COMPUTE_BIT;
 		break;
 	default:
-		Log::Error("[GraphicsPipeline::shader_stage_create_info] Unknown shader type");
+		Log::error("[GraphicsPipeline::shader_stage_create_info] Unknown shader type");
 		break;
 	}
 	return create_info;
@@ -164,7 +164,7 @@ GraphicsPipeline::GraphicsPipeline(const std::vector<ShaderModule>& shader_modul
 	pipeline_layout_info.pPushConstantRanges = nullptr; // Optional
 
 	if (vkCreatePipelineLayout(Renderer::device(), &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
-		Log::Error("[GraphicsPipeline::GraphicsPipeline] Failed to create pipeline layout");
+		Log::error("[GraphicsPipeline::GraphicsPipeline] Failed to create pipeline layout");
 	}
 
 	VkGraphicsPipelineCreateInfo pipeline_info{};
@@ -190,7 +190,7 @@ GraphicsPipeline::GraphicsPipeline(const std::vector<ShaderModule>& shader_modul
 	pipeline_info.basePipelineIndex = -1; // Optional
 
 	if (vkCreateGraphicsPipelines(Renderer::device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS) {
-		Log::Error("[GraphicsPipeline::GraphicsPipeline] Failed to create graphics pipeline!");
+		Log::error("[GraphicsPipeline::GraphicsPipeline] Failed to create graphics pipeline!");
 	}
 }
 
@@ -223,7 +223,7 @@ void GraphicsPipeline::create_render_pass() {
 	renderPassInfo.pSubpasses = &subpass;
 
 	if (vkCreateRenderPass(Renderer::device(), &renderPassInfo, nullptr, &render_pass) != VK_SUCCESS) {
-		Log::Error("[GraphicsPipeline::create_render_pass] Failed to create render pass!");
+		Log::error("[GraphicsPipeline::create_render_pass] Failed to create render pass!");
 	}
 }
 

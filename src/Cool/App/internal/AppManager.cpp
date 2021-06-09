@@ -213,7 +213,7 @@ void AppManager::ImGuiDockspace() {
 	}
 	else
 	{
-		Log::Warn("Docking not enabled !");
+		Log::warn("Docking not enabled !");
 	}
 	ImGui::End();
 }

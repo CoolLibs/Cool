@@ -10,8 +10,9 @@ int ToUser::_messages_count = 0;
 bool ToUser::_scroll_to_bottom = false;
 
 void ToUser::Message(std::string_view message) {
-	if (!_open)
+	if (!_open) {
 		_message.clear();
+	}
 	_message += "\n[";
 	_message += String::to_string(_messages_count, 3) + "] ";
 	_message += message;
@@ -20,7 +21,7 @@ void ToUser::Message(std::string_view message) {
 	_scroll_to_bottom = true;
 }
 
-void ToUser::Show_Console() {
+void ToUser::imgui_console_window() {
 	if (_open) {
 		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
 		ImGui::Text(_message.c_str());
@@ -32,7 +33,7 @@ void ToUser::Show_Console() {
 	}
 }
 
-void ToUser::ImGui_Toggle_Console() {
+void ToUser::imgui_toggle_console() {
 	ImGui::Checkbox("Console", &_open);
 }
 

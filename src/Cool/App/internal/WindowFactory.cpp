@@ -62,7 +62,7 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	assert(openGLMajorVersion >= 3);
 	assert(openGLMinorVersion >= 3);
 	if (s_bInitialized)
-		Log::Error("You are creating a WindowFactory twice !");
+		Log::error("You are creating a WindowFactory twice !");
 	s_bInitialized = true;
 #endif
 	// Init
@@ -70,7 +70,7 @@ WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 #ifdef __COOL_APP_VULKAN
 	// Setup Vulkan
 	if (!glfwVulkanSupported()) {
-		Log::ToUser::Error("GLFW : Vulkan Not Supported");
+		Log::ToUser::error("GLFW : Vulkan Not Supported");
 	}
 	uint32_t extensions_count = 0;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
@@ -106,12 +106,12 @@ void WindowFactory::initializeGLFW() {
 	if (!glfwInit()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
-		Log::Error("Glfw initialization failed :\n{}", errorDescription);
+		Log::error("Glfw initialization failed :\n{}", errorDescription);
 	}
 }
 
 void WindowFactory::GlfwErrorCallback(int error, const char* description) {
-	Log::Error("[Glfw] Error {} :\n{}", error, description);
+	Log::error("[Glfw] Error {} :\n{}", error, description);
 }
 
 #ifdef __COOL_APP_VULKAN
@@ -128,7 +128,7 @@ Window& WindowFactory::create(const char* name, int width, int height) {
 	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
-		Log::Error("[Glfw] Window creation failed :\n{}", errorDescription);
+		Log::error("[Glfw] Window creation failed :\n{}", errorDescription);
 	}
 	// TODO remove / adapt ?
 	// window.makeCurrent();
@@ -167,13 +167,13 @@ Window& WindowFactory::create(const char* name, int width, int height, GLFWwindo
 	if (!window.get()) {
 		const char* errorDescription;
 		glfwGetError(&errorDescription);
-		Log::Error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
+		Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
 	}
 	window.makeCurrent();
 	window.enableVSync();
 	// Load Glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		Log::Error("Failed to initialize Glad");
+		Log::error("Failed to initialize Glad");
 	//
 	setupGLDebugging();
 	setupImGui(window);
@@ -191,7 +191,7 @@ void WindowFactory::setupGLDebugging() {
 			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		}
 		else {
-			Log::Warn("Couldn't setup OpenGL Debugging");
+			Log::warn("Couldn't setup OpenGL Debugging");
 		}
 	}
 #endif

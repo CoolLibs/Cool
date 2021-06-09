@@ -13,7 +13,7 @@ void Input::Initialize(GLFWwindow* mainWindow) {
 	s_mainWindow = mainWindow;
 #ifndef NDEBUG
 	if (s_initialized)
-		Log::Warn("[Input::Initialize] You are calling Initialize() twice.");
+		Log::warn("[Input::Initialize] You are calling Initialize() twice.");
 	s_initialized = true;
 #endif
 }

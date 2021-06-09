@@ -50,7 +50,7 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode) {
 #ifndef NDEBUG
 	if (m_textureID != -1)
-		Log::Error("[Texture::genTexture] You have already generated that texture !");
+		Log::error("[Texture::genTexture] You have already generated that texture !");
 #endif
 	m_textureID = CreateTextureID(interpolationMode, wrapMode);
 }
@@ -59,7 +59,7 @@ void Texture::uploadRGB(int width, int height, unsigned char* data) {
 #ifndef NDEBUG
 	m_bDataUploaded = true;
 	if (m_textureID == -1)
-		Log::Error("[Texture::uploadRGB] You haven't generated that texture yet !");
+		Log::error("[Texture::uploadRGB] You haven't generated that texture yet !");
 #endif
 	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
 	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
@@ -70,7 +70,7 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data) {
 #ifndef NDEBUG
 	m_bDataUploaded = true;
 	if (m_textureID == -1)
-		Log::Error("[Texture::uploadRGBA] You haven't generated that texture yet !");
+		Log::error("[Texture::uploadRGBA] You haven't generated that texture yet !");
 #endif
 	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
 	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
@@ -80,9 +80,9 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data) {
 void Texture::attachToSlot(int slot) {
 #ifndef NDEBUG
 	if (m_textureID == -1)
-		Log::Error("[Texture::attachToSlot] You haven't generated that texture yet !");
+		Log::error("[Texture::attachToSlot] You haven't generated that texture yet !");
 	if (!m_bDataUploaded)
-		Log::Error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
+		Log::error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
 #endif
 	GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
 	GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));

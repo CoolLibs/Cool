@@ -24,7 +24,7 @@ void History::end_undo_group() {
 	}
 #ifndef NDEBUG
 	else {
-		Log::Warn("Empty undo group");
+		Log::warn("Empty undo group");
 	}
 	_undo_group_open = false;
 #endif

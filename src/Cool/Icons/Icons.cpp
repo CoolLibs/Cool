@@ -12,7 +12,7 @@ GLuint Icons::Get(std::string_view image_path) {
 	const auto path = to_canonical_path(image_path);
 	auto res = _map.find(path);
 	if (res == _map.end()) {
-		Log::Info("[Icons::Get] Generating texture for {}", path);
+		Log::info("[Icons::Get] Generating texture for {}", path);
 		GLuint tex_id = Texture::LoadTexture(path);
 		_map[path] = tex_id;
 		return tex_id;
@@ -26,7 +26,7 @@ void Icons::CleanupTexture(std::string_view image_path) {
 	const auto path = to_canonical_path(image_path);
 	auto res = _map.find(path);
 	if (res == _map.end()) {
-		Log::Warn("[Icons::CleanupTexture] The texture you want to clean up doesn't exist ! {}", path);
+		Log::warn("[Icons::CleanupTexture] The texture you want to clean up doesn't exist ! {}", path);
 	}
 	else {
 		Texture::DestroyTexture(res->second);

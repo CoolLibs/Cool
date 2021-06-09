@@ -53,7 +53,7 @@ void FrameBuffer::setSize(const glm::ivec2& size) {
 			statusStr = "UNKNOWN_ERROR";
 			break;
 		}
-		Log::Error("Framebuffer is not complete : {}", statusStr);
+		Log::error("Framebuffer is not complete : {}", statusStr);
 	}
 	unbind();
 #endif

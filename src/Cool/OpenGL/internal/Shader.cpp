@@ -88,7 +88,7 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code) {
 		case ShaderType::Compute:
 			return GL_COMPUTE_SHADER;
 		default:
-			Log::Error("Unknown shader type !");
+			Log::error("Unknown shader type !");
 			return 0;
 		}
 	}();
@@ -107,7 +107,7 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code) {
 		GLDebug(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)alloca(length * sizeof(char));
 		GLDebug(glGetShaderInfoLog(shader_id, length, &length, message));
-		Log::Error("Shader compilation failed :\n{}", message);
+		Log::error("Shader compilation failed :\n{}", message);
 		GLDebug(glDeleteShader(shader_id));
 	}
 #endif
