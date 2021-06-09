@@ -1,44 +1,43 @@
 #ifdef __COOL_APP_OPENGL
 
 #include "Renderer_Fullscreen.h"
-
 #include <Cool/App/RenderState.h>
 
 namespace Cool {
 
 Renderer_Fullscreen::Renderer_Fullscreen() {
-	RenderState::SubscribeToSizeChanges([this]() { onRenderAreaResized(); });
-	GLDebug(glGenVertexArrays(1, &m_dummyVaoID));
+	RenderState::SubscribeToSizeChanges([this]() { on_render_area_resized(); });
+	GLDebug(glGenVertexArrays(1, &_dummy_vao_id));
 }
 
 Renderer_Fullscreen::~Renderer_Fullscreen() {
-	GLDebug(glDeleteVertexArrays(1, &m_dummyVaoID));
+	GLDebug(glDeleteVertexArrays(1, &_dummy_vao_id));
 }
 
 void Renderer_Fullscreen::begin() {
-	m_renderBuffer.bind();
+	_render_buffer.bind();
 }
 
 void Renderer_Fullscreen::end() {
-	m_renderBuffer.blitTo(
+	_render_buffer.blitTo(
 		RenderState::SwapYConvention(RenderState::InAppRenderArea().botLeft()),
 		RenderState::SwapYConvention(RenderState::InAppRenderArea().topRight()),
 		SCREEN_FRAMEBUFFER_ID,
 		RenderState::preview_interpolation_mode()
 	);
-	m_renderBuffer.unbind();
+	_render_buffer.unbind();
 }
 
 void Renderer_Fullscreen::render() {
 	// We use a smart trick to render fullscreen, as explained here : https://stackoverflow.com/a/59739538
-	GLDebug(glBindVertexArray(m_dummyVaoID));
+	GLDebug(glBindVertexArray(_dummy_vao_id));
 	GLDebug(glDrawArrays(GL_TRIANGLES, 0, 3));
 }
 
-void Renderer_Fullscreen::onRenderAreaResized() {
+void Renderer_Fullscreen::on_render_area_resized() {
 	const glm::ivec2& size = RenderState::Size().size();
 	if (size.x != 0 && size.y != 0)
-		m_renderBuffer.setSize(size);
+		_render_buffer.setSize(size);
 }
 
 } // namespace Cool
