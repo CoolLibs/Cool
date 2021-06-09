@@ -87,9 +87,9 @@ public:
 							}
 						};
 						action.Do();
-						ParamsHistory::Get().begin_undo_group();
-						ParamsHistory::Get().add_action(action);
-						ParamsHistory::Get().end_undo_group();
+						ParamsHistory::get().begin_undo_group();
+						ParamsHistory::get().add_action(action);
+						ParamsHistory::get().end_undo_group();
 						b = true;
 					}
 				}

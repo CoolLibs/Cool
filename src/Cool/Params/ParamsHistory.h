@@ -6,7 +6,7 @@ namespace Cool {
 
 class ParamsHistory {
 public:
-	inline static History& Get() { return _history; }
+	inline static History& get() { return _history; }
 private:
 	static History _history;
 };

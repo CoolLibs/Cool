@@ -51,10 +51,10 @@ protected:
 
 private:
 	void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change) {
-		ParamsHistory::Get().begin_undo_group();
+		ParamsHistory::get().begin_undo_group();
 		T val = _value;
 		T prev_val = _value_before_edit;
-		ParamsHistory::Get().add_action({
+		ParamsHistory::get().add_action({
 			[&, val, on_value_change]()
 			{
 				_value = val;
@@ -66,8 +66,8 @@ private:
 				on_value_change();
 			}
 		});
-		ParamsHistory::Get().add_action(on_edit_ended);
-		ParamsHistory::Get().end_undo_group();
+		ParamsHistory::get().add_action(on_edit_ended);
+		ParamsHistory::get().end_undo_group();
 	}
 
 protected:
