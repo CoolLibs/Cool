@@ -1,7 +1,6 @@
 [submodule "lib/cereal"]
 	path = lib/cereal
 	url = https://github.com/USCiLab/cereal
-
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/g-truc/glm

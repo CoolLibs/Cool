@@ -6,7 +6,7 @@
 //? uniform int NumberOfComputationsZ;
 
 layout(std430, binding=0) buffer myBuffer {
-   float data[];
+    float data[];
 };
 
 // This is your main function
