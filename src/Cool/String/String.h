@@ -7,7 +7,7 @@ namespace Cool::String {
 	 * @param str 
 	 * @return A new string with all characters converted to lower case
 	 */
-	std::string to_lower(const std::string& str);
+	std::string to_lower(std::string_view str);
 
 	/**
 	 * @brief 
@@ -16,7 +16,7 @@ namespace Cool::String {
 	 * @param str 
 	 * @return true iff *str* starts with *to_find*
 	 */
-	bool starts_with(const char* to_find, const std::string& str);
+	bool starts_with(std::string_view to_find, std::string_view str);
 
 	/**
 	 * @brief Modifies *str* by replacing all occurences of *from* with *to*
@@ -25,7 +25,7 @@ namespace Cool::String {
 	 * @param from 
 	 * @param to 
 	 */
-	void replace_all(std::string& str, const std::string& from, const std::string& to);
+	void replace_all(std::string& str, std::string_view from, std::string_view to);
 
 	/**
 	 * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
