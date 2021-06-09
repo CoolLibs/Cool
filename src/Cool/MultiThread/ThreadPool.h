@@ -2,49 +2,57 @@
 
 namespace Cool {
 
-/// <summary>
-/// Manages a given number of threads and give them jobs
-/// </summary>
+/**
+ * @brief Manages a given number of threads and give them jobs
+ * 
+ */
 class ThreadPool {
 public:	
-	/// <summary>
-	/// Creates a thread pool using the maximum number of concurrent threads supported by the machine
-	/// </summary>
+	/**
+	 * @brief Creates a thread pool using the maximum number of concurrent threads supported by the machine
+	 * 
+	 */
 	ThreadPool();
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="nb_threads">Number of threads to create in the pool</param>
+	/**
+	 * @brief
+	 * 
+	 * @param nb_threads Number of threads to create in the pool
+	 */
 	ThreadPool(size_t nb_threads);
+
 	~ThreadPool();
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns>The number of threads in the pool</returns>
+	/**
+	 * @brief 
+	 * 
+	 * @return The number of threads in the pool
+	 */
 	inline size_t size() { return _nb_threads; }
 
-	/// <summary>
-	/// Blocks the calling thread until a thread is available to accept a job.
-	/// Using this function is not mandatory but makes sure that the queue of jobs waiting for a worker thread doesn't get too big.
-	/// </summary>
+	/**
+	 * @brief Blocks the calling thread until a thread is available to accept a job. Using this function is not mandatory but makes sure that the queue of jobs waiting for a worker thread doesn't get too big.
+	 * 
+	 */
 	void wait_for_available_thread();
 
-	/// <summary>
-	/// Starts the pool : creates the threads
-	/// </summary>
+	/**
+	 * @brief Starts the pool : creates the threads
+	 * 
+	 */
 	void start();
 
-	/// <summary>
-	/// Stops the pool : finishes all jobs and then destroys the threads
-	/// </summary>
+	/**
+	 * @brief Stops the pool : finishes all jobs and then destroys the threads
+	 * 
+	 */
 	void stop();
 
-	/// <summary>
-	/// Add a job to the queue.
-	/// </summary>
-	/// <param name="job"></param>
+	/**
+	 * @brief Adds a job to the queue.
+	 * 
+	 * @param job Any function pointer / lambda with signature void -> void
+	 */
 	void push_job(std::function<void()> job);
 
 private:

@@ -9,7 +9,7 @@ ThreadPool::ThreadPool()
 ThreadPool::ThreadPool(size_t nb_threads)
 	: _nb_threads(nb_threads)
 {
-	Log::Info("Using {} threads in the thread pool", nb_threads);
+	Log::Info("[ThreadPool::ThreadPool] Using {} threads in the thread pool", nb_threads);
 }
 
 ThreadPool::~ThreadPool() {
