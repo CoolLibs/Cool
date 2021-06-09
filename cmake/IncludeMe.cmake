@@ -20,9 +20,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <deque>
     <thread>
     
-    <Cool/Log/Log.h>
-    <Cool/Serialization/internal/GlmSerialization.h>
-    
     <imgui/imgui.h>
     <imgui/misc/cpp/imgui_stdlib.h>
     
@@ -37,6 +34,9 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <boxer/boxer.h>
     
     <nfd.hpp>
+    
+    <Cool/Log/Log.h>
+    <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
 )
 if (COOL_USE_OPENGL)
     target_precompile_headers(${PROJECT_NAME} PRIVATE
