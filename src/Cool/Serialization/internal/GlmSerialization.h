@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef __COOL_GLM
-
 namespace glm {
     template<class Archive>
     void serialize(Archive& archive, glm::vec2& v)
@@ -15,5 +13,3 @@ namespace glm {
         archive(v.x, v.y, v.z);
     }
 }
-
-#endif
