@@ -39,7 +39,7 @@ struct Preset {
 	ValuesWithUUID<T> valuesWithUUID;
 
 	Preset(const std::string& name, const T& values)
-		: name(name), valuesWithUUID(values, Random::getAnyLongInt())
+		: name(name), valuesWithUUID(values, Random::long_int())
 	{}
 
 	Preset(const std::string& name, const T& values, long int uuid)
