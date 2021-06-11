@@ -53,9 +53,10 @@ class Presets {
 	friend class Params;
 public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
-		: _file_extension(file_extension + std::string(".")),
-		  _folder_path(folder_path),
-		  _save_preset_as(find_placeholder_name())
+		: 
+		_file_extension(file_extension + std::string(".")),
+		_folder_path(folder_path),
+		_save_preset_as(find_placeholder_name())
 	{
 		load_presets();
 	}
@@ -86,7 +87,7 @@ public:
 								_last_uuid = last_uuid_copy;
 							}
 						};
-						action.Do();
+						action.apply();
 						ParamsHistory::get().begin_undo_group();
 						ParamsHistory::get().add_action(action);
 						ParamsHistory::get().end_undo_group();

@@ -1,23 +1,20 @@
 #pragma once
 
-#include <functional>
-
 namespace Cool {
 
 class Action{
 public:
 	Action() = default;
-	Action(std::function<void()> howToDo, std::function<void()> howToUndo)
-		: _do(howToDo), _undo(howToUndo)
+	Action(std::function<void()> how_to_apply, std::function<void()> how_to_revert)
+		: _apply(how_to_apply), _revert(how_to_revert)
 	{}
-	~Action() = default;
 
-	inline void Do() const { _do(); }
-	inline void Undo() const { _undo(); }
+	inline void apply()  const { _apply(); }
+	inline void revert() const { _revert(); }
 
 private:
-	std::function<void()> _do   = [](){};
-	std::function<void()> _undo = [](){};
+	std::function<void()> _apply   = [](){};
+	std::function<void()> _revert  = [](){};
 };
 
 } // namespace Cool

@@ -3,60 +3,60 @@
 namespace Cool {
 
 void History::begin_undo_group() {
-	m_tmpActionBuffer.resize(0);
+	_tmp_action_buffer.resize(0);
 #ifndef NDEBUG
-	_undo_group_open = true;
+	_an_undo_group_is_open = true;
 #endif
 }
 
 void History::end_undo_group() {
-	if (m_tmpActionBuffer.size() > 0) {
+	if (_tmp_action_buffer.size() > 0) {
 		//
-		m_cumulNbOfActionsToGetToThisUndoGroup.resize(m_indexOfCumulfNbOfActions + 1);
-		m_cumulNbOfActionsToGetToThisUndoGroup.push_back(m_tmpActionBuffer.size()+ (m_indexOfCumulfNbOfActions>-1 ? m_cumulNbOfActionsToGetToThisUndoGroup[m_indexOfCumulfNbOfActions] : 0));
-		m_indexOfCumulfNbOfActions++;
+		_cumul_nb_of_actions_to_get_to_this_undo_group.resize(_index_of_cumul_nb_of_actions + 1);
+		_cumul_nb_of_actions_to_get_to_this_undo_group.push_back(_tmp_action_buffer.size() + (_index_of_cumul_nb_of_actions > -1 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions] : 0));
+		_index_of_cumul_nb_of_actions++;
 		//
-		m_actions.resize(m_indexOfCumulfNbOfActions>0 ? m_cumulNbOfActionsToGetToThisUndoGroup[m_indexOfCumulfNbOfActions-1] : 0);
-		for (size_t i = 0; i < m_tmpActionBuffer.size(); ++i) {
-			m_actions.push_back(m_tmpActionBuffer[i]);
-			m_index++;
+		_actions.resize(_index_of_cumul_nb_of_actions > 0 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions-1] : 0);
+		for (size_t i = 0; i < _tmp_action_buffer.size(); ++i) {
+			_actions.push_back(_tmp_action_buffer[i]);
+			_index++;
 		}
 	}
 #ifndef NDEBUG
 	else {
-		Log::warn("Empty undo group");
+		Log::warn("[History::end_undo_group] Empty undo group");
 	}
-	_undo_group_open = false;
+	_an_undo_group_is_open = false;
 #endif
 }
 
 void History::add_action(Action action) {
-	assert(_undo_group_open && "add_action() must be called between a call to begin_undo_group() and a call to end_undo_group()");
-	m_tmpActionBuffer.push_back(action);
+	assert(_an_undo_group_is_open && "add_action() must be called between a call to begin_undo_group() and a call to end_undo_group()");
+	_tmp_action_buffer.push_back(action);
 }
 
 void History::move_backward() {
-	if (m_indexOfCumulfNbOfActions > -1) {
-		for (int i = 0; i < nbOfActionsBetweenThisAndPreviousUndoGroup(m_indexOfCumulfNbOfActions); ++i) {
-			m_actions[m_index].Undo();
-			m_index--;
+	if (_index_of_cumul_nb_of_actions > -1) {
+		for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions); ++i) {
+			_actions[_index].revert();
+			_index--;
 		}
-		m_indexOfCumulfNbOfActions--;
+		_index_of_cumul_nb_of_actions--;
 	}
 }
 
 void History::move_forward() {
-	if (m_indexOfCumulfNbOfActions < static_cast<int>(m_cumulNbOfActionsToGetToThisUndoGroup.size() - 1)) { // cast to an int because size_t is an unsigned type and it causes a bug when m_indexOfCumulfNbOfActions == -1
-		for (int i = 0; i < nbOfActionsBetweenThisAndPreviousUndoGroup(m_indexOfCumulfNbOfActions+1); ++i) {
-			m_index++;
-			m_actions[m_index].Do();
+	if (_index_of_cumul_nb_of_actions < static_cast<int>(_cumul_nb_of_actions_to_get_to_this_undo_group.size() - 1)) { // cast to an int because size_t is an unsigned type and it causes a bug when _index_of_cumul_nb_of_actions == -1
+		for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions+1); ++i) {
+			_index++;
+			_actions[_index].apply();
 		}
-		m_indexOfCumulfNbOfActions++;
+		_index_of_cumul_nb_of_actions++;
 	}
 }
 
-int History::nbOfActionsBetweenThisAndPreviousUndoGroup(int index){
-	return m_cumulNbOfActionsToGetToThisUndoGroup[index] - (index > 0 ? m_cumulNbOfActionsToGetToThisUndoGroup[index-1] : 0);
+int History::nb_of_actions_between_this_and_previous_undo_group(int index){
+	return _cumul_nb_of_actions_to_get_to_this_undo_group[index] - (index > 0 ? _cumul_nb_of_actions_to_get_to_this_undo_group[index-1] : 0);
 }
 
 } // namespace Cool
