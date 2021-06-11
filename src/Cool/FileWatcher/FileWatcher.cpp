@@ -5,49 +5,49 @@
 
 namespace Cool {
 
-FileWatcher::FileWatcher(std::function<void(const char*)> onFileChanged, float delayBetweenChecks)
-	: m_onFileChanged(onFileChanged), m_delayBetweenChecks(delayBetweenChecks)
+FileWatcher::FileWatcher(std::function<void(const char*)> on_file_changed, float delay_between_checks)
+	: _on_file_changed(on_file_changed), _delay_between_checks(delay_between_checks)
 {}
 
 void FileWatcher::update() {
-	checkAndUpdatePathValidity();
-	if (m_bPathIsValid) {
+	check_and_update_path_validity();
+	if (_path_is_valid) {
 		// Init static variable (it is static so that we don't need to include chrono in the header file)
-		static auto m_timeOfLastCheck = std::chrono::steady_clock::now();
+		static auto _time_of_last_check = std::chrono::steady_clock::now();
 		// Wait for delay between checks
 		auto now = std::chrono::steady_clock::now();
-		std::chrono::duration<float> elapsedTime = now - m_timeOfLastCheck;
-		if (elapsedTime.count() > m_delayBetweenChecks) {
-			m_timeOfLastCheck = now;
+		std::chrono::duration<float> elapsed_time = now - _time_of_last_check;
+		if (elapsed_time.count() > _delay_between_checks) {
+			_time_of_last_check = now;
 			// Check file exists
-			if (File::Exists(m_path.string().c_str())) {
+			if (File::Exists(_path.string())) {
 				// Check file was updated since last check
-				auto lastChange = std::filesystem::last_write_time(m_path);
-				if (lastChange != m_timeOfLastChange) {
+				auto last_change = std::filesystem::last_write_time(_path);
+				if (last_change != _time_of_last_change) {
 					// Apply
-					m_timeOfLastChange = lastChange;
-					m_onFileChanged(m_path.string().c_str());
+					_time_of_last_change = last_change;
+					_on_file_changed(_path.string().c_str());
 				}
 			}
 		}
 	}
 }
 
-void FileWatcher::setPath(std::string_view path) {
-	m_path = path;
-	m_bPathIsValid = false; // Forces checkAndUpdatePathValidity() to trigger an update (if the new path is valid)
-	checkAndUpdatePathValidity();
-	if (!m_bPathIsValid) {
-		Log::ToUser::warn("[FileWatcher::setPath] Invalid file path : \"{}\"", path);
+void FileWatcher::set_path(std::string_view path) {
+	_path = path;
+	_path_is_valid = false; // Forces check_and_update_path_validity() to trigger an update (if the new path is valid)
+	check_and_update_path_validity();
+	if (!_path_is_valid) {
+		Log::ToUser::warn("[FileWatcher::set_path] Invalid file path : \"{}\"", path);
 	}
 }
 
-void FileWatcher::checkAndUpdatePathValidity() {
-	bool bWasValid = m_bPathIsValid;
-	m_bPathIsValid = File::Exists(m_path.string().c_str()) && !std::filesystem::is_directory(m_path);
-	if (!bWasValid && m_bPathIsValid) {
-		m_timeOfLastChange = std::filesystem::last_write_time(m_path);
-		m_onFileChanged(m_path.string().c_str());
+void FileWatcher::check_and_update_path_validity() {
+	bool was_valid = _path_is_valid;
+	_path_is_valid = File::Exists(_path.string()) && !std::filesystem::is_directory(_path);
+	if (!was_valid && _path_is_valid) {
+		_time_of_last_change = std::filesystem::last_write_time(_path);
+		_on_file_changed(_path.string().c_str());
 	}
 }
 
