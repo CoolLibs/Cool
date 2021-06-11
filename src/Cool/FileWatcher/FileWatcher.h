@@ -16,7 +16,7 @@ public:
 	 * @param on_file_changed Callback function called whenever the file changes. Receives the path as parameter, just for convenience
 	 * @param In seconds : time between two checks. The smaller the delay the bigger the performance cost 
 	 */
-	FileWatcher(std::function<void(const char*)> on_file_changed, float delay_between_checks = 0.5f);
+	FileWatcher(std::function<void(std::string_view)> on_file_changed, float delay_between_checks = 0.5f);
 
 	/**
 	 * @brief Must be called on every frame. Checks if the delay is elapsed, if so checks if the file has changed, and if so calls the callback
@@ -51,7 +51,7 @@ private:
 private:
 	std::filesystem::path _path = "";
 	bool _path_is_valid = false;
-	std::function<void(const char*)> _on_file_changed;
+	std::function<void(std::string_view)> _on_file_changed;
 	float _delay_between_checks;
 	std::filesystem::file_time_type _time_of_last_change;
 };

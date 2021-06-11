@@ -5,7 +5,7 @@
 
 namespace Cool {
 
-FileWatcher::FileWatcher(std::function<void(const char*)> on_file_changed, float delay_between_checks)
+FileWatcher::FileWatcher(std::function<void(std::string_view)> on_file_changed, float delay_between_checks)
 	: _on_file_changed(on_file_changed), _delay_between_checks(delay_between_checks)
 {}
 
@@ -26,7 +26,7 @@ void FileWatcher::update() {
 				if (last_change != _time_of_last_change) {
 					// Apply
 					_time_of_last_change = last_change;
-					_on_file_changed(_path.string().c_str());
+					_on_file_changed(_path.string());
 				}
 			}
 		}
