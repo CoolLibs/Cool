@@ -51,6 +51,8 @@ public:
       /// Returns true iff the folders now exist (be it because they already existed or because they have been successfully created)
       /// </summary>
       static bool CreateFoldersForFileIfDoesntExist(std::string_view folderAndFilePath);
+
+      static inline std::string to_canonical_path(std::string_view path) { return std::filesystem::canonical(path).string(); }
       /// <summary>
       /// Root directory where the program was started from.
       /// Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up.

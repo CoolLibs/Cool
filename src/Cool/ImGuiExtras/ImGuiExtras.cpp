@@ -167,7 +167,7 @@ void invisible_wrapper_around_previous_line(const char* label) {
 }
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder) {
-	if (button_with_icon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+	if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
 		NFD::UniquePath outPath;
 		nfdresult_t result;
 		result = NFD::PickFolder(outPath, base_folder.data());
@@ -185,7 +185,7 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder) {
 }
 
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder) {
-	if (button_with_icon(Cool::Icons::Folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+	if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
 		NFD::UniquePath outPath;
 		nfdresult_t result;
 		result = NFD::OpenDialog(outPath, file_type_filters.data(), file_type_filters.size(), base_folder.data());
