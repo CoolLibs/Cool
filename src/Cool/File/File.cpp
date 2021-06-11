@@ -87,7 +87,7 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path) {
 }
 
 bool File::create_folders_for_file_if_they_dont_exist(std::string_view file_path) {
-    return create_folders_if_they_dont_exist(whithout_file_name(std::string(file_path)).c_str());
+    return create_folders_if_they_dont_exist(whithout_file_name(std::string(file_path)));
 }
 
 void File::initialize_root_dir(std::string_view path) {

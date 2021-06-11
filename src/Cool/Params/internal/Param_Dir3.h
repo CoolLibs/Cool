@@ -41,7 +41,7 @@ public:
 	}
 
 	void set_uniform_in_shader(Shader& shader) override {
-		shader.set_uniform(name().c_str(), operator*());
+		shader.set_uniform(name(), operator*());
 	}
 
 	inline const std::string& name() const override { return _angles.name(); }

@@ -47,7 +47,7 @@ void FileWatcher::check_and_update_path_validity() {
 	_path_is_valid = File::exists(_path.string()) && !std::filesystem::is_directory(_path);
 	if (!was_valid && _path_is_valid) {
 		_time_of_last_change = std::filesystem::last_write_time(_path);
-		_on_file_changed(_path.string().c_str());
+		_on_file_changed(_path.string());
 	}
 }
 

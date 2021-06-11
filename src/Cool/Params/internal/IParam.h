@@ -37,7 +37,7 @@ public:
 	inline const std::string& name() const override { return _name; }
 
 	void set_uniform_in_shader(Shader& shader) override {
-		shader.set_uniform(name().c_str(), _value);
+		shader.set_uniform(name(), _value);
 	}
 
 protected:
