@@ -15,7 +15,7 @@ namespace Cool {
 ShaderCode::ShaderCode(ShaderType type, std::string_view filePath)
 	: type(type)
 {
-	File::ToString(filePath, &source_code);
+	File::to_string(filePath, &source_code);
 }
 
 ShaderCode ShaderCode::FromCode(ShaderType type, std::string_view source_code) {

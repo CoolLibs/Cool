@@ -15,7 +15,7 @@ namespace Cool::Serialization {
  */
 template <typename T>
 void from_json(T& data, std::string_view file_path) {
-	if (File::Exists(file_path)) {
+	if (File::exists(file_path)) {
 		std::ifstream is(file_path);
 		try {
 			cereal::JSONInputArchive archive(is);
@@ -42,7 +42,7 @@ void from_json(T& data, std::string_view file_path) {
  */
 template <typename T>
 void to_json(const T& data, std::string_view file_path, std::string_view field_name = "value0") {
-	File::CreateFoldersForFileIfDoesntExist(file_path);
+	File::create_folders_for_file_if_they_dont_exist(file_path);
 	std::ofstream os(file_path);
 	{
 		cereal::JSONOutputArchive archive(os);

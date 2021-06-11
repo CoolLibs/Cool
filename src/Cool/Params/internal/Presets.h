@@ -122,7 +122,7 @@ public:
 			ImGui::SameLine();
 			ImGui::PushID(138571);
 			if (ImGui::InputText("", &_save_preset_as)) {
-				_name_available = !File::Exists(full_path(_save_preset_as)) && _save_preset_as.compare("Unsaved settings...");
+				_name_available = !File::exists(full_path(_save_preset_as)) && _save_preset_as.compare("Unsaved settings...");
 				_name_contains_dots = _save_preset_as.find(".") != std::string::npos;
 			}
 			ImGui::PopID();
@@ -195,7 +195,7 @@ private:
 		if (_rename_popup_open_last_frame) {
 			if (_new_preset_name.find(".") == std::string::npos) {
 				const std::string new_path = full_path(_new_preset_name);
-				if (!File::Exists(new_path)) {
+				if (!File::exists(new_path)) {
 					std::filesystem::rename(
 						full_path(current_name()),
 						new_path
@@ -226,7 +226,7 @@ private:
 	std::string find_placeholder_name() {
 		int i = 1;
 		std::string name = "MyPreset";
-		while (File::Exists(full_path(name))) {
+		while (File::exists(full_path(name))) {
 			name = "MyPreset(" + std::to_string(i) + ")";
 			i++;
 		}
@@ -234,7 +234,7 @@ private:
 	}
 
 	void load_presets() { 
-		if (File::Exists(_folder_path)) {
+		if (File::exists(_folder_path)) {
 			for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
 				if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
 					std::string name = file.path().filename().replace_extension("").extension().string().erase(0, 1);

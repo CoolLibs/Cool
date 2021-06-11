@@ -5,7 +5,7 @@ namespace Cool::ExportImage {
 /// <summary>
 /// Exports an image as PNG using stb_image_write (https://github.com/nothings/stb/blob/master/stb_image_write.h)
 /// </summary>
-/// <param name="filepath">The destination path for the image : something like "out/myImage.png". /!\ Warning : If folders in the path don't already exist they won't be created. You can use Cool::File::CreateFoldersForFileIfDoesntExist() to solve this.</param>
+/// <param name="filepath">The destination path for the image : something like "out/myImage.png". /!\ Warning : If folders in the path don't already exist they won't be created. You can use Cool::File::create_folders_for_file_if_they_dont_exist() to solve this.</param>
 /// <param name="width">The width in pixels of the image represented by <i>data</i></param>
 /// <param name="height">The height in pixels of the image represented by <i>data</i></param>
 /// <param name="data">An array of unsigned char representing the image. We expect 4 channels per pixel (RGBA) and the pixels should be written sequentially, row after row.

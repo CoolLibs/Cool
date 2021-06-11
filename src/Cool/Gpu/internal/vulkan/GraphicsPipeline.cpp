@@ -41,7 +41,7 @@ ShaderModule ShaderModule::from_spirv_code(ShaderType type, std::string_view spi
 
 ShaderModule ShaderModule::from_spirv_file(ShaderType type, std::string_view file_path) {
 	std::string spirv_code;
-	File::ToString(file_path, &spirv_code);
+	File::to_string(file_path, &spirv_code);
 	return from_spirv_code(type, spirv_code);
 }
 

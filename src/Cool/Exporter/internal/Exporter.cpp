@@ -57,7 +57,7 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frame_buffer.unbind();
 	// Write png
-	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image.c_str())) {
+	if (File::create_folders_if_they_dont_exist(_folder_path_for_image.c_str())) {
 		ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
 	}
 	else {
@@ -85,7 +85,7 @@ std::string Exporter::output_path() {
 }
 
 void Exporter::find_available_file_name() {
-	if (File::Exists(output_path().c_str())) {
+	if (File::exists(output_path().c_str())) {
 		// Find base_name and k
 		int k = 1;
 		std::string base_name = _file_name;
@@ -103,7 +103,7 @@ void Exporter::find_available_file_name() {
 			}
 		}
 		// Find available name
-		while (File::Exists(output_path().c_str())) {
+		while (File::exists(output_path().c_str())) {
 			_file_name = base_name + "(" + std::to_string(k) + ")";
 			k++;
 		}
@@ -156,7 +156,7 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		ImGui::SameLine();
 		_path_has_changed |= ImGui::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
 		if (_path_has_changed) {
-			_should_show_file_exists_warning = File::Exists(output_path().c_str());
+			_should_show_file_exists_warning = File::exists(output_path().c_str());
 		}
 		// Warning file exists
 		ImGui::NewLine();
@@ -174,7 +174,7 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 }
 
 void Exporter::begin_image_sequence_export() {
-	if (File::CreateFoldersIfDoesntExist(_folder_path_for_image_sequence.c_str())) {
+	if (File::create_folders_if_they_dont_exist(_folder_path_for_image_sequence.c_str())) {
 		_thread_pool.start();
 		_is_exporting_image_sequence = true;
 		RenderState::setIsExporting(true);

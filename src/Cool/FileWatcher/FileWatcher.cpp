@@ -20,7 +20,7 @@ void FileWatcher::update() {
 		if (elapsed_time.count() > _delay_between_checks) {
 			_time_of_last_check = now;
 			// Check file exists
-			if (File::Exists(_path.string())) {
+			if (File::exists(_path.string())) {
 				// Check file was updated since last check
 				auto last_change = std::filesystem::last_write_time(_path);
 				if (last_change != _time_of_last_change) {
@@ -44,7 +44,7 @@ void FileWatcher::set_path(std::string_view path) {
 
 void FileWatcher::check_and_update_path_validity() {
 	bool was_valid = _path_is_valid;
-	_path_is_valid = File::Exists(_path.string()) && !std::filesystem::is_directory(_path);
+	_path_is_valid = File::exists(_path.string()) && !std::filesystem::is_directory(_path);
 	if (!was_valid && _path_is_valid) {
 		_time_of_last_change = std::filesystem::last_write_time(_path);
 		_on_file_changed(_path.string().c_str());

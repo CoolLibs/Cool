@@ -12,7 +12,7 @@ Image::Image(unsigned int width, unsigned int height)
 }
 
 void Image::save_as(const char* filepath) {
-	Cool::File::CreateFoldersForFileIfDoesntExist(filepath);
+	Cool::File::create_folders_for_file_if_they_dont_exist(filepath);
 	Cool::ExportImage::AsPNG(filepath, _width, _height, _pixel_colors.data());
 }
 

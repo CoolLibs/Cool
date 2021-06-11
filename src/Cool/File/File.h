@@ -6,58 +6,98 @@ namespace Cool {
 
 class File {
 public:
-      /// <summary>
-      /// Returns true iff filepath corresponds to an existing file or folder
-      /// </summary>
-      static bool Exists(std::string_view filepath);
-      /// <summary>
-      /// Converts a relative or absolute path to an absolute path
-      /// </summary>
-      static std::string AbsolutePath(std::string_view filepath);
-      /// <summary>
-      /// Returns the name of the file + its extension (removes parent folders)
-      /// </summary>
-      static std::string FileName(const std::string& filepath);
-      /// <summary>
-      /// Returns the name of the file (removes parent folders and extension)
-      /// </summary>
-      static std::string FileNameWithoutExtension(const std::string& filepath);
-      /// <summary>
-      /// Returns the extension of the file, preceded by a dot : something like ".png"
-      /// </summary>
-      static std::string FileExtension(const std::string& filepath);
-      /// <summary>
-      /// Returns the filepath but whithout the extension.
-      /// </summary>
-      static std::string WhithoutFileExtension(const std::string& filepath);
-      /// <summary>
-      /// Returns the folders in the path, removes the file name if there is one at the end
-      /// </summary>
-      static std::string WhithoutFileName(const std::string& filepath);
-      /// <summary>
-      /// Loads the content of a file into a std::string.
-      /// (NB : We use this ugly API instead of returning a string for performance reasons.)
-      /// </summary>
-      /// <param name="filepath">Path to the file to be loaded</param>
-      /// <param name="dst">Pointer to the string to be filled with the content of the file</param>
-      static void ToString(std::string_view filepath, std::string* dst);
-      /// <summary>
-      /// Recursively creates all the folders so that at the end folderPath is a valid folder path. /!\ There shouldn't be any file name at the end of folderPath ; it there is, then use CreateFoldersForFileIfDoesntExist() instead.
-      /// Returns true iff the folders now exist (be it because they already existed or because they have been successfully created)
-      /// </summary>
-      static bool CreateFoldersIfDoesntExist(std::string_view folderPath);
-      /// <summary>
-      /// Recursively creates all the folders so that at the end folderAndFilePath is a valid file path.
-      /// Returns true iff the folders now exist (be it because they already existed or because they have been successfully created)
-      /// </summary>
-      static bool CreateFoldersForFileIfDoesntExist(std::string_view folderAndFilePath);
+      /**
+       * @brief 
+       * 
+       * @param file_path 
+       * @return true iff file_path corresponds to an existing file or folder
+       */
+      static bool exists(std::string_view file_path);
 
-      /// <summary>
-      /// Root directory where the program was started from.
-      /// Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up.
-      /// </summary>
+      /**
+       * @brief Converts a relative or absolute path to an absolute path
+       * 
+       * @param file_path 
+       * @return std::string 
+       */
+      static std::string absolute_path(std::string_view file_path);
+
+      /**
+       * @brief 
+       * 
+       * @param file_path 
+       * @return The name of the file + its extension (removes parent folders)
+       */
+      static std::string file_name(const std::string& file_path);
+
+      /**
+       * @brief 
+       * 
+       * @param file_path 
+       * @return The name of the file (removes parent folders and extension)
+       */
+      static std::string file_name_without_extension(const std::string& file_path);
+
+      /**
+       * @brief 
+       * 
+       * @param file_path 
+       * @return The extension of the file, preceded by a dot : something like ".png"
+       */
+      static std::string extension(const std::string& file_path);
+
+      /**
+       * @brief The file_path but whithout the extension
+       * 
+       * @param file_path 
+       * @return std::string 
+       */
+      static std::string whithout_extension(const std::string& file_path);
+
+      /**
+       * @brief 
+       * 
+       * @param file_path 
+       * @return The folders in the path, removes the file name if there is one at the end
+       */
+      static std::string whithout_file_name(const std::string& file_path);
+      
+      /**
+       * @brief Loads the content of a file into a std::string. (NB : We use this ugly out-param API instead of returning a string for performance reasons.)
+       * 
+       * @param file_path Path to the file to be loaded
+       * @param dst Pointer to the string to be filled with the content of the file
+       */
+      static void to_string(std::string_view file_path, std::string* dst);
+
+      /**
+       * @brief Recursively creates all the folders so that at the end folder_path is a valid folder path. /!\ There shouldn't be any file name at the end of folder_path ; it there is, then use create_folders_for_file_if_they_dont_exist() instead
+       * 
+       * @param folder_path 
+       * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
+       */
+      static bool create_folders_if_they_dont_exist(std::string_view folder_path);
+      
+      /**
+       * @brief Recursively creates all the folders so that at the end file_path is a valid file path
+       * 
+       * @param file_path 
+       * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
+       */
+      static bool create_folders_for_file_if_they_dont_exist(std::string_view file_path);
+
+      /**
+       * @brief Root directory where the program was started from. Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up
+       * 
+       * @return 
+       */
       static const std::string& root_dir();
 
+      /**
+       * @brief Initializes root_dir. This must be called once, at the start of your application
+       * 
+       * @param path 
+       */
       static void initialize_root_dir(std::string_view path);
 
 private:

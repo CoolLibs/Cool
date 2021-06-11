@@ -48,7 +48,7 @@ public:
     /// <param name="filePath">Path to the file containing the code of the compute shader.</param>
     void create_program_from_file(std::string_view file_path) {
         std::string source_code;
-        File::ToString(file_path, &source_code);
+        File::to_string(file_path, &source_code);
         create_program_from_code(source_code);
     }
 
