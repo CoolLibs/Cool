@@ -137,8 +137,8 @@ void Exporter::ImGui_resolution_widget() {
 	ImGui::PushItemWidth(50);
 	unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
 	unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
-	_was_used |= ImGui::InputUInt("W", &w); ImGui::SameLine();
-	_was_used |= ImGui::InputUInt("H", &h);
+	_was_used |= ImGui::input_uint("W", &w); ImGui::SameLine();
+	_was_used |= ImGui::input_uint("H", &h);
 	ImGui::PopItemWidth();
 	if (_was_used)
 		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
@@ -154,14 +154,14 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		_path_has_changed |= ImGui::InputText("File Name", &_file_name);
 		_path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
 		ImGui::SameLine();
-		_path_has_changed |= ImGui::OpenFolderDialog(&_folder_path_for_image, _folder_path_for_image);
+		_path_has_changed |= ImGui::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
 		if (_path_has_changed) {
 			_should_show_file_exists_warning = File::Exists(output_path().c_str());
 		}
 		// Warning file exists
 		ImGui::NewLine();
 		if (_should_show_file_exists_warning) {
-			ImGui::WarningText("This file already exists. Are you sure you want to overwrite it ?");
+			ImGui::warning_text("This file already exists. Are you sure you want to overwrite it ?");
 		}
 		// Validation
 		if (ImGui::Button("Export as PNG")) {
@@ -224,7 +224,7 @@ bool Exporter::ImGui_window_export_image_sequence() {
 			ImGui_resolution_widget();
 			ImGui::InputText("Path", &_folder_path_for_image_sequence);
 			ImGui::SameLine();
-			ImGui::OpenFolderDialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
+			ImGui::open_folder_dialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
 			ImGui::InputFloat("FPS", &_fps);
 			ImGui::PushItemWidth(50);
 			ImGui::Text("From"); ImGui::SameLine(); ImGui::PushID(13540);
@@ -244,7 +244,7 @@ bool Exporter::ImGui_window_export_image_sequence() {
 		else {
 			int frame_count = _nb_frames_which_finished_exporting.load();
 			ImGui::Text(("Exported " + String::to_string(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
-			ImGui::TimeFormatedHMS((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
+			ImGui::time_formated_hms((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size()); ImGui::SameLine();
 			ImGui::Text("remaining");
 			if (ImGui::Button("Stop exporting")) {
 				end_image_sequence_export();
