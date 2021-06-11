@@ -3,16 +3,16 @@
 namespace Cool {
 
 Color::Color() {
-	m_channels[0] = 0;
-	m_channels[1] = 0;
-	m_channels[2] = 0;
-	m_channels[3] = 255;
+	_channels[0] = 0;
+	_channels[1] = 0;
+	_channels[2] = 0;
+	_channels[3] = 255;
 }
 
 void Color::set(unsigned char r, unsigned char g, unsigned char b) {
-	m_channels[0] = r;
-	m_channels[1] = g;
-	m_channels[2] = b;
+	_channels[0] = r;
+	_channels[1] = g;
+	_channels[2] = b;
 }
 
 void Color::set(float r, float g, float b) {
