@@ -20,8 +20,8 @@ public:
 	inline const T& operator* () const { return _value; }
 	inline const T* const operator->() const { return &_value; }
 
-	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change) override {
-		bool b = ImGuiWidget();
+	bool imgui(Action on_edit_ended, std::function<void()> on_value_change) override {
+		bool b = imgui_widget();
 		push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
 		if (b) {
 			on_value_change();
@@ -34,7 +34,7 @@ public:
 	inline void set_uniform_in_shader(Shader& shader) override { shader.set_uniform(name(), _value); }
 
 protected:
-	virtual bool ImGuiWidget() = 0;
+	virtual bool imgui_widget() = 0;
 	void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change) {
 		if (ImGui::IsItemDeactivatedAfterEdit()) {
 			push_change_in_history(on_edit_ended, on_value_change);

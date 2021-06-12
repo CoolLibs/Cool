@@ -11,7 +11,7 @@ public:
 	{}
 
 protected:
-	bool ImGuiWidget() override {
+	bool imgui_widget() override {
 		ImGui::PushID(this+34);
 		ImGui::PushItemWidth(150);
 		bool b = ImGui::SliderFloat("",             &_value.x, _min_value.x, _max_value.x);

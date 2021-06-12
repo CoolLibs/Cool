@@ -11,7 +11,7 @@ public:
 	{}
 
 protected:
-	bool ImGuiWidget() override {
+	bool imgui_widget() override {
 		bool b = ImGui::SliderInt(name().c_str(), &_value, _min_value, _max_value);
 		ImGui::PushID(this);
 		if (ImGui::BeginPopupContextItem()) {

@@ -11,7 +11,7 @@ public:
 		: Parameter(name, glm::vec2(default_angle_ground, default_angle_up))
 	{}
 
-	bool ImGuiWidget() override {
+	bool imgui_widget() override {
 		return ImGui::direction_3d(name().c_str(), &_value.x, &_value.y);
 	}
 };
@@ -36,8 +36,8 @@ public:
 		);
 	}
 
-	bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) override {
-		return _angles.ImGui(on_edit_ended, on_value_change);
+	bool imgui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) override {
+		return _angles.imgui(on_edit_ended, on_value_change);
 	}
 
 	void set_uniform_in_shader(Shader& shader) override {
@@ -47,8 +47,8 @@ public:
 	inline const std::string& name() const override { return _angles.name(); }
 
 protected:
-	bool ImGuiWidget() override {
-		return _angles.ImGuiWidget();
+	bool imgui_widget() override {
+		return _angles.imgui_widget();
 	}
 
 private:

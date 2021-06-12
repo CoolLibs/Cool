@@ -11,7 +11,7 @@ public:
 	{}
 
 protected:
-	bool ImGuiWidget() override {
+	bool imgui_widget() override {
 		return ImGui::ColorEdit3(name().c_str(), glm::value_ptr(_value), ImGuiColorEditFlags_NoInputs);
 	}
 };
