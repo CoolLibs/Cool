@@ -8,10 +8,10 @@
 namespace Cool {
 
 TrackballState_Rotation::TrackballState_Rotation(ViewController_Trackball& controller)
-	: TrackballState(controller),
-	  _initial_angle_ground(controller._angle_ground),
-	  _initial_angle_up    (controller._angle_up),
-	  _initial_mouse_pos_sc(Input::MouseInScreenCoordinates())
+	: TrackballState(controller)
+	, _initial_angle_ground(controller._angle_ground)
+	, _initial_angle_up    (controller._angle_up)
+	, _initial_mouse_pos_sc(Input::MouseInScreenCoordinates())
 {}
 
 void TrackballState_Rotation::update() {

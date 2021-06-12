@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Ray.h"
+#include <Cool/Geometry/Ray.h>
 
 namespace Cool {
 
@@ -16,11 +16,13 @@ public:
 
 	inline void set_transform_matrix (const glm::mat4& new_transform_matrix)  { _transform_matrix  = new_transform_matrix;	}
 	inline void set_projection_matrix(const glm::mat4& new_projection_matrix) { _projection_matrix = new_projection_matrix;	}
-
-	/// <summary>
-	/// Returns a Ray passing through the given pixel and starting at the camera position.
-	/// Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : ray_passing_through_pixel(Input::mouse_in_pixels())
-	/// </summary>
+	
+	/**
+	 * @brief Returns a Ray passing through the given pixel and starting at the camera position. Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : ray_passing_through_pixel(Input::mouse_in_pixels())
+	 * 
+	 * @param position_in_pixels 
+	 * @return 
+	 */
 	Ray ray_passing_through_pixel(const glm::vec2& position_in_pixels);
 
 private:

@@ -6,10 +6,11 @@ class Camera;
 
 class ViewController_Freefly {
 public:
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="camera">The camera to control</param>
+	/**
+	 * @brief 
+	 * 
+	 * @param camera The camera to control
+	 */
 	ViewController_Freefly(Camera& camera);
 
 	//inline void update() { _state->update(); }
@@ -22,8 +23,8 @@ private:
 
 private:
 	Camera& _camera;
-	float _angle_ground = 0.0f;
-	float _angle_up = 0.0f;
+	float   _angle_ground = 0.f;
+	float   _angle_up = 0.f;
 };
 
 } // namespace Cool

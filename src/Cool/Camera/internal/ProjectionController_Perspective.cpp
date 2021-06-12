@@ -9,7 +9,7 @@ void ProjectionController_Perspective::update_projection_matrix() {
 	float fov = 2.f * atan(1.f / _focal_length); // in radians
 	_camera.set_projection_matrix(
 		glm::infinitePerspective(
-			fov * 180.f / glm::pi<float>(),
+			glm::degrees(fov),
 			RenderState::Size().aspectRatio(),
 			near_plane
 		)

@@ -11,8 +11,8 @@ glm::vec3 Camera::position()   const { return                glm::column(_transf
 
 Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels) {
 	glm::vec3 pos = position();
-	glm::vec3 pixelPos = glm::unProject(glm::vec3(position_in_pixels, 0.0f), view_matrix(), projection_matrix(), glm::vec4(0.0f, 0.0f, RenderState::Size().width(), RenderState::Size().height())); // TODO use the size of the screen ? isn't it bugued out if render size > on_scree size ?
-	glm::vec3 dir = pixelPos - pos;
+	glm::vec3 pixel_pos = glm::unProject(glm::vec3(position_in_pixels, 0.0f), view_matrix(), projection_matrix(), glm::vec4(0.0f, 0.0f, RenderState::Size().width(), RenderState::Size().height())); // TODO use the size of the screen ? isn't it bugued out if render size > on_scree size ?
+	glm::vec3 dir = pixel_pos - pos;
 	return Ray(pos, dir);
 }
 

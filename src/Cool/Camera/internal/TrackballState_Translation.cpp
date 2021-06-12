@@ -8,9 +8,9 @@
 namespace Cool {
 
 TrackballState_Translation::TrackballState_Translation(ViewController_Trackball& controller)
-	: TrackballState(controller),
-	  _initial_look_at(controller._look_at),
-	  _initial_mouse_pos_sc(Input::MouseInScreenCoordinates())
+	: TrackballState(controller)
+	, _initial_look_at(controller._look_at)
+	, _initial_mouse_pos_sc(Input::MouseInScreenCoordinates())
 {}
 
 void TrackballState_Translation::update() {

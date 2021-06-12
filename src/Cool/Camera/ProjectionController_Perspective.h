@@ -6,10 +6,11 @@ class Camera;
 
 class ProjectionController_Perspective {
 public:
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="camera">The camera to control</param>
+	/**
+	 * @brief 
+	 * 
+	 * @param The camera to control 
+	 */
 	ProjectionController_Perspective(Camera& camera)
 		: _camera(camera)
 	{
@@ -22,7 +23,7 @@ private:
 	void update_projection_matrix();
 
 private:
-	float _focal_length = 1.0f;
+	float   _focal_length = 1.f;
 	Camera& _camera;
 };
 
