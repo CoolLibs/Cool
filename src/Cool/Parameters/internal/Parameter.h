@@ -2,7 +2,6 @@
 
 #include "../ParametersHistory.h"
 #include "IParameter.h"
-#include <Cool/OpenGL/Shader.h>
 
 namespace Cool::Internal {
 

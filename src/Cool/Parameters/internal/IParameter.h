@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/History/Action.h>
+#include <Cool/OpenGL/Shader.h>
 
 namespace Cool::Internal {
 
