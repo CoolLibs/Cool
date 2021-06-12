@@ -1,15 +1,15 @@
 #pragma once
 
 #include "internal/Presets.h"
-#include "ParamsHistory.h"
+#include "ParametersHistory.h"
 #include "AnyParameter.h"
 
 namespace Cool {
 
 template <typename ParamValues>
-class Params {
+class ParameterGroup {
 public:
-	Params(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
+	ParameterGroup(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
 		: _presets(file_extension, folder_path), _on_value_change(on_value_change)
 	{}
 	bool ImGui() {

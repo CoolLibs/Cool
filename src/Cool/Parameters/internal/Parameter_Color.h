@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Param.h"
+#include "Parameter.h"
 
-namespace Cool::Param {
+namespace Cool::Parameter {
 
-class Color : public Internal::Param<glm::vec3> {
+class Color : public Internal::Parameter<glm::vec3> {
 public:
 	Color(std::string_view name = "", const glm::vec3& default_value = glm::vec3(0.f))
-		: Param(name, default_value)
+		: Parameter(name, default_value)
 	{}
 
 protected:
@@ -16,4 +16,4 @@ protected:
 	}
 };
 
-} // namespace Cool::Param
+} // namespace Cool::Parameter

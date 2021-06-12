@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Param.h"
+#include "Parameter.h"
 
-namespace Cool::Param {
+namespace Cool::Parameter {
 
-class Int : public Internal::Param<int> {
+class Int : public Internal::Parameter<int> {
 public:
 	Int(std::string_view name = "", int default_value = 0, int min_value = 0, int max_value = 20)
-		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
+		: Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:
@@ -31,4 +31,4 @@ private:
 	int _max_value;
 };
 
-} // namespace Cool::Param
+} // namespace Cool::Parameter

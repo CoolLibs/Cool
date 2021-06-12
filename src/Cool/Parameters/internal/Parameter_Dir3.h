@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Param.h"
+#include "Parameter.h"
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 
 namespace Cool::Internal {
 
-class Dir3Angles : public Internal::Param<glm::vec2> {
+class Dir3Angles : public Internal::Parameter<glm::vec2> {
 public:
 	Dir3Angles(std::string_view name, float default_angle_ground = 0.f, float default_angle_up = 0.f)
-		: Param(name, glm::vec2(default_angle_ground, default_angle_up))
+		: Parameter(name, glm::vec2(default_angle_ground, default_angle_up))
 	{}
 
 	bool ImGuiWidget() override {
@@ -18,9 +18,9 @@ public:
 
 } // namespace Cool::Internal
 
-namespace Cool::Param {
+namespace Cool::Parameter {
 
-class Dir3 : public Cool::Internal::IParam {
+class Dir3 : public Cool::Internal::IParameter {
 public:
 	Dir3(std::string_view name = "", float default_angle_ground = 0.f, float default_angle_up = 0.f)
 		: _angles(name, default_angle_ground, default_angle_up)
@@ -64,4 +64,4 @@ private:
 	Internal::Dir3Angles _angles;
 };
 
-} // namespace Cool::Param
+} // namespace Cool::Parameter

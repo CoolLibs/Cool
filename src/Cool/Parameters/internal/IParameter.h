@@ -8,9 +8,9 @@ namespace Cool::Internal {
  * @brief Interface that all parameters should implement
  * 
  */
-class IParam {
+class IParameter {
 public:
-	virtual ~IParam() = default;
+	virtual ~IParameter() = default;
 
 	virtual const std::string& name() const = 0;
 	virtual bool ImGui(Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;

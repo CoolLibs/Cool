@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Param.h"
+#include "Parameter.h"
 
-namespace Cool::Param {
+namespace Cool::Parameter {
 
-class Vec2 : public Internal::Param<glm::vec2> {
+class Vec2 : public Internal::Parameter<glm::vec2> {
 public:
 	Vec2(std::string_view name = "", glm::vec2 default_value = glm::vec2(0.f), glm::vec2 min_value = glm::vec2(0.f), glm::vec2 max_value = glm::vec2(1.f))
-		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
+		: Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:
@@ -37,4 +37,4 @@ private:
 	glm::vec2 _max_value;
 };
 
-} // namespace Cool::Param
+} // namespace Cool::Parameter

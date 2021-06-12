@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ParamsHistory.h"
-#include "IParam.h"
+#include "../ParametersHistory.h"
+#include "IParameter.h"
 #include <Cool/OpenGL/Shader.h>
 
 namespace Cool::Internal {
@@ -12,12 +12,12 @@ namespace Cool::Internal {
  * @tparam T 
  */
 template <typename T>
-class Param : public IParam {
+class Parameter : public IParameter {
 public:
-	Param(std::string_view name, const T& default_value = T(0))
+	Parameter(std::string_view name, const T& default_value = T(0))
 		: _name(name), _value(default_value), _value_before_edit(default_value)
 	{}
-	virtual ~Param() = default;
+	virtual ~Parameter() = default;
 	inline const T& operator* () const { return _value; }
 	inline const T* const operator->() const { return &_value; }
 
@@ -46,10 +46,10 @@ protected:
 
 private:
 	void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change) {
-		ParamsHistory::get().begin_undo_group();
+		ParametersHistory::get().begin_undo_group();
 		T val = _value;
 		T prev_val = _value_before_edit;
-		ParamsHistory::get().add_action({
+		ParametersHistory::get().add_action({
 			[&, val, on_value_change]()
 			{
 				_value = val;
@@ -61,8 +61,8 @@ private:
 				on_value_change();
 			}
 		});
-		ParamsHistory::get().add_action(on_edit_ended);
-		ParamsHistory::get().end_undo_group();
+		ParametersHistory::get().add_action(on_edit_ended);
+		ParametersHistory::get().end_undo_group();
 	}
 
 protected:

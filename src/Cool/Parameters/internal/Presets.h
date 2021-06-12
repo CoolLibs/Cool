@@ -50,7 +50,7 @@ struct Preset {
 template <typename T>
 class Presets {
 	template <typename T>
-	friend class Params;
+	friend class ParameterGroup;
 public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
 		: 
@@ -88,9 +88,9 @@ public:
 							}
 						};
 						action.apply();
-						ParamsHistory::get().begin_undo_group();
-						ParamsHistory::get().add_action(action);
-						ParamsHistory::get().end_undo_group();
+						ParametersHistory::get().begin_undo_group();
+						ParametersHistory::get().add_action(action);
+						ParametersHistory::get().end_undo_group();
 						b = true;
 					}
 				}
