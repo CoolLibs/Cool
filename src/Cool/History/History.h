@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/Action.h"
+#include "Action.h"
 
 namespace Cool {
 

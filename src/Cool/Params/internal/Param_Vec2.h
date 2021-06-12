@@ -1,13 +1,13 @@
 #pragma once
 
-#include "IParam.h"
+#include "Param.h"
 
 namespace Cool::Param {
 
-class Vec2 : public Internal::ParamForPrimitiveType<glm::vec2> {
+class Vec2 : public Internal::Param<glm::vec2> {
 public:
-	Vec2(std::string_view name, glm::vec2 default_value = glm::vec2(0.f), glm::vec2 min_value = glm::vec2(0.f), glm::vec2 max_value = glm::vec2(1.f))
-		: ParamForPrimitiveType(name, default_value), _min_value(min_value), _max_value(max_value)
+	Vec2(std::string_view name = "", glm::vec2 default_value = glm::vec2(0.f), glm::vec2 min_value = glm::vec2(0.f), glm::vec2 max_value = glm::vec2(1.f))
+		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:

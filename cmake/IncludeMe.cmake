@@ -15,6 +15,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <string>
     <memory>
     <functional>
+    <variant>
+    <optional>
     <algorithm>
     <unordered_map>
     <deque>
@@ -30,6 +32,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <cereal/types/vector.hpp>
     <cereal/types/string.hpp>
     <cereal/types/memory.hpp>
+    <cereal/types/variant.hpp>
     
     <boxer/boxer.h>
     

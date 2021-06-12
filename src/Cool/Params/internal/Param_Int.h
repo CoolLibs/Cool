@@ -1,13 +1,13 @@
 #pragma once
 
-#include "IParam.h"
+#include "Param.h"
 
 namespace Cool::Param {
 
-class Int : public Internal::ParamForPrimitiveType<int> {
+class Int : public Internal::Param<int> {
 public:
-	Int(std::string_view name, int default_value = 0, int min_value = 0, int max_value = 20)
-		: ParamForPrimitiveType(name, default_value), _min_value(min_value), _max_value(max_value)
+	Int(std::string_view name = "", int default_value = 0, int min_value = 0, int max_value = 20)
+		: Param(name, default_value), _min_value(min_value), _max_value(max_value)
 	{}
 
 protected:
