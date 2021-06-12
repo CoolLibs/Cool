@@ -17,6 +17,10 @@ public:
        */
       void imgui(std::function<void()> on_value_change = [](){});
 
+      void set_uniforms_in_shader(Shader& shader);
+
+      size_t find(std::string_view parameter_name);
+
       inline std::vector<AnyParameter>& operator* () { return _parameters; }
       inline std::vector<AnyParameter>* operator->() { return &operator*(); }
 
