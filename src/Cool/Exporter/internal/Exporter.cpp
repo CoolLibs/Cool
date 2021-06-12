@@ -25,7 +25,7 @@ public:
 
 	void operator()() {
 		auto begin = std::chrono::steady_clock::now();
-		ExportImage::AsPNG(_filepath, _width, _height, _data.data());
+		ExportImage::as_png(_filepath, _width, _height, _data.data());
 		auto end = std::chrono::steady_clock::now();
 		std::chrono::duration<float> delta_time = end - begin;
 		_frame_time_average.push(delta_time.count());
@@ -58,7 +58,7 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 	frame_buffer.unbind();
 	// Write png
 	if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
-		ExportImage::AsPNG(filepath, size.width(), size.height(), data.data());
+		ExportImage::as_png(filepath, size.width(), size.height(), data.data());
 	}
 	else {
 		Log::warn("[Exporter::export_image] Failed to create folder '{}'", _folder_path_for_image);

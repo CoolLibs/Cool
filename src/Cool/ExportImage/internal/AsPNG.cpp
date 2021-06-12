@@ -4,9 +4,9 @@
 
 namespace Cool::ExportImage {
 
-void AsPNG(std::string_view filepath, int width, int height, void* data, bool bFlipVertically) {
-	stbi_flip_vertically_on_write(bFlipVertically ? 1 : 0);
-	stbi_write_png(filepath.data(), width, height, 4, data, 0);
+void as_png(std::string_view file_path, int width, int height, void* data, bool _flip_vertically) {
+	stbi_flip_vertically_on_write(_flip_vertically ? 1 : 0);
+	stbi_write_png(file_path.data(), width, height, 4, data, 0);
 }
 
 } // namespace Cool::ExportImage
