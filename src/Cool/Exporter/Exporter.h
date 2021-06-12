@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/Averager.h"
+#include <Cool/Utils/Averager.h>
 #include <Cool/MultiThread/ThreadPool.h>
 
 namespace Cool {
