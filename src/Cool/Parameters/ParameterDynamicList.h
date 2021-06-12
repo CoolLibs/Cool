@@ -20,6 +20,7 @@ public:
       void set_uniforms_in_shader(Shader& shader);
 
       size_t find(std::string_view parameter_name);
+      size_t index_of(std::string_view parameter_name);
 
       inline std::vector<AnyParameter>& operator* () { return _parameters; }
       inline std::vector<AnyParameter>* operator->() { return &operator*(); }

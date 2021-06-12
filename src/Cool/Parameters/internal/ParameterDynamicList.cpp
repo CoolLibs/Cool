@@ -14,7 +14,7 @@ void ParameterDynamicList::set_uniforms_in_shader(Shader& shader) {
 	}
 }
 
-size_t ParameterDynamicList::find(std::string_view parameter_name) {
+size_t ParameterDynamicList::index_of(std::string_view parameter_name) {
 	for (size_t i = 0; i < _parameters.size(); ++i) {
 		const std::string& name = std::visit([&](auto&& arg){ return arg.name(); }, _parameters[i]);
 		if (!parameter_name.compare(name)) {
