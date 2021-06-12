@@ -13,19 +13,19 @@ namespace Cool {
 
 class ExportImage_Functor {
 public:
-	ExportImage_Functor(std::string_view filepath, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
-		: _filepath(filepath), _width(width), _height(height), _data(data), _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
+	ExportImage_Functor(std::string_view file_path, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
+		: _file_path(file_path), _width(width), _height(height), _data(data), _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
 	{}
 	ExportImage_Functor(ExportImage_Functor&& o) noexcept
-		: _filepath(std::move(o._filepath)), _width(o._width), _height(o._height), _data(std::move(o._data)), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
+		: _file_path(std::move(o._file_path)), _width(o._width), _height(o._height), _data(std::move(o._data)), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
 	{}
 	ExportImage_Functor(const ExportImage_Functor& o) noexcept
-		: _filepath(o._filepath), _width(o._width), _height(o._height), _data(o._data), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
+		: _file_path(o._file_path), _width(o._width), _height(o._height), _data(o._data), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
 	{}
 
 	void operator()() {
 		auto begin = std::chrono::steady_clock::now();
-		ExportImage::as_png(_filepath, _width, _height, _data.data());
+		ExportImage::as_png(_file_path, _width, _height, _data.data());
 		auto end = std::chrono::steady_clock::now();
 		std::chrono::duration<float> delta_time = end - begin;
 		_frame_time_average.push(delta_time.count());
@@ -33,12 +33,12 @@ public:
 	}
 
 private:
-	std::string _filepath;
-	int _width;
-	int _height;
+	std::string                _file_path;
+	int                        _width;
+	int                        _height;
 	std::vector<unsigned char> _data;
-	Averager<float>& _frame_time_average;
-	std::atomic<int>& _nb_frames_which_finished_exporting;
+	Averager<float>&           _frame_time_average;
+	std::atomic<int>&          _nb_frames_which_finished_exporting;
 };
 
 Exporter::Exporter()
@@ -46,7 +46,7 @@ Exporter::Exporter()
 	, _folder_path_for_image_sequence(File::root_dir() + "/exports")
 {}
 
-void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view filepath) {
+void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view file_path) {
 	// Render
 	RenderState::setIsExporting(true);
 	render();
@@ -58,16 +58,16 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 	frame_buffer.unbind();
 	// Write png
 	if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
-		ExportImage::as_png(filepath, size.width(), size.height(), data.data());
+		ExportImage::as_png(file_path, size.width(), size.height(), data.data());
 	}
 	else {
-		Log::warn("[Exporter::export_image] Failed to create folder '{}'", _folder_path_for_image);
+		Log::ToUser::warn("[Exporter::export_image] Failed to create folder \"{}\"", _folder_path_for_image);
 	}
 	//
 	RenderState::setIsExporting(false);
 }
 
-void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view filepath) {
+void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view file_path) {
 	// Wait for a thread to be available
 	_thread_pool.wait_for_available_thread();
 	// Get data
@@ -77,7 +77,7 @@ void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string
 	glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 	frame_buffer.unbind();
 	// Write png
-	_thread_pool.push_job(std::move(ExportImage_Functor(filepath, size.width(), size.height(), std::move(data), _frame_time_average, _nb_frames_which_finished_exporting)));
+	_thread_pool.push_job(std::move(ExportImage_Functor(file_path, size.width(), size.height(), std::move(data), _frame_time_average, _nb_frames_which_finished_exporting)));
 }
 
 std::string Exporter::output_path() {
@@ -112,11 +112,12 @@ void Exporter::find_available_file_name() {
 
 void Exporter::open_window_export_image(bool open) {
 	_is_window_open_image_export = open;
-	if (_is_window_open_image_export)
+	if (_is_window_open_image_export) {
 		find_available_file_name();
+	}
 }
 
-void Exporter::ImGui_menu_items() {
+void Exporter::imgui_menu_items() {
 	// Calculate max button width
 	const char* longuest_text = "Image Sequence";
 	float button_width = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
@@ -131,7 +132,7 @@ void Exporter::ImGui_menu_items() {
 	//ImGui::PopStyleVar();
 }
 
-void Exporter::ImGui_resolution_widget() {
+void Exporter::imgui_resolution_widget() {
 	bool _was_used = false;
 	ImGui::Text("Resolution : "); ImGui::SameLine();
 	ImGui::PushItemWidth(50);
@@ -140,22 +141,23 @@ void Exporter::ImGui_resolution_widget() {
 	_was_used |= ImGui::input_uint("W", &w); ImGui::SameLine();
 	_was_used |= ImGui::input_uint("H", &h);
 	ImGui::PopItemWidth();
-	if (_was_used)
+	if (_was_used) {
 		RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
+	}
 }
 
-void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuffer& frameBuffer) {
+void Exporter::imgui_window_export_image(std::function<void()> render, FrameBuffer& frame_buffer) {
 	if (_is_window_open_image_export) {
 		ImGui::Begin("Export an Image", &_is_window_open_image_export);
 		// Resolution
-		ImGui_resolution_widget();
+		imgui_resolution_widget();
 		// File and Folders
-		bool _path_has_changed = false;
-		_path_has_changed |= ImGui::InputText("File Name", &_file_name);
-		_path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
+		bool path_has_changed = false;
+		path_has_changed |= ImGui::InputText("File Name", &_file_name);
+		path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
 		ImGui::SameLine();
-		_path_has_changed |= ImGui::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
-		if (_path_has_changed) {
+		path_has_changed |= ImGui::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
+		if (path_has_changed) {
 			_should_show_file_exists_warning = File::exists(output_path());
 		}
 		// Warning file exists
@@ -166,7 +168,7 @@ void Exporter::ImGui_window_export_image(std::function<void()> render, FrameBuff
 		// Validation
 		if (ImGui::Button("Export as PNG")) {
 			_is_window_open_image_export = false;
-			export_image(render, frameBuffer, output_path());
+			export_image(render, frame_buffer, output_path());
 		}
 		//
 		ImGui::End();
@@ -192,12 +194,12 @@ void Exporter::begin_image_sequence_export() {
 	}
 }
 
-void Exporter::update(FrameBuffer& frameBuffer) {
+void Exporter::update(FrameBuffer& frame_buffer) {
 	if (_is_exporting_image_sequence) {
 		_is_window_open_image_sequence_export = true;
 		if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
 			if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-				export_image_multithreaded(frameBuffer, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
+				export_image_multithreaded(frame_buffer, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
 				_nb_frames_sent_to_thread_pool++;
 			}
 		}
@@ -215,13 +217,13 @@ void Exporter::end_image_sequence_export() {
 	_is_window_open_image_sequence_export = false;
 }
 
-bool Exporter::ImGui_window_export_image_sequence() {
+bool Exporter::imgui_window_export_image_sequence() {
 	bool has_started = false;
 	if (_is_window_open_image_sequence_export) {
 		ImGui::Begin("Export an Image Sequence", _is_exporting_image_sequence ? nullptr : &_is_window_open_image_sequence_export);
 		// Not exporting
 		if (!_is_exporting_image_sequence) {
-			ImGui_resolution_widget();
+			imgui_resolution_widget();
 			ImGui::InputText("Path", &_folder_path_for_image_sequence);
 			ImGui::SameLine();
 			ImGui::open_folder_dialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
