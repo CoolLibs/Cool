@@ -1,6 +1,6 @@
 #ifdef __COOL_APP_OPENGL
 
-#include "Renderer_Fullscreen.h"
+#include "../Renderer_Fullscreen.h"
 #include <Cool/App/RenderState.h>
 
 namespace Cool {

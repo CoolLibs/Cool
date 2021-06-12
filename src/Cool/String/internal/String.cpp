@@ -1,4 +1,4 @@
-#include "String.h"
+#include "../String.h"
 
 namespace Cool::String {
 

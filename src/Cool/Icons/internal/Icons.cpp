@@ -1,4 +1,4 @@
-#include "Icons.h"
+#include "../Icons.h"
 
 #include <Cool/LoadImage/LoadImage.h>
 #include <Cool/OpenGL/Texture.h>
