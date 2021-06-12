@@ -8,21 +8,31 @@
 
 namespace Cool {
 
-/// A wrapper for Glfw + Vulkan/OpenGL + ImGui initialization and shutdown and windows creation.
+/**
+ * @brief A wrapper for Glfw + Vulkan/OpenGL + ImGui initialization and shutdown and windows creation
+ * 
+ */
 class WindowFactory {
 public:
-	/// Sets the OpenGL Version and initializes a bunch of stuff. /!\ You must use OpenGL 3.3 or greater for the current ImGui implementation.
-	/// <param name="openGLMajorVersion">Open GL major version</param>
-	/// <param name="openGLMinorVersion">OpenGL minor version</param>
+	/**
+	 * @brief Sets the OpenGL Version and initializes a bunch of stuff. /!\ You must use OpenGL 3.3 or greater for the current ImGui implementation
+	 * 
+	 * @param openGLMajorVersion 
+	 * @param openGLMinorVersion 
+	 */
 	WindowFactory(int openGLMajorVersion, int openGLMinorVersion);
-	~WindowFactory();
 
-	// TODO update doc to talk about vulkan
-	/// Creates a window and its OpenGL context. /!\ If you want to create multiple windows, make sure you create the main one last ! (the one you hand to AppManager)
-	/// <param name="name">The name that will be displayed in the title bar of the window</param>
-	/// <param name="width">Initial width of the window</param>
-	/// <param name="height">Initial height of the window</param>
-	/// <param name="windowToShareContextWith">Optional window. If set, the created window will share the same OpenGL context as this one.</param>
+	~WindowFactory();
+	
+	/**
+	 * @brief Creates a window and its OpenGL context. /!\ If you want to create multiple windows, make sure you create the main one last ! (the one you hand to AppManager)
+	 * 
+	 * @param name The name that will be displayed in the title bar of the window
+	 * @param width Initial width of the window
+	 * @param height Initial height of the window
+	 * @param windowToShareContextWith Optional window. If set, the created window will share the same OpenGL context as this one
+	 * @return Window& 
+	 */
 #ifdef __COOL_APP_VULKAN
 	Window& create(const char* name, int width, int height);
 #endif
