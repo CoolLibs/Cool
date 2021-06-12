@@ -20,7 +20,7 @@ public:
 	inline const T& operator* () const { return _value; }
 	inline const T* const operator->() const { return &_value; }
 
-	bool imgui(Action on_edit_ended, std::function<void()> on_value_change) override {
+	bool imgui(Action on_edit_ended = {}, std::function<void()> on_value_change = [](){}) override {
 		bool b = imgui_widget();
 		push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
 		if (b) {
