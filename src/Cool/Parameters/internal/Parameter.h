@@ -6,7 +6,7 @@
 namespace Cool::Internal {
 
 /**
- * @brief A parameter that holds a value of type T. All changes to the value are saved in an history.
+ * @brief A parameter that holds a value of type T. Groups all behaviours common to all parameters (All changes to the value are saved in an history)
  * 
  * @tparam T 
  */
@@ -51,11 +51,13 @@ private:
 		ParametersHistory::get().add_action({
 			[&, val, on_value_change]()
 			{
+				Log::info("++");
 				_value = val;
 				on_value_change();
 			},
 			[&, prev_val, on_value_change]()
 			{
+				Log::info("--");
 				_value = prev_val;
 				on_value_change();
 			}
