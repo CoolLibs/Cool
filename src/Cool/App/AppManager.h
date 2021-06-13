@@ -46,7 +46,7 @@ private:
 	static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
-	Window& m_mainWindow;
+	Window& _main_window;
 	IApp& m_app;
 	bool m_bFirstFrame = true; // Used to prevent triggering the resize event twice at the start of the app
 	bool m_bShowUI = true;

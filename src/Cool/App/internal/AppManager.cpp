@@ -23,27 +23,27 @@
 namespace Cool {
 
 AppManager::AppManager(Window& mainWindow, IApp& app)
-	: m_mainWindow(mainWindow), m_app(app)
+	: _main_window(mainWindow), m_app(app)
 {
 	Input::Initialize(mainWindow.get());
 	// Set callbacks
-	glfwSetKeyCallback(m_mainWindow.get(), AppManager::key_callback);
-	glfwSetMouseButtonCallback(m_mainWindow.get(), AppManager::mouse_button_callback);
-	glfwSetScrollCallback(m_mainWindow.get(), AppManager::scroll_callback);
-	glfwSetCursorPosCallback(m_mainWindow.get(), AppManager::cursor_position_callback);
-	glfwSetWindowSizeCallback(m_mainWindow.get(), window_size_callback);
-	glfwSetWindowPosCallback(m_mainWindow.get(), window_pos_callback);
-	glfwSetWindowUserPointer(m_mainWindow.get(), reinterpret_cast<void*>(this));
+	glfwSetKeyCallback(_main_window.get(), AppManager::key_callback);
+	glfwSetMouseButtonCallback(_main_window.get(), AppManager::mouse_button_callback);
+	glfwSetScrollCallback(_main_window.get(), AppManager::scroll_callback);
+	glfwSetCursorPosCallback(_main_window.get(), AppManager::cursor_position_callback);
+	glfwSetWindowSizeCallback(_main_window.get(), window_size_callback);
+	glfwSetWindowPosCallback(_main_window.get(), window_pos_callback);
+	glfwSetWindowUserPointer(_main_window.get(), reinterpret_cast<void*>(this));
 	// Trigger window size / position event once
 	int x, y, w, h;
-	glfwGetWindowPos(m_mainWindow.get(), &x, &y);
-	glfwGetWindowSize(m_mainWindow.get(), &w, &h);
+	glfwGetWindowPos(_main_window.get(), &x, &y);
+	glfwGetWindowSize(_main_window.get(), &w, &h);
 	onWindowMove(x, y);
 	onWindowResize(w, h);
 }
 
 void AppManager::run() {
-	while (!glfwWindowShouldClose(m_mainWindow.get())) {
+	while (!glfwWindowShouldClose(_main_window.get())) {
 		update();
 	}
 }
@@ -52,10 +52,10 @@ void AppManager::update() {
 	// Events
 	glfwPollEvents();
 #ifdef __COOL_APP_VULKAN
-	m_mainWindow.check_for_swapchain_rebuild();
+	_main_window.check_for_swapchain_rebuild();
 #endif
 	// Clear screen
-	Renderer::set_render_target(m_mainWindow);
+	Renderer::set_render_target(_main_window);
 	Renderer::clear_background(RenderState::getEmptySpaceColor());
 	// Start ImGui frame
 #ifdef __COOL_APP_VULKAN
@@ -91,7 +91,7 @@ void AppManager::update() {
 	ImDrawData* main_draw_data = ImGui::GetDrawData();
 	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
 	if (!main_is_minimized)
-		m_mainWindow.FrameRender(main_draw_data);
+		_main_window.FrameRender(main_draw_data);
 
 	// Update and Render additional Platform Windows
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -101,7 +101,7 @@ void AppManager::update() {
 	}
 	// Present Main Platform Window
 	if (!main_is_minimized)
-		m_mainWindow.FramePresent();
+		_main_window.FramePresent();
 
 #endif
 #ifdef __COOL_APP_OPENGL
@@ -116,7 +116,7 @@ void AppManager::update() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backup_current_context);
 	}
-	glfwSwapBuffers(m_mainWindow.get());
+	glfwSwapBuffers(_main_window.get());
 #endif
 	// End frame
 	m_bFirstFrame = false;
@@ -127,7 +127,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
 	if (appManager->m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput)
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 	// Fullscreen
-	appManager->m_mainWindow.checkForFullscreenToggles(key, scancode, action, mods);
+	appManager->_main_window.checkForFullscreenToggles(key, scancode, action, mods);
 	// CTRL + H
 	if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
 		appManager->m_bShowUI = !appManager->m_bShowUI;
@@ -155,13 +155,13 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 void AppManager::window_size_callback(GLFWwindow* window, int w, int h) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	appManager->onWindowResize(w, h);
-	appManager->update();
+	// appManager->update();
 }
 
 void AppManager::window_pos_callback(GLFWwindow* window, int x, int y) {
 	AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 	appManager->onWindowMove(x, y);
-	appManager->update();
+	// appManager->update();
 }
 
 void AppManager::onWindowMove(int x, int y) {
