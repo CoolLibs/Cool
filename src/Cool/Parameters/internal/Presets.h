@@ -36,14 +36,14 @@ private:
 template <typename T>
 struct Preset {
 	std::string name;
-	ValuesWithUUID<T> valuesWithUUID;
+	ValuesWithUUID<T> values_with_uuid;
 
 	Preset(const std::string& name, const T& values)
-		: name(name), valuesWithUUID(values, Random::long_int())
+		: name(name), values_with_uuid(values, Random::long_int())
 	{}
 
 	Preset(const std::string& name, const T& values, long int uuid)
-		: name(name), valuesWithUUID(values, uuid)
+		: name(name), values_with_uuid(values, uuid)
 	{}
 };
 
@@ -53,25 +53,23 @@ class Presets {
 	friend class ParameterGroup;
 public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
-		: 
-		_file_extension(file_extension + std::string(".")),
-		_folder_path(folder_path),
-		_save_preset_as(find_placeholder_name())
+		: _file_extension(file_extension + std::string("."))
+		, _folder_path(folder_path)
+		, _save_preset_as(find_placeholder_name())
 	{
 		load_presets();
 	}
-	~Presets() = default;
 
-	bool ImGui_dropdown(const char* label, T* setting_values, std::function<void()> on_value_change) {
+	bool imgui_dropdown(const char* label, T* setting_values, std::function<void()> on_value_change) {
 		bool b = false;
 		if (ImGui::BeginCombo(label, current_name().c_str(), 0)) {
 			for (size_t i = 0; i < _presets.size(); i++) {
 				if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
 					if (i != _current_preset_idx) {
 						const auto cur_setting_values = *setting_values;
-						const auto new_setting_values = _presets[i].valuesWithUUID.values;
+						const auto new_setting_values = _presets[i].values_with_uuid.values;
 						const auto cur_uuid = current_uuid();
-						const auto new_uuid = _presets[i].valuesWithUUID.uuid;
+						const auto new_uuid = _presets[i].values_with_uuid.uuid;
 						const auto last_uuid_copy = last_uuid();
 						const Action action = {
 							[&, setting_values, new_setting_values, new_uuid, on_value_change]() {
@@ -100,8 +98,8 @@ public:
 		return b;
 	}
 
-	bool ImGui(T* setting_values, std::function<void()> on_value_change) {
-		bool b = ImGui_dropdown("Presets", setting_values, on_value_change);
+	bool imgui(T* setting_values, std::function<void()> on_value_change) {
+		bool b = imgui_dropdown("Presets", setting_values, on_value_change);
 		// Save preset
 		if (_current_preset_idx == -1) {
 			if (_name_available) {
@@ -122,7 +120,7 @@ public:
 			ImGui::SameLine();
 			ImGui::PushID(138571);
 			if (ImGui::InputText("", &_save_preset_as)) {
-				_name_available = !File::exists(full_path(_save_preset_as)) && _save_preset_as.compare("Unsaved settings...");
+				_name_available = !File::exists(full_path(_save_preset_as)) && _save_preset_as.compare(_placeholder_name);
 				_name_contains_dots = _save_preset_as.find(".") != std::string::npos;
 			}
 			ImGui::PopID();
@@ -216,7 +214,7 @@ private:
 	void compute_current_preset_idx(long int uuid) {
 		_current_preset_idx = -1;
 		for (size_t i = 0; i < _presets.size(); ++i) {
-			if (_presets[i].valuesWithUUID.uuid == uuid) {
+			if (_presets[i].values_with_uuid.uuid == uuid) {
 				_current_preset_idx = i;
 				break;
 			}
@@ -238,14 +236,14 @@ private:
 			for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
 				if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
 					std::string name = file.path().filename().replace_extension("").extension().string().erase(0, 1);
-					ValuesWithUUID<T> valuesWithUUID;
+					ValuesWithUUID<T> values_with_uuid;
 					std::ifstream is(file.path());
 					try {
 						cereal::JSONInputArchive archive(is);
 						archive(
-							valuesWithUUID
+							values_with_uuid
 						);
-						_presets.push_back({ name, valuesWithUUID.values, valuesWithUUID.uuid });
+						_presets.push_back({ name, values_with_uuid.values, values_with_uuid.uuid });
 					}
 					catch (std::exception e) {
 						Log::ToUser::warn("[Load Preset] Invalid file '{}'\n{}", file.path().string(), e.what());
@@ -262,9 +260,9 @@ private:
 		// Set as selected preset
 		_current_preset_idx = _presets.size() - 1;
 		// Set as last uuid
-		set_last_uuid(_presets.back().valuesWithUUID.uuid);
+		set_last_uuid(_presets.back().values_with_uuid.uuid);
 		// Save to file
-		Serialization::to_json(_presets.back().valuesWithUUID, full_path(_save_preset_as));
+		Serialization::to_json(_presets.back().values_with_uuid, full_path(_save_preset_as));
 		// Sort
 		sort();
 		// Find new placeholder name
@@ -276,7 +274,7 @@ private:
 	}
 
 	long int current_uuid() const {
-		return _current_preset_idx != -1 ? _presets[_current_preset_idx].valuesWithUUID.uuid : 0;
+		return _current_preset_idx != -1 ? _presets[_current_preset_idx].values_with_uuid.uuid : 0;
 	}
 
 	long int last_uuid() const {
@@ -292,17 +290,17 @@ private:
 	}
 
 private:
-	const std::string _file_extension;
-	const std::string _folder_path; // Must be declared before _save_preset_as
-	size_t _current_preset_idx = -1;
-	long int _last_uuid = 0;
+	const std::string      _file_extension;
+	const std::string      _folder_path; // Must be declared before _save_preset_as
+	size_t                 _current_preset_idx = -1;
+	long int               _last_uuid = 0;
 	std::vector<Preset<T>> _presets;
-	std::string _save_preset_as;
-	bool _name_available = true;
-	bool _name_contains_dots = false;
-	std::string _new_preset_name;
-	bool _rename_popup_open_last_frame = false;
-	bool _rename_popup_open_this_frame = false;
+	std::string            _save_preset_as;
+	bool                   _name_available = true;
+	bool                   _name_contains_dots = false;
+	std::string            _new_preset_name;
+	bool                   _rename_popup_open_last_frame = false;
+	bool                   _rename_popup_open_this_frame = false;
 	static inline const std::string _placeholder_name = "Unsaved settings...";
 
 private:

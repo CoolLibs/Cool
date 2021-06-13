@@ -11,12 +11,15 @@ namespace Cool {
  * 
  * @tparam ParameterValues All fields of this struct must be a Parameter of any type (Parameter::Float, Parameter::Color etc.)
  */
+template <typename ParameterValues>
 class ParameterGroup {
 public:
 	ParameterGroup(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
-		: _presets(file_extension, folder_path), _on_value_change(on_value_change)
+		: _presets(file_extension, folder_path)
+		, _on_value_change(on_value_change)
 	{}
-	bool ImGui() {
+
+	bool imgui() {
 		const auto uuid = _presets.last_uuid();
 		const Action action = {
 			[&]() {
@@ -29,22 +32,23 @@ public:
 			},
 		};
 		bool b = false;
-		if (_values.ImGui(action, _on_value_change)) {
+		if (_values.imgui(action, _on_value_change)) {
 			_presets.set_to_placeholder_setting();
 			b = true;
 		}
 		ImGui::Separator();
-		if (b |= _presets.ImGui(&_values, _on_value_change))
+		if (b |= _presets.imgui(&_values, _on_value_change)) {
 			_on_value_change();
+		}
 		return b;
 	}
-	inline const ParamValues& operator* () const { return  _values; }
-	inline const ParamValues* const operator->() const { return &_values; }
+	inline const ParameterValues& operator* () const { return  _values; }
+	inline const ParameterValues* const operator->() const { return &_values; }
 
 private:
-	ParamValues _values;
-	Presets<ParamValues> _presets;
-	std::function<void()> _on_value_change;
+	ParameterValues          _values;
+	Presets<ParameterValues> _presets;
+	std::function<void()>    _on_value_change;
 
 private:
 	//Serialization
