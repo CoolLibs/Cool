@@ -17,9 +17,19 @@ public:
        */
       void imgui(std::function<void()> on_value_change = [](){});
 
+      /**
+       * @brief Sets all the uniforms for all the parameters
+       * 
+       * @param shader 
+       */
       void set_uniforms_in_shader(Shader& shader);
 
-      size_t find(std::string_view parameter_name);
+      /**
+       * @brief Tries to find the parameter in the list
+       * 
+       * @param parameter_name The name of the parameter to look for
+       * @return The index of the parameter in the list, or -1 if it was not found 
+       */
       size_t index_of(std::string_view parameter_name);
 
       inline std::vector<AnyParameter>& operator* () { return _parameters; }

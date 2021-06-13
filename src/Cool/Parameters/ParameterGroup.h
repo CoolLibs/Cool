@@ -6,7 +6,11 @@
 
 namespace Cool {
 
-template <typename ParamValues>
+/**
+ * @brief Wraps a struct made of Parameter::xxx and handles presets for that struct
+ * 
+ * @tparam ParameterValues All fields of this struct must be a Parameter of any type (Parameter::Float, Parameter::Color etc.)
+ */
 class ParameterGroup {
 public:
 	ParameterGroup(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
