@@ -44,9 +44,8 @@ public:
 			},
 		};
 		bool b = false;
-		if (_values.imgui(action, _on_value_change)) {
+		if (b |= _values.imgui(action, _on_value_change)) {
 			_presets.set_to_placeholder_setting();
-			b = true;
 		}
 		ImGui::Separator();
 		if (b |= _presets.imgui(&_values, _on_value_change)) {
