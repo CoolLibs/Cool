@@ -50,7 +50,7 @@ struct Preset {
 template <typename T>
 class Presets {
 	template <typename T>
-	friend class ParameterGroup;
+	friend class ParametersWithPresets;
 public:
 	Presets(const std::string& file_extension, const std::string& folder_path)
 		: _file_extension(file_extension + std::string("."))

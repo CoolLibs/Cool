@@ -12,7 +12,7 @@ namespace Cool {
  * @tparam ParameterValues This struct must implement a "bool imgui(Action on_edit_ended, std::function<void()> on_value_change)" method as well as the cereal serialization
  */
 template <typename ParameterValues>
-class ParameterGroup {
+class ParametersWithPresets {
 public:
 	/**
 	 * @brief 
@@ -21,7 +21,7 @@ public:
 	 * @param folder_path The folder where the presets will be stored
 	 * @param on_value_change A callback that will be trigerred whenever a value changes
 	 */
-	ParameterGroup(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
+	ParametersWithPresets(const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
 		: _presets(file_extension, folder_path)
 		, _on_value_change(on_value_change)
 	{}
