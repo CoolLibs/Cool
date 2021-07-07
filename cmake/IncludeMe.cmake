@@ -25,6 +25,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <unordered_map>
     <deque>
     <thread>
+    <utility>
     
     <imgui/imgui.h>
     <imgui/misc/cpp/imgui_stdlib.h>

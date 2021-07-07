@@ -1,0 +1,78 @@
+#pragma once
+
+/**
+ * @brief Based on https://youtu.be/ejF6qqohp3M?t=2896
+ * 
+ * 
+ */
+
+namespace Cool {
+
+// template<typename T>
+using T = int;
+class Registry {
+public:
+      struct Id {
+            size_t id;
+            Id() = default;
+      private:
+      friend class Registry;
+            explicit Id(size_t id)
+                  : id(id)
+            {}
+      };
+
+      [[nodiscard]] auto emplace(T&& value) -> Id {
+            list_.emplace_back(id_for_next_value_, std::move(value));
+            ++nb_non_empty_slots_;
+            return Id{id_for_next_value_.id++};
+      }
+
+      [[nodiscard]] auto size() -> size_t {
+            return nb_non_empty_slots_;
+      }
+
+      T* get(Id id) {
+            auto p = std::lower_bound(list_.begin(), list_.end(), id,
+                  [](const auto& a, const auto& b) { return a.first.id < b.id; }
+            );
+            if (p == list_.end() || p->first.id != id.id || !p->second) {
+                  return nullptr;
+            }
+            else {
+                  return &p->second.value();
+            }
+      }
+
+      void remove(Id id) {
+            auto p = std::lower_bound(list_.begin(), list_.end(), id,
+                  [](const auto& a, const auto& b) { return a.first.id < b.id; }
+            );
+            if (p == list_.end() || p->first.id != id.id || !p->second) return;
+
+            p->second.reset();
+            --nb_non_empty_slots_;
+
+            if (nb_non_empty_slots_ < list_.size() / 2) {
+                  list_.erase(
+                        std::remove_if(list_.begin(), list_.end(), [](const auto& e) { return !e.second; }),
+                        list_.end()
+                  );
+            }
+      }
+
+private:
+      std::vector<std::pair<Id, std::optional<T>>> list_;
+      size_t nb_non_empty_slots_ = 0;
+      Id id_for_next_value_{0};
+};
+
+} // namespace Cool
+
+#include <doctest/doctest.h>
+TEST_CASE("My first test") {
+      Cool::Registry reg;
+      auto id = reg.emplace(10);
+      auto id2 = reg.emplace(10);
+      CHECK(reg.size() == 2);
+}
