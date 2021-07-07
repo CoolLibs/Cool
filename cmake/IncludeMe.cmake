@@ -10,6 +10,7 @@ include_directories(
     Cool/lib/nfd/src/include
     Cool/lib/cereal/include
     Cool/lib/spdlog/include
+    Cool/lib/doctest
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
@@ -102,6 +103,10 @@ add_library(STB_IMAGE_WRITE STATIC "Cool/lib/stb_image/stb_image_write.cpp")
 target_link_libraries(${PROJECT_NAME}
     STB_IMAGE_WRITE
 )
+
+# doctest
+# Strip tests from release builds
+add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>)
 
 # Add libraries to the project
 target_link_libraries(${PROJECT_NAME}
