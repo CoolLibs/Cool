@@ -70,9 +70,20 @@ private:
 } // namespace Cool
 
 #include <doctest/doctest.h>
-TEST_CASE("My first test") {
-      Cool::Registry reg;
-      auto id = reg.emplace(10);
-      auto id2 = reg.emplace(10);
-      CHECK(reg.size() == 2);
+TEST_CASE("Registry") {
+      Cool::Registry registry;
+	CHECK(registry.size() == 0);
+	auto id1 = registry.emplace(1);
+	CHECK(registry.size() == 1);
+	auto id2 = registry.emplace(2);
+	CHECK(registry.size() == 2);
+	// _registry.remove(0);
+	// _registry.remove(Registry::Id{0});
+	registry.remove(id1);
+	CHECK(registry.size() == 1);
+	auto* p1 = registry.get(id1);
+      CHECK(p1 == nullptr);
+	auto* p2 = registry.get(id2);
+      CHECK(p2 != nullptr);
+      CHECK(*p2 == 2);
 }
