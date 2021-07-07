@@ -5,13 +5,13 @@
 namespace Cool {
 
 GLFWwindow* Input::s_mainWindow;
-#ifndef NDEBUG
+#ifdef DEBUG
 bool Input::s_initialized = false;
 #endif
 
 void Input::Initialize(GLFWwindow* mainWindow) {
 	s_mainWindow = mainWindow;
-#ifndef NDEBUG
+#ifdef DEBUG
 	if (s_initialized)
 		Log::warn("[Input::Initialize] You are calling Initialize() twice.");
 	s_initialized = true;

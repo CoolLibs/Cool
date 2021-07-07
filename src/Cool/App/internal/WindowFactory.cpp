@@ -14,7 +14,7 @@
 
 namespace Cool {
 
-#ifndef NDEBUG
+#ifdef DEBUG
 bool WindowFactory::s_bInitialized = false;
 #endif
 
@@ -58,7 +58,7 @@ static void SetupVulkanWindow(const VulkanContext& vulkan_context, VulkanWindowS
 WindowFactory::WindowFactory(int openGLMajorVersion, int openGLMinorVersion)
 	: m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
 {
-#ifndef NDEBUG
+#ifdef DEBUG
 	assert(openGLMajorVersion >= 3);
 	assert(openGLMinorVersion >= 3);
 	if (s_bInitialized)
@@ -151,7 +151,7 @@ Window& WindowFactory::create(const char* name, int width, int height, GLFWwindo
 	// Window flags
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
-#ifndef NDEBUG
+#ifdef DEBUG
 	if (m_openGLVersion >= 430)
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
@@ -181,7 +181,7 @@ Window& WindowFactory::create(const char* name, int width, int height, GLFWwindo
 }
 
 void WindowFactory::setupGLDebugging() {
-#ifndef NDEBUG
+#ifdef DEBUG
 	if (m_openGLVersion >= 430) {
 		int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {

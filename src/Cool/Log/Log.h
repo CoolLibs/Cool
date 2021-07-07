@@ -19,7 +19,7 @@ namespace Cool::Log {
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> inline void info(Args&& ...args) {
-#ifndef NDEBUG
+#ifdef DEBUG
 		spdlog::info(std::forward<Args>(args)...);
 #endif
 	}
@@ -31,7 +31,7 @@ namespace Cool::Log {
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> inline void warn(Args&& ...args) {
-#ifndef NDEBUG
+#ifdef DEBUG
 		spdlog::warn(std::forward<Args>(args)...);
 #endif
 	}
@@ -43,7 +43,7 @@ namespace Cool::Log {
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> inline void error(Args&& ...args) {
-#ifndef NDEBUG
+#ifdef DEBUG
 		spdlog::error(std::forward<Args>(args)...);
 		assert(false);
 #endif
@@ -56,7 +56,7 @@ namespace Cool::Log {
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> inline void error_without_breakpoint(Args&& ...args) {
-#ifndef NDEBUG
+#ifdef DEBUG
 		spdlog::error(std::forward<Args>(args)...);
 #endif
 	}

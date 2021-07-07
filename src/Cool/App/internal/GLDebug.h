@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef __COOL_APP_OPENGL
-#ifndef NDEBUG
+#ifdef DEBUG
 
 namespace Cool {
     /// Wrap all you OpenGL calls in this macro : it will add debug checks. Something like : GLDebug(GLuint programID = glCreateProgram())

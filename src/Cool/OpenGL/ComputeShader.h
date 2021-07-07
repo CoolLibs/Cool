@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-#ifndef NDEBUG
+#ifdef DEBUG
 #define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == _shader._program_id && "You must call compute_shader->bind() before calling compute()");
 #else 
 #define ASSERT_SHADER_IS_BOUND

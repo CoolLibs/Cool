@@ -6,7 +6,7 @@
 namespace Cool {
 
 //#define IMGUI_UNLIMITED_FRAME_RATE
-#ifndef NDEBUG
+#ifdef DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
 

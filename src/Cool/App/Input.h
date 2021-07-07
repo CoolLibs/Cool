@@ -47,7 +47,7 @@ friend class AppManager;
 
 private:
 	static GLFWwindow* s_mainWindow;
-#ifndef NDEBUG
+#ifdef DEBUG
 	static bool s_initialized;
 #endif
 };

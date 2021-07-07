@@ -19,7 +19,7 @@ void FrameBuffer::setSize(const glm::ivec2& size) {
 	destroyAttachments();
 	createAttachments(size.x, size.y);
 	attachAttachments();
-#ifndef NDEBUG
+#ifdef DEBUG
 	bind();
 	GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	if (status != GL_FRAMEBUFFER_COMPLETE) {

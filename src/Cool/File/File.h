@@ -102,7 +102,7 @@ public:
 
 private:
       static std::string _root_dir;
-#ifndef NDEBUG
+#ifdef DEBUG
       static bool _root_dir_is_initialized;
 #endif
 };

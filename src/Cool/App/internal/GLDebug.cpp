@@ -1,5 +1,5 @@
 #ifdef __COOL_APP_OPENGL
-#ifndef NDEBUG
+#ifdef DEBUG
 
 #include "GLDebug.h"
 

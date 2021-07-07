@@ -7,7 +7,7 @@
 namespace Cool {
 
 std::string File::_root_dir;
-#ifndef NDEBUG
+#ifdef DEBUG
 bool File::_root_dir_is_initialized = false;
 #endif
 
@@ -91,7 +91,7 @@ bool File::create_folders_for_file_if_they_dont_exist(std::string_view file_path
 }
 
 void File::initialize_root_dir(std::string_view path) {
-#ifndef NDEBUG
+#ifdef DEBUG
     assert(!_root_dir_is_initialized);
     _root_dir_is_initialized = true;
 #endif
@@ -100,7 +100,7 @@ void File::initialize_root_dir(std::string_view path) {
 }
 
 const std::string& File::root_dir() {
-#ifndef NDEBUG
+#ifdef DEBUG
     assert(_root_dir_is_initialized);
 #endif
     return _root_dir;

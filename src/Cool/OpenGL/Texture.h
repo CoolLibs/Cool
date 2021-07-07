@@ -108,7 +108,7 @@ public:
 
 private:
 	GLuint m_textureID = -1;
-#ifndef NDEBUG
+#ifdef DEBUG
 	bool m_bDataUploaded = false;
 #endif
 };

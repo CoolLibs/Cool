@@ -52,7 +52,7 @@ private:
 	int m_openGLMajorVersion;
 	int m_openGLMinorVersion;
 	int m_openGLVersion;
-#ifndef NDEBUG
+#ifdef DEBUG
 	static bool s_bInitialized;
 #endif
 	std::list<Window> _windows;

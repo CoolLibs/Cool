@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-#ifndef NDEBUG
+#ifdef DEBUG
 #define ASSERT_SHADER_IS_BOUND GLint id; glGetIntegerv(GL_CURRENT_PROGRAM, &id); assert(id == _program_id && "The shader must be bound before setting any uniform");
 #else 
 #define ASSERT_SHADER_IS_BOUND
@@ -99,7 +99,7 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code) {
 	GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
 	GLDebug(glCompileShader(shader_id));
 	// Debug
-#ifndef NDEBUG
+#ifdef DEBUG
 	int result;
 	GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE) {
