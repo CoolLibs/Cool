@@ -1,4 +1,7 @@
 
+# define DEBUG in debug mode
+add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
+
 include_directories(
     Cool/src
     Cool/lib
