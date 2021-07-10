@@ -15,6 +15,7 @@ public:
 	glm::vec3 position() const;
 
 	inline void set_transform_matrix (const glm::mat4& new_transform_matrix)  { _transform_matrix  = new_transform_matrix;	}
+	inline void set_view_matrix (const glm::mat4& view_matrix)  { _transform_matrix  = glm::inverse(view_matrix); }
 	inline void set_projection_matrix(const glm::mat4& new_projection_matrix) { _projection_matrix = new_projection_matrix;	}
 	
 	/**
