@@ -9,6 +9,7 @@ class Camera;
 class ViewController_Trackball {
 public:
 	void look_at_the_origin(Camera& camera);
+	inline void set_state(TrackballState state) { _state = state; }
 
 	inline void on_mouse_move  (Camera& camera, glm::vec2 const& delta) { std::visit([&](auto&& state) { state.on_mouse_move  (*this, camera, delta); }, _state); }
 	inline void on_wheel_down  (Camera& camera, int mods)               { std::visit([&](auto&& state) { state.on_wheel_down  (*this, camera, mods);  }, _state); }
@@ -20,7 +21,6 @@ private:
 	friend class TrackballState_Rotation;
 	friend class TrackballState_Translation;
 
-	inline void set_state(TrackballState const& state) { _state = state; }
 	glm::vec3 get_look_at(Camera const& camera) const;
 
 private:
