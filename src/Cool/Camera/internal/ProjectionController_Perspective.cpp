@@ -5,14 +5,20 @@
 namespace Cool {
 
 void ProjectionController_Perspective::apply_to(Camera& camera) const {
-	const float fov = 2.f * atan(1.f / _focal_length); // in radians
 	camera.set_projection_matrix(
 		glm::infinitePerspective(
-			glm::degrees(fov),
+			glm::degrees(_field_of_view_in_radians),
 			RenderState::Size().aspectRatio(),
 			_near_plane
 		)
 	);
+}
+
+bool ProjectionController_Perspective::ImGui() {
+	bool b = false;
+	b |= ImGui::SliderAngle("Field of View", &_field_of_view_in_radians, 0.001f, 180.f);
+	b |= ImGui::SliderFloat("Near Plane", &_near_plane, 0.001f, 1.f);
+	return b;
 }
 
 } // namespace Cool
