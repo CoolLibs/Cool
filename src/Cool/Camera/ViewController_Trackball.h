@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/TrackballState.h"
+#include "internal/Trackball/TrackballState.h"
 
 namespace Cool {
 

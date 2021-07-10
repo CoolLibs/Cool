@@ -1,8 +1,8 @@
 #include "TrackballState_Rotation.h"
 #include "TrackballState_Idle.h"
 
-#include "../ViewController_Trackball.h"
-#include "../Camera.h"
+#include "../../ViewController_Trackball.h"
+#include "../../Camera.h"
 #include <Cool/App/Input.h>
 
 namespace Cool {
