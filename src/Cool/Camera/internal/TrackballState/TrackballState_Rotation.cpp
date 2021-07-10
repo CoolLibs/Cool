@@ -3,7 +3,6 @@
 
 #include "../../ViewController_Trackball.h"
 #include "../../Camera.h"
-#include <Cool/App/Input.h>
 #include <Cool/Constants/Constants.h>
 
 namespace Cool {
