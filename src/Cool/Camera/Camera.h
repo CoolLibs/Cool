@@ -33,6 +33,7 @@ public:
 	 * @param axis 
 	 */
 	void rotate_around(glm::vec3 const& center, float angle, glm::vec3 const& axis);
+	void rotate(float angle, glm::vec3 const& axis);
 
 	/**
 	 * @brief Returns a Ray passing through the given pixel and starting at the camera position. Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : ray_passing_through_pixel(Input::mouse_in_pixels())

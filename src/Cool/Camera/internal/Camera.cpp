@@ -15,8 +15,12 @@ void Camera::translate(glm::vec3 const& delta_position) {
 
 void Camera::rotate_around(glm::vec3 const& center, float angle, glm::vec3 const& axis) {
 	translate(-center);
-	_transform_matrix = glm::rotate(glm::mat4{1.f}, angle, axis) * _transform_matrix;
+	rotate(angle, axis);
 	translate(+center);
+}
+
+void Camera::rotate(float angle, glm::vec3 const& axis) {
+	_transform_matrix = glm::rotate(glm::mat4{1.f}, angle, axis) * _transform_matrix;
 }
 
 Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels) {
