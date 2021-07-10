@@ -9,8 +9,8 @@ namespace Cool {
 
 void TrackballState_Translation::on_mouse_move(ViewController_Trackball& controller, Camera& camera, glm::vec2 const& delta) {
 	camera.translate(controller._translation_speed * (
-		delta.x * camera.right_axis() +
-		delta.y * camera.up_axis()
+		- delta.x * camera.right_axis() +
+		+ delta.y * camera.up_axis()
 	));
 }
 
