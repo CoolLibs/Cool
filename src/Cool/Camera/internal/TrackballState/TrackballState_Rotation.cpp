@@ -9,18 +9,10 @@ namespace Cool {
 
 void TrackballState_Rotation::on_mouse_move(ViewController_Trackball& controller, Camera& camera, glm::vec2 const& delta) {
 	const auto look_at = controller.get_look_at(camera);
-	// camera.translate(-get_look_at);
-	camera.rotate_around(
-		look_at,
-		controller._rotation_speed * delta.x,
-		{0.f, 1.f, 0.f}
-	);
-	camera.rotate_around(
-		look_at,
-		controller._rotation_speed * delta.y,
-		camera.right_axis()
-	);
-	// camera.translate(+get_look_at);
+	camera.translate(-look_at);
+	camera.rotate(controller._rotation_speed * delta.x, {0.f, 1.f, 0.f});
+	camera.rotate(controller._rotation_speed * delta.y, camera.right_axis());
+	camera.translate(+look_at);
 }
 
 void TrackballState_Rotation::on_wheel_up(ViewController_Trackball& controller, Camera& camera) {
