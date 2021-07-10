@@ -1,22 +1,13 @@
-#pragma once
+#include "TrackballState_Idle.h"
+#include "TrackballState_Rotation.h"
+#include "TrackballState_Translation.h"
 
 namespace Cool {
 
-class ViewController_Trackball;
-
-class TrackballState {
-public:
-	TrackballState(ViewController_Trackball& controller)
-		: _controller(controller)
-	{}
-
-	virtual void update() {};
-	virtual void on_wheel_down(int mods) {};
-	virtual void on_wheel_up() {};
-	virtual void on_wheel_scroll(float dl) {};
-
-protected:
-	ViewController_Trackball& _controller;
-};
+using TrackballState = std::variant<
+      TrackballState_Idle,
+      TrackballState_Rotation,
+      TrackballState_Translation
+>;
 
 } // namespace Cool

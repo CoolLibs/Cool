@@ -1,15 +1,13 @@
 #pragma once
 
-#include "TrackballState.h"
+#include "ITrackballState.h"
 
 namespace Cool {
 
-class TrackballState_Idle : public TrackballState {
+class TrackballState_Idle : public ITrackballState {
 public:
-	TrackballState_Idle(ViewController_Trackball& controller);
-
-	void on_wheel_down(int mods) override;
-	void on_wheel_scroll(float dl) override;
+	void on_wheel_down  (ViewController_Trackball& controller, int mods) override;
+	void on_wheel_scroll(ViewController_Trackball& controller, float dl) override;
 };
 
 } // namespace Cool

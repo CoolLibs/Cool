@@ -1,15 +1,14 @@
 #pragma once
 
-#include "TrackballState.h"
+#include "ITrackballState.h"
 
 namespace Cool {
 
-class TrackballState_Translation : public TrackballState {
+class TrackballState_Translation : public ITrackballState {
 public:
-	TrackballState_Translation(ViewController_Trackball& controller);
-
-	void update() override;
-	void on_wheel_up() override;
+	TrackballState_Translation(const ViewController_Trackball& controller);
+	void update               (      ViewController_Trackball& controller) override;
+	void on_wheel_up          (      ViewController_Trackball& controller) override;
 
 private:
 	glm::vec3 _initial_look_at;

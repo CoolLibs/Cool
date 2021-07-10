@@ -1,15 +1,14 @@
 #pragma once
 
-#include "TrackballState.h"
+#include "ITrackballState.h"
 
 namespace Cool {
 
-class TrackballState_Rotation : public TrackballState {
+class TrackballState_Rotation : public ITrackballState {
 public:
-	TrackballState_Rotation(ViewController_Trackball& controller);
-
-	void update() override;
-	void on_wheel_up() override;
+	TrackballState_Rotation(const ViewController_Trackball& controller);
+	void update            (      ViewController_Trackball& controller) override;
+	void on_wheel_up       (      ViewController_Trackball& controller) override;
 
 private:
 	float _initial_angle_ground;

@@ -8,9 +8,8 @@
 namespace Cool {
 
 ViewController_Trackball::ViewController_Trackball(Camera& camera)
-	: _camera(camera)
+	: _camera(camera), _state(TrackballState_Idle{})
 {
-	set_state<TrackballState_Idle>();
 	update_transform_matrix();
 }
 

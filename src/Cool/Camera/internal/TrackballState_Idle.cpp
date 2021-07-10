@@ -8,22 +8,18 @@
 
 namespace Cool {
 
-TrackballState_Idle::TrackballState_Idle(ViewController_Trackball& controller)
-	: TrackballState(controller)
-{}
-
-void TrackballState_Idle::on_wheel_down(int mods) {
+void TrackballState_Idle::on_wheel_down(ViewController_Trackball& controller, int mods) {
 	if (mods & GLFW_MOD_SHIFT){
-		_controller.set_state<TrackballState_Translation>();
+		controller.set_state(TrackballState_Translation{controller});
 	}
 	else {
-		_controller.set_state<TrackballState_Rotation>();
+		controller.set_state(TrackballState_Rotation{controller});
 	}
 }
 
-void TrackballState_Idle::on_wheel_scroll(float dl){
-	_controller._dist_to_look_at *= pow(0.93f, dl);
-	_controller.update_transform_matrix();
+void TrackballState_Idle::on_wheel_scroll(ViewController_Trackball& controller, float dl){
+	controller._dist_to_look_at *= pow(0.93f, dl);
+	controller.update_transform_matrix();
 }
 
 } // namespace Cool
