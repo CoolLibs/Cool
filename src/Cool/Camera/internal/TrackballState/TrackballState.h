@@ -10,4 +10,9 @@ using TrackballState = std::variant<
       TrackballState_Translation
 >;
 
+// TEST : Every TrackballState implements the ITrackballState interface
+static_assert(std::is_base_of_v<ITrackballState, TrackballState_Idle>);
+static_assert(std::is_base_of_v<ITrackballState, TrackballState_Rotation>);
+static_assert(std::is_base_of_v<ITrackballState, TrackballState_Translation>);
+
 } // namespace Cool
