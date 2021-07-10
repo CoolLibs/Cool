@@ -7,7 +7,7 @@ namespace Cool {
 glm::vec3 Camera::right_axis() const { return  glm::normalize(glm::column(_transform_matrix, 0)); }
 glm::vec3 Camera::up_axis()    const { return  glm::normalize(glm::column(_transform_matrix, 1)); }
 glm::vec3 Camera::front_axis() const { return -glm::normalize(glm::column(_transform_matrix, 2)); }
-glm::vec3 Camera::position()   const { return                glm::column(_transform_matrix, 3); }
+glm::vec3 Camera::position()   const { return                 glm::column(_transform_matrix, 3) ; }
 
 void Camera::translate(glm::vec3 const& delta_position) {
 	_transform_matrix = glm::translate(glm::mat4{1.f}, delta_position) * _transform_matrix;
