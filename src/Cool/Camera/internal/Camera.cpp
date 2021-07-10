@@ -1,8 +1,17 @@
 #include "../Camera.h"
 #include <Cool/App/RenderState.h>
 #include <glm/gtc/matrix_access.hpp>
+#include <Cool/Constants/Constants.h>
 
 namespace Cool {
+
+Camera::Camera(glm::vec3 const& position, glm::vec3 const& look_at)
+	: _transform_matrix{glm::inverse(glm::lookAt(
+		position,
+		look_at,
+		Constants::world_up
+	))}
+{}
 
 glm::vec3 Camera::right_axis() const { return  glm::normalize(glm::column(_transform_matrix, 0)); }
 glm::vec3 Camera::up_axis()    const { return  glm::normalize(glm::column(_transform_matrix, 1)); }
