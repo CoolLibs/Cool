@@ -11,6 +11,7 @@ public:
 
 private:
 	float _focal_length = 1.f;
+	float _near_plane   = 0.1f;
 };
 
 } // namespace Cool
