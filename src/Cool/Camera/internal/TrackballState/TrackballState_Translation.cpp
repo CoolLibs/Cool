@@ -7,21 +7,14 @@
 
 namespace Cool {
 
-TrackballState_Translation::TrackballState_Translation(const ViewController_Trackball& controller)
-	: _initial_look_at(controller._look_at)
-	, _initial_mouse_pos_sc(Input::MouseInScreenCoordinates())
-{}
-
-void TrackballState_Translation::update(ViewController_Trackball& controller) {
-	glm::vec2 delta = (_initial_mouse_pos_sc - Input::MouseInScreenCoordinates()) * 0.01f;
-	controller._look_at =
-		_initial_look_at
-		+ controller._camera.right_axis() * delta.x
-		- controller._camera.up_axis()    * delta.y;
-	controller.update_transform_matrix();
+void TrackballState_Translation::on_mouse_move(ViewController_Trackball& controller, Camera& camera, glm::vec2 const& delta) {
+	camera.translate(controller._translation_speed * (
+		delta.x * camera.right_axis() +
+		delta.y * camera.up_axis()
+	));
 }
 
-void TrackballState_Translation::on_wheel_up(ViewController_Trackball& controller) {
+void TrackballState_Translation::on_wheel_up(ViewController_Trackball& controller, Camera& camera) {
 	controller.set_state(TrackballState_Idle{});
 }
 

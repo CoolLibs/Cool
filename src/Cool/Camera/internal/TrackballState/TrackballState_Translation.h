@@ -6,14 +6,8 @@ namespace Cool {
 
 class TrackballState_Translation : public ITrackballState {
 public:
-	TrackballState_Translation(const ViewController_Trackball& controller);
-	void update               (      ViewController_Trackball& controller) override;
-	void on_wheel_up          (      ViewController_Trackball& controller) override;
-
-private:
-	glm::vec3 _initial_look_at;
-	// _sc means that it is in screen coordinates
-	glm::vec2 _initial_mouse_pos_sc;
+	void on_mouse_move(ViewController_Trackball& controller, Camera& camera, glm::vec2 const& delta) override;
+	void on_wheel_up  (ViewController_Trackball& controller, Camera& camera)                         override;
 };
 
 } // namespace Cool

@@ -6,8 +6,8 @@ namespace Cool {
 
 class TrackballState_Idle : public ITrackballState {
 public:
-	void on_wheel_down  (ViewController_Trackball& controller, int mods) override;
-	void on_wheel_scroll(ViewController_Trackball& controller, float dl) override;
+	void on_wheel_down  (ViewController_Trackball& controller, Camera& camera, int mods) override;
+	void on_wheel_scroll(ViewController_Trackball& controller, Camera& camera, float dl) override;
 };
 
 } // namespace Cool
