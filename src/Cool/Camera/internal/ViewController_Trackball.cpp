@@ -1,6 +1,6 @@
-#include "../../Camera.h"
-#include "../../ViewController_Trackball.h"
-#include "TrackballState_Idle.h"
+#include "../Camera.h"
+#include "../ViewController_Trackball.h"
+#include "TrackballState/TrackballState_Idle.h"
 
 #include <Cool/Utils/sign.h>
 #include <glm/gtc/matrix_transform.hpp>
