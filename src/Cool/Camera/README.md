@@ -2,6 +2,26 @@
 
 ## The camera, the controllers and the manager
 
+## The controllers
+
+### Orbital
+
+This is a family of controllers who orbit around a given center (which can be translated).
+
+#### Trackball
+
+This is the simplest model that you will see in many tutorials ; it rotates around the world's up axis, and the camera's right axis.
+
+#### Turntable
+
+It is a simple twist on the trackball concept : if your head is upside down then the rotation around the up axis is inverted so that it feels more natural. I took this idea from Blender, where turntable is the default camera controller. *(A small difference to note : in Blender the test of "upsidedown-ness" is done once when you start dragging with the mouse, whereas we update this check every frame while you are dragging. I am note sure which one I prefer and would happily take any feedback on that.)*
+
+#### AxisFree
+
+When working on scenes that don't have a clear up axis (like a sphere) then trackball and turntable don't really make sense and can feel constraining. This is why we introduce *AxisFree* whose rotation only depends on the current orientation of the camera and not on an absolute up axis (we use the camera's up axis instead of the world's one).
+
+### Freefly
+
 ## JIT Dependencies
 
 ## Stateless view controllers
