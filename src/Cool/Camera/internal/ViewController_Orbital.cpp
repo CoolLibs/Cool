@@ -38,12 +38,12 @@ bool ViewController_Orbital::ImGui() {
 	return b;
 }
 
-void ViewController_Orbital::look_at_the_origin(Camera& camera) {
-	camera.translate(-get_look_at(camera));
+void ViewController_Orbital::set_orbit_center_to_the_origin(Camera& camera) {
+	camera.translate(-get_orbit_center(camera));
 }
 
-glm::vec3 ViewController_Orbital::get_look_at(Camera const& camera) const {
-	return camera.position() + _dist_to_look_at * camera.front_axis();
+glm::vec3 ViewController_Orbital::get_orbit_center(Camera const& camera) const {
+	return camera.position() + _distance_to_orbit_center * camera.front_axis();
 }
 
 } // namespace Cool

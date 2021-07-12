@@ -9,7 +9,7 @@
 namespace Cool {
 
 void OrbitalState_Rotation::on_mouse_move(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta) {
-	const auto look_at = controller.get_look_at(camera);
+	const auto orbit_center = controller.get_orbit_center(camera);
 	const auto up_axis = [&]() {
 		switch (controller._mode) {
 		case ViewController_Orbital::Mode::Trackball:
@@ -25,10 +25,10 @@ void OrbitalState_Rotation::on_mouse_move(ViewController_Orbital& controller, Ca
 			return glm::vec3{0};
 		}
 	}();
-	camera.translate(-look_at);
+	camera.translate(-orbit_center);
 	camera.rotate(- controller._rotation_speed * delta.x, up_axis);
 	camera.rotate(- controller._rotation_speed * delta.y, camera.right_axis());
-	camera.translate(+look_at);
+	camera.translate(+orbit_center);
 }
 
 void OrbitalState_Rotation::on_wheel_up(ViewController_Orbital& controller, Camera& camera) {
