@@ -40,3 +40,29 @@ Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels) {
 }
 
 } // namespace Cool
+
+TEST_CASE("Translating the camera only affects its position") {
+	// Given
+	Cool::Camera camera;
+	const auto position   = camera.position();
+	const auto right_axis = camera.right_axis();
+	const auto front_axis = camera.front_axis();
+	const auto up_axis    = camera.up_axis();
+	// When
+	const auto translation = glm::vec3{10.3f, -5.1f, 8.f};
+	camera.translate(translation);
+	// Then
+	CHECK(camera.position()   == position + translation);
+	CHECK(camera.right_axis() == right_axis);
+	CHECK(camera.front_axis() == front_axis);
+	CHECK(camera.up_axis()    == up_axis   );
+}
+
+TEST_CASE("Camera look_at constructor") {
+	// const auto position = glm::vec3{10.3f, -5.1f, 8.f};
+	// Cool::Camera camera{position};
+	// for (const auto x : position) {
+	// 	INFO(position);
+	// }
+	// CHECK(camera.position() == position);
+}
