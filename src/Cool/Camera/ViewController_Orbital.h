@@ -8,6 +8,17 @@ class Camera;
 
 class ViewController_Orbital {
 public:
+	enum class Mode {
+		Trackball,
+		Turntable,
+		AxisFree
+	};
+
+public:
+	ViewController_Orbital(ViewController_Orbital::Mode mode = ViewController_Orbital::Mode::Turntable);
+
+	bool ImGui();
+
 	void look_at_the_origin(Camera& camera);
 	inline void set_distance_to_look_at(float distance) { _dist_to_look_at = distance; }
 	inline void set_state(OrbitalState state) { _state = state; }
@@ -25,6 +36,7 @@ private:
 	glm::vec3 get_look_at(Camera const& camera) const;
 
 private:
+	ViewController_Orbital::Mode _mode;
 	float _translation_speed = 0.01f;
 	float _rotation_speed    = 0.01f;
 	float _dist_to_look_at   = 5.f;
