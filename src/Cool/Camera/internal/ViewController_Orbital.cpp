@@ -38,8 +38,8 @@ bool ViewController_Orbital::ImGui() {
 	return b;
 }
 
-void ViewController_Orbital::set_orbit_center_to_the_origin(Camera& camera) {
-	camera.translate(-get_orbit_center(camera));
+void ViewController_Orbital::set_orbit_center(glm::vec3 const& orbit_center, Camera& camera) {
+	camera.translate(orbit_center - get_orbit_center(camera));
 }
 
 glm::vec3 ViewController_Orbital::get_orbit_center(Camera const& camera) const {

@@ -19,7 +19,7 @@ public:
 
 	bool ImGui();
 
-	void set_orbit_center_to_the_origin(Camera& camera);
+	void set_orbit_center(glm::vec3 const& orbit_center, Camera& camera);
 	inline void set_distance_to_orbit_center(float distance) { _distance_to_orbit_center = distance; }
 	inline void set_state(OrbitalState state) { _state = state; }
 
@@ -39,7 +39,7 @@ private:
 	ViewController_Orbital::Mode _mode;
 	float _translation_speed = 0.01f;
 	float _rotation_speed    = 0.01f;
-	float _distance_to_orbit_center   = 5.f;
+	float _distance_to_orbit_center = 5.f;
 	OrbitalState _state = OrbitalState_Idle{};
 };
 
