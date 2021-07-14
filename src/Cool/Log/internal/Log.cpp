@@ -1,4 +1,5 @@
 #include "../Log.h"
+#include <iomanip>
 
 #include <Cool/String/String.h>
 
@@ -37,7 +38,12 @@ void ToUser::imgui_console_window() {
 					return ImVec4{0,0,0,0};
 				}
 			}();
-			ImGui::TextColored(color, "[%s] %s",message.category.c_str(), message.body.c_str());
+			// Get minutes and seconds
+			const std::time_t time = std::chrono::system_clock::to_time_t(message.timestamp);
+			std::stringstream min_sec;
+			min_sec <<  std::put_time(std::localtime(&time), "%M'%S\"");
+			//
+			ImGui::TextColored(color, "[%s] [%s] %s", min_sec.str().c_str(), message.category.c_str(), message.body.c_str());
 		}
 		if (_scroll_to_bottom) {
 			ImGui::SetScrollHereY(1.f);
