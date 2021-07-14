@@ -76,7 +76,7 @@ public:
 	 */
 	template<typename ...Args> static inline void info(std::string_view category, Args&& ...args) {
 		PushMessage({
-			Message::Type::Info,
+			Message::Severity::Info,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});
@@ -90,7 +90,7 @@ public:
 	 */
 	template<typename ...Args> static inline void warn(std::string_view category, Args&& ...args) {
 		PushMessage({
-			Message::Type::Warn,
+			Message::Severity::Warn,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});
@@ -104,7 +104,7 @@ public:
 	 */
 	template<typename ...Args> static inline void error(std::string_view category, Args&& ...args) {
 		PushMessage({
-			Message::Type::Error,
+			Message::Severity::Error,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});

@@ -1,13 +1,17 @@
 #pragma once
 
+namespace Cool {
+
 struct Message {
-    enum class Type {
+    enum class Severity {
         Info,
         Warn, 
         Error
     };
     
-    Type type;
+    Severity severity;
     std::string category;
 	std::string body;
 };
+
+}

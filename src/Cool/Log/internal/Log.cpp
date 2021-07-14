@@ -20,12 +20,12 @@ void ToUser::imgui_console_window() {
 		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
 		for ( auto message : _messages) {
 			const ImVec4 color = [&]() {
-				switch(message.type){
-				case Message::Type::Info :
+				switch(message.severity){
+				case Message::Severity::Info :
 					return ImVec4{1,1,1,1};
-				case Message::Type::Warn :
+				case Message::Severity::Warn :
 					return ImVec4{1,1,0,1};
-				case Message::Type::Error :
+				case Message::Severity::Error :
 					return ImVec4{1,0,0,1};
 				default:
 					Log::error("[ToUser::imgui_console_window] Unknown enum value");
