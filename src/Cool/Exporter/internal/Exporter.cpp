@@ -61,7 +61,7 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
 		ExportImage::as_png(file_path, size.width(), size.height(), data.data());
 	}
 	else {
-		Log::ToUser::warn("[Exporter::export_image] Failed to create folder \"{}\"", _folder_path_for_image);
+		Log::ToUser::warn("Exporter::export_image","Failed to create folder \"{}\"", _folder_path_for_image);
 	}
 	//
 	RenderState::setIsExporting(false);
@@ -190,7 +190,7 @@ void Exporter::begin_image_sequence_export() {
 		_frame_time_average.clear();
 	}
 	else {
-		Log::ToUser::warn("[Exporter::begin_image_sequence_export] Couldn't start exporting because folder creation failed !");
+		Log::ToUser::warn("Exporter::begin_image_sequence_export","Couldn't start exporting because folder creation failed !");
 	}
 }
 

@@ -59,7 +59,7 @@ void File::to_string(std::string_view file_path, std::string* dst) {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(file_path);
     if (!stream.is_open()) {
-        Log::ToUser::warn("[File::to_string] Failed to open file : \"{}\"", file_path);
+        Log::ToUser::warn("File::to_string","Failed to open file : \"{}\"", file_path);
         return;
     }
     stream.seekg(0, std::ios::end);
@@ -79,7 +79,7 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path) {
             return true;
         }
         catch (std::exception e) {
-            Log::ToUser::warn("[File::create_folders_if_they_dont_exist] Failed :\n{}", e.what());
+            Log::ToUser::warn("File::create_folders_if_they_dont_exist","Failed :\n{}", e.what());
             return false;
         }
     }

@@ -74,10 +74,10 @@ public:
 	 * @tparam Args 
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
-	template<typename ...Args> static inline void info(Args&& ...args) {
+	template<typename ...Args> static inline void info(std::string_view category, Args&& ...args) {
 		PushMessage({
 			Message::Type::Info,
-			"hgjhg",
+			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});
 	}
@@ -88,10 +88,10 @@ public:
 	 * @tparam Args 
 	 * @param args 
 	 */
-	template<typename ...Args> static inline void warn(Args&& ...args) {
+	template<typename ...Args> static inline void warn(std::string_view category, Args&& ...args) {
 		PushMessage({
 			Message::Type::Warn,
-			"hgjhg",
+			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});
 	}
@@ -102,10 +102,10 @@ public:
 	 * @tparam Args 
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
-	template<typename ...Args> static inline void error(Args&& ...args) {
+	template<typename ...Args> static inline void error(std::string_view category, Args&& ...args) {
 		PushMessage({
 			Message::Type::Error,
-			"hgjhg",
+			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
 		});
 	}
