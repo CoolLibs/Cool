@@ -10,7 +10,13 @@ int ToUser::_messages_count = 0;
 bool ToUser::_scroll_to_bottom = false;
 
 void ToUser::PushMessage(Message message) {
-	_messages.push_back(message);
+	if(_messages.empty() || _messages.back().category != message.category) {
+		_messages.push_back(message);
+	}
+	else {
+		_messages.back() = message;
+	}
+	
 	_open = true;
 	_scroll_to_bottom = true;
 }
