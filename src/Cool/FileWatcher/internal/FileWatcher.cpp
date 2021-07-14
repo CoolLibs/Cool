@@ -1,7 +1,6 @@
 #include "../FileWatcher.h"
 
 #include <Cool/File/File.h>
-#include <chrono>
 
 namespace Cool {
 
@@ -38,7 +37,7 @@ void FileWatcher::set_path(std::string_view path) {
 	_path_is_valid = false; // Forces check_and_update_path_validity() to trigger an update (if the new path is valid)
 	check_and_update_path_validity();
 	if (!_path_is_valid) {
-		Log::ToUser::warn("[FileWatcher::set_path] Invalid file path : \"{}\"", path);
+		Log::ToUser::warn("FileWatcher::set_path", "Invalid file path : \"{}\"", path);
 	}
 }
 
