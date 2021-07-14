@@ -7,71 +7,72 @@
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui_internal.h>
 
-namespace ImGui {
+namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
-    TextDisabled("(?)");
-    if (IsItemHovered()) {
-        BeginTooltip();
-        PushTextWrapPos(GetFontSize() * 35.f);
-        TextUnformatted(text);
-        PopTextWrapPos();
-        EndTooltip();
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
+        ImGui::TextUnformatted(text);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
     }
 }
 
 bool angle_wheel(const char* label, float* value_p, float thickness, float radius, int nb_segments_for_circle)
 {
-    ImGuiWindow* window = GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
     //
-    ImGuiStyle& style       = GetStyle();
-    float       line_height = GetTextLineHeight();
+    ImGuiStyle& style       = ImGui::GetStyle();
+    float       line_height = ImGui::GetTextLineHeight();
     //
-    ImVec2 p      = GetCursorScreenPos();
+    ImVec2 p      = ImGui::GetCursorScreenPos();
     ImVec2 center = ImVec2(p.x + radius, p.y + radius);
     // Detect clic
-    InvisibleButton(label, ImVec2(radius * 2.0f, radius * 2.0f));
-    bool is_active  = IsItemActive();
-    bool is_hovered = IsItemHovered();
+    ImGui::InvisibleButton(label, ImVec2(radius * 2.0f, radius * 2.0f));
+    bool is_active  = ImGui::IsItemActive();
+    bool is_hovered = ImGui::IsItemHovered();
 
     if (is_active) {
-        ImVec2 mp = GetIO().MousePos;
+        ImVec2 mp = ImGui::GetIO().MousePos;
         *value_p  = atan2f(center.y - mp.y, mp.x - center.x);
     }
 
     float x2 = cosf(*value_p) * radius + center.x;
     float y2 = -sinf(*value_p) * radius + center.y;
 
-    ImU32       col32     = GetColorU32(is_active ? ImGuiCol_FrameBgActive : is_hovered ? ImGuiCol_FrameBgHovered
-                                                                                        : ImGuiCol_FrameBg);
-    ImU32       col32line = GetColorU32(ImGuiCol_SliderGrabActive);
-    ImU32       col32text = GetColorU32(ImGuiCol_Text);
-    ImDrawList* draw_list = GetWindowDrawList();
+    ImU32       col32     = ImGui::GetColorU32(is_active    ? ImGuiCol_FrameBgActive
+                                               : is_hovered ? ImGuiCol_FrameBgHovered
+                                                            : ImGuiCol_FrameBg);
+    ImU32       col32line = ImGui::GetColorU32(ImGuiCol_SliderGrabActive);
+    ImU32       col32text = ImGui::GetColorU32(ImGuiCol_Text);
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddCircleFilled(center, radius, col32, nb_segments_for_circle);
     draw_list->AddLine(center, ImVec2(x2, y2), col32line, thickness);
     draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
     const ImGuiID id = window->GetID(label);
     if (is_active)
-        MarkItemEdited(id);
+        ImGui::MarkItemEdited(id);
     return is_active;
 }
 
 bool direction_3d(const char* label, float* value_p1, float* value_p2)
 {
-    BeginGroup(); // Group the two wheels so that things like IsItemDeactivatedAfterEdit() work properly
-    PushID(label);
+    ImGui::BeginGroup(); // Group the two wheels so that things like IsItemDeactivatedAfterEdit() work properly
+    ImGui::PushID(label);
     bool b = false;
 
-    Text("%s :", label);
+    ImGui::Text("%s :", label);
     b |= angle_wheel("Angle Ground", value_p1);
     b |= angle_wheel("Angle Up", value_p2);
 
-    PopID();
-    EndGroup();
+    ImGui::PopID();
+    ImGui::EndGroup();
     return b;
 }
 
@@ -81,37 +82,37 @@ void time_formated_hms(float time_in_sec, float total_duration)
         total_duration = time_in_sec;
     uint32_t t = static_cast<uint32_t>(time_in_sec);
     if (total_duration < 60.f) {
-        Text("%us", t);
+        ImGui::Text("%us", t);
     }
     else if (total_duration < 3600.f) {
-        Text("%um %02us", t / 60, t % 60);
+        ImGui::Text("%um %02us", t / 60, t % 60);
     }
     else {
-        Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
+        ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
     }
 }
 
 void tooltip(const char* text)
 {
-    if (IsItemHovered()) {
-        BeginTooltip();
-        Text(text);
-        EndTooltip();
+    if (ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::Text(text);
+        ImGui::EndTooltip();
     }
 }
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    PushStyleColor(ImGuiCol_Button, GetStyle().Colors[ImGuiCol_FrameBg]);
-    PushStyleColor(ImGuiCol_Text, GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
-    PopStyleColor(2);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+    ImGui::ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
+    ImGui::PopStyleColor(2);
     tooltip(reason_for_disabling);
 }
 
 bool button_with_icon(GLuint tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
 {
-    return ImageButton(reinterpret_cast<ImTextureID>(tex_id), ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
+    return ImGui::ImageButton(reinterpret_cast<ImTextureID>(tex_id), ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
 void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
@@ -123,7 +124,7 @@ void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling, 
 
 void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
-    ImGuiWindow* window = GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return;
 
@@ -132,33 +133,33 @@ void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const 
 
     // Default to using texture ID as ID. User can still push string/integer prefixes.
     // We could hash the size/uv to create a unique ID but that would prevent the user from animating UV.
-    PushID((void*)(intptr_t)tex_id);
+    ImGui::PushID((void*)(intptr_t)tex_id);
     const ImGuiID id = window->GetID("#image");
-    PopID();
+    ImGui::PopID();
 
     const ImVec2 padding = (frame_thickness >= 0) ? ImVec2((float)frame_thickness, (float)frame_thickness) : style.FramePadding;
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
     const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
-    ItemSize(bb);
-    if (!ItemAdd(bb, id))
+    ImGui::ItemSize(bb);
+    if (!ImGui::ItemAdd(bb, id))
         return;
 
     // Render
-    const ImU32 frameCol = frame_color.w > 0.0f ? GetColorU32(frame_color) : GetColorU32(ImGuiCol_Button);
-    RenderNavHighlight(bb, id);
-    RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    RenderFrame(image_bb.Min, image_bb.Max, GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    window->DrawList->AddImage(reinterpret_cast<ImTextureID>(tex_id), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), GetColorU32(tint_color));
+    const ImU32 frameCol = frame_color.w > 0.0f ? ImGui::GetColorU32(frame_color) : ImGui::GetColorU32(ImGuiCol_Button);
+    ImGui::RenderNavHighlight(bb, id);
+    ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+    ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+    window->DrawList->AddImage(reinterpret_cast<ImTextureID>(tex_id), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
 }
 
 bool input_uint(const char* label, unsigned int* value_p)
 {
-    return InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
+    return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
 }
 
 void warning_text(const char* text)
 {
-    TextColored(Cool::Constants::imvec4_red, text);
+    ImGui::TextColored(Cool::Constants::imvec4_red, text);
 }
 
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
@@ -168,15 +169,15 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
         return false;
     ImGuiID id = label ? window->GetID(label) : window->DC.LastItemId; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
     IM_ASSERT(id != 0);                                                // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
-    if (Button(label))
-        OpenPopupEx(id, popup_flags);
-    return BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
+    if (ImGui::Button(label))
+        ImGui::OpenPopupEx(id, popup_flags);
+    return ImGui::BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
 }
 
 void invisible_wrapper_around_previous_line(const char* label)
 {
-    SetCursorPos(GetCursorPos() - ImVec2(0, 2 * GetTextLineHeight()));
-    InvisibleButton(label, ImVec2(GetWindowWidth(), 2 * GetTextLineHeight()));
+    ImGui::SetCursorPos(ImGui::GetCursorPos() - ImVec2(0, 2 * ImGui::GetTextLineHeight()));
+    ImGui::InvisibleButton(label, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
 }
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
@@ -223,4 +224,4 @@ bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_t
     }
 }
 
-} // namespace ImGui
+} // namespace Cool::ImGuiExtras

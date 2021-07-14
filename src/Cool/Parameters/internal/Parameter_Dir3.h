@@ -14,7 +14,7 @@ public:
 
     bool imgui_widget() override
     {
-        return ImGui::direction_3d(name().c_str(), &_value.x, &_value.y);
+        return ImGuiExtras::direction_3d(name().c_str(), &_value.x, &_value.y);
     }
 };
 

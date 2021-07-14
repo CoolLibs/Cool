@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ImGui {
+namespace Cool::ImGuiExtras {
 
 /**
 	 * @brief A small "?" that displays some text when hovered.
@@ -146,4 +146,4 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder = ""
 	 */
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters = {}, std::string_view base_folder = "");
 
-} // namespace ImGui
+} // namespace Cool::ImGuiExtras
