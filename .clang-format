@@ -1,7 +1,7 @@
 ﻿---
 BasedOnStyle: Google
 AccessModifierOffset: '-4'
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: Align
 AlignConsecutiveMacros: 'true'
 AlignConsecutiveAssignments: 'true'
 AlignConsecutiveDeclarations: 'true'
