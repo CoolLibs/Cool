@@ -19,7 +19,20 @@ void ToUser::imgui_console_window() {
 	if (_open) {
 		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
 		for ( auto message : _messages) {
-			ImGui::Text(message.body.c_str());
+			const ImVec4 color = [&]() {
+				switch(message.type){
+				case Message::Type::Info :
+					return ImVec4{1,1,1,1};
+				case Message::Type::Warn :
+					return ImVec4{1,1,0,1};
+				case Message::Type::Error :
+					return ImVec4{1,0,0,1};
+				default:
+					Log::error("[ToUser::imgui_console_window] Unknown enum value");
+					return ImVec4{0,0,0,0};
+				}
+			}();
+			ImGui::TextColored(color, "[%s] %s",message.category.c_str(), message.body.c_str());
 		}
 		if (_scroll_to_bottom) {
 			ImGui::SetScrollHereY(1.f);
