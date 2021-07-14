@@ -16,7 +16,6 @@ void ToUser::PushMessage(Message message) {
 	else {
 		_messages.back() = message;
 	}
-	
 	_open = true;
 	_scroll_to_bottom = true;
 }
