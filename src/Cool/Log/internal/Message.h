@@ -5,13 +5,14 @@ namespace Cool {
 struct Message {
     enum class Severity {
         Info,
-        Warn, 
+        Warn,
         Error
     };
-    
-    Severity severity;
+
+    Severity    severity;
     std::string category;
-	std::string body;
+    std::string body;
+
     std::chrono::system_clock::time_point timestamp;
 
     Message(Severity severity, std::string_view category, std::string_view body)
@@ -23,4 +24,4 @@ struct Message {
     }
 };
 
-}
+} // namespace Cool
