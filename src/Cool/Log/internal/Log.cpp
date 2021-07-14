@@ -4,27 +4,23 @@
 
 namespace Cool::Log {
 
-std::string ToUser::_message = "";
+std::vector<Message> ToUser::_messages;
 bool ToUser::_open = false;
 int ToUser::_messages_count = 0;
 bool ToUser::_scroll_to_bottom = false;
 
-void ToUser::Message(std::string_view message) {
-	if (!_open) {
-		_message.clear();
-	}
-	_message += "\n[";
-	_message += String::to_string(_messages_count, 3) + "] ";
-	_message += message;
+void ToUser::PushMessage(Message message) {
+	_messages.push_back(message);
 	_open = true;
-	_messages_count = (_messages_count + 1) % 1000;
 	_scroll_to_bottom = true;
 }
 
 void ToUser::imgui_console_window() {
 	if (_open) {
 		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
-		ImGui::Text(_message.c_str());
+		for ( auto message : _messages) {
+			ImGui::Text(message.body.c_str());
+		}
 		if (_scroll_to_bottom) {
 			ImGui::SetScrollHereY(1.f);
 			_scroll_to_bottom = false;

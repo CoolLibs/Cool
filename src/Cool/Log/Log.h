@@ -1,6 +1,7 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
+#include "internal/Message.h"
 
 namespace Cool::Log {
 	/**
@@ -74,7 +75,11 @@ public:
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> static inline void info(Args&& ...args) {
-		Message(fmt::format(std::forward<Args>(args)...));
+		PushMessage({
+			Message::Type::Info,
+			"hgjhg",
+			fmt::format(std::forward<Args>(args)...)
+		});
 	}
 
 	/**
@@ -84,7 +89,11 @@ public:
 	 * @param args 
 	 */
 	template<typename ...Args> static inline void warn(Args&& ...args) {
-		Message(fmt::format(std::forward<Args>(args)...));
+		PushMessage({
+			Message::Type::Warn,
+			"hgjhg",
+			fmt::format(std::forward<Args>(args)...)
+		});
 	}
 
 	/**
@@ -94,7 +103,11 @@ public:
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> static inline void error(Args&& ...args) {
-		Message(fmt::format(std::forward<Args>(args)...));
+		PushMessage({
+			Message::Type::Error,
+			"hgjhg",
+			fmt::format(std::forward<Args>(args)...)
+		});
 	}
 
 	/**
@@ -110,10 +123,10 @@ public:
 	static void imgui_toggle_console();
 
 private:
-	static void Message(std::string_view message);
+	static void PushMessage(Message message);
 
 private:
-	static std::string _message;
+	static std::vector<Message> _messages;
 	static bool _open;
 	static int _messages_count;
 	static bool _scroll_to_bottom;
