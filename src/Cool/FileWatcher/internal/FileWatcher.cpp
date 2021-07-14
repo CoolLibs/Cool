@@ -1,7 +1,6 @@
 #include "../FileWatcher.h"
 
 #include <Cool/File/File.h>
-#include <chrono>
 
 namespace Cool {
 

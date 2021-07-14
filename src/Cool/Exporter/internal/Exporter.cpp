@@ -7,7 +7,6 @@
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Time/Time.h>
 #include <Cool/String/String.h>
-#include <chrono>
 
 namespace Cool {
 
