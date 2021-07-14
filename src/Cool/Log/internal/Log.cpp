@@ -6,25 +6,30 @@
 namespace Cool::Log {
 
 std::vector<Message> ToUser::_messages;
-bool ToUser::_open = false;
-int ToUser::_messages_count = 0;
+bool ToUser::_is_open = false;
 bool ToUser::_scroll_to_bottom = false;
 
-void ToUser::PushMessage(Message message) {
-	if(_messages.empty() || _messages.back().category != message.category) {
-		_messages.push_back(message);
-	}
-	else {
+void ToUser::add_message(Message message) {
+	// Merge messages of the same category together
+	if(!_messages.empty() && _messages.back().category == message.category) {
 		_messages.back() = message;
 	}
-	_open = true;
+	// or add the message to the list
+	else {
+		_messages.push_back(message);
+	}
+	// Update console
+	_is_open = true;
 	_scroll_to_bottom = true;
 }
 
 void ToUser::imgui_console_window() {
-	if (_open) {
-		ImGui::Begin("Console", &_open, ImGuiWindowFlags_NoFocusOnAppearing);
-		for ( auto message : _messages) {
+	if (!_is_open) {
+		_messages.clear();
+	}
+	else {
+		ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
+		for ( auto const& message : _messages) {
 			const ImVec4 color = [&]() {
 				switch(message.severity){
 				case Message::Severity::Info :
@@ -51,13 +56,10 @@ void ToUser::imgui_console_window() {
 		}
 		ImGui::End();
 	}
-	else {
-		_messages.clear();
-	}
 }
 
 void ToUser::imgui_toggle_console() {
-	ImGui::Checkbox("Console", &_open);
+	ImGui::Checkbox("Console", &_is_open);
 }
 
 } // namespace Cool::Log

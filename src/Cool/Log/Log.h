@@ -75,7 +75,7 @@ public:
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> static inline void info(std::string_view category, Args&& ...args) {
-		PushMessage({
+		add_message({
 			Message::Severity::Info,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
@@ -89,7 +89,7 @@ public:
 	 * @param args 
 	 */
 	template<typename ...Args> static inline void warn(std::string_view category, Args&& ...args) {
-		PushMessage({
+		add_message({
 			Message::Severity::Warn,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
@@ -103,7 +103,7 @@ public:
 	 * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
 	 */
 	template<typename ...Args> static inline void error(std::string_view category, Args&& ...args) {
-		PushMessage({
+		add_message({
 			Message::Severity::Error,
 			std::string{category},
 			fmt::format(std::forward<Args>(args)...)
@@ -123,12 +123,11 @@ public:
 	static void imgui_toggle_console();
 
 private:
-	static void PushMessage(Message message);
+	static void add_message(Message message);
 
 private:
 	static std::vector<Message> _messages;
-	static bool _open;
-	static int _messages_count;
+	static bool _is_open;
 	static bool _scroll_to_bottom;
 };
 
