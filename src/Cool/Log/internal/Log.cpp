@@ -1,6 +1,6 @@
 #include "../Log.h"
 #include <iomanip>
-
+#include <sstream>
 #include <Cool/String/String.h>
 
 namespace Cool::Log {
