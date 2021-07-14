@@ -27,40 +27,40 @@ void ToUser::add_message(Message message)
 
 void ToUser::imgui_console_window()
 {
-    if (!_is_open) {
+    ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
+    ImGui::BeginMenuBar();
+    if (ImGui::Button("Clear")) {
         _messages.clear();
     }
-    else {
-        ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
-        for (auto const& message : _messages) {
-            const ImVec4 color = [&]() {
-                switch (message.severity) {
-                case Message::Severity::Info:
-                    return Constants::imvec4_green;
-                case Message::Severity::Warn:
-                    return Constants::imvec4_yellow;
-                case Message::Severity::Error:
-                    return Constants::imvec4_red;
-                default:
-                    Log::error("[ToUser::imgui_console_window] Unknown enum value");
-                    return ImVec4{0, 0, 0, 0};
-                }
-            }();
-            // Get minutes and seconds
-            const std::time_t time = std::chrono::system_clock::to_time_t(message.timestamp);
-            std::stringstream min_sec;
-            min_sec << std::put_time(std::localtime(&time), "%M'%S\"");
-            //
-            ImGui::TextColored(color, "[%s] [%s]", min_sec.str().c_str(), message.category.c_str());
-            ImGui::SameLine();
-            ImGui::Text(message.body.c_str());
-        }
-        if (_scroll_to_bottom) {
-            ImGui::SetScrollHereY(1.f);
-            _scroll_to_bottom = false;
-        }
-        ImGui::End();
+    ImGui::EndMenuBar();
+    for (auto const& message : _messages) {
+        const ImVec4 color = [&]() {
+            switch (message.severity) {
+            case Message::Severity::Info:
+                return Constants::imvec4_green;
+            case Message::Severity::Warn:
+                return Constants::imvec4_yellow;
+            case Message::Severity::Error:
+                return Constants::imvec4_red;
+            default:
+                Log::error("[ToUser::imgui_console_window] Unknown enum value");
+                return ImVec4{0, 0, 0, 0};
+            }
+        }();
+        // Get minutes and seconds
+        const std::time_t time = std::chrono::system_clock::to_time_t(message.timestamp);
+        std::stringstream min_sec;
+        min_sec << std::put_time(std::localtime(&time), "%M'%S\"");
+        //
+        ImGui::TextColored(color, "[%s] [%s]", min_sec.str().c_str(), message.category.c_str());
+        ImGui::SameLine();
+        ImGui::Text(message.body.c_str());
     }
+    if (_scroll_to_bottom) {
+        ImGui::SetScrollHereY(1.f);
+        _scroll_to_bottom = false;
+    }
+    ImGui::End();
 }
 
 void ToUser::imgui_toggle_console()
