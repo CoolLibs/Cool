@@ -26,7 +26,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <deque>
     <thread>
     <utility>
-    
+    <chrono>
+
     <imgui/imgui.h>
     <imgui/misc/cpp/imgui_stdlib.h>
     
