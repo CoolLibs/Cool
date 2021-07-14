@@ -1,4 +1,5 @@
 #include "../Log.h"
+#include <Cool/Constants/Constants.h>
 #include <Cool/String/String.h>
 #include <iomanip>
 #include <sstream>
@@ -35,11 +36,11 @@ void ToUser::imgui_console_window()
             const ImVec4 color = [&]() {
                 switch (message.severity) {
                 case Message::Severity::Info:
-                    return ImVec4{1, 1, 1, 1};
+                    return Constants::imvec4_green;
                 case Message::Severity::Warn:
-                    return ImVec4{1, 1, 0, 1};
+                    return Constants::imvec4_yellow;
                 case Message::Severity::Error:
-                    return ImVec4{1, 0, 0, 1};
+                    return Constants::imvec4_red;
                 default:
                     Log::error("[ToUser::imgui_console_window] Unknown enum value");
                     return ImVec4{0, 0, 0, 0};

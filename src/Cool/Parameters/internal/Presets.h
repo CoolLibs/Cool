@@ -111,11 +111,11 @@ public:
 					ImGui::Text("as");
 				}
 				else {
-					ImGui::TextColored(ImVec4(0.74f, 0.04f, 0.04f, 1.f), "You can't have dots (.) in the name");
+                    ImGui::warning_text("You can't have dots (.) in the name");
 				}
 			}
 			else {
-				ImGui::TextColored(ImVec4(0.74f, 0.04f, 0.04f, 1.f), "Name already used :");
+                ImGui::warning_text("Name already used :");
 			}
 			ImGui::SameLine();
 			ImGui::PushID(138571);

@@ -3,6 +3,7 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
     #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
+#include <Cool/Constants/Constants.h>
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui_internal.h>
 
@@ -157,7 +158,7 @@ bool input_uint(const char* label, unsigned int* value_p)
 
 void warning_text(const char* text)
 {
-    TextColored(ImVec4(0.95f, 0.1f, 0.2f, 1.0f), text);
+    TextColored(Cool::Constants::imvec4_red, text);
 }
 
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
