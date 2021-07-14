@@ -51,6 +51,9 @@ void ToUser::imgui_console_window() {
 		}
 		ImGui::End();
 	}
+	else {
+		_messages.clear();
+	}
 }
 
 void ToUser::imgui_toggle_console() {
