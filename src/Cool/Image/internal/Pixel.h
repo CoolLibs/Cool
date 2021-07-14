@@ -12,47 +12,47 @@ class Image;
  */
 class Pixel {
 public:
-	Pixel(Image& image, unsigned int x, unsigned int y);
-	
-	/**
+    Pixel(Image& image, unsigned int x, unsigned int y);
+
+    /**
 	 * @brief 
 	 * 
 	 * @return A reference to the image's color at this pixel
 	 */
-	Color& color();
+    Color& color();
 
-	/**
+    /**
 	 * @brief 
 	 * 
 	 * @return x coordinate of the pixel. In the range [-aspect_ratio, +aspect_ratio]. Axis pointing right 
 	 */
-	float x();
+    float x();
 
-	/**
+    /**
 	 * @brief 
 	 * 
 	 * @return y coordinate of the pixel. In the range [-1, +1]. Axis pointing up 
 	 */
-	float y();
+    float y();
 
-	/**
+    /**
 	 * @brief 
 	 * 
 	 * @return Position expressed in number of pixels, ranging from 0 to width-1
 	 */
-	inline int x_as_int() { return _x; }
-	
-	/**
+    inline int x_as_int() { return _x; }
+
+    /**
 	 * @brief 
 	 * 
 	 * @return Position expressed in number of pixels, ranging from 0 to height-1 
 	 */
-	inline int y_as_int() { return _y; }
+    inline int y_as_int() { return _y; }
 
 private:
-	Image& _image;
-	unsigned int _x;
-	unsigned int _y;
+    Image&       _image;
+    unsigned int _x;
+    unsigned int _y;
 };
 
 } // namespace Cool

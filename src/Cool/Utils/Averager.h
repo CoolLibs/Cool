@@ -10,27 +10,31 @@ namespace Cool {
 template<typename T>
 class Averager {
 public:
-	Averager() {
-		clear();
-	}
+    Averager()
+    {
+        clear();
+    }
 
-	void push(T value) {
-		_N++;
-		_average = (_average * (_N-1) +  value) / _N;
-	}
+    void push(T value)
+    {
+        _N++;
+        _average = (_average * (_N - 1) + value) / _N;
+    }
 
-	operator T() {
-		return _average;
-	}
+    operator T()
+    {
+        return _average;
+    }
 
-	void clear() {
-		_average = 0;
-		_N = 0;
-	}
+    void clear()
+    {
+        _average = 0;
+        _N       = 0;
+    }
 
 private:
-	T _average;
-	unsigned int _N;
+    T            _average;
+    unsigned int _N;
 };
 
 } // namespace Cool

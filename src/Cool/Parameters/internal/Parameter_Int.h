@@ -6,29 +6,31 @@ namespace Cool::Parameter {
 
 class Int : public Internal::Parameter<int> {
 public:
-	Int(std::string_view name = "", int default_value = 0, int min_value = 0, int max_value = 20)
-		: Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
-	{}
+    Int(std::string_view name = "", int default_value = 0, int min_value = 0, int max_value = 20)
+        : Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
+    {
+    }
 
 protected:
-	bool imgui_widget() override {
-		bool b = ImGui::SliderInt(name().c_str(), &_value, _min_value, _max_value);
-		ImGui::PushID(this);
-		if (ImGui::BeginPopupContextItem()) {
-			ImGui::DragInt("", &_min_value);
-			ImGui::SameLine();
-			ImGui::Text("to");
-			ImGui::SameLine();
-			ImGui::DragInt(" ", &_max_value);
-			ImGui::EndPopup();
-		}
-		ImGui::PopID();
-		return b;
-	}
+    bool imgui_widget() override
+    {
+        bool b = ImGui::SliderInt(name().c_str(), &_value, _min_value, _max_value);
+        ImGui::PushID(this);
+        if (ImGui::BeginPopupContextItem()) {
+            ImGui::DragInt("", &_min_value);
+            ImGui::SameLine();
+            ImGui::Text("to");
+            ImGui::SameLine();
+            ImGui::DragInt(" ", &_max_value);
+            ImGui::EndPopup();
+        }
+        ImGui::PopID();
+        return b;
+    }
 
 private:
-	int _min_value;
-	int _max_value;
+    int _min_value;
+    int _max_value;
 };
 
 } // namespace Cool::Parameter

@@ -1,46 +1,53 @@
 #include "../Time.h"
-
-#include "Clock_Realtime.h"
-#include "Clock_FixedTimestep.h"
-#include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/App/RenderState.h>
 #include <Cool/Icons/Icons.h>
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
+#include "Clock_FixedTimestep.h"
+#include "Clock_Realtime.h"
 
 namespace Cool {
 
 std::unique_ptr<Clock> Time::_clock = nullptr;
 
-void Time::initialize() {
+void Time::initialize()
+{
     _clock = std::make_unique<Clock_Realtime>();
 }
 
-void Time::update() {
+void Time::update()
+{
     _clock->update();
 }
 
-float Time::delta_time() {
+float Time::delta_time()
+{
     return _clock->delta_time();
 }
 
-float Time::time() {
+float Time::time()
+{
     return _clock->time();
 }
 
-void Time::set_time(float new_time) {
+void Time::set_time(float new_time)
+{
     _clock->set_time(new_time);
 }
 
-void Time::set_elapse_mode_as_realtime() {
+void Time::set_elapse_mode_as_realtime()
+{
     float t = time();
-    _clock = std::make_unique<Clock_Realtime>();
+    _clock  = std::make_unique<Clock_Realtime>();
     _clock->set_time(t);
 }
 
-void Time::set_elapse_mode_as_fixed_timestep(float fps) {
+void Time::set_elapse_mode_as_fixed_timestep(float fps)
+{
     _clock = std::make_unique<Clock_FixedTimestep>(fps, time());
 }
 
-void Time::imgui_timeline() {
+void Time::imgui_timeline()
+{
     if (!RenderState::IsExporting()) {
         if (ImGui::button_with_icon(_clock->is_playing() ? Icons::pause() : Icons::play())) {
             _clock->toggle_play_pause();

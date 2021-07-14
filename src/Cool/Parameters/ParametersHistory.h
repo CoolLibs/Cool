@@ -10,9 +10,10 @@ namespace Cool {
  */
 class ParametersHistory {
 public:
-	inline static History& get() { return _history; }
+    inline static History& get() { return _history; }
+
 private:
-	static History _history;
+    static History _history;
 };
 
 } // namespace Cool
