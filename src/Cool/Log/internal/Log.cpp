@@ -50,7 +50,9 @@ void ToUser::imgui_console_window()
             std::stringstream min_sec;
             min_sec << std::put_time(std::localtime(&time), "%M'%S\"");
             //
-            ImGui::TextColored(color, "[%s] [%s] %s", min_sec.str().c_str(), message.category.c_str(), message.body.c_str());
+            ImGui::TextColored(color, "[%s] [%s]", min_sec.str().c_str(), message.category.c_str());
+            ImGui::SameLine();
+            ImGui::Text(message.body.c_str());
         }
         if (_scroll_to_bottom) {
             ImGui::SetScrollHereY(1.f);
