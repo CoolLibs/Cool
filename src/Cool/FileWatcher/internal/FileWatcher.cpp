@@ -1,5 +1,6 @@
 #include "../FileWatcher.h"
 #include <Cool/File/File.h>
+#include <Cool/Log/ToUser.h>
 
 namespace Cool {
 
