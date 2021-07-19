@@ -10,6 +10,7 @@
     #include <imgui/backends/imgui_impl_opengl3.h>
     #include "GLDebugCallback.h"
 #endif
+#include <Cool/Log/ToUser.h>
 
 namespace Cool {
 

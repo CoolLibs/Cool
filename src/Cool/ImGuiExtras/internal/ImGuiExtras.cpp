@@ -110,19 +110,19 @@ void button_disabled(const char* label, const char* reason_for_disabling)
     tooltip(reason_for_disabling);
 }
 
-bool button_with_icon(GLuint tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
+bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
 {
-    return ImGui::ImageButton(reinterpret_cast<ImTextureID>(tex_id), ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
+    return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
-void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
+void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
     tooltip(reason_for_disabling);
 }
 
-void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
+void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -149,7 +149,7 @@ void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const 
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    window->DrawList->AddImage(reinterpret_cast<ImTextureID>(tex_id), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
+    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
 }
 
 bool input_uint(const char* label, unsigned int* value_p)

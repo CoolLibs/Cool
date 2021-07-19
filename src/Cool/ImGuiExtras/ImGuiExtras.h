@@ -57,7 +57,7 @@ void button_disabled(const char* label, const char* reason_for_disabling = "Curr
 	 * @param frame_padding 
 	 * @return true iff the button was just pressed
 	 */
-bool button_with_icon(GLuint tex_id, const ImVec4& tint_color = ImVec4(1, 1, 1, 1), const ImVec4& background_color = ImVec4(0, 0, 0, 1), float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
+bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1, 1, 1), const ImVec4& background_color = ImVec4(0, 0, 0, 1), float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 
 /**
 	 * @brief A button that uses an image instead of text, but greyed out and you wan't click on it.
@@ -68,7 +68,7 @@ bool button_with_icon(GLuint tex_id, const ImVec4& tint_color = ImVec4(1, 1, 1, 
 	 * @param button_height 
 	 * @param frame_padding 
 	 */
-void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
+void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 
 /// <summary>
 ///
@@ -89,7 +89,7 @@ void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling =
 	 * @param background_color Color that will appear in places where your image is transparent
 	 * @param tint_color You can tint your image
 	 */
-void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness = -1, const ImVec4& frame_color = ImVec4(0, 0, 0, 0), const ImVec4& background_color = ImVec4(0, 0, 0, 1), const ImVec4& tint_color = ImVec4(1, 1, 1, 1));
+void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness = -1, const ImVec4& frame_color = ImVec4(0, 0, 0, 0), const ImVec4& background_color = ImVec4(0, 0, 0, 1), const ImVec4& tint_color = ImVec4(1, 1, 1, 1));
 
 /**
 	 * @brief Like ImGui::InputInt, but for an unsigned int

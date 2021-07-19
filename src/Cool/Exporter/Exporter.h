@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Cool/MultiThread/ThreadPool.h>
+#include <Cool/Rendering/IRenderTarget.h>
 #include <Cool/Utils/Averager.h>
 
 namespace Cool {
-
-class FrameBuffer;
 
 class Exporter {
 public:
@@ -18,7 +17,7 @@ public:
 	 * @param frame_buffer The frame buffer that your render function will render to
 	 * @param file_path The name of the image file that you want to write
 	 */
-    void export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view file_path);
+    void export_image(std::function<void()> render, const IRenderTarget& render_target, std::string_view file_path);
 
     /**
 	 * @brief The buttons to open the different export windows
@@ -32,7 +31,7 @@ public:
 	 * @param render The function that renders the desired image
 	 * @param frame_buffer The frame buffer that your render function will render to
 	 */
-    void imgui_window_export_image(std::function<void()> render, FrameBuffer& frame_buffer);
+    void imgui_window_export_image(std::function<void()> render, const IRenderTarget& render_target);
 
     /**
 	 * @brief Opens or closes the window with the image export parameters
@@ -52,7 +51,7 @@ public:
 	 * 
 	 * @param frame_buffer The frame buffer that your renderer has just rendered to
 	 */
-    void update(FrameBuffer& frame_buffer);
+    void update(const IRenderTarget& render_target);
 
     /**
 	 * @brief Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export
@@ -78,7 +77,7 @@ private:
     std::string output_path();
     void        find_available_file_name();
     void        imgui_resolution_widget();
-    void        export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view file_path);
+    void        export_image_multithreaded(const IRenderTarget& render_target, std::string_view file_path);
 
 private:
     std::string _folder_path_for_image;

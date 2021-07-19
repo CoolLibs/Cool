@@ -66,18 +66,18 @@ public:
 	 * 
 	 * @return The interpolation mode that should be used to blit the final render target to the screen.
 	 */
-    static inline GLint preview_interpolation_mode()
-    {
-        switch (_preview_interpolation_mode) {
-        case InterpolationMode::Nearest:
-            return GL_NEAREST;
-        case InterpolationMode::Linear:
-            return GL_LINEAR;
-        default:
-            Log::error("[RenderState::preview_interpolation_mode] Unknown interpolation mode");
-            return GL_NEAREST;
-        }
-    };
+    // static inline GLint preview_interpolation_mode()
+    // {
+    //     switch (_preview_interpolation_mode) {
+    //     case InterpolationMode::Nearest:
+    //         return GL_NEAREST;
+    //     case InterpolationMode::Linear:
+    //         return GL_LINEAR;
+    //     default:
+    //         Log::error("[RenderState::preview_interpolation_mode] Unknown interpolation mode");
+    //         return GL_NEAREST;
+    //     }
+    // };
 
     /// <summary>
     /// Allows user to control the preview size through the "Preview" menu. It is enabled by default.

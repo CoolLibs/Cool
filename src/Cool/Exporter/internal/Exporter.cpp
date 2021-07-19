@@ -12,7 +12,7 @@ namespace Cool {
 
 class ExportImage_Functor {
 public:
-    ExportImage_Functor(std::string_view file_path, int width, int height, std::vector<unsigned char>&& data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
+    ExportImage_Functor(std::string_view file_path, int width, int height, std::vector<unsigned char> data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
         : _file_path(file_path), _width(width), _height(height), _data(data), _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
     {
     }
@@ -50,20 +50,16 @@ Exporter::Exporter()
 {
 }
 
-void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buffer, std::string_view file_path)
+void Exporter::export_image(std::function<void()> render, const IRenderTarget& render_target, std::string_view file_path)
 {
     // Render
     RenderState::setIsExporting(true);
     render();
     // Get data
-    frame_buffer.bind();
-    auto                       size = RenderState::Size();
-    std::vector<unsigned char> data(4 * size.width() * size.height());
-    glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
-    frame_buffer.unbind();
+    const auto image = render_target.download_pixels();
     // Write png
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
-        ExportImage::as_png(file_path, size.width(), size.height(), data.data());
+        ExportImage::as_png(file_path, image.width, image.height, image.data.data());
     }
     else {
         Log::ToUser::warn("Exporter::export_image", "Failed to create folder \"{}\"", _folder_path_for_image);
@@ -72,18 +68,20 @@ void Exporter::export_image(std::function<void()> render, FrameBuffer& frame_buf
     RenderState::setIsExporting(false);
 }
 
-void Exporter::export_image_multithreaded(FrameBuffer& frame_buffer, std::string_view file_path)
+void Exporter::export_image_multithreaded(const IRenderTarget& render_target, std::string_view file_path)
 {
     // Wait for a thread to be available
     _thread_pool.wait_for_available_thread();
     // Get data
-    frame_buffer.bind();
-    auto                       size = RenderState::Size();
-    std::vector<unsigned char> data(4 * size.width() * size.height());
-    glReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE, data.data());
-    frame_buffer.unbind();
+    const auto image = render_target.download_pixels();
     // Write png
-    _thread_pool.push_job(std::move(ExportImage_Functor(file_path, size.width(), size.height(), std::move(data), _frame_time_average, _nb_frames_which_finished_exporting)));
+    _thread_pool.push_job(ExportImage_Functor{
+        file_path,
+        image.width,
+        image.height,
+        image.data,
+        _frame_time_average,
+        _nb_frames_which_finished_exporting});
 }
 
 std::string Exporter::output_path()
@@ -159,7 +157,7 @@ void Exporter::imgui_resolution_widget()
     }
 }
 
-void Exporter::imgui_window_export_image(std::function<void()> render, FrameBuffer& frame_buffer)
+void Exporter::imgui_window_export_image(std::function<void()> render, const IRenderTarget& render_target)
 {
     if (_is_window_open_image_export) {
         ImGui::Begin("Export an Image", &_is_window_open_image_export);
@@ -182,7 +180,7 @@ void Exporter::imgui_window_export_image(std::function<void()> render, FrameBuff
         // Validation
         if (ImGui::Button("Export as PNG")) {
             _is_window_open_image_export = false;
-            export_image(render, frame_buffer, output_path());
+            export_image(render, render_target, output_path());
         }
         //
         ImGui::End();
@@ -209,13 +207,13 @@ void Exporter::begin_image_sequence_export()
     }
 }
 
-void Exporter::update(FrameBuffer& frame_buffer)
+void Exporter::update(const IRenderTarget& render_target)
 {
     if (_is_exporting_image_sequence) {
         _is_window_open_image_sequence_export = true;
         if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
             if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-                export_image_multithreaded(frame_buffer, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
+                export_image_multithreaded(render_target, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
                 _nb_frames_sent_to_thread_pool++;
             }
         }

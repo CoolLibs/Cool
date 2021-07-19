@@ -1,7 +1,8 @@
 #pragma once
 
+#include <Cool/Gpu/Shader.h>
 #include <Cool/History/Action.h>
-#include <Cool/OpenGL/Shader.h>
+
 
 namespace Cool::Internal {
 
