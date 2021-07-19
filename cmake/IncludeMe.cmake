@@ -59,7 +59,7 @@ endif()
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
-    include("Cool/vulkan.cmake")
+    include("Cool/cmake/vulkan.cmake")
 endif()
 if (COOL_USE_OPENGL)
     add_compile_definitions(__COOL_APP_OPENGL)
