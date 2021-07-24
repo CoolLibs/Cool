@@ -11,6 +11,7 @@ include_directories(
     Cool/lib/cereal/include
     Cool/lib/spdlog/include
     Cool/lib/doctest
+    Cool/lib/Vookoo/include
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
