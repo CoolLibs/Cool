@@ -15,6 +15,7 @@ Texture::Id Icons::get(std::string_view image_path)
         Log::info("[Icons::get] Generating texture for \"{}\"", path);
         const auto tex_id = Texture::LoadTexture(path);
         _map[path]        = tex_id;
+        return tex_id;
     }
     else {
         return res->second;
