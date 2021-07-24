@@ -22,3 +22,6 @@
 [submodule "lib/doctest"]
 	path = lib/doctest
 	url = https://github.com/onqtam/doctest
+[submodule "lib/Vookoo"]
+	path = lib/Vookoo
+	url = https://github.com/CoolLibs/Vookoo
