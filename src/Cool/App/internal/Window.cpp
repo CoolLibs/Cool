@@ -3,9 +3,19 @@
 
 namespace Cool {
 
-Window::Window(GLFWwindow* window)
-    : _window(window)
+Window::Window(GLFWwindow* glfw_window, const vku::Framework& vku_framework)
+    : _glfw_window{glfw_window}
+    , _vku_window{
+          vku_framework.instance(),
+          vku_framework.device(),
+          vku_framework.physicalDevice(),
+          vku_framework.graphicsQueueFamilyIndex(),
+          glfw_window}
 {
+    if (!_vku_window.ok()) {
+        std::cout << "Window creation failed" << std::endl;
+        exit(1);
+    }
 }
 
 } // namespace Cool

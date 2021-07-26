@@ -1,17 +1,20 @@
 #pragma once
 
+#include <vku/vku_framework.hpp>
 struct GLFWwindow;
 
 namespace Cool {
 
 class Window {
 public:
-    Window(GLFWwindow* window);
+    Window(GLFWwindow* glfw_window, const vku::Framework& vku_framework);
 
-    inline GLFWwindow* glfw_window() const { return _window; }
+    inline GLFWwindow*  glfw() const { return _glfw_window; }
+    inline vku::Window& vku() { return _vku_window; }
 
 private:
-    GLFWwindow* _window;
+    GLFWwindow* _glfw_window;
+    vku::Window _vku_window;
 };
 
 } // namespace Cool

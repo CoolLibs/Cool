@@ -1,7 +1,6 @@
 #include "WindowFactory_Vulkan.h"
 #include <GLFW/glfw3.h>
 
-
 namespace Cool {
 
 void WindowFactory_Vulkan::initialize()
@@ -22,7 +21,7 @@ WindowFactory_Vulkan::WindowFactory_Vulkan()
 Cool::Window WindowFactory_Vulkan::make_window(const char* title, int width, int height) const
 {
     GLFWwindow* glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    return Cool::Window{glfw_window};
+    return Cool::Window{glfw_window, _vku_framework};
 }
 
 } // namespace Cool
