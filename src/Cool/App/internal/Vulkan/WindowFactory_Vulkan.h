@@ -6,19 +6,23 @@
 #include <vku/vku.hpp>
 // clang-format on
 
+struct GLFWwindow;
+
 namespace Cool {
 
 class WindowFactory_Vulkan {
 public:
     static void initialize();
-    WindowFactory_Vulkan();
+    explicit WindowFactory_Vulkan();
+    ~WindowFactory_Vulkan();
 
-    Cool::Window make_window(const char* title, int width, int height) const;
+    Cool::Window make_window(const char* title, int width, int height);
 
     inline vku::Framework& vku_framework() { return _vku_framework; }
 
 private:
-    vku::Framework _vku_framework;
+    vku::Framework           _vku_framework;
+    std::vector<GLFWwindow*> _windows;
 };
 
 } // namespace Cool
