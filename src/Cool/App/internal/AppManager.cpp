@@ -52,58 +52,47 @@ void AppManager::update()
     // Events
     glfwPollEvents();
 
-    // draw one triangle.
-    _main_window.vku().draw(_vku_framework.device(), _vku_framework.graphicsQueue());
+    _main_window.vku().draw(_vku_framework.device(), _vku_framework.graphicsQueue(), [&](vk::CommandBuffer cb, int imageIndex, vk::RenderPassBeginInfo& rpbi) {
+        // Start ImGui frame
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGuiDockspace();
+        // Actual application code
+        if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+            m_app.update();
+        // UI
+        if (m_bShowUI) {
+            // Menu bar
+            if (!RenderState::IsExporting()) {
+                ImGui::BeginMainMenuBar();
+                if (ImGui::BeginMenu("Preview")) {
+                    RenderState::ImGuiPreviewControls();
+                    ImGui::EndMenu();
+                }
+                m_app.ImGuiMenus();
+                ImGui::EndMainMenuBar();
+            }
+            // Windows
+            m_app.ImGuiWindows();
+        }
+        // Render ImGui
+        ImGui::Render();
+        // Update and Render additional Platform Windows
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+        cb.begin(vk::CommandBufferBeginInfo{});
+        // cb.beginRenderPass(rpbi, vk::SubpassContents::eInline);
+        // auto* main_draw_data = ImGui::GetDrawData();
+        // if (main_draw_data->DisplaySize.x > 0.0f && main_draw_data->DisplaySize.y > 0.0f) {
+        //     ImGui_ImplVulkan_RenderDrawData(main_draw_data, cb);
+        // }
+        // cb.endRenderPass();
+        cb.end();
+    });
 
-    // Very crude method to prevent your GPU from overheating.
-    std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    // #ifdef __COOL_APP_VULKAN
-    //     _main_window.check_for_swapchain_rebuild();
-    // #endif
-    //     // Clear screen
-    //     Renderer::set_render_target(_main_window);
-    //     Renderer::clear_background(RenderState::getEmptySpaceColor());
-    //     // Start ImGui frame
-    // #ifdef __COOL_APP_VULKAN
-    //     ImGui_ImplVulkan_NewFrame();
-    // #endif
-    // #ifdef __COOL_APP_OPENGL
-    //     ImGui_ImplOpenGL3_NewFrame();
-    // #endif
-    //     ImGui_ImplGlfw_NewFrame();
-    //     ImGui::NewFrame();
-    //     ImGuiDockspace();
-    //     // Actual application code
-    //     if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-    //         m_app.update();
-    //     // UI
-    //     if (m_bShowUI) {
-    //         // Menu bar
-    //         if (!RenderState::IsExporting()) {
-    //             ImGui::BeginMainMenuBar();
-    //             if (ImGui::BeginMenu("Preview")) {
-    //                 RenderState::ImGuiPreviewControls();
-    //                 ImGui::EndMenu();
-    //             }
-    //             m_app.ImGuiMenus();
-    //             ImGui::EndMainMenuBar();
-    //         }
-    //         // Windows
-    //         m_app.ImGuiWindows();
-    //     }
-    //     // Render ImGui
-    //     ImGui::Render();
-    // #ifdef __COOL_APP_VULKAN
-    //     ImDrawData* main_draw_data    = ImGui::GetDrawData();
-    //     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-    //     if (!main_is_minimized)
-    //         _main_window.FrameRender(main_draw_data);
-
-    //     // Update and Render additional Platform Windows
-    //     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-    //         ImGui::UpdatePlatformWindows();
-    //         ImGui::RenderPlatformWindowsDefault();
-    //     }
     //     // Present Main Platform Window
     //     if (!main_is_minimized)
     //         _main_window.FramePresent();

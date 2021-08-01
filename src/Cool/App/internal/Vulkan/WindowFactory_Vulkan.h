@@ -16,13 +16,16 @@ public:
     explicit WindowFactory_Vulkan();
     ~WindowFactory_Vulkan();
 
-    Cool::Window make_window(const char* title, int width, int height);
+    Cool::Window& make_window(const char* title, int width, int height);
 
     inline vku::Framework& vku_framework() { return _vku_framework; }
 
 private:
-    vku::Framework           _vku_framework;
-    std::vector<GLFWwindow*> _windows;
+    void setup_imgui(Window& window);
+
+private:
+    vku::Framework            _vku_framework;
+    std::vector<Cool::Window> _windows;
 };
 
 } // namespace Cool
