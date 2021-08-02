@@ -160,7 +160,7 @@ void Window::check_for_swapchain_rebuild()
     }
 }
 
-void Window::FrameRender(ImDrawData* draw_data)
+void Window::FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn)
 {
     auto*    wd = &_vulkan_window_state.g_MainWindowData;
     VkResult err;
@@ -205,6 +205,7 @@ void Window::FrameRender(ImDrawData* draw_data)
 
     // Record dear imgui primitives into command buffer
     ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
+    render_fn(fd->CommandBuffer);
 
     // Submit command buffer
     vkCmdEndRenderPass(fd->CommandBuffer);

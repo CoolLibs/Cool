@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+
 namespace Cool {
 
 class IApp {
@@ -11,6 +13,8 @@ public:
     /// Update function that will be called repeatedly
     /// </summary>
     virtual void update(){};
+
+    virtual void render(vk::CommandBuffer cb){};
 
     /// <summary>
     /// Please create all your ImGui windows inside this function (allows the AppManager to hide all UI when the user presses CTRL+H, and the dockspace to apply properly)

@@ -1,6 +1,7 @@
 #pragma once
 
 #ifdef __COOL_APP_VULKAN
+    #include <vulkan/vulkan.hpp>
     #include "internal/VulkanContext.h"
     #include "internal/VulkanWindowState.h"
     #define GLFW_INCLUDE_NONE
@@ -54,7 +55,7 @@ public:
 #ifdef __COOL_APP_VULKAN
     void check_for_swapchain_rebuild();
     void FramePresent();
-    void FrameRender(ImDrawData* draw_data);
+    void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
 #endif
 
 private:
