@@ -148,6 +148,9 @@ VulkanContext::VulkanContext(const char** extensions, uint32_t extensions_count)
         err                                  = vkCreateDescriptorPool(g_Device, &pool_info, g_Allocator, &g_DescriptorPool);
         check_vk_result(err);
     }
+
+    // Get memory properties
+    vkGetPhysicalDeviceMemoryProperties(g_PhysicalDevice, &memory_properties);
 }
 
 void VulkanContext::destroy0()
