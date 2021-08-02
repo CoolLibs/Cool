@@ -5,7 +5,6 @@
     #include <doctest/doctest.h>
 #endif
 
-#include <Cool/App/WindowFactory.h>
 #include <Cool/File/File.h>
 #include <Cool/Log/Log.h>
 #include <Cool/Time/Time.h>
@@ -42,8 +41,6 @@ void initialize()
     Cool::File::initialize_root_dir(std::filesystem::current_path().string());
 
     Cool::Time::initialize();
-
-    Cool::WindowFactory_Vulkan::initialize();
 }
 
 } // namespace Cool
