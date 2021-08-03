@@ -1,11 +1,9 @@
 #include "../Icons.h"
-// #include <Cool/GPU/Texture.h>
-#include <Cool/LoadImage/LoadImage.h>
 #include <filesystem>
 
 namespace Cool {
 
-std::unordered_map<std::string, Texture::Id> Icons::_map;
+std::unordered_map<std::string, Texture> Icons::_map;
 
 Texture::Id Icons::get(std::string_view image_path)
 {
@@ -13,12 +11,11 @@ Texture::Id Icons::get(std::string_view image_path)
     auto       res  = _map.find(path);
     if (res == _map.end()) {
         Log::info("[Icons::get] Generating texture for \"{}\"", path);
-        const auto tex_id = Texture::LoadTexture(path);
-        _map[path]        = tex_id;
-        return tex_id;
+        _map[path] = Texture{path};
+        return _map[path].id();
     }
     else {
-        return res->second;
+        return res->second.id();
     }
 }
 
@@ -30,8 +27,7 @@ void Icons::cleanup_texture(std::string_view image_path)
         Log::warn("[Icons::cleanup_texture] The texture you want to clean up doesn't exist ! \"{}\"", path);
     }
     else {
-        // Texture::DestroyTexture(res->second);
-        // _map.erase(path);
+        _map.erase(path);
     }
 }
 

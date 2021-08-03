@@ -10,21 +10,21 @@ public:
     /**
 	 * @brief 
 	 * 
-	 * @return The OpenGL texture ID of the "play" icon 
+	 * @return The texture ID of the "play" icon 
 	 */
     static inline Texture::Id play() { return get(File::root_dir() + "/Cool/res/icons/play.png"); }
 
     /**
 	 * @brief 
 	 * 
-	 * @return The OpenGL texture ID of the "pause" icon 
+	 * @return The texture ID of the "pause" icon 
 	 */
     static inline Texture::Id pause() { return get(File::root_dir() + "/Cool/res/icons/pause.png"); }
 
     /**
 	 * @brief 
 	 * 
-	 * @return The OpenGL texture ID of the "folder" icon 
+	 * @return The texture ID of the "folder" icon 
 	 */
     static inline Texture::Id folder() { return get(File::root_dir() + "/Cool/res/icons/folder.png"); }
 
@@ -44,7 +44,7 @@ public:
     static void cleanup_texture(std::string_view image_path);
 
 private:
-    static std::unordered_map<std::string, Texture::Id> _map;
+    static std::unordered_map<std::string, Texture> _map;
 };
 
 } // namespace Cool
