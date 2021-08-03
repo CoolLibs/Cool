@@ -1,9 +1,17 @@
 #pragma once
 
+#include <vku/vku.hpp>
+
 namespace Cool {
 
 class Texture {
 public:
+    struct Id;
+    Texture() = default;
+    Texture(std::string_view path);
+
+    Id id();
+
     struct Id {
         operator ImTextureID() const
         {
@@ -16,10 +24,8 @@ public:
 #endif
     };
 
-    static Id LoadTexture(std::string_view path)
-    {
-        return {0};
-    }
+private:
+    vku::TextureImage2D _vku;
 };
 
 } // namespace Cool
