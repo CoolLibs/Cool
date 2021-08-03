@@ -21,7 +21,8 @@
 namespace Cool {
 
 AppManager::AppManager(Window& mainWindow, IApp& app)
-    : _main_window(mainWindow), m_app(app)
+    : _main_window(mainWindow)
+    , m_app(app)
 {
     Input::Initialize(mainWindow.get());
     // Set callbacks
@@ -40,17 +41,27 @@ AppManager::AppManager(Window& mainWindow, IApp& app)
     onWindowResize(w, h);
 }
 
+AppManager::~AppManager()
+{
+    if (_update_thread.joinable()) {
+        _update_thread.join();
+    }
+}
+
 void AppManager::run()
 {
+    _update_thread = std::thread{[this]() {
+        while (!glfwWindowShouldClose(_main_window.get())) {
+            update();
+        }
+    }};
     while (!glfwWindowShouldClose(_main_window.get())) {
-        update();
+        glfwWaitEvents();
     }
 }
 
 void AppManager::update()
 {
-    // Events
-    glfwPollEvents();
 #ifdef __COOL_APP_VULKAN
     _main_window.check_for_swapchain_rebuild();
 #endif
@@ -68,8 +79,9 @@ void AppManager::update()
     ImGui::NewFrame();
     ImGuiDockspace();
     // Actual application code
-    if (!m_bFirstFrame) // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+    if (!m_bFirstFrame) { // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
         m_app.update();
+    }
     // UI
     if (m_bShowUI) {
         // Menu bar
@@ -160,14 +172,12 @@ void AppManager::window_size_callback(GLFWwindow* window, int w, int h)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
     appManager->onWindowResize(w, h);
-    // appManager->update();
 }
 
 void AppManager::window_pos_callback(GLFWwindow* window, int x, int y)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
     appManager->onWindowMove(x, y);
-    // appManager->update();
 }
 
 void AppManager::onWindowMove(int x, int y)
