@@ -2,6 +2,7 @@
 
     #include "../../Renderer.h"
     #include <Cool/App/Window.h>
+    #include <Cool/Vulkan/Context.h>
 
 namespace Cool {
 
@@ -24,8 +25,7 @@ void Renderer::set_render_target(Window& window)
 
 VkDevice Renderer::device()
 {
-    assert(_window != nullptr);
-    return _window->_vulkan_context.g_Device;
+    return Vulkan::context().g_Device;
 }
 
 } // namespace Cool

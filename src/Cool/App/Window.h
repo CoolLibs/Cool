@@ -2,7 +2,6 @@
 
 #ifdef __COOL_APP_VULKAN
     #include <vulkan/vulkan.hpp>
-    #include "internal/VulkanContext.h"
     #include "internal/VulkanWindowState.h"
     #define GLFW_INCLUDE_NONE
     #define GLFW_INCLUDE_VULKAN
@@ -19,12 +18,7 @@ public:
     /// <summary>
     /// Please use WindowFactory::create() to create a Window
     /// </summary>
-#ifdef __COOL_APP_VULKAN
-    Window(GLFWwindow* m_window, VulkanContext& vulkan_context);
-#endif
-#ifdef __COOL_APP_OPENGL
     Window(GLFWwindow* m_window);
-#endif
     Window(Window&&) noexcept;
     Window(const Window&) = delete;            // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
     Window& operator=(const Window&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
@@ -74,7 +68,6 @@ private:
 #ifdef __COOL_APP_VULKAN
 public:
     VulkanWindowState _vulkan_window_state;
-    VulkanContext&    _vulkan_context;
 #endif
 };
 

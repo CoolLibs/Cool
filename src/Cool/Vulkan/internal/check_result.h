@@ -3,9 +3,9 @@
 
     #include <vulkan/vulkan.h>
 
-namespace Cool {
+namespace Cool::Vulkan {
 
-inline void check_vk_result(VkResult err)
+inline void check_result(VkResult err)
 {
     if (err == 0)
         return;
@@ -14,6 +14,6 @@ inline void check_vk_result(VkResult err)
         abort();
 }
 
-} // namespace Cool
+} // namespace Cool::Vulkan
 
 #endif

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Cool/Image/ImageData.h>
 #include <vku/vku.hpp>
+
 
 namespace Cool {
 
@@ -8,6 +10,7 @@ class Texture {
 public:
     struct Id;
     Texture() = default;
+    Texture(const ImageData& image_data);
     Texture(std::string_view path);
 
     Id id();
