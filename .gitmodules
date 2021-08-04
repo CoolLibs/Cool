@@ -25,3 +25,6 @@
 [submodule "lib/Vookoo"]
 	path = lib/Vookoo
 	url = https://github.com/CoolLibs/Vookoo
+[submodule "lib/shaderc"]
+	path = lib/shaderc
+	url = https://github.com/google/shaderc
