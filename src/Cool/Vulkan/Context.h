@@ -18,6 +18,7 @@ struct Context {
     VkDebugReportCallbackEXT         g_DebugReport    = VK_NULL_HANDLE;
     VkPipelineCache                  g_PipelineCache  = VK_NULL_HANDLE;
     VkDescriptorPool                 g_DescriptorPool = VK_NULL_HANDLE;
+    VkCommandPool                    command_pool     = VK_NULL_HANDLE;
     VkPhysicalDeviceMemoryProperties memory_properties;
 };
 

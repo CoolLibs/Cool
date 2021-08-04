@@ -3,7 +3,6 @@
 #include <Cool/Image/ImageData.h>
 #include <vku/vku.hpp>
 
-
 namespace Cool {
 
 class Texture {
@@ -23,7 +22,7 @@ public:
 #if defined(__COOL_APP_OPENGL)
         GLuint id;
 #elif defined(__COOL_APP_VULKAN)
-        unsigned int id; // TODO
+        VkImage id;
 #endif
     };
 

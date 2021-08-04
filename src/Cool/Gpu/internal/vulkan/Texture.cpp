@@ -10,6 +10,13 @@ Texture::Texture(const ImageData& image_data)
           image_data.width,
           image_data.height}
 {
+    _vku.upload(
+        Vulkan::context().g_Device,
+        image_data.data.get(),
+        image_data.data_array_size(),
+        Vulkan::context().command_pool,
+        Vulkan::context().memory_properties,
+        Vulkan::context().g_Queue);
 }
 
 Texture::Texture(std::string_view path)
@@ -19,7 +26,7 @@ Texture::Texture(std::string_view path)
 
 Texture::Id Texture::id()
 {
-    return {0};
+    return {_vku.image()};
 }
 
 } // namespace Cool

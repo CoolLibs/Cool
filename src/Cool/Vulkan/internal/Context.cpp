@@ -4,7 +4,6 @@
     #include <glfw/glfw3.h>
     #include "check_result.h"
 
-
 namespace Cool::Vulkan {
     #if defined(DEBUG)
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT /*flags*/, VkDebugReportObjectTypeEXT /*objectType*/, uint64_t /*object*/, size_t /*location*/, int32_t /*messageCode*/, const char* /*pLayerPrefix*/, const char* pMessage, void* /*pUserData*/)
@@ -154,6 +153,16 @@ Context::Context()
 
     // Get memory properties
     vkGetPhysicalDeviceMemoryProperties(g_PhysicalDevice, &memory_properties);
+
+    // Create command pool
+    {
+        VkCommandPoolCreateInfo info = {};
+        info.sType                   = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        info.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        info.queueFamilyIndex        = g_QueueFamily;
+        err                          = vkCreateCommandPool(g_Device, &info, g_Allocator, &command_pool);
+        check_result(err);
+    }
 }
 
 void Context::destroy0()
