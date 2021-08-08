@@ -6,8 +6,8 @@ layout(location = 0) out vec3 fragColour;
 
 void main()
 {
-    // gl_Position = vec4(inPosition, 0.0, 1.0); // Copy 2D position to 3D + depth
-    fragColour = inColour; // Copy colour to the fragment shader.
+    gl_Position = vec4(2. * inPosition, 0.0, 1.0); // Copy 2D position to 3D + depth
+    fragColour  = inColour;                        // Copy colour to the fragment shader.
 }
 
 // #version 430

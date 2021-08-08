@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Cool/Gpu/ShaderKind.h>
+
 namespace Cool::Vulkan {
 
 class ShaderModule {
 public:
-    ShaderModule(std::string_view file_path);
+    ShaderModule(std::string_view file_path, Cool::Gpu::ShaderKind shader_kind);
 
     const vku::ShaderModule& vku() const { return _vku_shader_module; }
 
