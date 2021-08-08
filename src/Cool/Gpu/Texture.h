@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cool/Image/ImageData.h>
-#include <vku/vku.hpp>
 
 namespace Cool {
 

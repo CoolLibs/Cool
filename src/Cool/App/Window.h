@@ -1,7 +1,6 @@
 #pragma once
 
 #ifdef __COOL_APP_VULKAN
-    #include <vulkan/vulkan.hpp>
     #include "internal/VulkanWindowState.h"
     #define GLFW_INCLUDE_NONE
     #define GLFW_INCLUDE_VULKAN
