@@ -123,8 +123,11 @@ target_link_libraries(${PROJECT_NAME}
     glfw
 )
 if (COOL_USE_VULKAN)
+    # shaderc
+    add_subdirectory(Cool/lib/shaderc-and-deps)
     target_link_libraries(${PROJECT_NAME}
         Vulkan::Vulkan
+        shaderc
     )
 endif()
 if (COOL_USE_OPENGL)
