@@ -9,13 +9,14 @@ class FullscreenPipeline {
 public:
     FullscreenPipeline(std::string_view fragment_shader_path);
 
-    vk::UniquePipeline make_unique(const RenderTargetInfo& render_target_info);
+    void rebuild_for_render_target(const RenderTargetInfo& render_target_info);
 
-    void draw(vk::CommandBuffer cb, vk::UniquePipeline& pipeline);
+    void draw(vk::CommandBuffer cb);
 
 private:
-    ShaderModule _fragment_shader_module;
-    ShaderModule _vertex_shader_module;
+    ShaderModule       _fragment_shader_module;
+    ShaderModule       _vertex_shader_module;
+    vk::UniquePipeline _pipeline;
 };
 
 } // namespace Cool::Vulkan

@@ -10,7 +10,7 @@ FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_path)
 {
 }
 
-vk::UniquePipeline FullscreenPipeline::make_unique(const RenderTargetInfo& render_target_info)
+void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& render_target_info)
 {
     auto& device = Vulkan::context().g_Device;
     vkDeviceWaitIdle(device);
@@ -29,13 +29,12 @@ vk::UniquePipeline FullscreenPipeline::make_unique(const RenderTargetInfo& rende
     // Create a pipeline using a renderPass built for our window.
     auto renderPass = render_target_info.render_pass;
     auto cache      = Vulkan::context().g_PipelineCache;
-
-    return pm.createUnique(device, cache, *pipelineLayout_, renderPass);
+    _pipeline       = pm.createUnique(device, cache, *pipelineLayout_, renderPass);
 }
 
-void FullscreenPipeline::draw(vk::CommandBuffer cb, vk::UniquePipeline& pipeline)
+void FullscreenPipeline::draw(vk::CommandBuffer cb)
 {
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, *_pipeline);
     cb.draw(3, 1, 0, 0);
 }
 
