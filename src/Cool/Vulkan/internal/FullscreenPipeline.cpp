@@ -21,7 +21,11 @@ void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& rende
     auto                     pipelineLayout_ = plm.createUnique(device);
 
     // Make a pipeline to use the vertex format and shaders.
-    vku::PipelineMaker pm{render_target_info.width, render_target_info.height};
+    vku::PipelineMaker pm{
+        render_target_info.viewport.topLeft().x,
+        render_target_info.viewport.topLeft().y,
+        static_cast<uint32_t>(render_target_info.viewport.width()),
+        static_cast<uint32_t>(render_target_info.viewport.height())};
     pm.shader(vk::ShaderStageFlagBits::eVertex, _vertex_shader_module.vku());
     pm.shader(vk::ShaderStageFlagBits::eFragment, _fragment_shader_module.vku());
     pm.blendBegin(VK_TRUE);

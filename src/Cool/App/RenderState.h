@@ -88,7 +88,7 @@ public:
     /// </summary>
     static void disablePreviewControlThroughUI(const char* reasonForDisabling = "");
 
-private:
+public:
     friend class AppManager;
     friend class Renderer_Fullscreen;
     friend class Input;

@@ -1,7 +1,12 @@
 #pragma once
 
+#include <Cool/App/internal/RectSizePos.h>
+
+namespace Cool {
+
 struct RenderTargetInfo {
-    uint32_t     width;
-    uint32_t     height;
+    RectSizePos viewport;
     VkRenderPass render_pass;
 };
+
+}
