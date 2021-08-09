@@ -24,6 +24,7 @@ vk::UniquePipeline FullscreenPipeline::make_unique(const RenderTargetInfo& rende
     vku::PipelineMaker pm{render_target_info.width, render_target_info.height};
     pm.shader(vk::ShaderStageFlagBits::eVertex, _vertex_shader_module.vku());
     pm.shader(vk::ShaderStageFlagBits::eFragment, _fragment_shader_module.vku());
+    pm.blendBegin(VK_TRUE);
 
     // Create a pipeline using a renderPass built for our window.
     auto renderPass = render_target_info.render_pass;
