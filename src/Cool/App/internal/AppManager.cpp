@@ -1,21 +1,20 @@
 #include "../AppManager.h"
-#include <Cool/Gpu/Renderer.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "../IApp.h"
 #include "../Input.h"
 #include "../RenderState.h"
 #ifdef __COOL_APP_VULKAN
-    #include <imgui/backends/imgui_impl_vulkan.h>
+#include <imgui/backends/imgui_impl_vulkan.h>
 #endif
 #ifdef __COOL_APP_OPENGL
-    #include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
 #endif
 #include <imgui/imgui_internal.h>
 
 // Hide console in release builds
 // msvc version
 #if defined(_MSC_VER) && !defined(DEBUG)
-    #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 
 namespace Cool {
@@ -24,19 +23,19 @@ AppManager::AppManager(Window& mainWindow, IApp& app)
     : _main_window(mainWindow)
     , m_app(app)
 {
-    Input::Initialize(mainWindow.get());
+    Input::Initialize(mainWindow->glfw());
     // Set callbacks
-    glfwSetKeyCallback(_main_window.get(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(_main_window.get(), AppManager::mouse_button_callback);
-    glfwSetScrollCallback(_main_window.get(), AppManager::scroll_callback);
-    glfwSetCursorPosCallback(_main_window.get(), AppManager::cursor_position_callback);
-    glfwSetWindowSizeCallback(_main_window.get(), window_size_callback);
-    glfwSetWindowPosCallback(_main_window.get(), window_pos_callback);
-    glfwSetWindowUserPointer(_main_window.get(), reinterpret_cast<void*>(this));
+    glfwSetKeyCallback(_main_window->glfw(), AppManager::key_callback);
+    glfwSetMouseButtonCallback(_main_window->glfw(), AppManager::mouse_button_callback);
+    glfwSetScrollCallback(_main_window->glfw(), AppManager::scroll_callback);
+    glfwSetCursorPosCallback(_main_window->glfw(), AppManager::cursor_position_callback);
+    glfwSetWindowSizeCallback(_main_window->glfw(), window_size_callback);
+    glfwSetWindowPosCallback(_main_window->glfw(), window_pos_callback);
+    glfwSetWindowUserPointer(_main_window->glfw(), reinterpret_cast<void*>(this));
     // Trigger window size / position event once
     int x, y, w, h;
-    glfwGetWindowPos(_main_window.get(), &x, &y);
-    glfwGetWindowSize(_main_window.get(), &w, &h);
+    glfwGetWindowPos(_main_window->glfw(), &x, &y);
+    glfwGetWindowSize(_main_window->glfw(), &w, &h);
     onWindowMove(x, y);
     onWindowResize(w, h);
 }
@@ -51,11 +50,11 @@ AppManager::~AppManager()
 void AppManager::run()
 {
     _update_thread = std::thread{[this]() {
-        while (!glfwWindowShouldClose(_main_window.get())) {
+        while (!glfwWindowShouldClose(_main_window->glfw())) {
             update();
         }
     }};
-    while (!glfwWindowShouldClose(_main_window.get())) {
+    while (!glfwWindowShouldClose(_main_window->glfw())) {
         glfwWaitEvents();
     }
 }
@@ -66,8 +65,8 @@ void AppManager::update()
     _main_window.check_for_swapchain_rebuild();
 #endif
     // Clear screen
-    Renderer::set_render_target(_main_window);
-    Renderer::clear_background(RenderState::getEmptySpaceColor());
+    // Renderer::set_render_target(_main_window);
+    // Renderer::clear_background(RenderState::getEmptySpaceColor());
     // Start ImGui frame
 #ifdef __COOL_APP_VULKAN
     ImGui_ImplVulkan_NewFrame();
@@ -140,7 +139,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     if (appManager->m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput)
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     // Fullscreen
-    appManager->_main_window.checkForFullscreenToggles(key, scancode, action, mods);
+    appManager->_main_window->checkForFullscreenToggles(key, scancode, action, mods);
     // CTRL + H
     if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
         appManager->m_bShowUI = !appManager->m_bShowUI;

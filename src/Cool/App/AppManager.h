@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Cool/Window/Window.h>
 #include "IApp.h"
-#include "Window.h"
 
 struct ImGuiDockNode;
 

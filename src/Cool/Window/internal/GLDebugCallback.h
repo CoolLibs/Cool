@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef DEBUG
+#if defined(__COOL_APP_OPENGL) && defined(DEBUG)
 
 namespace Cool {
 
