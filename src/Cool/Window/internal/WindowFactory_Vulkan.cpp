@@ -63,7 +63,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     // Window flags
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     // Create window
-    _windows.emplace_back(glfwCreateWindow(width, height, name, NULL, NULL));
+    _windows.push_back(Window_Vulkan{glfwCreateWindow(width, height, name, NULL, NULL)});
     Window_Vulkan& window = _windows.back();
     if (!window->glfw()) {
         const char* errorDescription;

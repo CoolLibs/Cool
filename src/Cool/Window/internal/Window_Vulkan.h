@@ -16,12 +16,10 @@ struct VulkanWindowState {
 
 class Window_Vulkan {
 public:
-    Window_Vulkan(GLFWwindow* window);
     Window_Vulkan(Window_Vulkan&&) noexcept = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
-    Window_Vulkan(const Window_Vulkan&)                = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-    Window_Vulkan& operator=(const Window_Vulkan&) = delete;     // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-    void           destroy();
+    Window_Vulkan(const Window_Vulkan&)                = delete; // Non-copyable because there should only be one owner of the window.
+    Window_Vulkan& operator=(const Window_Vulkan&) = delete;     // Non-copyable because there should only be one owner of the window.
 
     void check_for_swapchain_rebuild();
     void FramePresent();
@@ -29,6 +27,12 @@ public:
 
     Window_Base& operator*() { return _base; }
     Window_Base* operator->() { return &operator*(); }
+
+private:
+    // To construct a window, use WindowFactory_Vulkan::make_window()
+    friend class WindowFactory_Vulkan;
+    Window_Vulkan(GLFWwindow* window);
+    void destroy();
 
 public:
     VulkanWindowState _vulkan_window_state;

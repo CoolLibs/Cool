@@ -6,16 +6,8 @@ namespace Cool {
 
 class Window_Base {
 public:
-    /// <summary>
-    /// Please use WindowFactory::create() to create a Window
-    /// </summary>
-    Window_Base(GLFWwindow* m_window);
-    Window_Base(Window_Base&&) noexcept;
-    Window_Base& operator=(Window_Base&&) noexcept;
-
-    Window_Base(const Window_Base&) = delete;            // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-    Window_Base& operator=(const Window_Base&) = delete; // Non-copyable because there should only be ONE owner of the window. Please store references to the window if you need to.
-    void         destroy();
+    Window_Base(const Window_Base&) = delete;            // Non-copyable because there should only be one owner of the window.
+    Window_Base& operator=(const Window_Base&) = delete; // Non-copyable because there should only be one owner of the window.
 
     /// <summary>
     /// You have to forward the parameters of the IApp::onKeyboardEvent() function (a.k.a. glfw key callback) and it will turn fullscreen on / off appropriately.
@@ -32,6 +24,14 @@ public:
     /// Returns the monitor that the window is mostly displayed in
     /// </summary>
     GLFWmonitor* getCurrentMonitor() const;
+
+private:
+    friend class Window_OpenGL;
+    friend class Window_Vulkan;
+    Window_Base(GLFWwindow* m_window);
+    Window_Base(Window_Base&&) noexcept;
+    Window_Base& operator=(Window_Base&&) noexcept;
+    void         destroy();
 
 private:
     GLFWwindow* m_window;
