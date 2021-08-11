@@ -19,14 +19,14 @@
 
 namespace Cool {
 
-AppManager::AppManager(Window& mainWindow, std::list<Window>& windows, IApp& app)
+AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app)
     : _main_window(mainWindow)
-    , _windows{windows}
+    , _window_manager{window_manager}
     , m_app(app)
 {
     Input::Initialize(mainWindow->glfw());
     // Set callbacks
-    for (auto& window : _windows) {
+    for (auto& window : _window_manager.windows()) {
         GLFWwindow* glfw_window = window->glfw();
         glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this));
         if (glfw_window != _main_window->glfw()) {
@@ -162,19 +162,14 @@ void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
     // Fullscreen
-    Window& window = *std::find_if(std::begin(appManager->_windows), std::end(appManager->_windows), [&](const Window& win) {
-        return win->glfw() == glfw_window;
-    });
-    window->check_for_fullscreen_toggles(key, scancode, action, mods);
+    appManager->_window_manager.find(glfw_window)->check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
 void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_window)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
     // Fullscreen
-    Window& window = *std::find_if(std::begin(appManager->_windows), std::end(appManager->_windows), [&](const Window& win) {
-        return win->glfw() == glfw_window;
-    });
+    Window& window = appManager->_window_manager.find(glfw_window);
     if (window->is_visible() && glfwWindowShouldClose(window->glfw())) {
         window->set_visibility(false);
         glfwSetWindowShouldClose(glfw_window, GLFW_FALSE);

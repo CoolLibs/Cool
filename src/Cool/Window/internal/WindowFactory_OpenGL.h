@@ -2,6 +2,7 @@
 
 #if defined(__COOL_APP_OPENGL)
 
+#include "WindowManager.h"
 #include "Window_OpenGL.h"
 
 namespace Cool {
@@ -24,15 +25,15 @@ public:
 	 * @param height Initial height of the window
 	 * @return Window& 
 	 */
-    Window_OpenGL&            make_window(const char* name, int width, int height);
-    std::list<Window_OpenGL>& windows() { return _windows; }
+    Window_OpenGL& make_window(const char* name, int width, int height);
+    WindowManager& window_manager() { return _window_manager; }
 
 private:
     void setupGLDebugging();
     void setup_imgui(GLFWwindow* glfw_window);
 
 private:
-    std::list<Window_OpenGL> _windows;
+    WindowManager _window_manager;
 
     int m_openGLMajorVersion;
     int m_openGLMinorVersion;
