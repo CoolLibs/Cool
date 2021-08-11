@@ -2,75 +2,75 @@
 
 namespace Cool {
 
-Window_Base::Window_Base(GLFWwindow* m_window)
-    : m_window{m_window}
+Window_Base::Window_Base(GLFWwindow* glfw_window)
+    : _glfw_window{glfw_window}
 {
 }
 
 Window_Base::Window_Base(Window_Base&& o) noexcept
-    : m_window(o.m_window)
+    : _glfw_window(o._glfw_window)
 {
-    o.m_window = nullptr;
+    o._glfw_window = nullptr;
 }
 
 Window_Base& Window_Base::operator=(Window_Base&& o) noexcept
 {
-    m_window   = o.m_window;
-    o.m_window = nullptr;
+    _glfw_window   = o._glfw_window;
+    o._glfw_window = nullptr;
     return *this;
 }
 
 Window_Base::~Window_Base()
 {
-    if (m_window != nullptr) { // Could have been moved
-        glfwDestroyWindow(m_window);
+    if (_glfw_window != nullptr) { // Could have been moved
+        glfwDestroyWindow(_glfw_window);
     }
 }
 
-bool Window_Base::checkForFullscreenToggles(int key, int scancode, int action, int mods)
+bool Window_Base::check_for_fullscreen_toggles(int key, int scancode, int action, int mods)
 {
     if (action == GLFW_RELEASE) {
         if (key == GLFW_KEY_F11) {
-            switchFullScreen();
+            switch_fullscreen();
             return true;
         }
-        if (key == GLFW_KEY_ESCAPE && m_bIsFullScreen) {
-            escapeFullScreen();
+        if (key == GLFW_KEY_ESCAPE && _is_fullscreen) {
+            escape_fullscreen();
             return true;
         }
     }
     return false;
 }
 
-void Window_Base::switchFullScreen()
+void Window_Base::switch_fullscreen()
 {
-    if (m_bIsFullScreen)
-        escapeFullScreen();
+    if (_is_fullscreen)
+        escape_fullscreen();
     else {
-        GLFWmonitor*       monitor = getCurrentMonitor();
+        GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
-        glfwGetWindowPos(m_window, &m_posXBeforeFullscreen, &m_posYBeforeFullscreen);
-        glfwGetWindowSize(m_window, &m_widthBeforeFullscreen, &m_heightBeforeFullscreen);
-        glfwSetWindowMonitor(m_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        glfwGetWindowPos(_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
+        glfwGetWindowSize(_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
+        glfwSetWindowMonitor(_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
         // if (m_bIsVSyncEnabled)
         //     setSwapInterval(GLFW_TRUE);
-        m_bIsFullScreen = true;
+        _is_fullscreen = true;
     }
 }
 
-void Window_Base::escapeFullScreen()
+void Window_Base::escape_fullscreen()
 {
-    if (m_bIsFullScreen) {
-        GLFWmonitor*       monitor = getCurrentMonitor();
+    if (_is_fullscreen) {
+        GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(m_window, NULL, m_posXBeforeFullscreen, m_posYBeforeFullscreen, m_widthBeforeFullscreen, m_heightBeforeFullscreen, mode->refreshRate);
+        glfwSetWindowMonitor(_glfw_window, NULL, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, mode->refreshRate);
         // if (m_bIsVSyncEnabled)
         //     setSwapInterval(GLFW_TRUE);
-        m_bIsFullScreen = false;
+        _is_fullscreen = false;
     }
 }
 
-GLFWmonitor* Window_Base::getCurrentMonitor() const
+GLFWmonitor* Window_Base::current_monitor() const
 {
     // Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
     int                nmonitors, i;
@@ -84,8 +84,8 @@ GLFWmonitor* Window_Base::getCurrentMonitor() const
     bestoverlap = 0;
     bestmonitor = NULL;
 
-    glfwGetWindowPos(m_window, &wx, &wy);
-    glfwGetWindowSize(m_window, &ww, &wh);
+    glfwGetWindowPos(_glfw_window, &wx, &wy);
+    glfwGetWindowSize(_glfw_window, &ww, &wh);
     monitors = glfwGetMonitors(&nmonitors);
 
     for (i = 0; i < nmonitors; i++) {

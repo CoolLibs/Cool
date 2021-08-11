@@ -139,7 +139,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     if (appManager->m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput)
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     // Fullscreen
-    appManager->_main_window->checkForFullscreenToggles(key, scancode, action, mods);
+    appManager->_main_window->check_for_fullscreen_toggles(key, scancode, action, mods);
     // CTRL + H
     if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
         appManager->m_bShowUI = !appManager->m_bShowUI;
