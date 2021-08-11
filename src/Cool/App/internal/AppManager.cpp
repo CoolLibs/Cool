@@ -31,6 +31,7 @@ AppManager::AppManager(Window& mainWindow, std::list<Window>& windows, IApp& app
         glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this));
         if (glfw_window != _main_window->glfw()) {
             glfwSetKeyCallback(glfw_window, AppManager::key_callback_for_secondary_windows);
+            glfwSetWindowCloseCallback(glfw_window, AppManager::window_close_callback_for_secondary_windows);
         }
     }
     // clang-format off
@@ -165,6 +166,19 @@ void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int
         return win->glfw() == glfw_window;
     });
     window->check_for_fullscreen_toggles(key, scancode, action, mods);
+}
+
+void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_window)
+{
+    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
+    // Fullscreen
+    Window& window = *std::find_if(std::begin(appManager->_windows), std::end(appManager->_windows), [&](const Window& win) {
+        return win->glfw() == glfw_window;
+    });
+    if (window->is_visible() && glfwWindowShouldClose(window->glfw())) {
+        window->set_visibility(false);
+        glfwSetWindowShouldClose(glfw_window, GLFW_FALSE);
+    }
 }
 
 void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

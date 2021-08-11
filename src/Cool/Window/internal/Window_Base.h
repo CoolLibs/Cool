@@ -18,6 +18,9 @@ public:
     void switch_fullscreen();
     void escape_fullscreen();
 
+    bool is_visible() const { return _is_visible; }
+    void set_visibility(bool is_visible);
+
     /**
      * @brief Returns the underlying glfw window pointer
      * 
@@ -50,6 +53,7 @@ private:
 private:
     GLFWwindow* _glfw_window;
     bool        _is_fullscreen = false;
+    bool        _is_visible    = true;
     int         _pos_x_before_fullscreen;
     int         _pos_y_before_fullscreen;
     int         _width_before_fullscreen;

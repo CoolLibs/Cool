@@ -70,6 +70,18 @@ void Window_Base::escape_fullscreen()
     }
 }
 
+void Window_Base::set_visibility(bool is_visible)
+{
+    _is_visible = is_visible;
+    if (is_visible) {
+        glfwShowWindow(_glfw_window);
+    }
+    else {
+        escape_fullscreen(); // If fullscreen, glfwHideWindow does nothing
+        glfwHideWindow(_glfw_window);
+    }
+}
+
 GLFWmonitor* Window_Base::current_monitor() const
 {
     // Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
