@@ -24,14 +24,15 @@ public:
 	 * @param height Initial height of the window
 	 * @return Window& 
 	 */
-    Window_OpenGL& make_window(const char* name, int width, int height);
+    Window_OpenGL&            make_window(const char* name, int width, int height);
+    std::list<Window_OpenGL>& windows() { return _windows; }
 
 private:
     void setupGLDebugging();
     void setup_imgui(GLFWwindow* glfw_window);
 
 private:
-    std::list<Window> _windows;
+    std::list<Window_OpenGL> _windows;
 
     int m_openGLMajorVersion;
     int m_openGLMinorVersion;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Window/Window.h>
+#include <Cool/Window/WindowFactory.h>
 #include "IApp.h"
 
 struct ImGuiDockNode;
@@ -13,7 +14,7 @@ class AppManager {
 public:
     /// <param name="mainWindow">The main window where your app will be rendered to, created by the WindowFactory</param>
     /// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
-    AppManager(Window& mainWindow, IApp& app);
+    AppManager(Window& mainWindow, std::list<Window>& windows, IApp& app);
     ~AppManager();
 
     /// Runs the app's update loop continuously, until the user closes the main window
@@ -46,12 +47,13 @@ private:
     static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
-    Window&     _main_window;
-    IApp&       m_app;
-    bool        m_bFirstFrame                = true; // Used to prevent triggering the resize event twice at the start of the app
-    bool        m_bShowUI                    = true;
-    bool        m_bDoForwardKeyEventsToImGui = true;
-    std::thread _update_thread;
+    Window&            _main_window;
+    std::list<Window>& _windows;
+    IApp&              m_app;
+    bool               m_bFirstFrame                = true; // Used to prevent triggering the resize event twice at the start of the app
+    bool               m_bShowUI                    = true;
+    bool               m_bDoForwardKeyEventsToImGui = true;
+    std::thread        _update_thread;
 };
 
 } // namespace Cool

@@ -19,8 +19,9 @@
 
 namespace Cool {
 
-AppManager::AppManager(Window& mainWindow, IApp& app)
+AppManager::AppManager(Window& mainWindow, std::list<Window>& windows, IApp& app)
     : _main_window(mainWindow)
+    , _windows{windows}
     , m_app(app)
 {
     Input::Initialize(mainWindow->glfw());
