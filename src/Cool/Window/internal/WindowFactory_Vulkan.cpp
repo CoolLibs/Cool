@@ -56,6 +56,18 @@ static void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceK
     ImGui_ImplVulkanH_CreateOrResizeWindow(Vulkan::context().g_Instance, Vulkan::context().g_PhysicalDevice, Vulkan::context().g_Device, wd, Vulkan::context().g_QueueFamily, Vulkan::context().g_Allocator, width, height, vulkan_window_state.g_MinImageCount);
 }
 
+Window_Vulkan& WindowFactory_Vulkan::make_main_window(const char* name, int width, int height)
+{
+    auto& window = make_window(name, width, height);
+    setup_imgui(window);
+    return window;
+}
+
+Window_Vulkan& WindowFactory_Vulkan::make_secondary_window(const char* name, int width, int height)
+{
+    return make_window(name, width, height);
+}
+
 Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, int height)
 {
     auto& vk_context = Vulkan::context();
@@ -81,7 +93,6 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     int w, h;
     glfwGetFramebufferSize(window->glfw(), &w, &h);
     SetupVulkanWindow(window._vulkan_window_state, surface, w, h);
-    setup_imgui(window);
     return window;
 }
 
