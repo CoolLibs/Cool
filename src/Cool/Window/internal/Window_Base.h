@@ -26,6 +26,13 @@ public:
     GLFWwindow* glfw() { return _glfw_window; }
 
     /**
+     * @brief Returns the underlying glfw window pointer
+     * 
+     * @return GLFWwindow* 
+     */
+    const GLFWwindow* glfw() const { return _glfw_window; }
+
+    /**
      * @brief Returns the monitor that the window is in
      * (if it is over multiple monitors, returns the one which contains most of the window)
      * 

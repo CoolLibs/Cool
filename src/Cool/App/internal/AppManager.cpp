@@ -26,13 +26,22 @@ AppManager::AppManager(Window& mainWindow, std::list<Window>& windows, IApp& app
 {
     Input::Initialize(mainWindow->glfw());
     // Set callbacks
-    glfwSetKeyCallback(_main_window->glfw(), AppManager::key_callback);
+    for (auto& window : _windows) {
+        GLFWwindow* glfw_window = window->glfw();
+        glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this));
+        if (glfw_window != _main_window->glfw()) {
+            glfwSetKeyCallback(glfw_window, AppManager::key_callback_for_secondary_windows);
+        }
+    }
+    // clang-format off
+    glfwSetKeyCallback        (_main_window->glfw(), AppManager::key_callback);
     glfwSetMouseButtonCallback(_main_window->glfw(), AppManager::mouse_button_callback);
-    glfwSetScrollCallback(_main_window->glfw(), AppManager::scroll_callback);
-    glfwSetCursorPosCallback(_main_window->glfw(), AppManager::cursor_position_callback);
-    glfwSetWindowSizeCallback(_main_window->glfw(), window_size_callback);
-    glfwSetWindowPosCallback(_main_window->glfw(), window_pos_callback);
-    glfwSetWindowUserPointer(_main_window->glfw(), reinterpret_cast<void*>(this));
+    glfwSetScrollCallback     (_main_window->glfw(), AppManager::scroll_callback);
+    glfwSetCursorPosCallback  (_main_window->glfw(), AppManager::cursor_position_callback);
+    glfwSetWindowSizeCallback (_main_window->glfw(), window_size_callback);
+    glfwSetWindowPosCallback  (_main_window->glfw(), window_pos_callback);
+    // clang-format on
+
     // Trigger window size / position event once
     int x, y, w, h;
     glfwGetWindowPos(_main_window->glfw(), &x, &y);
@@ -146,6 +155,16 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         appManager->m_bShowUI = !appManager->m_bShowUI;
     //
     appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+}
+
+void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+{
+    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
+    // Fullscreen
+    Window& window = *std::find_if(std::begin(appManager->_windows), std::end(appManager->_windows), [&](const Window& win) {
+        return win->glfw() == glfw_window;
+    });
+    window->check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
 void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

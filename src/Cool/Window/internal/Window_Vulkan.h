@@ -26,8 +26,10 @@ public:
     void FramePresent();
     void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
 
-    Window_Base& operator*() { return _base; }
-    Window_Base* operator->() { return &operator*(); }
+    Window_Base&       operator*() { return _base; }
+    Window_Base*       operator->() { return &operator*(); }
+    const Window_Base& operator*() const { return _base; }
+    const Window_Base* operator->() const { return &operator*(); }
 
 private:
     // To construct a window, use WindowFactory_Vulkan::make_window()
