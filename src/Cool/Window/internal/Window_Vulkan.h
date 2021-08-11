@@ -20,6 +20,7 @@ public:
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
     Window_Vulkan(const Window_Vulkan&)                = delete; // Non-copyable because there should only be one owner of the window.
     Window_Vulkan& operator=(const Window_Vulkan&) = delete;     // Non-copyable because there should only be one owner of the window.
+    Window_Vulkan::~Window_Vulkan();
 
     void check_for_swapchain_rebuild();
     void FramePresent();
@@ -32,7 +33,6 @@ private:
     // To construct a window, use WindowFactory_Vulkan::make_window()
     friend class WindowFactory_Vulkan;
     Window_Vulkan(GLFWwindow* window);
-    void destroy();
 
 public:
     VulkanWindowState _vulkan_window_state;

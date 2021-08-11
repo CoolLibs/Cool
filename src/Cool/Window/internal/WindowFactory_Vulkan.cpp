@@ -17,8 +17,7 @@ WindowFactory_Vulkan::~WindowFactory_Vulkan()
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    for (auto& window : _windows)
-        window.destroy();
+    _windows.clear();
     Vulkan::context().destroy1(); // TODO is this the proper place to do it ?
     glfwTerminate();
 }

@@ -20,10 +20,11 @@ Window_Base& Window_Base::operator=(Window_Base&& o) noexcept
     return *this;
 }
 
-void Window_Base::destroy()
+Window_Base::~Window_Base()
 {
-    if (m_window != nullptr) // Could have been moved
+    if (m_window != nullptr) { // Could have been moved
         glfwDestroyWindow(m_window);
+    }
 }
 
 bool Window_Base::checkForFullscreenToggles(int key, int scancode, int action, int mods)

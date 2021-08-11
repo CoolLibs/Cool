@@ -8,6 +8,7 @@ class Window_Base {
 public:
     Window_Base(const Window_Base&) = delete;            // Non-copyable because there should only be one owner of the window.
     Window_Base& operator=(const Window_Base&) = delete; // Non-copyable because there should only be one owner of the window.
+    Window_Base::~Window_Base();
 
     /// <summary>
     /// You have to forward the parameters of the IApp::onKeyboardEvent() function (a.k.a. glfw key callback) and it will turn fullscreen on / off appropriately.
@@ -31,7 +32,6 @@ private:
     Window_Base(GLFWwindow* m_window);
     Window_Base(Window_Base&&) noexcept;
     Window_Base& operator=(Window_Base&&) noexcept;
-    void         destroy();
 
 private:
     GLFWwindow* m_window;

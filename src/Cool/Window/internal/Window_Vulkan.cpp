@@ -12,10 +12,13 @@ Window_Vulkan::Window_Vulkan(GLFWwindow* window)
 {
 }
 
-void Window_Vulkan::destroy()
+Window_Vulkan::~Window_Vulkan()
 {
-    _base.destroy();
-    ImGui_ImplVulkanH_DestroyWindow(Vulkan::context().g_Instance, Vulkan::context().g_Device, &_vulkan_window_state.g_MainWindowData, Vulkan::context().g_Allocator);
+    ImGui_ImplVulkanH_DestroyWindow(
+        Vulkan::context().g_Instance,
+        Vulkan::context().g_Device,
+        &_vulkan_window_state.g_MainWindowData,
+        Vulkan::context().g_Allocator);
 }
 
 void Window_Vulkan::check_for_swapchain_rebuild()
