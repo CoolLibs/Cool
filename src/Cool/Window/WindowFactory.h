@@ -13,4 +13,5 @@ using WindowFactory = WindowFactory_OpenGL;
 namespace Cool {
 using WindowFactory = WindowFactory_Vulkan;
 } // namespace Cool
+
 #endif
