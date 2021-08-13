@@ -4,7 +4,7 @@
 
 #include "internal/Window_OpenGL.h"
 namespace Cool {
-using Cool::Window = Cool::Window_OpenGL;
+using Window = Window_OpenGL;
 }
 
 #elif defined(__COOL_APP_VULKAN)
