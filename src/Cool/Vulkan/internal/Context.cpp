@@ -1,17 +1,17 @@
 #ifdef __COOL_APP_VULKAN
 
-    #include "../Context.h"
-    #include <glfw/glfw3.h>
-    #include "check_result.h"
+#include "../Context.h"
+#include <glfw/glfw3.h>
+#include "check_result.h"
 
 namespace Cool::Vulkan {
-    #if defined(DEBUG)
+#if defined(DEBUG)
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT /*flags*/, VkDebugReportObjectTypeEXT /*objectType*/, uint64_t /*object*/, size_t /*location*/, int32_t /*messageCode*/, const char* /*pLayerPrefix*/, const char* pMessage, void* /*pUserData*/)
 {
     Log::warn("[vulkan] {}\n", pMessage);
     return VK_FALSE;
 }
-    #endif
+#endif
 
 Context::Context()
 {
@@ -24,7 +24,7 @@ Context::Context()
         create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         create_info.enabledExtensionCount   = extensions_count;
         create_info.ppEnabledExtensionNames = extensions;
-    #if defined(DEBUG)
+#if defined(DEBUG)
         // Enabling validation layers
         const char* layers[]            = {"VK_LAYER_KHRONOS_validation"};
         create_info.enabledLayerCount   = 1;
@@ -54,12 +54,12 @@ Context::Context()
         debug_report_ci.pUserData                          = NULL;
         err                                                = vkCreateDebugReportCallbackEXT(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport);
         check_result(err);
-    #else
+#else
         // Create Vulkan Instance without any debug feature
         err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
         check_result(err);
         IM_UNUSED(g_DebugReport);
-    #endif
+#endif
     }
 
     // Select GPU
@@ -174,11 +174,11 @@ void Context::destroy0()
 void Context::destroy1()
 {
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
-    #if defined(DEBUG)
+#if defined(DEBUG)
     // Remove the debug report callback
     auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
     vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
-    #endif
+#endif
     vkDestroyDevice(g_Device, g_Allocator);
     vkDestroyInstance(g_Instance, g_Allocator);
 }
