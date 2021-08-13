@@ -125,6 +125,22 @@ void Window_Vulkan::FramePresent()
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
 }
 
+void Window_Vulkan::cap_framerate(bool should_cap)
+{
+    _vulkan_window_state.g_MainWindowData.PresentMode = should_cap ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_MAILBOX_KHR;
+    vkDeviceWaitIdle(Vulkan::context().g_Device);
+    ImGui_ImplVulkanH_CreateOrResizeWindow(
+        Vulkan::context().g_Instance,
+        Vulkan::context().g_PhysicalDevice,
+        Vulkan::context().g_Device,
+        &_vulkan_window_state.g_MainWindowData,
+        Vulkan::context().g_QueueFamily,
+        Vulkan::context().g_Allocator,
+        _vulkan_window_state.g_MainWindowData.Width,
+        _vulkan_window_state.g_MainWindowData.Height,
+        _vulkan_window_state.g_MinImageCount);
+}
+
 } // namespace Cool
 
 #endif
