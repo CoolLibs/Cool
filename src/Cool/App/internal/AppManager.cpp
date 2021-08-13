@@ -73,7 +73,9 @@ void AppManager::run()
 void AppManager::update()
 {
 #ifdef __COOL_APP_VULKAN
-    _main_window.check_for_swapchain_rebuild();
+    for (auto& window : _window_manager.windows()) {
+        window.check_for_swapchain_rebuild();
+    }
 #endif
     // Clear screen
     // Renderer::set_render_target(_main_window);
