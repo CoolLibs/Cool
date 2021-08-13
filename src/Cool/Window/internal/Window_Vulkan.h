@@ -23,6 +23,7 @@ public:
     Window_Vulkan::~Window_Vulkan();
 
     void check_for_swapchain_rebuild();
+    void rebuild_swapchain();
     void FramePresent();
     void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
 
