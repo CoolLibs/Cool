@@ -46,6 +46,7 @@ public:
 
 private:
     Window_Base _base;
+    bool        _present_mode_mailbox_is_avaible = false;
 };
 
 } // namespace Cool

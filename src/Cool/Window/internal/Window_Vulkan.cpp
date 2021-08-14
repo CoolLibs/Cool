@@ -143,10 +143,15 @@ void Window_Vulkan::rebuild_swapchain()
 
 void Window_Vulkan::cap_framerate(bool should_cap)
 {
-    _vulkan_window_state.g_MainWindowData.PresentMode = should_cap ? VK_PRESENT_MODE_FIFO_KHR
-                                                                   : VK_PRESENT_MODE_MAILBOX_KHR;
-    vkDeviceWaitIdle(Vulkan::context().g_Device); // Safety measure but we could probably do more efficient (who cares though ?)
-    rebuild_swapchain();
+    if (_present_mode_mailbox_is_avaible) {
+        _vulkan_window_state.g_MainWindowData.PresentMode = should_cap ? VK_PRESENT_MODE_FIFO_KHR
+                                                                       : VK_PRESENT_MODE_MAILBOX_KHR;
+        vkDeviceWaitIdle(Vulkan::context().g_Device); // Safety measure but we could probably do more efficient (who cares though ?)
+        rebuild_swapchain();
+    }
+    else {
+        Log::warn("[Window_Vulkan::cap_framerate] Cannot un-cap framerate because VK_PRESENT_MODE_MAILBOX_KHR is not available.");
+    }
 }
 
 bool Window_Vulkan::framerate_is_capped()
