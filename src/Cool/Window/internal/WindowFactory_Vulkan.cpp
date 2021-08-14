@@ -41,29 +41,21 @@ static void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceK
     const VkFormat        requestSurfaceImageFormat[] = {VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM};
     const VkColorSpaceKHR requestSurfaceColorSpace    = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
     wd->SurfaceFormat                                 = ImGui_ImplVulkanH_SelectSurfaceFormat(Vulkan::context().g_PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
-
-    // Select Present Mode
-    wd->PresentMode = VK_PRESENT_MODE_FIFO_KHR; //ImGui_ImplVulkanH_SelectPresentMode(Vulkan::context().g_PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
-    //printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
-
-    // Create SwapChain, RenderPass, Framebuffer, etc.
-    IM_ASSERT(vulkan_window_state.g_MinImageCount >= 2);
-    ImGui_ImplVulkanH_CreateOrResizeWindow(Vulkan::context().g_Instance, Vulkan::context().g_PhysicalDevice, Vulkan::context().g_Device, wd, Vulkan::context().g_QueueFamily, Vulkan::context().g_Allocator, width, height, vulkan_window_state.g_MinImageCount);
 }
 
-Window_Vulkan& WindowFactory_Vulkan::make_main_window(const char* name, int width, int height)
+Window_Vulkan& WindowFactory_Vulkan::make_main_window(const char* name, int width, int height, bool cap_framerate)
 {
-    auto& window = make_window(name, width, height);
+    auto& window = make_window(name, width, height, cap_framerate);
     setup_imgui(window);
     return window;
 }
 
-Window_Vulkan& WindowFactory_Vulkan::make_secondary_window(const char* name, int width, int height)
+Window_Vulkan& WindowFactory_Vulkan::make_secondary_window(const char* name, int width, int height, bool cap_framerate)
 {
-    return make_window(name, width, height);
+    return make_window(name, width, height, cap_framerate);
 }
 
-Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, int height)
+Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, int height, bool cap_framerate)
 {
     auto& vk_context = Vulkan::context();
     // Window flags
@@ -106,6 +98,8 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
 
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();
+
+    window.cap_framerate(cap_framerate);
 
     return window;
 }
