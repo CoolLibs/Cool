@@ -28,6 +28,8 @@ public:
     void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
 
     void cap_framerate(bool should_cap);
+    bool framerate_is_capped();
+    bool imgui_cap_framerate();
 
     Window_Base&       operator*() { return _base; }
     Window_Base*       operator->() { return &operator*(); }

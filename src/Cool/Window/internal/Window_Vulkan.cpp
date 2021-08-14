@@ -149,6 +149,22 @@ void Window_Vulkan::cap_framerate(bool should_cap)
     rebuild_swapchain();
 }
 
+bool Window_Vulkan::framerate_is_capped()
+{
+    return _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_KHR ||
+           _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_RELAXED_KHR;
+}
+
+bool Window_Vulkan::imgui_cap_framerate()
+{
+    bool should_cap_framerate = framerate_is_capped();
+    bool checkbox_triggered   = ImGui::Checkbox("Framerate capped", &should_cap_framerate);
+    if (checkbox_triggered) {
+        cap_framerate(should_cap_framerate);
+    }
+    return checkbox_triggered;
+}
+
 } // namespace Cool
 
 #endif
