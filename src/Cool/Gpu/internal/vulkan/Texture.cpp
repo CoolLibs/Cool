@@ -19,6 +19,7 @@ Texture::Texture(const ImageData& image_data)
         Vulkan::context().command_pool,
         Vulkan::context().memory_properties,
         Vulkan::context().g_Queue);
+    _imgui_texture_id = ImGui_ImplVulkan_AddTexture(*_sampler, _vku.imageView(), static_cast<VkImageLayout>(_vku.layout()));
 }
 
 Texture::Texture(std::string_view path)
@@ -29,11 +30,6 @@ Texture::Texture(std::string_view path)
 Texture::Id Texture::id()
 {
     return {_vku.image()};
-}
-
-ImTextureID Texture::imgui_texture_id() const
-{
-    return ImGui_ImplVulkan_AddTexture(*_sampler, _vku.imageView(), static_cast<VkImageLayout>(_vku.layout()));
 }
 
 } // namespace Cool

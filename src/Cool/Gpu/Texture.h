@@ -12,7 +12,7 @@ public:
     Texture(std::string_view path);
 
     Id          id();
-    ImTextureID imgui_texture_id() const;
+    ImTextureID imgui_texture_id() const { return _imgui_texture_id; }
 
     struct Id {
         operator ImTextureID() const
@@ -29,6 +29,7 @@ public:
 private:
     vku::TextureImage2D _vku;
     vk::UniqueSampler   _sampler;
+    ImTextureID         _imgui_texture_id;
 };
 
 } // namespace Cool
