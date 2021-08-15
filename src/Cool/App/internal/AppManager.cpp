@@ -61,6 +61,7 @@ AppManager::~AppManager()
 void AppManager::run()
 {
     _update_thread = std::thread{[this]() {
+        NFD_Init();
         while (!glfwWindowShouldClose(_main_window->glfw())) {
             update();
         }
