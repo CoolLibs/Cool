@@ -1,5 +1,6 @@
 #include "../../Texture.h"
 #include <Cool/Vulkan/Context.h>
+#include <imgui/backends/imgui_impl_vulkan.h>
 
 namespace Cool {
 
@@ -9,6 +10,7 @@ Texture::Texture(const ImageData& image_data)
           Cool::Vulkan::context().memory_properties,
           image_data.width,
           image_data.height}
+    , _sampler{vku::SamplerMaker{}.createUnique(Vulkan::context().g_Device)}
 {
     _vku.upload(
         Vulkan::context().g_Device,
@@ -27,6 +29,11 @@ Texture::Texture(std::string_view path)
 Texture::Id Texture::id()
 {
     return {_vku.image()};
+}
+
+ImTextureID Texture::imgui_texture_id() const
+{
+    return ImGui_ImplVulkan_AddTexture(*_sampler, _vku.imageView(), static_cast<VkImageLayout>(_vku.layout()));
 }
 
 } // namespace Cool

@@ -1,7 +1,7 @@
 #include "../ImGuiExtras.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
-    #define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include <Cool/Constants/Constants.h>
 #include <Cool/Icons/Icons.h>
@@ -182,7 +182,7 @@ void invisible_wrapper_around_previous_line(const char* label)
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
         NFD::UniquePath outPath;
 
         nfdresult_t result = NFD::PickFolder(outPath, std::filesystem::absolute(base_folder).string().c_str());
@@ -201,7 +201,7 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
         NFD::UniquePath outPath;
         // clang-format off
         nfdresult_t result = NFD::OpenDialog(

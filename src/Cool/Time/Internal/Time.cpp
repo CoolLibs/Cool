@@ -49,7 +49,7 @@ void Time::set_elapse_mode_as_fixed_timestep(float fps)
 void Time::imgui_timeline()
 {
     if (!RenderState::IsExporting()) {
-        if (ImGuiExtras::button_with_icon(_clock->is_playing() ? Icons::pause() : Icons::play())) {
+        if (ImGuiExtras::button_with_icon((_clock->is_playing() ? Icons::pause() : Icons::play()).imgui_texture_id())) {
             _clock->toggle_play_pause();
         }
         ImGui::SameLine();
