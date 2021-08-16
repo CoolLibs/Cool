@@ -3,10 +3,9 @@
 namespace Cool {
 
 struct ImageData {
-    int width;
-    int height;
-    int nb_of_channels;
-
+    uint32_t                 width;
+    uint32_t                 height;
+    int                      nb_of_channels;
     std::unique_ptr<uint8_t> data;
 
     /**
@@ -22,9 +21,9 @@ struct ImageData {
      * @brief data is a pointer to the beginning of an array (stored as a pointer because this is how stb_image does things).
      * This give you the number of elements in the array.
      * 
-     * @return int 
+     * @return size_t 
      */
-    int data_array_size() const { return width * height * nb_of_channels; }
+    size_t data_array_size() const { return width * height * nb_of_channels; }
 };
 
 } // namespace Cool
