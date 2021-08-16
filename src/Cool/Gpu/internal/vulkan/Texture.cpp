@@ -4,23 +4,26 @@
 
 namespace Cool {
 
-Texture::Texture(uint32_t width, uint32_t height, vk::Format format)
+Texture::Texture(uint32_t width, uint32_t height, vk::Format format, vk::ImageUsageFlagBits additional_usage_flags)
     : _vku{
           Cool::Vulkan::context().g_Device,
           Cool::Vulkan::context().memory_properties,
           width,
           height,
           1,
-          format}
+          format,
+          false,
+          additional_usage_flags}
     , _sampler{vku::SamplerMaker{}.createUnique(Vulkan::context().g_Device)}
 {
     _imgui_texture_id = ImGui_ImplVulkan_AddTexture(*_sampler, _vku.imageView(), static_cast<VkImageLayout>(_vku.layout()));
 }
 
-Texture::Texture(const ImageData& image_data, vk::Format format)
+Texture::Texture(const ImageData& image_data, vk::Format format, vk::ImageUsageFlagBits additional_usage_flags)
     : Texture{image_data.width,
               image_data.height,
-              format}
+              format,
+              additional_usage_flags}
 {
     _vku.upload(
         Vulkan::context().g_Device,
