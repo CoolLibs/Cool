@@ -18,7 +18,8 @@ void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& rende
     // Make a default pipeline layout. This shows how pointers
     // to resources are layed out.
     vku::PipelineLayoutMaker plm{};
-    auto                     pipelineLayout_ = plm.createUnique(device);
+    plm.pushConstantRange(vk::ShaderStageFlagBits::eFragment, 0, sizeof(float)); // TODO push constants shouldn't be hardcoded
+    _pipeline_layout = plm.createUnique(device);
 
     // Make a pipeline to use the vertex format and shaders.
     vku::PipelineMaker pm{
@@ -33,7 +34,7 @@ void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& rende
     // Create a pipeline using a renderPass built for our window.
     auto renderPass = render_target_info.render_pass;
     auto cache      = Vulkan::context().g_PipelineCache;
-    _pipeline       = pm.createUnique(device, cache, *pipelineLayout_, renderPass);
+    _pipeline       = pm.createUnique(device, cache, *_pipeline_layout, renderPass);
 }
 
 void FullscreenPipeline::draw(vk::CommandBuffer cb)
