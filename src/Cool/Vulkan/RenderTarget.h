@@ -22,6 +22,7 @@ public:
     void imgui_window();
 
 private:
+    void resize(uint32_t width, uint32_t height);
     void build();
     void build_render_pass();
     void build_framebuffer();

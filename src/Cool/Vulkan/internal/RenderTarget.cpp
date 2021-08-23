@@ -24,10 +24,7 @@ RenderTarget::RenderTarget(uint32_t width, uint32_t height, vk::Format format)
 
 void RenderTarget::render(std::function<void(vk::CommandBuffer& cb)> render_fn)
 {
-    vkDeviceWaitIdle(Vulkan::context().g_Device);
-    _texture.resize(_size.x, _size.y);
-    build();
-    vkDeviceWaitIdle(Vulkan::context().g_Device);
+    resize(_size.x, _size.y);
     VkRenderPassBeginInfo rp_begin_info    = {};
     rp_begin_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rp_begin_info.renderPass               = render_pass();
@@ -80,6 +77,12 @@ RenderTargetInfo RenderTarget::info() const
         static_cast<int>(height())};
     info.render_pass = *_render_pass;
     return info;
+}
+
+void RenderTarget::resize(uint32_t width, uint32_t height)
+{
+    _texture.resize(width, height);
+    build_framebuffer();
 }
 
 void RenderTarget::build()
