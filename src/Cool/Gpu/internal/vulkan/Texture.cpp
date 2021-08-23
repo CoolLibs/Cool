@@ -49,8 +49,7 @@ void Texture::resize(uint32_t width, uint32_t height)
         1,
         _vku.format(),
         false,
-        _vku.imageUsageFlags()
-    };
+        _vku.imageUsageFlags()};
     ImGui_ImplVulkan_UpdateTexture(_imgui_texture_id, *_sampler, _vku.imageView(), static_cast<VkImageLayout>(_vku.layout()));
 }
 
