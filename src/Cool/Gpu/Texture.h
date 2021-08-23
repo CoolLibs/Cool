@@ -17,9 +17,18 @@ public:
             vk::ImageUsageFlagBits additional_usage_flags = (vk::ImageUsageFlagBits)0);
     Texture(std::string_view path);
 
+    /**
+     * @brief Recreates the underlying image with a new size. Warning : the data is lost and the image is reset to black !
+     * 
+     * @param width 
+     * @param height 
+     */
+    void resize(uint32_t width, uint32_t height);
+
     Id                         id();
     ImTextureID                imgui_texture_id() const { return _imgui_texture_id; }
     const vku::TextureImage2D& image() const { return _vku; }
+    vku::TextureImage2D&       image() { return _vku; }
 
     struct Id {
         operator ImTextureID() const
