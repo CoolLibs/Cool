@@ -23,6 +23,7 @@ public:
 
 private:
     void resize(uint32_t width, uint32_t height);
+    void resize_if_necessary();
     void build();
     void build_render_pass();
     void build_framebuffer();
@@ -32,7 +33,7 @@ private:
     vk::UniqueRenderPass  _render_pass;
     vk::UniqueFramebuffer _framebuffer;
     vk::CommandBuffer     _command_buffer;
-    ImVec2                _size{100, 100};
+    glm::uvec2            _imgui_window_size{1, 1};
 };
 
 } // namespace Cool::Vulkan
