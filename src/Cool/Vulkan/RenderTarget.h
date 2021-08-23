@@ -19,6 +19,8 @@ public:
     vk::Format       format() const { return _texture.image().format(); }
     const Texture&   texture() const { return _texture; }
 
+    void imgui_window();
+
 private:
     void build();
     void build_render_pass();
@@ -29,6 +31,7 @@ private:
     vk::UniqueRenderPass  _render_pass;
     vk::UniqueFramebuffer _framebuffer;
     vk::CommandBuffer     _command_buffer;
+    ImVec2                _size{100, 100};
 };
 
 } // namespace Cool::Vulkan
