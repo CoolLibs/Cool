@@ -5,7 +5,7 @@
 namespace Cool::Vulkan {
 
 RenderTarget::RenderTarget(uint32_t width, uint32_t height, vk::Format format)
-    : _texture{width, height, format, vk::ImageUsageFlagBits::eColorAttachment}
+    : _texture{width, height, format, vk::ImageLayout::eGeneral, vk::ImageUsageFlagBits::eColorAttachment}
 {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
