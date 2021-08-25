@@ -1,8 +1,8 @@
 #include "../../Texture.h"
-#include <Cool/Vulkan/Context.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
+#include "../Context.h"
 
-namespace Cool {
+namespace Cool::Vulkan {
 
 Texture::Texture(uint32_t width, uint32_t height, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
     : _vku{
@@ -60,4 +60,4 @@ Texture::Id Texture::id()
     return {_vku.image()};
 }
 
-} // namespace Cool
+} // namespace Cool::Vulkan

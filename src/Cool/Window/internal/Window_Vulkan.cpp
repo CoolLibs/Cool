@@ -1,8 +1,8 @@
 #if defined(__COOL_APP_VULKAN)
 
 #include "Window_Vulkan.h"
-#include <Cool/Vulkan/Context.h>
-#include <Cool/Vulkan/internal/check_result.h>
+#include <Cool/Gpu/Vulkan/Context.h>
+#include <Cool/Gpu/Vulkan/internal/check_result.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
 
 namespace Cool {

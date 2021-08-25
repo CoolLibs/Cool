@@ -1,9 +1,9 @@
 #if defined(__COOL_APP_VULKAN)
 
 #include "WindowFactory_Vulkan.h"
+#include <Cool/Gpu/Vulkan/Context.h>
+#include <Cool/Gpu/Vulkan/internal/check_result.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/Vulkan/Context.h>
-#include <Cool/Vulkan/internal/check_result.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include <imgui/imgui.h>

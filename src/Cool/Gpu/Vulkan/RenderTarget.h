@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Cool/Gpu/RenderTargetInfo.h>
-#include <Cool/Gpu/Texture.h>
 #include <vku/vku.hpp>
+#include "Texture.h"
+
 
 namespace Cool::Vulkan {
 
