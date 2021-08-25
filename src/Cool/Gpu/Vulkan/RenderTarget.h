@@ -4,7 +4,6 @@
 #include <vku/vku.hpp>
 #include "Texture.h"
 
-
 namespace Cool::Vulkan {
 
 class RenderTarget {
