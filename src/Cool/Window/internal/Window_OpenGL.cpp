@@ -4,24 +4,13 @@
 
 namespace Cool {
 
-void Window_OpenGL::enableVSync()
+void Window_OpenGL::cap_framerate(bool should_cap)
 {
-    setSwapInterval(GLFW_TRUE);
-    m_bIsVSyncEnabled = true;
-}
-
-void Window_OpenGL::disableVSync()
-{
-    setSwapInterval(GLFW_FALSE);
-    m_bIsVSyncEnabled = false;
-}
-
-void Window_OpenGL::setSwapInterval(int value)
-{
-    //GLFWwindow* currentWindow = glfwGetCurrentContext();
-    //glfwMakeContextCurrent(m_window);
-    //glfwSwapInterval(value);
-    //glfwMakeContextCurrent(currentWindow);
+    GLFWwindow* current_glfw = glfwGetCurrentContext();
+    glfwMakeContextCurrent(glfw());
+    glfwSwapInterval(should_cap ? 1 : 0);
+    glfwMakeContextCurrent(current_glfw);
+    _framerate_is_capped = should_cap;
 }
 
 } // namespace Cool
