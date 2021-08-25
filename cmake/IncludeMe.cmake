@@ -47,9 +47,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     
     <nfd.hpp>
     
-    <vulkan/vulkan.hpp>
-    <vku/vku.hpp>
-    
     <doctest/doctest.h>
     <Cool/Log/Log.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
@@ -59,6 +56,12 @@ if (COOL_USE_OPENGL)
     target_precompile_headers(${PROJECT_NAME} PRIVATE
         <glad/glad.h>
         <Cool/App/internal/GLDebug.h>
+    )
+endif()
+if (COOL_USE_VULKAN)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE
+        <vulkan/vulkan.hpp>
+        <vku/vku.hpp>
     )
 endif()
 
