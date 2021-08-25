@@ -130,12 +130,14 @@ void RenderTarget::build_framebuffer()
 void RenderTarget::imgui_window()
 {
     ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
-    auto size          = ImGui::GetContentRegionAvail();
-    _imgui_window_size = {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};
+    auto size = ImGui::GetContentRegionAvail();
+    if (size.x > 0.f && size.y > 0.f) {
+        _imgui_window_size = {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};
+    }
     ImGui::Image(
         texture().imgui_texture_id(),
-        {static_cast<float>(texture().image().extent().width),
-         static_cast<float>(texture().image().extent().height)});
+        {static_cast<float>(width()),
+         static_cast<float>(height())});
     ImGui::End();
 }
 
