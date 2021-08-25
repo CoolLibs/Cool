@@ -8,7 +8,7 @@
 namespace Cool {
 
 Window_Vulkan::Window_Vulkan(GLFWwindow* window)
-    : _base{window}
+    : Window_Base{window}
 {
 }
 
@@ -25,7 +25,7 @@ void Window_Vulkan::check_for_swapchain_rebuild()
 {
     if (_vulkan_window_state.g_SwapChainRebuild) {
         int width, height;
-        glfwGetFramebufferSize(_base.glfw(), &width, &height);
+        glfwGetFramebufferSize(glfw(), &width, &height);
         if (width > 0 && height > 0) {
             ImGui_ImplVulkan_SetMinImageCount(_vulkan_window_state.g_MinImageCount);
             _vulkan_window_state.g_MainWindowData.Width  = width;
@@ -154,20 +154,10 @@ void Window_Vulkan::cap_framerate(bool should_cap)
     }
 }
 
-bool Window_Vulkan::framerate_is_capped()
+bool Window_Vulkan::framerate_is_capped() const
 {
     return _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_KHR ||
            _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_RELAXED_KHR;
-}
-
-bool Window_Vulkan::imgui_cap_framerate()
-{
-    bool should_cap_framerate = framerate_is_capped();
-    bool checkbox_triggered   = ImGui::Checkbox("Framerate capped", &should_cap_framerate);
-    if (checkbox_triggered) {
-        cap_framerate(should_cap_framerate);
-    }
-    return checkbox_triggered;
 }
 
 } // namespace Cool

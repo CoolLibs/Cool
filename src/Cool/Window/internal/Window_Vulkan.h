@@ -14,7 +14,7 @@ struct VulkanWindowState {
     bool                     g_SwapChainRebuild = false;
 };
 
-class Window_Vulkan {
+class Window_Vulkan : public Window_Base {
 public:
     Window_Vulkan(Window_Vulkan&&) noexcept = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
@@ -27,14 +27,8 @@ public:
     void FramePresent();
     void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
 
-    void cap_framerate(bool should_cap);
-    bool framerate_is_capped();
-    bool imgui_cap_framerate();
-
-    Window_Base&       operator*() { return _base; }
-    Window_Base*       operator->() { return &operator*(); }
-    const Window_Base& operator*() const { return _base; }
-    const Window_Base* operator->() const { return &operator*(); }
+    void cap_framerate(bool should_cap) override;
+    bool framerate_is_capped() const override;
 
 private:
     // To construct a window, use WindowFactory_Vulkan::make_window()
@@ -45,8 +39,7 @@ public:
     VulkanWindowState _vulkan_window_state;
 
 private:
-    Window_Base _base;
-    bool        _present_mode_mailbox_is_avaible = false;
+    bool _present_mode_mailbox_is_avaible = false;
 };
 
 } // namespace Cool

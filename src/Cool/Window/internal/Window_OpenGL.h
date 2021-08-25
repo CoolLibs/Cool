@@ -1,19 +1,13 @@
 #pragma once
 #if defined(__COOL_APP_OPENGL)
 
+#include "Window_Base.h"
+
 namespace Cool {
 
-class Window_OpenGL {
+class Window_OpenGL : public Window_Base {
 public:
-    void        setSwapInterval(int value);
-    inline void makeCurrent() { glfwMakeContextCurrent(m_window); }
-
-    void        enableVSync();
-    void        disableVSync();
-    inline bool isVSyncEnabled() const { return m_bIsVSyncEnabled; }
-
-private:
-    bool m_bIsVSyncEnabled = true;
+    inline void makeCurrent() { glfwMakeContextCurrent(_base.glfw()); }
 };
 
 } // namespace Cool

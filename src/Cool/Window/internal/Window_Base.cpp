@@ -82,6 +82,16 @@ void Window_Base::set_visibility(bool is_visible)
     }
 }
 
+bool Window_Base::imgui_cap_framerate()
+{
+    bool should_cap_framerate = framerate_is_capped();
+    bool checkbox_triggered   = ImGui::Checkbox("Framerate capped", &should_cap_framerate);
+    if (checkbox_triggered) {
+        cap_framerate(should_cap_framerate);
+    }
+    return checkbox_triggered;
+}
+
 GLFWmonitor* Window_Base::current_monitor() const
 {
     // Thanks to https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw

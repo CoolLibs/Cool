@@ -63,7 +63,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     // Create window
     _window_manager.windows().push_back(Window_Vulkan{glfwCreateWindow(width, height, name, NULL, NULL)});
     Window_Vulkan& window = _window_manager.windows().back();
-    if (!window->glfw()) {
+    if (!window.glfw()) {
         const char* errorDescription;
         glfwGetError(&errorDescription);
         Log::error("[Glfw] Window creation failed :\n{}", errorDescription);
@@ -73,12 +73,12 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     // window.enableVSync();
     // Create Window Surface
     VkSurfaceKHR surface;
-    VkResult     err = glfwCreateWindowSurface(vk_context.g_Instance, window->glfw(), vk_context.g_Allocator, &surface);
+    VkResult     err = glfwCreateWindowSurface(vk_context.g_Instance, window.glfw(), vk_context.g_Allocator, &surface);
     Vulkan::check_result(err);
 
     // Create Framebuffers
     int w, h;
-    glfwGetFramebufferSize(window->glfw(), &w, &h);
+    glfwGetFramebufferSize(window.glfw(), &w, &h);
     SetupVulkanWindow(window._vulkan_window_state, surface, w, h);
 
     // Check present mode's availability
@@ -106,7 +106,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
 
 void WindowFactory_Vulkan::setup_imgui(Window_Vulkan& window)
 {
-    ImGui_ImplGlfw_InitForVulkan(window->glfw(), true);
+    ImGui_ImplGlfw_InitForVulkan(window.glfw(), true);
     ImGui_ImplVulkan_InitInfo init_info = {};
     init_info.Instance                  = Vulkan::context().g_Instance;
     init_info.PhysicalDevice            = Vulkan::context().g_PhysicalDevice;
