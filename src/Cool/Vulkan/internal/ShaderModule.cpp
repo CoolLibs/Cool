@@ -28,7 +28,9 @@ static vku::ShaderModule shader_module_from_glsl_file(std::string_view file_path
 
     auto res = compiler.CompileGlslToSpv(glsl_source, shader_kind_cool2shaderc(shader_kind), file_path.data());
 
-    Log::warn(res.GetErrorMessage());
+    if (!res.GetErrorMessage().empty()) {
+        Log::warn(res.GetErrorMessage());
+    }
 
     return vku::ShaderModule{Vulkan::context().g_Device, res.begin(), res.end()};
 }
