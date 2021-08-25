@@ -23,7 +23,7 @@ public:
     void check_for_swapchain_rebuild();
     void rebuild_swapchain();
     void FramePresent();
-    void FrameRender(ImDrawData* draw_data, std::function<void(vk::CommandBuffer)> render_fn);
+    void FrameRender(ImDrawData* draw_data);
 
     void cap_framerate(bool should_cap) override;
     bool framerate_is_capped() const override;

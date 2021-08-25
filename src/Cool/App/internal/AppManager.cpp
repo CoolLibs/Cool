@@ -116,9 +116,7 @@ void AppManager::update()
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
     if (!main_is_minimized)
-        _main_window.FrameRender(main_draw_data, [this](vk::CommandBuffer cb) {
-            m_app.render(cb);
-        });
+        _main_window.FrameRender(main_draw_data);
 
     // Update and Render additional Platform Windows
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
