@@ -6,6 +6,9 @@ namespace Cool {
 
 class Window_Base {
 public:
+    Window_Base(GLFWwindow* glfw_window);
+    Window_Base(Window_Base&&) noexcept;
+    Window_Base& operator           =(Window_Base&&) noexcept;
     Window_Base(const Window_Base&) = delete;            // Non-copyable because there should only be one owner of the window.
     Window_Base& operator=(const Window_Base&) = delete; // Non-copyable because there should only be one owner of the window.
     Window_Base::~Window_Base();
@@ -51,13 +54,6 @@ public:
      * @return GLFWmonitor* 
      */
     GLFWmonitor* current_monitor() const;
-
-private:
-    friend class Window_OpenGL;
-    friend class Window_Vulkan;
-    Window_Base(GLFWwindow* glfw_window);
-    Window_Base(Window_Base&&) noexcept;
-    Window_Base& operator=(Window_Base&&) noexcept;
 
 private:
     GLFWwindow* _glfw_window;

@@ -18,8 +18,6 @@ class Window_Vulkan : public Window_Base {
 public:
     Window_Vulkan(Window_Vulkan&&) noexcept = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
-    Window_Vulkan(const Window_Vulkan&)                = delete; // Non-copyable because there should only be one owner of the window.
-    Window_Vulkan& operator=(const Window_Vulkan&) = delete;     // Non-copyable because there should only be one owner of the window.
     Window_Vulkan::~Window_Vulkan();
 
     void check_for_swapchain_rebuild();
