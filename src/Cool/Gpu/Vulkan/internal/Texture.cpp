@@ -1,3 +1,5 @@
+#if defined(__COOL_APP_VULKAN)
+
 #include "../../Texture.h"
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include "../Context.h"
@@ -61,3 +63,5 @@ Texture::Id Texture::id()
 }
 
 } // namespace Cool::Vulkan
+
+#endif

@@ -1,3 +1,5 @@
+#if defined(__COOL_APP_VULKAN)
+
 #include "../ShaderModule.h"
 #include <Cool/File/File.h>
 #include <shaderc/shaderc.hpp>
@@ -41,3 +43,5 @@ ShaderModule::ShaderModule(std::string_view file_path, Cool::Gpu::ShaderKind sha
 }
 
 } // namespace Cool::Vulkan
+
+#endif

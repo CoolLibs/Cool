@@ -1,3 +1,5 @@
+#if defined(__COOL_APP_VULKAN)
+
 #include "../RenderTarget.h"
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include "../Context.h"
@@ -142,3 +144,5 @@ void RenderTarget::imgui_window()
 }
 
 } // namespace Cool::Vulkan
+
+#endif

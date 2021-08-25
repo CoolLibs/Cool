@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include <Cool/Gpu/ShaderKind.h>
 
@@ -15,3 +16,5 @@ private:
 };
 
 } // namespace Cool::Vulkan
+
+#endif

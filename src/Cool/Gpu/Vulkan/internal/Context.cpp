@@ -1,4 +1,4 @@
-#ifdef __COOL_APP_VULKAN
+#if defined(__COOL_APP_VULKAN)
 
 #include "../Context.h"
 #include <glfw/glfw3.h>

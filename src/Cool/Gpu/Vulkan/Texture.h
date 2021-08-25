@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include <Cool/Image/ImageData.h>
 
@@ -52,3 +53,5 @@ private:
 };
 
 } // namespace Cool::Vulkan
+
+#endif

@@ -1,3 +1,5 @@
+#if defined(__COOL_APP_VULKAN)
+
 #include "../FullscreenPipeline.h"
 #include <Cool/File/File.h>
 #include "../Context.h"
@@ -44,3 +46,5 @@ void FullscreenPipeline::draw(vk::CommandBuffer cb)
 }
 
 } // namespace Cool::Vulkan
+
+#endif

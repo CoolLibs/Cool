@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include <Cool/Gpu/RenderTargetInfo.h>
 #include "ShaderModule.h"
@@ -23,3 +24,5 @@ public:
 };
 
 } // namespace Cool::Vulkan
+
+#endif

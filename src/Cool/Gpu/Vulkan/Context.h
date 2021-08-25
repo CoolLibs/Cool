@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include <Vulkan/Vulkan.h>
 
@@ -29,3 +30,5 @@ inline Context& context()
 }
 
 } // namespace Cool::Vulkan
+
+#endif
