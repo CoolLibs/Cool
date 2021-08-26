@@ -17,7 +17,7 @@ WindowFactory_Vulkan::~WindowFactory_Vulkan()
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    _window_manager.windows().clear();
+    window_manager().windows().clear();
     Vulkan::context().destroy1(); // TODO is this the proper place to do it ?
     glfwTerminate();
 }
@@ -61,8 +61,8 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     // Window flags
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     // Create window
-    _window_manager.windows().push_back(Window_Vulkan{glfwCreateWindow(width, height, name, NULL, NULL)});
-    Window_Vulkan& window = _window_manager.windows().back();
+    window_manager().windows().push_back(Window_Vulkan{glfwCreateWindow(width, height, name, NULL, NULL)});
+    Window_Vulkan& window = window_manager().windows().back();
     if (!window.glfw()) {
         const char* errorDescription;
         glfwGetError(&errorDescription);

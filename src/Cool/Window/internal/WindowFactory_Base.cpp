@@ -9,7 +9,7 @@ namespace Cool {
 WindowFactory_Base::WindowFactory_Base()
 {
     initializeGLFW();
-    setup_imgui();
+    initialize_imgui();
 }
 
 void WindowFactory_Base::initializeGLFW()
@@ -27,7 +27,7 @@ void WindowFactory_Base::GlfwErrorCallback(int error, const char* description)
     Log::error("[Glfw] Error {} :\n{}", error, description);
 }
 
-void WindowFactory_Base::setup_imgui()
+void WindowFactory_Base::initialize_imgui()
 {
     // Setup context
     IMGUI_CHECKVERSION();
@@ -36,7 +36,7 @@ void WindowFactory_Base::setup_imgui()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // DISABLED because platform windows freze since we are not rendering on the main thread
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // DISABLED because platform windows freeze since we are not rendering on the main thread
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
