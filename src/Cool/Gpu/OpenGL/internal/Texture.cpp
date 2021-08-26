@@ -1,13 +1,28 @@
-#ifdef __COOL_APP_OPENGL
+#if defined(__COOL_APP_OPENGL)
 
-    #include "../Texture.h"
-    #include <Cool/LoadImage/LoadImage.h>
+#include "../Texture.h"
+#include <Cool/Image/ImageData.h>
 
-namespace Cool {
+namespace Cool::OpenGL {
 
 Texture::~Texture()
 {
     DestroyTexture(m_textureID);
+}
+
+Texture::Texture(Texture&& rhs) noexcept
+    : m_textureID{rhs.m_textureID}
+{
+    rhs.m_textureID = -1;
+}
+
+Texture& Texture::operator=(Texture&& rhs) noexcept
+{
+    if (this != &rhs) {
+        m_textureID     = rhs.m_textureID;
+        rhs.m_textureID = -1;
+    }
+    return *this;
 }
 
 GLuint Texture::CreateTextureID(GLint interpolationMode, GLint wrapMode)
@@ -31,41 +46,40 @@ void Texture::DestroyTexture(GLuint texID)
 Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
     : m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     m_bDataUploaded = true;
-    #endif
+#endif
 }
 
 GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
 {
     // Load image
-    int                            width, height;
-    std::unique_ptr<unsigned char> data = LoadImage::load(filepath, &width, &height);
+    auto image = ImageData{filepath, 4};
     // Create texture
     GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
     // Upload data
     GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.get()));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
     //
     return texID;
 }
 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     if (m_textureID != -1)
         Log::error("[Texture::genTexture] You have already generated that texture !");
-    #endif
+#endif
     m_textureID = CreateTextureID(interpolationMode, wrapMode);
 }
 
 void Texture::uploadRGB(int width, int height, unsigned char* data)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     m_bDataUploaded = true;
     if (m_textureID == -1)
         Log::error("[Texture::uploadRGB] You haven't generated that texture yet !");
-    #endif
+#endif
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
@@ -73,11 +87,11 @@ void Texture::uploadRGB(int width, int height, unsigned char* data)
 
 void Texture::uploadRGBA(int width, int height, unsigned char* data)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     m_bDataUploaded = true;
     if (m_textureID == -1)
         Log::error("[Texture::uploadRGBA] You haven't generated that texture yet !");
-    #endif
+#endif
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
@@ -85,16 +99,16 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 
 void Texture::attachToSlot(int slot)
 {
-    #ifdef DEBUG
+#ifdef DEBUG
     if (m_textureID == -1)
         Log::error("[Texture::attachToSlot] You haven't generated that texture yet !");
     if (!m_bDataUploaded)
         Log::error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
-    #endif
+#endif
     GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
 }
 
-} // namespace Cool
+} // namespace Cool::OpenGL
 
 #endif

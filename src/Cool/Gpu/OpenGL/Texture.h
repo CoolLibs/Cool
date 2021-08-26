@@ -1,7 +1,7 @@
 #pragma once
-#ifdef __COOL_APP_OPENGL
+#if defined(__COOL_APP_OPENGL)
 
-namespace Cool {
+namespace Cool::OpenGL {
 
 /// <summary>
 /// A wrapper for an OpenGL texture2D
@@ -10,9 +10,13 @@ class Texture {
 public:
     Texture() = default;
     ~Texture();
+    Texture(Texture&&) noexcept;
+    Texture& operator=(Texture&&) noexcept;
+
     Texture(const Texture&) = delete;            // Non-copyable
-    Texture(Texture&&)      = delete;            // Non-copyable
     Texture& operator=(const Texture&) = delete; // Non-copyable
+
+    ImTextureID imgui_texture_id() const { return reinterpret_cast<ImTextureID>(m_textureID); }
 
     /// <summary>
     /// Constructs a texture from an image.
@@ -108,11 +112,11 @@ public:
 
 private:
     GLuint m_textureID = -1;
-    #ifdef DEBUG
+#ifdef DEBUG
     bool m_bDataUploaded = false;
-    #endif
+#endif
 };
 
-} // namespace Cool
+} // namespace Cool::OpenGL
 
 #endif

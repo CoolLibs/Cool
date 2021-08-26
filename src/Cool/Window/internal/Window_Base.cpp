@@ -15,8 +15,10 @@ Window_Base::Window_Base(Window_Base&& o) noexcept
 
 Window_Base& Window_Base::operator=(Window_Base&& o) noexcept
 {
-    _glfw_window   = o._glfw_window;
-    o._glfw_window = nullptr;
+    if (this != &o) {
+        _glfw_window   = o._glfw_window;
+        o._glfw_window = nullptr;
+    }
     return *this;
 }
 

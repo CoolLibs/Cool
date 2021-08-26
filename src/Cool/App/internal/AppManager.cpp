@@ -139,7 +139,7 @@ void AppManager::update()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-    glfwSwapBuffers(_main_window.get());
+    glfwSwapBuffers(_main_window.glfw());
 #endif
     // End frame
     m_bFirstFrame = false;

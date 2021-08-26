@@ -4,6 +4,11 @@
 
 namespace Cool {
 
+Window_OpenGL::Window_OpenGL(GLFWwindow* window)
+    : Window_Base{window}
+{
+}
+
 void Window_OpenGL::cap_framerate(bool should_cap)
 {
     GLFWwindow* current_glfw = glfwGetCurrentContext();

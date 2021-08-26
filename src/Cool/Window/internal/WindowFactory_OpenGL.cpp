@@ -1,6 +1,7 @@
 #if defined(__COOL_APP_OPENGL)
 
 #include "WindowFactory_OpenGL.h"
+#include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include "GLDebugCallback.h"
 
@@ -18,12 +19,23 @@ WindowFactory_OpenGL::~WindowFactory_OpenGL()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    for (auto& window : _windows)
-        window.destroy();
+    window_manager().windows().clear();
     glfwTerminate();
 }
 
-Window_OpenGL& WindowFactory_OpenGL::create(const char* name, int width, int height)
+Window_OpenGL& WindowFactory_OpenGL::make_main_window(const char* name, int width, int height, bool cap_framerate)
+{
+    auto& window = make_window(name, width, height, cap_framerate);
+    setup_imgui(window);
+    return window;
+}
+
+Window_OpenGL& WindowFactory_OpenGL::make_secondary_window(const char* name, int width, int height, bool cap_framerate)
+{
+    return make_window(name, width, height, cap_framerate);
+}
+
+Window_OpenGL& WindowFactory_OpenGL::make_window(const char* name, int width, int height, bool cap_framerate)
 {
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
@@ -37,22 +49,23 @@ Window_OpenGL& WindowFactory_OpenGL::create(const char* name, int width, int hei
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     // Create window
-    _windows.emplace_back(
-        glfwCreateWindow(width, height, name, NULL, windowToShareContextWith));
-    Window& window = _windows.back();
-    if (!window.get()) {
+    auto&       windows      = window_manager().windows();
+    GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
+    windows.push_back(Window_OpenGL{glfwCreateWindow(width, height, name, nullptr, other_window)});
+    Window& window = windows.back();
+    if (!window.glfw()) {
         const char* errorDescription;
         glfwGetError(&errorDescription);
         Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
     }
-    window.makeCurrent();
-    window.enableVSync();
+    window.make_current();
+    window.cap_framerate(cap_framerate);
     // Load Glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         Log::error("Failed to initialize Glad");
     //
     setupGLDebugging();
-    setupImGui(window);
+    setup_imgui(window);
     return window;
 }
 
@@ -75,9 +88,9 @@ void WindowFactory_OpenGL::setupGLDebugging()
 #endif
 }
 
-void WindowFactory_OpenGL::setup_imgui(GLFWwindow* glfw_window)
+void WindowFactory_OpenGL::setup_imgui(Window_OpenGL& window)
 {
-    ImGui_ImplGlfw_InitForOpenGL(glfw_window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window.glfw(), true);
     std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 }
