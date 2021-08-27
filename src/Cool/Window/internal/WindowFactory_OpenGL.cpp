@@ -10,8 +10,7 @@ namespace Cool {
 WindowFactory_OpenGL::WindowFactory_OpenGL(int openGLMajorVersion, int openGLMinorVersion)
     : m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
 {
-    assert(openGLMajorVersion >= 3);
-    assert(openGLMinorVersion >= 3);
+    assert(m_openGLVersion >= 330);
 }
 
 WindowFactory_OpenGL::~WindowFactory_OpenGL()
@@ -90,7 +89,7 @@ void WindowFactory_OpenGL::setupGLDebugging()
 
 void WindowFactory_OpenGL::setup_imgui(Window_OpenGL& window)
 {
-    ImGui_ImplGlfw_InitForOpenGL(window.glfw(), true);
+    ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
     std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 }
