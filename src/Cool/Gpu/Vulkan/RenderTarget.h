@@ -8,7 +8,7 @@ namespace Cool::Vulkan {
 
 class RenderTarget {
 public:
-    RenderTarget(uint32_t width, uint32_t height, vk::Format format = vk::Format::eR8G8B8A8Srgb);
+    RenderTarget(vk::Format format = vk::Format::eR8G8B8A8Srgb, uint32_t width = 1, uint32_t height = 1);
 
     void render(std::function<void(vk::CommandBuffer& cb)> render_fn);
 
