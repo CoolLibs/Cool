@@ -21,7 +21,7 @@ private:
     Window_OpenGL(GLFWwindow* window);
 
 private:
-    bool _framerate_is_capped = false;
+    bool _framerate_is_capped = true;
 };
 
 } // namespace Cool
