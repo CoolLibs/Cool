@@ -1,8 +1,7 @@
 #pragma once
 #if defined(__COOL_APP_VULKAN)
 
-#include <Cool/Gpu/RenderTargetInfo.h>
-#include <vku/vku.hpp>
+#include "../RenderTargetInfo.h"
 #include "Texture.h"
 
 namespace Cool::Vulkan {
