@@ -1,6 +1,8 @@
 
-# define DEBUG in debug mode
+# Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
+# Define CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
+set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"">)
 
 include_directories(
     Cool/src
@@ -59,7 +61,7 @@ endif()
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
-    include("Cool/vulkan.cmake")
+    include("Cool/cmake/vulkan.cmake")
 endif()
 if (COOL_USE_OPENGL)
     add_compile_definitions(__COOL_APP_OPENGL)
