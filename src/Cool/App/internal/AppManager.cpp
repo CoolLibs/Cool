@@ -95,6 +95,8 @@ void AppManager::update()
     ImGui_ImplVulkan_NewFrame();
 #endif
 #ifdef __COOL_APP_OPENGL
+    glClearColor(1.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_NewFrame();
 #endif
     ImGui_ImplGlfw_NewFrame();
