@@ -55,7 +55,9 @@ private:
     bool           m_bFirstFrame                = true; // Used to prevent triggering the resize event twice at the start of the app
     bool           m_bShowUI                    = true;
     bool           m_bDoForwardKeyEventsToImGui = true;
-    std::thread    _update_thread;
+#if defined(__COOL_APP_VULKAN)
+    std::thread _update_thread;
+#endif
 };
 
 } // namespace Cool

@@ -53,13 +53,16 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
 
 AppManager::~AppManager()
 {
+#if defined(__COOL_APP_VULKAN)
     if (_update_thread.joinable()) {
         _update_thread.join();
     }
+#endif
 }
 
 void AppManager::run()
 {
+#if defined(__COOL_APP_VULKAN)
     _update_thread = std::thread{[this]() {
         NFD_Init();
         while (!glfwWindowShouldClose(_main_window.glfw())) {
@@ -69,6 +72,12 @@ void AppManager::run()
     while (!glfwWindowShouldClose(_main_window.glfw())) {
         glfwWaitEvents();
     }
+#elif defined(__COOL_APP_OPENGL)
+    while (!glfwWindowShouldClose(_main_window.glfw())) {
+        glfwPollEvents();
+        update();
+    }
+#endif
 }
 
 void AppManager::update()
