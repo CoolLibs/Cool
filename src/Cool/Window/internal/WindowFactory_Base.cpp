@@ -36,7 +36,9 @@ void WindowFactory_Base::initialize_imgui()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // DISABLED because platform windows freeze since we are not rendering on the main thread
+#if defined(__COOL_APP_OPENGL)                            // DISABLED for Vulkan because platform windows freeze since we are not rendering on the main thread
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
