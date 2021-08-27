@@ -1,11 +1,12 @@
 #pragma once
 
 #if defined(DEBUG)
-    #define DOCTEST_CONFIG_IMPLEMENT
-    #include <doctest/doctest.h>
+#define DOCTEST_CONFIG_IMPLEMENT
+#include <doctest/doctest.h>
 #endif
 
 #include <Cool/File/File.h>
+#include <Cool/Icons/Icons.h>
 #include <Cool/Log/Log.h>
 #include <Cool/Time/Time.h>
 
@@ -16,7 +17,7 @@ namespace Cool {
  * (NB : this function is somewhat opinionated and you might want to replace this with your own way of initializing Cool) 
  *  
  */
-void initialize()
+inline void initialize()
 {
 #if defined(DEBUG)
     // Run the tests !
@@ -41,6 +42,15 @@ void initialize()
     Cool::File::initialize_root_dir(std::filesystem::current_path().string());
 
     Cool::Time::initialize();
+}
+
+/** 
+ * @brief Shuts down all the Cool systems 
+ *  
+ */
+inline void shut_down()
+{
+    Icons::shut_down();
 }
 
 } // namespace Cool

@@ -43,6 +43,12 @@ public:
 	 */
     static void cleanup_texture(std::string_view image_path);
 
+    /**
+     * @brief Cleans up all the textures
+     * 
+     */
+    static void shut_down();
+
 private:
     static std::unordered_map<std::string, Texture> _map;
 };
