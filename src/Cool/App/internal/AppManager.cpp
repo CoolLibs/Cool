@@ -162,7 +162,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     // Fullscreen
     appManager->_main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
     // CTRL + H
-    if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & 2))
+    if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & GLFW_MOD_CONTROL))
         appManager->m_bShowUI = !appManager->m_bShowUI;
     //
     appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
