@@ -1,12 +1,11 @@
-#ifdef __COOL_APP_OPENGL
-    #ifdef DEBUG
+#if defined(__COOL_APP_OPENGL) && defined(DEBUG)
 
-        #include "GLDebug.h"
+#include "GLDebug.h"
 
 void CoolGlDebug::clearFromPreviousErrors()
 {
-    while (glGetError() != GL_NO_ERROR)
-        ;
+    while (glGetError() != GL_NO_ERROR) {
+    }
 }
 
 bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename, int line)
@@ -46,5 +45,4 @@ char const* CoolGlDebug::glErrorString(GLenum const err)
     }
 }
 
-    #endif
 #endif
