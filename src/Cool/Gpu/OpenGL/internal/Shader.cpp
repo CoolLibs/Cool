@@ -2,6 +2,7 @@
 
 #include "../../Shader.h"
 #include <Cool/File/File.h>
+#include "../../ShaderSource.h"
 
 namespace Cool {
 
@@ -14,27 +15,14 @@ namespace Cool {
 #define ASSERT_SHADER_IS_BOUND
 #endif
 
-ShaderCode::ShaderCode(ShaderType type, std::string_view filePath)
-    : type(type)
+Shader::Shader(const std::vector<ShaderSource>& shader_sources)
 {
-    File::to_string(filePath, &source_code);
-}
-
-ShaderCode ShaderCode::FromCode(ShaderType type, std::string_view source_code)
-{
-    ShaderCode shader;
-    shader.type        = type;
-    shader.source_code = source_code;
-    return shader;
-}
-
-Shader::Shader(const std::vector<ShaderCode>& shader_codes)
-{
-    create_program(shader_codes);
+    create_program(shader_sources);
 }
 
 Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-    : Shader({ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path)})
+    : Shader({ShaderSource{File::to_string(vertex_shader_file_path), ShaderKind::Vertex},
+              ShaderSource{File::to_string(fragment_shader_file_path), ShaderKind::Fragment}})
 {
 }
 
@@ -55,7 +43,7 @@ Shader::~Shader()
     glDeleteProgram(_program_id);
 }
 
-void Shader::create_program(const std::vector<ShaderCode>& shader_codes)
+void Shader::create_program(const std::vector<ShaderSource>& shader_sources)
 {
     // Create program
     if (_program_id != 0) {
@@ -65,9 +53,9 @@ void Shader::create_program(const std::vector<ShaderCode>& shader_codes)
     GLDebug(_program_id = glCreateProgram());
     // Compile shaders
     std::vector<GLuint> shader_ids;
-    shader_ids.reserve(shader_codes.size());
-    for (const auto& shader_code : shader_codes) {
-        shader_ids.push_back(CreateShader(shader_code));
+    shader_ids.reserve(shader_sources.size());
+    for (const auto& shader_source : shader_sources) {
+        shader_ids.push_back(CreateShader(shader_source));
         GLDebug(glAttachShader(_program_id, shader_ids.back()));
     }
     // Link
@@ -79,23 +67,23 @@ void Shader::create_program(const std::vector<ShaderCode>& shader_codes)
     }
 }
 
-void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-{
-    create_program({ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path)});
-}
+// void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
+// {
+//     create_program({ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path)});
+// }
 
-GLuint Shader::CreateShader(const ShaderCode& shader_code)
+GLuint Shader::CreateShader(const ShaderSource& shader_source)
 {
     // Get shader type
     const GLenum shader_type = [&]() {
-        switch (shader_code.type) {
-        case ShaderType::Vertex:
+        switch (shader_source.kind()) {
+        case ShaderKind::Vertex:
             return GL_VERTEX_SHADER;
-        case ShaderType::Fragment:
+        case ShaderKind::Fragment:
             return GL_FRAGMENT_SHADER;
-        case ShaderType::Geometry:
+        case ShaderKind::Geometry:
             return GL_GEOMETRY_SHADER;
-        case ShaderType::Compute:
+        case ShaderKind::Compute:
             return GL_COMPUTE_SHADER;
         default:
             Log::error("Unknown shader type !");
@@ -105,7 +93,8 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code)
     // Create
     GLDebug(GLuint shader_id = glCreateShader(shader_type));
     // Compile
-    const char* src = shader_code.source_code.c_str();
+    std::string my_src = shader_source.to_opengl_glsl();
+    const char* src    = my_src.c_str();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
 // Debug

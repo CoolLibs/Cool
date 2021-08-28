@@ -1,37 +1,11 @@
 #pragma once
 
+#include "ShaderSource.h"
+
 namespace Cool {
 
 using GLuint = unsigned int;
 using GLint  = int;
-
-enum class ShaderType {
-    Vertex,
-    Fragment,
-    Geometry,
-    Compute
-};
-
-struct ShaderCode {
-    ShaderType  type;
-    std::string source_code;
-
-    /// <summary>
-    /// Constructs a ShaderCode by reading source_code from a file.
-    /// </summary>
-    /// <param name="type">An enum representing the type of the shader (Vertex, Fragment, etc.)</param>
-    /// <param name="file_path">The path to the file containing the source code of the shader.</param>
-    ShaderCode(ShaderType type, std::string_view file_path);
-    ShaderCode() = default;
-
-    /// <summary>
-    /// Constructs a ShaderCode by giving its source code directly.
-    /// </summary>
-    /// <param name="type">An enum representing the type of the shader (Vertex, Fragment, etc.)</param>
-    /// <param name="source_code">The source code of the shader.</param>
-    /// <returns>A ShaderCode.</returns>
-    static ShaderCode FromCode(ShaderType type, std::string_view source_code);
-};
 
 class Shader {
 public:
@@ -40,7 +14,7 @@ public:
     /// Creates and compiles a full shader pipeline from the shader codes.
     /// </summary>
     /// <param name="shader_codes">A list of the shaders : for example a vertex and a fragment shader.</param>
-    Shader(const std::vector<ShaderCode>& shader_codes);
+    Shader(const std::vector<ShaderSource>& shader_sources);
 
     /// Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
     /// <param name="vertex_shader_file_path">Path to the vertex shader file</param>
@@ -55,7 +29,7 @@ public:
     /// It can also be used to recompile the shader with different sources as often as you would like.
     /// </summary>
     /// <param name="shader_codes"></param>
-    void create_program(const std::vector<ShaderCode>& shader_codes);
+    void create_program(const std::vector<ShaderSource>& shader_sources);
 
     /// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.
     /// It can also be used to recompile the shader with different sources as often as you would like.
@@ -83,7 +57,7 @@ private:
     /// <summary>
     /// Creates and compiles a shader, and returns its ID
     /// </summary>
-    static GLuint CreateShader(const ShaderCode& shader_code);
+    static GLuint CreateShader(const ShaderSource& shader_source);
 
 private:
     std::unordered_map<const char*, GLint> _uniform_locations;
