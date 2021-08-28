@@ -7,7 +7,7 @@ namespace Cool::Vulkan {
 
 class ShaderModule {
 public:
-    ShaderModule(std::string_view file_path, Cool::Gpu::ShaderKind shader_kind);
+    ShaderModule(std::string_view file_path, Cool::ShaderKind shader_kind);
 
     const vku::ShaderModule& vku() const { return _vku_shader_module; }
 

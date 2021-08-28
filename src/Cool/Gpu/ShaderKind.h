@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Cool::Gpu {
+namespace Cool {
 
 enum class ShaderKind {
     Vertex,
@@ -9,4 +9,4 @@ enum class ShaderKind {
     Compute
 };
 
-} // namespace Cool::Gpu
+} // namespace Cool
