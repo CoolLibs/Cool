@@ -117,9 +117,6 @@ target_link_libraries(${PROJECT_NAME}
     STB_IMAGE_WRITE
 )
 
-# shaderc
-add_subdirectory(Cool/lib/shaderc-and-deps)
-
 # doctest
 # Strip tests from release builds
 add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>)
@@ -130,11 +127,13 @@ target_link_libraries(${PROJECT_NAME}
     Boxer
     nfd
     glfw
-    shaderc
 )
 if (COOL_USE_VULKAN)
+    # shaderc
+    add_subdirectory(Cool/lib/shaderc-and-deps)
     target_link_libraries(${PROJECT_NAME}
         Vulkan::Vulkan
+        shaderc
     )
 endif()
 if (COOL_USE_OPENGL)
