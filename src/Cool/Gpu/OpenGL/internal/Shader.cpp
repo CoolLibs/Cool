@@ -1,18 +1,18 @@
 #ifdef __COOL_APP_OPENGL
 
-    #include "../Shader.h"
-    #include <Cool/File/File.h>
+#include "../../Shader.h"
+#include <Cool/File/File.h>
 
 namespace Cool {
 
-    #ifdef DEBUG
-        #define ASSERT_SHADER_IS_BOUND              \
-            GLint id;                               \
-            glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
-            assert(id == _program_id && "The shader must be bound before setting any uniform");
-    #else
-        #define ASSERT_SHADER_IS_BOUND
-    #endif
+#ifdef DEBUG
+#define ASSERT_SHADER_IS_BOUND              \
+    GLint id;                               \
+    glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
+    assert(id == _program_id && "The shader must be bound before setting any uniform");
+#else
+#define ASSERT_SHADER_IS_BOUND
+#endif
 
 ShaderCode::ShaderCode(ShaderType type, std::string_view filePath)
     : type(type)
@@ -108,8 +108,8 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code)
     const char* src = shader_code.source_code.c_str();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
-    // Debug
-    #ifdef DEBUG
+// Debug
+#ifdef DEBUG
     int result;
     GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
@@ -120,7 +120,7 @@ GLuint Shader::CreateShader(const ShaderCode& shader_code)
         Log::error("Shader compilation failed :\n{}", message);
         GLDebug(glDeleteShader(shader_id));
     }
-    #endif
+#endif
     return shader_id;
 }
 
