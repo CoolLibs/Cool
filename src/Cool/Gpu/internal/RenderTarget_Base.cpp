@@ -1,8 +1,8 @@
 #include "RenderTarget_Base.h"
 
 #if defined(__COOL_APP_VULKAN)
-#include "../Vulkan/RenderTarget_ImplVulkan.h"
-template class Cool::RenderTarget_Base<Cool::Vulkan::RenderTarget>;
+#include "RenderTarget_ImplVulkan.h"
+template class Cool::RenderTarget_Base<Cool::RenderTarget_ImplVulkan>;
 #elif defined(__COOL_APP_OPENGL)
 #include "RenderTarget_ImplOpenGL.h"
 template class Cool::RenderTarget_Base<Cool::RenderTarget_ImplOpenGL>;

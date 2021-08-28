@@ -9,9 +9,9 @@ using RenderTarget = RenderTarget_Base<RenderTarget_ImplOpenGL>;
 }
 
 #elif defined(__COOL_APP_VULKAN)
-#include "Vulkan/RenderTarget_ImplVulkan.h"
+#include "internal/RenderTarget_ImplVulkan.h"
 namespace Cool {
-using RenderTarget = RenderTarget_Base<Vulkan::RenderTarget>;
+using RenderTarget = RenderTarget_Base<RenderTarget_ImplVulkan>;
 }
 
 #endif

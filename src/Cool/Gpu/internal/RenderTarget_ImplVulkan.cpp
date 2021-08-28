@@ -1,12 +1,12 @@
 #if defined(__COOL_APP_VULKAN)
 
-#include "../RenderTarget_ImplVulkan.h"
+#include "RenderTarget_ImplVulkan.h"
 #include <imgui/backends/imgui_impl_vulkan.h>
-#include "../Context.h"
+#include "../Vulkan/Context.h"
 
-namespace Cool::Vulkan {
+namespace Cool {
 
-RenderTarget::RenderTarget(vk::Format format, uint32_t width, uint32_t height)
+RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, uint32_t width, uint32_t height)
     : _texture{width, height, format, vk::ImageLayout::eGeneral, vk::ImageUsageFlagBits::eColorAttachment}
 {
     VkCommandBufferAllocateInfo allocInfo{};
@@ -24,7 +24,7 @@ RenderTarget::RenderTarget(vk::Format format, uint32_t width, uint32_t height)
     build();
 }
 
-void RenderTarget::render(RenderFuncType render_fn)
+void RenderTarget_ImplVulkan::render(RenderFuncType render_fn)
 {
     VkRenderPassBeginInfo rp_begin_info    = {};
     rp_begin_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -70,7 +70,7 @@ void RenderTarget::render(RenderFuncType render_fn)
     }
 }
 
-RenderTargetInfo RenderTarget::info() const
+RenderTargetInfo RenderTarget_ImplVulkan::info() const
 {
     RenderTargetInfo info;
     info.viewport = RectSizePos{
@@ -80,19 +80,19 @@ RenderTargetInfo RenderTarget::info() const
     return info;
 }
 
-void RenderTarget::resize(uint32_t width, uint32_t height)
+void RenderTarget_ImplVulkan::resize(uint32_t width, uint32_t height)
 {
     _texture.resize(width, height);
     build_framebuffer();
 }
 
-void RenderTarget::build()
+void RenderTarget_ImplVulkan::build()
 {
     build_render_pass();
     build_framebuffer();
 }
 
-void RenderTarget::build_render_pass()
+void RenderTarget_ImplVulkan::build_render_pass()
 {
     vku::RenderpassMaker _rpm;
     _rpm.attachmentBegin(format());
@@ -104,7 +104,7 @@ void RenderTarget::build_render_pass()
     _render_pass = _rpm.createUnique(Vulkan::context().g_Device);
 }
 
-void RenderTarget::build_framebuffer()
+void RenderTarget_ImplVulkan::build_framebuffer()
 {
     vk::ImageView attachments[] = {_texture.image().imageView()};
 
@@ -121,6 +121,6 @@ void RenderTarget::build_framebuffer()
     _framebuffer = vk::Device{Vulkan::context().g_Device}.createFramebufferUnique(fbci);
 }
 
-} // namespace Cool::Vulkan
+} // namespace Cool
 
 #endif
