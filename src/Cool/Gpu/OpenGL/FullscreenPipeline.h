@@ -12,7 +12,8 @@ public:
     FullscreenPipeline& operator=(const FullscreenPipeline&) = delete; // non-copyable because we store a handle to a VAO
     ~FullscreenPipeline();
 
-    void draw();
+    Shader& shader() { return _shader; }
+    void    draw();
 
 private:
     Shader _shader;
