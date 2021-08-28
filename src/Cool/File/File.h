@@ -63,12 +63,11 @@ public:
     static std::string whithout_file_name(const std::string& file_path);
 
     /**
-       * @brief Loads the content of a file into a std::string. (NB : We use this ugly out-param API instead of returning a string for performance reasons.)
+       * @brief Reads the content of a file into a std::string.
        * 
        * @param file_path Path to the file to be loaded
-       * @param dst Pointer to the string to be filled with the content of the file
        */
-    static void to_string(std::string_view file_path, std::string* dst);
+    static std::string to_string(std::string_view file_path);
 
     /**
        * @brief Recursively creates all the folders so that at the end folder_path is a valid folder path. /!\ There shouldn't be any file name at the end of folder_path ; it there is, then use create_folders_for_file_if_they_dont_exist() instead

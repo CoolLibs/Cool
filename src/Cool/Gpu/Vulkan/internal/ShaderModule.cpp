@@ -23,8 +23,7 @@ static shaderc_shader_kind shader_kind_cool2shaderc(Cool::Gpu::ShaderKind shader
 
 static vku::ShaderModule shader_module_from_glsl_file(std::string_view file_path, Cool::Gpu::ShaderKind shader_kind)
 {
-    std::string glsl_source;
-    File::to_string(file_path, &glsl_source);
+    std::string             glsl_source = File::to_string(file_path);
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
 
