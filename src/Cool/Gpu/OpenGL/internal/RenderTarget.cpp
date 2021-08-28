@@ -4,7 +4,7 @@
 
 namespace Cool::OpenGL {
 
-void RenderTarget::render(std::function<void()> render_fn)
+void RenderTarget::render(RenderFuncType render_fn)
 {
     _texture.bind();
     render_fn();

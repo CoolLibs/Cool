@@ -1,15 +1,25 @@
 #include "RenderTarget.h"
 
+#if defined(__COOL_APP_VULKAN)
+#include "../Vulkan/RenderTarget.h"
+template class Cool::RenderTarget_Base<Cool::Vulkan::RenderTarget>;
+#elif defined(__COOL_APP_OPENGL)
+#include "../OpenGL/RenderTarget.h"
+template class Cool::RenderTarget_Base<Cool::OpenGL::RenderTarget>;
+#endif
+
 namespace Cool {
 
-void RenderTarget::resize_if_necessary()
+template<typename T>
+void RenderTarget_Base<T>::resize_if_necessary()
 {
     if (_imgui_window_size.x != width() || _imgui_window_size.y != height()) {
         _impl.resize(_imgui_window_size.x, _imgui_window_size.y);
     }
 }
 
-void RenderTarget::imgui_window() const
+template<typename T>
+void RenderTarget_Base<T>::imgui_window() const
 {
     ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
     auto size = ImGui::GetContentRegionAvail();

@@ -24,7 +24,7 @@ RenderTarget::RenderTarget(vk::Format format, uint32_t width, uint32_t height)
     build();
 }
 
-void RenderTarget::render(std::function<void(vk::CommandBuffer& cb)> render_fn)
+void RenderTarget::render(RenderFuncType render_fn)
 {
     VkRenderPassBeginInfo rp_begin_info    = {};
     rp_begin_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

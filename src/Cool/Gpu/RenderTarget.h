@@ -5,13 +5,13 @@
 #if defined(__COOL_APP_OPENGL)
 #include "OpenGL/RenderTarget.h"
 namespace Cool {
-// using RenderTarget = OpenGL::RenderTarget;
+using RenderTarget = RenderTarget_Base<OpenGL::RenderTarget>;
 }
 
 #elif defined(__COOL_APP_VULKAN)
 #include "Vulkan/RenderTarget.h"
 namespace Cool {
-// using RenderTarget = Vulkan::RenderTarget;
+using RenderTarget = RenderTarget_Base<Vulkan::RenderTarget>;
 }
 
 #endif

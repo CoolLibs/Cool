@@ -8,7 +8,8 @@ namespace Cool::OpenGL {
 
 class RenderTarget {
 public:
-    void render(std::function<void()> render_fn);
+    using RenderFuncType = std::function<void()>;
+    void render(RenderFuncType render_fn);
 
     RenderTargetInfo info() const;
     uint32_t         width() const { return _texture.width(); }
