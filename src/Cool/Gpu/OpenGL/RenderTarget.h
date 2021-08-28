@@ -14,16 +14,14 @@ public:
     uint32_t         width() const { return _texture.width(); }
     uint32_t         height() const { return _texture.height(); }
     // const Texture&   texture() const { return _texture.; }
+    ImTextureID imgui_texture_id() const { return reinterpret_cast<ImTextureID>(_texture.textureID()); }
 
     void imgui_window();
 
-private:
     void resize(uint32_t width, uint32_t height);
-    void resize_if_necessary();
 
 private:
-    TextureFB  _texture;
-    glm::uvec2 _imgui_window_size{1, 1};
+    TextureFB _texture;
 };
 
 } // namespace Cool::OpenGL

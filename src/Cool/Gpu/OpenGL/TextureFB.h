@@ -1,7 +1,7 @@
 #pragma once
 #ifdef __COOL_APP_OPENGL
 
-    #include "FrameBuffer.h"
+#include "FrameBuffer.h"
 
 namespace Cool {
 
@@ -10,8 +10,8 @@ public:
     TextureFB() = default;
     ~TextureFB();
 
-    void          attachTextureToSlot(unsigned int slot);
-    inline GLuint textureID() { return m_colorTextureId; }
+    void   attachTextureToSlot(unsigned int slot);
+    GLuint textureID() const { return m_colorTextureId; }
 
 private:
     void createAttachments(int width, int height) override;
