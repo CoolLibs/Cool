@@ -1,6 +1,6 @@
 #if defined(__COOL_APP_VULKAN)
 
-#include "../RenderTarget.h"
+#include "../RenderTarget_ImplVulkan.h"
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include "../Context.h"
 
