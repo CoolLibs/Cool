@@ -26,7 +26,6 @@ RenderTarget::RenderTarget(vk::Format format, uint32_t width, uint32_t height)
 
 void RenderTarget::render(std::function<void(vk::CommandBuffer& cb)> render_fn)
 {
-    resize_if_necessary();
     VkRenderPassBeginInfo rp_begin_info    = {};
     rp_begin_info.sType                    = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     rp_begin_info.renderPass               = render_pass();
@@ -87,13 +86,6 @@ void RenderTarget::resize(uint32_t width, uint32_t height)
     build_framebuffer();
 }
 
-void RenderTarget::resize_if_necessary()
-{
-    if (_imgui_window_size.x != width() || _imgui_window_size.y != height()) {
-        resize(_imgui_window_size.x, _imgui_window_size.y);
-    }
-}
-
 void RenderTarget::build()
 {
     build_render_pass();
@@ -127,20 +119,6 @@ void RenderTarget::build_framebuffer()
     };
 
     _framebuffer = vk::Device{Vulkan::context().g_Device}.createFramebufferUnique(fbci);
-}
-
-void RenderTarget::imgui_window()
-{
-    ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
-    auto size = ImGui::GetContentRegionAvail();
-    if (size.x > 0.f && size.y > 0.f) {
-        _imgui_window_size = {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};
-    }
-    ImGui::Image(
-        texture().imgui_texture_id(),
-        {static_cast<float>(width()),
-         static_cast<float>(height())});
-    ImGui::End();
 }
 
 } // namespace Cool::Vulkan

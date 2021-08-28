@@ -1,14 +1,17 @@
 #pragma once
 
 #include "../OpenGL/RenderTarget.h"
+#include "../Vulkan/RenderTarget.h"
 
 namespace Cool {
 
-using RenderTarget_Impl = Cool::OpenGL::RenderTarget;
+// using RenderTarget_Impl = Cool::OpenGL::RenderTarget;
+using RenderTarget_Impl = Cool::Vulkan::RenderTarget;
 
 class RenderTarget {
 public:
-    void render(std::function<void()> render_fn)
+    // void render(std::function<void()> render_fn)
+    void render(std::function<void(vk::CommandBuffer& cb)> render_fn)
     {
         resize_if_necessary();
         _impl.render(render_fn);

@@ -18,7 +18,7 @@ class Window_Vulkan : public Window_Base {
 public:
     Window_Vulkan(Window_Vulkan&&) noexcept = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
-    Window_Vulkan::~Window_Vulkan();
+    ~Window_Vulkan();
 
     void check_for_swapchain_rebuild();
     void rebuild_swapchain();
