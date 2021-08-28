@@ -1,15 +1,12 @@
+#if defined(__COOL_APP_VULKAN)
+
 #include "../ShaderSource.h"
 
-namespace Cool {
+namespace Cool::Vulkan {
 
 ShaderSource::ShaderSource(std::string_view vulkan_glsl_source, ShaderKind shader_kind)
     : _vulkan_glsl_source{vulkan_glsl_source}, _shader_kind{shader_kind}
 {
-}
-
-std::string ShaderSource::to_opengl_glsl() const
-{
-    return _vulkan_glsl_source;
 }
 
 static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind)
@@ -26,7 +23,7 @@ static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind
     }
 }
 
-shaderc::SpvCompilationResult ShaderSource::to_vulkan_spirv() const
+shaderc::SpvCompilationResult ShaderSource::to_spirv() const
 {
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
@@ -40,4 +37,6 @@ shaderc::SpvCompilationResult ShaderSource::to_vulkan_spirv() const
     return res;
 }
 
-} // namespace Cool
+} // namespace Cool::Vulkan
+
+#endif

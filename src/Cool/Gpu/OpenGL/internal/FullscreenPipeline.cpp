@@ -6,7 +6,7 @@
 namespace Cool::OpenGL {
 
 FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_path)
-    : _shader{File::root_dir() + "/Cool/res/shaders/fullscreen.vert",
+    : _shader{File::root_dir() + "/Cool/res/shaders/fullscreen.gl.vert",
               fragment_shader_path}
 {
     GLDebug(glGenVertexArrays(1, &_dummy_vao_id));

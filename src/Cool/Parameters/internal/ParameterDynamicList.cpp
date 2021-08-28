@@ -9,12 +9,14 @@ void ParameterDynamicList::imgui(std::function<void()> on_value_change)
     }
 }
 
-void ParameterDynamicList::set_uniforms_in_shader(Shader& shader)
+#if defined(__COOL_APP_OPENGL)
+void ParameterDynamicList::set_uniforms_in_shader(OpenGL::Shader& shader)
 {
     for (auto& param : _parameters) {
         std::visit([&](auto&& arg) { arg.set_uniform_in_shader(shader); }, param);
     }
 }
+#endif
 
 size_t ParameterDynamicList::index_of(std::string_view parameter_name)
 {

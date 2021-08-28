@@ -1,10 +1,9 @@
-#ifdef __COOL_APP_OPENGL
+#if defined(__COOL_APP_OPENGL)
 
-#include "../../Shader.h"
+#include "../Shader.h"
 #include <Cool/File/File.h>
-#include "../../ShaderSource.h"
 
-namespace Cool {
+namespace Cool::OpenGL {
 
 #ifdef DEBUG
 #define ASSERT_SHADER_IS_BOUND              \
@@ -93,7 +92,7 @@ GLuint Shader::CreateShader(const ShaderSource& shader_source)
     // Create
     GLDebug(GLuint shader_id = glCreateShader(shader_type));
     // Compile
-    std::string my_src = shader_source.to_opengl_glsl();
+    std::string my_src = shader_source.glsl_source();
     const char* src    = my_src.c_str();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
@@ -177,6 +176,6 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat)
     GLDebug(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
-} // namespace Cool
+} // namespace Cool::OpenGL
 
 #endif

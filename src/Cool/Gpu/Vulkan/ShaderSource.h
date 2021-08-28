@@ -1,16 +1,16 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include <shaderc/shaderc.hpp>
-#include "ShaderKind.h"
+#include "../ShaderKind.h"
 
-namespace Cool {
+namespace Cool::Vulkan {
 
 class ShaderSource {
 public:
     ShaderSource(std::string_view vulkan_glsl_source, ShaderKind shader_kind);
 
-    std::string                   to_opengl_glsl() const;
-    shaderc::SpvCompilationResult to_vulkan_spirv() const;
+    shaderc::SpvCompilationResult to_spirv() const;
     ShaderKind                    kind() const { return _shader_kind; }
 
 private:
@@ -18,4 +18,6 @@ private:
     ShaderKind  _shader_kind;
 };
 
-} // namespace Cool
+} // namespace Cool::Vulkan
+
+#endif

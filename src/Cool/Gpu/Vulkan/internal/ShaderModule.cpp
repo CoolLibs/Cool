@@ -2,14 +2,14 @@
 
 #include "../ShaderModule.h"
 #include <Cool/File/File.h>
-#include "../../ShaderSource.h"
 #include "../Context.h "
+#include "../ShaderSource.h"
 
 namespace Cool::Vulkan {
 
 static vku::ShaderModule shader_module_from_glsl_file(std::string_view file_path, Cool::ShaderKind shader_kind)
 {
-    auto res = ShaderSource{File::to_string(file_path), shader_kind}.to_vulkan_spirv();
+    auto res = ShaderSource{File::to_string(file_path), shader_kind}.to_spirv();
 
     return vku::ShaderModule{Vulkan::context().g_Device, res.begin(), res.end()};
 }
