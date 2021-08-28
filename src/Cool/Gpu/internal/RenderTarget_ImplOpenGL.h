@@ -1,12 +1,12 @@
 #pragma once
 #if defined(__COOL_APP_OPENGL)
 
+#include "../OpenGL/TextureFB.h"
 #include "../RenderTargetInfo.h"
-#include "TextureFB.h"
 
-namespace Cool::OpenGL {
+namespace Cool {
 
-class RenderTarget {
+class RenderTarget_ImplOpenGL {
 public:
     using RenderFuncType = std::function<void()>;
     void render(RenderFuncType render_fn);
@@ -25,6 +25,6 @@ private:
     TextureFB _texture;
 };
 
-} // namespace Cool::OpenGL
+} // namespace Cool
 
 #endif

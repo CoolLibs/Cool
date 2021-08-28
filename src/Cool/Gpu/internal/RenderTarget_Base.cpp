@@ -4,8 +4,8 @@
 #include "../Vulkan/RenderTarget_ImplVulkan.h"
 template class Cool::RenderTarget_Base<Cool::Vulkan::RenderTarget>;
 #elif defined(__COOL_APP_OPENGL)
-#include "../OpenGL/RenderTarget_ImplOpenGL.h"
-template class Cool::RenderTarget_Base<Cool::OpenGL::RenderTarget>;
+#include "RenderTarget_ImplOpenGL.h"
+template class Cool::RenderTarget_Base<Cool::RenderTarget_ImplOpenGL>;
 #endif
 
 namespace Cool {

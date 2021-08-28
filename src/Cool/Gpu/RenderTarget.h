@@ -3,9 +3,9 @@
 #include "internal/RenderTarget_Base.h"
 
 #if defined(__COOL_APP_OPENGL)
-#include "OpenGL/RenderTarget_ImplOpenGL.h"
+#include "internal/RenderTarget_ImplOpenGL.h"
 namespace Cool {
-using RenderTarget = RenderTarget_Base<OpenGL::RenderTarget>;
+using RenderTarget = RenderTarget_Base<RenderTarget_ImplOpenGL>;
 }
 
 #elif defined(__COOL_APP_VULKAN)
