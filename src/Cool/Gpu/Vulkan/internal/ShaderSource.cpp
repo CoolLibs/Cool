@@ -27,8 +27,9 @@ shaderc::SpvCompilationResult ShaderSource::to_spirv() const
 {
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
+    options.AddMacroDefinition("COOL_VULKAN");
 
-    auto res = compiler.CompileGlslToSpv(_vulkan_glsl_source, shader_kind_cool2shaderc(_shader_kind), "Unknown");
+    auto res = compiler.CompileGlslToSpv(_vulkan_glsl_source, shader_kind_cool2shaderc(_shader_kind), "Unknown", options);
 
     if (!res.GetErrorMessage().empty()) {
         Log::warn(res.GetErrorMessage());
