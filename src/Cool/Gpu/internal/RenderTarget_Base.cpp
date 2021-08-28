@@ -29,7 +29,8 @@ void RenderTarget_Base<T>::imgui_window() const
     ImGui::Image(
         _impl.imgui_texture_id(),
         {static_cast<float>(width()),
-         static_cast<float>(height())});
+         static_cast<float>(height())},
+        {0.f, 1.f}, {1.f, 0.f});
     ImGui::End();
 }
 
