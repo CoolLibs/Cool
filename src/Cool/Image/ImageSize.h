@@ -74,7 +74,7 @@ float aspect_ratio(ImageSizeT<T> size)
 }
 
 /**
- * @return The biggest ImageSize that fits into frame and has the same aspect ratio as image.
+ * @return The biggest ImageSizeT<float> that fits into frame and has the same aspect ratio as image.
  */
 ImageSizeT<float> fit_into(ImageSize frame, ImageSize image);
 
