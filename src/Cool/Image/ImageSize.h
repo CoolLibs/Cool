@@ -6,22 +6,24 @@ namespace Cool {
  * @brief Represents the width and height of an axis-aligned rectangle.
  * width and height are guaranteed to be >= 1
  * 
+ * @tparam T The type of width and height
  */
-class ImageSize {
+template<typename T>
+class ImageSizeT {
 public:
     /**
      * @brief The type of width and height
      * 
      */
-    using DataType = uint32_t;
+    using DataType = T;
 
-    ImageSize() = default;
-    ImageSize(DataType w, DataType h)
+    ImageSizeT() = default;
+    ImageSizeT(DataType w, DataType h)
         : _width{w}, _height{h}
     {
         assert(w >= 1 && h >= 1);
     }
-    friend bool operator==(const ImageSize&, const ImageSize&) = default;
+    friend bool operator==(const ImageSizeT&, const ImageSizeT&) = default;
 
     DataType width() const { return _width; }
     DataType height() const { return _height; }
@@ -51,6 +53,8 @@ private:
     DataType _height = 1;
 };
 
+using ImageSize = ImageSizeT<uint32_t>;
+
 namespace ImageSizeU {
 
 /**
@@ -58,7 +62,11 @@ namespace ImageSizeU {
  * 
  * @return The aspect ratio of the rectangle, aka width / height
  */
-inline float aspect_ratio(const ImageSize& size) { return static_cast<float>(size.width()) / static_cast<float>(size.height()); }
+template<typename T>
+float aspect_ratio(ImageSizeT<T> size)
+{
+    return static_cast<float>(size.width()) / static_cast<float>(size.height());
+}
 
 } // namespace ImageSizeU
 
