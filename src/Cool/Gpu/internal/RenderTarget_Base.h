@@ -17,7 +17,7 @@ public:
     RenderTargetInfo info() const { return _impl.info(); }
     ImageSize        compute_size() const;
 
-    void imgui_window() const;
+    void imgui_window(std::string_view name) const;
 
 private:
     void resize_if_necessary();

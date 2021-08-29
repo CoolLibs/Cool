@@ -29,9 +29,9 @@ ImageSize RenderTarget_Base<T>::compute_size() const
 }
 
 template<typename T>
-void RenderTarget_Base<T>::imgui_window() const
+void RenderTarget_Base<T>::imgui_window(std::string_view name) const
 {
-    ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);
     // Update _imgui_window_size
     auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
