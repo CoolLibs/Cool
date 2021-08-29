@@ -1,4 +1,5 @@
 #include "RenderTarget_Base.h"
+#include <Cool/ImGuiExtras/ImGuiExtras.h>
 
 #if defined(__COOL_APP_VULKAN)
 #include "RenderTarget_ImplVulkan.h"
@@ -41,11 +42,10 @@ void RenderTarget_Base<T>::imgui_window() const
         _imgui_window_size.reset();
     }
     const auto image_size = ImageSizeU::fit_into(_imgui_window_size.value_or(ImageSize{}), _impl.size());
-    ImGui::Image(
+    ImGuiExtras::image_centered(
         _impl.imgui_texture_id(),
         {image_size.width(),
-         image_size.height()},
-        {0.f, 1.f}, {1.f, 0.f});
+         image_size.height()});
     ImGui::End();
 }
 

@@ -146,4 +146,9 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder = ""
 	 */
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters = {}, std::string_view base_folder = "");
 
+/**
+ * @brief Equivalent to ImGui::Image except the image will be centered in the window
+ */
+void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
+
 } // namespace Cool::ImGuiExtras

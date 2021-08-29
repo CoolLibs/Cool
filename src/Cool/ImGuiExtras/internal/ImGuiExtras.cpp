@@ -224,4 +224,10 @@ bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_t
     }
 }
 
+void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
+{
+    ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
+    ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
+}
+
 } // namespace Cool::ImGuiExtras
