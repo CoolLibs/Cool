@@ -33,12 +33,12 @@ void RenderTarget_Base<T>::imgui_window() const
     ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
     auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
-        _imgui_window_size.emplace();
-        _imgui_window_size->set_width(static_cast<ImageSize::DataType>(size.x));
-        _imgui_window_size->set_height(static_cast<ImageSize::DataType>(size.y));
+        _imgui_window_size.emplace(
+            static_cast<ImageSize::DataType>(size.x),
+            static_cast<ImageSize::DataType>(size.y));
     }
     else {
-        _imgui_window_size = std::nullopt;
+        _imgui_window_size.reset();
     }
     const auto out_size = _imgui_window_size ? *_imgui_window_size : ImageSize{};
     ImGui::Image(
