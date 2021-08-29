@@ -109,7 +109,7 @@ void AppManager::update()
     // UI
     if (m_bShowUI) {
         // Menu bar
-        if (!RenderState::IsExporting()) {
+        if (!RenderState::is_exporting()) {
             ImGui::BeginMainMenuBar();
             if (ImGui::BeginMenu("Preview")) {
                 RenderState::ImGuiPreviewControls();
@@ -222,25 +222,10 @@ void AppManager::window_pos_callback(GLFWwindow* window, int x, int y)
 
 void AppManager::onWindowMove(int x, int y)
 {
-    RenderState::setWindowTopLeft(x, y);
 }
 
 void AppManager::onWindowResize(int w, int h)
 {
-    RenderState::setWindowSize(w, h);
-}
-
-void AppManager::updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node)
-{
-    // Position
-    RenderState::setAvailableSpaceTopLeft(
-        static_cast<int>(node->Pos.x) /*- RenderState::getWindowTopLeft().x*/,
-        static_cast<int>(node->Pos.y) /*- RenderState::getWindowTopLeft().y*/);
-    // Size
-    glm::ivec2 size = {static_cast<int>(node->Size.x), static_cast<int>(node->Size.y)};
-    if (size.x != RenderState::getAvailableSpaceSize().x || size.y != RenderState::getAvailableSpaceSize().y) {
-        RenderState::setAvailableSpaceSize(size.x, size.y, !m_bFirstFrame);
-    }
 }
 
 void AppManager::ImGuiDockspace()
@@ -264,7 +249,6 @@ void AppManager::ImGuiDockspace()
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-        updateAvailableRenderingSpaceSizeAndPos(ImGui::DockBuilderGetCentralNode(dockspace_id));
     }
     else {
         Log::warn("Docking not enabled !");

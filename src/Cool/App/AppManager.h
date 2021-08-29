@@ -37,7 +37,6 @@ private:
     void onWindowResize(int w, int h);
 
     void ImGuiDockspace();
-    void updateAvailableRenderingSpaceSizeAndPos(ImGuiDockNode* node);
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);

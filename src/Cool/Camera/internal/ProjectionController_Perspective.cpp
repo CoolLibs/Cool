@@ -4,12 +4,12 @@
 
 namespace Cool {
 
-void ProjectionController_Perspective::apply_to(Camera& camera) const
+void ProjectionController_Perspective::apply_to(Camera& camera, float aspect_ratio) const
 {
     camera.set_projection_matrix(
         glm::infinitePerspective(
             glm::degrees(_field_of_view_in_radians),
-            RenderState::Size().aspectRatio(),
+            aspect_ratio,
             _near_plane));
 }
 

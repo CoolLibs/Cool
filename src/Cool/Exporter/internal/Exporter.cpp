@@ -53,7 +53,7 @@ Exporter::Exporter()
 void Exporter::export_image(std::function<void()> render, const IRenderTarget& render_target, std::string_view file_path)
 {
     // Render
-    RenderState::setIsExporting(true);
+    RenderState::set_is_exporting(true);
     render();
     // Get data
     const auto image = render_target.download_pixels();
@@ -65,7 +65,7 @@ void Exporter::export_image(std::function<void()> render, const IRenderTarget& r
         Log::ToUser::warn("Exporter::export_image", "Failed to create folder \"{}\"", _folder_path_for_image);
     }
     //
-    RenderState::setIsExporting(false);
+    RenderState::set_is_exporting(false);
 }
 
 void Exporter::export_image_multithreaded(const IRenderTarget& render_target, std::string_view file_path)
@@ -146,14 +146,14 @@ void Exporter::imgui_resolution_widget()
     ImGui::Text("Resolution : ");
     ImGui::SameLine();
     ImGui::PushItemWidth(50);
-    unsigned int w = static_cast<unsigned int>(RenderState::getExportSize().x);
-    unsigned int h = static_cast<unsigned int>(RenderState::getExportSize().y);
+    uint32_t w = RenderState::export_size().width();
+    uint32_t h = RenderState::export_size().height();
     _was_used |= ImGuiExtras::input_uint("W", &w);
     ImGui::SameLine();
     _was_used |= ImGuiExtras::input_uint("H", &h);
     ImGui::PopItemWidth();
     if (_was_used) {
-        RenderState::setExportSize(static_cast<int>(w), static_cast<int>(h));
+        RenderState::set_export_size({w, h});
     }
 }
 
@@ -192,7 +192,7 @@ void Exporter::begin_image_sequence_export()
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image_sequence)) {
         _thread_pool.start();
         _is_exporting_image_sequence = true;
-        RenderState::setIsExporting(true);
+        RenderState::set_is_exporting(true);
         _nb_frames_sent_to_thread_pool      = 0;
         _nb_frames_which_finished_exporting = 0;
         float total_export_duration         = _sequence_end_time_in_sec - _sequence_begin_time_in_sec;
@@ -227,7 +227,7 @@ void Exporter::end_image_sequence_export()
 {
     _thread_pool.stop();
     _is_exporting_image_sequence = false;
-    RenderState::setIsExporting(false);
+    RenderState::set_is_exporting(false);
     Time::set_elapse_mode_as_realtime();
     _is_window_open_image_sequence_export = false;
 }
