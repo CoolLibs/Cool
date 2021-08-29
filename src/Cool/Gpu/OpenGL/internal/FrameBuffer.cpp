@@ -1,6 +1,6 @@
 #ifdef __COOL_APP_OPENGL
 
-    #include "../FrameBuffer.h"
+#include "../FrameBuffer.h"
 
 namespace Cool {
 
@@ -15,13 +15,13 @@ FrameBuffer::~FrameBuffer()
     GLDebug(glDeleteFramebuffers(1, &m_frameBufferId));
 }
 
-void FrameBuffer::setSize(const glm::ivec2& size)
+void FrameBuffer::setSize(ImageSize size)
 {
     m_size = size;
     destroyAttachments();
-    createAttachments(size.x, size.y);
+    createAttachments(size);
     attachAttachments();
-    #ifdef DEBUG
+#ifdef DEBUG
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE) {
@@ -58,7 +58,7 @@ void FrameBuffer::setSize(const glm::ivec2& size)
         Log::error("Framebuffer is not complete : {}", statusStr);
     }
     unbind();
-    #endif
+#endif
 }
 
 void FrameBuffer::bind()
@@ -84,14 +84,14 @@ void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, 
 
 void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode)
 {
-    blitTo({0, 0}, frameBuffer.size(), frameBuffer.frameBufferId(), interpolationMode);
+    blitTo({0, 0}, {width(), height()}, frameBuffer.frameBufferId(), interpolationMode);
 }
 
-void FrameBuffer::createAttachments(int width, int height)
+void FrameBuffer::createAttachments(ImageSize size)
 {
     GLDebug(glGenRenderbuffers(1, &m_depthRenderBufferId));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId));
-    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height));
+    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size.width(), size.height()));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 }
 

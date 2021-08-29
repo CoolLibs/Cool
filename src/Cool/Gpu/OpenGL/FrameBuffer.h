@@ -1,6 +1,7 @@
 #pragma once
+#if defined(__COOL_APP_OPENGL)
 
-#ifdef __COOL_APP_OPENGL
+#include <Cool/Image/ImageSize.h>
 
 namespace Cool {
 
@@ -11,7 +12,7 @@ public:
     FrameBuffer();
     virtual ~FrameBuffer();
 
-    void setSize(const glm::ivec2& size);
+    void setSize(ImageSize size);
 
     void bind();
     void unbind();
@@ -35,23 +36,23 @@ public:
     /// </param>
     void blitTo(FrameBuffer& frameBuffer, GLint interpolationMode = GL_LINEAR);
 
-    inline int               width() const { return m_size.x; }
-    inline int               height() const { return m_size.y; }
-    inline const glm::ivec2& size() const { return m_size; }
-    inline float             aspectRatio() const { return static_cast<float>(m_size.x) / static_cast<float>(m_size.y); }
+    inline ImageSize::DataType width() const { return m_size.width(); }
+    inline ImageSize::DataType height() const { return m_size.height(); }
+    inline ImageSize           size() const { return m_size; }
+    inline float               aspectRatio() const { ImageSizeU::aspect_ratio(m_size); }
 
 protected:
     virtual void destroyAttachments();
-    virtual void createAttachments(int width, int height);
+    virtual void createAttachments(ImageSize size);
     virtual void attachAttachments();
 
     inline GLuint frameBufferId() { return m_frameBufferId; }
 
 private:
-    GLuint     m_frameBufferId       = -1;
-    GLuint     m_depthRenderBufferId = -1;
-    glm::ivec2 m_size                = glm::ivec2(0);
-    int        m_prevViewport[4];
+    GLuint    m_frameBufferId       = -1;
+    GLuint    m_depthRenderBufferId = -1;
+    ImageSize m_size;
+    int       m_prevViewport[4];
 };
 
 } // namespace Cool

@@ -1,5 +1,5 @@
 #ifdef __COOL_APP_OPENGL
-    #include "../TextureFB.h"
+#include "../TextureFB.h"
 
 namespace Cool {
 
@@ -8,12 +8,12 @@ TextureFB::~TextureFB()
     destroyAttachments();
 }
 
-void TextureFB::createAttachments(int width, int height)
+void TextureFB::createAttachments(ImageSize size)
 {
-    FrameBuffer::createAttachments(width, height);
+    FrameBuffer::createAttachments(size);
     GLDebug(glGenTextures(1, &m_colorTextureId));
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_colorTextureId));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, size.width(), size.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));

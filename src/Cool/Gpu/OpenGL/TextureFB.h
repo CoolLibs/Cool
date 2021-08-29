@@ -14,7 +14,7 @@ public:
     GLuint textureID() const { return m_colorTextureId; }
 
 private:
-    void createAttachments(int width, int height) override;
+    void createAttachments(ImageSize size) override;
     void destroyAttachments() override;
     void attachAttachments() override;
 

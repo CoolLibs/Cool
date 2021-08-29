@@ -20,9 +20,9 @@ RenderTargetInfo RenderTarget_ImplOpenGL::info() const
     return info;
 }
 
-void RenderTarget_ImplOpenGL::resize(uint32_t width, uint32_t height)
+void RenderTarget_ImplOpenGL::resize(ImageSize size)
 {
-    _texture.setSize({width, height});
+    _texture.setSize(size);
 }
 
 } // namespace Cool

@@ -1,6 +1,6 @@
 #ifdef __COOL_APP_OPENGL
 
-    #include "../RenderBufferFB.h"
+#include "../RenderBufferFB.h"
 
 namespace Cool {
 
@@ -9,12 +9,12 @@ RenderBufferFB::~RenderBufferFB()
     destroyAttachments();
 }
 
-void RenderBufferFB::createAttachments(int width, int height)
+void RenderBufferFB::createAttachments(ImageSize size)
 {
-    FrameBuffer::createAttachments(width, height);
+    FrameBuffer::createAttachments(size);
     GLDebug(glGenRenderbuffers(1, &m_colorRenderBufferId));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_colorRenderBufferId));
-    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height));
+    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, size.width(), size.height()));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 }
 
