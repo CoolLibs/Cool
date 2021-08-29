@@ -24,6 +24,11 @@ public:
         assert(w >= 1 && h >= 1);
     }
     friend bool operator==(const ImageSizeT&, const ImageSizeT&) = default;
+    template<typename U>
+    explicit operator ImageSizeT<U>() const
+    {
+        return ImageSizeT<U>{static_cast<U>(_width), static_cast<U>(_height)};
+    }
 
     DataType width() const { return _width; }
     DataType height() const { return _height; }
