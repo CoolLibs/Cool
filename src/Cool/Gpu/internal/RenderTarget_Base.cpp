@@ -32,6 +32,7 @@ template<typename T>
 void RenderTarget_Base<T>::imgui_window() const
 {
     ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
+    // Update _imgui_window_size
     auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
         _imgui_window_size.emplace(
@@ -41,7 +42,11 @@ void RenderTarget_Base<T>::imgui_window() const
     else {
         _imgui_window_size.reset();
     }
-    const auto image_size = ImageSizeU::fit_into(_imgui_window_size.value_or(ImageSize{}), _impl.size());
+    // Display the image
+    const auto window_size = _imgui_window_size.value_or(ImageSize{});
+    const auto image_size  = _imposed_size.has_value()
+                                 ? ImageSizeU::fit_into(window_size, _impl.size())
+                                 : static_cast<ImageSizeT<float>>(window_size);
     ImGuiExtras::image_centered(
         _impl.imgui_texture_id(),
         {image_size.width(),
