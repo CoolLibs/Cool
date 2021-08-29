@@ -13,8 +13,12 @@ namespace Cool {
 template<typename T>
 void RenderTarget_Base<T>::resize_if_necessary()
 {
-    if (_imgui_window_size.x != width() || _imgui_window_size.y != height()) {
-        _impl.resize(_imgui_window_size.x, _imgui_window_size.y);
+    const auto target_size = [&]() {
+        return _imgui_window_size ? *_imgui_window_size : ImageSize{};
+    }();
+
+    if (target_size.width() != width() || target_size.height() != height()) {
+        _impl.resize(target_size.width(), target_size.height());
     }
 }
 
@@ -23,8 +27,13 @@ void RenderTarget_Base<T>::imgui_window() const
 {
     ImGui::Begin("MyImage", nullptr, ImGuiWindowFlags_NoScrollbar);
     auto size = ImGui::GetContentRegionAvail();
-    if (size.x > 0.f && size.y > 0.f) {
-        _imgui_window_size = {static_cast<uint32_t>(size.x), static_cast<uint32_t>(size.y)};
+    if (size.x >= 1.f && size.y >= 1.f) {
+        _imgui_window_size.emplace();
+        _imgui_window_size->set_width(static_cast<ImageSize::DataType>(size.x));
+        _imgui_window_size->set_height(static_cast<ImageSize::DataType>(size.y));
+    }
+    else {
+        _imgui_window_size = std::nullopt;
     }
     ImGui::Image(
         _impl.imgui_texture_id(),

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/Image/ImageSize.h>
 #include "../RenderTargetInfo.h"
 
 namespace Cool {
@@ -23,8 +24,8 @@ private:
     void resize_if_necessary();
 
 private:
-    RenderTarget_Impl  _impl;
-    mutable glm::uvec2 _imgui_window_size{1, 1};
+    RenderTarget_Impl                _impl;
+    mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
 };
 
 } // namespace Cool
