@@ -1,6 +1,7 @@
 #pragma once
 #if defined(__COOL_APP_VULKAN)
 
+#include <Cool/Image/ImageSize.h>
 #include "../RenderTargetInfo.h"
 #include "../Vulkan/Texture.h"
 
@@ -9,7 +10,7 @@ namespace Cool {
 class RenderTarget_ImplVulkan {
 public:
     using RenderFuncType = std::function<void(vk::CommandBuffer& cb)>;
-    RenderTarget_ImplVulkan(vk::Format format = vk::Format::eR8G8B8A8Srgb, uint32_t width = 1, uint32_t height = 1);
+    RenderTarget_ImplVulkan(vk::Format format = vk::Format::eR8G8B8A8Srgb, ImageSize size = {});
 
     void render(RenderFuncType render_fn);
 
@@ -17,11 +18,12 @@ public:
     vk::RenderPass         render_pass() const { return *_render_pass; }
     uint32_t               width() const { return _texture.image().extent().width; }
     uint32_t               height() const { return _texture.image().extent().height; }
+    ImageSize              size() const { return {width(), height()}; }
     vk::Format             format() const { return _texture.image().format(); }
     const Vulkan::Texture& texture() const { return _texture; }
 
     void        imgui_window();
-    void        resize(uint32_t width, uint32_t height);
+    void        resize(ImageSize size);
     ImTextureID imgui_texture_id() const { return _texture.imgui_texture_id(); }
 
 private:

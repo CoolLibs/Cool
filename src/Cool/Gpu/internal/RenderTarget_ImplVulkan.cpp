@@ -6,8 +6,8 @@
 
 namespace Cool {
 
-RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, uint32_t width, uint32_t height)
-    : _texture{width, height, format, vk::ImageLayout::eGeneral, vk::ImageUsageFlagBits::eColorAttachment}
+RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, ImageSize size)
+    : _texture{size, format, vk::ImageLayout::eGeneral, vk::ImageUsageFlagBits::eColorAttachment}
 {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -80,9 +80,9 @@ RenderTargetInfo RenderTarget_ImplVulkan::info() const
     return info;
 }
 
-void RenderTarget_ImplVulkan::resize(uint32_t width, uint32_t height)
+void RenderTarget_ImplVulkan::resize(ImageSize size)
 {
-    _texture.resize(width, height);
+    _texture.resize(size);
     build_framebuffer();
 }
 

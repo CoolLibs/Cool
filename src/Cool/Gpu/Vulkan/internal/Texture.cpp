@@ -6,12 +6,12 @@
 
 namespace Cool::Vulkan {
 
-Texture::Texture(uint32_t width, uint32_t height, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
+Texture::Texture(ImageSize size, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
     : _vku{
           Cool::Vulkan::context().g_Device,
           Cool::Vulkan::context().memory_properties,
-          width,
-          height,
+          size.width(),
+          size.height(),
           1,
           format,
           false,
@@ -23,8 +23,7 @@ Texture::Texture(uint32_t width, uint32_t height, vk::Format format, vk::ImageLa
 }
 
 Texture::Texture(const ImageData& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
-    : Texture{image_data.width(),
-              image_data.height(),
+    : Texture{image_data.size,
               format,
               layout_when_read_by_imgui_shader,
               additional_usage_flags}
@@ -43,13 +42,13 @@ Texture::Texture(std::string_view path)
 {
 }
 
-void Texture::resize(uint32_t width, uint32_t height)
+void Texture::resize(ImageSize size)
 {
     _vku = vku::TextureImage2D{
         Cool::Vulkan::context().g_Device,
         Cool::Vulkan::context().memory_properties,
-        width,
-        height,
+        size.width(),
+        size.height(),
         1,
         _vku.format(),
         false,
