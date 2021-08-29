@@ -21,6 +21,7 @@ public:
     {
         assert(w >= 1 && h >= 1);
     }
+    friend bool operator==(const ImageSize&, const ImageSize&) = default;
 
     DataType width() const { return _width; }
     DataType height() const { return _height; }
