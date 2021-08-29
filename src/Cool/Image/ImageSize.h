@@ -68,6 +68,11 @@ float aspect_ratio(ImageSizeT<T> size)
     return static_cast<float>(size.width()) / static_cast<float>(size.height());
 }
 
+/**
+ * @return The biggest ImageSize that fits into frame and has the same aspect ratio as image.
+ */
+ImageSizeT<float> fit_into(ImageSize frame, ImageSize image);
+
 } // namespace ImageSizeU
 
 } // namespace Cool
