@@ -26,13 +26,6 @@ public:
     DataType height() const { return _height; }
 
     /**
-     * @brief 
-     * 
-     * @return The aspect ratio of the rectangle, aka width / height 
-     */
-    float aspect_ratio() const { return static_cast<float>(_width) / static_cast<float>(_height); }
-
-    /**
      * @brief Sets the width
      * @param w must be >= 1
      */
@@ -56,5 +49,16 @@ private:
     DataType _width  = 1;
     DataType _height = 1;
 };
+
+namespace ImageSizeU {
+
+/**
+ * @brief 
+ * 
+ * @return The aspect ratio of the rectangle, aka width / height
+ */
+inline float aspect_ratio(const ImageSize& size) { return static_cast<float>(size.width()) / static_cast<float>(size.height()); }
+
+} // namespace ImageSizeU
 
 } // namespace Cool
