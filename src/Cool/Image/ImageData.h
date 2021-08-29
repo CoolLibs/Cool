@@ -1,12 +1,16 @@
 #pragma once
 
+#include "ImageSize.h"
+
 namespace Cool {
 
 struct ImageData {
-    uint32_t                 width;
-    uint32_t                 height;
+    ImageSize                size;
     int                      nb_of_channels;
     std::unique_ptr<uint8_t> data;
+
+    ImageSize::DataType width() const { return size.width(); }
+    ImageSize::DataType height() const { return size.height(); }
 
     /**
      * @brief Loads an image from a file using stb_image (https://github.com/nothings/stb/blob/master/stb_image.h)
@@ -23,7 +27,7 @@ struct ImageData {
      * 
      * @return size_t 
      */
-    size_t data_array_size() const { return width * height * nb_of_channels; }
+    size_t data_array_size() const { return width() * height() * nb_of_channels; }
 };
 
 } // namespace Cool

@@ -9,10 +9,12 @@ ImageData::ImageData(std::string_view file_path, int nb_of_channels, bool flip_v
     stbi_set_flip_vertically_on_load(flip_vertically ? 1 : 0);
     int w, h;
     data.reset(stbi_load(file_path.data(), &w, &h, nullptr, nb_of_channels));
-    width  = static_cast<uint32_t>(w);
-    height = static_cast<uint32_t>(h);
-    if (!data) {
+    if (!data || w < 1 || h < 1) {
         Log::error("[LoadImage::load] Couldn't open file \"{}\"", file_path);
+    }
+    else {
+        size.set_width(static_cast<ImageSize::DataType>(w));
+        size.set_height(static_cast<ImageSize::DataType>(h));
     }
 }
 

@@ -23,8 +23,8 @@ Texture::Texture(uint32_t width, uint32_t height, vk::Format format, vk::ImageLa
 }
 
 Texture::Texture(const ImageData& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
-    : Texture{image_data.width,
-              image_data.height,
+    : Texture{image_data.width(),
+              image_data.height(),
               format,
               layout_when_read_by_imgui_shader,
               additional_usage_flags}

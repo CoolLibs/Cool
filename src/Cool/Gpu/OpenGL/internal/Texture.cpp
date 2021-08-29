@@ -59,7 +59,7 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
     GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
     // Upload data
     GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
     //
     return texID;
 }
