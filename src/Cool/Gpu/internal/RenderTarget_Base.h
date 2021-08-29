@@ -15,8 +15,7 @@ public:
     }
 
     RenderTargetInfo info() const { return _impl.info(); }
-    uint32_t         width() const { return _impl.width(); }
-    uint32_t         height() const { return _impl.height(); }
+    ImageSize        compute_size() const;
 
     void imgui_window() const;
 
