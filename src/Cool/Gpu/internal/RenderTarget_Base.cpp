@@ -13,12 +13,12 @@ namespace Cool {
 template<typename T>
 void RenderTarget_Base<T>::resize_if_necessary()
 {
-    const auto target_size = [&]() {
-        return _imgui_window_size ? *_imgui_window_size : ImageSize{};
-    }();
+    const auto expected_size = _imposed_size        ? *_imposed_size
+                               : _imgui_window_size ? *_imgui_window_size
+                                                    : ImageSize{};
 
-    if (target_size.width() != width() || target_size.height() != height()) {
-        _impl.resize(target_size.width(), target_size.height());
+    if (width() != expected_size.width() || height() != expected_size.height()) {
+        _impl.resize(expected_size.width(), expected_size.height());
     }
 }
 

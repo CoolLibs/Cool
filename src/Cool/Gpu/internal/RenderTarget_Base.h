@@ -26,6 +26,7 @@ private:
 private:
     RenderTarget_Impl                _impl;
     mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
+    std::optional<ImageSize>         _imposed_size;
 };
 
 } // namespace Cool
