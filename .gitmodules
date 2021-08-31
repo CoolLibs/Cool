@@ -37,3 +37,6 @@
 [submodule "lib/shaderc-and-deps/glslang"]
 	path = lib/shaderc-and-deps/glslang
 	url = https://github.com/KhronosGroup/glslang
+[submodule "lib/scope_guard"]
+	path = lib/scope_guard
+	url = https://github.com/ricab/scope_guard
