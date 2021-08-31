@@ -5,9 +5,9 @@
 namespace Cool {
 
 struct ImageData {
-    ImageSize                size;
-    int                      nb_of_channels;
-    std::unique_ptr<uint8_t> data;
+    ImageSize                  size;
+    int                        nb_of_channels;
+    std::unique_ptr<uint8_t[]> data;
 
     ImageSize::DataType width() const { return size.width(); }
     ImageSize::DataType height() const { return size.height(); }
@@ -21,7 +21,7 @@ struct ImageData {
      */
     ImageData(std::string_view file_path, int nb_of_channels = 4, bool flip_vertically = true);
 
-    ImageData(ImageSize size, int nb_of_channels, std::unique_ptr<uint8_t>&& data)
+    ImageData(ImageSize size, int nb_of_channels, std::unique_ptr<uint8_t[]>&& data)
         : size{size}, nb_of_channels{nb_of_channels}, data{std::move(data)}
     {
     }

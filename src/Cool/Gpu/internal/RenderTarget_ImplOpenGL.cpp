@@ -28,7 +28,7 @@ void RenderTarget_ImplOpenGL::resize(ImageSize size)
 ImageData RenderTarget_ImplOpenGL::download_pixels() const
 {
     _texture.bind();
-    std::unique_ptr<uint8_t> data{new uint8_t[4 * width() * height()]};
+    std::unique_ptr<uint8_t[]> data{new uint8_t[4 * width() * height()]};
     glReadPixels(0, 0, width(), height(), GL_RGBA, GL_UNSIGNED_BYTE, data.get());
     _texture.unbind();
     return ImageData{

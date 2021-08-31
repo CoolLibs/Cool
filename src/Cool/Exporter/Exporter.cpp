@@ -1,4 +1,4 @@
-#include "../Exporter.h"
+#include "Exporter.h"
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
