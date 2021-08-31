@@ -21,6 +21,11 @@ struct ImageData {
      */
     ImageData(std::string_view file_path, int nb_of_channels = 4, bool flip_vertically = true);
 
+    ImageData(ImageSize size, int nb_of_channels, std::unique_ptr<uint8_t>&& data)
+        : size{size}, nb_of_channels{nb_of_channels}, data{std::move(data)}
+    {
+    }
+
     /**
      * @brief data is a pointer to the beginning of an array (stored as a pointer because this is how stb_image does things).
      * This give you the number of elements in the array.

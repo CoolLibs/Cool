@@ -14,8 +14,8 @@ public:
 
     void setSize(ImageSize size);
 
-    void bind();
-    void unbind();
+    void bind() const;
+    void unbind() const;
     /// <summary>
     /// Copies the content of this framebuffer to another framebuffer
     /// </summary>
@@ -49,10 +49,10 @@ protected:
     inline GLuint frameBufferId() { return m_frameBufferId; }
 
 private:
-    GLuint    m_frameBufferId       = -1;
-    GLuint    m_depthRenderBufferId = -1;
-    ImageSize m_size;
-    int       m_prevViewport[4];
+    GLuint      m_frameBufferId       = -1;
+    GLuint      m_depthRenderBufferId = -1;
+    ImageSize   m_size;
+    mutable int m_prevViewport[4];
 };
 
 } // namespace Cool

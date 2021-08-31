@@ -61,14 +61,14 @@ void FrameBuffer::setSize(ImageSize size)
 #endif
 }
 
-void FrameBuffer::bind()
+void FrameBuffer::bind() const
 {
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferId));
     GLDebug(glGetIntegerv(GL_VIEWPORT, m_prevViewport)); // Store viewport settings to restore them when unbinding
     GLDebug(glViewport(0, 0, width(), height()));        // Only usefull if we plan on using this frame buffer at a different resolution than the screen's
 }
 
-void FrameBuffer::unbind()
+void FrameBuffer::unbind() const
 {
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, SCREEN_FRAMEBUFFER_ID));
     GLDebug(glViewport(m_prevViewport[0], m_prevViewport[1], m_prevViewport[2], m_prevViewport[3]));

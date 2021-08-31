@@ -50,38 +50,38 @@ Exporter::Exporter()
 {
 }
 
-void Exporter::export_image(std::function<void()> render, const IRenderTarget& render_target, std::string_view file_path)
+void Exporter::export_image(ExporterInput in, std::string_view file_path)
 {
     // Render
-    RenderState::instance().set_is_exporting(true);
-    render();
+    auto prev_constrained_size = in.render_target.constrained_size();
+    in.render_target.set_constrained_size(RenderState::instance().export_size());
+    in.render_fn(in.render_target);
     // Get data
-    const auto image = render_target.download_pixels();
-    // Write png
+    const auto image = in.render_target.download_pixels();
+    // // Write png
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
-        ExportImage::as_png(file_path, image.width, image.height, image.data.data());
+        ExportImage::as_png(file_path, image.width(), image.height(), image.data.get());
     }
     else {
         Log::ToUser::warn("Exporter::export_image", "Failed to create folder \"{}\"", _folder_path_for_image);
     }
-    //
-    RenderState::instance().set_is_exporting(false);
+    in.render_target.set_constrained_size(prev_constrained_size); // TODO should use a SCOPE_EXIT
 }
 
-void Exporter::export_image_multithreaded(const IRenderTarget& render_target, std::string_view file_path)
+void Exporter::export_image_multithreaded(ExporterInput input, std::string_view file_path)
 {
-    // Wait for a thread to be available
-    _thread_pool.wait_for_available_thread();
-    // Get data
-    const auto image = render_target.download_pixels();
-    // Write png
-    _thread_pool.push_job(ExportImage_Functor{
-        file_path,
-        image.width,
-        image.height,
-        image.data,
-        _frame_time_average,
-        _nb_frames_which_finished_exporting});
+    // // Wait for a thread to be available
+    // _thread_pool.wait_for_available_thread();
+    // // Get data
+    // const auto image = render_target.download_pixels();
+    // // Write png
+    // _thread_pool.push_job(ExportImage_Functor{
+    //     file_path,
+    //     image.width,
+    //     image.height,
+    //     image.data,
+    //     _frame_time_average,
+    //     _nb_frames_which_finished_exporting});
 }
 
 std::string Exporter::output_path()
@@ -157,7 +157,7 @@ void Exporter::imgui_resolution_widget()
     }
 }
 
-void Exporter::imgui_window_export_image(std::function<void()> render, const IRenderTarget& render_target)
+void Exporter::imgui_window_export_image(ExporterInput input)
 {
     if (_is_window_open_image_export) {
         ImGui::Begin("Export an Image", &_is_window_open_image_export);
@@ -180,7 +180,7 @@ void Exporter::imgui_window_export_image(std::function<void()> render, const IRe
         // Validation
         if (ImGui::Button("Export as PNG")) {
             _is_window_open_image_export = false;
-            export_image(render, render_target, output_path());
+            export_image(input, output_path());
         }
         //
         ImGui::End();
@@ -207,20 +207,20 @@ void Exporter::begin_image_sequence_export()
     }
 }
 
-void Exporter::update(const IRenderTarget& render_target)
+void Exporter::update(ExporterInput input)
 {
-    if (_is_exporting_image_sequence) {
-        _is_window_open_image_sequence_export = true;
-        if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
-            if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-                export_image_multithreaded(render_target, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
-                _nb_frames_sent_to_thread_pool++;
-            }
-        }
-        else {
-            end_image_sequence_export();
-        }
-    }
+    // if (_is_exporting_image_sequence) {
+    //     _is_window_open_image_sequence_export = true;
+    //     if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
+    //         if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
+    //             export_image_multithreaded(render_target, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
+    //             _nb_frames_sent_to_thread_pool++;
+    //         }
+    //     }
+    //     else {
+    //         end_image_sequence_export();
+    //     }
+    // }
 }
 
 void Exporter::end_image_sequence_export()

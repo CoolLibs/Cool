@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/Image/ImageData.h>
 #include <Cool/Image/ImageSize.h>
 #include "../RenderTargetInfo.h"
 
@@ -14,10 +15,12 @@ public:
         _impl.render(render_fn);
     }
 
-    RenderTargetInfo info() const { return _impl.info(); }
-    ImageSize        compute_size() const;
-    ImageSize        imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
-    void             set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
+    ImageData                download_pixels() const { return _impl.download_pixels(); }
+    RenderTargetInfo         info() const { return _impl.info(); }
+    ImageSize                compute_size() const;
+    ImageSize                imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
+    std::optional<ImageSize> constrained_size() const { return _constrained_size; }
+    void                     set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
 
     void imgui_window(std::string_view name) const;
 
