@@ -12,9 +12,14 @@ AspectRatio       RenderState::_preview_aspect_ratio;
 bool              RenderState::m_bPreviewControlThroughUIEnabled     = true;
 std::string       RenderState::m_bReasonForDisablingPreviewUIControl = "";
 
-ImageSize RenderState::size(ImageSize frame_size)
+std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size)
 {
-    return _is_exporting ? export_size() : preview_size(frame_size);
+    if (wants_to_constrain_size()) {
+        return _is_exporting ? export_size() : preview_size(frame_size);
+    }
+    else {
+        return std::nullopt;
+    }
 }
 
 ImageSize RenderState::preview_size(ImageSize frame_size)

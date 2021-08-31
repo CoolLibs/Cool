@@ -20,9 +20,10 @@ public:
     static void set_preview_nb_pixels(uint32_t nb_pixels) { _preview_nb_pixels = nb_pixels; }
     static void set_is_controlling_preview_nb_pixels(bool should_control) { _is_controlling_preview_nb_pixels = should_control; }
 
-    static ImageSize size(ImageSize frame_size);
-    static ImageSize preview_size(ImageSize frame_size);
-    static ImageSize export_size() { return _export_size; }
+    static bool                     wants_to_constrain_size() { return _is_exporting || _is_controlling_preview_aspect_ratio || _is_controlling_preview_nb_pixels; }
+    static std::optional<ImageSize> constrained_size(ImageSize frame_size);
+    static ImageSize                preview_size(ImageSize frame_size);
+    static ImageSize                export_size() { return _export_size; }
 
     static void ImGuiPreviewControls();
 
