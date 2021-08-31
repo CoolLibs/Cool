@@ -2,7 +2,7 @@
 
 #include <Cool/Gpu/InterpolationMode.h>
 #include <Cool/Image/ImageSize.h>
-#include "internal/AspectRatio.h"
+#include <Cool/Utils/AspectRatio.h>
 
 namespace Cool {
 

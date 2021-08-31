@@ -1,5 +1,4 @@
 #include "../Input.h"
-#include "../RenderState.h"
 
 namespace Cool {
 

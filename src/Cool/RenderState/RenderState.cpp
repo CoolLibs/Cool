@@ -1,4 +1,4 @@
-#include "../RenderState.h"
+#include "RenderState.h"
 
 namespace Cool {
 

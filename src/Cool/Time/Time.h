@@ -29,6 +29,12 @@ public:
     static void imgui_timeline();
 
     /**
+     * @brief Displays the current time in an ImGui widget
+     * 
+     */
+    static void imgui_current_time();
+
+    /**
 	 * @brief 
 	 * 
 	 * @return The current time in seconds. 

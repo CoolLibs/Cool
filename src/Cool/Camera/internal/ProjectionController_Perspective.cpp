@@ -1,5 +1,4 @@
 #include "../ProjectionController_Perspective.h"
-#include <Cool/App/RenderState.h>
 #include "../Camera.h"
 
 namespace Cool {
