@@ -7,6 +7,7 @@
 // #include <Cool/OpenGL/FrameBuffer.h>
 #include <Cool/String/String.h>
 #include <Cool/Time/Time.h>
+#include <scope_guard/scope_guard.hpp>
 
 namespace Cool {
 
@@ -53,19 +54,19 @@ Exporter::Exporter()
 void Exporter::export_image(ExporterInput in, std::string_view file_path)
 {
     // Render
-    auto prev_constrained_size = in.render_target.constrained_size();
+    auto prev_constrained_size    = in.render_target.constrained_size();
+    auto restore_constrained_size = sg::make_scope_guard([&]() { in.render_target.set_constrained_size(prev_constrained_size); });
     in.render_target.set_constrained_size(RenderState::instance().export_size());
     in.render_fn(in.render_target);
     // Get data
     const auto image = in.render_target.download_pixels();
-    // // Write png
+    // Write png
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
         ExportImage::as_png(file_path, image.width(), image.height(), image.data.get());
     }
     else {
         Log::ToUser::warn("Exporter::export_image", "Failed to create folder \"{}\"", _folder_path_for_image);
     }
-    in.render_target.set_constrained_size(prev_constrained_size); // TODO should use a SCOPE_EXIT
 }
 
 void Exporter::export_image_multithreaded(ExporterInput input, std::string_view file_path)
