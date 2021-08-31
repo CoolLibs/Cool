@@ -23,7 +23,7 @@ void RenderTarget_Base<T>::resize_if_necessary()
 template<typename T>
 ImageSize RenderTarget_Base<T>::compute_size() const
 {
-    return _imposed_size        ? *_imposed_size
+    return _constrained_size    ? *_constrained_size
            : _imgui_window_size ? *_imgui_window_size
                                 : ImageSize{};
 }
@@ -43,8 +43,8 @@ void RenderTarget_Base<T>::imgui_window(std::string_view name) const
         _imgui_window_size.reset();
     }
     // Display the image
-    const auto window_size = _imgui_window_size.value_or(ImageSize{});
-    const auto image_size  = _imposed_size.has_value()
+    const auto window_size = imgui_window_size();
+    const auto image_size  = _constrained_size.has_value()
                                  ? ImageSizeU::fit_into(window_size, _impl.size())
                                  : static_cast<ImageSizeT<float>>(window_size);
     ImGuiExtras::image_centered(

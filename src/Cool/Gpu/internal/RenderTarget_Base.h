@@ -16,6 +16,8 @@ public:
 
     RenderTargetInfo info() const { return _impl.info(); }
     ImageSize        compute_size() const;
+    ImageSize        imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
+    void             set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
 
     void imgui_window(std::string_view name) const;
 
@@ -25,7 +27,7 @@ private:
 private:
     RenderTarget_Impl                _impl;
     mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
-    std::optional<ImageSize>         _imposed_size;
+    std::optional<ImageSize>         _constrained_size;
 };
 
 } // namespace Cool
