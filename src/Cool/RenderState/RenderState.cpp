@@ -2,17 +2,7 @@
 
 namespace Cool {
 
-bool              RenderState::_is_exporting                        = false;
-bool              RenderState::_is_controlling_preview_nb_pixels    = false;
-bool              RenderState::_is_controlling_preview_aspect_ratio = false;
-ImageSize         RenderState::_export_size                         = {1920, 1080};
-InterpolationMode RenderState::_preview_interpolation_mode          = InterpolationMode::NearestNeighbor;
-int               RenderState::_preview_nb_pixels                   = 250000;
-AspectRatio       RenderState::_preview_aspect_ratio;
-bool              RenderState::m_bPreviewControlThroughUIEnabled     = true;
-std::string       RenderState::m_bReasonForDisablingPreviewUIControl = "";
-
-std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size)
+std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size) const
 {
     if (wants_to_constrain_size()) {
         return _is_exporting ? export_size() : preview_size(frame_size);
@@ -22,7 +12,7 @@ std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size)
     }
 }
 
-ImageSize RenderState::preview_size(ImageSize frame_size)
+ImageSize RenderState::preview_size(ImageSize frame_size) const
 {
     float aspect_ratio = _is_controlling_preview_aspect_ratio
                              ? _preview_aspect_ratio.asFloat()
