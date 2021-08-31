@@ -22,6 +22,8 @@ public:
     /// </summary>
     virtual void ImGuiMenus(){};
 
+    virtual bool should_show_menu_bar() { return true; }
+
     /// <summary>
     /// This is where you receive and handle keyboard events.
     /// For full informations, check out GLFW's documentation for glfwSetKeyCallback : https://www.glfw.org/docs/latest/group__input.html#ga1caf18159767e761185e49a3be019f8d

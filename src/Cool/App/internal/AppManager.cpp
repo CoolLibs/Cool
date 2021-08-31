@@ -109,12 +109,8 @@ void AppManager::update()
     // UI
     if (m_bShowUI) {
         // Menu bar
-        if (!RenderState::instance().is_exporting()) {
+        if (m_app.should_show_menu_bar()) {
             ImGui::BeginMainMenuBar();
-            if (ImGui::BeginMenu("Preview")) {
-                RenderState::instance().ImGuiPreviewControls();
-                ImGui::EndMenu();
-            }
             m_app.ImGuiMenus();
             ImGui::EndMainMenuBar();
         }
