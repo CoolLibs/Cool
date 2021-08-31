@@ -75,7 +75,7 @@ public:
        * @param folder_path 
        * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
        */
-    static bool create_folders_if_they_dont_exist(std::string_view folder_path);
+    static bool [[nodiscard]] create_folders_if_they_dont_exist(std::string_view folder_path);
 
     /**
        * @brief Recursively creates all the folders so that at the end file_path is a valid file path
@@ -83,7 +83,7 @@ public:
        * @param file_path 
        * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
        */
-    static bool create_folders_for_file_if_they_dont_exist(std::string_view file_path);
+    static bool [[nodiscard]] create_folders_for_file_if_they_dont_exist(std::string_view file_path);
 
     /**
        * @brief Root directory where the program was started from. Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up
