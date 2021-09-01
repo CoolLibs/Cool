@@ -51,7 +51,6 @@ private:
     Window&        _main_window;
     WindowManager& _window_manager;
     IApp&          m_app;
-    bool           m_bFirstFrame                = true; // Used to prevent triggering the resize event twice at the start of the app
     bool           m_bShowUI                    = true;
     bool           m_bDoForwardKeyEventsToImGui = true;
 #if defined(__COOL_APP_VULKAN)

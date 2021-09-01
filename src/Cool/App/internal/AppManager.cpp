@@ -105,9 +105,7 @@ void AppManager::update()
     ImGui::NewFrame();
     ImGuiDockspace();
     // Actual application code
-    if (!m_bFirstFrame) { // Don't update on first frame because PreviewOptions::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-        m_app.update();   // TODO is this still necessary ?
-    }
+    m_app.update();
     // UI
     if (m_bShowUI) {
         // Menu bar
@@ -150,8 +148,6 @@ void AppManager::update()
     }
     glfwSwapBuffers(_main_window.glfw());
 #endif
-    // End frame
-    m_bFirstFrame = false;
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
