@@ -8,12 +8,6 @@ namespace Cool {
 
 class PreviewOptions {
 public:
-    static PreviewOptions& instance()
-    {
-        static PreviewOptions render_state;
-        return render_state;
-    }
-
     void control_aspect_ratio(float aspect_ratio)
     {
         _aspect_ratio = aspect_ratio;
