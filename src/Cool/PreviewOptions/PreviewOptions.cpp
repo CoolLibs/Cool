@@ -25,8 +25,8 @@ ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
                                              : frame_size.width() * frame_size.height());
 
     return {
-        static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))),
-        static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio)))};
+        std::max(static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))), static_cast<ImageSize::DataType>(1)),
+        std::max(static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<ImageSize::DataType>(1))};
 }
 
 void PreviewOptions::imgui()
