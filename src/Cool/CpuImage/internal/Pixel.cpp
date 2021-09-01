@@ -1,9 +1,9 @@
 #include "Pixel.h"
-#include "../Image.h"
+#include "../CpuImage.h"
 
 namespace Cool {
 
-Pixel::Pixel(Image& image, unsigned int x, unsigned int y)
+Pixel::Pixel(CpuImage& image, unsigned int x, unsigned int y)
     : _image(image), _x(x), _y(y)
 {
 }

@@ -4,18 +4,18 @@
 
 namespace Cool {
 
-class Image;
+class CpuImage;
 
-class ImageIterator {
+class CpuImageIterator {
 public:
-    ImageIterator(Image& image, unsigned int x, unsigned int y);
+    CpuImageIterator(CpuImage& image, unsigned int x, unsigned int y);
 
     Pixel operator*();
     void  operator++();
-    bool  operator!=(ImageIterator& it);
+    bool  operator!=(CpuImageIterator& it);
 
 private:
-    Image&       _image;
+    CpuImage&    _image;
     unsigned int _x;
     unsigned int _y;
 };

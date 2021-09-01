@@ -1,7 +1,7 @@
 #pragma once
 
 #include "internal/Color.h"
-#include "internal/ImageIterator.h"
+#include "internal/CpuImageIterator.h"
 
 namespace Cool {
 
@@ -9,7 +9,7 @@ namespace Cool {
  * @brief Wrapper for a vector of Colors (4 unsigned chars) representing an image
  * 
  */
-class Image {
+class CpuImage {
 public:
     /**
 	 * @brief Creates an image with each pixel set as (0, 0, 0, 255) (black with 100% opacity)
@@ -17,7 +17,7 @@ public:
 	 * @param width 
 	 * @param height 
 	 */
-    Image(unsigned int width, unsigned int height);
+    CpuImage(unsigned int width, unsigned int height);
 
     /**
 	 * @brief Saves the image as a PNG. If the folders present in the path don't exist, they will be created.
@@ -63,8 +63,8 @@ public:
 	 */
     inline Color& color_at(unsigned int x, unsigned int y) { return _pixel_colors[x + y * _width]; }
 
-    ImageIterator begin();
-    ImageIterator end();
+    CpuImageIterator begin();
+    CpuImageIterator end();
 
 private:
     unsigned int _width;

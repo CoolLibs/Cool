@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-class Image;
+class CpuImage;
 
 /**
  * @brief The position and color of a given pixel of a given image. No need to take this class by reference : it already holds a reference to the image and can modify it.
@@ -12,7 +12,7 @@ class Image;
  */
 class Pixel {
 public:
-    Pixel(Image& image, unsigned int x, unsigned int y);
+    Pixel(CpuImage& image, unsigned int x, unsigned int y);
 
     /**
 	 * @brief 
@@ -50,7 +50,7 @@ public:
     inline int y_as_int() { return _y; }
 
 private:
-    Image&       _image;
+    CpuImage&    _image;
     unsigned int _x;
     unsigned int _y;
 };
