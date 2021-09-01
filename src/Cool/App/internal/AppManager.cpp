@@ -1,5 +1,4 @@
 #include "../AppManager.h"
-#include <Cool/PreviewOptions/PreviewOptions.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "../IApp.h"
 #include "../Input.h"

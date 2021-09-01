@@ -1,10 +1,10 @@
-#include "PreviewOptions.h"
+#include "ImageSizeConstraint.h"
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
-#include <Cool/Image/ImageSizeU.h>
+#include "ImageSizeU.h"
 
 namespace Cool {
 
-std::optional<ImageSize> PreviewOptions::constrained_size(ImageSize frame_size) const
+std::optional<ImageSize> ImageSizeConstraint::constrained_size(ImageSize frame_size) const
 {
     if (wants_to_constrain_size()) {
         return preview_size(frame_size);
@@ -14,7 +14,7 @@ std::optional<ImageSize> PreviewOptions::constrained_size(ImageSize frame_size) 
     }
 }
 
-ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
+ImageSize ImageSizeConstraint::preview_size(ImageSize frame_size) const
 {
     float aspect_ratio = _is_controlling_aspect_ratio
                              ? _aspect_ratio.asFloat()
@@ -29,7 +29,7 @@ ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
         std::max(static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<ImageSize::DataType>(1))};
 }
 
-void PreviewOptions::imgui()
+void ImageSizeConstraint::imgui()
 {
     // Aspect Ratio
     ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {

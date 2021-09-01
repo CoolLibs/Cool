@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Cool/Gpu/InterpolationMode.h>
-#include <Cool/Image/ImageSize.h>
-#include <Cool/Utils/AspectRatio.h>
+#include "AspectRatio.h"
+#include "ImageSize.h"
 
 namespace Cool {
 
-class PreviewOptions {
+class ImageSizeConstraint {
 public:
     void control_aspect_ratio(float aspect_ratio)
     {
