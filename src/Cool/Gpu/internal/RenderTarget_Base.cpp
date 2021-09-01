@@ -44,7 +44,7 @@ void RenderTarget_Base<T>::imgui_window(std::string_view name) const
     }
     // Display the image
     const auto window_size = imgui_window_size();
-    const auto image_size  = _constrained_size.has_value()
+    const auto image_size  = _is_aspect_ratio_constrained
                                  ? ImageSizeU::fit_into(window_size, _impl.size())
                                  : static_cast<ImageSizeT<float>>(window_size);
     ImGuiExtras::image_centered(

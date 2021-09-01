@@ -28,6 +28,7 @@ public:
     void should_control_nb_pixels(bool should_control) { _is_controlling_nb_pixels = should_control; }
 
     bool                     wants_to_constrain_size() const { return _is_controlling_aspect_ratio || _is_controlling_nb_pixels; }
+    bool                     wants_to_constrain_aspect_ratio() const { return _is_controlling_aspect_ratio; }
     std::optional<ImageSize> constrained_size(ImageSize frame_size) const;
     ImageSize                preview_size(ImageSize frame_size) const;
 

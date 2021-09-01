@@ -21,6 +21,7 @@ public:
     ImageSize                imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
     std::optional<ImageSize> constrained_size() const { return _constrained_size; }
     void                     set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
+    void                     set_is_aspect_ratio_constrained(bool is_constrained) { _is_aspect_ratio_constrained = is_constrained; }
 
     void imgui_window(std::string_view name) const;
 
@@ -31,6 +32,7 @@ private:
     RenderTarget_Impl                _impl;
     mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
     std::optional<ImageSize>         _constrained_size;
+    bool                             _is_aspect_ratio_constrained = false;
 };
 
 } // namespace Cool
