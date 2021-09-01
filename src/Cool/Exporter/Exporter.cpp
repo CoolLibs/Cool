@@ -1,4 +1,5 @@
 #include "Exporter.h"
+#include <Cool/ExportImage/AsPNG.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
@@ -40,7 +41,7 @@ void Exporter::export_image_multithreaded(ExporterInput in, std::string_view fil
     // Wait for a thread to be available
     _thread_pool.wait_for_available_thread();
     // Write png
-    _thread_pool.push_job(ExportImage_Functor{
+    _thread_pool.push_job(ImageExportJob{
         file_path,
         in.render_target.download_pixels(),
         &_frame_time_average,

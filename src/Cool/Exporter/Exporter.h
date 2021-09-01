@@ -1,43 +1,15 @@
 #pragma once
 
-#include <Cool/ExportImage/AsPNG.h>
 #include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Image/ImageSize.h>
 #include <Cool/MultiThread/ThreadPool.h>
-#include <Cool/Utils/Averager.h>
+#include "internal/ImageExportJob.h"
 
 namespace Cool {
 
 struct ExporterInput {
     RenderTarget&                      render_target;
     std::function<void(RenderTarget&)> render_fn;
-};
-
-class ExportImage_Functor {
-public:
-    ExportImage_Functor() = default;
-    ExportImage_Functor(std::string_view file_path, ImageData&& image, Averager<float>* frame_time_average, std::atomic<int>* nb_frames_which_finished_exporting)
-        : _file_path(file_path), _image{std::move(image)}, _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
-    {
-    }
-    ExportImage_Functor(ExportImage_Functor&& o) noexcept = default;
-    ExportImage_Functor& operator=(ExportImage_Functor&& o) noexcept = default;
-
-    void operator()()
-    {
-        auto begin = std::chrono::steady_clock::now();
-        ExportImage::as_png(_file_path, _image.width(), _image.height(), _image.data.get());
-        auto                         end        = std::chrono::steady_clock::now();
-        std::chrono::duration<float> delta_time = end - begin;
-        _frame_time_average->push(delta_time.count());
-        (*_nb_frames_which_finished_exporting)++;
-    }
-
-private:
-    std::string       _file_path;
-    ImageData         _image;
-    Averager<float>*  _frame_time_average;
-    std::atomic<int>* _nb_frames_which_finished_exporting;
 };
 
 class Exporter {
@@ -122,18 +94,18 @@ private:
     bool        _is_window_open_image_export     = false;
     bool        _should_show_file_exists_warning = false;
 
-    ThreadPool<ExportImage_Functor> _thread_pool;
-    std::string                     _folder_path_for_image_sequence;
-    bool                            _is_exporting_image_sequence          = false;
-    float                           _fps                                  = 30.f;
-    float                           _sequence_begin_time_in_sec           = 0.f;
-    float                           _sequence_end_time_in_sec             = 10.f;
-    bool                            _is_window_open_image_sequence_export = false;
-    int                             _nb_frames_sent_to_thread_pool;
-    std::atomic<int>                _nb_frames_which_finished_exporting;
-    int                             _total_nb_of_frames_in_sequence;
-    int                             _max_nb_digits_of_frame_count;
-    Averager<float>                 _frame_time_average;
+    ThreadPool<ImageExportJob> _thread_pool;
+    std::string                _folder_path_for_image_sequence;
+    bool                       _is_exporting_image_sequence          = false;
+    float                      _fps                                  = 30.f;
+    float                      _sequence_begin_time_in_sec           = 0.f;
+    float                      _sequence_end_time_in_sec             = 10.f;
+    bool                       _is_window_open_image_sequence_export = false;
+    int                        _nb_frames_sent_to_thread_pool;
+    std::atomic<int>           _nb_frames_which_finished_exporting;
+    int                        _total_nb_of_frames_in_sequence;
+    int                        _max_nb_digits_of_frame_count;
+    Averager<float>            _frame_time_average;
 };
 
 } // namespace Cool
