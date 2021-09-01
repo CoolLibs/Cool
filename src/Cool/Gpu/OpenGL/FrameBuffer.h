@@ -2,6 +2,7 @@
 #if defined(__COOL_APP_OPENGL)
 
 #include <Cool/Image/ImageSize.h>
+#include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
 

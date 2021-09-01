@@ -1,4 +1,5 @@
 #include "RenderState.h"
+#include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
 
