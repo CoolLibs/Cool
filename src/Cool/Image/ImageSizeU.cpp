@@ -1,6 +1,5 @@
 #include "ImageSizeU.h"
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
-#include <scope_guard/scope_guard.hpp>
 
 namespace Cool::ImageSizeU {
 
