@@ -230,4 +230,22 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
 }
 
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu)
+{
+    ImGui::PushID(label);
+    bool checkbox_was_used = ImGui::Checkbox("", bool_p);
+    ImGui::PopID();
+    ImGui::SameLine();
+    if (*bool_p) {
+        if (ImGui::BeginMenu(label)) {
+            submenu();
+            ImGui::EndMenu();
+        }
+    }
+    else {
+        ImGui::Text(label);
+    }
+    return checkbox_was_used;
+}
+
 } // namespace Cool::ImGuiExtras

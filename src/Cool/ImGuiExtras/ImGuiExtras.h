@@ -151,4 +151,14 @@ bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_t
  */
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
 
+/**
+ * @brief A checkbox that, when ticked, displays a menu on the side
+ * 
+ * @param label 
+ * @param bool_p 
+ * @param submenu A function that calls the imgui widgets that should appear in the submenu 
+ * @return true iff the checkbox was used this frame
+ */
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu);
+
 } // namespace Cool::ImGuiExtras
