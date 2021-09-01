@@ -14,16 +14,20 @@ public:
         return render_state;
     }
 
-    void set_preview_aspect_ratio(float aspect_ratio)
+    void control_aspect_ratio(float aspect_ratio)
     {
-        _preview_aspect_ratio = aspect_ratio;
-        set_is_controlling_preview_aspect_ratio(true);
+        _aspect_ratio = aspect_ratio;
+        should_control_aspect_ratio(true);
     }
-    void set_is_controlling_preview_aspect_ratio(bool should_control) { _is_controlling_preview_aspect_ratio = should_control; }
-    void set_preview_nb_pixels(uint32_t nb_pixels) { _preview_nb_pixels = nb_pixels; }
-    void set_is_controlling_preview_nb_pixels(bool should_control) { _is_controlling_preview_nb_pixels = should_control; }
+    void control_nb_pixels(uint32_t nb_pixels)
+    {
+        _nb_pixels = nb_pixels;
+        should_control_nb_pixels(true);
+    }
+    void should_control_aspect_ratio(bool should_control) { _is_controlling_aspect_ratio = should_control; }
+    void should_control_nb_pixels(bool should_control) { _is_controlling_nb_pixels = should_control; }
 
-    bool                     wants_to_constrain_size() const { return _is_controlling_preview_aspect_ratio || _is_controlling_preview_nb_pixels; }
+    bool                     wants_to_constrain_size() const { return _is_controlling_aspect_ratio || _is_controlling_nb_pixels; }
     std::optional<ImageSize> constrained_size(ImageSize frame_size) const;
     ImageSize                preview_size(ImageSize frame_size) const;
 
@@ -39,11 +43,11 @@ public:
     void disablePreviewControlThroughUI(const char* reasonForDisabling = "");
 
 private:
-    bool              _is_controlling_preview_nb_pixels    = false;
-    bool              _is_controlling_preview_aspect_ratio = false;
-    InterpolationMode _preview_interpolation_mode          = InterpolationMode::NearestNeighbor;
-    int               _preview_nb_pixels                   = 250000;
-    AspectRatio       _preview_aspect_ratio;
+    bool              _is_controlling_nb_pixels    = false;
+    bool              _is_controlling_aspect_ratio = false;
+    InterpolationMode _interpolation_mode          = InterpolationMode::NearestNeighbor;
+    int               _nb_pixels                   = 250000;
+    AspectRatio       _aspect_ratio;
 
     bool        m_bPreviewControlThroughUIEnabled     = true;
     std::string m_bReasonForDisablingPreviewUIControl = "";
