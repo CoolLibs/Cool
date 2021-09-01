@@ -72,6 +72,8 @@ public:
 	 */
     bool imgui_window_export_image_sequence();
 
+    bool is_exporting() const { return _is_exporting_image_sequence; }
+
     /**
 	 * @brief Opens or closes the window with the image sequence export parameters
 	 * 

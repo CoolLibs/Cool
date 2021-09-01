@@ -4,7 +4,6 @@
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/RenderState/RenderState.h>
 #include <Cool/String/String.h>
 #include <Cool/Time/Time.h>
 
@@ -174,8 +173,7 @@ void Exporter::begin_image_sequence_export()
 {
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image_sequence)) {
         _thread_pool.start();
-        _is_exporting_image_sequence = true;
-        RenderState::instance().set_is_exporting(true);
+        _is_exporting_image_sequence        = true;
         _nb_frames_sent_to_thread_pool      = 0;
         _nb_frames_which_finished_exporting = 0;
         float total_export_duration         = _sequence_end_time_in_sec - _sequence_begin_time_in_sec;
@@ -210,7 +208,6 @@ void Exporter::end_image_sequence_export()
 {
     _thread_pool.stop();
     _is_exporting_image_sequence = false;
-    RenderState::instance().set_is_exporting(false);
     Time::set_elapse_mode_as_realtime();
     _is_window_open_image_sequence_export = false;
 }
