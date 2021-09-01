@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Gpu/RenderTarget.h>
+#include <Cool/Image/ImageSize.h>
 #include <Cool/MultiThread/ThreadPool.h>
 #include <Cool/Utils/Averager.h>
 
@@ -81,10 +82,11 @@ public:
 private:
     std::string output_path();
     void        find_available_file_name();
-    void        imgui_resolution_widget();
     void        export_image_multithreaded(ExporterInput input, std::string_view file_path);
 
 private:
+    ImageSize _export_size{1920, 1080};
+
     std::string _folder_path_for_image;
     std::string _file_name                       = "img(0)";
     bool        _is_window_open_image_export     = false;

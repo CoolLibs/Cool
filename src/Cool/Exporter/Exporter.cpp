@@ -2,12 +2,11 @@
 #include <Cool/ExportImage/AsPNG.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
+#include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/RenderState/RenderState.h>
-// #include <Cool/OpenGL/FrameBuffer.h>
 #include <Cool/String/String.h>
 #include <Cool/Time/Time.h>
-#include <scope_guard/scope_guard.hpp>
 
 namespace Cool {
 
@@ -56,7 +55,7 @@ void Exporter::export_image(ExporterInput in, std::string_view file_path)
     // Render
     auto prev_constrained_size    = in.render_target.constrained_size();
     auto restore_constrained_size = sg::make_scope_guard([&]() { in.render_target.set_constrained_size(prev_constrained_size); });
-    in.render_target.set_constrained_size(RenderState::instance().export_size());
+    in.render_target.set_constrained_size(_export_size);
     in.render_fn(in.render_target);
     // Get data
     const auto image = in.render_target.download_pixels();
@@ -141,29 +140,12 @@ void Exporter::imgui_menu_items()
     //ImGui::PopStyleVar();
 }
 
-void Exporter::imgui_resolution_widget()
-{
-    bool _was_used = false;
-    ImGui::Text("Resolution : ");
-    ImGui::SameLine();
-    ImGui::PushItemWidth(50);
-    uint32_t w = RenderState::instance().export_size().width();
-    uint32_t h = RenderState::instance().export_size().height();
-    _was_used |= ImGuiExtras::input_uint("W", &w);
-    ImGui::SameLine();
-    _was_used |= ImGuiExtras::input_uint("H", &h);
-    ImGui::PopItemWidth();
-    if (_was_used) {
-        RenderState::instance().set_export_size({w, h});
-    }
-}
-
 void Exporter::imgui_window_export_image(ExporterInput input)
 {
     if (_is_window_open_image_export) {
         ImGui::Begin("Export an Image", &_is_window_open_image_export);
         // Resolution
-        imgui_resolution_widget();
+        ImageSizeU::imgui(_export_size);
         // File and Folders
         bool path_has_changed = false;
         path_has_changed |= ImGui::InputText("File Name", &_file_name);
@@ -240,7 +222,7 @@ bool Exporter::imgui_window_export_image_sequence()
         ImGui::Begin("Export an Image Sequence", _is_exporting_image_sequence ? nullptr : &_is_window_open_image_sequence_export);
         // Not exporting
         if (!_is_exporting_image_sequence) {
-            imgui_resolution_widget();
+            ImageSizeU::imgui(_export_size);
             ImGui::InputText("Path", &_folder_path_for_image_sequence);
             ImGui::SameLine();
             ImGuiExtras::open_folder_dialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
