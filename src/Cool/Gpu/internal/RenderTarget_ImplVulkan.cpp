@@ -121,6 +121,11 @@ void RenderTarget_ImplVulkan::build_framebuffer()
     _framebuffer = vk::Device{Vulkan::context().g_Device}.createFramebufferUnique(fbci);
 }
 
+ImageData RenderTarget_ImplVulkan::download_pixels() const
+{
+    return _texture.download_pixels();
+}
+
 } // namespace Cool
 
 #endif

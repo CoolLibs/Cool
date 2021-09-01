@@ -21,6 +21,7 @@ public:
     ImageSize              size() const { return {width(), height()}; }
     vk::Format             format() const { return _texture.image().format(); }
     const Vulkan::Texture& texture() const { return _texture; }
+    ImageData              download_pixels() const;
 
     void        imgui_window();
     void        resize(ImageSize size);

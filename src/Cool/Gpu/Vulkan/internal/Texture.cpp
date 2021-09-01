@@ -61,6 +61,31 @@ Texture::Id Texture::id()
     return {_vku.image()};
 }
 
+ImageData Texture::download_pixels() const
+{
+    auto w  = image().extent().width;
+    auto h  = image().extent().height;
+    auto sz = nb_channels() * w * h;
+
+    vku::GenericBuffer stagingBuffer{Vulkan::context().g_Device, Vulkan::context().memory_properties, (vk::BufferUsageFlags)vk::BufferUsageFlagBits::eTransferDst, (vk::DeviceSize)sz, vk::MemoryPropertyFlagBits::eHostVisible};
+    vku::executeImmediately(Vulkan::context().g_Device, Vulkan::context().command_pool, Vulkan::context().g_Queue, [&](vk::CommandBuffer cb) {
+        vk::Buffer          buf = stagingBuffer.buffer();
+        vk::BufferImageCopy region{};
+        region.bufferOffset     = 0;
+        region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 1, 1, 1};
+        region.imageExtent      = _vku.extent();
+        cb.copyImageToBuffer(_vku.image(), _vku.layout(), buf, {region});
+    });
+    std::unique_ptr<uint8_t[]> data{new uint8_t[sz]};
+    void*                      mem = stagingBuffer.map(Vulkan::context().g_Device);
+    memcpy(data.get(), mem, sz);
+    stagingBuffer.unmap(Vulkan::context().g_Device);
+    return ImageData{
+        ImageSize{w, h},
+        nb_channels(),
+        std::move(data)};
+}
+
 } // namespace Cool::Vulkan
 
 #endif

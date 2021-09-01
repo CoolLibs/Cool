@@ -1,5 +1,6 @@
 #include "RenderTarget_Base.h"
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
+#include <Cool/Image/ImageSizeU.h>
 
 #if defined(__COOL_APP_VULKAN)
 #include "RenderTarget_ImplVulkan.h"

@@ -30,6 +30,8 @@ public:
     ImTextureID                imgui_texture_id() const { return _imgui_texture_id; }
     const vku::TextureImage2D& image() const { return _vku; }
     vku::TextureImage2D&       image() { return _vku; }
+    int                        nb_channels() const { return 4; } // TODO fix me
+    ImageData                  download_pixels() const;
 
     struct Id {
         operator ImTextureID() const
