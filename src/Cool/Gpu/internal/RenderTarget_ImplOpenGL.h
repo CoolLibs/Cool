@@ -11,6 +11,7 @@ namespace Cool {
 class RenderTarget_ImplOpenGL {
 public:
     using RenderFuncType = std::function<void()>;
+    RenderTarget_ImplOpenGL(ImageSize size = {});
     void render(RenderFuncType render_fn);
 
     RenderTargetInfo    info() const;

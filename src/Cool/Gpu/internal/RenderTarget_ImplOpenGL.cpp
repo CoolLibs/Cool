@@ -4,6 +4,11 @@
 
 namespace Cool {
 
+RenderTarget_ImplOpenGL::RenderTarget_ImplOpenGL(ImageSize size)
+{
+    resize(size);
+}
+
 void RenderTarget_ImplOpenGL::render(RenderFuncType render_fn)
 {
     _texture.bind();
