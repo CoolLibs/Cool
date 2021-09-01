@@ -31,7 +31,7 @@ public:
     std::optional<ImageSize> constrained_size(ImageSize frame_size) const;
     ImageSize                preview_size(ImageSize frame_size) const;
 
-    void ImGuiPreviewControls();
+    void imgui();
 
 private:
     bool              _is_controlling_nb_pixels    = false;

@@ -28,7 +28,7 @@ ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
         static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio)))};
 }
 
-void PreviewOptions::ImGuiPreviewControls()
+void PreviewOptions::imgui()
 {
     // Aspect Ratio
     ImGui::Checkbox("Control aspect ratio", &_is_controlling_aspect_ratio);
