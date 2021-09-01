@@ -12,6 +12,7 @@ struct ImageData {
     ImageSize::DataType width() const { return size.width(); }
     ImageSize::DataType height() const { return size.height(); }
 
+    ImageData() = default;
     /**
      * @brief Loads an image from a file using stb_image (https://github.com/nothings/stb/blob/master/stb_image.h)
      * 

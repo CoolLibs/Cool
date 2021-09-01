@@ -1,5 +1,4 @@
 #include "Exporter.h"
-#include <Cool/ExportImage/AsPNG.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
@@ -8,40 +7,6 @@
 #include <Cool/Time/Time.h>
 
 namespace Cool {
-
-class ExportImage_Functor {
-public:
-    ExportImage_Functor(std::string_view file_path, int width, int height, std::vector<unsigned char> data, Averager<float>& frame_time_average, std::atomic<int>& nb_frames_which_finished_exporting)
-        : _file_path(file_path), _width(width), _height(height), _data(data), _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
-    {
-    }
-    ExportImage_Functor(ExportImage_Functor&& o) noexcept
-        : _file_path(std::move(o._file_path)), _width(o._width), _height(o._height), _data(std::move(o._data)), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
-    {
-    }
-    ExportImage_Functor(const ExportImage_Functor& o) noexcept
-        : _file_path(o._file_path), _width(o._width), _height(o._height), _data(o._data), _frame_time_average(o._frame_time_average), _nb_frames_which_finished_exporting(o._nb_frames_which_finished_exporting)
-    {
-    }
-
-    void operator()()
-    {
-        auto begin = std::chrono::steady_clock::now();
-        ExportImage::as_png(_file_path, _width, _height, _data.data());
-        auto                         end        = std::chrono::steady_clock::now();
-        std::chrono::duration<float> delta_time = end - begin;
-        _frame_time_average.push(delta_time.count());
-        _nb_frames_which_finished_exporting++;
-    }
-
-private:
-    std::string                _file_path;
-    int                        _width;
-    int                        _height;
-    std::vector<unsigned char> _data;
-    Averager<float>&           _frame_time_average;
-    std::atomic<int>&          _nb_frames_which_finished_exporting;
-};
 
 Exporter::Exporter()
     : _folder_path_for_image(File::root_dir() + "/out")
@@ -67,20 +32,19 @@ void Exporter::export_image(ExporterInput in, std::string_view file_path)
     }
 }
 
-void Exporter::export_image_multithreaded(ExporterInput input, std::string_view file_path)
+void Exporter::export_image_multithreaded(ExporterInput in, std::string_view file_path)
 {
-    // // Wait for a thread to be available
-    // _thread_pool.wait_for_available_thread();
-    // // Get data
-    // const auto image = render_target.download_pixels();
-    // // Write png
-    // _thread_pool.push_job(ExportImage_Functor{
-    //     file_path,
-    //     image.width,
-    //     image.height,
-    //     image.data,
-    //     _frame_time_average,
-    //     _nb_frames_which_finished_exporting});
+    // Render
+    in.render_target.set_constrained_size(_export_size);
+    in.render_fn(in.render_target);
+    // Wait for a thread to be available
+    _thread_pool.wait_for_available_thread();
+    // Write png
+    _thread_pool.push_job(ExportImage_Functor{
+        file_path,
+        in.render_target.download_pixels(),
+        &_frame_time_average,
+        &_nb_frames_which_finished_exporting});
 }
 
 std::string Exporter::output_path()
@@ -190,18 +154,18 @@ void Exporter::begin_image_sequence_export()
 
 void Exporter::update(ExporterInput input)
 {
-    // if (_is_exporting_image_sequence) {
-    //     _is_window_open_image_sequence_export = true;
-    //     if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
-    //         if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-    //             export_image_multithreaded(render_target, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
-    //             _nb_frames_sent_to_thread_pool++;
-    //         }
-    //     }
-    //     else {
-    //         end_image_sequence_export();
-    //     }
-    // }
+    if (_is_exporting_image_sequence) {
+        _is_window_open_image_sequence_export = true;
+        if (_nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
+            if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
+                export_image_multithreaded(input, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
+                _nb_frames_sent_to_thread_pool++;
+            }
+        }
+        else {
+            end_image_sequence_export();
+        }
+    }
 }
 
 void Exporter::end_image_sequence_export()
