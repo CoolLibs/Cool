@@ -29,6 +29,19 @@ ImageSize RenderTarget_Base<T>::compute_size() const
 }
 
 template<typename T>
+void RenderTarget_Base<T>::set_constrained_size(std::optional<ImageSize> size)
+{
+    set_constrained_size(size, size.has_value());
+}
+
+template<typename T>
+void RenderTarget_Base<T>::set_constrained_size(std::optional<ImageSize> size, bool is_aspect_ratio_constrained)
+{
+    _constrained_size            = size;
+    _is_aspect_ratio_constrained = is_aspect_ratio_constrained;
+}
+
+template<typename T>
 void RenderTarget_Base<T>::imgui_window(std::string_view name) const
 {
     ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);

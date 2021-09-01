@@ -20,8 +20,8 @@ public:
     ImageSize                compute_size() const;
     ImageSize                imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
     std::optional<ImageSize> constrained_size() const { return _constrained_size; }
-    void                     set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
-    void                     set_is_aspect_ratio_constrained(bool is_constrained) { _is_aspect_ratio_constrained = is_constrained; }
+    void                     set_constrained_size(std::optional<ImageSize> size);
+    void                     set_constrained_size(std::optional<ImageSize> size, bool is_aspect_ratio_constrained);
 
     void imgui_window(std::string_view name) const;
 
