@@ -69,10 +69,11 @@ ImageData Texture::download_pixels() const
 
     vku::GenericBuffer stagingBuffer{Vulkan::context().g_Device, Vulkan::context().memory_properties, (vk::BufferUsageFlags)vk::BufferUsageFlagBits::eTransferDst, (vk::DeviceSize)sz, vk::MemoryPropertyFlagBits::eHostVisible};
     vku::executeImmediately(Vulkan::context().g_Device, Vulkan::context().command_pool, Vulkan::context().g_Queue, [&](vk::CommandBuffer cb) {
+        _vku.setLayout(cb, vk::ImageLayout::eGeneral);
         vk::Buffer          buf = stagingBuffer.buffer();
         vk::BufferImageCopy region{};
         region.bufferOffset     = 0;
-        region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 1, 1, 1};
+        region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
         region.imageExtent      = _vku.extent();
         cb.copyImageToBuffer(_vku.image(), _vku.layout(), buf, {region});
     });

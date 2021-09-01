@@ -46,10 +46,10 @@ public:
     };
 
 private:
-    vku::TextureImage2D _vku;
-    vk::UniqueSampler   _sampler;
-    vk::ImageLayout     _layout_when_read_by_imgui_shader;
-    ImTextureID         _imgui_texture_id;
+    mutable vku::TextureImage2D _vku;
+    vk::UniqueSampler           _sampler;
+    vk::ImageLayout             _layout_when_read_by_imgui_shader;
+    ImTextureID                 _imgui_texture_id;
 };
 
 } // namespace Cool::Vulkan
