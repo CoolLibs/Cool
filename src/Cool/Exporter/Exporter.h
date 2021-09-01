@@ -1,16 +1,10 @@
 #pragma once
 
-#include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Image/ImageSize.h>
-#include <Cool/MultiThread/ThreadPool.h>
-#include "internal/ImageExportJob.h"
+#include "VideoExportParams.h"
+#include "VideoExportProcess.h"
 
 namespace Cool {
-
-struct ExporterInput {
-    RenderTarget&                      render_target;
-    std::function<void(RenderTarget&)> render_fn;
-};
 
 class Exporter {
 public:
@@ -72,7 +66,7 @@ public:
 	 */
     bool imgui_window_export_image_sequence();
 
-    bool is_exporting() const { return _is_exporting_image_sequence; }
+    bool is_exporting() const { return _video_export_process.has_value(); }
 
     /**
 	 * @brief Opens or closes the window with the image sequence export parameters
@@ -84,7 +78,6 @@ public:
 private:
     std::string output_path();
     void        find_available_file_name();
-    void        export_image_multithreaded(ExporterInput input, std::string_view file_path);
 
 private:
     ImageSize _export_size{1920, 1080};
@@ -94,18 +87,10 @@ private:
     bool        _is_window_open_image_export     = false;
     bool        _should_show_file_exists_warning = false;
 
-    ThreadPool<ImageExportJob> _thread_pool;
-    std::string                _folder_path_for_image_sequence;
-    bool                       _is_exporting_image_sequence          = false;
-    float                      _fps                                  = 30.f;
-    float                      _sequence_begin_time_in_sec           = 0.f;
-    float                      _sequence_end_time_in_sec             = 10.f;
-    bool                       _is_window_open_image_sequence_export = false;
-    int                        _nb_frames_sent_to_thread_pool;
-    std::atomic<int>           _nb_frames_which_finished_exporting;
-    int                        _total_nb_of_frames_in_sequence;
-    int                        _max_nb_digits_of_frame_count;
-    Averager<float>            _frame_time_average;
+    std::string                       _folder_path_for_image_sequence;
+    bool                              _is_window_open_image_sequence_export = false;
+    std::optional<VideoExportProcess> _video_export_process;
+    VideoExportParams                 _video_export_params;
 };
 
 } // namespace Cool
