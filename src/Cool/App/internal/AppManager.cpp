@@ -41,6 +41,8 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
     glfwSetCursorPosCallback  (_main_window.glfw(), AppManager::cursor_position_callback);
     glfwSetWindowSizeCallback (_main_window.glfw(), window_size_callback);
     glfwSetWindowPosCallback  (_main_window.glfw(), window_pos_callback);
+    glfwSetCharCallback       (_main_window.glfw(), ImGui_ImplGlfw_CharCallback);
+    glfwSetMonitorCallback    (                     ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
 
     // Trigger window size / position event once
