@@ -44,6 +44,7 @@ Texture::Texture(std::string_view path)
 
 void Texture::resize(ImageSize size)
 {
+    vkDeviceWaitIdle(Vulkan::context().g_Device); // We must wait for all curent users of the image to finish before destroying it
     _vku = vku::TextureImage2D{
         Cool::Vulkan::context().g_Device,
         Cool::Vulkan::context().memory_properties,
