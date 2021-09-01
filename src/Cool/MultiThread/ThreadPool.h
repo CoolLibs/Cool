@@ -6,6 +6,7 @@ namespace Cool {
  * @brief Manages a given number of threads and give them jobs
  * 
  */
+template<typename Job>
 class ThreadPool {
 public:
     /**
@@ -53,20 +54,22 @@ public:
 	 * 
 	 * @param job Any function pointer / lambda with signature void -> void
 	 */
-    void push_job(std::function<void()> job);
+    void push_job(Job&& job);
 
 private:
     void check_for_jobs();
     void wait_for_all_jobs_to_finish();
 
 private:
-    size_t                            _nb_threads;
-    std::vector<std::thread>          _threads;
-    std::condition_variable           _condition_to_pop_from_queue;
-    std::condition_variable           _condition_to_check_queue_size_is_small_enough;
-    std::deque<std::function<void()>> _jobs_queue;
-    std::mutex                        _jobs_queue_mutex;
-    bool                              _running = false;
+    size_t                   _nb_threads;
+    std::vector<std::thread> _threads;
+    std::condition_variable  _condition_to_pop_from_queue;
+    std::condition_variable  _condition_to_check_queue_size_is_small_enough;
+    std::deque<Job>          _jobs_queue;
+    std::mutex               _jobs_queue_mutex;
+    bool                     _running = false;
 };
 
 } // namespace Cool
+
+#include "internal/ThreadPool.tpp"
