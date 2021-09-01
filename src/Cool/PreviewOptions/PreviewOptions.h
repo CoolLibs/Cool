@@ -33,24 +33,12 @@ public:
 
     void ImGuiPreviewControls();
 
-    /// <summary>
-    /// Allows user to control the preview size through the "Preview" menu. It is enabled by default.
-    /// </summary>
-    void enablePreviewControlThroughUI();
-    /// <summary>
-    /// Prevents user from controlling the preview size through the "Preview" menu.
-    /// </summary>
-    void disablePreviewControlThroughUI(const char* reasonForDisabling = "");
-
 private:
     bool              _is_controlling_nb_pixels    = false;
     bool              _is_controlling_aspect_ratio = false;
     InterpolationMode _interpolation_mode          = InterpolationMode::NearestNeighbor;
     int               _nb_pixels                   = 250000;
     AspectRatio       _aspect_ratio;
-
-    bool        m_bPreviewControlThroughUIEnabled     = true;
-    std::string m_bReasonForDisablingPreviewUIControl = "";
 };
 
 } // namespace Cool

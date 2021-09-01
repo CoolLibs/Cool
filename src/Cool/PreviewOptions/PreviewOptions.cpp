@@ -30,39 +30,23 @@ ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
 
 void PreviewOptions::ImGuiPreviewControls()
 {
-    if (m_bPreviewControlThroughUIEnabled) {
-        // Aspect Ratio
-        ImGui::Checkbox("Control aspect ratio", &_is_controlling_aspect_ratio);
-        if (_is_controlling_aspect_ratio) {
-            _aspect_ratio.ImGuiPicker(168492224155754);
-        }
-        // Nb Pixels
-        ImGui::Checkbox("Control number of pixels", &_is_controlling_nb_pixels);
-        if (_is_controlling_nb_pixels) {
-            int previewNbPixels = _nb_pixels;
-            if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 100000 /*InAppRenderArea().area()*/)) {
-                _nb_pixels = previewNbPixels;
-            }
-        }
-        // Interpolation mode
-        if (_is_controlling_aspect_ratio || _is_controlling_nb_pixels) {
-            ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
+    // Aspect Ratio
+    ImGui::Checkbox("Control aspect ratio", &_is_controlling_aspect_ratio);
+    if (_is_controlling_aspect_ratio) {
+        _aspect_ratio.ImGuiPicker(168492224155754);
+    }
+    // Nb Pixels
+    ImGui::Checkbox("Control number of pixels", &_is_controlling_nb_pixels);
+    if (_is_controlling_nb_pixels) {
+        int previewNbPixels = _nb_pixels;
+        if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 100000 /*InAppRenderArea().area()*/)) {
+            _nb_pixels = previewNbPixels;
         }
     }
-    else {
-        ImGui::TextDisabled(m_bReasonForDisablingPreviewUIControl.c_str());
+    // Interpolation mode
+    if (_is_controlling_aspect_ratio || _is_controlling_nb_pixels) {
+        ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
     }
-}
-
-void PreviewOptions::enablePreviewControlThroughUI()
-{
-    m_bPreviewControlThroughUIEnabled = true;
-}
-
-void PreviewOptions::disablePreviewControlThroughUI(const char* reasonForDisabling)
-{
-    m_bPreviewControlThroughUIEnabled     = false;
-    m_bReasonForDisablingPreviewUIControl = reasonForDisabling;
 }
 
 } // namespace Cool
