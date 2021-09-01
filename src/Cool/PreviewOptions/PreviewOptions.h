@@ -6,11 +6,11 @@
 
 namespace Cool {
 
-class RenderState {
+class PreviewOptions {
 public:
-    static RenderState& instance()
+    static PreviewOptions& instance()
     {
-        static RenderState render_state;
+        static PreviewOptions render_state;
         return render_state;
     }
 

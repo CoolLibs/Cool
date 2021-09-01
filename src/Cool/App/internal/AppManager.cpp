@@ -1,5 +1,5 @@
 #include "../AppManager.h"
-#include <Cool/RenderState/RenderState.h>
+#include <Cool/PreviewOptions/PreviewOptions.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "../IApp.h"
 #include "../Input.h"
@@ -105,8 +105,8 @@ void AppManager::update()
     ImGui::NewFrame();
     ImGuiDockspace();
     // Actual application code
-    if (!m_bFirstFrame) { // Don't update on first frame because RenderState::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
-        m_app.update();
+    if (!m_bFirstFrame) { // Don't update on first frame because PreviewOptions::Size hasn't been initialized yet (we do this trickery to prevent the resizing event to be called twice at the start of the app)
+        m_app.update();   // TODO is this still necessary ?
     }
     // UI
     if (m_bShowUI) {

@@ -1,9 +1,9 @@
-#include "RenderState.h"
+#include "PreviewOptions.h"
 #include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
 
-std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size) const
+std::optional<ImageSize> PreviewOptions::constrained_size(ImageSize frame_size) const
 {
     if (wants_to_constrain_size()) {
         return preview_size(frame_size);
@@ -13,7 +13,7 @@ std::optional<ImageSize> RenderState::constrained_size(ImageSize frame_size) con
     }
 }
 
-ImageSize RenderState::preview_size(ImageSize frame_size) const
+ImageSize PreviewOptions::preview_size(ImageSize frame_size) const
 {
     float aspect_ratio = _is_controlling_preview_aspect_ratio
                              ? _preview_aspect_ratio.asFloat()
@@ -28,7 +28,7 @@ ImageSize RenderState::preview_size(ImageSize frame_size) const
         static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio)))};
 }
 
-void RenderState::ImGuiPreviewControls()
+void PreviewOptions::ImGuiPreviewControls()
 {
     if (m_bPreviewControlThroughUIEnabled) {
         // Aspect Ratio
@@ -54,12 +54,12 @@ void RenderState::ImGuiPreviewControls()
     }
 }
 
-void RenderState::enablePreviewControlThroughUI()
+void PreviewOptions::enablePreviewControlThroughUI()
 {
     m_bPreviewControlThroughUIEnabled = true;
 }
 
-void RenderState::disablePreviewControlThroughUI(const char* reasonForDisabling)
+void PreviewOptions::disablePreviewControlThroughUI(const char* reasonForDisabling)
 {
     m_bPreviewControlThroughUIEnabled     = false;
     m_bReasonForDisablingPreviewUIControl = reasonForDisabling;
