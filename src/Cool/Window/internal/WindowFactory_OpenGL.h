@@ -19,11 +19,6 @@ public:
 private:
     void setupGLDebugging();
     void setup_imgui(Window_OpenGL& window);
-
-private:
-    int _opengl_version;
-    int _opengl_major_version;
-    int _opengl_minor_version;
 };
 
 } // namespace Cool

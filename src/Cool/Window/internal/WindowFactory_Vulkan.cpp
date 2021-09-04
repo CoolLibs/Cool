@@ -4,6 +4,7 @@
 #include <Cool/Gpu/Vulkan/Context.h>
 #include <Cool/Gpu/Vulkan/internal/check_result.h>
 #include <Cool/Log/ToUser.h>
+#include <Cool/Utils/Version.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include <imgui/imgui.h>
@@ -13,7 +14,7 @@ namespace Cool {
 
 WindowFactory_Vulkan::WindowFactory_Vulkan()
 {
-    Log::info("[Gpu] Using Vulkan");
+    Log::info("[Gpu] Using Vulkan {}.{}", major_version(COOL_VULKAN_VERSION), minor_version(COOL_VULKAN_VERSION));
 }
 
 void WindowFactory_Vulkan::shut_down(WindowManager& window_manager)

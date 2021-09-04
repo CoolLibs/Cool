@@ -1,6 +1,7 @@
 #if defined(__COOL_APP_VULKAN)
 
 #include "../Context.h"
+#include <Cool/Utils/Version.h>
 #include <glfw/glfw3.h>
 #include "check_result.h"
 
@@ -24,6 +25,10 @@ Context::Context()
         create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         create_info.enabledExtensionCount   = extensions_count;
         create_info.ppEnabledExtensionNames = extensions;
+        VkApplicationInfo app_info          = {};
+        app_info.sType                      = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        app_info.apiVersion                 = VK_MAKE_VERSION(major_version(COOL_VULKAN_VERSION), minor_version(COOL_VULKAN_VERSION), 0),
+        create_info.pApplicationInfo        = &app_info;
 #if defined(DEBUG)
         // Enabling validation layers
         const char* layers[]            = {"VK_LAYER_KHRONOS_validation"};

@@ -1,6 +1,7 @@
 #if defined(__COOL_APP_OPENGL)
 
 #include "WindowFactory_OpenGL.h"
+#include <Cool/Utils/Version.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include "GLDebugCallback.h"
@@ -8,12 +9,9 @@
 namespace Cool {
 
 WindowFactory_OpenGL::WindowFactory_OpenGL()
-    : _opengl_version(COOL_OPENGL_VERSION)
-    , _opengl_major_version(COOL_OPENGL_VERSION / 100)
-    , _opengl_minor_version((COOL_OPENGL_VERSION - COOL_OPENGL_VERSION / 100 * 100) / 10)
 {
-    assert(_opengl_version >= 330);
-    Log::info("[Gpu] Using OpenGL {}.{}", _opengl_major_version, _opengl_minor_version);
+    assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
+    Log::info("[Gpu] Using OpenGL {}.{}", major_version(COOL_OPENGL_VERSION), minor_version(COOL_OPENGL_VERSION));
 }
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
@@ -39,11 +37,12 @@ void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window, WindowM
 Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& params, WindowManager& window_manager)
 {
     // Window flags
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _opengl_major_version);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, _opengl_minor_version);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version(COOL_OPENGL_VERSION));
 #ifdef DEBUG
-    if (_opengl_version >= 430)
+    if (COOL_OPENGL_VERSION >= 430) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    }
 #endif
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -71,7 +70,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
 void WindowFactory_OpenGL::setupGLDebugging()
 {
 #if defined(DEBUG)
-    if (_opengl_version >= 430) {
+    if (COOL_OPENGL_VERSION >= 430) {
         int flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -90,7 +89,7 @@ void WindowFactory_OpenGL::setupGLDebugging()
 void WindowFactory_OpenGL::setup_imgui(Window_OpenGL& window)
 {
     ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
-    std::string glslVersion = "#version " + std::to_string(_opengl_version);
+    std::string glslVersion = "#version " + std::to_string(COOL_OPENGL_VERSION);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 }
 

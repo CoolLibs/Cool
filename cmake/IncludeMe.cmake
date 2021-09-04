@@ -5,7 +5,10 @@ add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
 # Define COOL_OPENGL_VERSION ; this is used to initialize WindowFactory_OpenGL
-    "COOL_OPENGL_VERSION=${COOL_USE_OPENGL}">)
+    "COOL_OPENGL_VERSION=${COOL_USE_OPENGL}"
+# Define COOL_VULKAN_VERSION ; this is used to initialize VulkanContext
+    "COOL_VULKAN_VERSION=${COOL_USE_VULKAN}"
+>)
 
 include_directories(
     Cool/src
