@@ -103,10 +103,10 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ImGui::ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
-    ImGui::PopStyleColor(2);
+    ImGui::BeginDisabled();
+    ImGui::Button(label);
+    ImGui::EndDisabled();
+    invisible_wrapper_around_previous_line(reason_for_disabling);
     tooltip(reason_for_disabling);
 }
 
@@ -167,8 +167,8 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
     ImGuiWindow* window = GImGui->CurrentWindow;
     if (window->SkipItems)
         return false;
-    ImGuiID id = label ? window->GetID(label) : window->DC.LastItemId; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
-    IM_ASSERT(id != 0);                                                // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
+    ImGuiID id = label ? window->GetID(label) : GImGui->LastItemData.ID; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
+    IM_ASSERT(id != 0);                                                  // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
     if (ImGui::Button(label))
         ImGui::OpenPopupEx(id, popup_flags);
     return ImGui::BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);

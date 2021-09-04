@@ -41,6 +41,8 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
     glfwSetWindowSizeCallback (_main_window.glfw(), window_size_callback);
     glfwSetWindowPosCallback  (_main_window.glfw(), window_pos_callback);
     glfwSetCharCallback       (_main_window.glfw(), ImGui_ImplGlfw_CharCallback);
+    glfwSetWindowFocusCallback(_main_window.glfw(), ImGui_ImplGlfw_WindowFocusCallback);
+    glfwSetCursorEnterCallback(_main_window.glfw(), ImGui_ImplGlfw_CursorEnterCallback);
     glfwSetMonitorCallback    (                     ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
 
