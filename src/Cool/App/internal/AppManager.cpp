@@ -90,6 +90,9 @@ void AppManager::update()
         window.check_for_swapchain_rebuild();
     }
 #endif
+#ifdef __COOL_APP_OPENGL
+    _main_window.make_current();
+#endif
     // Clear screen
     // Renderer::set_render_target(_main_window);
     // Renderer::clear_background(RenderState::getEmptySpaceColor());
