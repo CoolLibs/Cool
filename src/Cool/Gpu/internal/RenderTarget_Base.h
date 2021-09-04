@@ -17,6 +17,7 @@ public:
 
     ImageData                download_pixels() const { return _impl.download_pixels(); }
     RenderTargetInfo         info() const { return _impl.info(); }
+    bool                     is_hovered() const { return _is_hovered; }
     ImageSize                compute_size() const;
     ImageSize                imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
     std::optional<ImageSize> constrained_size() const { return _constrained_size; }
@@ -33,6 +34,7 @@ private:
     mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
     std::optional<ImageSize>         _constrained_size;
     bool                             _is_aspect_ratio_constrained = false;
+    mutable bool                     _is_hovered                  = false;
 };
 
 } // namespace Cool

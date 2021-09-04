@@ -65,6 +65,8 @@ void RenderTarget_Base<T>::imgui_window(std::string_view name) const
         _impl.imgui_texture_id(),
         {image_size.width(),
          image_size.height()});
+    // Update _is_hovered
+    _is_hovered = ImGui::IsItemHovered();
     ImGui::End();
 }
 
