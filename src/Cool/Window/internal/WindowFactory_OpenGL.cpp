@@ -25,6 +25,7 @@ WindowFactory_OpenGL::~WindowFactory_OpenGL()
 Window_OpenGL& WindowFactory_OpenGL::make_main_window(const char* name, int width, int height, bool cap_framerate)
 {
     auto& window = make_window(name, width, height, cap_framerate);
+    setupGLDebugging();
     setup_imgui(window);
     return window;
 }
@@ -63,8 +64,6 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const char* name, int width, in
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         Log::error("Failed to initialize Glad");
     //
-    setupGLDebugging();
-    setup_imgui(window);
     return window;
 }
 
