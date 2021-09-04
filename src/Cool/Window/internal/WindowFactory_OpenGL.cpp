@@ -7,10 +7,11 @@
 
 namespace Cool {
 
-WindowFactory_OpenGL::WindowFactory_OpenGL(int openGLMajorVersion, int openGLMinorVersion)
-    : m_openGLMajorVersion(openGLMajorVersion), m_openGLMinorVersion(openGLMinorVersion), m_openGLVersion(openGLMajorVersion * 100 + openGLMinorVersion * 10)
+WindowFactory_OpenGL::WindowFactory_OpenGL()
+    : m_openGLMajorVersion(3), m_openGLMinorVersion(3), m_openGLVersion(330)
 {
     assert(m_openGLVersion >= 330);
+    Log::info("[Gpu] Using OpenGL {}.{}", m_openGLMajorVersion, m_openGLMinorVersion);
 }
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)

@@ -11,6 +11,11 @@
 
 namespace Cool {
 
+WindowFactory_Vulkan::WindowFactory_Vulkan()
+{
+    Log::info("[Gpu] Using Vulkan");
+}
+
 void WindowFactory_Vulkan::shut_down(WindowManager& window_manager)
 {
     Vulkan::context().destroy0(); // TODO is this the proper place to do it ?

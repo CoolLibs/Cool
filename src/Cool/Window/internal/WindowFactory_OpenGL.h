@@ -9,13 +9,7 @@ namespace Cool {
 
 class WindowFactory_OpenGL {
 public:
-    /**
-	 * @brief Sets the OpenGL Version and initializes a bunch of stuff. /!\ You must use OpenGL 3.3 or greater for the current ImGui implementation
-	 * 
-	 * @param openGLMajorVersion 
-	 * @param openGLMinorVersion 
-	 */
-    WindowFactory_OpenGL(int openGLMajorVersion = 3, int openGLMinorVersion = 3);
+    WindowFactory_OpenGL();
     void shut_down(WindowManager& window_manager);
 
     void           setup_main_window(Window_OpenGL& window);
