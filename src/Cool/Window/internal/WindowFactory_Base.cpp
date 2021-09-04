@@ -46,7 +46,7 @@ template<typename T>
 Window& WindowFactory_Base<T>::make_secondary_window(const WindowCreationParams& params)
 {
     auto& window = _impl.make_window(params, _window_manager);
-    _impl.setup_secondary_window(window);
+    _impl.setup_secondary_window(window, _window_manager);
     return window;
 }
 

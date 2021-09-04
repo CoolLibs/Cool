@@ -28,8 +28,9 @@ void WindowFactory_OpenGL::setup_main_window(Window_OpenGL& window)
     setup_imgui(window);
 }
 
-void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window)
+void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window, WindowManager& window_manager)
 {
+    window_manager.main_window().make_current();
 }
 
 Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& params, WindowManager& window_manager)

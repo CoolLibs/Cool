@@ -27,7 +27,7 @@ void WindowFactory_Vulkan::setup_main_window(Window_Vulkan& window)
     setup_imgui(window);
 }
 
-void WindowFactory_Vulkan::setup_secondary_window(Window_Vulkan& window)
+void WindowFactory_Vulkan::setup_secondary_window(Window_Vulkan& window, WindowManager& window_manager)
 {
 }
 

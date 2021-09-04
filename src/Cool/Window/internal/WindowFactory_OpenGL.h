@@ -19,7 +19,7 @@ public:
     void shut_down(WindowManager& window_manager);
 
     void           setup_main_window(Window_OpenGL& window);
-    void           setup_secondary_window(Window_OpenGL& window);
+    void           setup_secondary_window(Window_OpenGL& window, WindowManager& window_manager);
     Window_OpenGL& make_window(const WindowCreationParams& params, WindowManager& window_manager);
 
 private:
