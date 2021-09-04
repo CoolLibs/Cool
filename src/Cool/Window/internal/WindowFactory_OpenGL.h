@@ -21,9 +21,9 @@ private:
     void setup_imgui(Window_OpenGL& window);
 
 private:
-    int m_openGLMajorVersion;
-    int m_openGLMinorVersion;
-    int m_openGLVersion;
+    int _opengl_version;
+    int _opengl_major_version;
+    int _opengl_minor_version;
 };
 
 } // namespace Cool

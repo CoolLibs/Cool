@@ -2,7 +2,10 @@
 # Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 # Define CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
-set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"">)
+set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS
+    $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+# Define COOL_OPENGL_VERSION ; this is used to initialize WindowFactory_OpenGL
+    "COOL_OPENGL_VERSION=${COOL_USE_OPENGL}">)
 
 include_directories(
     Cool/src

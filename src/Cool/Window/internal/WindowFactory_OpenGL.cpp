@@ -8,10 +8,12 @@
 namespace Cool {
 
 WindowFactory_OpenGL::WindowFactory_OpenGL()
-    : m_openGLMajorVersion(3), m_openGLMinorVersion(3), m_openGLVersion(330)
+    : _opengl_version(COOL_OPENGL_VERSION)
+    , _opengl_major_version(COOL_OPENGL_VERSION / 100)
+    , _opengl_minor_version((COOL_OPENGL_VERSION - COOL_OPENGL_VERSION / 100 * 100) / 10)
 {
-    assert(m_openGLVersion >= 330);
-    Log::info("[Gpu] Using OpenGL {}.{}", m_openGLMajorVersion, m_openGLMinorVersion);
+    assert(_opengl_version >= 330);
+    Log::info("[Gpu] Using OpenGL {}.{}", _opengl_major_version, _opengl_minor_version);
 }
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
@@ -37,10 +39,10 @@ void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window, WindowM
 Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& params, WindowManager& window_manager)
 {
     // Window flags
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, m_openGLMinorVersion);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _opengl_major_version);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, _opengl_minor_version);
 #ifdef DEBUG
-    if (m_openGLVersion >= 430)
+    if (_opengl_version >= 430)
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
 #ifdef __APPLE__
@@ -69,7 +71,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
 void WindowFactory_OpenGL::setupGLDebugging()
 {
 #if defined(DEBUG)
-    if (m_openGLVersion >= 430) {
+    if (_opengl_version >= 430) {
         int flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -88,7 +90,7 @@ void WindowFactory_OpenGL::setupGLDebugging()
 void WindowFactory_OpenGL::setup_imgui(Window_OpenGL& window)
 {
     ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
-    std::string glslVersion = "#version " + std::to_string(m_openGLVersion);
+    std::string glslVersion = "#version " + std::to_string(_opengl_version);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 }
 
