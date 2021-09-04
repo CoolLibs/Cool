@@ -1,19 +1,21 @@
 #pragma once
 
-#include "WindowFactory_Base.h"
+#include "WindowCreationParams.h"
+#include "WindowManager.h"
 #include "Window_Vulkan.h"
 
 namespace Cool {
 
-class WindowFactory_Vulkan : public WindowFactory_Base {
+class WindowFactory_Vulkan {
 public:
-    ~WindowFactory_Vulkan();
-    Window_Vulkan& make_main_window(const char* name, int width, int height, bool cap_framerate = true);
-    Window_Vulkan& make_secondary_window(const char* name, int width, int height, bool cap_framerate = true);
+    void shut_down(WindowManager& window_manager);
+
+    void           setup_main_window(Window_Vulkan& window);
+    void           setup_secondary_window(Window_Vulkan& window);
+    Window_Vulkan& make_window(const WindowCreationParams& params, WindowManager& window_manager);
 
 private:
-    Window_Vulkan& make_window(const char* name, int width, int height, bool cap_framerate = true);
-    void           setup_imgui(Window_Vulkan& window);
+    void setup_imgui(Window_Vulkan& window);
 };
 
 } // namespace Cool

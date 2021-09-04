@@ -11,15 +11,24 @@
 
 namespace Cool {
 
-WindowFactory_Vulkan::~WindowFactory_Vulkan()
+void WindowFactory_Vulkan::shut_down(WindowManager& window_manager)
 {
     Vulkan::context().destroy0(); // TODO is this the proper place to do it ?
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    window_manager().windows().clear();
+    window_manager.windows().clear();
     Vulkan::context().destroy1(); // TODO is this the proper place to do it ?
     glfwTerminate();
+}
+
+void WindowFactory_Vulkan::setup_main_window(Window_Vulkan& window)
+{
+    setup_imgui(window);
+}
+
+void WindowFactory_Vulkan::setup_secondary_window(Window_Vulkan& window)
+{
 }
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
@@ -43,34 +52,19 @@ static void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceK
     wd->SurfaceFormat                                 = ImGui_ImplVulkanH_SelectSurfaceFormat(Vulkan::context().g_PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 }
 
-Window_Vulkan& WindowFactory_Vulkan::make_main_window(const char* name, int width, int height, bool cap_framerate)
-{
-    auto& window = make_window(name, width, height, cap_framerate);
-    setup_imgui(window);
-    return window;
-}
-
-Window_Vulkan& WindowFactory_Vulkan::make_secondary_window(const char* name, int width, int height, bool cap_framerate)
-{
-    return make_window(name, width, height, cap_framerate);
-}
-
-Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, int height, bool cap_framerate)
+Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowCreationParams& params, WindowManager& window_manager)
 {
     auto& vk_context = Vulkan::context();
     // Window flags
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     // Create window
-    window_manager().windows().push_back(Window_Vulkan{glfwCreateWindow(width, height, name, NULL, NULL)});
-    Window_Vulkan& window = window_manager().windows().back();
+    window_manager.windows().push_back(Window_Vulkan{glfwCreateWindow(params.width, params.height, params.name, NULL, NULL)});
+    Window_Vulkan& window = window_manager.windows().back();
     if (!window.glfw()) {
         const char* errorDescription;
         glfwGetError(&errorDescription);
         Log::error("[Glfw] Window creation failed :\n{}", errorDescription);
     }
-    // TODO remove / adapt ?
-    // window.makeCurrent();
-    // window.enableVSync();
     // Create Window Surface
     VkSurfaceKHR surface;
     VkResult     err = glfwCreateWindowSurface(vk_context.g_Instance, window.glfw(), vk_context.g_Allocator, &surface);
@@ -99,7 +93,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const char* name, int width, in
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();
 
-    window.cap_framerate(cap_framerate);
+    window.cap_framerate(params.cap_framerate);
 
     return window;
 }

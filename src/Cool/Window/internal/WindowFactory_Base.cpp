@@ -4,30 +4,65 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
 
+#if defined(__COOL_APP_VULKAN)
+#include "WindowFactory_Vulkan.h"
+template class Cool::WindowFactory_Base<Cool::WindowFactory_Vulkan>;
+#elif defined(__COOL_APP_OPENGL)
+#include "WindowFactory_OpenGL.h"
+template class Cool::WindowFactory_Base<Cool::WindowFactory_OpenGL>;
+#endif
+
 namespace Cool {
 
-WindowFactory_Base::WindowFactory_Base()
+template<typename T>
+WindowFactory_Base<T>::WindowFactory_Base()
 {
-    initializeGLFW();
+    initialize_glfw();
     initialize_imgui();
 }
 
-void WindowFactory_Base::initializeGLFW()
+template<typename T>
+WindowFactory_Base<T>::~WindowFactory_Base()
 {
-    glfwSetErrorCallback(WindowFactory_Base::GlfwErrorCallback);
-    if (!glfwInit()) {
-        const char* errorDescription;
-        glfwGetError(&errorDescription);
-        Log::error("Glfw initialization failed :\n{}", errorDescription);
-    }
+    _impl.shut_down(_window_manager);
 }
 
-void WindowFactory_Base::GlfwErrorCallback(int error, const char* description)
+template<typename T>
+void WindowFactory_Base<T>::glfw_error_callback(int error, const char* description)
 {
     Log::error("[Glfw] Error {} :\n{}", error, description);
 }
 
-void WindowFactory_Base::initialize_imgui()
+template<typename T>
+Window& WindowFactory_Base<T>::make_main_window(const WindowCreationParams& params)
+{
+    auto& window = _impl.make_window(params, _window_manager);
+    _window_manager.set_main_window(window);
+    _impl.setup_main_window(window);
+    return window;
+}
+
+template<typename T>
+Window& WindowFactory_Base<T>::make_secondary_window(const WindowCreationParams& params)
+{
+    auto& window = _impl.make_window(params, _window_manager);
+    _impl.setup_secondary_window(window);
+    return window;
+}
+
+template<typename T>
+void WindowFactory_Base<T>::initialize_glfw()
+{
+    glfwSetErrorCallback(WindowFactory_Base::glfw_error_callback);
+    if (!glfwInit()) {
+        const char* error_description;
+        glfwGetError(&error_description);
+        Log::error("[WindowFactory_Base::initialize_glfw] Initialization failed :\n{}", error_description);
+    }
+}
+
+template<typename T>
+void WindowFactory_Base<T>::initialize_imgui()
 {
     // Setup context
     IMGUI_CHECKVERSION();

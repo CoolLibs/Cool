@@ -13,29 +13,26 @@ WindowFactory_OpenGL::WindowFactory_OpenGL(int openGLMajorVersion, int openGLMin
     assert(m_openGLVersion >= 330);
 }
 
-WindowFactory_OpenGL::~WindowFactory_OpenGL()
+void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    window_manager().windows().clear();
+    window_manager.windows().clear();
     glfwTerminate();
 }
 
-Window_OpenGL& WindowFactory_OpenGL::make_main_window(const char* name, int width, int height, bool cap_framerate)
+void WindowFactory_OpenGL::setup_main_window(Window_OpenGL& window)
 {
-    auto& window = make_window(name, width, height, cap_framerate);
     setupGLDebugging();
     setup_imgui(window);
-    return window;
 }
 
-Window_OpenGL& WindowFactory_OpenGL::make_secondary_window(const char* name, int width, int height, bool cap_framerate)
+void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window)
 {
-    return make_window(name, width, height, cap_framerate);
 }
 
-Window_OpenGL& WindowFactory_OpenGL::make_window(const char* name, int width, int height, bool cap_framerate)
+Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& params, WindowManager& window_manager)
 {
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, m_openGLMajorVersion);
@@ -49,9 +46,9 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const char* name, int width, in
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     // Create window
-    auto&       windows      = window_manager().windows();
+    auto&       windows      = window_manager.windows();
     GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
-    windows.push_back(Window_OpenGL{glfwCreateWindow(width, height, name, nullptr, other_window)});
+    windows.push_back(Window_OpenGL{glfwCreateWindow(params.width, params.height, params.name, nullptr, other_window)});
     Window& window = windows.back();
     if (!window.glfw()) {
         const char* errorDescription;
@@ -59,7 +56,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const char* name, int width, in
         Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
     }
     window.make_current();
-    window.cap_framerate(cap_framerate);
+    window.cap_framerate(params.cap_framerate);
     // Load Glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         Log::error("Failed to initialize Glad");
