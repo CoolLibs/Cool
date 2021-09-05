@@ -1,6 +1,4 @@
 #include "RenderTarget_Base.h"
-#include <Cool/ImGuiExtras/ImGuiExtras.h>
-#include <Cool/Image/ImageSizeU.h>
 
 #if defined(__COOL_APP_VULKAN)
 #include "RenderTarget_ImplVulkan.h"
@@ -15,59 +13,9 @@ namespace Cool {
 template<typename T>
 void RenderTarget_Base<T>::resize_if_necessary()
 {
-    const auto size = compute_size();
-    if (_impl.size() != size) {
-        _impl.resize(size);
+    if (_impl.size() != desired_size()) {
+        _impl.resize(desired_size());
     }
-}
-
-template<typename T>
-ImageSize RenderTarget_Base<T>::compute_size() const
-{
-    return _constrained_size    ? *_constrained_size
-           : _imgui_window_size ? *_imgui_window_size
-                                : ImageSize{};
-}
-
-template<typename T>
-void RenderTarget_Base<T>::set_constrained_size(std::optional<ImageSize> size)
-{
-    set_constrained_size(size, size.has_value());
-}
-
-template<typename T>
-void RenderTarget_Base<T>::set_constrained_size(std::optional<ImageSize> size, bool is_aspect_ratio_constrained)
-{
-    _constrained_size            = size;
-    _is_aspect_ratio_constrained = is_aspect_ratio_constrained;
-}
-
-template<typename T>
-void RenderTarget_Base<T>::imgui_window(std::string_view name) const
-{
-    ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);
-    // Update _imgui_window_size
-    auto size = ImGui::GetContentRegionAvail();
-    if (size.x >= 1.f && size.y >= 1.f) {
-        _imgui_window_size.emplace(
-            static_cast<ImageSize::DataType>(size.x),
-            static_cast<ImageSize::DataType>(size.y));
-    }
-    else {
-        _imgui_window_size.reset();
-    }
-    // Display the image
-    const auto window_size = imgui_window_size();
-    const auto image_size  = _is_aspect_ratio_constrained
-                                 ? ImageSizeU::fit_into(window_size, _impl.size())
-                                 : static_cast<ImageSizeT<float>>(window_size);
-    ImGuiExtras::image_centered(
-        _impl.imgui_texture_id(),
-        {image_size.width(),
-         image_size.height()});
-    // Update _is_hovered
-    _is_hovered = ImGui::IsItemHovered();
-    ImGui::End();
 }
 
 } // namespace Cool

@@ -16,25 +16,19 @@ public:
     }
 
     ImageData                download_pixels() const { return _impl.download_pixels(); }
+    ImTextureID              imgui_texture_id() const { return _impl.imgui_texture_id(); }
     RenderTargetInfo         info() const { return _impl.info(); }
-    bool                     is_hovered() const { return _is_hovered; }
-    ImageSize                compute_size() const;
-    ImageSize                imgui_window_size() const { return _imgui_window_size.value_or(ImageSize{}); }
+    ImageSize                current_size() const { return _impl.size(); }
+    ImageSize                desired_size() const { return _constrained_size.value_or(ImageSize{}); }
     std::optional<ImageSize> constrained_size() const { return _constrained_size; }
-    void                     set_constrained_size(std::optional<ImageSize> size);
-    void                     set_constrained_size(std::optional<ImageSize> size, bool is_aspect_ratio_constrained);
-
-    void imgui_window(std::string_view name) const;
+    void                     set_constrained_size(std::optional<ImageSize> size) { _constrained_size = size; }
 
 private:
     void resize_if_necessary();
 
 private:
-    RenderTarget_Impl                _impl;
-    mutable std::optional<ImageSize> _imgui_window_size; // Can be nullopt when the window is closed
-    std::optional<ImageSize>         _constrained_size;
-    bool                             _is_aspect_ratio_constrained = false;
-    mutable bool                     _is_hovered                  = false;
+    RenderTarget_Impl        _impl;
+    std::optional<ImageSize> _constrained_size;
 };
 
 } // namespace Cool
