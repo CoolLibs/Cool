@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-void RenderTargetWindow::imgui_window(std::string_view name)
+void RenderTargetWindow::imgui_window(std::string_view name, bool should_fit)
 {
     ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);
     // Update _size
@@ -17,25 +17,25 @@ void RenderTargetWindow::imgui_window(std::string_view name)
     else {
         _size.reset();
     }
-    // if (!_render_target.constrained_size()) {
-    //     _render_target.set_constrained_size(_size);
-    //     _is_aspect_ratio_constrained = false;
-    // }
     // Display the image
     if (_size.has_value()) {
-        const auto image_size = _is_aspect_ratio_constrained
+        const auto image_size = should_fit
                                     ? ImageSizeU::fit_into(*_size, _render_target.current_size())
                                     : static_cast<ImageSizeT<float>>(*_size);
         ImGuiExtras::image_centered(
             _render_target.imgui_texture_id(),
             {image_size.width(),
              image_size.height()});
-        // Update _is_hovered
         _is_hovered = ImGui::IsItemHovered();
     }
     else {
     }
     ImGui::End();
+}
+
+void RenderTargetWindow::update_render_target_size()
+{
+    _render_target.set_constrained_size(_preview_size ? _preview_size : _size);
 }
 
 } // namespace Cool

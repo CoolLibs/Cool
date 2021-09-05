@@ -5,11 +5,18 @@ namespace Cool {
 
 class RenderTargetWindow {
 public:
-    void                     imgui_window(std::string_view name);
+    /**
+     * @brief Displays the render target's image in an ImGui window
+     * 
+     * @param name The name of the window
+     * @param should_fill true iff the window and the render target are expected to have different aspect ratios and a fitting operation is required
+     */
+    void                     imgui_window(std::string_view name, bool should_fit = false);
     std::optional<ImageSize> size() const { return _size; }
     bool                     is_hovered() const { return _is_hovered; }
 
-    void set_is_aspect_ratio_constrained(bool is_constrained) { _is_aspect_ratio_constrained = is_constrained; }
+    void update_render_target_size();
+    void set_preview_size(std::optional<ImageSize> size) { _preview_size = size; }
 
     RenderTarget&       operator*() { return _render_target; }
     RenderTarget*       operator->() { return &_render_target; }
@@ -18,9 +25,9 @@ public:
 
 private:
     RenderTarget             _render_target;
-    std::optional<ImageSize> _size; // Can be nullopt when the window is closed
-    bool                     _is_hovered                  = false;
-    bool                     _is_aspect_ratio_constrained = false;
+    bool                     _is_hovered   = false;
+    std::optional<ImageSize> _size         = std::nullopt; // Can be nullopt when the window is closed
+    std::optional<ImageSize> _preview_size = std::nullopt;
 };
 
 } // namespace Cool
