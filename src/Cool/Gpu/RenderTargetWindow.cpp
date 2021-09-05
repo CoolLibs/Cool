@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-void RenderTargetWindow::imgui_window(std::string_view name, bool should_fit)
+void RenderTargetWindow::imgui_window(std::string_view name, bool need_to_fit)
 {
     ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);
     // Update _size
@@ -19,7 +19,7 @@ void RenderTargetWindow::imgui_window(std::string_view name, bool should_fit)
     }
     // Display the image
     if (_size.has_value()) {
-        const auto image_size = should_fit
+        const auto image_size = need_to_fit
                                     ? ImageSizeU::fit_into(*_size, _render_target.current_size())
                                     : static_cast<ImageSizeT<float>>(*_size);
         ImGuiExtras::image_centered(

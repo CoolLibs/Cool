@@ -9,9 +9,9 @@ public:
      * @brief Displays the render target's image in an ImGui window
      * 
      * @param name The name of the window
-     * @param should_fill true iff the window and the render target are expected to have different aspect ratios and a fitting operation is required
+     * @param need_to_fit true iff the window and the render target are expected to have different aspect ratios and a fitting operation is required
      */
-    void                     imgui_window(std::string_view name, bool should_fit = false);
+    void                     imgui_window(std::string_view name, bool need_to_fit = false);
     std::optional<ImageSize> size() const { return _size; }
     bool                     is_hovered() const { return _is_hovered; }
 
