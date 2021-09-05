@@ -54,8 +54,7 @@ void VideoExportProcess::imgui()
 void VideoExportProcess::export_frame(ExporterInput in, std::string_view file_path)
 {
     // Render
-    in.render_target.set_constrained_size(_size);
-    in.render_fn(in.render_target);
+    in.render(_size);
     // Wait for a thread to be available
     _thread_pool.wait_for_available_thread();
     // Write png

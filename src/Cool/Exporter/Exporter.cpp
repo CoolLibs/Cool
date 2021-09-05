@@ -17,12 +17,7 @@ Exporter::Exporter()
 
 void Exporter::export_image(ExporterInput in, std::string_view file_path)
 {
-    // Render
-    auto prev_constrained_size    = in.render_target.constrained_size();
-    auto restore_constrained_size = sg::make_scope_guard([&]() { in.render_target.set_constrained_size(prev_constrained_size); });
-    in.render_target.set_constrained_size(_export_size);
-    in.render_fn(in.render_target);
-    // Get data
+    in.render(_export_size);
     const auto image = in.render_target.download_pixels();
     // Write png
     if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
