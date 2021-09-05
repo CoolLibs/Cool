@@ -2,10 +2,10 @@
 
 namespace Cool::ImageSizeConstraintU {
 
-void apply(const ImageSizeConstraint& constraint, RenderTargetWindow& window)
+void apply(const ImageSizeConstraint& constraint, View& view)
 {
-    if (window.size().has_value()) {
-        window.set_preview_size(constraint.constrained_size(*window.size()));
+    if (view.size().has_value()) {
+        view.set_preview_size(constraint.constrained_size(*view.size()));
     }
 }
 

@@ -1,10 +1,10 @@
-#include "RenderTargetWindow.h"
+#include "View.h"
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
 
-void RenderTargetWindow::imgui_window(std::string_view name, bool need_to_fit)
+void View::imgui_window(std::string_view name, bool need_to_fit)
 {
     ImGui::Begin(name.data(), nullptr, ImGuiWindowFlags_NoScrollbar);
     // Update _size
@@ -33,7 +33,7 @@ void RenderTargetWindow::imgui_window(std::string_view name, bool need_to_fit)
     ImGui::End();
 }
 
-void RenderTargetWindow::update_render_target_size()
+void View::update_render_target_size()
 {
     _render_target.set_size(_preview_size.value_or(_size.value_or(ImageSize{})));
 }

@@ -3,7 +3,7 @@
 
 namespace Cool {
 
-class RenderTargetWindow {
+class View {
 public:
     /**
      * @brief Displays the render target's image in an ImGui window

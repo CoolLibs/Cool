@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Cool/Gpu/RenderTargetWindow.h>
+#include <Cool/Gpu/View.h>
 #include "ImageSizeConstraint.h"
 
 namespace Cool::ImageSizeConstraintU {
 
-void apply(const ImageSizeConstraint& constraint, RenderTargetWindow& window);
+void apply(const ImageSizeConstraint& constraint, View& view);
 
 } // namespace Cool::ImageSizeConstraintU
