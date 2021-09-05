@@ -35,7 +35,7 @@ void RenderTargetWindow::imgui_window(std::string_view name, bool should_fit)
 
 void RenderTargetWindow::update_render_target_size()
 {
-    _render_target.set_constrained_size(_preview_size ? _preview_size : _size);
+    _render_target.set_size(_preview_size.value_or(_size.value_or(ImageSize{})));
 }
 
 } // namespace Cool
