@@ -20,6 +20,9 @@ static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind
         return shaderc_shader_kind::shaderc_geometry_shader;
     case Cool::ShaderKind::Compute:
         return shaderc_shader_kind::shaderc_compute_shader;
+    default:
+        Log::error("[ShaderSource::shader_kind_cool2shaderc] Unkown enum value \"{}\"", static_cast<int>(shader_kind));
+        return shaderc_shader_kind::shaderc_vertex_shader;
     }
 }
 
