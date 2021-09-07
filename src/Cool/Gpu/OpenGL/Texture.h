@@ -16,7 +16,7 @@ public:
     Texture(const Texture&) = delete;            // Non-copyable
     Texture& operator=(const Texture&) = delete; // Non-copyable
 
-    ImTextureID imgui_texture_id() const { return reinterpret_cast<ImTextureID>(m_textureID); }
+    ImTextureID imgui_texture_id() const { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(m_textureID)); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 
     /// <summary>
     /// Constructs a texture from an image.
