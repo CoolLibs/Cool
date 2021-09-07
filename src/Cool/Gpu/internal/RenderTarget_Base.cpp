@@ -11,7 +11,7 @@ template class Cool::RenderTarget_Base<Cool::RenderTarget_ImplOpenGL>;
 namespace Cool {
 
 template<typename T>
-void RenderTarget_Base<T>::render(T::RenderFuncType render_fn)
+void RenderTarget_Base<T>::render(typename T::RenderFuncType render_fn)
 {
     resize_if_necessary();
     _impl.render(render_fn);

@@ -9,7 +9,7 @@ namespace Cool {
 template<typename RenderTarget_Impl>
 class RenderTarget_Base {
 public:
-    void             render(RenderTarget_Impl::RenderFuncType render_fn);
+    void             render(typename RenderTarget_Impl::RenderFuncType render_fn);
     ImageData        download_pixels() const { return _impl.download_pixels(); }
     ImTextureID      imgui_texture_id() const { return _impl.imgui_texture_id(); }
     RenderTargetInfo info() const { return _impl.info(); }
