@@ -4,17 +4,17 @@
 
 namespace Cool {
 
-std::optional<ImageSize> ImageSizeConstraint::constrained_size(ImageSize frame_size) const
+ImageSize ImageSizeConstraint::applied_to(ImageSize frame_size) const
 {
     if (wants_to_constrain_size()) {
-        return preview_size(frame_size);
+        return compute_constraints_on(frame_size);
     }
     else {
-        return std::nullopt;
+        return frame_size;
     }
 }
 
-ImageSize ImageSizeConstraint::preview_size(ImageSize frame_size) const
+ImageSize ImageSizeConstraint::compute_constraints_on(ImageSize frame_size) const
 {
     float aspect_ratio = _is_controlling_aspect_ratio
                              ? _aspect_ratio.asFloat()
