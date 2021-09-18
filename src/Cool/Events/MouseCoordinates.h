@@ -1,47 +1,38 @@
 #pragma once
+#include <concepts>
 
 namespace Cool {
 
 template<typename T>
 concept MouseCoordinates = requires(T coords)
 {
-    coords.value();
+    // clang-format off
+    { coords } -> std::convertible_to<glm::vec2>;
+    // clang-format on
 };
 
-class ScreenCoordinates {
+class ScreenCoordinates : public glm::vec2 {
 public:
-    ScreenCoordinates(glm::vec2 value)
-        : _value{value}
+    explicit ScreenCoordinates(glm::vec2 v)
+        : glm::vec2{v}
     {
     }
-    glm::vec2 value() const { return _value; }
-
-private:
-    glm::vec2 _value;
 };
 
-class MainWindowCoordinates {
+class MainWindowCoordinates : public glm::vec2 {
 public:
-    MainWindowCoordinates(glm::vec2 value)
-        : _value{value}
+    explicit MainWindowCoordinates(glm::vec2 v)
+        : glm::vec2{v}
     {
     }
-    glm::vec2 value() const { return _value; }
-
-private:
-    glm::vec2 _value;
 };
 
-class ImGuiWindowCoordinates {
+class ImGuiWindowCoordinates : public glm::vec2 {
 public:
-    ImGuiWindowCoordinates(glm::vec2 value)
-        : _value{value}
+    explicit ImGuiWindowCoordinates(glm::vec2 v)
+        : glm::vec2{v}
     {
     }
-    glm::vec2 value() const { return _value; }
-
-private:
-    glm::vec2 _value;
 };
 
 } // namespace Cool

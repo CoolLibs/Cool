@@ -28,9 +28,9 @@ void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>&
 {
     if (_is_hovered) {
         auto pos = ImGuiWindowCoordinates{
-            event.position.value() - glm::vec2{_position.x, _position.y}};
-        auto y = _size->height() - pos.value().y;
-        _mouse_event_dispatcher.move_event().receive({glm::vec2{pos.value().x, y}});
+            event.position - glm::vec2{_position.x, _position.y}};
+        pos.y = _size.value_or(ImageSize{}).height() - pos.y;
+        _mouse_event_dispatcher.move_event().receive({pos});
     }
 }
 
