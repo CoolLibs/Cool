@@ -27,6 +27,11 @@ public:
     MouveEventDispatcher& mouse_events() { return _mouse_event_dispatcher; }
 
 private:
+    void grab_window_size();
+    void grab_window_position();
+    void display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
+
+private:
     std::string              _name       = "";
     bool                     _is_open    = true;
     bool                     _is_hovered = false;
