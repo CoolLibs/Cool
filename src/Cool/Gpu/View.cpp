@@ -27,9 +27,12 @@ void View::imgui_open_close_checkbox()
 void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event)
 {
     if (_is_hovered) {
+        // Convert to this window's position
         auto pos = ImGuiWindowCoordinates{
             event.position - glm::vec2{_position.x, _position.y}};
+        // Make y-axis point up
         pos.y = _size.value_or(ImageSize{}).height() - pos.y;
+        //
         _mouse_event_dispatcher.move_event().receive({pos});
     }
 }
