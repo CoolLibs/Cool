@@ -9,12 +9,12 @@ namespace Cool {
 template<MouseCoordinates Coords>
 class MouveEventDispatcher {
 public:
-    EventDispatcher<MouseMoveEvent<Coords>>& move_event() { return _mouse_move_dispatcher; }
-    EventDispatcher<MouseScrollEvent>&       scroll_event() { return _mouse_scroll_dispatcher; }
+    EventDispatcher<MouseMoveEvent<Coords>>&   move_event() { return _mouse_move_dispatcher; }
+    EventDispatcher<MouseScrollEvent<Coords>>& scroll_event() { return _mouse_scroll_dispatcher; }
 
 private:
-    EventDispatcher<MouseMoveEvent<Coords>> _mouse_move_dispatcher;
-    EventDispatcher<MouseScrollEvent>       _mouse_scroll_dispatcher;
+    EventDispatcher<MouseMoveEvent<Coords>>   _mouse_move_dispatcher;
+    EventDispatcher<MouseScrollEvent<Coords>> _mouse_scroll_dispatcher;
 };
 
 } // namespace Cool

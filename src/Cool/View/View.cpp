@@ -37,7 +37,7 @@ void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& eve
     }
 }
 
-void View::receive_mouse_scroll_event(const MouseScrollEvent& event)
+void View::receive_mouse_scroll_event(const MouseScrollEvent<ScreenCoordinates>& event)
 {
     // // Convert to this window's coordinate space
     // auto pos = ImGuiWindowCoordinates{event.position - _position};

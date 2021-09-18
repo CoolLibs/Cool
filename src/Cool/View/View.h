@@ -23,7 +23,7 @@ public:
     std::optional<ImageSize> size() const { return _size; }
 
     void receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event);
-    void receive_mouse_scroll_event(const MouseScrollEvent& event);
+    void receive_mouse_scroll_event(const MouseScrollEvent<ScreenCoordinates>& event);
     auto mouse_events() -> MouveEventDispatcher<ImGuiWindowCoordinates>& { return _mouse_event_dispatcher; }
 
 private:
