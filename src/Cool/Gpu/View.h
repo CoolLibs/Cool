@@ -36,7 +36,7 @@ private:
     bool                                         _is_open    = true;
     bool                                         _is_hovered = false;
     std::optional<ImageSize>                     _size       = std::nullopt; // Can be nullopt when the window is closed
-    ImVec2                                       _position   = {};
+    ScreenCoordinates                            _position{glm::vec2{}};
     MouveEventDispatcher<ImGuiWindowCoordinates> _mouse_event_dispatcher;
 };
 

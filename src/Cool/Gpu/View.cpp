@@ -28,8 +28,7 @@ void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& eve
 {
     if (_is_hovered) {
         // Convert to this window's position
-        auto pos = ImGuiWindowCoordinates{
-            event.position - glm::vec2{_position.x, _position.y}};
+        auto pos = ImGuiWindowCoordinates{event.position - _position};
         // Make y-axis point up
         pos.y = _size.value_or(ImageSize{}).height() - pos.y;
         //
@@ -52,7 +51,8 @@ void View::grab_window_size()
 
 void View::grab_window_position()
 {
-    _position = ImGui::GetCursorScreenPos();
+    const auto pos = ImGui::GetCursorScreenPos();
+    _position      = ScreenCoordinates{glm::vec2{pos.x, pos.y}};
 }
 
 void View::display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit)
