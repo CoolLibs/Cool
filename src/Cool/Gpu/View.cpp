@@ -24,7 +24,7 @@ void View::imgui_open_close_checkbox()
     ImGui::Checkbox(_name.c_str(), &_is_open);
 }
 
-void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event)
+void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event)
 {
     if (_is_hovered) {
         // Convert to this window's position

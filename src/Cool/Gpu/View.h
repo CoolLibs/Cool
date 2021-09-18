@@ -23,7 +23,7 @@ public:
     std::optional<ImageSize> size() const { return _size; }
     bool                     is_hovered() const { return _is_hovered; }
 
-    void receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event);
+    void receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event);
     auto mouse_events() -> MouveEventDispatcher<ImGuiWindowCoordinates>& { return _mouse_event_dispatcher; }
 
 private:
