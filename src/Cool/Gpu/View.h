@@ -23,8 +23,8 @@ public:
     std::optional<ImageSize> size() const { return _size; }
     bool                     is_hovered() const { return _is_hovered; }
 
-    void                  receive_mouse_move_event(const MouseMoveEvent& event);
-    MouveEventDispatcher& mouse_events() { return _mouse_event_dispatcher; }
+    void receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event);
+    auto mouse_events() -> MouveEventDispatcher<ImGuiWindowCoordinates>& { return _mouse_event_dispatcher; }
 
 private:
     void grab_window_size();
@@ -32,12 +32,12 @@ private:
     void display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
 
 private:
-    std::string              _name       = "";
-    bool                     _is_open    = true;
-    bool                     _is_hovered = false;
-    std::optional<ImageSize> _size       = std::nullopt; // Can be nullopt when the window is closed
-    ImVec2                   _position   = {};
-    MouveEventDispatcher     _mouse_event_dispatcher;
+    std::string                                  _name       = "";
+    bool                                         _is_open    = true;
+    bool                                         _is_hovered = false;
+    std::optional<ImageSize>                     _size       = std::nullopt; // Can be nullopt when the window is closed
+    ImVec2                                       _position   = {};
+    MouveEventDispatcher<ImGuiWindowCoordinates> _mouse_event_dispatcher;
 };
 
 } // namespace Cool

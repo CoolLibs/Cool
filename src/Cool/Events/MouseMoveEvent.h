@@ -1,10 +1,11 @@
 #pragma once
+#include "MouseCoordinates.h"
 
 namespace Cool {
 
+template<MouseCoordinates Coords>
 struct MouseMoveEvent {
-    double x;
-    double y;
+    Coords position;
 };
 
 } // namespace Cool

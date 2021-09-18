@@ -24,13 +24,11 @@ void View::imgui_open_close_checkbox()
     ImGui::Checkbox(_name.c_str(), &_is_open);
 }
 
-void View::receive_mouse_move_event(const MouseMoveEvent& event)
+void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event)
 {
     if (_is_hovered) {
-        auto e = event;
-        e.x -= _position.x;
-        e.y -= _position.y;
-        _mouse_event_dispatcher.move_event().receive(e);
+        _mouse_event_dispatcher.move_event().receive({ImGuiWindowCoordinates{
+            event.position.value() - glm::vec2{_position.x, _position.y}}});
     }
 }
 

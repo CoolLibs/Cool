@@ -60,7 +60,7 @@ public:
     /// </summary>
     /// <param name="xpos">Current x position of the mouse, in pixels, relative to the top-left of the window.</param>
     /// <param name="ypos">Current y position of the mouse, in pixels, relative to the top-left of the window.</param>
-    virtual void on_mouse_move(const MouseMoveEvent& event){};
+    virtual void on_mouse_move(const MouseMoveEvent<MainWindowCoordinates>& event){};
 };
 
 } // namespace Cool
