@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Events/MouseMoveEvent.h>
+#include <Cool/Events/MouseScrollEvent.h>
 
 namespace Cool {
 
@@ -61,7 +62,7 @@ public:
     /// </summary>
     /// <param name="xOffset">Delta in the x direction</param>
     /// <param name="yOffset">Delta in the y direction. This is what most mouses and touch pads will generate</param>
-    virtual void onScrollEvent(double xOffset, double yOffset){};
+    virtual void on_mouse_scroll(const MouseScrollEvent<MainWindowCoordinates>& event){};
 
     /// <summary>
     /// This is where you receive and handle mouse move events.

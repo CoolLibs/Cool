@@ -151,6 +151,13 @@ void AppManager::update()
 #endif
 }
 
+static MainWindowCoordinates mouse_position(GLFWwindow* window)
+{
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    return MainWindowCoordinates{x, y};
+}
+
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
@@ -199,7 +206,9 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
     if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.onScrollEvent(xoffset, yoffset);
+        appManager->m_app.on_mouse_scroll({static_cast<float>(xoffset),
+                                           static_cast<float>(yoffset),
+                                           mouse_position(window)});
     }
 }
 
