@@ -37,6 +37,20 @@ void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& eve
     }
 }
 
+void View::receive_mouse_scroll_event(const MouseScrollEvent& event)
+{
+    // // Convert to this window's coordinate space
+    // auto pos = ImGuiWindowCoordinates{event.position - _position};
+    // // Check if we are hovering the image
+    // if (pos.x >= 0.f && pos.x <= _size.value_or(ImageSize{}).width() &&
+    //     pos.y >= 0.f && pos.y <= _size.value_or(ImageSize{}).height()) {
+    //     // Make y-axis point up
+    //     pos.y = _size.value_or(ImageSize{}).height() - pos.y;
+    //     //
+    //     _mouse_event_dispatcher.move_event().receive({pos});
+    // }
+}
+
 void View::grab_window_size()
 {
     auto size = ImGui::GetContentRegionAvail();
