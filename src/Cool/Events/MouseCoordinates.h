@@ -1,4 +1,5 @@
 #pragma once
+#include <glfw/glfw3.h>
 #include <concepts>
 
 namespace Cool {
@@ -26,6 +27,13 @@ public:
     explicit MainWindowCoordinates(Args... args)
         : glm::vec2{std::forward<Args>(args)...}
     {
+    }
+
+    ScreenCoordinates as_screen_coordinates(GLFWwindow* window) const
+    {
+        int x, y;
+        glfwGetWindowPos(window, &x, &y);
+        return ScreenCoordinates{*this + glm::vec2{x, y}};
     }
 };
 
