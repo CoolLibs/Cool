@@ -23,10 +23,18 @@ void View::imgui_open_close_checkbox()
     ImGui::Checkbox(_name.c_str(), &_is_open);
 }
 
-void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event)
+void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
+    const auto pos_screen = [&]() {
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            return event.position.as_screen_coordinates(window);
+        }
+        else {
+            return ScreenCoordinates{event.position}; // We trick ImGui because if viewports are disabled, ImGui functions that pretend to return screen coordinates actually return window coordinates (this is a temporary measure because I know that ImGui plans on fixing this)
+        }
+    }();
     // Convert to this window's coordinate space
-    auto pos = ImGuiWindowCoordinates{event.position - _position};
+    auto pos = ImGuiWindowCoordinates{pos_screen - _position};
     // Check if we are hovering the image
     if (pos.x >= 0.f && pos.x <= _size.value_or(ImageSize{}).width() &&
         pos.y >= 0.f && pos.y <= _size.value_or(ImageSize{}).height()) {
