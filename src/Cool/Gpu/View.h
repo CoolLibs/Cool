@@ -21,7 +21,6 @@ public:
     void                     imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
     void                     imgui_open_close_checkbox();
     std::optional<ImageSize> size() const { return _size; }
-    bool                     is_hovered() const { return _is_hovered; }
 
     void receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event);
     auto mouse_events() -> MouveEventDispatcher<ImGuiWindowCoordinates>& { return _mouse_event_dispatcher; }
@@ -32,10 +31,9 @@ private:
     void display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
 
 private:
-    std::string                                  _name       = "";
-    bool                                         _is_open    = true;
-    bool                                         _is_hovered = false;
-    std::optional<ImageSize>                     _size       = std::nullopt; // Can be nullopt when the window is closed
+    std::string                                  _name    = "";
+    bool                                         _is_open = true;
+    std::optional<ImageSize>                     _size    = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                            _position{};
     MouveEventDispatcher<ImGuiWindowCoordinates> _mouse_event_dispatcher;
 };

@@ -15,7 +15,6 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool
     }
     else {
         _size.reset();
-        _is_hovered = false;
     }
 }
 
@@ -26,16 +25,15 @@ void View::imgui_open_close_checkbox()
 
 void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& event)
 {
-    if (_is_hovered) {
-        // Convert to this window's position
-        auto pos = ImGuiWindowCoordinates{event.position - _position};
+    // Convert to this window's coordinate space
+    auto pos = ImGuiWindowCoordinates{event.position - _position};
+    // Check if we are hovering the image
+    if (pos.x >= 0.f && pos.x <= _size.value_or(ImageSize{}).width() &&
+        pos.y >= 0.f && pos.y <= _size.value_or(ImageSize{}).height()) {
         // Make y-axis point up
         pos.y = _size.value_or(ImageSize{}).height() - pos.y;
-        // _is_hovered is updated one frame after the current mouse event, so we have to check that we actually are hovering the image
-        if (pos.x >= 0.f && pos.x <= _size.value_or(ImageSize{}).width() &&
-            pos.y >= 0.f && pos.y <= _size.value_or(ImageSize{}).height()) {
-            _mouse_event_dispatcher.move_event().receive({pos});
-        }
+        //
+        _mouse_event_dispatcher.move_event().receive({pos});
     }
 }
 
@@ -65,10 +63,6 @@ void View::display_image(ImTextureID image_texture_id, ImageSize image_size, boo
                                            ? ImageSizeU::fit_into(*_size, image_size)
                                            : static_cast<ImageSizeT<float>>(*_size);
         ImGuiExtras::image_centered(image_texture_id, {fitted_image_size.width(), fitted_image_size.height()});
-        _is_hovered = ImGui::IsItemHovered();
-    }
-    else {
-        _is_hovered = false;
     }
 }
 
