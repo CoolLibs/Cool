@@ -18,6 +18,9 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool
         else {
             _size.reset();
         }
+        // Update _position
+        _position = ImGui::GetCursorScreenPos();
+
         if (_size.has_value()) {
             // Display the image
             const auto fitted_image_size = need_to_fit
@@ -40,6 +43,16 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool
 void View::imgui_open_close_checkbox()
 {
     ImGui::Checkbox(_name.c_str(), &_is_open);
+}
+
+void View::receive_mouse_move_event(const MouseMoveEvent& event)
+{
+    if (_is_hovered) {
+        auto e = event;
+        e.x -= _position.x;
+        e.y -= _position.y;
+        _mouse_event_dispatcher.move_event().receive(e);
+    }
 }
 
 } // namespace Cool

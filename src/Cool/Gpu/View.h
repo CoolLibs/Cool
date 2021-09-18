@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Events/MouveEventDispatcher.h>
 #include "RenderTarget.h"
 
 namespace Cool {
@@ -22,11 +23,16 @@ public:
     std::optional<ImageSize> size() const { return _size; }
     bool                     is_hovered() const { return _is_hovered; }
 
+    void                  receive_mouse_move_event(const MouseMoveEvent& event);
+    MouveEventDispatcher& mouse_events() { return _mouse_event_dispatcher; }
+
 private:
     std::string              _name       = "";
     bool                     _is_open    = true;
     bool                     _is_hovered = false;
     std::optional<ImageSize> _size       = std::nullopt; // Can be nullopt when the window is closed
+    ImVec2                   _position   = {};
+    MouveEventDispatcher     _mouse_event_dispatcher;
 };
 
 } // namespace Cool

@@ -93,9 +93,8 @@ void AppManager::update()
 #ifdef __COOL_APP_OPENGL
     _main_window.make_current();
 #endif
-    // Clear screen
-    // Renderer::set_render_target(_main_window);
-    // Renderer::clear_background(RenderState::getEmptySpaceColor());
+    // Actual application code
+    m_app.update();
     // Start ImGui frame
 #ifdef __COOL_APP_VULKAN
     ImGui_ImplVulkan_NewFrame();
@@ -108,8 +107,6 @@ void AppManager::update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGuiDockspace();
-    // Actual application code
-    m_app.update();
     // UI
     if (m_bShowUI) {
         // Menu bar
@@ -203,7 +200,7 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->m_app.onMouseMoveEvent(xpos, ypos);
+    appManager->m_app.on_mouse_move({xpos, ypos});
 }
 
 void AppManager::window_size_callback(GLFWwindow* window, int w, int h)

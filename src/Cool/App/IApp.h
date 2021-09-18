@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Cool/Events/MouseMoveEvent.h>
+
 namespace Cool {
 
 class IApp {
@@ -58,7 +60,7 @@ public:
     /// </summary>
     /// <param name="xpos">Current x position of the mouse, in pixels, relative to the top-left of the window.</param>
     /// <param name="ypos">Current y position of the mouse, in pixels, relative to the top-left of the window.</param>
-    virtual void onMouseMoveEvent(double xPos, double yPos){};
+    virtual void on_mouse_move(const MouseMoveEvent& event){};
 };
 
 } // namespace Cool
