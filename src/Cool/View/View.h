@@ -31,6 +31,15 @@ private:
     void grab_window_position();
     void display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
 
+    /**
+     * @brief Returns the position relative to the ImGui window, or std::nullopt if the position is outside of the view.
+     * (0, 0) is in the bottom-left corner of the window
+     * 
+     * @param position 
+     * @param window 
+     */
+    auto to_imgui_space(MainWindowCoordinates position, GLFWwindow* window) -> std::optional<ImGuiWindowCoordinates>;
+
 private:
     std::string                                  _name    = "";
     bool                                         _is_open = true;
