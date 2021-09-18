@@ -31,8 +31,11 @@ void View::receive_mouse_move_event(const MouseMoveEvent<ScreenCoordinates>& eve
         auto pos = ImGuiWindowCoordinates{event.position - _position};
         // Make y-axis point up
         pos.y = _size.value_or(ImageSize{}).height() - pos.y;
-        //
-        _mouse_event_dispatcher.move_event().receive({pos});
+        // _is_hovered is updated one frame after the current mouse event, so we have to check that we actually are hovering the image
+        if (pos.x >= 0.f && pos.x <= _size.value_or(ImageSize{}).width() &&
+            pos.y >= 0.f && pos.y <= _size.value_or(ImageSize{}).height()) {
+            _mouse_event_dispatcher.move_event().receive({pos});
+        }
     }
 }
 
