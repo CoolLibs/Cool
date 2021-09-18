@@ -110,7 +110,7 @@ void AppManager::update()
     // UI
     if (m_bShowUI) {
         // Menu bar
-        if (m_app.should_show_menu_bar()) {
+        if (m_app.wants_to_show_menu_bar()) {
             ImGui::BeginMainMenuBar();
             m_app.ImGuiMenus();
             ImGui::EndMainMenuBar();
@@ -162,7 +162,9 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & GLFW_MOD_CONTROL))
         appManager->m_bShowUI = !appManager->m_bShowUI;
     //
-    appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+    if (appManager->m_app.inputs_are_allowed()) {
+        appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+    }
 }
 
 void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
@@ -187,20 +189,26 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->m_app.onMouseButtonEvent(button, action, mods);
+    if (appManager->m_app.inputs_are_allowed()) {
+        appManager->m_app.onMouseButtonEvent(button, action, mods);
+    }
 }
 
 void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->m_app.onScrollEvent(xoffset, yoffset);
+    if (appManager->m_app.inputs_are_allowed()) {
+        appManager->m_app.onScrollEvent(xoffset, yoffset);
+    }
 }
 
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->m_app.on_mouse_move({MainWindowCoordinates{xpos, ypos}});
+    if (appManager->m_app.inputs_are_allowed()) {
+        appManager->m_app.on_mouse_move({MainWindowCoordinates{xpos, ypos}});
+    }
 }
 
 void AppManager::window_size_callback(GLFWwindow* window, int w, int h)

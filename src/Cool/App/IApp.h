@@ -14,6 +14,16 @@ public:
     /// </summary>
     virtual void update(){};
 
+    /**
+     * @brief Inputs are only forwarded to the app when this returns true
+     */
+    virtual bool inputs_are_allowed() const { return true; }
+
+    /**
+     * @brief If this returns false, the menu bar won't be shown
+     */
+    virtual bool wants_to_show_menu_bar() const { return true; }
+
     /// <summary>
     /// Please create all your ImGui windows inside this function (allows the AppManager to hide all UI when the user presses CTRL+H, and the dockspace to apply properly)
     /// </summary>
@@ -23,8 +33,6 @@ public:
     /// Put all menus that should appear on the top menu bar here.
     /// </summary>
     virtual void ImGuiMenus(){};
-
-    virtual bool should_show_menu_bar() { return true; }
 
     /// <summary>
     /// This is where you receive and handle keyboard events.
