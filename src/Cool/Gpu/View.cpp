@@ -52,7 +52,7 @@ void View::grab_window_size()
 void View::grab_window_position()
 {
     const auto pos = ImGui::GetCursorScreenPos();
-    _position      = ScreenCoordinates{glm::vec2{pos.x, pos.y}};
+    _position      = ScreenCoordinates{pos.x, pos.y};
 }
 
 void View::display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit)

@@ -200,7 +200,7 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->m_app.on_mouse_move({MainWindowCoordinates{{xpos, ypos}}});
+    appManager->m_app.on_mouse_move({MainWindowCoordinates{xpos, ypos}});
 }
 
 void AppManager::window_size_callback(GLFWwindow* window, int w, int h)

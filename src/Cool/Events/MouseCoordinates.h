@@ -13,24 +13,27 @@ concept MouseCoordinates = requires(T coords)
 
 class ScreenCoordinates : public glm::vec2 {
 public:
-    explicit ScreenCoordinates(glm::vec2 v)
-        : glm::vec2{v}
+    template<typename... Args>
+    explicit ScreenCoordinates(Args... args)
+        : glm::vec2{std::forward<Args>(args)...}
     {
     }
 };
 
 class MainWindowCoordinates : public glm::vec2 {
 public:
-    explicit MainWindowCoordinates(glm::vec2 v)
-        : glm::vec2{v}
+    template<typename... Args>
+    explicit MainWindowCoordinates(Args... args)
+        : glm::vec2{std::forward<Args>(args)...}
     {
     }
 };
 
 class ImGuiWindowCoordinates : public glm::vec2 {
 public:
-    explicit ImGuiWindowCoordinates(glm::vec2 v)
-        : glm::vec2{v}
+    template<typename... Args>
+    explicit ImGuiWindowCoordinates(Args... args)
+        : glm::vec2{std::forward<Args>(args)...}
     {
     }
 };
