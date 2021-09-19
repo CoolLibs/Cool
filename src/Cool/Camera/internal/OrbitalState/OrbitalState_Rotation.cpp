@@ -27,7 +27,7 @@ void OrbitalState_Rotation::on_mouse_move(ViewController_Orbital& controller, Ca
     }();
     camera.translate(-orbit_center);
     camera.rotate(-controller._rotation_speed * delta.x, up_axis);
-    camera.rotate(-controller._rotation_speed * delta.y, camera.right_axis());
+    camera.rotate(+controller._rotation_speed * delta.y, camera.right_axis());
     camera.translate(+orbit_center);
 }
 
