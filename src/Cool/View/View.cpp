@@ -71,6 +71,14 @@ void View::receive_mouse_scroll_event(const MouseScrollEvent<MainWindowCoordinat
     }
 }
 
+void View::receive_mouse_button_event(const MouseButtonEvent<MainWindowCoordinates>& event, GLFWwindow* window)
+{
+    const auto pos = to_imgui_space(event.position, window);
+    if (pos) {
+        _mouse_event_dispatcher.button_event().receive({*pos, event.action});
+    }
+}
+
 void View::grab_window_size()
 {
     auto size = ImGui::GetContentRegionAvail();

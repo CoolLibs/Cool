@@ -197,7 +197,7 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
     if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.onMouseButtonEvent(button, action, mods);
+        appManager->m_app.on_mouse_button({mouse_position(window), button, action, mods});
     }
 }
 
