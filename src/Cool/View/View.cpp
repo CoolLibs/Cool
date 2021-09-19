@@ -79,16 +79,13 @@ void View::receive_mouse_scroll_event(const MouseScrollEvent<MainWindowCoordinat
 
 void View::receive_mouse_button_event(const MouseButtonEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
-    // const auto pos = to_imgui_space(event.position, window);
-    // if (event.action == GLFW_RELEASE && _mouse_event_dispatcher.drag().is_dragging()) {
-    //     _mouse_event_dispatcher.drag().stop().receive({pos.value_or(ImGuiWindowCoordinates{0.f, 0.f})});
-    // }
-    // if (contains(pos)) {
-    //     _mouse_event_dispatcher.button_event().receive({pos, event.action});
-    //     if (event.action == GLFW_PRESS) {
-    //         _mouse_event_dispatcher.drag().start().receive({pos});
-    //     }
-    // }
+    const auto pos          = to_imgui_space(event.position, window);
+    const bool contains_pos = contains(pos);
+    const auto new_event    = MouseButtonEvent<ImGuiWindowCoordinates>{pos, event.button, event.action, event.mods};
+    _mouse_event_dispatcher.drag().receive_mouse_button_event(new_event, contains_pos);
+    if (contains_pos) {
+        _mouse_event_dispatcher.button_event().receive(new_event);
+    }
 }
 
 void View::grab_window_size()
