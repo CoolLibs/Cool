@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-void OrbitalState_Idle::on_wheel_down(ViewController_Orbital& controller, Camera& camera, int mods)
+void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, int mods)
 {
     if (mods & GLFW_MOD_SHIFT) {
         controller.set_state(OrbitalState_Translation{});

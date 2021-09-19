@@ -13,19 +13,19 @@ void hook_events(MouveEventDispatcher<ImGuiWindowCoordinates>& dispatcher, ViewC
         .drag()
         .start()
         .subscribe([&](const auto& event) {
-            controller.on_wheel_down(camera, event.mods);
+            controller.on_drag_start(camera, event.mods);
         });
     dispatcher
         .drag()
         .update()
         .subscribe([&](const auto& event) {
-            controller.on_mouse_move(camera, event.delta);
+            controller.on_drag(camera, event.delta);
         });
     dispatcher
         .drag()
         .stop()
         .subscribe([&](const auto& event) {
-            controller.on_wheel_up(camera);
+            controller.on_drag_stop(camera);
         });
 }
 
