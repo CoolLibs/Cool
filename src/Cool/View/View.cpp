@@ -25,7 +25,7 @@ void View::imgui_open_close_checkbox()
     ImGui::Checkbox(_name.c_str(), &_is_open);
 }
 
-static ScreenCoordinates window_to_screen(MainWindowCoordinates position, GLFWwindow* window)
+static ScreenCoordinates window_to_screen(WindowCoordinates position, GLFWwindow* window)
 {
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         return position.as_screen_coordinates(window);
@@ -35,23 +35,23 @@ static ScreenCoordinates window_to_screen(MainWindowCoordinates position, GLFWwi
     }
 }
 
-static ImGuiWindowCoordinates screen_to_imgui(ScreenCoordinates position, ScreenCoordinates window_position, float height)
+static ViewCoordinates screen_to_view(ScreenCoordinates position, ScreenCoordinates window_position, float height)
 {
-    const auto pos = ImGuiWindowCoordinates{position - window_position};
-    return ImGuiWindowCoordinates{
+    const auto pos = ViewCoordinates{position - window_position};
+    return ViewCoordinates{
         pos.x,
         height - pos.y}; // Make y-axis point up
 }
 
-auto View::to_imgui_space(MainWindowCoordinates position, GLFWwindow* window) -> ImGuiWindowCoordinates
+auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> ViewCoordinates
 {
-    return screen_to_imgui(
+    return screen_to_view(
         window_to_screen(position, window),
         _position,
         _size ? static_cast<float>(_size->height()) : 0.f);
 }
 
-bool View::contains(ImGuiWindowCoordinates pos)
+bool View::contains(ViewCoordinates pos)
 {
     if (!_window_is_hovered) {
         return false;
@@ -68,28 +68,28 @@ bool View::contains(ImGuiWindowCoordinates pos)
     }
 }
 
-void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event, GLFWwindow* window)
+void View::receive_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
-    const auto pos = to_imgui_space(event.position, window);
+    const auto pos = to_view_space(event.position, window);
     _mouse_event_dispatcher.drag().receive_mouse_move_event({pos});
     if (contains(pos)) {
         _mouse_event_dispatcher.move_event().receive({pos});
     }
 }
 
-void View::receive_mouse_scroll_event(const MouseScrollEvent<MainWindowCoordinates>& event, GLFWwindow* window)
+void View::receive_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
-    const auto pos = to_imgui_space(event.position, window);
+    const auto pos = to_view_space(event.position, window);
     if (contains(pos)) {
         _mouse_event_dispatcher.scroll_event().receive({event.dx, event.dy, pos});
     }
 }
 
-void View::receive_mouse_button_event(const MouseButtonEvent<MainWindowCoordinates>& event, GLFWwindow* window)
+void View::receive_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
-    const auto pos          = to_imgui_space(event.position, window);
+    const auto pos          = to_view_space(event.position, window);
     const bool contains_pos = contains(pos);
-    const auto new_event    = MouseButtonEvent<ImGuiWindowCoordinates>{pos, event.button, event.action, event.mods};
+    const auto new_event    = MouseButtonEvent<ViewCoordinates>{pos, event.button, event.action, event.mods};
     _mouse_event_dispatcher.drag().receive_mouse_button_event(new_event, contains_pos);
     if (contains_pos) {
         _mouse_event_dispatcher.button_event().receive(new_event);

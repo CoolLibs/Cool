@@ -4,6 +4,6 @@
 
 namespace Cool {
 
-void hook_events(MouveEventDispatcher<ImGuiWindowCoordinates>& dispatcher, ViewController_Orbital& controller, Camera& camera);
+void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher, ViewController_Orbital& controller, Camera& camera);
 
 } // namespace Cool

@@ -21,10 +21,10 @@ public:
     }
 };
 
-class MainWindowCoordinates : public glm::vec2 {
+class WindowCoordinates : public glm::vec2 {
 public:
     template<typename... Args>
-    explicit MainWindowCoordinates(Args... args)
+    explicit WindowCoordinates(Args... args)
         : glm::vec2{std::forward<Args>(args)...}
     {
     }
@@ -37,10 +37,10 @@ public:
     }
 };
 
-class ImGuiWindowCoordinates : public glm::vec2 {
+class ViewCoordinates : public glm::vec2 {
 public:
     template<typename... Args>
-    explicit ImGuiWindowCoordinates(Args... args)
+    explicit ViewCoordinates(Args... args)
         : glm::vec2{std::forward<Args>(args)...}
     {
     }

@@ -151,11 +151,11 @@ void AppManager::update()
 #endif
 }
 
-static MainWindowCoordinates mouse_position(GLFWwindow* window)
+static WindowCoordinates mouse_position(GLFWwindow* window)
 {
     double x, y;
     glfwGetCursorPos(window, &x, &y);
-    return MainWindowCoordinates{x, y};
+    return WindowCoordinates{x, y};
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -216,7 +216,7 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
     if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.on_mouse_move({MainWindowCoordinates{xpos, ypos}});
+        appManager->m_app.on_mouse_move({WindowCoordinates{xpos, ypos}});
     }
 }
 
