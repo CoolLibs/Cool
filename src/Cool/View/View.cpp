@@ -33,50 +33,62 @@ static ScreenCoordinates window_to_screen(MainWindowCoordinates position, GLFWwi
     }
 }
 
-static std::optional<ImGuiWindowCoordinates> screen_to_imgui(ScreenCoordinates position, ScreenCoordinates window_position, ImageSizeT<float> size)
+static ImGuiWindowCoordinates screen_to_imgui(ScreenCoordinates position, ScreenCoordinates window_position, float height)
 {
     const auto pos = ImGuiWindowCoordinates{position - window_position};
-    if (pos.x >= 0.f && pos.x <= size.width() &&
-        pos.y >= 0.f && pos.y <= size.height()) {
-        return ImGuiWindowCoordinates{
-            pos.x,
-            size.height() - pos.y}; // Make y-axis point up
-    }
-    else {
-        return std::nullopt;
-    }
+    return ImGuiWindowCoordinates{
+        pos.x,
+        height - pos.y}; // Make y-axis point up
 }
 
-auto View::to_imgui_space(MainWindowCoordinates position, GLFWwindow* window) -> std::optional<ImGuiWindowCoordinates>
+auto View::to_imgui_space(MainWindowCoordinates position, GLFWwindow* window) -> ImGuiWindowCoordinates
 {
     return screen_to_imgui(
         window_to_screen(position, window),
         _position,
-        static_cast<ImageSizeT<float>>(_size.value_or(ImageSize{})));
+        _size ? static_cast<float>(_size->height()) : 0.f);
+}
+
+bool View::contains(ImGuiWindowCoordinates pos)
+{
+    if (_size) {
+        const auto size = static_cast<ImageSizeT<float>>(*_size);
+        return pos.x >= 0.f && pos.x <= size.width() &&
+               pos.y >= 0.f && pos.y <= size.height();
+    }
+    else {
+        return false;
+    }
 }
 
 void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos = to_imgui_space(event.position, window);
-    if (pos) {
-        _mouse_event_dispatcher.move_event().receive({*pos});
+    if (contains(pos)) {
+        _mouse_event_dispatcher.move_event().receive({pos});
     }
 }
 
 void View::receive_mouse_scroll_event(const MouseScrollEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos = to_imgui_space(event.position, window);
-    if (pos) {
-        _mouse_event_dispatcher.scroll_event().receive({event.dx, event.dy, *pos});
+    if (contains(pos)) {
+        _mouse_event_dispatcher.scroll_event().receive({event.dx, event.dy, pos});
     }
 }
 
 void View::receive_mouse_button_event(const MouseButtonEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
-    const auto pos = to_imgui_space(event.position, window);
-    if (pos) {
-        _mouse_event_dispatcher.button_event().receive({*pos, event.action});
-    }
+    // const auto pos = to_imgui_space(event.position, window);
+    // if (event.action == GLFW_RELEASE && _mouse_event_dispatcher.drag().is_dragging()) {
+    //     _mouse_event_dispatcher.drag().stop().receive({pos.value_or(ImGuiWindowCoordinates{0.f, 0.f})});
+    // }
+    // if (contains(pos)) {
+    //     _mouse_event_dispatcher.button_event().receive({pos, event.action});
+    //     if (event.action == GLFW_PRESS) {
+    //         _mouse_event_dispatcher.drag().start().receive({pos});
+    //     }
+    // }
 }
 
 void View::grab_window_size()
