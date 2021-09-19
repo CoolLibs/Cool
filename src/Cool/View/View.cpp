@@ -10,11 +10,13 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
         grab_window_size();
         grab_window_position();
+        _window_is_hovered = ImGui::IsWindowHovered();
         display_image(image_texture_id, image_size, need_to_fit);
         ImGui::End();
     }
     else {
         _size.reset();
+        _window_is_hovered = false;
     }
 }
 
@@ -51,13 +53,18 @@ auto View::to_imgui_space(MainWindowCoordinates position, GLFWwindow* window) ->
 
 bool View::contains(ImGuiWindowCoordinates pos)
 {
-    if (_size) {
-        const auto size = static_cast<ImageSizeT<float>>(*_size);
-        return pos.x >= 0.f && pos.x <= size.width() &&
-               pos.y >= 0.f && pos.y <= size.height();
+    if (!_window_is_hovered) {
+        return false;
     }
     else {
-        return false;
+        if (_size) {
+            const auto size = static_cast<ImageSizeT<float>>(*_size);
+            return pos.x >= 0.f && pos.x <= size.width() &&
+                   pos.y >= 0.f && pos.y <= size.height();
+        }
+        else {
+            return false;
+        }
     }
 }
 

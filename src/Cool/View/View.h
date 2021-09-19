@@ -44,9 +44,10 @@ private:
     bool contains(ImGuiWindowCoordinates pos);
 
 private:
-    std::string                                  _name    = "";
-    bool                                         _is_open = true;
-    std::optional<ImageSize>                     _size    = std::nullopt; // Can be nullopt when the window is closed
+    std::string                                  _name              = "";
+    bool                                         _is_open           = true;
+    bool                                         _window_is_hovered = false;
+    std::optional<ImageSize>                     _size              = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                            _position{};
     MouveEventDispatcher<ImGuiWindowCoordinates> _mouse_event_dispatcher;
 };
