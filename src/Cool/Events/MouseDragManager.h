@@ -18,23 +18,27 @@ public:
     {
         if (event.action == GLFW_PRESS && is_inside_view && !_dragged_button.has_value()) {
             _dragged_button.emplace(event.button);
-            start().receive({event.position});
+            _last_mouse_position = event.position;
+            start().receive({event.position, event.mods});
         }
         if (event.action == GLFW_RELEASE && _dragged_button.has_value() && *_dragged_button == event.button) {
             _dragged_button.reset();
-            stop().receive({event.position});
+            stop().receive({event.position, event.mods});
         }
     }
 
     void receive_mouse_move_event(const MouseMoveEvent<Coords>& event)
     {
         if (_dragged_button.has_value()) {
-            update().receive({event.position});
+            update().receive({event.position,
+                              event.position - _last_mouse_position});
+            _last_mouse_position = event.position;
         }
     }
 
 private:
     std::optional<int>                            _dragged_button{};
+    Coords                                        _last_mouse_position;
     EventDispatcher<MouseDragStartEvent<Coords>>  _drag_start_dispatcher;
     EventDispatcher<MouseDragUpdateEvent<Coords>> _drag_update_dispatcher;
     EventDispatcher<MouseDragStopEvent<Coords>>   _drag_stop_dispatcher;

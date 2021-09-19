@@ -5,7 +5,8 @@ namespace Cool {
 
 template<MouseCoordinates Coords>
 struct MouseDragUpdateEvent {
-    Coords position;
+    Coords    position;
+    glm::vec2 delta;
 };
 
 } // namespace Cool
