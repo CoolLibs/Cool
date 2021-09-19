@@ -3,6 +3,7 @@
 #include "MouseDragStartEvent.h"
 #include "MouseDragStopEvent.h"
 #include "MouseDragUpdateEvent.h"
+#include "MouseMoveEvent.h"
 
 namespace Cool {
 
@@ -13,7 +14,7 @@ public:
     auto update() -> EventDispatcher<MouseDragUpdateEvent<Coords>>& { return _drag_update_dispatcher; }
     auto stop() -> EventDispatcher<MouseDragStopEvent<Coords>>& { return _drag_stop_dispatcher; }
 
-    void receive_mouse_button_event(const MouseButtonEvent<ImGuiWindowCoordinates>& event, bool is_inside_view)
+    void receive_mouse_button_event(const MouseButtonEvent<Coords>& event, bool is_inside_view)
     {
         if (event.action == GLFW_PRESS && is_inside_view && !_dragged_button.has_value()) {
             _dragged_button.emplace(event.button);
@@ -22,6 +23,13 @@ public:
         if (event.action == GLFW_RELEASE && _dragged_button.has_value() && *_dragged_button == event.button) {
             _dragged_button.reset();
             stop().receive({event.position});
+        }
+    }
+
+    void receive_mouse_move_event(const MouseMoveEvent<Coords>& event)
+    {
+        if (_dragged_button.has_value()) {
+            update().receive({event.position});
         }
     }
 

@@ -64,6 +64,7 @@ bool View::contains(ImGuiWindowCoordinates pos)
 void View::receive_mouse_move_event(const MouseMoveEvent<MainWindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos = to_imgui_space(event.position, window);
+    _mouse_event_dispatcher.drag().receive_mouse_move_event({pos});
     if (contains(pos)) {
         _mouse_event_dispatcher.move_event().receive({pos});
     }
