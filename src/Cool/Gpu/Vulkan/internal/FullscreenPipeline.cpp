@@ -20,7 +20,7 @@ void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& rende
     // Make a default pipeline layout. This shows how pointers
     // to resources are layed out.
     vku::PipelineLayoutMaker plm{};
-    plm.pushConstantRange(vk::ShaderStageFlagBits::eFragment, 0, sizeof(float)); // TODO push constants shouldn't be hardcoded
+    plm.pushConstantRange(vk::ShaderStageFlagBits::eFragment, 0, 96); // TODO push constants shouldn't be hardcoded
     _pipeline_layout = plm.createUnique(device);
 
     // Make a pipeline to use the vertex format and shaders.
