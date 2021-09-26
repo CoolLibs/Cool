@@ -5,6 +5,10 @@
 #include <doctest/doctest.h>
 #endif
 
+#if defined(__COOL_APP_VULKAN)
+#include <Cool/Gpu/Vulkan/Context.h>
+#endif
+
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Log/Log.h>
@@ -50,6 +54,9 @@ inline void initialize()
  */
 inline void shut_down()
 {
+#if defined(__COOL_APP_VULKAN)
+    vkDeviceWaitIdle(Vulkan::context().g_Device);
+#endif
     Icons::shut_down();
 }
 

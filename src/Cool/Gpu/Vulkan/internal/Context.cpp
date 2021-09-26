@@ -178,6 +178,7 @@ void Context::destroy0()
 
 void Context::destroy1()
 {
+    vkDestroyCommandPool(g_Device, command_pool, g_Allocator);
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
 #if defined(DEBUG)
     // Remove the debug report callback
