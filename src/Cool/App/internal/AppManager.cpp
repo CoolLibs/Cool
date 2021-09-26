@@ -16,6 +16,10 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 
+#if defined(__COOL_APP_VULKAN)
+#define COOL_UPDATE_ON_SEPARATE_THREAD
+#endif
+
 namespace Cool {
 
 AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app)
@@ -56,7 +60,7 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
 
 AppManager::~AppManager()
 {
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_UPDATE_ON_SEPARATE_THREAD)
     if (_update_thread.joinable()) {
         _update_thread.join();
     }
@@ -65,7 +69,7 @@ AppManager::~AppManager()
 
 void AppManager::run()
 {
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_UPDATE_ON_SEPARATE_THREAD)
     _update_thread = std::thread{[this]() {
         NFD_Init();
         while (!glfwWindowShouldClose(_main_window.glfw())) {
@@ -75,7 +79,7 @@ void AppManager::run()
     while (!glfwWindowShouldClose(_main_window.glfw())) {
         glfwWaitEvents();
     }
-#elif defined(__COOL_APP_OPENGL)
+#else
     while (!glfwWindowShouldClose(_main_window.glfw())) {
         glfwPollEvents();
         update();
