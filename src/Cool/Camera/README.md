@@ -6,7 +6,7 @@
 
 ### Orbital
 
-This is a family of controllers who orbit around a given center (which can be translated).
+This is a family of controllers who orbit around a given center (which can be translated). (They are not seperate classes because we want them to retain the same center of rotation as we switch between them ; + they don't have specific data, only behaviour)
 
 #### Trackball
 
