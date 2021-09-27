@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ParametersHistory.h"
+#include "ParametersHistory.h"
 
 namespace Cool {
 

@@ -1,4 +1,4 @@
-#include "../Camera.h"
+#include "Camera.h"
 #include <Cool/Constants/Constants.h>
 #include <glm/gtc/matrix_access.hpp>
 

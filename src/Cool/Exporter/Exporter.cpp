@@ -1,5 +1,5 @@
 #include "Exporter.h"
-#include <Cool/ExportImage/AsPNG.h>
+#include <Cool/ExportImage/as_png.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>

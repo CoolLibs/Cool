@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../NfdFileFilter.h"
+#include "NfdFileFilter.h"
 
 namespace Cool {
 

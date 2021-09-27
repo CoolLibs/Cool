@@ -1,8 +1,8 @@
-#include "../Time.h"
+#include "Time.h"
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
-#include "Clock_FixedTimestep.h"
-#include "Clock_Realtime.h"
+#include "internal/Clock_FixedTimestep.h"
+#include "internal/Clock_Realtime.h"
 
 namespace Cool {
 

@@ -1,4 +1,4 @@
-#include "../Input.h"
+#include "Input.h"
 
 namespace Cool {
 

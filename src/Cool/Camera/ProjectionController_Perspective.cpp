@@ -1,5 +1,5 @@
-#include "../ProjectionController_Perspective.h"
-#include "../Camera.h"
+#include "ProjectionController_Perspective.h"
+#include "Camera.h"
 
 namespace Cool {
 

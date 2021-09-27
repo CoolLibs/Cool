@@ -72,4 +72,4 @@ private:
 
 } // namespace Cool
 
-#include "internal/ThreadPool.tpp"
+#include "ThreadPool.tpp"

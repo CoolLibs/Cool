@@ -1,5 +1,5 @@
-#include "../ViewController_Orbital.h"
-#include "../Camera.h"
+#include "ViewController_Orbital.h"
+#include "Camera.h"
 
 namespace Cool {
 
