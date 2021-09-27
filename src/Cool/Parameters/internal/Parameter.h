@@ -34,7 +34,12 @@ public:
 
     inline const std::string& name() const override { return _name; }
 
-    inline void set_uniform_in_shader(Shader& shader) override { shader.set_uniform(name(), _value); }
+#if defined(__COOL_APP_OPENGL)
+    inline void set_uniform_in_shader(OpenGL::Shader& shader) override
+    {
+        shader.set_uniform(name(), _value);
+    }
+#endif
 
 protected:
     virtual bool imgui_widget() = 0;

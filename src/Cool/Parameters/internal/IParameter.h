@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Cool/Gpu/OpenGL/Shader.h> // TODO can't include OpenGL specific things
 #include <Cool/History/Action.h>
-#include <Cool/OpenGL/Shader.h>
 
 namespace Cool::Internal {
 
@@ -16,7 +16,9 @@ public:
     virtual const std::string& name() const = 0;
     virtual bool               imgui(
                       Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
-    virtual void set_uniform_in_shader(Shader& shader)                                       = 0;
+#if defined(__COOL_APP_OPENGL)
+    virtual void set_uniform_in_shader(OpenGL::Shader& shader) = 0;
+#endif
 
 protected:
     virtual bool imgui_widget() = 0;

@@ -1,5 +1,4 @@
 #include "../Camera.h"
-#include <Cool/App/RenderState.h>
 #include <Cool/Constants/Constants.h>
 #include <glm/gtc/matrix_access.hpp>
 
@@ -35,10 +34,10 @@ void Camera::rotate(float angle, glm::vec3 const& axis)
     _transform_matrix = glm::rotate(glm::mat4{1.f}, angle, axis) * _transform_matrix;
 }
 
-Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels)
+Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size)
 {
     glm::vec3 pos       = position();
-    glm::vec3 pixel_pos = glm::unProject(glm::vec3(position_in_pixels, 0.0f), view_matrix(), projection_matrix(), glm::vec4(0.0f, 0.0f, RenderState::Size().width(), RenderState::Size().height())); // TODO use the size of the screen ? isn't it bugued out if render size > on_scree size ?
+    glm::vec3 pixel_pos = glm::unProject(glm::vec3(position_in_pixels, 0.0f), view_matrix(), projection_matrix(), glm::vec4(0.0f, 0.0f, image_size.width(), image_size.height()));
     glm::vec3 dir       = pixel_pos - pos;
     return Ray(pos, dir);
 }

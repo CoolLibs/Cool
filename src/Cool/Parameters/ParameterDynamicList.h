@@ -17,12 +17,14 @@ public:
        */
     void imgui(std::function<void()> on_value_change = []() {});
 
+#if defined(__COOL_APP_OPENGL)
     /**
        * @brief Sets all the uniforms for all the parameters
        * 
        * @param shader 
        */
-    void set_uniforms_in_shader(Shader& shader);
+    void set_uniforms_in_shader(OpenGL::Shader& shader);
+#endif
 
     /**
        * @brief Tries to find the parameter in the list

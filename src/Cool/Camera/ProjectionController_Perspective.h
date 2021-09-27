@@ -6,7 +6,7 @@ class Camera;
 
 class ProjectionController_Perspective {
 public:
-    void         apply_to(Camera& camera) const;
+    void         apply_to(Camera& camera, float aspect_ratio) const;
     inline float focal_length() const { return 1.f / tan(_field_of_view_in_radians / 2.f); }
     bool         ImGui();
 

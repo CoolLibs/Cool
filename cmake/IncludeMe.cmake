@@ -2,7 +2,13 @@
 # Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 # Define CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
-set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"">)
+set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS
+    $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+# Define COOL_OPENGL_VERSION ; this is used to initialize WindowFactory_OpenGL
+    "COOL_OPENGL_VERSION=${COOL_USE_OPENGL}"
+# Define COOL_VULKAN_VERSION ; this is used to initialize VulkanContext
+    "COOL_VULKAN_VERSION=${COOL_USE_VULKAN}"
+>)
 
 include_directories(
     Cool/src
@@ -13,6 +19,7 @@ include_directories(
     Cool/lib/cereal/include
     Cool/lib/spdlog/include
     Cool/lib/doctest
+    Cool/lib/Vookoo/include
 )
 
 # More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
@@ -43,10 +50,10 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
     <cereal/types/variant.hpp>
     
     <boxer/boxer.h>
-    
     <nfd.hpp>
-    
     <doctest/doctest.h>
+    <scope_guard/scope_guard.hpp>
+
     <Cool/Log/Log.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/glm/ostream.h>                             # must be included after <glm/glm.hpp> because it depends on it
@@ -57,11 +64,17 @@ if (COOL_USE_OPENGL)
         <Cool/App/internal/GLDebug.h>
     )
 endif()
+if (COOL_USE_VULKAN)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE
+        <vulkan/vulkan.hpp>
+        <vku/vku.hpp>
+    )
+endif()
 
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
-    include("Cool/cmake/vulkan.cmake")
+    include("Cool/cmake/vookoo.cmake")
 endif()
 if (COOL_USE_OPENGL)
     add_compile_definitions(__COOL_APP_OPENGL)
@@ -122,8 +135,11 @@ target_link_libraries(${PROJECT_NAME}
     glfw
 )
 if (COOL_USE_VULKAN)
+    # shaderc
+    add_subdirectory(Cool/lib/shaderc-and-deps)
     target_link_libraries(${PROJECT_NAME}
         Vulkan::Vulkan
+        shaderc
     )
 endif()
 if (COOL_USE_OPENGL)

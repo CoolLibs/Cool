@@ -1,7 +1,7 @@
 #include "../ImGuiExtras.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
-    #define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include <Cool/Constants/Constants.h>
 #include <Cool/Icons/Icons.h>
@@ -103,26 +103,26 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ImGui::ButtonEx(label, ImVec2(0, 0), ImGuiButtonFlags_Disabled);
-    ImGui::PopStyleColor(2);
+    ImGui::BeginDisabled();
+    ImGui::Button(label);
+    ImGui::EndDisabled();
+    invisible_wrapper_around_previous_line(reason_for_disabling);
     tooltip(reason_for_disabling);
 }
 
-bool button_with_icon(GLuint tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
+bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
 {
-    return ImGui::ImageButton(reinterpret_cast<ImTextureID>(tex_id), ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
+    return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
-void button_with_icon_disabled(GLuint tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
+void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
     tooltip(reason_for_disabling);
 }
 
-void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
+void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -149,7 +149,7 @@ void image_framed(GLuint tex_id, const ImVec2& size, int frame_thickness, const 
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    window->DrawList->AddImage(reinterpret_cast<ImTextureID>(tex_id), image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
+    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
 }
 
 bool input_uint(const char* label, unsigned int* value_p)
@@ -167,8 +167,8 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
     ImGuiWindow* window = GImGui->CurrentWindow;
     if (window->SkipItems)
         return false;
-    ImGuiID id = label ? window->GetID(label) : window->DC.LastItemId; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
-    IM_ASSERT(id != 0);                                                // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
+    ImGuiID id = label ? window->GetID(label) : GImGui->LastItemData.ID; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
+    IM_ASSERT(id != 0);                                                  // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
     if (ImGui::Button(label))
         ImGui::OpenPopupEx(id, popup_flags);
     return ImGui::BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
@@ -182,7 +182,7 @@ void invisible_wrapper_around_previous_line(const char* label)
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
         NFD::UniquePath outPath;
 
         nfdresult_t result = NFD::PickFolder(outPath, std::filesystem::absolute(base_folder).string().c_str());
@@ -201,7 +201,7 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
         NFD::UniquePath outPath;
         // clang-format off
         nfdresult_t result = NFD::OpenDialog(
@@ -222,6 +222,30 @@ bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_t
     else {
         return false;
     }
+}
+
+void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
+{
+    ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
+    ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
+}
+
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu)
+{
+    ImGui::PushID(label);
+    bool checkbox_was_used = ImGui::Checkbox("", bool_p);
+    ImGui::PopID();
+    ImGui::SameLine();
+    if (*bool_p) {
+        if (ImGui::BeginMenu(label)) {
+            submenu();
+            ImGui::EndMenu();
+        }
+    }
+    else {
+        ImGui::Text(label);
+    }
+    return checkbox_was_used;
 }
 
 } // namespace Cool::ImGuiExtras

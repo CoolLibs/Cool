@@ -45,12 +45,17 @@ public:
         return _angles.imgui(on_edit_ended, on_value_change);
     }
 
-    void set_uniform_in_shader(Shader& shader) override
+#if defined(__COOL_APP_OPENGL)
+    void set_uniform_in_shader(OpenGL::Shader& shader) override
     {
         shader.set_uniform(name(), operator*());
     }
+#endif
 
-    inline const std::string& name() const override { return _angles.name(); }
+    inline const std::string& name() const override
+    {
+        return _angles.name();
+    }
 
 protected:
     bool imgui_widget() override

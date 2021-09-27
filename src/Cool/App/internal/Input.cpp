@@ -1,5 +1,4 @@
 #include "../Input.h"
-#include "../RenderState.h"
 
 namespace Cool {
 
@@ -48,29 +47,32 @@ bool Input::AltIsDown()
 
 glm::vec2 Input::MouseInScreenCoordinates()
 {
-    double x, y;
-    glfwGetCursorPos(s_mainWindow, &x, &y);
-    return glm::vec2(x, y) - glm::vec2(RenderState::InAppRenderArea().topLeft());
+    // double x, y;
+    // glfwGetCursorPos(s_mainWindow, &x, &y);
+    // return glm::vec2(x, y) - glm::vec2(RenderState::InAppRenderArea().topLeft());
+    return {0, 0};
 }
 
 glm::vec2 Input::MouseInNormalizedRatioSpace()
 {
-    glm::vec2 pos = MouseInScreenCoordinates();
-    pos /= RenderState::InAppRenderArea().height();
-    pos.y = 1.0f - pos.y;
-    pos *= 2.0f;
-    pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
-    return pos;
+    // glm::vec2 pos = MouseInScreenCoordinates();
+    // pos /= RenderState::InAppRenderArea().height();
+    // pos.y = 1.0f - pos.y;
+    // pos *= 2.0f;
+    // pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
+    // return pos;
+    return {0, 0};
 }
 
 glm::vec2 Input::ToNormalizedRatioSpace(double xPos, double yPos)
 {
-    glm::vec2 pos = glm::vec2(xPos, yPos) - glm::vec2(RenderState::InAppRenderArea().topLeft());
-    pos /= RenderState::InAppRenderArea().height();
-    pos.y = 1.0f - pos.y;
-    pos *= 2.0f;
-    pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
-    return pos;
+    // glm::vec2 pos = glm::vec2(xPos, yPos) - glm::vec2(RenderState::InAppRenderArea().topLeft());
+    // pos /= RenderState::InAppRenderArea().height();
+    // pos.y = 1.0f - pos.y;
+    // pos *= 2.0f;
+    // pos -= glm::vec2(RenderState::InAppRenderArea().aspectRatio(), 1.0f);
+    // return pos;
+    return {0, 0};
 }
 
 } // namespace Cool

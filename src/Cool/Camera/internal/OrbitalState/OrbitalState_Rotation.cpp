@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-void OrbitalState_Rotation::on_mouse_move(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta)
+void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta)
 {
     const auto orbit_center = controller.get_orbit_center(camera);
     const auto up_axis      = [&]() {
@@ -27,11 +27,11 @@ void OrbitalState_Rotation::on_mouse_move(ViewController_Orbital& controller, Ca
     }();
     camera.translate(-orbit_center);
     camera.rotate(-controller._rotation_speed * delta.x, up_axis);
-    camera.rotate(-controller._rotation_speed * delta.y, camera.right_axis());
+    camera.rotate(+controller._rotation_speed * delta.y, camera.right_axis());
     camera.translate(+orbit_center);
 }
 
-void OrbitalState_Rotation::on_wheel_up(ViewController_Orbital& controller, Camera& camera)
+void OrbitalState_Rotation::on_drag_stop(ViewController_Orbital& controller, Camera& camera)
 {
     controller.set_state(OrbitalState_Idle{});
 }

@@ -1,5 +1,4 @@
 #include "../Time.h"
-#include <Cool/App/RenderState.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include "Clock_FixedTimestep.h"
@@ -48,19 +47,19 @@ void Time::set_elapse_mode_as_fixed_timestep(float fps)
 
 void Time::imgui_timeline()
 {
-    if (!RenderState::IsExporting()) {
-        if (ImGuiExtras::button_with_icon(_clock->is_playing() ? Icons::pause() : Icons::play())) {
-            _clock->toggle_play_pause();
-        }
-        ImGui::SameLine();
-        float t = time();
-        if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
-            set_time(t);
-        }
+    if (ImGuiExtras::button_with_icon((_clock->is_playing() ? Icons::pause() : Icons::play()).imgui_texture_id())) {
+        _clock->toggle_play_pause();
     }
-    else {
-        ImGui::Text("%.2f seconds", time());
+    ImGui::SameLine();
+    float t = time();
+    if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
+        set_time(t);
     }
+}
+
+void Time::imgui_current_time()
+{
+    ImGui::Text("%.2f seconds", time());
 }
 
 } // namespace Cool

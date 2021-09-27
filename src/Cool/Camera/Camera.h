@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Geometry/Ray.h>
+#include <Cool/Image/ImageSize.h>
 
 namespace Cool {
 
@@ -38,12 +39,12 @@ public:
     void rotate(float angle, glm::vec3 const& axis);
 
     /**
-	 * @brief Returns a Ray passing through the given pixel and starting at the camera position. Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : ray_passing_through_pixel(Input::mouse_in_pixels())
+	 * @brief Returns a Ray passing through the given pixel of an image and starting at the camera position. Typically what you would want in order to check if a 3D object is under the mouse cursor by casting a ray : ray_passing_through_pixel(Input::mouse_in_pixels())
 	 * 
 	 * @param position_in_pixels 
 	 * @return 
 	 */
-    Ray ray_passing_through_pixel(const glm::vec2& position_in_pixels);
+    Ray ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size);
 
 private:
     glm::mat4 _transform_matrix  = glm::mat4{1.f};
