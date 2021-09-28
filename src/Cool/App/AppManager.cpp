@@ -42,18 +42,11 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
     glfwSetMouseButtonCallback(_main_window.glfw(), AppManager::mouse_button_callback);
     glfwSetScrollCallback     (_main_window.glfw(), AppManager::scroll_callback);
     glfwSetCursorPosCallback  (_main_window.glfw(), AppManager::cursor_position_callback);
-    glfwSetWindowSizeCallback (_main_window.glfw(), window_size_callback);
-    glfwSetWindowPosCallback  (_main_window.glfw(), window_pos_callback);
     glfwSetCharCallback       (_main_window.glfw(), ImGui_ImplGlfw_CharCallback);
     glfwSetWindowFocusCallback(_main_window.glfw(), ImGui_ImplGlfw_WindowFocusCallback);
     glfwSetCursorEnterCallback(_main_window.glfw(), ImGui_ImplGlfw_CursorEnterCallback);
     glfwSetMonitorCallback    (                     ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
-
-    // Trigger window size / position event once
-    int x, y, w, h;
-    glfwGetWindowPos(_main_window.glfw(), &x, &y);
-    glfwGetWindowSize(_main_window.glfw(), &w, &h);
 }
 
 AppManager::~AppManager()
@@ -160,55 +153,57 @@ static WindowCoordinates mouse_position(GLFWwindow* window)
     return WindowCoordinates{x, y};
 }
 
+static AppManager& get_app_manager(GLFWwindow* window)
+{
+    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+}
+
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    if (appManager->m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput)
+    auto& app_manager = get_app_manager(window);
+    if (app_manager.m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput) {
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    // Fullscreen
-    appManager->_main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
-    // CTRL + H
-    if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & GLFW_MOD_CONTROL))
-        appManager->m_bShowUI = !appManager->m_bShowUI;
-    //
-    if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.onKeyboardEvent(key, scancode, action, mods);
+    }
+    app_manager._main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
+    if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & GLFW_MOD_CONTROL)) {
+        app_manager.m_bShowUI = !app_manager.m_bShowUI;
+    }
+    if (app_manager.m_app.inputs_are_allowed()) {
+        app_manager.m_app.onKeyboardEvent(key, scancode, action, mods);
     }
 }
 
 void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
 {
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
-    // Fullscreen
-    appManager->_window_manager.find(glfw_window).check_for_fullscreen_toggles(key, scancode, action, mods);
+    get_app_manager(glfw_window)
+        ._window_manager.find(glfw_window)
+        .check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
 void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_window)
 {
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window));
-    // Fullscreen
-    Window& window = appManager->_window_manager.find(glfw_window);
+    Window& window = get_app_manager(glfw_window)._window_manager.find(glfw_window);
     if (window.is_visible() && glfwWindowShouldClose(window.glfw())) {
         window.set_visibility(false);
-        glfwSetWindowShouldClose(glfw_window, GLFW_FALSE);
+        glfwSetWindowShouldClose(window.glfw(), GLFW_FALSE);
     }
 }
 
 void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.on_mouse_button({mouse_position(window), button, action, mods});
+    auto& app_manager = get_app_manager(window);
+    if (app_manager.m_app.inputs_are_allowed()) {
+        app_manager.m_app.on_mouse_button({mouse_position(window), button, action, mods});
     }
 }
 
 void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.on_mouse_scroll({static_cast<float>(xoffset),
+    auto& app_manager = get_app_manager(window);
+    if (app_manager.m_app.inputs_are_allowed()) {
+        app_manager.m_app.on_mouse_scroll({static_cast<float>(xoffset),
                                            static_cast<float>(yoffset),
                                            mouse_position(window)});
     }
@@ -216,20 +211,10 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    if (appManager->m_app.inputs_are_allowed()) {
-        appManager->m_app.on_mouse_move({WindowCoordinates{xpos, ypos}});
+    auto& app_manager = get_app_manager(window);
+    if (app_manager.m_app.inputs_are_allowed()) {
+        app_manager.m_app.on_mouse_move({WindowCoordinates{xpos, ypos}});
     }
-}
-
-void AppManager::window_size_callback(GLFWwindow* window, int w, int h)
-{
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-}
-
-void AppManager::window_pos_callback(GLFWwindow* window, int x, int y)
-{
-    AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
 }
 
 void AppManager::ImGuiDockspace()
