@@ -1,7 +1,7 @@
 #pragma once
-#include <Cool/Events/MouseButtonEvent.h>
-#include <Cool/Events/MouseMoveEvent.h>
-#include <Cool/Events/MouseScrollEvent.h>
+#include <Cool/Input/MouseButtonEvent.h>
+#include <Cool/Input/MouseMoveEvent.h>
+#include <Cool/Input/MouseScrollEvent.h>
 
 namespace Cool {
 

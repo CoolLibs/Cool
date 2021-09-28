@@ -1,6 +1,6 @@
 #pragma once
-#include <Cool/Events/MouveEventDispatcher.h>
 #include <Cool/Gpu/RenderTarget.h>
+#include <Cool/Input/MouveEventDispatcher.h>
 
 namespace Cool {
 

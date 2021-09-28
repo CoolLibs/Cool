@@ -1,5 +1,5 @@
 #pragma once
-#include <Cool/Events/MouveEventDispatcher.h>
+#include <Cool/Input/MouveEventDispatcher.h>
 #include "ViewController_Orbital.h"
 
 namespace Cool {
