@@ -22,9 +22,9 @@ public:
     void                     imgui_open_close_checkbox();
     std::optional<ImageSize> size() const { return _size; }
 
-    void receive_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window);
-    void receive_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window);
-    void receive_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window);
+    void dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window);
+    void dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window);
+    void dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window);
     auto mouse_events() -> MouveEventDispatcher<ViewCoordinates>& { return _mouse_event_dispatcher; }
 
 private:

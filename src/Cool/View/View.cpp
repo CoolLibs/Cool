@@ -68,31 +68,31 @@ bool View::contains(ViewCoordinates pos)
     }
 }
 
-void View::receive_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos = to_view_space(event.position, window);
-    _mouse_event_dispatcher.drag().receive_mouse_move_event({pos});
+    _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
     if (contains(pos)) {
-        _mouse_event_dispatcher.move_event().receive({pos});
+        _mouse_event_dispatcher.move_event().dispatch({pos});
     }
 }
 
-void View::receive_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos = to_view_space(event.position, window);
     if (contains(pos)) {
-        _mouse_event_dispatcher.scroll_event().receive({event.dx, event.dy, pos});
+        _mouse_event_dispatcher.scroll_event().dispatch({event.dx, event.dy, pos});
     }
 }
 
-void View::receive_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window)
 {
     const auto pos          = to_view_space(event.position, window);
     const bool contains_pos = contains(pos);
     const auto new_event    = MouseButtonEvent<ViewCoordinates>{pos, event.button, event.action, event.mods};
-    _mouse_event_dispatcher.drag().receive_mouse_button_event(new_event, contains_pos);
+    _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos) {
-        _mouse_event_dispatcher.button_event().receive(new_event);
+        _mouse_event_dispatcher.button_event().dispatch(new_event);
     }
 }
 

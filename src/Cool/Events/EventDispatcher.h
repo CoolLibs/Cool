@@ -5,7 +5,7 @@ namespace Cool {
 template<typename Event>
 class EventDispatcher {
 public:
-    void receive(const Event& event)
+    void dispatch(const Event& event)
     {
         for (const auto& callback : _callbacks) {
             callback(event);
