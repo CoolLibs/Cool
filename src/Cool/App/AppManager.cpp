@@ -194,7 +194,10 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     auto& app_manager = get_app_manager(window);
     if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_button({mouse_position(window), button, action, mods});
+        app_manager.m_app.on_mouse_button({.position = mouse_position(window),
+                                           .button   = button,
+                                           .action   = action,
+                                           .mods     = mods});
     }
 }
 
@@ -203,9 +206,9 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     auto& app_manager = get_app_manager(window);
     if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_scroll({static_cast<float>(xoffset),
-                                           static_cast<float>(yoffset),
-                                           mouse_position(window)});
+        app_manager.m_app.on_mouse_scroll({.dx       = static_cast<float>(xoffset),
+                                           .dy       = static_cast<float>(yoffset),
+                                           .position = mouse_position(window)});
     }
 }
 
@@ -213,7 +216,7 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 {
     auto& app_manager = get_app_manager(window);
     if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_move({WindowCoordinates{xpos, ypos}});
+        app_manager.m_app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
     }
 }
 
