@@ -18,7 +18,7 @@ public:
     }
 
 private:
-    std::vector<std::function<void(const Event&)>> _callbacks = {};
+    std::vector<std::function<void(const Event&)>> _callbacks{};
 };
 
 } // namespace Cool
