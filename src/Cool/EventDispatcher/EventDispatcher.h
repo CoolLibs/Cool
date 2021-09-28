@@ -2,6 +2,11 @@
 
 namespace Cool {
 
+/**
+ * @brief A class that dispatches events to everyone that subscribed a callback to it.
+ * 
+ * @tparam Event Any struct that will be passed to the subscribers.
+ */
 template<typename Event>
 class EventDispatcher {
 public:

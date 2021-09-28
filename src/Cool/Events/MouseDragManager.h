@@ -1,5 +1,5 @@
 #pragma once
-#include "EventDispatcher.h"
+#include <Cool/EventDispatcher/EventDispatcher.h>
 #include "MouseDragStartEvent.h"
 #include "MouseDragStopEvent.h"
 #include "MouseDragUpdateEvent.h"
