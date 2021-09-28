@@ -165,7 +165,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
     app_manager._main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
-    if (action == GLFW_RELEASE && Input::MatchesChar("h", key) && (mods & GLFW_MOD_CONTROL)) {
+    if (action == GLFW_RELEASE && Input::matches_char("h", key) && (mods & GLFW_MOD_CONTROL)) {
         app_manager.m_bShowUI = !app_manager.m_bShowUI;
     }
     if (app_manager.m_app.inputs_are_allowed()) {

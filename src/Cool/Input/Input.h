@@ -6,12 +6,13 @@ namespace Cool {
 
 class Input {
 public:
-    /// <summary>
-    /// Checks if a glfw key code corresponds to a given character in the current keyboard layout
-    /// </summary>
-    /// <param name="character">A const char* containing the single character that you want to check against</param>
-    /// <param name="key">The key code that you want to check</param>
-    static bool MatchesChar(const char* character, int key);
+    /**
+     * @brief Checks if a glfw key-code corresponds to a given character in the current keyboard layout
+     * 
+     * @param character A const char* containing the single character that you want to check against
+     * @param key The key code that you want to check
+     */
+    static bool matches_char(const char* character, int key);
 
     /// <summary>
     /// Returns whether the specified key is currently pressed. /!\ This is about physical keys, independent of the keyboard layout !

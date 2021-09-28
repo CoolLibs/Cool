@@ -17,7 +17,7 @@ void Input::Initialize(GLFWwindow* mainWindow)
 #endif
 }
 
-bool Input::MatchesChar(const char* character, int key)
+bool Input::matches_char(const char* character, int key)
 {
     if (key == -1)
         return false;
