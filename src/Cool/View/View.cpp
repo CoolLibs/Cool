@@ -81,7 +81,9 @@ void View::dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>
 {
     const auto pos = to_view_space(event.position, window);
     if (contains(pos)) {
-        _mouse_event_dispatcher.scroll_event().dispatch({event.dx, event.dy, pos});
+        _mouse_event_dispatcher.scroll_event().dispatch({.position = pos,
+                                                         .dx       = event.dx,
+                                                         .dy       = event.dy});
     }
 }
 

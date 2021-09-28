@@ -206,9 +206,9 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     auto& app_manager = get_app_manager(window);
     if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_scroll({.dx       = static_cast<float>(xoffset),
-                                           .dy       = static_cast<float>(yoffset),
-                                           .position = mouse_position(window)});
+        app_manager.m_app.on_mouse_scroll({.position = mouse_position(window),
+                                           .dx       = static_cast<float>(xoffset),
+                                           .dy       = static_cast<float>(yoffset)});
     }
 }
 

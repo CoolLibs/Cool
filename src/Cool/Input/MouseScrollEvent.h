@@ -5,9 +5,9 @@ namespace Cool {
 
 template<MouseCoordinates Coords>
 struct MouseScrollEvent {
+    Coords position;
     float  dx;
     float  dy;
-    Coords position;
 };
 
 } // namespace Cool
