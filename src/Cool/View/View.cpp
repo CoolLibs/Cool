@@ -91,7 +91,11 @@ void View::dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>
 {
     const auto pos          = to_view_space(event.position, window);
     const bool contains_pos = contains(pos);
-    const auto new_event    = MouseButtonEvent<ViewCoordinates>{pos, event.button, event.action, event.mods};
+    const auto new_event    = MouseButtonEvent<ViewCoordinates>{
+        .position = pos,
+        .button   = event.button,
+        .action   = event.action,
+        .mods     = event.mods};
     _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos) {
         _mouse_event_dispatcher.button_event().dispatch(new_event);
