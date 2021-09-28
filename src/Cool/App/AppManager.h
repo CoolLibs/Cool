@@ -33,8 +33,6 @@ public:
 
 private:
     void update();
-    void onWindowMove(int x, int y);
-    void onWindowResize(int w, int h);
 
     void ImGuiDockspace();
 

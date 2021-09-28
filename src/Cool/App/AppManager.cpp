@@ -54,8 +54,6 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
     int x, y, w, h;
     glfwGetWindowPos(_main_window.glfw(), &x, &y);
     glfwGetWindowSize(_main_window.glfw(), &w, &h);
-    onWindowMove(x, y);
-    onWindowResize(w, h);
 }
 
 AppManager::~AppManager()
@@ -227,49 +225,33 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 void AppManager::window_size_callback(GLFWwindow* window, int w, int h)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->onWindowResize(w, h);
 }
 
 void AppManager::window_pos_callback(GLFWwindow* window, int x, int y)
 {
     AppManager* appManager = reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
-    appManager->onWindowMove(x, y);
-}
-
-void AppManager::onWindowMove(int x, int y)
-{
-}
-
-void AppManager::onWindowResize(int w, int h)
-{
 }
 
 void AppManager::ImGuiDockspace()
 {
-    const ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-    ImGuiWindowFlags         window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+        constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-    bool bopen = true;
-    ImGui::Begin("MyMainDockSpace", &bopen, window_flags);
-    ImGui::PopStyleVar(3);
-
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
+        ImGui::PopStyleVar(3);
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        ImGui::End();
     }
-    else {
-        Log::warn("Docking not enabled !");
-    }
-    ImGui::End();
 }
 
 } // namespace Cool
