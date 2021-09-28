@@ -1,7 +1,7 @@
 #include "AppManager.h"
+#include <Cool/Input/Input.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "IApp.h"
-#include "Input.h"
 #ifdef __COOL_APP_VULKAN
 #include <imgui/backends/imgui_impl_vulkan.h>
 #endif
