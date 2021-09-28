@@ -24,24 +24,6 @@ public:
     static bool ShiftIsDown();
     static bool AltIsDown();
 
-    /// Relative to the viewing area, not the whole window !
-    /// (0, 0) is in the top-left corner
-    /// Screen coordinates are kind of like pixels, but they are independent of the DPI of the user's screen, so this is what you should use most of the time.
-    static glm::vec2 MouseInScreenCoordinates();
-
-    /// Relative to the viewing area, not the whole window !
-    /// (0, 0) is in the middle
-    /// x is in the range [-aspectRatio, +aspectRatio] Axis pointing right
-    /// y is in the range [-1, 1] Axis poiting up
-    static glm::vec2 MouseInNormalizedRatioSpace();
-
-    /// Converts coordinates returned by glfw to the proper space.
-    /// Relative to the viewing area, not the whole window !
-    /// (0, 0) is in the middle
-    /// x is in the range [-aspectRatio, +aspectRatio] Axis pointing right
-    /// y is in the range [-1, 1] Axis poiting up
-    static glm::vec2 ToNormalizedRatioSpace(double xPos, double yPos);
-
 private:
     friend class AppManager;
     static void Initialize(GLFWwindow* mainWindow);
