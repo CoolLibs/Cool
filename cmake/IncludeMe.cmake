@@ -63,7 +63,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
 if (COOL_USE_OPENGL)
     target_precompile_headers(${PROJECT_NAME} PRIVATE
         <glad/glad.h>
-        <Cool/App/internal/GLDebug.h>
+        <Cool/Gpu/OpenGL/GLDebug.h>
     )
 endif()
 if (COOL_USE_VULKAN)
