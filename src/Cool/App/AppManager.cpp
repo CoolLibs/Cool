@@ -27,7 +27,6 @@ AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& 
     , _window_manager{window_manager}
     , m_app(app)
 {
-    Input::Initialize(mainWindow.glfw());
     // Set callbacks
     for (auto& window : _window_manager.windows()) {
         GLFWwindow* glfw_window = window.glfw();
