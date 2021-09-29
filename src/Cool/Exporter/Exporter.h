@@ -48,7 +48,6 @@ public:
 
 private:
     std::string output_path();
-    void        find_available_file_name();
     void        imgui_window_export_image(Polaroid polaroid);
     void        imgui_window_export_video();
 

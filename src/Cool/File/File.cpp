@@ -11,6 +11,24 @@ std::string File::_root_dir;
 bool File::_root_dir_is_initialized = false;
 #endif
 
+const std::string& File::root_dir()
+{
+#ifdef DEBUG
+    assert(_root_dir_is_initialized);
+#endif
+    return _root_dir;
+}
+
+void File::initialize_root_dir(std::string_view path)
+{
+#ifdef DEBUG
+    assert(!_root_dir_is_initialized);
+    _root_dir_is_initialized = true;
+#endif
+    _root_dir = path;
+    Log::info("[File::initialize_root_dir] \"{}\" is the root directory", _root_dir);
+}
+
 bool File::exists(std::string_view file_path)
 {
     struct stat buffer;
@@ -105,22 +123,35 @@ bool File::create_folders_for_file_if_they_dont_exist(std::string_view file_path
     return create_folders_if_they_dont_exist(whithout_file_name(std::string(file_path)));
 }
 
-void File::initialize_root_dir(std::string_view path)
+std::string File::find_available_name(std::string_view file_path)
 {
-#ifdef DEBUG
-    assert(!_root_dir_is_initialized);
-    _root_dir_is_initialized = true;
-#endif
-    _root_dir = path;
-    Log::info("[File::initialize_root_dir] \"{}\" is the root directory", _root_dir);
-}
+    // Find base_name and k
+    int               k           = 1;
+    const std::string folder_path = File::whithout_file_name(file_path);
+    const std::string file_name   = File::file_name_without_extension(file_path);
+    const std::string extension   = File::extension(file_path);
+    std::string       base_name   = file_name;
+    std::string       out_name    = file_name;
 
-const std::string& File::root_dir()
-{
-#ifdef DEBUG
-    assert(_root_dir_is_initialized);
-#endif
-    return _root_dir;
+    if (size_t pos = file_name.find_last_of("(");
+        pos != std::string::npos) {
+        // Find number in parenthesis
+        base_name      = file_name.substr(0, pos);
+        size_t end_pos = file_name.find_last_of(")");
+        try {
+            k = std::stoi(file_name.substr(pos + 1, end_pos - pos));
+        }
+        catch (std::exception& e) {
+            k         = 1;
+            base_name = file_name;
+        }
+    }
+    // Find available name
+    while (File::exists(folder_path + "/" + out_name + extension)) {
+        out_name = base_name + "(" + std::to_string(k) + ")";
+        k++;
+    }
+    return out_name;
 }
 
 } // namespace Cool

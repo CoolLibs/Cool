@@ -14,7 +14,7 @@ Exporter::Exporter()
     , _folder_path_for_video{File::root_dir() + "/exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
-        find_available_file_name();
+        _file_name = File::find_available_name(output_path());
     });
 }
 
@@ -27,33 +27,6 @@ void Exporter::imgui_windows(Polaroid polaroid)
 std::string Exporter::output_path()
 {
     return _folder_path_for_image + "/" + _file_name + ".png";
-}
-
-void Exporter::find_available_file_name()
-{
-    if (File::exists(output_path())) {
-        // Find base_name and k
-        int         k         = 1;
-        std::string base_name = _file_name;
-        size_t      pos       = _file_name.find_last_of("(");
-        if (pos != std::string::npos) {
-            // Find number in parenthesis
-            base_name      = _file_name.substr(0, pos);
-            size_t end_pos = _file_name.find_last_of(")");
-            try {
-                k = std::stoi(_file_name.substr(pos + 1, end_pos - pos));
-            }
-            catch (std::exception& e) {
-                k         = 1;
-                base_name = _file_name;
-            }
-        }
-        // Find available name
-        while (File::exists(output_path())) {
-            _file_name = base_name + "(" + std::to_string(k) + ")";
-            k++;
-        }
-    }
 }
 
 void Exporter::imgui_menu_items()

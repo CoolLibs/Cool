@@ -7,6 +7,19 @@ namespace Cool {
 class File {
 public:
     /**
+     * @brief Root directory where the program was started from. Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up
+     * 
+     * @return 
+     */
+    static const std::string& root_dir();
+
+    /**
+     * @brief Initializes root_dir. This must be called once, at the start of your application
+     * 
+     */
+    static void initialize_root_dir(std::string_view path);
+
+    /**
      * @brief 
      * 
      * @return true iff file_path corresponds to an existing file or folder
@@ -74,17 +87,10 @@ public:
     static bool [[nodiscard]] create_folders_for_file_if_they_dont_exist(std::string_view file_path);
 
     /**
-     * @brief Root directory where the program was started from. Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up
-     * 
-     * @return 
+     * @param file_path The base file name
+     * @return std::string A file name that isn't in use yet ; it will be file_path, eventually postfixed with a number in parenthesis
      */
-    static const std::string& root_dir();
-
-    /**
-     * @brief Initializes root_dir. This must be called once, at the start of your application
-     * 
-     */
-    static void initialize_root_dir(std::string_view path);
+    static std::string find_available_name(std::string_view file_path);
 
 private:
     static std::string _root_dir;
