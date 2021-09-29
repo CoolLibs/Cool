@@ -67,29 +67,40 @@ void AppManager::run()
 #endif
 }
 
-void AppManager::update()
-{
-    prepare_windows();
-    _app.update();
-    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
-        imgui_new_frame();
-        imgui_render();
-        end_frame();
-    }
-}
-
-void AppManager::prepare_windows()
+static void prepare_windows(WindowManager& window_manager)
 {
 #if defined(__COOL_APP_VULKAN)
-    for (auto& window : _window_manager.windows()) {
+    for (auto& window : window_manager.windows()) {
         window.check_for_swapchain_rebuild();
     }
 #elif defined(__COOL_APP_OPENGL)
-    _window_manager.main_window().make_current();
+    window_manager.main_window().make_current();
 #endif
 }
 
-void AppManager::imgui_new_frame()
+static void imgui_dockspace()
+{
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+        constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+        ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
+        ImGui::PopStyleVar(3);
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        ImGui::End();
+    }
+}
+
+static void imgui_new_frame()
 {
 #if defined(__COOL_APP_VULKAN)
     ImGui_ImplVulkan_NewFrame();
@@ -103,28 +114,26 @@ void AppManager::imgui_new_frame()
     imgui_dockspace();
 }
 
-void AppManager::imgui_render()
+static void imgui_render(IApp& app)
 {
-    if (_show_ui) {
-        // Menu bar
-        if (_app.wants_to_show_menu_bar()) {
-            ImGui::BeginMainMenuBar();
-            _app.ImGuiMenus();
-            ImGui::EndMainMenuBar();
-        }
-        // Windows
-        _app.ImGuiWindows();
+    // Menu bar
+    if (app.wants_to_show_menu_bar()) {
+        ImGui::BeginMainMenuBar();
+        app.ImGuiMenus();
+        ImGui::EndMainMenuBar();
     }
+    // Windows
+    app.ImGuiWindows();
 }
 
-void AppManager::end_frame()
+static void end_frame(WindowManager& window_manager)
 {
     ImGui::Render();
 #ifdef __COOL_APP_VULKAN
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
     if (!main_is_minimized)
-        _window_manager.main_window().FrameRender(main_draw_data);
+        window_manager.main_window().FrameRender(main_draw_data);
 
     // Update and Render additional Platform Windows
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -133,7 +142,7 @@ void AppManager::end_frame()
     }
     // Present Main Platform Window
     if (!main_is_minimized)
-        _window_manager.main_window().FramePresent();
+        window_manager.main_window().FramePresent();
 
 #endif
 #ifdef __COOL_APP_OPENGL
@@ -147,8 +156,21 @@ void AppManager::end_frame()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-    glfwSwapBuffers(_window_manager.main_window().glfw());
+    glfwSwapBuffers(window_manager.main_window().glfw());
 #endif
+}
+
+void AppManager::update()
+{
+    prepare_windows(_window_manager);
+    _app.update();
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+        imgui_new_frame();
+        if (_show_ui) {
+            imgui_render(_app);
+        }
+        end_frame(_window_manager);
+    }
 }
 
 static WindowCoordinates mouse_position(GLFWwindow* window)
@@ -225,28 +247,6 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
     auto& app_manager = get_app_manager(window);
     if (app_manager._app.inputs_are_allowed()) {
         app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
-    }
-}
-
-void AppManager::imgui_dockspace()
-{
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-        constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-        constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-        ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
-        ImGui::PopStyleVar(3);
-        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-        ImGui::End();
     }
 }
 
