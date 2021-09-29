@@ -14,7 +14,7 @@ class AppManager {
 public:
     /// <param name="mainWindow">The main window where your app will be rendered to, created by the WindowFactory</param>
     /// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
-    AppManager(Window& main_window, WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
+    AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
     ~AppManager();
 
     /// Runs the app's update loop continuously, until the user closes the main window
@@ -35,7 +35,6 @@ private:
     static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
-    Window&          _main_window;
     WindowManager&   _window_manager;
     IApp&            _app;
     bool             _show_ui = true;

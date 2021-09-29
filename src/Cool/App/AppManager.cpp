@@ -12,9 +12,8 @@
 
 namespace Cool {
 
-AppManager::AppManager(Window& main_window, WindowManager& window_manager, IApp& app, AppManagerConfig config)
-    : _main_window(main_window)
-    , _window_manager{window_manager}
+AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
+    : _window_manager{window_manager}
     , _app(app)
     , _config{config}
 {
@@ -22,20 +21,20 @@ AppManager::AppManager(Window& main_window, WindowManager& window_manager, IApp&
     for (auto& window : _window_manager.windows()) {
         GLFWwindow* glfw_window = window.glfw();
         glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this));
-        if (glfw_window != _main_window.glfw()) {
+        if (glfw_window != _window_manager.main_window().glfw()) {
             glfwSetKeyCallback(glfw_window, AppManager::key_callback_for_secondary_windows);
             glfwSetWindowCloseCallback(glfw_window, AppManager::window_close_callback_for_secondary_windows);
         }
     }
     // clang-format off
-    glfwSetKeyCallback        (_main_window.glfw(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(_main_window.glfw(), AppManager::mouse_button_callback);
-    glfwSetScrollCallback     (_main_window.glfw(), AppManager::scroll_callback);
-    glfwSetCursorPosCallback  (_main_window.glfw(), AppManager::cursor_position_callback);
-    glfwSetCharCallback       (_main_window.glfw(), ImGui_ImplGlfw_CharCallback);
-    glfwSetWindowFocusCallback(_main_window.glfw(), ImGui_ImplGlfw_WindowFocusCallback);
-    glfwSetCursorEnterCallback(_main_window.glfw(), ImGui_ImplGlfw_CursorEnterCallback);
-    glfwSetMonitorCallback    (                     ImGui_ImplGlfw_MonitorCallback);
+    glfwSetKeyCallback        (_window_manager.main_window().glfw(), AppManager::key_callback);
+    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), AppManager::mouse_button_callback);
+    glfwSetScrollCallback     (_window_manager.main_window().glfw(), AppManager::scroll_callback);
+    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), AppManager::cursor_position_callback);
+    glfwSetCharCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
+    glfwSetWindowFocusCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
+    glfwSetCursorEnterCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
+    glfwSetMonitorCallback    (                                      ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
 }
 
@@ -53,15 +52,15 @@ void AppManager::run()
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     _update_thread = std::thread{[this]() {
         NFD_Init();
-        while (!glfwWindowShouldClose(_main_window.glfw())) {
+        while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
             update();
         }
     }};
-    while (!glfwWindowShouldClose(_main_window.glfw())) {
+    while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
         glfwWaitEvents();
     }
 #else
-    while (!glfwWindowShouldClose(_main_window.glfw())) {
+    while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
         glfwPollEvents();
         update();
     }
@@ -76,7 +75,7 @@ void AppManager::update()
     }
 #endif
 #ifdef __COOL_APP_OPENGL
-    _main_window.make_current();
+    _window_manager.main_window().make_current();
 #endif
     // Actual application code
     _app.update();
@@ -109,7 +108,7 @@ void AppManager::update()
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
     if (!main_is_minimized)
-        _main_window.FrameRender(main_draw_data);
+        _window_manager.main_window().FrameRender(main_draw_data);
 
     // Update and Render additional Platform Windows
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -118,7 +117,7 @@ void AppManager::update()
     }
     // Present Main Platform Window
     if (!main_is_minimized)
-        _main_window.FramePresent();
+        _window_manager.main_window().FramePresent();
 
 #endif
 #ifdef __COOL_APP_OPENGL
@@ -132,7 +131,7 @@ void AppManager::update()
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);
     }
-    glfwSwapBuffers(_main_window.glfw());
+    glfwSwapBuffers(_window_manager.main_window().glfw());
 #endif
 }
 
@@ -154,7 +153,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     if (app_manager._config.dispatch_key_events_to_imgui || ImGui::GetIO().WantTextInput) {
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
-    app_manager._main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
+    app_manager._window_manager.main_window().check_for_fullscreen_toggles(key, scancode, action, mods);
     if (action == GLFW_RELEASE && Input::matches_char("h", key) && (mods & GLFW_MOD_CONTROL)) {
         app_manager._show_ui = !app_manager._show_ui;
     }
