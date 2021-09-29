@@ -25,10 +25,10 @@ void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& rende
 
     // Make a pipeline to use the vertex format and shaders.
     vku::PipelineMaker pm{
-        render_target_info.viewport.topLeft().x,
-        render_target_info.viewport.topLeft().y,
-        static_cast<uint32_t>(render_target_info.viewport.width()),
-        static_cast<uint32_t>(render_target_info.viewport.height())};
+        (int32_t)render_target_info.viewport.bottom_left_corner.x,
+        (int32_t)render_target_info.viewport.bottom_left_corner.y,
+        render_target_info.viewport.size.width(),
+        render_target_info.viewport.size.height()};
     pm.shader(vk::ShaderStageFlagBits::eVertex, _vertex_shader_module.vku());
     pm.shader(vk::ShaderStageFlagBits::eFragment, _fragment_shader_module.vku());
     pm.blendBegin(VK_TRUE);

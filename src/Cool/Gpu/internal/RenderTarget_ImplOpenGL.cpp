@@ -20,9 +20,7 @@ RenderTargetInfo RenderTarget_ImplOpenGL::info() const
 {
     return RenderTargetInfo{
         .viewport = {
-            .size = {
-                width(),
-                height()},
+            .size               = size(),
             .bottom_left_corner = {0.f, 0.f}}};
 }
 

@@ -72,12 +72,11 @@ void RenderTarget_ImplVulkan::render(RenderFuncType render_fn)
 
 RenderTargetInfo RenderTarget_ImplVulkan::info() const
 {
-    RenderTargetInfo info;
-    info.viewport = RectSizePos{
-        static_cast<int>(width()),
-        static_cast<int>(height())};
-    info.render_pass = *_render_pass;
-    return info;
+    return RenderTargetInfo{
+        .viewport = {
+            .size               = size(),
+            .bottom_left_corner = {0.f, 0.f}},
+        .render_pass = *_render_pass};
 }
 
 void RenderTarget_ImplVulkan::resize(ImageSize size)
