@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/ImGuiExtras/ImGuiWindow.h>
 #include <Cool/Image/ImageSize.h>
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"
@@ -50,13 +51,6 @@ public:
 
     bool is_exporting() const { return _video_export_process.has_value(); }
 
-    /**
-	 * @brief Opens or closes the window with the image sequence export parameters
-	 * 
-	 * @param open true iff the window should open, and false iff it should close
-	 */
-    inline void open_window_export_image_sequence(bool open = true) { _is_window_open_image_sequence_export = open; }
-
 private:
     std::string output_path();
     void        find_available_file_name();
@@ -78,12 +72,12 @@ private:
     ImageSize _export_size{1920, 1080};
 
     std::string _folder_path_for_image;
-    std::string _file_name                       = "img(0)";
-    bool        _is_window_open_image_export     = false;
+    std::string _file_name = "img(0)";
+    ImGuiWindow _image_export_window{"Export an Image", false};
     bool        _should_show_file_exists_warning = false;
 
     std::string                       _folder_path_for_image_sequence;
-    bool                              _is_window_open_image_sequence_export = false;
+    ImGuiWindow                       _video_export_window{"Export a Video", false};
     std::optional<VideoExportProcess> _video_export_process;
     VideoExportParams                 _video_export_params;
 };

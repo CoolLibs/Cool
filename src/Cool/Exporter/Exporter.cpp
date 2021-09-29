@@ -55,9 +55,12 @@ void Exporter::find_available_file_name()
 
 void Exporter::open_window_export_image(bool open)
 {
-    _is_window_open_image_export = open;
-    if (_is_window_open_image_export) {
+    if (open) {
+        _image_export_window.open();
         find_available_file_name();
+    }
+    else {
+        _image_export_window.close();
     }
 }
 
@@ -72,15 +75,14 @@ void Exporter::imgui_menu_items()
         open_window_export_image(true);
     }
     if (ImGui::Button("Image Sequence", ImVec2(button_width, 0.0f))) {
-        _is_window_open_image_sequence_export = true;
+        _video_export_window.open();
     }
     //ImGui::PopStyleVar();
 }
 
 void Exporter::imgui_window_export_image(Polaroid polaroid)
 {
-    if (_is_window_open_image_export) {
-        ImGui::Begin("Export an Image", &_is_window_open_image_export);
+    _image_export_window.show([&]() {
         // Resolution
         ImageSizeU::imgui(_export_size);
         // File and Folders
@@ -99,12 +101,10 @@ void Exporter::imgui_window_export_image(Polaroid polaroid)
         }
         // Validation
         if (ImGui::Button("Export as PNG")) {
-            _is_window_open_image_export = false;
+            _image_export_window.close();
             ExporterU::export_image(_export_size, polaroid, output_path());
         }
-        //
-        ImGui::End();
-    }
+    });
 }
 
 void Exporter::begin_image_sequence_export()
@@ -120,7 +120,6 @@ void Exporter::begin_image_sequence_export()
 void Exporter::update(Polaroid polaroid)
 {
     if (_video_export_process.has_value()) {
-        _is_window_open_image_sequence_export = true;
         if (_video_export_process->update(polaroid)) {
             end_image_sequence_export();
         }
@@ -130,16 +129,18 @@ void Exporter::update(Polaroid polaroid)
 void Exporter::end_image_sequence_export()
 {
     _video_export_process.reset();
-    _is_window_open_image_sequence_export = false;
 }
 
 bool Exporter::imgui_window_export_image_sequence()
 {
     bool has_started = false;
-    if (_is_window_open_image_sequence_export) {
-        ImGui::Begin("Export an Image Sequence", is_exporting() ? nullptr : &_is_window_open_image_sequence_export);
-        // Not exporting
-        if (!is_exporting()) {
+    if (is_exporting()) {
+        ImGui::Begin("Video export in progress");
+        _video_export_process->imgui();
+        ImGui::End();
+    }
+    else {
+        _video_export_window.show([&]() {
             ImageSizeU::imgui(_export_size);
             ImGui::InputText("Path", &_folder_path_for_image_sequence);
             ImGui::SameLine();
@@ -148,14 +149,10 @@ bool Exporter::imgui_window_export_image_sequence()
             // Validation
             if (ImGui::Button("Start exporting")) {
                 has_started = true;
+                _video_export_window.close();
                 begin_image_sequence_export();
             }
-        }
-        // Exporting
-        else {
-            _video_export_process->imgui();
-        }
-        ImGui::End();
+        });
     }
     return has_started;
 }
