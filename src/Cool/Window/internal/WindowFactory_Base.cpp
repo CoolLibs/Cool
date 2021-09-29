@@ -1,4 +1,5 @@
 #include "WindowFactory_Base.h"
+#include <Cool/Core/should_we_use_a_separate_thread_for_update.h>
 #include <Cool/Log/ToUser.h>
 #include <glfw/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
@@ -71,7 +72,7 @@ void WindowFactory_Base<T>::initialize_imgui()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-#if defined(__COOL_APP_OPENGL)                            // DISABLED for Vulkan because platform windows freeze since we are not rendering on the main thread
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO : need to investigate that bug ; it is probably comming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
