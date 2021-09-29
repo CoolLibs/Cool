@@ -2,6 +2,7 @@
 
 #include <Cool/Window/Window.h>
 #include <Cool/Window/internal/WindowManager.h>
+#include "AppManagerConfig.h"
 #include "IApp.h"
 
 struct ImGuiDockNode;
@@ -14,22 +15,11 @@ class AppManager {
 public:
     /// <param name="mainWindow">The main window where your app will be rendered to, created by the WindowFactory</param>
     /// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
-    AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app);
+    AppManager(Window& main_window, WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
     ~AppManager();
 
     /// Runs the app's update loop continuously, until the user closes the main window
     void run();
-
-    /// <summary>
-    /// Will prevent ImGui from reacting to key events (NB : doesn't affect text inputs, only things like moving in a list with up / down arrows).
-    /// This is off by default;
-    /// </summary>
-    inline void DontForwardKeyEventsToImGui() { m_bDoForwardKeyEventsToImGui = false; }
-    /// <summary>
-    /// Will allow ImGui to react to key events (NB : doesn't affect text inputs, only things like moving in a list with up / down arrows).
-    /// This is on by default;
-    /// </summary>
-    inline void DoForwardKeyEventsToImGui() { m_bDoForwardKeyEventsToImGui = true; }
 
 private:
     void update();
@@ -46,11 +36,11 @@ private:
     static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
-    Window&        _main_window;
-    WindowManager& _window_manager;
-    IApp&          m_app;
-    bool           m_bShowUI                    = true;
-    bool           m_bDoForwardKeyEventsToImGui = true;
+    Window&          _main_window;
+    WindowManager&   _window_manager;
+    IApp&            m_app;
+    bool             m_bShowUI = true;
+    AppManagerConfig _config;
 #if defined(__COOL_APP_VULKAN)
     std::thread _update_thread;
 #endif

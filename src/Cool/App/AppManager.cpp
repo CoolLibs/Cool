@@ -16,10 +16,11 @@
 
 namespace Cool {
 
-AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app)
+AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app, AppManagerConfig config)
     : _main_window(mainWindow)
     , _window_manager{window_manager}
     , m_app(app)
+    , _config{config}
 {
     // Set callbacks
     for (auto& window : _window_manager.windows()) {
@@ -154,7 +155,7 @@ static AppManager& get_app_manager(GLFWwindow* window)
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     auto& app_manager = get_app_manager(window);
-    if (app_manager.m_bDoForwardKeyEventsToImGui || ImGui::GetIO().WantTextInput) {
+    if (app_manager._config.dispatch_key_events_to_imgui || ImGui::GetIO().WantTextInput) {
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
     app_manager._main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
