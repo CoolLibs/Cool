@@ -88,7 +88,7 @@ static void prepare_windows(WindowManager& window_manager)
     }
 #elif defined(__COOL_APP_OPENGL)
     window_manager.main_window().make_current();
-    glClearColor(1.f, 0.f, 0.f, 1.f);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
 #endif
 }
