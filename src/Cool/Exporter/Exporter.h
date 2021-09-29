@@ -11,15 +11,6 @@ public:
     Exporter();
 
     /**
-	 * @brief Exports an image as PNG
-	 * 
-	 * @param render The function that renders the desired image
-	 * @param frame_buffer The frame buffer that your render function will render to
-	 * @param file_path The name of the image file that you want to write
-	 */
-    void export_image(ExporterInput input, std::string_view file_path);
-
-    /**
 	 * @brief The buttons to open the different export windows
 	 * 
 	 */

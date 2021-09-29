@@ -1,31 +1,18 @@
 #include "Exporter.h"
-#include <Cool/ExportImage/as_png.h>
 #include <Cool/File/File.h>
 #include <Cool/ImGuiExtras/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/String/String.h>
 #include <Cool/Time/Time.h>
+#include "ExporterU.h"
 
 namespace Cool {
 
 Exporter::Exporter()
-    : _folder_path_for_image(File::root_dir() + "/out")
-    , _folder_path_for_image_sequence(File::root_dir() + "/exports")
+    : _folder_path_for_image{File::root_dir() + "/out"}
+    , _folder_path_for_image_sequence{File::root_dir() + "/exports"}
 {
-}
-
-void Exporter::export_image(ExporterInput in, std::string_view file_path)
-{
-    in.render(_export_size);
-    const auto image = in.render_target.download_pixels();
-    // Write png
-    if (File::create_folders_if_they_dont_exist(_folder_path_for_image)) {
-        ExportImage::as_png(file_path, image.width(), image.height(), image.data.get());
-    }
-    else {
-        Log::ToUser::warn("Exporter::export_image", "Failed to create folder \"{}\"", _folder_path_for_image);
-    }
 }
 
 std::string Exporter::output_path()
@@ -107,7 +94,7 @@ void Exporter::imgui_window_export_image(ExporterInput input)
         // Validation
         if (ImGui::Button("Export as PNG")) {
             _is_window_open_image_export = false;
-            export_image(input, output_path());
+            ExporterU::export_image(_export_size, input, output_path());
         }
         //
         ImGui::End();
