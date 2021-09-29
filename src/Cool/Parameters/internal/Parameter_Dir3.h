@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/ImGuiExtras/ImGuiExtras.h>
+#include <Cool/ImGui/ImGuiExtras.h>
 #include "Parameter.h"
 
 namespace Cool::Internal {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/ImGuiExtras/ImGuiWindow.h>
+#include <Cool/ImGui/ImGuiWindow.h>
 #include <Cool/Image/ImageSize.h>
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"

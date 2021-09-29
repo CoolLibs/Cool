@@ -1,5 +1,5 @@
 #include "View.h"
-#include <Cool/ImGuiExtras/ImGuiExtras.h>
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
