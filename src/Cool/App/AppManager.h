@@ -8,15 +8,24 @@
 
 namespace Cool {
 
-/// Wrapper for an App. Handles the main window and the UI layout and docking.
+/**
+ * @brief Wrapper for an App. It handles the user events, the ImGui UI, and the windows' updates.
+ * 
+ */
 class AppManager {
 public:
-    /// <param name="mainWindow">The main window where your app will be rendered to, created by the WindowFactory</param>
-    /// <param name="app">An instance of an App class that you have to implement, deriving from IApp</param>
+    /**
+     * @param window_manager The WindowManager (the one that WindowFactory can give you)
+     * @param app An instance of an App class that you have to implement, deriving from IApp.
+     * @param config Configuration options that control the behaviour of the AppManager
+     */
     AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
     ~AppManager();
 
-    /// Runs the app's update loop continuously, until the user closes the main window
+    /**
+     * @brief Runs the app's update loop continuously, until the user closes the main window
+     * 
+     */
     void run();
 
 private:

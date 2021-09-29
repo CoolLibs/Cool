@@ -73,7 +73,7 @@ void AppManager::update()
 {
     prepare_windows(_window_manager);
     _app.update();
-    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) { // When update is not run on the main thread, if the window is closed during imgui_new_frame() it will freeze. We try to prevent that, even though this solution is probably not 100% bullet proof
         imgui_new_frame();
         imgui_render(_app);
         end_frame(_window_manager);

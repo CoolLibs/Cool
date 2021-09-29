@@ -5,6 +5,7 @@ namespace Cool {
 
 template<MouseCoordinates Coords>
 struct MouseMoveEvent {
+    // The position of the mouse
     Coords position;
 };
 
