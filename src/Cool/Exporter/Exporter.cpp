@@ -15,6 +15,12 @@ Exporter::Exporter()
 {
 }
 
+void Exporter::imgui_windows(Polaroid polaroid)
+{
+    imgui_window_export_image(polaroid);
+    imgui_window_export_image_sequence();
+}
+
 std::string Exporter::output_path()
 {
     return _folder_path_for_image + "/" + _file_name + ".png";
