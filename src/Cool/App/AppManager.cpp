@@ -14,7 +14,7 @@ namespace Cool {
 
 AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
-    , _app(app)
+    , _app{app}
     , _config{config}
 {
     // Set callbacks
@@ -69,21 +69,31 @@ void AppManager::run()
 
 void AppManager::update()
 {
-#ifdef __COOL_APP_VULKAN
+    prepare_windows();
+    _app.update();
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+        imgui_new_frame();
+        imgui_render();
+        end_frame();
+    }
+}
+
+void AppManager::prepare_windows()
+{
+#if defined(__COOL_APP_VULKAN)
     for (auto& window : _window_manager.windows()) {
         window.check_for_swapchain_rebuild();
     }
-#endif
-#ifdef __COOL_APP_OPENGL
+#elif defined(__COOL_APP_OPENGL)
     _window_manager.main_window().make_current();
 #endif
-    // Actual application code
-    _app.update();
-    // Start ImGui frame
-#ifdef __COOL_APP_VULKAN
+}
+
+void AppManager::imgui_new_frame()
+{
+#if defined(__COOL_APP_VULKAN)
     ImGui_ImplVulkan_NewFrame();
-#endif
-#ifdef __COOL_APP_OPENGL
+#elif defined(__COOL_APP_OPENGL)
     glClearColor(1.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_NewFrame();
@@ -91,7 +101,10 @@ void AppManager::update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     imgui_dockspace();
-    // UI
+}
+
+void AppManager::imgui_render()
+{
     if (_show_ui) {
         // Menu bar
         if (_app.wants_to_show_menu_bar()) {
@@ -102,7 +115,10 @@ void AppManager::update()
         // Windows
         _app.ImGuiWindows();
     }
-    // Render ImGui
+}
+
+void AppManager::end_frame()
+{
     ImGui::Render();
 #ifdef __COOL_APP_VULKAN
     ImDrawData* main_draw_data    = ImGui::GetDrawData();

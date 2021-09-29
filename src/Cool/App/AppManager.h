@@ -22,7 +22,10 @@ public:
 
 private:
     void update();
-
+    void prepare_windows();
+    void imgui_new_frame();
+    void imgui_render();
+    void end_frame();
     void imgui_dockspace();
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
