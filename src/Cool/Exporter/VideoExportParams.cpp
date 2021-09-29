@@ -9,13 +9,13 @@ void VideoExportParams::imgui()
     ImGui::Text("From");
     ImGui::SameLine();
     ImGui::PushID(13540);
-    ImGui::DragFloat("", &_sequence_begin_time_in_sec);
+    ImGui::DragFloat("", &_video_begin_time_in_sec);
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::Text("To");
     ImGui::SameLine();
     ImGui::PushID(14540);
-    ImGui::DragFloat("", &_sequence_end_time_in_sec);
+    ImGui::DragFloat("", &_video_end_time_in_sec);
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::Text("seconds");

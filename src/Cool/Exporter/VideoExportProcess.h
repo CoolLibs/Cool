@@ -10,7 +10,7 @@ namespace Cool {
 
 class VideoExportProcess {
 public:
-    VideoExportProcess(const VideoExportParams& params, std::string_view folder_path_for_image_sequence, ImageSize size);
+    VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, ImageSize size);
     ~VideoExportProcess();
     bool update(Polaroid polaroid);
     void imgui();
@@ -26,7 +26,7 @@ private:
     int                        _total_nb_of_frames_in_sequence;
     int                        _max_nb_digits_of_frame_count;
     Averager<float>            _frame_time_average;
-    std::string                _folder_path_for_image_sequence;
+    std::string                _folder_path;
     bool                       _should_stop_asap = false;
     ImageSize                  _size;
 };

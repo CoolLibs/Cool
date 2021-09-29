@@ -11,7 +11,7 @@ namespace Cool {
 
 Exporter::Exporter()
     : _folder_path_for_image{File::root_dir() + "/out"}
-    , _folder_path_for_image_sequence{File::root_dir() + "/exports"}
+    , _folder_path_for_video{File::root_dir() + "/exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
         find_available_file_name();
@@ -21,7 +21,7 @@ Exporter::Exporter()
 void Exporter::imgui_windows(Polaroid polaroid)
 {
     imgui_window_export_image(polaroid);
-    imgui_window_export_image_sequence();
+    imgui_window_export_video();
 }
 
 std::string Exporter::output_path()
@@ -60,17 +60,15 @@ void Exporter::find_available_file_name()
 void Exporter::imgui_menu_items()
 {
     // Calculate max button width
-    const char* longuest_text = "Image Sequence";
+    const char* longuest_text = "Video";
     float       button_width  = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
     // Draw buttons
-    //ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
     if (ImGui::Button("Image", ImVec2(button_width, 0.0f))) {
         _image_export_window.open();
     }
-    if (ImGui::Button("Image Sequence", ImVec2(button_width, 0.0f))) {
+    if (ImGui::Button("Video", ImVec2(button_width, 0.0f))) {
         _video_export_window.open();
     }
-    //ImGui::PopStyleVar();
 }
 
 void Exporter::imgui_window_export_image(Polaroid polaroid)
@@ -100,13 +98,13 @@ void Exporter::imgui_window_export_image(Polaroid polaroid)
     });
 }
 
-void Exporter::begin_image_sequence_export()
+void Exporter::begin_video_export()
 {
-    if (File::create_folders_if_they_dont_exist(_folder_path_for_image_sequence)) {
-        _video_export_process.emplace(_video_export_params, _folder_path_for_image_sequence, _export_size);
+    if (File::create_folders_if_they_dont_exist(_folder_path_for_video)) {
+        _video_export_process.emplace(_video_export_params, _folder_path_for_video, _export_size);
     }
     else {
-        Log::ToUser::warn("Exporter::begin_image_sequence_export", "Couldn't start exporting because folder creation failed !");
+        Log::ToUser::warn("Exporter::begin_video_export", "Couldn't start exporting because folder creation failed !");
     }
 }
 
@@ -114,17 +112,17 @@ void Exporter::update(Polaroid polaroid)
 {
     if (_video_export_process.has_value()) {
         if (_video_export_process->update(polaroid)) {
-            end_image_sequence_export();
+            end_video_export();
         }
     }
 }
 
-void Exporter::end_image_sequence_export()
+void Exporter::end_video_export()
 {
     _video_export_process.reset();
 }
 
-void Exporter::imgui_window_export_image_sequence()
+void Exporter::imgui_window_export_video()
 {
     if (is_exporting()) {
         ImGui::Begin("Video export in progress");
@@ -134,14 +132,14 @@ void Exporter::imgui_window_export_image_sequence()
     else {
         _video_export_window.show([&]() {
             ImageSizeU::imgui(_export_size);
-            ImGui::InputText("Path", &_folder_path_for_image_sequence);
+            ImGui::InputText("Path", &_folder_path_for_video);
             ImGui::SameLine();
-            ImGuiExtras::open_folder_dialog(&_folder_path_for_image_sequence, _folder_path_for_image_sequence);
+            ImGuiExtras::open_folder_dialog(&_folder_path_for_video, _folder_path_for_video);
             _video_export_params.imgui();
             // Validation
             if (ImGui::Button("Start exporting")) {
                 _video_export_window.close();
-                begin_image_sequence_export();
+                begin_video_export();
             }
         });
     }
