@@ -11,6 +11,11 @@ class Exporter {
 public:
     Exporter();
 
+    bool is_exporting() const { return _video_export_process.has_value(); }
+
+    ImGuiWindow& image_export_window() { return _image_export_window; }
+    ImGuiWindow& video_export_window() { return _video_export_window; }
+
     /**
      * @brief Displays all the currently active windows
      * 
@@ -41,8 +46,6 @@ public:
 	 * 
 	 */
     void end_image_sequence_export();
-
-    bool is_exporting() const { return _video_export_process.has_value(); }
 
 private:
     std::string output_path();
