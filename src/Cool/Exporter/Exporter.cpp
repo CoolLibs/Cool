@@ -14,7 +14,7 @@ Exporter::Exporter()
     , _folder_path_for_video{File::root_dir() + "/exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
-        _file_name = File::find_available_name(output_path());
+        _file_name = File::find_available_name(_folder_path_for_image, _file_name, ".png");
     });
 }
 

@@ -123,31 +123,27 @@ bool File::create_folders_for_file_if_they_dont_exist(std::string_view file_path
     return create_folders_if_they_dont_exist(whithout_file_name(std::string(file_path)));
 }
 
-std::string File::find_available_name(std::string_view file_path)
+std::string File::find_available_name(std::string_view folder_path, std::string_view file_name, std::string_view extension)
 {
-    // Find base_name and k
-    int               k           = 1;
-    const std::string folder_path = File::whithout_file_name(file_path);
-    const std::string file_name   = File::file_name_without_extension(file_path);
-    const std::string extension   = File::extension(file_path);
-    std::string       base_name   = file_name;
-    std::string       out_name    = file_name;
+    // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
+    auto [k, base_name] = [&]() {
+        if (auto pos = file_name.find_last_of("(");
+            pos != std::string::npos) {
+            auto end_pos = file_name.find_last_of(")");
+            try {
+                return std::make_pair(
+                    std::stoi(std::string{file_name.substr(pos + 1, end_pos - pos)}),
+                    std::string{file_name.substr(0, pos)});
+            }
+            catch (std::exception&) {
+            }
+        }
+        return std::make_pair(0, std::string{file_name});
+    }();
 
-    if (size_t pos = file_name.find_last_of("(");
-        pos != std::string::npos) {
-        // Find number in parenthesis
-        base_name      = file_name.substr(0, pos);
-        size_t end_pos = file_name.find_last_of(")");
-        try {
-            k = std::stoi(file_name.substr(pos + 1, end_pos - pos));
-        }
-        catch (std::exception& e) {
-            k         = 1;
-            base_name = file_name;
-        }
-    }
-    // Find available name
-    while (File::exists(folder_path + "/" + out_name + extension)) {
+    // Find an available name
+    auto out_name = std::string{file_name};
+    while (File::exists(std::string{folder_path} + "/" + out_name + std::string{extension})) {
         out_name = base_name + "(" + std::to_string(k) + ")";
         k++;
     }

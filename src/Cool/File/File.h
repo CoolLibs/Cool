@@ -87,10 +87,12 @@ public:
     static bool [[nodiscard]] create_folders_for_file_if_they_dont_exist(std::string_view file_path);
 
     /**
-     * @param file_path The base file name
-     * @return std::string A file name that isn't in use yet ; it will be file_path, eventually postfixed with a number in parenthesis
+     * @param folder_path The folder where you want the file to be created
+     * @param file_name The name you would like to give to the file
+     * @param extension The extension of the file, e.g. ".png"
+     * @return std::string A file name that isn't in use yet ; it will be file_name, eventually postfixed with a number in parenthesis
      */
-    static std::string find_available_name(std::string_view file_path);
+    static std::string find_available_name(std::string_view folder_path, std::string_view file_name, std::string_view extension);
 
 private:
     static std::string _root_dir;
