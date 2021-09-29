@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Cool/App/internal/RectSizePos.h>
+#include "Viewport.h"
 
 namespace Cool {
 
 struct RenderTargetInfo {
-    RectSizePos viewport;
+    Viewport viewport;
 #if defined(__COOL_APP_VULKAN)
     VkRenderPass render_pass;
 #endif

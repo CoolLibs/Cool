@@ -18,11 +18,12 @@ void RenderTarget_ImplOpenGL::render(RenderFuncType render_fn)
 
 RenderTargetInfo RenderTarget_ImplOpenGL::info() const
 {
-    RenderTargetInfo info;
-    info.viewport = RectSizePos{
-        static_cast<int>(width()),
-        static_cast<int>(height())};
-    return info;
+    return RenderTargetInfo{
+        .viewport = {
+            .size = {
+                width(),
+                height()},
+            .bottom_left_corner = {0.f, 0.f}}};
 }
 
 void RenderTarget_ImplOpenGL::resize(ImageSize size)
