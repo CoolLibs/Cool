@@ -1,5 +1,5 @@
 #include "ImageExportJob.h"
-#include <Cool/ExportImage/as_png.h>
+#include <Cool/Image/ExportImage.h>
 
 namespace Cool {
 

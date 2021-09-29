@@ -1,6 +1,6 @@
 #include "CpuImage.h"
-#include <Cool/ExportImage/as_png.h>
 #include <Cool/File/File.h>
+#include <Cool/Image/ExportImage.h>
 
 namespace Cool {
 

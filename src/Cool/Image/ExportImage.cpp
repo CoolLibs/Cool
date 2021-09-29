@@ -1,4 +1,4 @@
-#include "as_png.h"
+#include "ExportImage.h"
 #include <stb_image/stb_image_write.h>
 
 namespace Cool::ExportImage {
