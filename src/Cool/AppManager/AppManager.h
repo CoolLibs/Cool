@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Cool/Core/should_we_use_a_separate_thread_for_update.h>
 #include <Cool/Window/Window.h>
 #include <Cool/Window/internal/WindowManager.h>
 #include "AppManagerConfig.h"
 #include "IApp.h"
+#include "should_we_use_a_separate_thread_for_update.h"
 
 namespace Cool {
 

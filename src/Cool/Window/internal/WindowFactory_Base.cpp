@@ -1,5 +1,5 @@
 #include "WindowFactory_Base.h"
-#include <Cool/Core/should_we_use_a_separate_thread_for_update.h>
+#include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
 #include <Cool/Log/ToUser.h>
 #include <glfw/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
