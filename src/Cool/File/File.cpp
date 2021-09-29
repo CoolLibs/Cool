@@ -22,44 +22,48 @@ std::string File::absolute_path(std::string_view file_path)
     return std::filesystem::absolute(file_path).string();
 }
 
-std::string File::file_name(const std::string& file_path)
+std::string File::file_name(std::string_view file_path)
 {
     auto pos = file_path.find_last_of("/\\") + 1;
-    return file_path.substr(pos, file_path.size() - pos);
+    return std::string{file_path.substr(pos, file_path.size() - pos)};
 }
 
-std::string File::file_name_without_extension(const std::string& file_path)
+std::string File::file_name_without_extension(std::string_view file_path)
 {
     return whithout_extension(file_name(file_path));
 }
 
-std::string File::extension(const std::string& file_path)
+std::string File::extension(std::string_view file_path)
 {
     auto pos = file_path.find_last_of(".");
     if (pos < file_path.size()) {
-        return file_path.substr(pos, file_path.size());
+        return std::string{file_path.substr(pos, file_path.size())};
     }
     else {
         return "";
     }
 }
 
-std::string File::whithout_extension(const std::string& file_path)
+std::string File::whithout_extension(std::string_view file_path)
 {
     auto pos = file_path.find_last_of(".");
     if (pos < file_path.size()) {
-        return file_path.substr(0, pos);
+        return std::string{file_path.substr(0, pos)};
     }
-    return file_path;
+    else {
+        return std::string{file_path};
+    }
 }
 
-std::string File::whithout_file_name(const std::string& file_path)
+std::string File::whithout_file_name(std::string_view file_path)
 {
     if (file_path.find_last_of(".") < file_path.size()) { // There is a "." of an extension, so the thing after the last "/" must be a file name
         auto pos = file_path.find_last_of("/\\");
-        return file_path.substr(0, pos);
+        return std::string{file_path.substr(0, pos)};
     }
-    return file_path;
+    else {
+        return std::string{file_path};
+    }
 }
 
 std::string File::to_string(std::string_view file_path)
@@ -88,7 +92,7 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
             std::filesystem::create_directories(folder_path);
             return true;
         }
-        catch (std::exception e) {
+        catch (std::exception& e) {
             Log::ToUser::warn("File::create_folders_if_they_dont_exist", "Failed :\n{}", e.what());
             return false;
         }
