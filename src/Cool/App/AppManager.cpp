@@ -12,6 +12,12 @@
 
 namespace Cool {
 
+static void prepare_windows(WindowManager& window_manager);
+static void imgui_dockspace();
+static void imgui_new_frame();
+static void imgui_render(IApp& app);
+static void end_frame(WindowManager& window_manager);
+
 AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
     , _app{app}
@@ -67,6 +73,19 @@ void AppManager::run()
 #endif
 }
 
+void AppManager::update()
+{
+    prepare_windows(_window_manager);
+    _app.update();
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+        imgui_new_frame();
+        if (_show_ui) {
+            imgui_render(_app);
+        }
+        end_frame(_window_manager);
+    }
+}
+
 static void prepare_windows(WindowManager& window_manager)
 {
 #if defined(__COOL_APP_VULKAN)
@@ -75,29 +94,9 @@ static void prepare_windows(WindowManager& window_manager)
     }
 #elif defined(__COOL_APP_OPENGL)
     window_manager.main_window().make_current();
+    glClearColor(1.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 #endif
-}
-
-static void imgui_dockspace()
-{
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-        constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-        constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-        ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
-        ImGui::PopStyleVar(3);
-        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-        ImGui::End();
-    }
 }
 
 static void imgui_new_frame()
@@ -105,8 +104,6 @@ static void imgui_new_frame()
 #if defined(__COOL_APP_VULKAN)
     ImGui_ImplVulkan_NewFrame();
 #elif defined(__COOL_APP_OPENGL)
-    glClearColor(1.f, 0.f, 0.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_NewFrame();
 #endif
     ImGui_ImplGlfw_NewFrame();
@@ -129,23 +126,20 @@ static void imgui_render(IApp& app)
 static void end_frame(WindowManager& window_manager)
 {
     ImGui::Render();
-#ifdef __COOL_APP_VULKAN
+#if defined(__COOL_APP_VULKAN)
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-    if (!main_is_minimized)
+    if (!main_is_minimized) {
         window_manager.main_window().FrameRender(main_draw_data);
-
-    // Update and Render additional Platform Windows
+    }
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
-    // Present Main Platform Window
-    if (!main_is_minimized)
+    if (!main_is_minimized) {
         window_manager.main_window().FramePresent();
-
-#endif
-#ifdef __COOL_APP_OPENGL
+    }
+#elif defined(__COOL_APP_OPENGL)
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -160,16 +154,25 @@ static void end_frame(WindowManager& window_manager)
 #endif
 }
 
-void AppManager::update()
+static void imgui_dockspace()
 {
-    prepare_windows(_window_manager);
-    _app.update();
-    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
-        imgui_new_frame();
-        if (_show_ui) {
-            imgui_render(_app);
-        }
-        end_frame(_window_manager);
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+        constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+        ImGui::Begin("MyMainDockSpace", nullptr, window_flags);
+        ImGui::PopStyleVar(3);
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        ImGui::End();
     }
 }
 
