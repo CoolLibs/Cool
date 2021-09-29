@@ -29,13 +29,13 @@ public:
      * @brief All ImGui windows should be created inside this function (it allows the dockspace to work properly)
      * 
      */
-    virtual void ImGuiWindows() = 0;
+    virtual void imgui_windows() = 0;
 
     /**
      * @brief All ImGui menus created inside this function will appear in the main menu bar.
      * 
      */
-    virtual void ImGuiMenus() = 0;
+    virtual void imgui_menus() = 0;
 
     /**
      * @brief This is where you receive and handle keyboard events.

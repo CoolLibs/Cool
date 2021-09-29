@@ -110,11 +110,11 @@ static void imgui_render(IApp& app)
     // Menu bar
     if (app.wants_to_show_menu_bar()) {
         ImGui::BeginMainMenuBar();
-        app.ImGuiMenus();
+        app.imgui_menus();
         ImGui::EndMainMenuBar();
     }
     // Windows
-    app.ImGuiWindows();
+    app.imgui_windows();
 }
 
 static void end_frame(WindowManager& window_manager)
