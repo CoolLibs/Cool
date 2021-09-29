@@ -12,10 +12,10 @@
 
 namespace Cool {
 
-AppManager::AppManager(Window& mainWindow, WindowManager& window_manager, IApp& app, AppManagerConfig config)
-    : _main_window(mainWindow)
+AppManager::AppManager(Window& main_window, WindowManager& window_manager, IApp& app, AppManagerConfig config)
+    : _main_window(main_window)
     , _window_manager{window_manager}
-    , m_app(app)
+    , _app(app)
     , _config{config}
 {
     // Set callbacks
@@ -79,7 +79,7 @@ void AppManager::update()
     _main_window.make_current();
 #endif
     // Actual application code
-    m_app.update();
+    _app.update();
     // Start ImGui frame
 #ifdef __COOL_APP_VULKAN
     ImGui_ImplVulkan_NewFrame();
@@ -91,17 +91,17 @@ void AppManager::update()
 #endif
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-    ImGuiDockspace();
+    imgui_dockspace();
     // UI
-    if (m_bShowUI) {
+    if (_show_ui) {
         // Menu bar
-        if (m_app.wants_to_show_menu_bar()) {
+        if (_app.wants_to_show_menu_bar()) {
             ImGui::BeginMainMenuBar();
-            m_app.ImGuiMenus();
+            _app.ImGuiMenus();
             ImGui::EndMainMenuBar();
         }
         // Windows
-        m_app.ImGuiWindows();
+        _app.ImGuiWindows();
     }
     // Render ImGui
     ImGui::Render();
@@ -156,13 +156,13 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     }
     app_manager._main_window.check_for_fullscreen_toggles(key, scancode, action, mods);
     if (action == GLFW_RELEASE && Input::matches_char("h", key) && (mods & GLFW_MOD_CONTROL)) {
-        app_manager.m_bShowUI = !app_manager.m_bShowUI;
+        app_manager._show_ui = !app_manager._show_ui;
     }
-    if (!ImGui::GetIO().WantTextInput && app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_keyboard_event({.key      = key,
-                                             .scancode = scancode,
-                                             .action   = action,
-                                             .mods     = mods});
+    if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed()) {
+        app_manager._app.on_keyboard_event({.key      = key,
+                                            .scancode = scancode,
+                                            .action   = action,
+                                            .mods     = mods});
     }
 }
 
@@ -186,11 +186,11 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     auto& app_manager = get_app_manager(window);
-    if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_button({.position = mouse_position(window),
-                                           .button   = button,
-                                           .action   = action,
-                                           .mods     = mods});
+    if (app_manager._app.inputs_are_allowed()) {
+        app_manager._app.on_mouse_button({.position = mouse_position(window),
+                                          .button   = button,
+                                          .action   = action,
+                                          .mods     = mods});
     }
 }
 
@@ -198,22 +198,22 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     auto& app_manager = get_app_manager(window);
-    if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_scroll({.position = mouse_position(window),
-                                           .dx       = static_cast<float>(xoffset),
-                                           .dy       = static_cast<float>(yoffset)});
+    if (app_manager._app.inputs_are_allowed()) {
+        app_manager._app.on_mouse_scroll({.position = mouse_position(window),
+                                          .dx       = static_cast<float>(xoffset),
+                                          .dy       = static_cast<float>(yoffset)});
     }
 }
 
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     auto& app_manager = get_app_manager(window);
-    if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
+    if (app_manager._app.inputs_are_allowed()) {
+        app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
     }
 }
 
-void AppManager::ImGuiDockspace()
+void AppManager::imgui_dockspace()
 {
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
         constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;

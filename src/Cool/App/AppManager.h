@@ -23,7 +23,7 @@ public:
 private:
     void update();
 
-    void ImGuiDockspace();
+    void imgui_dockspace();
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -37,8 +37,8 @@ private:
 private:
     Window&          _main_window;
     WindowManager&   _window_manager;
-    IApp&            m_app;
-    bool             m_bShowUI = true;
+    IApp&            _app;
+    bool             _show_ui = true;
     AppManagerConfig _config;
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     std::thread _update_thread;
