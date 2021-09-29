@@ -1,5 +1,4 @@
 #include "AppManager.h"
-#include <Cool/Input/Input.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #if defined(__COOL_APP_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
@@ -76,9 +75,7 @@ void AppManager::update()
     _app.update();
     if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
         imgui_new_frame();
-        if (_show_ui) {
-            imgui_render(_app);
-        }
+        imgui_render(_app);
         end_frame(_window_manager);
     }
 }
@@ -191,9 +188,6 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
     app_manager._window_manager.main_window().check_for_fullscreen_toggles(key, scancode, action, mods);
-    if (action == GLFW_RELEASE && Input::matches_char("h", key) && (mods & GLFW_MOD_CONTROL)) {
-        app_manager._show_ui = !app_manager._show_ui;
-    }
     if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed()) {
         app_manager._app.on_keyboard_event({.key      = key,
                                             .scancode = scancode,

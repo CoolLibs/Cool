@@ -34,7 +34,6 @@ private:
 private:
     WindowManager&   _window_manager;
     IApp&            _app;
-    bool             _show_ui = true;
     AppManagerConfig _config;
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     std::thread _update_thread;
