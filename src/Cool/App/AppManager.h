@@ -7,7 +7,6 @@
 #include "IApp.h"
 
 namespace Cool {
-class Iapp;
 
 /// Wrapper for an App. Handles the main window and the UI layout and docking.
 class AppManager {

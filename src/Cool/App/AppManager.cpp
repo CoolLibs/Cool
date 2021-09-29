@@ -1,14 +1,11 @@
 #include "AppManager.h"
 #include <Cool/Input/Input.h>
 #include <imgui/backends/imgui_impl_glfw.h>
-#include "IApp.h"
-#ifdef __COOL_APP_VULKAN
+#if defined(__COOL_APP_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
-#endif
-#ifdef __COOL_APP_OPENGL
+#elif defined(__COOL_APP_OPENGL)
 #include <imgui/backends/imgui_impl_opengl3.h>
 #endif
-#include <imgui/imgui_internal.h>
 
 namespace Cool {
 
