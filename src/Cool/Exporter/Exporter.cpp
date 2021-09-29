@@ -43,7 +43,7 @@ void Exporter::find_available_file_name()
             try {
                 k = std::stoi(_file_name.substr(pos + 1, end_pos - pos));
             }
-            catch (std::exception e) {
+            catch (std::exception& e) {
                 k         = 1;
                 base_name = _file_name;
             }
@@ -54,7 +54,6 @@ void Exporter::find_available_file_name()
             k++;
         }
     }
-    _should_show_file_exists_warning = false;
 }
 
 void Exporter::imgui_menu_items()
@@ -77,17 +76,13 @@ void Exporter::imgui_window_export_image(Polaroid polaroid)
         // Resolution
         ImageSizeU::imgui(_export_size);
         // File and Folders
-        bool path_has_changed = false;
-        path_has_changed |= ImGui::InputText("File Name", &_file_name);
-        path_has_changed |= ImGui::InputText("Path", &_folder_path_for_image);
+        ImGui::InputText("File Name", &_file_name);
+        ImGui::InputText("Path", &_folder_path_for_image);
         ImGui::SameLine();
-        path_has_changed |= ImGuiExtras::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
-        if (path_has_changed) {
-            _should_show_file_exists_warning = File::exists(output_path());
-        }
+        ImGuiExtras::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
         // Warning file exists
         ImGui::NewLine();
-        if (_should_show_file_exists_warning) {
+        if (File::exists(output_path())) {
             ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it ?");
         }
         // Validation

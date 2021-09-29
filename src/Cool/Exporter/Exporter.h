@@ -11,8 +11,7 @@ class Exporter {
 public:
     Exporter();
 
-    bool is_exporting() const { return _video_export_process.has_value(); }
-
+    bool         is_exporting() const { return _video_export_process.has_value(); }
     ImGuiWindow& image_export_window() { return _image_export_window; }
     ImGuiWindow& video_export_window() { return _video_export_window; }
 
@@ -59,7 +58,6 @@ private:
     std::string _folder_path_for_image;
     std::string _file_name = "img(0)";
     ImGuiWindow _image_export_window{"Export an Image", false};
-    bool        _should_show_file_exists_warning = false;
 
     std::string                       _folder_path_for_video;
     ImGuiWindow                       _video_export_window{"Export a Video", false};
