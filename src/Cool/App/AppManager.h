@@ -5,8 +5,6 @@
 #include "AppManagerConfig.h"
 #include "IApp.h"
 
-struct ImGuiDockNode;
-
 namespace Cool {
 class Iapp;
 
