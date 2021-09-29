@@ -24,13 +24,6 @@ public:
     void imgui_menu_items();
 
     /**
-	 * @brief Opens or closes the window with the image export parameters
-	 * 
-	 * @param open true iff the window should open, and false iff it should close
-	 */
-    void open_window_export_image(bool open = true);
-
-    /**
 	 * @brief Starts the export of the image sequence. You must then call update() on every frame after your rendering code
 	 * 
 	 */

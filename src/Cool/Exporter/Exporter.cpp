@@ -13,6 +13,9 @@ Exporter::Exporter()
     : _folder_path_for_image{File::root_dir() + "/out"}
     , _folder_path_for_image_sequence{File::root_dir() + "/exports"}
 {
+    _image_export_window.on_open().subscribe([&](auto) {
+        find_available_file_name();
+    });
 }
 
 void Exporter::imgui_windows(Polaroid polaroid)
@@ -53,17 +56,6 @@ void Exporter::find_available_file_name()
     }
 }
 
-void Exporter::open_window_export_image(bool open)
-{
-    if (open) {
-        _image_export_window.open();
-        find_available_file_name();
-    }
-    else {
-        _image_export_window.close();
-    }
-}
-
 void Exporter::imgui_menu_items()
 {
     // Calculate max button width
@@ -72,7 +64,7 @@ void Exporter::imgui_menu_items()
     // Draw buttons
     //ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.5f, 0.5f));
     if (ImGui::Button("Image", ImVec2(button_width, 0.0f))) {
-        open_window_export_image(true);
+        _image_export_window.open();
     }
     if (ImGui::Button("Image Sequence", ImVec2(button_width, 0.0f))) {
         _video_export_window.open();
