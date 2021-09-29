@@ -3,8 +3,8 @@
 #include <Cool/MultiThread/ThreadPool.h>
 #include <Cool/Utils/Averager.h>
 #include "VideoExportParams.h"
-#include "internal/ExporterInput.h"
 #include "internal/ImageExportJob.h"
+#include "internal/Polaroid.h"
 
 namespace Cool {
 
@@ -12,11 +12,11 @@ class VideoExportProcess {
 public:
     VideoExportProcess(const VideoExportParams& params, std::string_view folder_path_for_image_sequence, ImageSize size);
     ~VideoExportProcess();
-    bool update(ExporterInput input);
+    bool update(Polaroid polaroid);
     void imgui();
 
 private:
-    void export_frame(ExporterInput in, std::string_view file_path);
+    void export_frame(Polaroid polaroid, std::string_view file_path);
 
 private:
     VideoExportParams          _params;

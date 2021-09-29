@@ -71,7 +71,7 @@ void Exporter::imgui_menu_items()
     //ImGui::PopStyleVar();
 }
 
-void Exporter::imgui_window_export_image(ExporterInput input)
+void Exporter::imgui_window_export_image(Polaroid polaroid)
 {
     if (_is_window_open_image_export) {
         ImGui::Begin("Export an Image", &_is_window_open_image_export);
@@ -94,7 +94,7 @@ void Exporter::imgui_window_export_image(ExporterInput input)
         // Validation
         if (ImGui::Button("Export as PNG")) {
             _is_window_open_image_export = false;
-            ExporterU::export_image(_export_size, input, output_path());
+            ExporterU::export_image(_export_size, polaroid, output_path());
         }
         //
         ImGui::End();
@@ -111,11 +111,11 @@ void Exporter::begin_image_sequence_export()
     }
 }
 
-void Exporter::update(ExporterInput input)
+void Exporter::update(Polaroid polaroid)
 {
     if (_video_export_process.has_value()) {
         _is_window_open_image_sequence_export = true;
-        if (_video_export_process->update(input)) {
+        if (_video_export_process->update(polaroid)) {
             end_image_sequence_export();
         }
     }

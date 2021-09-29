@@ -22,7 +22,7 @@ public:
 	 * @param render The function that renders the desired image
 	 * @param frame_buffer The frame buffer that your render function will render to
 	 */
-    void imgui_window_export_image(ExporterInput input);
+    void imgui_window_export_image(Polaroid polaroid);
 
     /**
 	 * @brief Opens or closes the window with the image export parameters
@@ -42,7 +42,7 @@ public:
 	 * 
 	 * @param frame_buffer The frame buffer that your renderer has just rendered to
 	 */
-    void update(ExporterInput input);
+    void update(Polaroid polaroid);
 
     /**
 	 * @brief Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export

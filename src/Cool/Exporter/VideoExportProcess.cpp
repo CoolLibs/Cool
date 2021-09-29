@@ -6,7 +6,9 @@
 namespace Cool {
 
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::string_view folder_path_for_image_sequence, ImageSize size)
-    : _params{params}, _folder_path_for_image_sequence{folder_path_for_image_sequence}, _size{size}
+    : _params{params}
+    , _folder_path_for_image_sequence{folder_path_for_image_sequence}
+    , _size{size}
 {
     _thread_pool.start();
     _nb_frames_sent_to_thread_pool      = 0;
@@ -25,11 +27,11 @@ VideoExportProcess::~VideoExportProcess()
     Time::set_elapse_mode_as_realtime();
 }
 
-bool VideoExportProcess::update(ExporterInput input)
+bool VideoExportProcess::update(Polaroid polaroid)
 {
     if (!_should_stop_asap && _nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
         if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence) {
-            export_frame(input, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
+            export_frame(polaroid, _folder_path_for_image_sequence + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
             _nb_frames_sent_to_thread_pool++;
         }
         return false;
@@ -51,16 +53,16 @@ void VideoExportProcess::imgui()
     }
 }
 
-void VideoExportProcess::export_frame(ExporterInput in, std::string_view file_path)
+void VideoExportProcess::export_frame(Polaroid polaroid, std::string_view file_path)
 {
     // Render
-    in.render(_size);
+    polaroid.render(_size);
     // Wait for a thread to be available
     _thread_pool.wait_for_available_thread();
     // Write png
     _thread_pool.push_job(ImageExportJob{
         file_path,
-        in.render_target.download_pixels(),
+        polaroid.render_target.download_pixels(),
         &_frame_time_average,
         &_nb_frames_which_finished_exporting});
 }

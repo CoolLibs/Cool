@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/Image/ImageSize.h>
-#include "internal/ExporterInput.h"
+#include "internal/Polaroid.h"
 
 namespace Cool::ExporterU {
 
@@ -8,9 +8,9 @@ namespace Cool::ExporterU {
  * @brief Exports an image as PNG
  * 
  * @param size 
- * @param input 
+ * @param polaroid 
  * @param file_path The name of the file that you want to create
  */
-void export_image(ImageSize size, ExporterInput input, std::string_view file_path);
+void export_image(ImageSize size, Polaroid polaroid, std::string_view file_path);
 
 } // namespace Cool::ExporterU

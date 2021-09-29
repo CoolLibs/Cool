@@ -4,8 +4,10 @@
 
 namespace Cool {
 
-struct ExporterInput {
-    RenderTarget&                      render_target;
+struct Polaroid {
+    // The target that we will render to
+    RenderTarget& render_target;
+    // The function that renders the desired image
     std::function<void(RenderTarget&)> render_fn;
 
     void render(ImageSize size)
