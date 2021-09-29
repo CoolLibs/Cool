@@ -12,7 +12,6 @@ CpuImage::CpuImage(unsigned int width, unsigned int height)
 
 void CpuImage::save_as(const char* filepath)
 {
-    Cool::File::create_folders_for_file_if_they_dont_exist(filepath);
     Cool::ExportImage::as_png(filepath, _width, _height, _pixel_colors.data());
 }
 
