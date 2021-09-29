@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Input/KeyboardEvent.h>
 #include <Cool/Input/MouseButtonEvent.h>
 #include <Cool/Input/MouseMoveEvent.h>
 #include <Cool/Input/MouseScrollEvent.h>
@@ -46,7 +47,7 @@ public:
     /// <param name="action">The action is one of GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE</param>
     /// <param name="mods">Flags indicating whether modifier keys are being pressed at the same time.
     /// For example call (mods &amp; GLFW_MOD_SHIFT) to check if SHIFT is pressed</param>
-    virtual void onKeyboardEvent(int key, int scancode, int action, int mods){};
+    virtual void on_keyboard_event(const KeyboardEvent& event){};
 
     /// <summary>
     /// This is where you receive and handle mouse button events.

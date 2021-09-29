@@ -168,8 +168,11 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     if (action == GLFW_RELEASE && Input::matches_char("h", key) && (mods & GLFW_MOD_CONTROL)) {
         app_manager.m_bShowUI = !app_manager.m_bShowUI;
     }
-    if (app_manager.m_app.inputs_are_allowed()) {
-        app_manager.m_app.onKeyboardEvent(key, scancode, action, mods);
+    if (!ImGui::GetIO().WantTextInput && app_manager.m_app.inputs_are_allowed()) {
+        app_manager.m_app.on_keyboard_event({.key      = key,
+                                             .scancode = scancode,
+                                             .action   = action,
+                                             .mods     = mods});
     }
 }
 
