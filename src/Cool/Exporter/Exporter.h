@@ -50,19 +50,8 @@ public:
 private:
     std::string output_path();
     void        find_available_file_name();
-    /**
-	 * @brief The window with the image sequence export parameters
-	 * 
-	 * @return true iff the export has just started
-	 */
-    bool imgui_window_export_image_sequence();
-    /**
-	 * @brief The window with the image export parameters
-	 * 
-	 * @param render The function that renders the desired image
-	 * @param frame_buffer The frame buffer that your render function will render to
-	 */
-    void imgui_window_export_image(Polaroid polaroid);
+    void        imgui_window_export_image(Polaroid polaroid);
+    void        imgui_window_export_image_sequence();
 
 private:
     ImageSize _export_size{1920, 1080};

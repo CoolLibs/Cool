@@ -124,9 +124,8 @@ void Exporter::end_image_sequence_export()
     _video_export_process.reset();
 }
 
-bool Exporter::imgui_window_export_image_sequence()
+void Exporter::imgui_window_export_image_sequence()
 {
-    bool has_started = false;
     if (is_exporting()) {
         ImGui::Begin("Video export in progress");
         _video_export_process->imgui();
@@ -141,13 +140,11 @@ bool Exporter::imgui_window_export_image_sequence()
             _video_export_params.imgui();
             // Validation
             if (ImGui::Button("Start exporting")) {
-                has_started = true;
                 _video_export_window.close();
                 begin_image_sequence_export();
             }
         });
     }
-    return has_started;
 }
 
 } // namespace Cool
