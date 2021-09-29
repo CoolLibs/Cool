@@ -10,12 +10,6 @@
 #endif
 #include <imgui/imgui_internal.h>
 
-// Hide console in release builds
-// msvc version
-#if defined(_MSC_VER) && !defined(DEBUG)
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
-
 #if defined(__COOL_APP_VULKAN)
 #define COOL_UPDATE_ON_SEPARATE_THREAD
 #endif

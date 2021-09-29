@@ -1,5 +1,7 @@
 #pragma once
 
+#include "hide_console_in_release.h"
+
 #if defined(DEBUG)
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
