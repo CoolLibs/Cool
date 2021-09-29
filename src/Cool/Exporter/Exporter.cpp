@@ -3,7 +3,6 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/String/String.h>
 #include <Cool/Time/Time.h>
 #include "ExporterU.h"
 
