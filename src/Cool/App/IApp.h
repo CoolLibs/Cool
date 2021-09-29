@@ -8,9 +8,6 @@ namespace Cool {
 
 class IApp {
 public:
-    IApp()  = default;
-    ~IApp() = default;
-
     /// <summary>
     /// Update function that will be called repeatedly
     /// </summary>
