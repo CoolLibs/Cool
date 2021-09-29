@@ -54,6 +54,7 @@ void Exporter::find_available_file_name()
             k++;
         }
     }
+    _should_show_file_exists_warning = false;
 }
 
 void Exporter::imgui_menu_items()
