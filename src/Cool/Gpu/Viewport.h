@@ -5,8 +5,8 @@
 namespace Cool {
 
 struct Viewport {
-    ImageSize size;
-    glm::vec2 bottom_left_corner;
+    ImageSize  size;
+    glm::ivec2 bottom_left_corner;
 };
 
 } // namespace Cool

@@ -75,7 +75,7 @@ RenderTargetInfo RenderTarget_ImplVulkan::info() const
     return RenderTargetInfo{
         .viewport = {
             .size               = size(),
-            .bottom_left_corner = {0.f, 0.f}},
+            .bottom_left_corner = {0, 0}},
         .render_pass = *_render_pass};
 }
 

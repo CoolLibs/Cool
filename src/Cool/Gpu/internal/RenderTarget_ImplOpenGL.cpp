@@ -21,7 +21,7 @@ RenderTargetInfo RenderTarget_ImplOpenGL::info() const
     return RenderTargetInfo{
         .viewport = {
             .size               = size(),
-            .bottom_left_corner = {0.f, 0.f}}};
+            .bottom_left_corner = {0, 0}}};
 }
 
 void RenderTarget_ImplOpenGL::resize(ImageSize size)
