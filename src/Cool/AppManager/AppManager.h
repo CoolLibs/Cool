@@ -4,7 +4,6 @@
 #include <Cool/Window/internal/WindowManager.h>
 #include "AppManagerConfig.h"
 #include "IApp.h"
-#include "should_we_use_a_separate_thread_for_update.h"
 
 namespace Cool {
 
@@ -20,7 +19,6 @@ public:
      * @param config Configuration options that control the behaviour of the AppManager
      */
     AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
-    ~AppManager();
 
     /**
      * @brief Runs the app's update loop continuously, until the user closes the main window
@@ -44,9 +42,6 @@ private:
     WindowManager&   _window_manager;
     IApp&            _app;
     AppManagerConfig _config;
-#if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
-    std::thread _update_thread;
-#endif
 };
 
 } // namespace Cool

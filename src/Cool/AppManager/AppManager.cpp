@@ -1,5 +1,6 @@
 #include "AppManager.h"
 #include <imgui/backends/imgui_impl_glfw.h>
+#include "should_we_use_a_separate_thread_for_update.h"
 #if defined(__COOL_APP_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(__COOL_APP_OPENGL)
@@ -40,25 +41,18 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     // clang-format on
 }
 
-AppManager::~AppManager()
-{
-#if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
-    if (_update_thread.joinable()) {
-        _update_thread.join();
-    }
-#endif
-}
-
 void AppManager::run()
 {
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
-    _update_thread = std::thread{[this]() {
+    auto should_stop   = false;
+    auto update_thread = std::jthread{[&]() {
         NFD_Init();
         while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
             update();
         }
+        should_stop = true;
     }};
-    while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+    while (!should_stop) {
         glfwWaitEvents();
     }
 #else
@@ -73,11 +67,9 @@ void AppManager::update()
 {
     prepare_windows(_window_manager);
     _app.update();
-    if (!glfwWindowShouldClose(_window_manager.main_window().glfw())) { // When update is not run on the main thread, if the window is closed during imgui_new_frame() it will freeze. We try to prevent that, even though this solution is probably not 100% bullet proof
-        imgui_new_frame();
-        imgui_render(_app);
-        end_frame(_window_manager);
-    }
+    imgui_new_frame();
+    imgui_render(_app);
+    end_frame(_window_manager);
 }
 
 static void prepare_windows(WindowManager& window_manager)
