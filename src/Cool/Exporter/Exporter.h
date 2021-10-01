@@ -19,7 +19,7 @@ public:
      * @brief Displays all the currently active windows
      * 
      */
-    void imgui_windows(Polaroid polaroid);
+    void imgui_windows(Polaroid polaroid, float time);
 
     /**
 	 * @brief The buttons to open the different export windows
@@ -48,7 +48,7 @@ public:
 
 private:
     std::string output_path();
-    void        imgui_window_export_image(Polaroid polaroid);
+    void        imgui_window_export_image(Polaroid polaroid, float time);
     void        imgui_window_export_video();
 
 private:

@@ -14,7 +14,6 @@
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Log/Log.h>
-#include <Cool/Time/Time.h>
 
 namespace Cool {
 
@@ -46,8 +45,6 @@ inline void initialize()
     std::filesystem::current_path(CMAKE_SOURCE_DIR);
 #endif
     Cool::File::initialize_root_dir(std::filesystem::current_path().string());
-
-    Cool::Time::initialize();
 }
 
 /** 

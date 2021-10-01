@@ -1,7 +1,6 @@
 #include "VideoExportProcess.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/String/String.h>
-#include <Cool/Time/Time.h>
 
 namespace Cool {
 
@@ -9,6 +8,7 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
     : _params{params}
     , _folder_path{folder_path}
     , _size{size}
+    , _clock{_params._fps, _params._video_begin_time_in_sec}
 {
     _thread_pool.start();
     _nb_frames_sent_to_thread_pool      = 0;
@@ -16,15 +16,12 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
     float total_export_duration         = _params._video_end_time_in_sec - _params._video_begin_time_in_sec;
     _total_nb_of_frames_in_sequence     = static_cast<unsigned int>(std::ceil(total_export_duration * _params._fps));
     _max_nb_digits_of_frame_count       = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
-    Time::set_elapse_mode_as_fixed_timestep(_params._fps);
-    Time::set_time(_params._video_begin_time_in_sec);
     _frame_time_average.clear();
 }
 
 VideoExportProcess::~VideoExportProcess()
 {
     _thread_pool.stop();
-    Time::set_elapse_mode_as_realtime();
 }
 
 bool VideoExportProcess::update(Polaroid polaroid)
@@ -56,7 +53,7 @@ void VideoExportProcess::imgui()
 void VideoExportProcess::export_frame(Polaroid polaroid, std::string_view file_path)
 {
     // Render
-    polaroid.render(_size);
+    polaroid.render(_size, _clock.time());
     // Wait for a thread to be available
     _thread_pool.wait_for_available_thread();
     // Write png

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/MultiThread/ThreadPool.h>
+#include <Cool/Time/Clock_FixedTimestep.h>
 #include <Cool/Utils/Averager.h>
 #include "VideoExportParams.h"
 #include "internal/ImageExportJob.h"
@@ -29,6 +30,7 @@ private:
     std::string                _folder_path;
     bool                       _should_stop_asap = false;
     ImageSize                  _size;
+    Clock_FixedTimestep        _clock;
 };
 
 } // namespace Cool

@@ -3,7 +3,6 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/Time/Time.h>
 #include "ExporterU.h"
 
 namespace Cool {
@@ -17,9 +16,9 @@ Exporter::Exporter()
     });
 }
 
-void Exporter::imgui_windows(Polaroid polaroid)
+void Exporter::imgui_windows(Polaroid polaroid, float time)
 {
-    imgui_window_export_image(polaroid);
+    imgui_window_export_image(polaroid, time);
     imgui_window_export_video();
 }
 
@@ -42,7 +41,7 @@ void Exporter::imgui_menu_items()
     }
 }
 
-void Exporter::imgui_window_export_image(Polaroid polaroid)
+void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
 {
     _image_export_window.show([&]() {
         // Resolution
@@ -60,7 +59,7 @@ void Exporter::imgui_window_export_image(Polaroid polaroid)
         // Validation
         if (ImGui::Button("Export as PNG")) {
             _image_export_window.close();
-            ExporterU::export_image(_export_size, polaroid, output_path());
+            ExporterU::export_image(_export_size, time, polaroid, output_path());
         }
     });
 }
