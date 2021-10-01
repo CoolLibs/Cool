@@ -8,13 +8,13 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
     : _params{params}
     , _folder_path{folder_path}
     , _size{size}
-    , _clock{_params._fps, _params._video_begin_time_in_sec}
+    , _clock{_params.fps, _params.beginning}
 {
     _thread_pool.start();
     _nb_frames_sent_to_thread_pool      = 0;
     _nb_frames_which_finished_exporting = 0;
-    float total_export_duration         = _params._video_end_time_in_sec - _params._video_begin_time_in_sec;
-    _total_nb_of_frames_in_sequence     = static_cast<unsigned int>(std::ceil(total_export_duration * _params._fps));
+    float total_export_duration         = _params.end - _params.beginning;
+    _total_nb_of_frames_in_sequence     = static_cast<unsigned int>(std::ceil(total_export_duration * _params.fps));
     _max_nb_digits_of_frame_count       = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
     _frame_time_average.clear();
 }
