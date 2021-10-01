@@ -29,25 +29,13 @@ public:
 	 * 
 	 * @return The number of threads in the pool
 	 */
-    inline size_t size() { return _nb_threads; }
+    auto size() { return _threads.size(); }
 
     /**
 	 * @brief Blocks the calling thread until a thread is available to accept a job. Using this function is not mandatory but makes sure that the queue of jobs waiting for a worker thread doesn't get too big.
 	 * 
 	 */
     void wait_for_available_thread();
-
-    /**
-	 * @brief Starts the pool : creates the threads
-	 * 
-	 */
-    void start();
-
-    /**
-	 * @brief Stops the pool : finishes all jobs and then destroys the threads
-	 * 
-	 */
-    void stop();
 
     /**
 	 * @brief Adds a job to the queue.
@@ -57,17 +45,15 @@ public:
     void push_job(Job&& job);
 
 private:
-    void check_for_jobs();
+    void check_for_jobs(std::stop_token stop_token);
     void wait_for_all_jobs_to_finish();
 
 private:
-    size_t                   _nb_threads;
-    std::vector<std::thread> _threads;
-    std::condition_variable  _condition_to_pop_from_queue;
-    std::condition_variable  _condition_to_check_queue_size_is_small_enough;
-    std::deque<Job>          _jobs_queue;
-    std::mutex               _jobs_queue_mutex;
-    bool                     _running = false;
+    std::vector<std::jthread> _threads;
+    std::condition_variable   _condition_to_pop_from_queue;
+    std::condition_variable   _condition_to_check_queue_size_is_small_enough;
+    std::deque<Job>           _jobs_queue;
+    std::mutex                _jobs_queue_mutex;
 };
 
 } // namespace Cool
