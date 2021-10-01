@@ -50,7 +50,7 @@ private:
 
 private:
     std::vector<std::jthread> _threads;
-    std::condition_variable   _condition_to_pop_from_queue;
+    std::condition_variable   _wake_up_thread;
     std::condition_variable   _condition_to_check_queue_size_is_small_enough;
     std::deque<Job>           _jobs_queue;
     std::mutex                _jobs_queue_mutex;

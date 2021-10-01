@@ -11,11 +11,11 @@ ThreadPool<Job>::ThreadPool()
 template<typename Job>
 ThreadPool<Job>::ThreadPool(size_t nb_threads)
 {
+    Log::info("[ThreadPool::ThreadPool] Using {} threads in the thread pool", nb_threads);
     _threads.reserve(nb_threads);
     for (size_t i = 0; i < nb_threads; ++i) {
         _threads.emplace_back([this](std::stop_token st) { check_for_jobs(st); });
     }
-    Log::info("[ThreadPool::ThreadPool] Using {} threads in the thread pool", nb_threads);
 }
 
 template<typename Job>
@@ -24,8 +24,7 @@ ThreadPool<Job>::~ThreadPool()
     for (auto& thread : _threads) {
         thread.request_stop();
     }
-    // wait_for_all_jobs_to_finish();
-    _condition_to_pop_from_queue.notify_all();
+    _wake_up_thread.notify_all();
 }
 
 template<typename Job>
@@ -42,7 +41,7 @@ void ThreadPool<Job>::push_job(Job&& job)
         std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
         _jobs_queue.push_back(std::move(job));
     }
-    _condition_to_pop_from_queue.notify_one();
+    _wake_up_thread.notify_one();
 }
 
 template<typename Job>
@@ -52,7 +51,7 @@ void ThreadPool<Job>::check_for_jobs(std::stop_token stop_token)
     while (!stop_token.stop_requested()) {
         {
             std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
-            _condition_to_pop_from_queue.wait(lock, [this, stop_token] { return !_jobs_queue.empty() || stop_token.stop_requested(); });
+            _wake_up_thread.wait(lock, [this, stop_token] { return !_jobs_queue.empty() || stop_token.stop_requested(); });
             if (stop_token.stop_requested()) {
                 break;
             }
