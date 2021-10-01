@@ -28,13 +28,6 @@ ThreadPool<Job>::~ThreadPool()
 }
 
 template<typename Job>
-void ThreadPool<Job>::wait_for_available_thread()
-{
-    std::unique_lock<std::mutex> lock(_jobs_queue_mutex);
-    _condition_to_check_queue_size_is_small_enough.wait(lock, [this] { return _jobs_queue.size() < size(); });
-}
-
-template<typename Job>
 void ThreadPool<Job>::push_job(Job&& job)
 {
     {
@@ -59,7 +52,6 @@ void ThreadPool<Job>::check_for_jobs(std::stop_token stop_token)
             _jobs_queue.pop_front();
         }
         job();
-        _condition_to_check_queue_size_is_small_enough.notify_all();
     }
 }
 

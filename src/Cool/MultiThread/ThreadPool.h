@@ -31,11 +31,7 @@ public:
 	 */
     auto size() { return _threads.size(); }
 
-    /**
-	 * @brief Blocks the calling thread until a thread is available to accept a job. Using this function is not mandatory but makes sure that the queue of jobs waiting for a worker thread doesn't get too big.
-	 * 
-	 */
-    void wait_for_available_thread();
+    bool has_available_worker() { return _jobs_queue.size() < size(); }
 
     /**
 	 * @brief Adds a job to the queue.
@@ -51,7 +47,6 @@ private:
 private:
     std::vector<std::jthread> _threads;
     std::condition_variable   _wake_up_thread;
-    std::condition_variable   _condition_to_check_queue_size_is_small_enough;
     std::deque<Job>           _jobs_queue;
     std::mutex                _jobs_queue_mutex;
 };
