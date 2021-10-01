@@ -28,7 +28,7 @@ public:
 
     void clear()
     {
-        _average = 0;
+        _average = T{0};
         _N       = 0;
     }
 
