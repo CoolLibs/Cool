@@ -20,7 +20,6 @@ private:
     void export_frame(Polaroid polaroid, std::string_view file_path);
 
 private:
-    VideoExportParams          _params;
     ThreadPool<ImageExportJob> _thread_pool;
     int                        _nb_frames_sent_to_thread_pool;
     std::atomic<int>           _nb_frames_which_finished_exporting;
