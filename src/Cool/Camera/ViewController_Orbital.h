@@ -24,10 +24,10 @@ public:
     inline void set_state(OrbitalState state) { _state = state; }
 
     // clang-format off
-    inline void on_drag  (Camera& camera, glm::vec2 const& delta) { std::visit([&](auto&& state) { state.on_drag  (*this, camera, delta); }, _state); }
-	inline void on_drag_start  (Camera& camera, int mods)         { std::visit([&](auto&& state) { state.on_drag_start  (*this, camera, mods);  }, _state); }
-	inline void on_drag_stop    (Camera& camera)                  { std::visit([&](auto&& state) { state.on_drag_stop    (*this, camera);        }, _state); }
-	inline void on_wheel_scroll(Camera& camera, float dl)         { std::visit([&](auto&& state) { state.on_wheel_scroll(*this, camera, dl);    }, _state); }
+    inline void on_drag        (Camera& camera, glm::vec2 const& delta) { std::visit([&](auto&& state) { state.on_drag  (*this, camera, delta); }, _state); }
+	inline void on_drag_start  (Camera& camera, int mods)               { std::visit([&](auto&& state) { state.on_drag_start  (*this, camera, mods);  }, _state); }
+	inline void on_drag_stop   (Camera& camera)                         { std::visit([&](auto&& state) { state.on_drag_stop    (*this, camera);        }, _state); }
+	inline void on_wheel_scroll(Camera& camera, float dl)               { std::visit([&](auto&& state) { state.on_wheel_scroll(*this, camera, dl);    }, _state); }
     // clang-format on
 
 private:
