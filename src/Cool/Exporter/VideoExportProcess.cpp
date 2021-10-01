@@ -7,15 +7,11 @@ namespace Cool {
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, ImageSize size)
     : _folder_path{folder_path}
     , _size{size}
+    , _total_nb_of_frames_in_sequence{static_cast<unsigned int>(std::ceil((params.end - params.beginning) * params.fps))}
+    , _max_nb_digits_of_frame_count{static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)))}
     , _clock{params.fps, params.beginning}
 {
     _thread_pool.start();
-    _nb_frames_sent_to_thread_pool      = 0;
-    _nb_frames_which_finished_exporting = 0;
-    float total_export_duration         = params.end - params.beginning;
-    _total_nb_of_frames_in_sequence     = static_cast<unsigned int>(std::ceil(total_export_duration * params.fps));
-    _max_nb_digits_of_frame_count       = static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)));
-    _frame_time_average.clear();
 }
 
 VideoExportProcess::~VideoExportProcess()
