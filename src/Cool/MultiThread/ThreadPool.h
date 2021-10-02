@@ -3,7 +3,7 @@
 namespace Cool {
 
 /**
- * @brief Manages a given number of threads and give them jobs
+ * @brief Manages a given number of threads and gives them jobs
  * 
  */
 template<typename Job>
@@ -41,8 +41,7 @@ public:
     void push_job(Job&& job);
 
 private:
-    void check_for_jobs(std::stop_token stop_token);
-    void wait_for_all_jobs_to_finish();
+    void worker_thread_loop(std::stop_token stop_token);
 
 private:
     std::vector<std::jthread> _threads;
