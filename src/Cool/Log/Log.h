@@ -22,7 +22,7 @@ inline void initialize(std::string_view spdlog_pattern = "%^[%e] %n: %v%$")
 template<typename... Args>
 inline void info(Args&&... args)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     spdlog::info(std::forward<Args>(args)...);
 #endif
 }
@@ -36,7 +36,7 @@ inline void info(Args&&... args)
 template<typename... Args>
 inline void warn(Args&&... args)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     spdlog::warn(std::forward<Args>(args)...);
 #endif
 }
@@ -50,7 +50,7 @@ inline void warn(Args&&... args)
 template<typename... Args>
 inline void error(Args&&... args)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     spdlog::error(std::forward<Args>(args)...);
     assert(false);
 #endif
@@ -65,7 +65,7 @@ inline void error(Args&&... args)
 template<typename... Args>
 inline void error_without_breakpoint(Args&&... args)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     spdlog::error(std::forward<Args>(args)...);
 #endif
 }

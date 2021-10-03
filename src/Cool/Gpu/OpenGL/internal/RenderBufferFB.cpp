@@ -1,4 +1,4 @@
-#ifdef COOL_OPENGL
+#if defined(COOL_OPENGL)
 
 #include "../RenderBufferFB.h"
 

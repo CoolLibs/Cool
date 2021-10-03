@@ -46,7 +46,7 @@ void Texture::DestroyTexture(GLuint texID)
 Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
     : m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     m_bDataUploaded = true;
 #endif
 }
@@ -66,7 +66,7 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     if (m_textureID != -1)
         Log::error("[Texture::genTexture] You have already generated that texture !");
 #endif
@@ -75,7 +75,7 @@ void Texture::genTexture(GLint interpolationMode, GLint wrapMode)
 
 void Texture::uploadRGB(int width, int height, unsigned char* data)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     m_bDataUploaded = true;
     if (m_textureID == -1)
         Log::error("[Texture::uploadRGB] You haven't generated that texture yet !");
@@ -87,7 +87,7 @@ void Texture::uploadRGB(int width, int height, unsigned char* data)
 
 void Texture::uploadRGBA(int width, int height, unsigned char* data)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     m_bDataUploaded = true;
     if (m_textureID == -1)
         Log::error("[Texture::uploadRGBA] You haven't generated that texture yet !");
@@ -99,7 +99,7 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 
 void Texture::attachToSlot(int slot)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     if (m_textureID == -1)
         Log::error("[Texture::attachToSlot] You haven't generated that texture yet !");
     if (!m_bDataUploaded)

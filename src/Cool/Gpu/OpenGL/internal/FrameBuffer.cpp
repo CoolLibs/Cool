@@ -1,4 +1,4 @@
-#ifdef COOL_OPENGL
+#if defined(COOL_OPENGL)
 
 #include "../FrameBuffer.h"
 
@@ -21,7 +21,7 @@ void FrameBuffer::setSize(ImageSize size)
     destroyAttachments();
     createAttachments(size);
     attachAttachments();
-#ifdef DEBUG
+#if defined(DEBUG)
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE) {

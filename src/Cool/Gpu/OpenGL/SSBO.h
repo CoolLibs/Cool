@@ -1,5 +1,5 @@
 #pragma once
-#ifdef COOL_OPENGL
+#if defined(COOL_OPENGL)
 
 namespace Cool {
 

@@ -39,12 +39,12 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version(COOL_OPENGL_VERSION));
-#ifdef DEBUG
+#if defined(DEBUG)
     if (COOL_OPENGL_VERSION >= 430) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     }
 #endif
-#ifdef __APPLE__
+#if defined(__APPLE__)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif

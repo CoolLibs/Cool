@@ -1,12 +1,12 @@
 #pragma once
-#ifdef COOL_OPENGL
+#if defined(COOL_OPENGL)
 
 #include <Cool/File/File.h>
 #include "Shader.h"
 
 namespace Cool {
 
-#ifdef DEBUG
+#if defined(DEBUG)
 #define ASSERT_SHADER_IS_BOUND              \
     GLint id;                               \
     glGetIntegerv(GL_CURRENT_PROGRAM, &id); \

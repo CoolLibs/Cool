@@ -7,21 +7,19 @@
 namespace Cool {
 
 std::string File::_root_dir;
-#ifdef DEBUG
+#if defined(DEBUG)
 bool File::_root_dir_is_initialized = false;
 #endif
 
 const std::string& File::root_dir()
 {
-#ifdef DEBUG
     assert(_root_dir_is_initialized);
-#endif
     return _root_dir;
 }
 
 void File::initialize_root_dir(std::string_view path)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
     assert(!_root_dir_is_initialized);
     _root_dir_is_initialized = true;
 #endif

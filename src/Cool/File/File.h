@@ -98,7 +98,7 @@ public:
 
 private:
     static std::string _root_dir;
-#ifdef DEBUG
+#if defined(DEBUG)
     static bool _root_dir_is_initialized;
 #endif
 };

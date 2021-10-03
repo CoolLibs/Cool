@@ -5,7 +5,7 @@
 
 namespace Cool::OpenGL {
 
-#ifdef DEBUG
+#if defined(DEBUG)
 #define ASSERT_SHADER_IS_BOUND              \
     GLint id;                               \
     glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
@@ -97,7 +97,7 @@ GLuint Shader::CreateShader(const ShaderSource& shader_source)
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
 // Debug
-#ifdef DEBUG
+#if defined(DEBUG)
     int result;
     GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
