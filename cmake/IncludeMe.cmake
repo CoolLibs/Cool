@@ -4,16 +4,6 @@ add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 # Define COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
 add_compile_definitions($<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\">)
 
-# Define Vulkan or OpenGL version
-function(define_if_set DEFINE_NAME DEFINE_VALUE)
-    if (DEFINE_VALUE)
-        add_definitions(-D${DEFINE_NAME}=${DEFINE_VALUE})
-        message("[Cool] Adding #define ${DEFINE_NAME} ${DEFINE_VALUE}")
-    endif()
-endfunction()
-define_if_set(COOL_VULKAN_VERSION "${COOL_USE_VULKAN}")
-define_if_set(COOL_OPENGL_VERSION "${COOL_USE_OPENGL}")
-
 include_directories(
     Cool/src
     Cool/lib
@@ -78,10 +68,12 @@ endif()
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
     add_compile_definitions(__COOL_APP_VULKAN)
+    add_compile_definitions(COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     include("Cool/cmake/vookoo.cmake")
 endif()
 if (COOL_USE_OPENGL)
     add_compile_definitions(__COOL_APP_OPENGL)
+    add_compile_definitions(COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     find_package(OpenGL REQUIRED)
     add_library(GLAD STATIC Cool/lib/glad/src/glad.c)
     include_directories(
