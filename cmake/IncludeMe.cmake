@@ -1,12 +1,8 @@
-
 # Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
-# if (CONFIG:Debug)
-add_definitions(
-    -DCMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"
-)
-# endif()
+# Define COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
+add_compile_definitions($<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\">)
 
 # Define Vulkan or OpenGL version
 function(define_if_set DEFINE_NAME DEFINE_VALUE)

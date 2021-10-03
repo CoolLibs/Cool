@@ -42,7 +42,7 @@ inline void initialize()
     // Also, if you modify an asset at the root whithout modifying some code, and then restart the program
     // the asset won't be copied (because I couldn't figure out how to configure CMake to do so)
     // So it is better to always work with the assets at the root while in development.
-    std::filesystem::current_path(CMAKE_SOURCE_DIR);
+    std::filesystem::current_path(COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR);
 #endif
     Cool::File::initialize_root_dir(std::filesystem::current_path().string());
 }
