@@ -2,15 +2,23 @@
 # Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
-# Add some #define
-set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS
-    # Define CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
-    $<$<CONFIG:Debug>:"CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"">
-    # Define COOL_OPENGL_VERSION ; this is used to initialize WindowFactory_OpenGL
-    "COOL_OPENGL_VERSION=${COOL_USE_OPENGL}"
-    # Define COOL_VULKAN_VERSION ; this is used to initialize VulkanContext
-    "COOL_VULKAN_VERSION=${COOL_USE_VULKAN}"
+# if (CONFIG:Debug)
+add_definitions(
+    -DCMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"
 )
+# endif()
+
+# Define Vulkan or OpenGL version
+function(define_if_set DEFINE_NAME DEFINE_VALUE)
+    if (DEFINE_VALUE)
+        add_definitions(
+            -D${DEFINE_NAME}=${DEFINE_VALUE}
+        )
+        message("[Cool] Adding #define ${DEFINE_NAME} ${DEFINE_VALUE}")
+    endif()
+endfunction()
+define_if_set(COOL_VULKAN_VERSION "${COOL_USE_VULKAN}")
+define_if_set(COOL_OPENGL_VERSION "${COOL_USE_OPENGL}")
 
 include_directories(
     Cool/src
