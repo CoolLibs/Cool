@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__COOL_APP_VULKAN)
 
 #include "WindowCreationParams.h"
 #include "WindowManager.h"
@@ -20,3 +21,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif
