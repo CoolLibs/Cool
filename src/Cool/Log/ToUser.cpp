@@ -58,7 +58,7 @@ void ToUser::imgui_console_window()
             //
             ImGui::TextColored(color, "[%s] [%s]", min_sec.str().c_str(), message.category.c_str());
             ImGui::SameLine();
-            ImGui::Text(message.body.c_str());
+            ImGui::Text("%s", message.body.c_str());
         }
         if (_scroll_to_bottom) {
             ImGui::SetScrollHereY(1.f);

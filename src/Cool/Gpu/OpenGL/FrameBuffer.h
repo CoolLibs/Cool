@@ -40,7 +40,7 @@ public:
     inline ImageSize::DataType width() const { return m_size.width(); }
     inline ImageSize::DataType height() const { return m_size.height(); }
     inline ImageSize           size() const { return m_size; }
-    inline float               aspectRatio() const { ImageSizeU::aspect_ratio(m_size); }
+    inline float               aspectRatio() const { return ImageSizeU::aspect_ratio(m_size); }
 
 protected:
     virtual void destroyAttachments();

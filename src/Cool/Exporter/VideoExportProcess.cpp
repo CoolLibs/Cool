@@ -31,7 +31,7 @@ bool VideoExportProcess::update(Polaroid polaroid)
 void VideoExportProcess::imgui()
 {
     int frame_count = _nb_frames_which_finished_exporting.load();
-    ImGui::Text(("Exported " + String::to_string(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
+    ImGui::Text("%s", ("Exported " + String::to_string(frame_count, _max_nb_digits_of_frame_count) + " / " + std::to_string(_total_nb_of_frames_in_sequence) + " frames").c_str());
     ImGuiExtras::time_formated_hms((_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / _thread_pool.size());
     ImGui::SameLine();
     ImGui::Text("remaining");

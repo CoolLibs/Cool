@@ -17,7 +17,7 @@ template<typename T>
 void from_json(T& data, std::string_view file_path)
 {
     if (File::exists(file_path)) {
-        std::ifstream is(file_path);
+        std::ifstream is(file_path.data());
         try {
             cereal::JSONInputArchive archive(is);
             archive(
@@ -43,12 +43,13 @@ void from_json(T& data, std::string_view file_path)
 template<typename T>
 void to_json(const T& data, std::string_view file_path, std::string_view field_name = "value0")
 {
-    File::create_folders_for_file_if_they_dont_exist(file_path);
-    std::ofstream os(file_path);
-    {
-        cereal::JSONOutputArchive archive(os);
-        archive(
-            cereal::make_nvp(field_name.data(), data));
+    if (File::create_folders_for_file_if_they_dont_exist(file_path)) {
+        std::ofstream os(file_path.data());
+        {
+            cereal::JSONOutputArchive archive(os);
+            archive(
+                cereal::make_nvp(field_name.data(), data));
+        }
     }
 }
 

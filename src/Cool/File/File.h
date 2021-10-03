@@ -77,14 +77,16 @@ public:
      * 
      * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
      */
-    static bool [[nodiscard]] create_folders_if_they_dont_exist(std::string_view folder_path);
+    [[nodiscard("You can only use the folders if this function returns true")]] static bool
+        create_folders_if_they_dont_exist(std::string_view folder_path);
 
     /**
      * @brief Recursively creates all the folders so that at the end file_path is a valid file path
      * 
      * @return true iff the folders now exist (be it because they already existed or because they have been successfully created)
      */
-    static bool [[nodiscard]] create_folders_for_file_if_they_dont_exist(std::string_view file_path);
+    [[nodiscard("You can only use the file if this function returns true")]] static bool
+        create_folders_for_file_if_they_dont_exist(std::string_view file_path);
 
     /**
      * @param folder_path The folder where you want the file to be created

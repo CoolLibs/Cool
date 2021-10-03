@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ParametersHistory.h"
 
 namespace Cool {

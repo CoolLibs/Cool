@@ -96,7 +96,7 @@ void tooltip(const char* text)
 {
     if (ImGui::IsItemHovered()) {
         ImGui::BeginTooltip();
-        ImGui::Text(text);
+        ImGui::Text("%s", text);
         ImGui::EndTooltip();
     }
 }
@@ -159,7 +159,7 @@ bool input_uint(const char* label, unsigned int* value_p)
 
 void warning_text(const char* text)
 {
-    ImGui::TextColored(Cool::Constants::imvec4_red, text);
+    ImGui::TextColored(Cool::Constants::imvec4_red, "%s", text);
 }
 
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
@@ -243,7 +243,7 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
         }
     }
     else {
-        ImGui::Text(label);
+        ImGui::Text("%s", label);
     }
     return checkbox_was_used;
 }

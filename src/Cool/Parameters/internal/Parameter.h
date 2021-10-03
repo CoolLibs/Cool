@@ -42,8 +42,7 @@ public:
 #endif
 
 protected:
-    virtual bool imgui_widget() = 0;
-    void         push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change)
+    void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change)
     {
         if (ImGui::IsItemDeactivatedAfterEdit()) {
             push_change_in_history(on_edit_ended, on_value_change);

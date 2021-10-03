@@ -33,7 +33,7 @@ void ImageSizeConstraint::imgui()
 {
     // Aspect Ratio
     ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {
-        _aspect_ratio.ImGuiPicker(168492224155754);
+        _aspect_ratio.ImGuiPicker(15754);
     });
     // Nb Pixels
     ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {

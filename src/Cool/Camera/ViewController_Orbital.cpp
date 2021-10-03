@@ -10,8 +10,7 @@ ViewController_Orbital::ViewController_Orbital(ViewController_Orbital::Mode mode
 
 bool ViewController_Orbital::ImGui()
 {
-    bool b                  = false;
-    int  current_combo_item = [&]() {
+    int current_combo_item = [&]() {
         switch (_mode) {
         case ViewController_Orbital::Mode::Turntable:
             return 0;
@@ -24,7 +23,7 @@ bool ViewController_Orbital::ImGui()
             return 0;
         }
     }();
-    if (b = ImGui::Combo("Orbit Mode", &current_combo_item, " Turntable\0 Trackball\0 AxisFree\0\0")) {
+    if (ImGui::Combo("Orbit Mode", &current_combo_item, " Turntable\0 Trackball\0 AxisFree\0\0")) {
         switch (current_combo_item) {
         case 0:
             _mode = ViewController_Orbital::Mode::Turntable;
@@ -36,8 +35,11 @@ bool ViewController_Orbital::ImGui()
             _mode = ViewController_Orbital::Mode::AxisFree;
             break;
         }
+        return true;
     }
-    return b;
+    else {
+        return false;
+    }
 }
 
 void ViewController_Orbital::set_orbit_center(glm::vec3 const& orbit_center, Camera& camera)
