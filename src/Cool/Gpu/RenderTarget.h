@@ -2,7 +2,7 @@
 
 #include "internal/RenderTarget_Base.h"
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 #include "internal/RenderTarget_ImplOpenGL.h"
 namespace Cool {
 using RenderTarget = RenderTarget_Base<RenderTarget_ImplOpenGL>;

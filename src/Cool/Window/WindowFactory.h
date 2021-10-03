@@ -2,7 +2,7 @@
 
 #include "internal/WindowFactory_Base.h"
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 #include "internal/WindowFactory_OpenGL.h"
 namespace Cool {
 using WindowFactory = WindowFactory_Base<WindowFactory_OpenGL>;

@@ -34,7 +34,7 @@ public:
 
     inline const std::string& name() const override { return _name; }
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
     inline void set_uniform_in_shader(OpenGL::Shader& shader) override
     {
         shader.set_uniform(name(), _value);

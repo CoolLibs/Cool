@@ -1,19 +1,19 @@
 #pragma once
-#ifdef __COOL_APP_OPENGL
+#ifdef COOL_OPENGL
 
-    #include <Cool/File/File.h>
-    #include "Shader.h"
+#include <Cool/File/File.h>
+#include "Shader.h"
 
 namespace Cool {
 
-    #ifdef DEBUG
-        #define ASSERT_SHADER_IS_BOUND              \
-            GLint id;                               \
-            glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
-            assert(id == _shader._program_id && "You must call compute_shader->bind() before calling compute()");
-    #else
-        #define ASSERT_SHADER_IS_BOUND
-    #endif
+#ifdef DEBUG
+#define ASSERT_SHADER_IS_BOUND              \
+    GLint id;                               \
+    glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
+    assert(id == _shader._program_id && "You must call compute_shader->bind() before calling compute()");
+#else
+#define ASSERT_SHADER_IS_BOUND
+#endif
 
 /// <summary>
 /// A wrapper for an OpenGL compute shader.

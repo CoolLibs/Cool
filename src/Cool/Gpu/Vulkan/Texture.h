@@ -38,7 +38,7 @@ public:
         {
             return reinterpret_cast<ImTextureID>(id);
         }
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
         GLuint id;
 #elif defined(__COOL_APP_VULKAN)
         VkImage id;

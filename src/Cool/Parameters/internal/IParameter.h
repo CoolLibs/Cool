@@ -16,7 +16,7 @@ public:
     virtual const std::string& name() const = 0;
     virtual bool               imgui(
                       Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
     virtual void set_uniform_in_shader(OpenGL::Shader& shader) = 0;
 #endif
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 #include "OpenGL/Texture.h"
 namespace Cool {
 using Texture = OpenGL::Texture;

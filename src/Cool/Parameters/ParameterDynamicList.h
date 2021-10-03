@@ -17,7 +17,7 @@ public:
        */
     void imgui(std::function<void()> on_value_change = []() {});
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
     /**
        * @brief Sets all the uniforms for all the parameters
        * 

@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 #include "OpenGL/FullscreenPipeline.h"
 namespace Cool {
 using FullscreenPipeline = OpenGL::FullscreenPipeline;

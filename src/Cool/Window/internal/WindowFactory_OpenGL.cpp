@@ -1,4 +1,4 @@
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 
 #include "WindowFactory_OpenGL.h"
 #include <Cool/Utils/Version.h>

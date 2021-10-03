@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
 
 #include "Shader.h"
 

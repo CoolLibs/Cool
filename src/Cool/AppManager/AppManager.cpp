@@ -3,7 +3,7 @@
 #include "should_we_use_a_separate_thread_for_update.h"
 #if defined(__COOL_APP_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
-#elif defined(__COOL_APP_OPENGL)
+#elif defined(COOL_OPENGL)
 #include <imgui/backends/imgui_impl_opengl3.h>
 #endif
 
@@ -78,7 +78,7 @@ static void prepare_windows(WindowManager& window_manager)
     for (auto& window : window_manager.windows()) {
         window.check_for_swapchain_rebuild();
     }
-#elif defined(__COOL_APP_OPENGL)
+#elif defined(COOL_OPENGL)
     window_manager.main_window().make_current();
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -89,7 +89,7 @@ static void imgui_new_frame()
 {
 #if defined(__COOL_APP_VULKAN)
     ImGui_ImplVulkan_NewFrame();
-#elif defined(__COOL_APP_OPENGL)
+#elif defined(COOL_OPENGL)
     ImGui_ImplOpenGL3_NewFrame();
 #endif
     ImGui_ImplGlfw_NewFrame();
@@ -125,7 +125,7 @@ static void end_frame(WindowManager& window_manager)
     if (!main_is_minimized) {
         window_manager.main_window().FramePresent();
     }
-#elif defined(__COOL_APP_OPENGL)
+#elif defined(COOL_OPENGL)
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

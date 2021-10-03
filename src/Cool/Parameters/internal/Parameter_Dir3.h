@@ -45,7 +45,7 @@ public:
         return _angles.imgui(on_edit_ended, on_value_change);
     }
 
-#if defined(__COOL_APP_OPENGL)
+#if defined(COOL_OPENGL)
     void set_uniform_in_shader(OpenGL::Shader& shader) override
     {
         shader.set_uniform(name(), operator*());

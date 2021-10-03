@@ -1,5 +1,5 @@
 #pragma once
-#ifdef __COOL_APP_OPENGL
+#ifdef COOL_OPENGL
 
 #include "FrameBuffer.h"
 

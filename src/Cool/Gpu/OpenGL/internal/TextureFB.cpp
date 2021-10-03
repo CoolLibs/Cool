@@ -1,4 +1,4 @@
-#ifdef __COOL_APP_OPENGL
+#ifdef COOL_OPENGL
 #include "../TextureFB.h"
 
 namespace Cool {
