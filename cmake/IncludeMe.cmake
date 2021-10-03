@@ -7,9 +7,7 @@ add_compile_definitions($<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${
 # Define Vulkan or OpenGL version
 function(define_if_set DEFINE_NAME DEFINE_VALUE)
     if (DEFINE_VALUE)
-        add_definitions(
-            -D${DEFINE_NAME}=${DEFINE_VALUE}
-        )
+        add_definitions(-D${DEFINE_NAME}=${DEFINE_VALUE})
         message("[Cool] Adding #define ${DEFINE_NAME} ${DEFINE_VALUE}")
     endif()
 endfunction()
