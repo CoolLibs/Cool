@@ -17,7 +17,7 @@ void as_png(std::string_view file_path, int width, int height, void const* data,
         stbi_write_png(file_path.data(), width, height, 4, data, 0);
     }
     else {
-        Log::ToUser::warn("ExportImage::as_png", "Failed to create folder \"{}\"", File::whithout_file_name(file_path));
+        Log::ToUser::warn("ExportImage::as_png", "Couldn't export because folder creation failed !");
     }
 }
 
