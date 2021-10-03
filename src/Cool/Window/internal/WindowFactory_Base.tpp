@@ -1,17 +1,8 @@
-#include "WindowFactory_Base.h"
 #include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
 #include <Cool/Log/ToUser.h>
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
-
-#if defined(__COOL_APP_VULKAN)
-#include "WindowFactory_Vulkan.h"
-template class Cool::WindowFactory_Base<Cool::WindowFactory_Vulkan>;
-#elif defined(__COOL_APP_OPENGL)
-#include "WindowFactory_OpenGL.h"
-template class Cool::WindowFactory_Base<Cool::WindowFactory_OpenGL>;
-#endif
 
 namespace Cool {
 

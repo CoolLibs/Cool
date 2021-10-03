@@ -50,3 +50,5 @@ private:
 };
 
 } // namespace Cool
+
+#include "WindowFactory_Base.tpp"

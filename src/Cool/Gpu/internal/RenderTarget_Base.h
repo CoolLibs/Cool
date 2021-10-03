@@ -26,3 +26,5 @@ private:
 };
 
 } // namespace Cool
+
+#include "RenderTarget_Base.tpp"
