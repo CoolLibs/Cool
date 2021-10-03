@@ -6,7 +6,7 @@ namespace Cool {
 using FullscreenPipeline = OpenGL::FullscreenPipeline;
 }
 
-#elif defined(__COOL_APP_VULKAN)
+#elif defined(COOL_VULKAN)
 #include "Vulkan/FullscreenPipeline.h"
 namespace Cool {
 using FullscreenPipeline = Vulkan::FullscreenPipeline;

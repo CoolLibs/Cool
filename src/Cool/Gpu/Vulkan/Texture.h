@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 
 #include <Cool/Image/ImageData.h>
 
@@ -40,7 +40,7 @@ public:
         }
 #if defined(COOL_OPENGL)
         GLuint id;
-#elif defined(__COOL_APP_VULKAN)
+#elif defined(COOL_VULKAN)
         VkImage id;
 #endif
     };

@@ -8,7 +8,7 @@ namespace Cool {
 using WindowFactory = WindowFactory_Base<WindowFactory_OpenGL>;
 } // namespace Cool
 
-#elif defined(__COOL_APP_VULKAN)
+#elif defined(COOL_VULKAN)
 #include "internal/WindowFactory_Vulkan.h"
 namespace Cool {
 using WindowFactory = WindowFactory_Base<WindowFactory_Vulkan>;

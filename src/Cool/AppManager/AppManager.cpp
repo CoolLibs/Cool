@@ -1,7 +1,7 @@
 #include "AppManager.h"
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "should_we_use_a_separate_thread_for_update.h"
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(COOL_OPENGL)
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -74,7 +74,7 @@ void AppManager::update()
 
 static void prepare_windows(WindowManager& window_manager)
 {
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
     for (auto& window : window_manager.windows()) {
         window.check_for_swapchain_rebuild();
     }
@@ -87,7 +87,7 @@ static void prepare_windows(WindowManager& window_manager)
 
 static void imgui_new_frame()
 {
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
     ImGui_ImplVulkan_NewFrame();
 #elif defined(COOL_OPENGL)
     ImGui_ImplOpenGL3_NewFrame();
@@ -112,7 +112,7 @@ static void imgui_render(IApp& app)
 static void end_frame(WindowManager& window_manager)
 {
     ImGui::Render();
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
     if (!main_is_minimized) {

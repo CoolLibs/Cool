@@ -1,4 +1,4 @@
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 
 #include "../../Texture.h"
 #include <imgui/backends/imgui_impl_vulkan.h>

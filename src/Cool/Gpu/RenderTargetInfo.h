@@ -6,7 +6,7 @@ namespace Cool {
 
 struct RenderTargetInfo {
     Viewport viewport;
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
     VkRenderPass render_pass;
 #endif
 };

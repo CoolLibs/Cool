@@ -1,4 +1,4 @@
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 
 #include "../Context.h"
 #include <Cool/Utils/Version.h>

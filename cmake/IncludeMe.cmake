@@ -68,7 +68,7 @@ endif()
 
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
-    add_compile_definitions(__COOL_APP_VULKAN)
+    add_compile_definitions(COOL_VULKAN)
     add_compile_definitions(COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     include("Cool/cmake/vookoo.cmake")
 endif()

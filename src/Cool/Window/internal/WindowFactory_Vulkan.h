@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 
 #include "WindowCreationParams.h"
 #include "WindowManager.h"

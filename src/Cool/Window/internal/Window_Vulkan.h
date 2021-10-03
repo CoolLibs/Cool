@@ -1,5 +1,5 @@
 #pragma once
-#if defined(__COOL_APP_VULKAN)
+#if defined(COOL_VULKAN)
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
