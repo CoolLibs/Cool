@@ -34,7 +34,7 @@ void Camera::rotate(float angle, glm::vec3 const& axis)
     _transform_matrix = glm::rotate(glm::mat4{1.f}, angle, axis) * _transform_matrix;
 }
 
-Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size)
+Ray Camera::ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size) const
 {
     glm::vec3 pos       = position();
     glm::vec3 pixel_pos = glm::unProject(glm::vec3(position_in_pixels, 0.0f), view_matrix(), projection_matrix(), glm::vec4(0.0f, 0.0f, image_size.width(), image_size.height()));

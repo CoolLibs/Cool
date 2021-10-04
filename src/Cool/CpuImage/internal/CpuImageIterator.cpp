@@ -8,7 +8,7 @@ CpuImageIterator::CpuImageIterator(CpuImage& image, unsigned int x, unsigned int
 {
 }
 
-Pixel CpuImageIterator::operator*()
+Pixel CpuImageIterator::operator*() const
 {
     return Pixel(_image, _x, _y);
 }
@@ -22,7 +22,7 @@ void CpuImageIterator::operator++()
     }
 }
 
-bool CpuImageIterator::operator!=(CpuImageIterator& it)
+bool CpuImageIterator::operator!=(CpuImageIterator& it) const
 {
     return _x != it._x || _y != it._y;
 }

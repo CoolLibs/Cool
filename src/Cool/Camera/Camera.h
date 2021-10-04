@@ -44,7 +44,7 @@ public:
 	 * @param position_in_pixels 
 	 * @return 
 	 */
-    Ray ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size);
+    Ray ray_passing_through_pixel(const glm::vec2& position_in_pixels, ImageSize image_size) const;
 
 private:
     glm::mat4 _transform_matrix  = glm::mat4{1.f};

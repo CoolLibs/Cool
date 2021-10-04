@@ -37,7 +37,7 @@ void TextureFB::attachAttachments()
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void TextureFB::attachTextureToSlot(unsigned int slot)
+void TextureFB::attachTextureToSlot(unsigned int slot) const
 {
     GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_colorTextureId));

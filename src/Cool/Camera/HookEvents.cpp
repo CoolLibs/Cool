@@ -24,7 +24,7 @@ void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher, ViewControll
     dispatcher
         .drag()
         .stop()
-        .subscribe([&](const auto& event) {
+        .subscribe([&](const auto&) {
             controller.on_drag_stop(camera);
         });
 }

@@ -10,7 +10,7 @@ void as_png(std::string_view file_path, const ImageData& image, bool flip_vertic
     as_png(file_path, image.size.width(), image.size.height(), image.data.get(), flip_vertically);
 }
 
-void as_png(std::string_view file_path, int width, int height, void const* data, bool flip_vertically)
+void as_png(std::string_view file_path, ImageSize::DataType width, ImageSize::DataType height, void const* data, bool flip_vertically)
 {
     if (File::create_folders_for_file_if_they_dont_exist(file_path)) {
         stbi_flip_vertically_on_write(flip_vertically ? 1 : 0);

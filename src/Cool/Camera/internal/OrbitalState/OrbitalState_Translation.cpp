@@ -11,7 +11,7 @@ void OrbitalState_Translation::on_drag(ViewController_Orbital& controller, Camer
                                                       -delta.y * camera.up_axis()));
 }
 
-void OrbitalState_Translation::on_drag_stop(ViewController_Orbital& controller, Camera& camera)
+void OrbitalState_Translation::on_drag_stop(ViewController_Orbital& controller, Camera&)
 {
     controller.set_state(OrbitalState_Idle{});
 }

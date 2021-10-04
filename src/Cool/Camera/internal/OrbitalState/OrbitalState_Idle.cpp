@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, int mods)
+void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera&, int mods)
 {
     if (mods & GLFW_MOD_SHIFT) {
         controller.set_state(OrbitalState_Translation{});
@@ -21,7 +21,7 @@ void OrbitalState_Idle::on_wheel_scroll(ViewController_Orbital& controller, Came
 {
     // Update controller's distance to look at
     const float previous_distance = controller._distance_to_orbit_center;
-    controller._distance_to_orbit_center *= pow(0.93f, dl);
+    controller._distance_to_orbit_center *= std::pow(0.93f, dl);
     // Update camera
     const float delta = previous_distance - controller._distance_to_orbit_center;
     camera.translate(camera.front_axis() * delta);

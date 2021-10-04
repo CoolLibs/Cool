@@ -10,7 +10,7 @@ public:
     TextureFB() = default;
     ~TextureFB();
 
-    void   attachTextureToSlot(unsigned int slot);
+    void   attachTextureToSlot(unsigned int slot) const;
     GLuint textureID() const { return m_colorTextureId; }
 
 private:

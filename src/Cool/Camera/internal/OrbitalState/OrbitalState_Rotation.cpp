@@ -31,7 +31,7 @@ void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
     camera.translate(+orbit_center);
 }
 
-void OrbitalState_Rotation::on_drag_stop(ViewController_Orbital& controller, Camera& camera)
+void OrbitalState_Rotation::on_drag_stop(ViewController_Orbital& controller, Camera&)
 {
     controller.set_state(OrbitalState_Idle{});
 }

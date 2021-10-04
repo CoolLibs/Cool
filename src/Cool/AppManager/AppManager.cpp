@@ -23,7 +23,7 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     // Set callbacks
     for (auto& window : _window_manager.windows()) {
         GLFWwindow* glfw_window = window.glfw();
-        glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this));
+        glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this)); // NOLINT
         if (glfw_window != _window_manager.main_window().glfw()) {
             glfwSetKeyCallback(glfw_window, AppManager::key_callback_for_secondary_windows);
             glfwSetWindowCloseCallback(glfw_window, AppManager::window_close_callback_for_secondary_windows);
@@ -141,7 +141,7 @@ static void end_frame(WindowManager& window_manager)
 
 static void imgui_dockspace()
 {
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) { // NOLINT
         constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
         constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
@@ -163,14 +163,14 @@ static void imgui_dockspace()
 
 static WindowCoordinates mouse_position(GLFWwindow* window)
 {
-    double x, y;
+    double x, y; // NOLINT
     glfwGetCursorPos(window, &x, &y);
     return WindowCoordinates{x, y};
 }
 
 static AppManager& get_app_manager(GLFWwindow* window)
 {
-    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window));
+    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

@@ -10,9 +10,9 @@ class CpuImageIterator {
 public:
     CpuImageIterator(CpuImage& image, unsigned int x, unsigned int y);
 
-    Pixel operator*();
+    Pixel operator*() const;
     void  operator++();
-    bool  operator!=(CpuImageIterator& it);
+    bool  operator!=(CpuImageIterator& it) const;
 
 private:
     CpuImage&    _image;
