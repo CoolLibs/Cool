@@ -1,4 +1,5 @@
 #pragma once
+#include "ModifierKeys.h"
 #include "MouseCoordinates.h"
 
 namespace Cool {
@@ -11,9 +12,8 @@ struct MouseButtonEvent {
     int button;
     // Can be GLFW_PRESS or GLFW_RELEASE
     int action;
-    // Flags indicating whether modifier keys are being pressed.
-    // For example call (mods & GLFW_MOD_SHIFT) to check if SHIFT is pressed.
-    int mods;
+    // Modifier keys that where pressed when the even occured.
+    ModifierKeys mods;
 };
 
 } // namespace Cool

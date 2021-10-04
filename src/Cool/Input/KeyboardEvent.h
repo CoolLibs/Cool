@@ -1,4 +1,5 @@
 #pragma once
+#include "ModifierKeys.h"
 
 namespace Cool {
 
@@ -13,9 +14,8 @@ struct KeyboardEvent {
     int scancode;
     // The action is one of GLFW_PRESS, GLFW_REPEAT or GLFW_RELEASE.
     int action;
-    // Flags indicating whether modifier keys are being pressed.
-    // For example call (mods & GLFW_MOD_SHIFT) to check if SHIFT is pressed.
-    int mods;
+    // Modifier keys that where pressed when the even occured.
+    ModifierKeys mods;
 };
 
 } // namespace Cool

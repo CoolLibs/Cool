@@ -1,12 +1,13 @@
 #pragma once
+#include "ModifierKeys.h"
 #include "MouseCoordinates.h"
 
 namespace Cool {
 
 template<MouseCoordinates Coords>
 struct MouseDragStartEvent {
-    Coords position;
-    int    mods;
+    Coords       position;
+    ModifierKeys mods;
 };
 
 } // namespace Cool

@@ -1,5 +1,4 @@
 #include "OrbitalState_Idle.h"
-#include <GLFW/glfw3.h>
 #include "../../Camera.h"
 #include "../../ViewController_Orbital.h"
 #include "OrbitalState_Rotation.h"
@@ -7,9 +6,9 @@
 
 namespace Cool {
 
-void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera&, int mods)
+void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera&, ModifierKeys mods)
 {
-    if (mods & GLFW_MOD_SHIFT) {
+    if (mods.shift()) {
         controller.set_state(OrbitalState_Translation{});
     }
     else {

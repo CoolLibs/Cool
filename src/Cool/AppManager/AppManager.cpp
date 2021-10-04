@@ -129,7 +129,7 @@ static void end_frame(WindowManager& window_manager)
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) { // NOLINT
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
@@ -186,7 +186,7 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         app_manager._app.on_keyboard_event({.key      = key,
                                             .scancode = scancode,
                                             .action   = action,
-                                            .mods     = mods});
+                                            .mods     = ModifierKeys{mods}});
     }
 }
 
@@ -214,7 +214,7 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
         app_manager._app.on_mouse_button({.position = mouse_position(window),
                                           .button   = button,
                                           .action   = action,
-                                          .mods     = mods});
+                                          .mods     = ModifierKeys{mods}});
     }
 }
 
