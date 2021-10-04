@@ -2,7 +2,7 @@
 
 #include "../Context.h"
 #include <Cool/Utils/Version.h>
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 #include "check_result.h"
 
 namespace Cool::Vulkan {

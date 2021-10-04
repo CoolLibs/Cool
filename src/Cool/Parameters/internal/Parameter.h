@@ -58,12 +58,10 @@ private:
         T val      = _value;
         T prev_val = _value_before_edit;
         ParametersHistory::get().add_action({[&, val, on_value_change]() {
-                                                 Log::info("++"); // TODO remove me
                                                  _value = val;
                                                  on_value_change();
                                              },
                                              [&, prev_val, on_value_change]() {
-                                                 Log::info("--"); // TODO remove me
                                                  _value = prev_val;
                                                  on_value_change();
                                              }});
