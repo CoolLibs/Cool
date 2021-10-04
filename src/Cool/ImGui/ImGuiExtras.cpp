@@ -28,8 +28,8 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
         return false;
     }
     //
-    ImGuiStyle& style       = ImGui::GetStyle();
-    float       line_height = ImGui::GetTextLineHeight();
+    const ImGuiStyle& style       = ImGui::GetStyle();
+    const float       line_height = ImGui::GetTextLineHeight();
     //
     ImVec2 p      = ImGui::GetCursorScreenPos();
     ImVec2 center = ImVec2(p.x + radius, p.y + radius);
@@ -118,7 +118,7 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4
     return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
-void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, int frame_padding)
+void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, std::optional<float> frame_padding)
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
