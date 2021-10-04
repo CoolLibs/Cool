@@ -12,7 +12,7 @@ void History::begin_undo_group()
 
 void History::end_undo_group()
 {
-    if (_tmp_action_buffer.size() > 0) {
+    if (!_tmp_action_buffer.empty()) {
         //
         _cumul_nb_of_actions_to_get_to_this_undo_group.resize(_index_of_cumul_nb_of_actions + 1);
         _cumul_nb_of_actions_to_get_to_this_undo_group.push_back(_tmp_action_buffer.size() + (_index_of_cumul_nb_of_actions > -1 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions] : 0));

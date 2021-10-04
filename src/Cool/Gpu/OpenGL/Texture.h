@@ -103,7 +103,7 @@ public:
     /// Attaches your texture to a slot, so that it is ready to be read by a shader.
     /// </summary>
     /// <param name="slot">The slot. This should match the "uniform sampler2D u_TextureSlot" in your shader that is set through set_uniform(slot)</param>
-    void attachToSlot(int slot);
+    void attachToSlot(int slot) const;
 
     /// <summary>
     /// The OpenGL ID of the texture.

@@ -84,12 +84,12 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 	 * 
 	 * @param tex_id OpenGL texture ID of the image
 	 * @param size Size the image will be displayed at
-	 * @param frame_thickness Thickness of the frame. Leave as -1 if you don't want a frame
+	 * @param frame_thickness Thickness of the frame. Leave as std::nullopt if you don't want a frame
 	 * @param frame_color Color of the frame
 	 * @param background_color Color that will appear in places where your image is transparent
 	 * @param tint_color You can tint your image
 	 */
-void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness = -1, const ImVec4& frame_color = ImVec4(0, 0, 0, 0), const ImVec4& background_color = ImVec4(0, 0, 0, 1), const ImVec4& tint_color = ImVec4(1, 1, 1, 1));
+void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness = std::nullopt, const ImVec4& frame_color = ImVec4(0, 0, 0, 0), const ImVec4& background_color = ImVec4(0, 0, 0, 1), const ImVec4& tint_color = ImVec4(1, 1, 1, 1));
 
 /**
 	 * @brief Like ImGui::InputInt, but for an unsigned int

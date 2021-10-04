@@ -25,36 +25,28 @@ void FrameBuffer::setSize(ImageSize size)
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-        const char* statusStr;
-        switch (status) {
-        case GL_FRAMEBUFFER_UNDEFINED:
-            statusStr = "GL_FRAMEBUFFER_UNDEFINED";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT ";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER ";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER ";
-            break;
-        case GL_FRAMEBUFFER_UNSUPPORTED:
-            statusStr = "GL_FRAMEBUFFER_UNSUPPORTED ";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE ";
-            break;
-        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-            statusStr = "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS ";
-            break;
-        default:
-            statusStr = "UNKNOWN_ERROR";
-            break;
-        }
+        auto statusStr = [status]() {
+            switch (status) {
+            case GL_FRAMEBUFFER_UNDEFINED:
+                return "GL_FRAMEBUFFER_UNDEFINED";
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                return "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ";
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                return "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT ";
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+                return "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER ";
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+                return "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER ";
+            case GL_FRAMEBUFFER_UNSUPPORTED:
+                return "GL_FRAMEBUFFER_UNSUPPORTED ";
+            case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+                return "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE ";
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+                return "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS ";
+            default:
+                return "UNKNOWN_ERROR";
+            }
+        }();
         Log::error("Framebuffer is not complete : {}", statusStr);
     }
     unbind();
@@ -74,7 +66,7 @@ void FrameBuffer::unbind() const
     GLDebug(glViewport(m_prevViewport[0], m_prevViewport[1], m_prevViewport[2], m_prevViewport[3]));
 }
 
-void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID, GLint interpolationMode)
+void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID, GLint interpolationMode) const
 {
     GLDebug(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBufferID));
     GLDebug(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId));
@@ -82,7 +74,7 @@ void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, 
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode)
+void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLint interpolationMode) const
 {
     blitTo({0, 0}, {width(), height()}, frameBuffer.frameBufferId(), interpolationMode);
 }

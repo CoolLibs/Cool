@@ -27,7 +27,7 @@ public:
     /// The default value is GL_LINEAR.
     /// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
     /// </param>
-    void blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID = SCREEN_FRAMEBUFFER_ID, GLint interpolationMode = GL_LINEAR);
+    void blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID = SCREEN_FRAMEBUFFER_ID, GLint interpolationMode = GL_LINEAR) const;
     /// <summary>
     /// Copies the content of this framebuffer to another framebuffer
     /// </summary>
@@ -35,7 +35,7 @@ public:
     /// The default value is GL_LINEAR.
     /// Can be either GL_LINEAR or GL_NEAREST (nearest neighbour, a.k.a. no real interpolation)
     /// </param>
-    void blitTo(FrameBuffer& frameBuffer, GLint interpolationMode = GL_LINEAR);
+    void blitTo(FrameBuffer& frameBuffer, GLint interpolationMode = GL_LINEAR) const;
 
     inline ImageSize::DataType width() const { return m_size.width(); }
     inline ImageSize::DataType height() const { return m_size.height(); }
@@ -53,7 +53,7 @@ private:
     GLuint      m_frameBufferId       = -1;
     GLuint      m_depthRenderBufferId = -1;
     ImageSize   m_size;
-    mutable int m_prevViewport[4];
+    mutable int m_prevViewport[4] = {};
 };
 
 } // namespace Cool

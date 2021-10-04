@@ -24,8 +24,9 @@ void help_marker(const char* text)
 bool angle_wheel(const char* label, float* value_p, float thickness, float radius, int nb_segments_for_circle)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
+    if (window->SkipItems) {
         return false;
+    }
     //
     ImGuiStyle& style       = ImGui::GetStyle();
     float       line_height = ImGui::GetTextLineHeight();
@@ -56,8 +57,9 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
     const ImGuiID id = window->GetID(label);
-    if (is_active)
+    if (is_active) {
         ImGui::MarkItemEdited(id);
+    }
     return is_active;
 }
 
@@ -78,9 +80,10 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2)
 
 void time_formated_hms(float time_in_sec, float total_duration)
 {
-    if (total_duration == 0.f)
+    if (total_duration == 0.f) {
         total_duration = time_in_sec;
-    uint32_t t = static_cast<uint32_t>(time_in_sec);
+    }
+    auto t = static_cast<uint32_t>(time_in_sec);
     if (total_duration < 60.f) {
         ImGui::Text("%us", t);
     }
@@ -122,11 +125,12 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
     tooltip(reason_for_disabling);
 }
 
-void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
+void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
+    if (window->SkipItems) {
         return;
+    }
 
     ImGuiContext&     g     = *GImGui;
     const ImGuiStyle& style = g.Style;
@@ -137,12 +141,13 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness, c
     const ImGuiID id = window->GetID("#image");
     ImGui::PopID();
 
-    const ImVec2 padding = (frame_thickness >= 0) ? ImVec2((float)frame_thickness, (float)frame_thickness) : style.FramePadding;
+    const ImVec2 padding = frame_thickness ? ImVec2(*frame_thickness, *frame_thickness) : style.FramePadding;
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
     const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
     ImGui::ItemSize(bb);
-    if (!ImGui::ItemAdd(bb, id))
+    if (!ImGui::ItemAdd(bb, id)) {
         return;
+    }
 
     // Render
     const ImU32 frameCol = frame_color.w > 0.0f ? ImGui::GetColorU32(frame_color) : ImGui::GetColorU32(ImGuiCol_Button);
@@ -154,7 +159,7 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, int frame_thickness, c
 
 bool input_uint(const char* label, unsigned int* value_p)
 {
-    return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, NULL, NULL, "%u");
+    return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, nullptr, nullptr, "%u");
 }
 
 void warning_text(const char* text)
@@ -165,19 +170,21 @@ void warning_text(const char* text)
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
 {
     ImGuiWindow* window = GImGui->CurrentWindow;
-    if (window->SkipItems)
+    if (window->SkipItems) {
         return false;
+    }
     ImGuiID id = label ? window->GetID(label) : GImGui->LastItemData.ID; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
     IM_ASSERT(id != 0);                                                  // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
-    if (ImGui::Button(label))
+    if (ImGui::Button(label)) {
         ImGui::OpenPopupEx(id, popup_flags);
+    }
     return ImGui::BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
 }
 
-void invisible_wrapper_around_previous_line(const char* label)
+void invisible_wrapper_around_previous_line(const char* str_id)
 {
     ImGui::SetCursorPos(ImGui::GetCursorPos() - ImVec2(0, 2 * ImGui::GetTextLineHeight()));
-    ImGui::InvisibleButton(label, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
+    ImGui::InvisibleButton(str_id, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
 }
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)

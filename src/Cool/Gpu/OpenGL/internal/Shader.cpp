@@ -31,10 +31,13 @@ Shader::Shader(Shader&& o) noexcept
     o._program_id = 0;
 }
 
-void Shader::operator=(Shader&& o) noexcept
+Shader& Shader::operator=(Shader&& o) noexcept
 {
-    _program_id   = o._program_id;
-    o._program_id = 0;
+    if (&o != this) {
+        _program_id   = o._program_id;
+        o._program_id = 0;
+    }
+    return *this;
 }
 
 Shader::~Shader()
@@ -112,7 +115,7 @@ GLuint Shader::CreateShader(const ShaderSource& shader_source)
     return shader_id;
 }
 
-void Shader::bind()
+void Shader::bind() const
 {
     GLDebug(glUseProgram(_program_id));
 }

@@ -51,7 +51,7 @@ std::string File::file_name_without_extension(std::string_view file_path)
 
 std::string File::extension(std::string_view file_path)
 {
-    auto pos = file_path.find_last_of(".");
+    auto pos = file_path.find_last_of('.');
     if (pos < file_path.size()) {
         return std::string{file_path.substr(pos, file_path.size())};
     }
@@ -62,7 +62,7 @@ std::string File::extension(std::string_view file_path)
 
 std::string File::whithout_extension(std::string_view file_path)
 {
-    auto pos = file_path.find_last_of(".");
+    auto pos = file_path.find_last_of('.');
     if (pos < file_path.size()) {
         return std::string{file_path.substr(0, pos)};
     }
@@ -73,7 +73,7 @@ std::string File::whithout_extension(std::string_view file_path)
 
 std::string File::whithout_file_name(std::string_view file_path)
 {
-    if (file_path.find_last_of(".") < file_path.size()) { // There is a "." of an extension, so the thing after the last "/" must be a file name
+    if (file_path.find_last_of('.') < file_path.size()) { // There is a "." of an extension, so the thing after the last "/" must be a file name
         auto pos = file_path.find_last_of("/\\");
         return std::string{file_path.substr(0, pos)};
     }
@@ -125,9 +125,9 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
 {
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
     auto [k, base_name] = [&]() {
-        if (auto pos = file_name.find_last_of("(");
+        if (auto pos = file_name.find_last_of('(');
             pos != std::string::npos) {
-            auto end_pos = file_name.find_last_of(")");
+            auto end_pos = file_name.find_last_of(')');
             try {
                 return std::make_pair(
                     std::stoi(std::string{file_name.substr(pos + 1, end_pos - pos)}),

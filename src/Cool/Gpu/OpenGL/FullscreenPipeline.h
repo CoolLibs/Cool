@@ -17,7 +17,7 @@ public:
 
 private:
     Shader _shader;
-    GLuint _dummy_vao_id;
+    GLuint _dummy_vao_id{};
 };
 
 } // namespace Cool::OpenGL

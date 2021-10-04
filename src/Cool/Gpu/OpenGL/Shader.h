@@ -23,7 +23,7 @@ public:
     Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path);
     ~Shader();
     Shader(Shader&& o) noexcept;
-    void operator=(Shader&& o) noexcept;
+    Shader& operator=(Shader&& o) noexcept;
 
     /// <summary>
     /// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.
@@ -41,7 +41,7 @@ public:
     /// <summary>
     /// Binds the shader pipeline.
     /// </summary>
-    void bind();
+    void bind() const;
 
     void set_uniform(std::string_view uniform_name, int v);
     void set_uniform(std::string_view uniform_name, unsigned int v);
