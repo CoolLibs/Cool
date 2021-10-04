@@ -137,10 +137,9 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
 
     // Default to using texture ID as ID. User can still push string/integer prefixes.
     // We could hash the size/uv to create a unique ID but that would prevent the user from animating UV.
-    ImGui::PushID((void*)(intptr_t)tex_id); // TODO
+    ImGui::PushID(tex_id);
     const ImGuiID id = window->GetID("#image");
     ImGui::PopID();
-
     const ImVec2 padding = frame_thickness ? ImVec2(*frame_thickness, *frame_thickness) : style.FramePadding;
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
     const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
@@ -152,7 +151,7 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
     // Render
     const ImU32 frameCol = frame_color.w > 0.0f ? ImGui::GetColorU32(frame_color) : ImGui::GetColorU32(ImGuiCol_Button);
     ImGui::RenderNavHighlight(bb, id);
-    ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding)); // TODO
+    ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp(ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
 }
