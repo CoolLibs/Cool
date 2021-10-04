@@ -3,11 +3,8 @@
 namespace Cool {
 
 Color::Color()
+    : _channels{0, 0, 0, 255}
 {
-    _channels[0] = 0;
-    _channels[1] = 0;
-    _channels[2] = 0;
-    _channels[3] = 255;
 }
 
 void Color::set(unsigned char r, unsigned char g, unsigned char b)

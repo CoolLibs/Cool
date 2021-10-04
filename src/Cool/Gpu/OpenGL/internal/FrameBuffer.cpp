@@ -25,7 +25,7 @@ void FrameBuffer::setSize(ImageSize size)
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-        auto statusStr = [status]() {
+        const auto statusStr = [status]() {
             switch (status) {
             case GL_FRAMEBUFFER_UNDEFINED:
                 return "GL_FRAMEBUFFER_UNDEFINED";

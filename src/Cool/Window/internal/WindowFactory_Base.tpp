@@ -16,7 +16,7 @@ WindowFactory_Base<T>::WindowFactory_Base()
 template<typename T>
 WindowFactory_Base<T>::~WindowFactory_Base()
 {
-    _impl.shut_down(_window_manager);
+    T::shut_down(_window_manager);
 }
 
 template<typename T>
@@ -38,7 +38,7 @@ template<typename T>
 Window& WindowFactory_Base<T>::make_secondary_window(const WindowCreationParams& params)
 {
     auto& window = _impl.make_window(params, _window_manager);
-    _impl.setup_secondary_window(window, _window_manager);
+    T::setup_secondary_window(window, _window_manager);
     return window;
 }
 

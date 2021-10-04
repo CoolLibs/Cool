@@ -29,7 +29,7 @@ Window_Base::~Window_Base()
     }
 }
 
-bool Window_Base::check_for_fullscreen_toggles(int key, int scancode, int action, int mods)
+bool Window_Base::check_for_fullscreen_toggles(int key, int /*scancode*/, int action, int /*mods*/)
 {
     if (action == GLFW_RELEASE) {
         if (key == GLFW_KEY_F11) {
@@ -46,8 +46,9 @@ bool Window_Base::check_for_fullscreen_toggles(int key, int scancode, int action
 
 void Window_Base::switch_fullscreen()
 {
-    if (_is_fullscreen)
+    if (_is_fullscreen) {
         escape_fullscreen();
+    }
     else {
         GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
@@ -65,7 +66,7 @@ void Window_Base::escape_fullscreen()
     if (_is_fullscreen) {
         GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(_glfw_window, NULL, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, mode->refreshRate);
+        glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, mode->refreshRate);
         // if (m_bIsVSyncEnabled)
         //     setSwapInterval(GLFW_TRUE);
         _is_fullscreen = false;

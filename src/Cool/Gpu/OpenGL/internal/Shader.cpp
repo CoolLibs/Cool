@@ -101,12 +101,12 @@ GLuint Shader::CreateShader(const ShaderSource& shader_source)
     GLDebug(glCompileShader(shader_id));
 // Debug
 #if defined(DEBUG)
-    int result;
+    int result; // NOLINT
     GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
-        int length;
+        int length; // NOLINT
         GLDebug(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
-        char* message = (char*)alloca(length * sizeof(char));
+        char* message = (char*)alloca(length * sizeof(char)); // NOLINT
         GLDebug(glGetShaderInfoLog(shader_id, length, &length, message));
         Log::error("Shader compilation failed :\n{}", message);
         GLDebug(glDeleteShader(shader_id));

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "NfdFileFilter.h"
 
 namespace Cool {

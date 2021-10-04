@@ -29,7 +29,7 @@ void File::initialize_root_dir(std::string_view path)
 
 bool File::exists(std::string_view file_path)
 {
-    struct stat buffer;
+    struct stat buffer; // NOLINT
     return (stat(file_path.data(), &buffer) == 0);
 }
 

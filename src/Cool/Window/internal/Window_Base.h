@@ -59,10 +59,10 @@ private:
     GLFWwindow* _glfw_window;
     bool        _is_fullscreen = false;
     bool        _is_visible    = true;
-    int         _pos_x_before_fullscreen;
-    int         _pos_y_before_fullscreen;
-    int         _width_before_fullscreen;
-    int         _height_before_fullscreen;
+    int         _pos_x_before_fullscreen{};
+    int         _pos_y_before_fullscreen{};
+    int         _width_before_fullscreen{};
+    int         _height_before_fullscreen{};
 };
 
 } // namespace Cool

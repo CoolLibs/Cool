@@ -10,7 +10,7 @@ namespace Cool {
 
 WindowFactory_OpenGL::WindowFactory_OpenGL()
 {
-    assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
+    static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
     Log::info("[Gpu] Using OpenGL {}.{}", major_version(COOL_OPENGL_VERSION), minor_version(COOL_OPENGL_VERSION));
 }
 
@@ -29,7 +29,7 @@ void WindowFactory_OpenGL::setup_main_window(Window_OpenGL& window)
     setup_imgui(window);
 }
 
-void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL& window, WindowManager& window_manager)
+void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL&, WindowManager& window_manager)
 {
     window_manager.main_window().make_current();
 }
@@ -54,15 +54,16 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
     windows.push_back(Window_OpenGL{glfwCreateWindow(params.width, params.height, params.name, nullptr, other_window)});
     Window& window = windows.back();
     if (!window.glfw()) {
-        const char* errorDescription;
+        const char* errorDescription; // NOLINT
         glfwGetError(&errorDescription);
         Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
     }
     window.make_current();
     window.cap_framerate(params.cap_framerate);
     // Load Glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { // NOLINT
         Log::error("Failed to initialize Glad");
+    }
     //
     return window;
 }
@@ -71,7 +72,7 @@ void WindowFactory_OpenGL::setupGLDebugging()
 {
 #if defined(DEBUG)
     if (COOL_OPENGL_VERSION >= 430) {
-        int flags;
+        int flags; // NOLINT
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
             glEnable(GL_DEBUG_OUTPUT);

@@ -10,10 +10,10 @@ namespace Cool {
 class WindowFactory_Vulkan {
 public:
     WindowFactory_Vulkan();
-    void shut_down(WindowManager& window_manager);
+    static void shut_down(WindowManager& window_manager);
 
     void           setup_main_window(Window_Vulkan& window);
-    void           setup_secondary_window(Window_Vulkan& window, WindowManager& window_manager);
+    static void    setup_secondary_window(Window_Vulkan&, WindowManager&);
     Window_Vulkan& make_window(const WindowCreationParams& params, WindowManager& window_manager);
 
 private:

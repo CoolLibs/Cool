@@ -23,16 +23,16 @@ public:
     /**
 	 * @brief
 	 * 
-	 * @return A random long int (between std::numeric_limits<long int>::min() and std::numeric_limits<long int>::max())
+	 * @return A random int64_t (between std::numeric_limits<int64_t>::min() and std::numeric_limits<int64_t>::max())
 	 */
-    static long int long_int();
+    static int64_t long_int();
 
 private:
-    static std::random_device                      _true_random_generator;
-    static std::default_random_engine              _generator;
-    static std::uniform_real_distribution<float>   _distribution_0to1;
-    static std::uniform_real_distribution<float>   distribution_minus1to1;
-    static std::uniform_int_distribution<long int> distribution_long_int;
+    static std::random_device                     _true_random_generator;
+    static std::default_random_engine             _generator;
+    static std::uniform_real_distribution<float>  _distribution_0to1;
+    static std::uniform_real_distribution<float>  distribution_minus1to1;
+    static std::uniform_int_distribution<int64_t> distribution_long_int;
 
     Random()  = delete;
     ~Random() = delete;

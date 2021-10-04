@@ -10,7 +10,7 @@ void CoolGlDebug::clearFromPreviousErrors()
 
 bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename, int line)
 {
-    GLenum error;
+    GLenum error; // NOLINT
     bool   bFoundErrors = false;
     while ((error = glGetError()) != GL_NO_ERROR) {
         Cool::Log::error_without_breakpoint("[OpenGL Error] {} : {} {} {}", glErrorString(error), functionName, filename, line);

@@ -11,15 +11,16 @@ std::string to_lower(std::string_view str)
     return res;
 }
 
-bool starts_with(std::string_view toFind, std::string_view str)
+bool starts_with(std::string_view to_find, std::string_view str)
 {
-    return str.rfind(toFind, 0) == 0;
+    return str.rfind(to_find, 0) == 0;
 }
 
 void replace_all(std::string& str, std::string_view from, std::string_view to)
 {
-    if (from.empty())
+    if (from.empty()) {
         return;
+    }
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
         str.replace(start_pos, from.length(), to);

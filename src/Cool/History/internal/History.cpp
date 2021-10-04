@@ -19,8 +19,8 @@ void History::end_undo_group()
         _index_of_cumul_nb_of_actions++;
         //
         _actions.resize(_index_of_cumul_nb_of_actions > 0 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions - 1] : 0);
-        for (size_t i = 0; i < _tmp_action_buffer.size(); ++i) {
-            _actions.push_back(_tmp_action_buffer[i]);
+        for (const auto& action : _tmp_action_buffer) {
+            _actions.push_back(action);
             _index++;
         }
     }
