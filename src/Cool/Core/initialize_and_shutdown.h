@@ -24,7 +24,7 @@ namespace Cool {
  * (NB : this function is somewhat opinionated and you might want to replace this with your own way of initializing Cool) 
  *  
  */
-inline void initialize()
+inline void default_init()
 {
 #if defined(DEBUG)
     // Run the tests !
