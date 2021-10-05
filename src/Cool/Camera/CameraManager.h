@@ -13,7 +13,7 @@ public:
     explicit CameraManager(const glm::vec3& position = {15.f, 0.f, 0.f}, const glm::vec3& look_at = glm::vec3{0.f});
 
     void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher);
-    void update(float aspect_ratio);
+    void apply(float aspect_ratio);
     void imgui();
 
     const Camera& operator*() const { return _camera; }

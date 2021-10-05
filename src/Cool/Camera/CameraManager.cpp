@@ -14,7 +14,7 @@ void CameraManager::hook_events(MouveEventDispatcher<ViewCoordinates>& dispatche
     CameraU::hook_events(dispatcher, _view_controller, _camera);
 }
 
-void CameraManager::update(float aspect_ratio)
+void CameraManager::apply(float aspect_ratio)
 {
     _projection_controller.apply_to(_camera, aspect_ratio);
 }
