@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cool/Window/Window.h>
-#include <Cool/Window/internal/WindowManager.h>
+#include <Cool/Window/WindowManager.h>
 #include "AppManagerConfig.h"
 #include "IApp.h"
 

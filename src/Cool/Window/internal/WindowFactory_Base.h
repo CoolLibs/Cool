@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../WindowManager.h"
 #include "WindowCreationParams.h"
-#include "WindowManager.h"
 
 namespace Cool {
 /**

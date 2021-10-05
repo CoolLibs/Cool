@@ -1,8 +1,8 @@
 #pragma once
 #if defined(COOL_VULKAN)
 
+#include "../WindowManager.h"
 #include "WindowCreationParams.h"
-#include "WindowManager.h"
 #include "Window_Vulkan.h"
 
 namespace Cool {

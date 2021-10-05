@@ -15,7 +15,7 @@
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Log/Log.h>
-#include <Cool/Window/WindowFactory.h>
+#include <Cool/Window/internal/WindowFactory.h>
 
 namespace Cool {
 

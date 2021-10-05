@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Window.h"
+#include "Window.h"
 
 namespace Cool {
 
