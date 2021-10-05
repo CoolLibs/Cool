@@ -69,10 +69,11 @@ void Shader::create_program(const std::vector<ShaderSource>& shader_sources)
     }
 }
 
-// void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-// {
-//     create_program({ShaderCode(ShaderType::Vertex, vertex_shader_file_path), ShaderCode(ShaderType::Fragment, fragment_shader_file_path)});
-// }
+void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
+{
+    create_program({ShaderSource{vertex_shader_file_path, ShaderKind::Vertex},
+                    ShaderSource{fragment_shader_file_path, ShaderKind::Fragment}});
+}
 
 GLuint Shader::CreateShader(const ShaderSource& shader_source)
 {
