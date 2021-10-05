@@ -1,10 +1,11 @@
 #include "ViewController_OrbitalU.h"
+#include <Cool/Constants/Constants.h>
 
 namespace Cool::ViewController_OrbitalU {
 
 void reset_transform(ViewController_Orbital& controller, Camera& camera)
 {
-    const auto position = glm::vec3{15.f, 0.f, 0.f};
+    const auto position = Constants::default_camera_position;
     const auto look_at  = glm::vec3{0.f};
 
     camera = Camera{position, look_at};

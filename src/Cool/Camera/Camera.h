@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Cool/Geometry/Ray.h>
+#include <Cool/Constants/Constants.h>
 #include <Cool/Image/ImageSize.h>
 
 namespace Cool {
 
 class Camera {
 public:
-    Camera(glm::vec3 const& position = {15.f, 0.f, 0.f}, glm::vec3 const& look_at = glm::vec3{0.f});
+    Camera(glm::vec3 const& position = Constants::default_camera_position, glm::vec3 const& look_at = glm::vec3{0.f});
 
     inline const glm::mat4& transform_matrix() const { return _transform_matrix; }
     inline glm::mat4        view_matrix() const { return glm::inverse(_transform_matrix); }
