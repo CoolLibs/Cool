@@ -23,6 +23,17 @@ private:
     Camera                           _camera;
     ViewController_Orbital           _view_controller;
     ProjectionController_Perspective _projection_controller;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Camera", _camera),
+                cereal::make_nvp("ViewController", _view_controller),
+                cereal::make_nvp("ProjectionController", _projection_controller));
+    }
 };
 
 } // namespace Cool

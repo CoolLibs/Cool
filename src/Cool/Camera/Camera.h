@@ -49,6 +49,16 @@ public:
 private:
     glm::mat4 _transform_matrix  = glm::mat4{1.f};
     glm::mat4 _projection_matrix = glm::mat4{1.f};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Transform", _transform_matrix),
+                cereal::make_nvp("Projection", _projection_matrix));
+    }
 };
 
 } // namespace Cool

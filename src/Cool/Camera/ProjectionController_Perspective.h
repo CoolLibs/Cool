@@ -13,6 +13,16 @@ public:
 private:
     float _field_of_view_in_radians = glm::pi<float>() * 0.5f;
     float _near_plane               = 0.1f;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("FOV", _field_of_view_in_radians),
+                cereal::make_nvp("Near Plane", _near_plane));
+    }
 };
 
 } // namespace Cool
