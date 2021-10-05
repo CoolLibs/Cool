@@ -1,6 +1,6 @@
 #include "HookEvents.h"
 
-namespace Cool {
+namespace Cool::CameraU {
 
 void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher, ViewController_Orbital& controller, Camera& camera)
 {
@@ -29,4 +29,4 @@ void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher, ViewControll
         });
 }
 
-} // namespace Cool
+} // namespace Cool::CameraU

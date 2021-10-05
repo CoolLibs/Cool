@@ -2,8 +2,8 @@
 #include <Cool/Input/MouveEventDispatcher.h>
 #include "ViewController_Orbital.h"
 
-namespace Cool {
+namespace Cool::CameraU {
 
 void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher, ViewController_Orbital& controller, Camera& camera);
 
-} // namespace Cool
+} // namespace Cool::CameraU
