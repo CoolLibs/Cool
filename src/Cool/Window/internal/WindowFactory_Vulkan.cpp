@@ -94,7 +94,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowConfig& config, Win
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();
 
-    WindowFactoryU::apply_config(window, config);
+    WindowFactoryU::apply_config(config, window);
 
     return window;
 }

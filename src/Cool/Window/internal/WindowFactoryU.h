@@ -19,6 +19,6 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
     return window;
 }
 
-void apply_config(Window& window, const WindowConfig& config);
+void apply_config(const WindowConfig& config, Window& window);
 
 } // namespace Cool::WindowFactoryU
