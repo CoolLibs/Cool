@@ -18,7 +18,7 @@ public:
      * @param app An instance of an App class that you have to implement, deriving from IApp.
      * @param config Configuration options that control the behaviour of the AppManager
      */
-    AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config = {});
+    AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config);
 
     /**
      * @brief Runs the app's update loop continuously, until the user closes the main window
