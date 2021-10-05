@@ -42,9 +42,7 @@ void VideoExportProcess::imgui()
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::string_view file_path)
 {
-    // Render
     polaroid.render(_clock.time(), _size);
-    // Write png
     _thread_pool.push_job(ImageExportJob{
         file_path,
         polaroid.render_target.download_pixels(),
