@@ -4,7 +4,7 @@ namespace Cool::WindowFactoryU {
 
 void apply_config(const WindowConfig& config, Window& window)
 {
-    window.cap_framerate_if(is_building_as(config.start_with_capped_framerate_if));
+    window.cap_framerate_if(is_building_as(config.cap_framerate_on_startup_if));
     if (is_building_as(config.maximize_on_startup_if)) {
         glfwMaximizeWindow(window.glfw());
     }
