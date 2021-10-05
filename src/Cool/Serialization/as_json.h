@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/File/File.h>
+#include <Cool/Log/ToUser.h>
 #include <cereal/archives/json.hpp>
 #include <fstream>
 
