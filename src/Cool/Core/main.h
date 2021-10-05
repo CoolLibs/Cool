@@ -76,6 +76,9 @@ void run(std::vector<WindowConfig> _windows_configs)
                                             AppManagerConfig{
                                                 .dispatch_keyboard_events_to_imgui = true}};
         app_manager.run();
+#if defined(COOL_VULKAN)
+        vkDeviceWaitIdle(Vulkan::context().g_Device);
+#endif
     }
     Cool::shut_down();
 }
