@@ -3,9 +3,10 @@
 
 namespace Cool {
 
-CameraManager::CameraManager()
+CameraManager::CameraManager(const glm::vec3& position, const glm::vec3& look_at)
+    : _camera{position, look_at}
 {
-    _view_controller.set_distance_to_orbit_center(15.f);
+    _view_controller.set_distance_to_orbit_center(glm::distance(position, look_at));
 }
 
 void CameraManager::hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher)
