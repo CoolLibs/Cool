@@ -7,7 +7,7 @@ namespace Cool::ExporterU {
 
 void export_image(ImageSize size, float time, Polaroid polaroid, std::string_view file_path)
 {
-    polaroid.render(size, time);
+    polaroid.render(time, size);
     ExportImage::as_png(file_path, polaroid.render_target.download_pixels());
 }
 
