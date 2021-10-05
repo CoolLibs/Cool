@@ -2,7 +2,7 @@
 #if defined(COOL_VULKAN)
 
 #include "../WindowManager.h"
-#include "WindowCreationParams.h"
+#include "WindowConfig.h"
 #include "Window_Vulkan.h"
 
 namespace Cool {
@@ -14,7 +14,7 @@ public:
 
     void           setup_main_window(Window_Vulkan& window);
     static void    setup_secondary_window(Window_Vulkan&, WindowManager&);
-    Window_Vulkan& make_window(const WindowCreationParams& params, WindowManager& window_manager);
+    Window_Vulkan& make_window(const WindowConfig& config, WindowManager& window_manager);
 
 private:
     void setup_imgui(Window_Vulkan& window);

@@ -52,13 +52,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
     // Create window
     auto&       windows      = window_manager.windows();
     GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
-    windows.push_back(Window_OpenGL{glfwCreateWindow(config.initial_width, config.initial_height, config.title, nullptr, other_window)});
-    Window& window = windows.back();
-    if (!window.glfw()) {
-        const char* errorDescription; // NOLINT
-        glfwGetError(&errorDescription);
-        Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
-    }
+    auto&       window       = WindowFactoryU::make_window_with_glfw<Window_OpenGL>(config, window_manager, other_window);
     window.make_current();
     WindowFactoryU::apply_config(window, config);
     // Load Glad

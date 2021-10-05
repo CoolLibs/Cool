@@ -59,19 +59,13 @@ void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceKHR surf
     wd->SurfaceFormat                                 = ImGui_ImplVulkanH_SelectSurfaceFormat(Vulkan::context().g_PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 }
 
-Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowCreationParams& params, WindowManager& window_manager)
+Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowConfig& config, WindowManager& window_manager)
 {
     auto& vk_context = Vulkan::context();
     // Window flags
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     // Create window
-    window_manager.windows().push_back(Window_Vulkan{glfwCreateWindow(params.width, params.height, params.title, nullptr, nullptr)});
-    Window_Vulkan& window = window_manager.windows().back();
-    if (!window.glfw()) {
-        const char* errorDescription;
-        glfwGetError(&errorDescription);
-        Log::error("[Glfw] Window creation failed :\n{}", errorDescription);
-    }
+    auto& window = WindowFactoryU::make_window_with_glfw<Window_Vulkan>(config, window_manager);
     // Create Window Surface
     VkSurfaceKHR surface;
     VkResult     err = glfwCreateWindowSurface(vk_context.g_Instance, window.glfw(), vk_context.g_Allocator, &surface);
@@ -100,7 +94,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowCreationParams& par
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();
 
-    WindowFactoryU::apply_config(window, params);
+    WindowFactoryU::apply_config(window, config);
 
     return window;
 }
