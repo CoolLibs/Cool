@@ -1,5 +1,5 @@
 #pragma once
-#include "JsonFile.h"
+#include "as_json.h"
 
 namespace Cool {
 
