@@ -23,7 +23,7 @@ void from_json(T& data, std::string_view file_path)
             archive(
                 data);
         }
-        catch (std::exception e) {
+        catch (const std::exception& e) {
             Log::ToUser::warn("Serialization::from_json", "Invalid \"{}\" file. Starting with default values instead.\n{}", file_path, e.what());
         }
     }
