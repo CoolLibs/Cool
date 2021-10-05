@@ -5,6 +5,7 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include "GLDebugCallback.h"
+#include "WindowFactoryU.h"
 
 namespace Cool {
 
@@ -59,7 +60,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
         Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
     }
     window.make_current();
-    window.cap_framerate(params.cap_framerate);
+    WindowFactoryU::apply_config(window, params);
     // Load Glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { // NOLINT
         Log::error("Failed to initialize Glad");

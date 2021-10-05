@@ -9,6 +9,7 @@
 #include <imgui/backends/imgui_impl_vulkan.h>
 #include <imgui/imgui.h>
 #include <vulkan/vulkan.h>
+#include "WindowFactoryU.h"
 
 namespace Cool {
 
@@ -99,7 +100,7 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowCreationParams& par
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();
 
-    window.cap_framerate(params.cap_framerate);
+    WindowFactoryU::apply_config(window, params);
 
     return window;
 }

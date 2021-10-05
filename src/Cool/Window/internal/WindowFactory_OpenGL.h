@@ -1,8 +1,8 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
+#include "../WindowManager.h"
 #include "WindowCreationParams.h"
-#include "WindowManager.h"
 #include "Window_OpenGL.h"
 
 namespace Cool {
