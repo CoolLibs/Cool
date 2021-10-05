@@ -51,7 +51,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
     // Create window
     auto&       windows      = window_manager.windows();
     GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
-    windows.push_back(Window_OpenGL{glfwCreateWindow(params.width, params.height, params.name, nullptr, other_window)});
+    windows.push_back(Window_OpenGL{glfwCreateWindow(params.width, params.height, params.title, nullptr, other_window)});
     Window& window = windows.back();
     if (!window.glfw()) {
         const char* errorDescription; // NOLINT
