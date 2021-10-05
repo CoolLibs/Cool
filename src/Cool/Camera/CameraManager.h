@@ -14,6 +14,7 @@ public:
 
     void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher);
     void apply(float aspect_ratio);
+    void reset_transform();
     void imgui();
 
     const Camera& operator*() const { return _camera; }
