@@ -11,9 +11,11 @@
 #include <Cool/Gpu/Vulkan/Context.h>
 #endif
 
+#include <Cool/AppManager/AppManager.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Log/Log.h>
+#include <Cool/Window/WindowFactory.h>
 
 namespace Cool {
 
@@ -57,6 +59,22 @@ inline void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Icons::shut_down();
+}
+
+template<typename App>
+void run(std::vector<WindowCreationParams> _windows_params)
+{
+    assert(_windows_params.size() >= 1);
+    auto window_factory = Cool::WindowFactory{};
+    window_factory.make_main_window(_windows_params[0]);
+    for (size_t i = 1; i < _windows_params.size(); ++i) {
+        window_factory.make_secondary_window(_windows_params[i]);
+    }
+    auto app         = App{window_factory.window_manager().main_window()};
+    auto app_manager = Cool::AppManager{window_factory.window_manager(), app,
+                                        AppManagerConfig{
+                                            .dispatch_keyboard_events_to_imgui = true}};
+    app_manager.run();
 }
 
 } // namespace Cool
