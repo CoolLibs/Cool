@@ -71,7 +71,7 @@ void run(std::vector<WindowCreationParams> _windows_params)
         window_factory.make_secondary_window(_windows_params[i]);
     }
     {
-        auto app         = App{window_factory.window_manager().main_window()};
+        auto app         = App{window_factory.window_manager()};
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app,
                                             AppManagerConfig{
                                                 .dispatch_keyboard_events_to_imgui = true}};
