@@ -62,13 +62,13 @@ inline void shut_down()
 }
 
 template<typename App>
-void run(std::vector<WindowCreationParams> _windows_params)
+void run(std::vector<WindowConfig> _windows_configs)
 {
-    assert(_windows_params.size() >= 1);
+    assert(_windows_configs.size() >= 1);
     auto window_factory = Cool::WindowFactory{};
-    window_factory.make_main_window(_windows_params[0]);
-    for (size_t i = 1; i < _windows_params.size(); ++i) {
-        window_factory.make_secondary_window(_windows_params[i]);
+    window_factory.make_main_window(_windows_configs[0]);
+    for (size_t i = 1; i < _windows_configs.size(); ++i) {
+        window_factory.make_secondary_window(_windows_configs[i]);
     }
     {
         auto app         = App{window_factory.window_manager()};

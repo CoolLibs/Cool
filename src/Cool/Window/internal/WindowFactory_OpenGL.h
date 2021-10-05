@@ -2,7 +2,7 @@
 #if defined(COOL_OPENGL)
 
 #include "../WindowManager.h"
-#include "WindowCreationParams.h"
+#include "WindowConfig.h"
 #include "Window_OpenGL.h"
 
 namespace Cool {
@@ -14,7 +14,7 @@ public:
 
     void           setup_main_window(Window_OpenGL& window);
     static void    setup_secondary_window(Window_OpenGL&, WindowManager& window_manager);
-    Window_OpenGL& make_window(const WindowCreationParams& params, WindowManager& window_manager);
+    Window_OpenGL& make_window(const WindowConfig& config, WindowManager& window_manager);
 
 private:
     void setupGLDebugging();

@@ -26,18 +26,18 @@ void WindowFactory_Base<T>::glfw_error_callback(int error, const char* descripti
 }
 
 template<typename T>
-Window& WindowFactory_Base<T>::make_main_window(const WindowCreationParams& params)
+Window& WindowFactory_Base<T>::make_main_window(const WindowConfig& config)
 {
-    auto& window = _impl.make_window(params, _window_manager);
+    auto& window = _impl.make_window(config, _window_manager);
     _window_manager.set_main_window(window);
     _impl.setup_main_window(window);
     return window;
 }
 
 template<typename T>
-Window& WindowFactory_Base<T>::make_secondary_window(const WindowCreationParams& params)
+Window& WindowFactory_Base<T>::make_secondary_window(const WindowConfig& config)
 {
-    auto& window = _impl.make_window(params, _window_manager);
+    auto& window = _impl.make_window(config, _window_manager);
     T::setup_secondary_window(window, _window_manager);
     return window;
 }

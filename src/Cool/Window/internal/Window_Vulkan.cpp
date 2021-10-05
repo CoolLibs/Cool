@@ -140,7 +140,7 @@ void Window_Vulkan::rebuild_swapchain()
         _vulkan_window_state.g_MinImageCount);
 }
 
-void Window_Vulkan::cap_framerate(bool should_cap)
+void Window_Vulkan::cap_framerate_if(bool should_cap)
 {
     if (_present_mode_mailbox_is_avaible) {
         _vulkan_window_state.g_MainWindowData.PresentMode = should_cap ? VK_PRESENT_MODE_FIFO_KHR

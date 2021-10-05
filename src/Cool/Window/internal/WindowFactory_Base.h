@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../WindowManager.h"
-#include "WindowCreationParams.h"
+#include "WindowConfig.h"
 
 namespace Cool {
 /**
@@ -21,7 +21,7 @@ public:
      * There can only be one such main window. If you want more windows, use make_secondary_window()
 	 * @return Window& A reference to the window (it is actually stored in the window_manager() who handles its lifetime).
 	 */
-    Window& make_main_window(const WindowCreationParams& params);
+    Window& make_main_window(const WindowConfig& config);
 
     /**
 	 * @brief Creates a secondary window. It will not have an ImGui context.
@@ -29,7 +29,7 @@ public:
      * NB : you must also create one main window for the application to run.
 	 * @return Window& A reference to the window (it is actually stored in the window_manager() who handles its lifetime).
 	 */
-    Window& make_secondary_window(const WindowCreationParams& params);
+    Window& make_secondary_window(const WindowConfig& config);
 
     /**
      * @brief Returns the underlying implementation for a given graphics API.

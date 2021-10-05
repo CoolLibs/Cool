@@ -1,9 +1,9 @@
 #pragma once
 #include "../Window.h"
-#include "WindowCreationParams.h"
+#include "WindowConfig.h"
 
 namespace Cool::WindowFactoryU {
 
-void apply_config(Window& window, WindowCreationParams config);
+void apply_config(Window& window, const WindowConfig& config);
 
 } // namespace Cool::WindowFactoryU

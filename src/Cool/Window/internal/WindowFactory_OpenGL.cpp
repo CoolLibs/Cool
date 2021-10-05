@@ -35,7 +35,7 @@ void WindowFactory_OpenGL::setup_secondary_window(Window_OpenGL&, WindowManager&
     window_manager.main_window().make_current();
 }
 
-Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& params, WindowManager& window_manager)
+Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, WindowManager& window_manager)
 {
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
@@ -52,7 +52,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
     // Create window
     auto&       windows      = window_manager.windows();
     GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
-    windows.push_back(Window_OpenGL{glfwCreateWindow(params.width, params.height, params.title, nullptr, other_window)});
+    windows.push_back(Window_OpenGL{glfwCreateWindow(config.initial_width, config.initial_height, config.title, nullptr, other_window)});
     Window& window = windows.back();
     if (!window.glfw()) {
         const char* errorDescription; // NOLINT
@@ -60,7 +60,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowCreationParams& par
         Log::error("[Glfw] Window or OpenGL context creation failed :\n{}", errorDescription);
     }
     window.make_current();
-    WindowFactoryU::apply_config(window, params);
+    WindowFactoryU::apply_config(window, config);
     // Load Glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { // NOLINT
         Log::error("Failed to initialize Glad");

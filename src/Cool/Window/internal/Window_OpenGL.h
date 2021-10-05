@@ -12,7 +12,7 @@ public:
 
     inline void make_current() { glfwMakeContextCurrent(glfw()); }
 
-    void cap_framerate(bool should_cap) override;
+    void cap_framerate_if(bool should_cap) override;
     bool framerate_is_capped() const override { return _framerate_is_capped; }
 
 private:

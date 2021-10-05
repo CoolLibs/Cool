@@ -30,8 +30,8 @@ public:
      * @return true iff the widget was triggered
      */
     bool         imgui_cap_framerate();
-    virtual void cap_framerate(bool should_cap) = 0;
-    virtual bool framerate_is_capped() const    = 0;
+    virtual void cap_framerate_if(bool should_cap) = 0;
+    virtual bool framerate_is_capped() const       = 0;
 
     /**
      * @brief Returns the underlying glfw window pointer

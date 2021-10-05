@@ -2,9 +2,9 @@
 
 namespace Cool::WindowFactoryU {
 
-void apply_config(Window& window, WindowCreationParams config)
+void apply_config(Window& window, const WindowConfig& config)
 {
-    window.cap_framerate(is_building_as(config.cap_framerate_if));
+    window.cap_framerate_if(is_building_as(config.start_with_capped_framerate_if));
     if (is_building_as(config.maximize_on_startup_if)) {
         glfwMaximizeWindow(window.glfw());
     }

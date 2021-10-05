@@ -9,7 +9,7 @@ Window_OpenGL::Window_OpenGL(GLFWwindow* window)
 {
 }
 
-void Window_OpenGL::cap_framerate(bool should_cap)
+void Window_OpenGL::cap_framerate_if(bool should_cap)
 {
     GLFWwindow* current_glfw = glfwGetCurrentContext();
     glfwMakeContextCurrent(glfw());

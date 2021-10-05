@@ -25,7 +25,7 @@ public:
     void FramePresent();
     void FrameRender(ImDrawData* draw_data);
 
-    void cap_framerate(bool should_cap) override;
+    void cap_framerate_if(bool should_cap) override;
     bool framerate_is_capped() const override;
 
 private:
