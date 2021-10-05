@@ -1,8 +1,13 @@
 #include "CameraU.h"
+#include <Cool/Constants/Constants.h>
 
 namespace Cool::CameraU {
 
-Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, ImageSizeT<float> view_size)
+float roll(const Camera& camera)
+{
+    return glm::dot(camera.right_axis(), Constants::world_up);
+}
+
 Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, ImageSizeT<float> image_size)
 {
     const auto pos       = camera.position();
