@@ -1,5 +1,6 @@
 #include "CameraManager.h"
 #include <Cool/Camera/hook_events.h>
+#include "ViewController_OrbitalU.h"
 
 namespace Cool {
 
@@ -21,11 +22,7 @@ void CameraManager::apply(float aspect_ratio)
 
 void CameraManager::reset_transform()
 {
-    const auto position = glm::vec3{15.f, 0.f, 0.f};
-    const auto look_at  = glm::vec3{0.f};
-
-    _camera = Camera{position, look_at};
-    _view_controller.set_distance_to_orbit_center(glm::distance(position, look_at));
+    ViewController_OrbitalU::reset_transform(_view_controller, _camera);
 }
 
 void CameraManager::imgui()
