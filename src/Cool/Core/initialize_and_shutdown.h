@@ -70,11 +70,14 @@ void run(std::vector<WindowCreationParams> _windows_params)
     for (size_t i = 1; i < _windows_params.size(); ++i) {
         window_factory.make_secondary_window(_windows_params[i]);
     }
-    auto app         = App{window_factory.window_manager().main_window()};
-    auto app_manager = Cool::AppManager{window_factory.window_manager(), app,
-                                        AppManagerConfig{
-                                            .dispatch_keyboard_events_to_imgui = true}};
-    app_manager.run();
+    {
+        auto app         = App{window_factory.window_manager().main_window()};
+        auto app_manager = Cool::AppManager{window_factory.window_manager(), app,
+                                            AppManagerConfig{
+                                                .dispatch_keyboard_events_to_imgui = true}};
+        app_manager.run();
+    }
+    Cool::shut_down();
 }
 
 } // namespace Cool
