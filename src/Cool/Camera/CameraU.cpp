@@ -1,11 +1,22 @@
 #include "CameraU.h"
 #include <Cool/Constants/Constants.h>
+#include <glm/gtx/vector_angle.hpp>
+#include <smart/smart.hpp>
 
 namespace Cool::CameraU {
 
 float roll(const Camera& camera)
 {
-    return glm::dot(camera.right_axis(), Constants::world_up);
+    const auto right         = camera.right_axis();
+    const auto desired_right = glm::normalize(glm::cross(camera.front_axis(), Constants::world_up));
+    return glm::angle(right, desired_right) * smart::sign(glm::dot(right, Constants::world_up));
+}
+
+void reset_roll(Camera& camera)
+{
+    camera.rotate_around(camera.position(),
+                         roll(camera),
+                         camera.front_axis());
 }
 
 Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, ImageSizeT<float> image_size)
