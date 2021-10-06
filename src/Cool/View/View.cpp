@@ -4,14 +4,14 @@
 
 namespace Cool {
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view)
 {
     if (_is_open) {
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
         grab_window_size();
         grab_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
-        display_image(image_texture_id, image_size, need_to_fit);
+        display_image(image_texture_id, _image_size_inside_view);
         ImGui::End();
     }
     else {
@@ -121,12 +121,10 @@ void View::grab_window_position()
     _position      = ScreenCoordinates{pos.x, pos.y};
 }
 
-void View::display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit)
+void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view)
 {
     if (_size.has_value()) {
-        const auto fitted_image_size = need_to_fit
-                                           ? ImageSizeU::fit_into(*_size, image_size)
-                                           : static_cast<ImageSizeT<float>>(*_size);
+        const auto fitted_image_size = _image_size_inside_view.fit_into(*_size);
         ImGuiExtras::image_centered(image_texture_id, {fitted_image_size.width(), fitted_image_size.height()});
     }
 }

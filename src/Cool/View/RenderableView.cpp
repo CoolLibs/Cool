@@ -13,8 +13,8 @@ void RenderableView::imgui_window(bool aspect_ratio_is_constrained)
 {
     view.imgui_window(
         render_target.imgui_texture_id(),
-        render_target.current_size(),
-        aspect_ratio_is_constrained);
+        ImageSizeInsideView{render_target.current_size(),
+                            aspect_ratio_is_constrained});
 }
 
 } // namespace Cool

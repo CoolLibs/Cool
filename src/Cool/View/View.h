@@ -1,12 +1,13 @@
 #pragma once
 #include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Input/MouveEventDispatcher.h>
+#include "ImageSizeInsideView.h"
 
 namespace Cool {
 
 class View {
 public:
-    View(std::string_view name)
+    explicit View(std::string_view name)
         : _name{name}
     {
     }
@@ -14,11 +15,8 @@ public:
      * @brief Displays the render target's image in an ImGui window
      * 
      * @param name The name of the window
-     * @param image_texture_id 
-     * @param image_size 
-     * @param need_to_fit true iff the window and the image are expected to have different aspect ratios and a fitting operation is required 
      */
-    void                     imgui_window(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
+    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
     void                     imgui_open_close_checkbox();
     std::optional<ImageSize> size() const { return _size; }
 
@@ -30,7 +28,7 @@ public:
 private:
     void grab_window_size();
     void grab_window_position();
-    void display_image(ImTextureID image_texture_id, ImageSize image_size, bool need_to_fit);
+    void display_image(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
 
     /**
      * @brief Returns the position relative to the ImGui window.
