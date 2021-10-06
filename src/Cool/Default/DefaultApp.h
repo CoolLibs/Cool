@@ -57,6 +57,15 @@ private:
     bool _show_imgui_debug = true;
     bool _show_imgui_demo  = false;
 #endif
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Camera Manager", _camera));
+    }
 };
 
 } // namespace CoolDefault
