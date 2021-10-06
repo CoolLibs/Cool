@@ -1,7 +1,7 @@
 #pragma once
 #include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Input/MouveEventDispatcher.h>
-#include "ImageSizeInsideView.h"
+#include "ViewEvent.h"
 
 namespace Cool {
 
@@ -20,9 +20,9 @@ public:
     void                     imgui_open_close_checkbox();
     std::optional<ImageSize> size() const { return _size; }
 
-    void dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
-    void dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
-    void dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
+    void dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event);
+    void dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event);
+    void dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event);
     auto mouse_events() -> MouveEventDispatcher<ViewCoordinates>& { return _mouse_event_dispatcher; }
 
 private:

@@ -71,34 +71,34 @@ bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
     }
 }
 
-void View::dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
+void View::dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event)
 {
-    const auto pos = to_view_space(event.position, window);
+    const auto pos = to_view_space(event.event.position, event.window);
     _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
-    if (contains(pos, image_size)) {
+    if (contains(pos, event.image_size)) {
         _mouse_event_dispatcher.move_event().dispatch({pos});
     }
 }
 
-void View::dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
+void View::dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event)
 {
-    const auto pos = to_view_space(event.position, window);
-    if (contains(pos, image_size)) {
+    const auto pos = to_view_space(event.event.position, event.window);
+    if (contains(pos, event.image_size)) {
         _mouse_event_dispatcher.scroll_event().dispatch({.position = pos,
-                                                         .dx       = event.dx,
-                                                         .dy       = event.dy});
+                                                         .dx       = event.event.dx,
+                                                         .dy       = event.event.dy});
     }
 }
 
-void View::dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
+void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event)
 {
-    const auto pos          = to_view_space(event.position, window);
-    const bool contains_pos = contains(pos, image_size);
+    const auto pos          = to_view_space(event.event.position, event.window);
+    const bool contains_pos = contains(pos, event.image_size);
     const auto new_event    = MouseButtonEvent<ViewCoordinates>{
         .position = pos,
-        .button   = event.button,
-        .action   = event.action,
-        .mods     = event.mods};
+        .button   = event.event.button,
+        .action   = event.event.action,
+        .mods     = event.event.mods};
     _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos) {
         _mouse_event_dispatcher.button_event().dispatch(new_event);
