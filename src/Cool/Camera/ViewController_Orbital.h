@@ -17,7 +17,7 @@ public:
 public:
     ViewController_Orbital(ViewController_Orbital::Mode mode = ViewController_Orbital::Mode::Turntable);
 
-    bool ImGui();
+    bool ImGui(Camera& camera);
 
     glm::vec3 get_orbit_center(Camera const& camera) const;
 

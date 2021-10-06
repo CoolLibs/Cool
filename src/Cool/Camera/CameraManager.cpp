@@ -27,7 +27,7 @@ void CameraManager::reset_transform()
 
 void CameraManager::imgui()
 {
-    _view_controller.ImGui();
+    _view_controller.ImGui(_camera);
     if (ImGui::Button("Look at the origin")) {
         _view_controller.set_orbit_center({0, 0, 0}, _camera);
     }

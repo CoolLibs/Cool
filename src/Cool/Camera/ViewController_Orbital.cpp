@@ -1,5 +1,6 @@
 #include "ViewController_Orbital.h"
 #include "Camera.h"
+#include "CameraU.h"
 
 namespace Cool {
 
@@ -8,32 +9,37 @@ ViewController_Orbital::ViewController_Orbital(ViewController_Orbital::Mode mode
 {
 }
 
-bool ViewController_Orbital::ImGui()
+bool ViewController_Orbital::ImGui(Camera& camera)
 {
+    const auto prev_mode = _mode;
+
     int current_combo_item = [&]() {
         switch (_mode) {
-        case ViewController_Orbital::Mode::Turntable:
+        case Mode::Turntable:
             return 0;
-        case ViewController_Orbital::Mode::Trackball:
+        case Mode::Trackball:
             return 1;
-        case ViewController_Orbital::Mode::AxisFree:
+        case Mode::AxisFree:
             return 2;
         default:
-            Log::error("[ViewController_Orbital::ImGui] Unknown ViewController_Orbital::Mode");
+            Log::error("[ViewController_Orbital::ImGui] Unknown enum value");
             return 0;
         }
     }();
     if (ImGui::Combo("Orbit Mode", &current_combo_item, " Turntable\0 Trackball\0 AxisFree\0\0")) {
         switch (current_combo_item) {
         case 0:
-            _mode = ViewController_Orbital::Mode::Turntable;
+            _mode = Mode::Turntable;
             break;
         case 1:
-            _mode = ViewController_Orbital::Mode::Trackball;
+            _mode = Mode::Trackball;
             break;
         case 2:
-            _mode = ViewController_Orbital::Mode::AxisFree;
+            _mode = Mode::AxisFree;
             break;
+        }
+        if (prev_mode == Mode::AxisFree && _mode != Mode::AxisFree) {
+            CameraU::reset_roll(camera);
         }
         return true;
     }
