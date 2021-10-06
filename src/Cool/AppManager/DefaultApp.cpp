@@ -60,7 +60,7 @@ void DefaultApp::imgui_windows()
     // Exporter
     _exporter.imgui_windows(polaroid(), _clock.time());
     //
-    if (!_exporter.is_exporting()) {
+    if (inputs_are_allowed()) {
         // Console
         Cool::Log::ToUser::imgui_console_window();
         // Time
