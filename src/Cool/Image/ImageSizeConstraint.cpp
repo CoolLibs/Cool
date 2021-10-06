@@ -38,7 +38,7 @@ void ImageSizeConstraint::imgui()
     // Nb Pixels
     ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
         int previewNbPixels = _nb_pixels;
-        if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10000, 100000 /*InAppRenderArea().area()*/)) {
+        if (ImGui::SliderInt("Number of Pixels", &previewNbPixels, 10'000, 500'000)) {
             _nb_pixels = previewNbPixels;
         }
     });
