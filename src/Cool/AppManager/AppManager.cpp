@@ -1,4 +1,5 @@
 #include "AppManager.h"
+#include <Cool/Gpu/Vulkan/Context.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "should_we_use_a_separate_thread_for_update.h"
 #if defined(COOL_VULKAN)
@@ -66,6 +67,9 @@ void AppManager::run()
 void AppManager::update()
 {
     prepare_windows(_window_manager);
+#if defined(COOL_VULKAN)
+    vkDeviceWaitIdle(Vulkan::context().g_Device);
+#endif
     _app.update();
     imgui_new_frame();
     imgui_render(_app);
