@@ -1,6 +1,6 @@
 #include "OrbitalState_Rotation.h"
 #include <Cool/Constants/Constants.h>
-#include <Cool/Utils/sign.h>
+#include <smart/smart.hpp>
 #include "../../Camera.h"
 #include "../../ViewController_Orbital.h"
 #include "OrbitalState_Idle.h"
@@ -15,7 +15,7 @@ void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
         case ViewController_Orbital::Mode::Trackball:
             return Constants::world_up;
         case ViewController_Orbital::Mode::Turntable: {
-            const float sign = glm::dot(camera.up_axis(), Constants::world_up) > 0.f ? 1.f : -1.f;
+            const auto sign = smart::sign(glm::dot(camera.up_axis(), Constants::world_up));
             return sign * Constants::world_up;
         }
         case ViewController_Orbital::Mode::AxisFree:
