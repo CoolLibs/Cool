@@ -51,16 +51,19 @@ auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> View
         _size ? static_cast<float>(_size->height()) : 0.f);
 }
 
-bool View::contains(ViewCoordinates pos)
+bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
 {
     if (!_window_is_hovered) {
         return false;
     }
     else {
         if (_size) {
-            const auto size = static_cast<ImageSizeT<float>>(*_size);
-            return pos.x >= 0.f && pos.x <= size.width() &&
-                   pos.y >= 0.f && pos.y <= size.height();
+            const auto img_size   = image_size.fit_into(*_size);
+            const auto pos_in_img = pos + glm::vec2{
+                                              (img_size.width() - _size->width()) * 0.5f,
+                                              (img_size.height() - _size->height()) * 0.5f};
+            return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width() &&
+                   pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
         }
         else {
             return false;
@@ -68,29 +71,29 @@ bool View::contains(ViewCoordinates pos)
     }
 }
 
-void View::dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
 {
     const auto pos = to_view_space(event.position, window);
     _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
-    if (contains(pos)) {
+    if (contains(pos, image_size)) {
         _mouse_event_dispatcher.move_event().dispatch({pos});
     }
 }
 
-void View::dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
 {
     const auto pos = to_view_space(event.position, window);
-    if (contains(pos)) {
+    if (contains(pos, image_size)) {
         _mouse_event_dispatcher.scroll_event().dispatch({.position = pos,
                                                          .dx       = event.dx,
                                                          .dy       = event.dy});
     }
 }
 
-void View::dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window)
+void View::dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size)
 {
     const auto pos          = to_view_space(event.position, window);
-    const bool contains_pos = contains(pos);
+    const bool contains_pos = contains(pos, image_size);
     const auto new_event    = MouseButtonEvent<ViewCoordinates>{
         .position = pos,
         .button   = event.button,

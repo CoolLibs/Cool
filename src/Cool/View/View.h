@@ -20,9 +20,9 @@ public:
     void                     imgui_open_close_checkbox();
     std::optional<ImageSize> size() const { return _size; }
 
-    void dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window);
-    void dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window);
-    void dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window);
+    void dispatch_mouse_move_event(const MouseMoveEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
+    void dispatch_mouse_scroll_event(const MouseScrollEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
+    void dispatch_mouse_button_event(const MouseButtonEvent<WindowCoordinates>& event, GLFWwindow* window, ImageSizeInsideView image_size);
     auto mouse_events() -> MouveEventDispatcher<ViewCoordinates>& { return _mouse_event_dispatcher; }
 
 private:
@@ -37,9 +37,9 @@ private:
     auto to_view_space(WindowCoordinates position, GLFWwindow* window) -> ViewCoordinates;
 
     /**
-     * @brief Returns true iff the position is inside the view
+     * @brief Returns true iff the position is inside the image fitted in the view
      */
-    bool contains(ViewCoordinates pos);
+    bool contains(ViewCoordinates pos, ImageSizeInsideView image_size);
 
 private:
     std::string                           _name              = "";
