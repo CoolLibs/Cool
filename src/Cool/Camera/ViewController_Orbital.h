@@ -19,6 +19,8 @@ public:
 
     bool ImGui();
 
+    glm::vec3 get_orbit_center(Camera const& camera) const;
+
     void        set_orbit_center(glm::vec3 const& orbit_center, Camera& camera);
     inline void set_distance_to_orbit_center(float distance) { _distance_to_orbit_center = distance; }
     inline void set_state(OrbitalState state) { _state = state; }
@@ -34,8 +36,6 @@ private:
     friend class OrbitalState_Idle;
     friend class OrbitalState_Rotation;
     friend class OrbitalState_Translation;
-
-    glm::vec3 get_orbit_center(Camera const& camera) const;
 
 private:
     ViewController_Orbital::Mode _mode;
