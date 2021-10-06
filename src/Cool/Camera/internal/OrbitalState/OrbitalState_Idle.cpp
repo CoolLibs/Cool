@@ -6,13 +6,13 @@
 
 namespace Cool {
 
-void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera&, ModifierKeys mods)
+void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods)
 {
     if (mods.shift()) {
         controller.set_state(OrbitalState_Translation{});
     }
     else {
-        controller.set_state(OrbitalState_Rotation{});
+        controller.set_state(OrbitalState_Rotation{camera});
     }
 }
 

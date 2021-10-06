@@ -7,6 +7,11 @@
 
 namespace Cool {
 
+OrbitalState_Rotation::OrbitalState_Rotation(const Camera& camera)
+    : _sign_of_alignment_with_up{smart::sign(glm::dot(camera.up_axis(), Constants::world_up))}
+{
+}
+
 void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta)
 {
     const auto orbit_center = controller.get_orbit_center(camera);
@@ -15,8 +20,7 @@ void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
         case ViewController_Orbital::Mode::Trackball:
             return Constants::world_up;
         case ViewController_Orbital::Mode::Turntable: {
-            const auto sign = smart::sign(glm::dot(camera.up_axis(), Constants::world_up));
-            return sign * Constants::world_up;
+            return Constants::world_up * _sign_of_alignment_with_up;
         }
         case ViewController_Orbital::Mode::AxisFree:
             return camera.up_axis();

@@ -11,7 +11,7 @@ public:
     enum class Mode {
         Trackball,
         Turntable,
-        AxisFree
+        AxisFree,
     };
 
 public:
