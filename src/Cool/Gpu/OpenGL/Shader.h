@@ -5,9 +5,6 @@
 
 namespace Cool::OpenGL {
 
-using GLuint = unsigned int;
-using GLint  = int;
-
 class Shader {
 public:
     Shader() = default;
@@ -15,7 +12,7 @@ public:
     /// Creates and compiles a full shader pipeline from the shader codes.
     /// </summary>
     /// <param name="shader_codes">A list of the shaders : for example a vertex and a fragment shader.</param>
-    Shader(const std::vector<ShaderSource>& shader_sources);
+    explicit Shader(const std::vector<ShaderSource>& shader_sources);
 
     /// Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
     /// <param name="vertex_shader_file_path">Path to the vertex shader file</param>
