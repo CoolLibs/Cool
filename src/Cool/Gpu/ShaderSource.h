@@ -1,9 +1,8 @@
 #pragma once
-#if defined(COOL_OPENGL)
 
-#include "../ShaderKind.h"
+#include "ShaderKind.h"
 
-namespace Cool::OpenGL {
+namespace Cool {
 
 class ShaderSource {
 public:
@@ -20,6 +19,4 @@ private:
     ShaderKind  _shader_kind;
 };
 
-} // namespace Cool::OpenGL
-
-#endif
+} // namespace Cool

@@ -1,7 +1,7 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
-#include "ShaderSource.h"
+#include <Cool/Gpu/ShaderSource.h>
 
 namespace Cool::OpenGL {
 
