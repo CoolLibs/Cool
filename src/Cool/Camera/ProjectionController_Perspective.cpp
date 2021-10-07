@@ -7,7 +7,7 @@ void ProjectionController_Perspective::apply_to(Camera& camera, float aspect_rat
 {
     camera.set_projection_matrix(
         glm::infinitePerspective(
-            glm::degrees(_field_of_view_in_radians),
+            _field_of_view_in_radians,
             aspect_ratio,
             _near_plane));
 }
