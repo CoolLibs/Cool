@@ -9,7 +9,7 @@ class ShaderSource {
 public:
     explicit ShaderSource(std::string_view glsl_source);
 
-    std::string_view glsl_source() const { return _glsl_source; }
+    const std::string& glsl_source() const { return _glsl_source; }
 
 private:
     std::string _glsl_source;

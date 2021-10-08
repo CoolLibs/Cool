@@ -96,7 +96,7 @@ GLuint Shader::CreateShader(const ShaderDescription& shader_description)
     // Create
     GLDebug(GLuint shader_id = glCreateShader(shader_type));
     // Compile
-    const char* src = shader_description.source_code.glsl_source().data();
+    const char* src = shader_description.source_code.glsl_source().c_str();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
 // Debug
