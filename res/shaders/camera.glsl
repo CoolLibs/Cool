@@ -1,9 +1,8 @@
-uniform mat4 cool_camera_transform;
-uniform mat4 cool_camera_inverse_projection;
+uniform mat4 cool_camera_inverse_view_projection;
 
 vec3 __apply_camera(vec3 pos)
 {
-    vec4 v = (cool_camera_transform * cool_camera_inverse_projection * vec4(pos, 1.));
+    vec4 v = (cool_camera_inverse_view_projection * vec4(pos, 1.));
     return v.xyz / v.w;
 }
 
