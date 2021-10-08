@@ -14,14 +14,14 @@ namespace Cool::OpenGL {
 #define ASSERT_SHADER_IS_BOUND
 #endif
 
-Shader::Shader(const std::vector<ShaderSource>& shader_sources)
+Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
 {
-    create_program(shader_sources);
+    create_program(shader_descriptions);
 }
 
 Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-    : Shader({ShaderSource{File::to_string(vertex_shader_file_path), ShaderKind::Vertex},
-              ShaderSource{File::to_string(fragment_shader_file_path), ShaderKind::Fragment}})
+    : Shader({ShaderDescription{ShaderSource{vertex_shader_file_path}, ShaderKind::Vertex},
+              ShaderDescription{ShaderSource{fragment_shader_file_path}, ShaderKind::Fragment}})
 {
 }
 
@@ -45,7 +45,7 @@ Shader::~Shader()
     glDeleteProgram(_program_id);
 }
 
-void Shader::create_program(const std::vector<ShaderSource>& shader_sources)
+void Shader::create_program(const std::vector<ShaderDescription>& shader_descriptions)
 {
     // Create program
     if (_program_id != 0) {
@@ -55,9 +55,9 @@ void Shader::create_program(const std::vector<ShaderSource>& shader_sources)
     GLDebug(_program_id = glCreateProgram());
     // Compile shaders
     std::vector<GLuint> shader_ids;
-    shader_ids.reserve(shader_sources.size());
-    for (const auto& shader_source : shader_sources) {
-        shader_ids.push_back(CreateShader(shader_source));
+    shader_ids.reserve(shader_descriptions.size());
+    for (const auto& shader_desc : shader_descriptions) {
+        shader_ids.push_back(CreateShader(shader_desc));
         GLDebug(glAttachShader(_program_id, shader_ids.back()));
     }
     // Link
@@ -71,15 +71,15 @@ void Shader::create_program(const std::vector<ShaderSource>& shader_sources)
 
 void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
 {
-    create_program({ShaderSource{vertex_shader_file_path, ShaderKind::Vertex},
-                    ShaderSource{fragment_shader_file_path, ShaderKind::Fragment}});
+    create_program({ShaderDescription{ShaderSource{File::to_string(vertex_shader_file_path)}, ShaderKind::Vertex},
+                    ShaderDescription{ShaderSource{File::to_string(fragment_shader_file_path)}, ShaderKind::Fragment}});
 }
 
-GLuint Shader::CreateShader(const ShaderSource& shader_source)
+GLuint Shader::CreateShader(const ShaderDescription& shader_description)
 {
     // Get shader type
     const GLenum shader_type = [&]() {
-        switch (shader_source.kind()) {
+        switch (shader_description.kind) {
         case ShaderKind::Vertex:
             return GL_VERTEX_SHADER;
         case ShaderKind::Fragment:
@@ -96,8 +96,7 @@ GLuint Shader::CreateShader(const ShaderSource& shader_source)
     // Create
     GLDebug(GLuint shader_id = glCreateShader(shader_type));
     // Compile
-    std::string my_src = shader_source.glsl_source();
-    const char* src    = my_src.c_str();
+    const char* src = shader_description.source_code.glsl_source().data();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
 // Debug

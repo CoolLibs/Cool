@@ -1,19 +1,19 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
+#include "../ShaderSource.h"
 #include "Shader.h"
 
 namespace Cool::OpenGL {
 
 class FullscreenPipeline {
 public:
-    FullscreenPipeline(std::string_view fragment_shader_path);
+    explicit FullscreenPipeline(const ShaderSource& source);
     FullscreenPipeline(const FullscreenPipeline&) = delete;            // non-copyable because we store a handle to a VAO
     FullscreenPipeline& operator=(const FullscreenPipeline&) = delete; // non-copyable because we store a handle to a VAO
     ~FullscreenPipeline();
 
-    void recompile_shader_from_file(std::string_view fragment_shader_path);
-    void recompile_shader_from_source(std::string_view fragment_source_code);
+    void recompile(const ShaderSource& source);
 
     Shader& shader() { return _shader; }
     void    draw();

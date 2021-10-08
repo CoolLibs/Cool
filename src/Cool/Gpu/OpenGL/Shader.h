@@ -1,7 +1,7 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
-#include <Cool/Gpu/ShaderSource.h>
+#include <Cool/Gpu/ShaderDescription.h>
 
 namespace Cool::OpenGL {
 
@@ -11,8 +11,8 @@ public:
 
     /// Creates and compiles a full shader pipeline from the shader codes.
     /// </summary>
-    /// <param name="shader_codes">A list of the shaders : for example a vertex and a fragment shader.</param>
-    explicit Shader(const std::vector<ShaderSource>& shader_sources);
+    /// <param name="shader_descriptions">A list of the shaders : for example a vertex and a fragment shader.</param>
+    explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
 
     /// Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
     /// <param name="vertex_shader_file_path">Path to the vertex shader file</param>
@@ -27,7 +27,7 @@ public:
     /// It can also be used to recompile the shader with different sources as often as you would like.
     /// </summary>
     /// <param name="shader_codes"></param>
-    void create_program(const std::vector<ShaderSource>& shader_sources);
+    void create_program(const std::vector<ShaderDescription>& shader_descriptions);
 
     /// Creates and compiles a shader program. You don't need to call this if you used a non-default constructor.
     /// It can also be used to recompile the shader with different sources as often as you would like.
@@ -55,7 +55,7 @@ private:
     /// <summary>
     /// Creates and compiles a shader, and returns its ID
     /// </summary>
-    static GLuint CreateShader(const ShaderSource& shader_source);
+    static GLuint CreateShader(const ShaderDescription& shader_description);
 
 private:
     std::unordered_map<const char*, GLint> _uniform_locations;
