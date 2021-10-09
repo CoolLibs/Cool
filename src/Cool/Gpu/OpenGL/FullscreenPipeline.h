@@ -14,12 +14,12 @@ public:
 
     void recompile(std::string_view source);
 
-    Shader& shader() { return _shader; }
-    void    draw();
+    auto shader() -> std::optional<Shader>& { return _shader; }
+    void draw();
 
 private:
-    Shader _shader;
-    GLuint _dummy_vao_id{};
+    std::optional<Shader> _shader;
+    GLuint                _dummy_vao_id{};
 };
 
 } // namespace Cool::OpenGL
