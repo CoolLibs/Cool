@@ -11,13 +11,9 @@ public:
      * @brief Throws if there is an error while compiling the shader source code.
      */
     explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
-
-    /**
-     * @brief Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
-     * Throws if there is an error while compiling the shader source code
-     */
-    Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path);
     ~Shader();
+    Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
     Shader(Shader&& o) noexcept;
     Shader& operator=(Shader&& o) noexcept;
 

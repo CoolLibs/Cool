@@ -15,38 +15,33 @@ namespace Cool::OpenGL {
 #define ASSERT_SHADER_IS_BOUND
 #endif
 
-Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
+static GLuint make_shader(const std::vector<ShaderDescription>& shader_descriptions)
 {
-    GLDebug(_program_id = glCreateProgram());
-    // Compile shaders
-    std::vector<ShaderModule> shader_modules;
-    shader_modules.reserve(shader_descriptions.size());
+    GLDebug(GLuint id = glCreateProgram());
     for (const auto& shader_desc : shader_descriptions) {
-        shader_modules.emplace_back(shader_desc);
-        GLDebug(glAttachShader(_program_id, shader_modules.back().id()));
+        GLDebug(glAttachShader(id, ShaderModule{shader_desc}.id()));
     }
-    // Link
-    GLDebug(glLinkProgram(_program_id));
-    GLDebug(glValidateProgram(_program_id));
+    GLDebug(glLinkProgram(id));
+    GLDebug(glValidateProgram(id));
+    return id;
 }
 
-Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-    : Shader({ShaderDescription{std::string{vertex_shader_file_path}, ShaderKind::Vertex},
-              ShaderDescription{std::string{fragment_shader_file_path}, ShaderKind::Fragment}})
+Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
+    : _program_id{make_shader(shader_descriptions)}
 {
 }
 
-Shader::Shader(Shader&& o) noexcept
-    : _program_id(o._program_id)
+Shader::Shader(Shader&& rhs) noexcept
+    : _program_id(rhs._program_id)
 {
-    o._program_id = decltype(o._program_id){};
+    rhs._program_id = decltype(rhs._program_id){};
 }
 
-Shader& Shader::operator=(Shader&& o) noexcept
+Shader& Shader::operator=(Shader&& rhs) noexcept
 {
-    if (&o != this) {
-        _program_id   = o._program_id;
-        o._program_id = decltype(o._program_id){};
+    if (&rhs != this) {
+        _program_id     = rhs._program_id;
+        rhs._program_id = decltype(rhs._program_id){};
     }
     return *this;
 }
