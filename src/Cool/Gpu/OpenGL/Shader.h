@@ -17,28 +17,24 @@ public:
     Shader(Shader&& o) noexcept;
     Shader& operator=(Shader&& o) noexcept;
 
-    /// <summary>
-    /// Binds the shader pipeline.
-    /// </summary>
     void bind() const;
-
-    void set_uniform(std::string_view uniform_name, int v);
-    void set_uniform(std::string_view uniform_name, unsigned int v);
-    void set_uniform(std::string_view uniform_name, bool v);
-    void set_uniform(std::string_view uniform_name, float v);
-    void set_uniform(std::string_view uniform_name, const glm::vec2& v);
-    void set_uniform(std::string_view uniform_name, const glm::vec3& v);
-    void set_uniform(std::string_view uniform_name, const glm::vec4& v);
-    void set_uniform(std::string_view uniform_name, const glm::mat2& mat);
-    void set_uniform(std::string_view uniform_name, const glm::mat3& mat);
-    void set_uniform(std::string_view uniform_name, const glm::mat4& mat);
-
-private:
-    std::unordered_map<const char*, GLint> _uniform_locations;
-    GLint                                  uniform_location(const char* uniform_name);
+    void set_uniform(std::string_view uniform_name, int v) const;
+    void set_uniform(std::string_view uniform_name, unsigned int v) const;
+    void set_uniform(std::string_view uniform_name, bool v) const;
+    void set_uniform(std::string_view uniform_name, float v) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec2& v) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec3& v) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec4& v) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat2& mat) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat3& mat) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat4& mat) const;
 
 private:
-    GLuint _program_id;
+    GLint uniform_location(const char* uniform_name) const;
+
+private:
+    GLuint                                         _program_id;
+    mutable std::unordered_map<const char*, GLint> _uniform_locations;
 
     template<unsigned int, unsigned int, unsigned int>
     friend class ComputeShader;
