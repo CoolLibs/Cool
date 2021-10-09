@@ -2,41 +2,51 @@
 
 namespace Cool::OpenGL {
 
-ShaderModule::ShaderModule(const ShaderDescription& desc)
+static GLenum opengl_shader_kind(ShaderKind kind)
 {
-    const GLenum shader_type = [&]() {
-        switch (desc.kind) {
-        case ShaderKind::Vertex:
-            return GL_VERTEX_SHADER;
-        case ShaderKind::Fragment:
-            return GL_FRAGMENT_SHADER;
-        case ShaderKind::Geometry:
-            return GL_GEOMETRY_SHADER;
-        case ShaderKind::Compute:
-            return GL_COMPUTE_SHADER;
-        default:
-            Log::error("Unknown shader type !");
-            return 0;
-        }
-    }();
-    // Create
-    GLDebug(_id = glCreateShader(shader_type));
-    // Compile
+    switch (kind) {
+    case ShaderKind::Vertex:
+        return GL_VERTEX_SHADER;
+    case ShaderKind::Fragment:
+        return GL_FRAGMENT_SHADER;
+    case ShaderKind::Geometry:
+        return GL_GEOMETRY_SHADER;
+    case ShaderKind::Compute:
+        return GL_COMPUTE_SHADER;
+    default:
+        Log::error("[opengl_shader_kind] Unknown enum value");
+        return 0;
+    }
+}
+
+static GLuint make_shader_module_id(const ShaderDescription& desc)
+{
+    GLDebug(GLuint id = glCreateShader(opengl_shader_kind(desc.kind)));
     const char* src = desc.source_code.c_str();
-    GLDebug(glShaderSource(_id, 1, &src, nullptr));
-    GLDebug(glCompileShader(_id));
-// Debug
-#if defined(DEBUG)
+    GLDebug(glShaderSource(id, 1, &src, nullptr));
+    GLDebug(glCompileShader(id));
+    return id;
+}
+
+static void validate_shader_module(GLuint id)
+{
     int result; // NOLINT
-    GLDebug(glGetShaderiv(_id, GL_COMPILE_STATUS, &result));
+    GLDebug(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
         int length; // NOLINT
-        GLDebug(glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &length));
+        GLDebug(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         char* message = (char*)alloca(length * sizeof(char)); // NOLINT
-        GLDebug(glGetShaderInfoLog(_id, length, &length, message));
+        GLDebug(glGetShaderInfoLog(id, length, &length, message));
         Log::error("Shader compilation failed :\n{}", message);
-        GLDebug(glDeleteShader(_id));
+        GLDebug(glDeleteShader(id));
     }
+}
+
+ShaderModule::ShaderModule(const ShaderDescription& desc)
+    : _id{make_shader_module_id(desc)}
+{
+#if defined(DEBUG)
+    validate_shader_module(_id);
 #endif
 }
 
