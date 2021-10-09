@@ -2,6 +2,7 @@
 
 #include "ShaderModule.h"
 #include <exception>
+#include "../ShaderSource.h"
 
 namespace Cool::OpenGL {
 
@@ -40,7 +41,8 @@ static void validate_shader_module(GLuint id, const std::string& name)
 static GLuint make_shader_module(const ShaderDescription& desc)
 {
     GLDebug(GLuint id = glCreateShader(opengl_shader_kind(desc.kind)));
-    auto src = desc.source_code.c_str();
+    auto preprocessed_source = preprocess_shader_source(desc.source_code);
+    auto src                 = preprocessed_source.c_str();
     GLDebug(glShaderSource(id, 1, &src, nullptr));
     GLDebug(glCompileShader(id));
     validate_shader_module(id, desc.name);
