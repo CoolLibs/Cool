@@ -19,10 +19,10 @@ static GLenum opengl_shader_kind(ShaderKind kind)
     }
 }
 
-static GLuint make_shader_module_id(const ShaderDescription& desc)
+static GLuint make_shader_module(const ShaderDescription& desc)
 {
     GLDebug(GLuint id = glCreateShader(opengl_shader_kind(desc.kind)));
-    const char* src = desc.source_code.c_str();
+    auto src = desc.source_code.c_str();
     GLDebug(glShaderSource(id, 1, &src, nullptr));
     GLDebug(glCompileShader(id));
     return id;
@@ -35,15 +35,15 @@ static void validate_shader_module(GLuint id)
     if (result == GL_FALSE) {
         int length; // NOLINT
         GLDebug(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-        char* message = (char*)alloca(length * sizeof(char)); // NOLINT
-        GLDebug(glGetShaderInfoLog(id, length, &length, message));
-        Log::error("Shader compilation failed :\n{}", message);
-        GLDebug(glDeleteShader(id));
+        std::vector<char> error_message;
+        error_message.reserve(length);
+        GLDebug(glGetShaderInfoLog(id, length, &length, error_message.data()));
+        Log::error("Shader compilation failed :\n{}", error_message.data());
     }
 }
 
 ShaderModule::ShaderModule(const ShaderDescription& desc)
-    : _id{make_shader_module_id(desc)}
+    : _id{make_shader_module(desc)}
 {
 #if defined(DEBUG)
     validate_shader_module(_id);
