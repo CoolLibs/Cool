@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include <Cool/File/File.h>
+#include "ShaderModule.h"
 
 namespace Cool::OpenGL {
 
@@ -54,65 +55,21 @@ void Shader::create_program(const std::vector<ShaderDescription>& shader_descrip
     }
     GLDebug(_program_id = glCreateProgram());
     // Compile shaders
-    std::vector<GLuint> shader_ids;
-    shader_ids.reserve(shader_descriptions.size());
+    std::vector<ShaderModule> shader_modules;
+    shader_modules.reserve(shader_descriptions.size());
     for (const auto& shader_desc : shader_descriptions) {
-        shader_ids.push_back(CreateShader(shader_desc));
-        GLDebug(glAttachShader(_program_id, shader_ids.back()));
+        shader_modules.emplace_back(shader_desc);
+        GLDebug(glAttachShader(_program_id, shader_modules.back().id()));
     }
     // Link
     GLDebug(glLinkProgram(_program_id));
     GLDebug(glValidateProgram(_program_id));
-    // Delete shaders
-    for (auto shader_id : shader_ids) {
-        glDeleteShader(shader_id);
-    }
 }
 
 void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
 {
     create_program({ShaderDescription{File::to_string(vertex_shader_file_path), ShaderKind::Vertex},
                     ShaderDescription{File::to_string(fragment_shader_file_path), ShaderKind::Fragment}});
-}
-
-GLuint Shader::CreateShader(const ShaderDescription& shader_description)
-{
-    // Get shader type
-    const GLenum shader_type = [&]() {
-        switch (shader_description.kind) {
-        case ShaderKind::Vertex:
-            return GL_VERTEX_SHADER;
-        case ShaderKind::Fragment:
-            return GL_FRAGMENT_SHADER;
-        case ShaderKind::Geometry:
-            return GL_GEOMETRY_SHADER;
-        case ShaderKind::Compute:
-            return GL_COMPUTE_SHADER;
-        default:
-            Log::error("Unknown shader type !");
-            return 0;
-        }
-    }();
-    // Create
-    GLDebug(GLuint shader_id = glCreateShader(shader_type));
-    // Compile
-    const char* src = shader_description.source_code.c_str();
-    GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
-    GLDebug(glCompileShader(shader_id));
-// Debug
-#if defined(DEBUG)
-    int result; // NOLINT
-    GLDebug(glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result));
-    if (result == GL_FALSE) {
-        int length; // NOLINT
-        GLDebug(glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length));
-        char* message = (char*)alloca(length * sizeof(char)); // NOLINT
-        GLDebug(glGetShaderInfoLog(shader_id, length, &length, message));
-        Log::error("Shader compilation failed :\n{}", message);
-        GLDebug(glDeleteShader(shader_id));
-    }
-#endif
-    return shader_id;
 }
 
 void Shader::bind() const

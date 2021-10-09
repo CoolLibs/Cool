@@ -52,12 +52,6 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::mat4& mat);
 
 private:
-    /// <summary>
-    /// Creates and compiles a shader, and returns its ID
-    /// </summary>
-    static GLuint CreateShader(const ShaderDescription& shader_description);
-
-private:
     std::unordered_map<const char*, GLint> _uniform_locations;
     GLint                                  uniform_location(const char* uniform_name);
 
