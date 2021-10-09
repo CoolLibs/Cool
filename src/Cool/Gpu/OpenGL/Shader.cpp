@@ -73,12 +73,15 @@ void Shader::bind() const
 
 GLint Shader::uniform_location(const char* uniform_name) const
 {
-    if (_uniform_locations.find(uniform_name) != _uniform_locations.end()) {
-        return _uniform_locations[uniform_name];
+    auto it = _uniform_locations.find(uniform_name);
+    if (it != _uniform_locations.end()) {
+        return it->second;
     }
-    GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name));
-    _uniform_locations[uniform_name] = location;
-    return location;
+    else {
+        GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name));
+        _uniform_locations[uniform_name] = location;
+        return location;
+    }
 }
 
 void Shader::set_uniform(std::string_view uniform_name, int v) const
