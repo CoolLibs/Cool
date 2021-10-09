@@ -1,4 +1,5 @@
 #pragma once
+#if defined(COOL_OPENGL)
 
 namespace Cool {
 
@@ -18,3 +19,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

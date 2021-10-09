@@ -1,4 +1,5 @@
 #pragma once
+#if defined(COOL_OPENGL)
 
 #include "../ShaderDescription.h"
 
@@ -23,3 +24,5 @@ private:
 };
 
 } // namespace Cool::OpenGL
+
+#endif

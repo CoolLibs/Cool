@@ -1,4 +1,5 @@
 #pragma once
+#if defined(COOL_OPENGL)
 
 #include <Cool/Log/ToUser.h>
 #include "Shader.h"
@@ -17,3 +18,5 @@ inline std::optional<Shader> try_make_shader(const std::vector<ShaderDescription
 }
 
 } // namespace Cool::OpenGL
+
+#endif

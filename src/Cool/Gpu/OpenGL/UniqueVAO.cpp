@@ -1,3 +1,5 @@
+#if defined(COOL_OPENGL)
+
 #include "UniqueVAO.h"
 
 namespace Cool {
@@ -28,3 +30,5 @@ UniqueVAO& UniqueVAO::operator=(UniqueVAO&& rhs) noexcept
 }
 
 } // namespace Cool
+
+#endif

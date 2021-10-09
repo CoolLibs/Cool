@@ -1,3 +1,5 @@
+#if defined(COOL_OPENGL)
+
 #include "ShaderModule.h"
 #include <exception>
 
@@ -71,3 +73,5 @@ ShaderModule::~ShaderModule()
 }
 
 } // namespace Cool::OpenGL
+
+#endif
