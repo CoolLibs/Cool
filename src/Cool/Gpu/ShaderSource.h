@@ -1,18 +1,7 @@
 #pragma once
 
-#include <Cool/File/File.h>
-#include "ShaderKind.h"
+namespace Cool::OpenGL {
 
-namespace Cool {
+std::string preprocess_shader_source(const std::string& source);
 
-class ShaderSource {
-public:
-    explicit ShaderSource(std::string_view glsl_source);
-
-    const std::string& glsl_source() const { return _glsl_source; }
-
-private:
-    std::string _glsl_source;
-};
-
-} // namespace Cool
+} // namespace Cool::OpenGL
