@@ -49,10 +49,10 @@ public:
     template<typename... Args>
     static inline void error(std::string_view category, Args&&... args)
     {
-        // add_message(
-        //     {Message::Severity::Error,
-        //      std::string{category},
-        //      fmt::format(std::forward<Args>(args)...)});
+        add_message(
+            {Message::Severity::Error,
+             std::string{category},
+             fmt::format(std::forward<Args>(args)...)});
     }
 
     /**
