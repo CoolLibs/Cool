@@ -71,15 +71,15 @@ void Shader::bind() const
     GLDebug(glUseProgram(_program_id));
 }
 
-GLint Shader::uniform_location(const char* uniform_name) const
+GLint Shader::uniform_location(std::string_view uniform_name) const
 {
-    auto it = _uniform_locations.find(uniform_name);
+    auto it = _uniform_locations.find(uniform_name.data());
     if (it != _uniform_locations.end()) {
         return it->second;
     }
     else {
-        GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name));
-        _uniform_locations[uniform_name] = location;
+        GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name.data()));
+        _uniform_locations[uniform_name.data()] = location;
         return location;
     }
 }
@@ -87,7 +87,7 @@ GLint Shader::uniform_location(const char* uniform_name) const
 void Shader::set_uniform(std::string_view uniform_name, int v) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniform1i(uniform_location(uniform_name.data()), v));
+    GLDebug(glUniform1i(uniform_location(uniform_name), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, unsigned int v) const
 {
@@ -100,37 +100,37 @@ void Shader::set_uniform(std::string_view uniform_name, bool v) const
 void Shader::set_uniform(std::string_view uniform_name, float v) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniform1f(uniform_location(uniform_name.data()), v));
+    GLDebug(glUniform1f(uniform_location(uniform_name), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniform2f(uniform_location(uniform_name.data()), v.x, v.y));
+    GLDebug(glUniform2f(uniform_location(uniform_name), v.x, v.y));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec3& v) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniform3f(uniform_location(uniform_name.data()), v.x, v.y, v.z));
+    GLDebug(glUniform3f(uniform_location(uniform_name), v.x, v.y, v.z));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniform4f(uniform_location(uniform_name.data()), v.x, v.y, v.z, v.w));
+    GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniformMatrix2fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+    GLDebug(glUniformMatrix2fv(uniform_location(uniform_name), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat3& mat) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniformMatrix3fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+    GLDebug(glUniformMatrix3fv(uniform_location(uniform_name), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat) const
 {
     assert_shader_is_bound(_program_id);
-    GLDebug(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
+    GLDebug(glUniformMatrix4fv(uniform_location(uniform_name), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
 } // namespace Cool::OpenGL

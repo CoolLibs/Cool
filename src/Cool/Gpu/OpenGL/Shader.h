@@ -30,7 +30,7 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::mat4& mat) const;
 
 private:
-    GLint uniform_location(const char* uniform_name) const;
+    GLint uniform_location(std::string_view uniform_name) const;
 
 private:
     GLuint                                         _program_id;
