@@ -6,14 +6,14 @@
 
 namespace Cool::OpenGL {
 
+static void assert_shader_is_bound(GLuint id)
+{
 #if defined(DEBUG)
-#define ASSERT_SHADER_IS_BOUND              \
-    GLint id;                               \
-    glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
-    assert(id == _program_id && "The shader must be bound before setting any uniform");
-#else
-#define ASSERT_SHADER_IS_BOUND
+    GLint current_id;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &current_id);
+    assert(current_id == id && "The shader must be bound before setting any uniform.");
 #endif
+}
 
 void validate_shader(GLuint id)
 {
@@ -84,7 +84,7 @@ GLint Shader::uniform_location(const char* uniform_name)
 
 void Shader::set_uniform(std::string_view uniform_name, int v)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniform1i(uniform_location(uniform_name.data()), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, unsigned int v)
@@ -97,37 +97,37 @@ void Shader::set_uniform(std::string_view uniform_name, bool v)
 }
 void Shader::set_uniform(std::string_view uniform_name, float v)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniform1f(uniform_location(uniform_name.data()), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniform2f(uniform_location(uniform_name.data()), v.x, v.y));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec3& v)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniform3f(uniform_location(uniform_name.data()), v.x, v.y, v.z));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniform4f(uniform_location(uniform_name.data()), v.x, v.y, v.z, v.w));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniformMatrix2fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat3& mat)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniformMatrix3fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat)
 {
-    ASSERT_SHADER_IS_BOUND;
+    assert_shader_is_bound(_program_id);
     GLDebug(glUniformMatrix4fv(uniform_location(uniform_name.data()), 1, GL_FALSE, glm::value_ptr(mat)));
 }
 
