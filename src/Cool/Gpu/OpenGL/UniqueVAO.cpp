@@ -15,14 +15,14 @@ UniqueVAO::~UniqueVAO()
 UniqueVAO::UniqueVAO(UniqueVAO&& rhs) noexcept
     : _id{rhs._id}
 {
-    rhs._id = GLuint{};
+    rhs._id = decltype(rhs._id){};
 }
 
 UniqueVAO& UniqueVAO::operator=(UniqueVAO&& rhs) noexcept
 {
     if (&rhs != this) {
         _id     = rhs._id;
-        rhs._id = GLuint{};
+        rhs._id = decltype(rhs._id){};
     }
     return *this;
 }

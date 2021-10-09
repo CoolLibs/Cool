@@ -53,14 +53,14 @@ ShaderModule::ShaderModule(const ShaderDescription& desc)
 ShaderModule::ShaderModule(ShaderModule&& rhs) noexcept
     : _id{rhs._id}
 {
-    rhs._id = GLuint{};
+    rhs._id = decltype(rhs._id){};
 }
 
 ShaderModule& ShaderModule::operator=(ShaderModule&& rhs) noexcept
 {
     if (&rhs != this) {
         _id     = rhs._id;
-        rhs._id = GLuint{};
+        rhs._id = decltype(rhs._id){};
     }
     return *this;
 }
