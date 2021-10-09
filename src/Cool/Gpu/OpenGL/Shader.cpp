@@ -15,6 +15,22 @@ namespace Cool::OpenGL {
 #define ASSERT_SHADER_IS_BOUND
 #endif
 
+void validate_shader(GLuint id)
+{
+    GLDebug(glValidateProgram(id));
+    GLint result;
+    GLDebug(glGetProgramiv(id, GL_VALIDATE_STATUS, &result));
+    if (result == GL_FALSE) {
+        GLsizei length;
+        GLDebug(glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length));
+        std::vector<GLchar> error_message;
+        error_message.reserve(length);
+        GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
+        GLDebug(glDeleteProgram(id));
+        throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
+    }
+}
+
 static GLuint make_shader(const std::vector<ShaderDescription>& shader_descriptions)
 {
     GLDebug(GLuint id = glCreateProgram());
@@ -22,7 +38,7 @@ static GLuint make_shader(const std::vector<ShaderDescription>& shader_descripti
         GLDebug(glAttachShader(id, ShaderModule{shader_desc}.id()));
     }
     GLDebug(glLinkProgram(id));
-    GLDebug(glValidateProgram(id));
+    validate_shader(id);
     return id;
 }
 

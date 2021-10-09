@@ -25,11 +25,11 @@ static void validate_shader_module(GLuint id)
     int result; // NOLINT
     GLDebug(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE) {
-        int length; // NOLINT
+        GLsizei length; // NOLINT
         GLDebug(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-        std::vector<char> error_message;
+        std::vector<GLchar> error_message;
         error_message.reserve(length);
-        GLDebug(glGetShaderInfoLog(id, length, &length, error_message.data()));
+        GLDebug(glGetShaderInfoLog(id, length, nullptr, error_message.data()));
         GLDebug(glDeleteShader(id));
         throw std::invalid_argument(std::string{"Compilation failed:\n"} + error_message.data());
     }
