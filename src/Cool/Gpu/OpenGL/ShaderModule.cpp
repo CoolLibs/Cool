@@ -2,7 +2,7 @@
 
 #include "ShaderModule.h"
 #include <exception>
-#include "../ShaderSource.h"
+#include "preprocess_shader_source.h"
 
 namespace Cool::OpenGL {
 

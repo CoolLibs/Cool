@@ -1,4 +1,6 @@
-#include "ShaderSource.h"
+#if defined(COOL_OPENGL)
+
+#include "preprocess_shader_source.h"
 #include <Cool/File/File.h>
 #include <Cool/RegExp/RegExp.h>
 #include <sstream>
@@ -30,3 +32,5 @@ std::string preprocess_shader_source(const std::string& source)
 }
 
 } // namespace Cool::OpenGL
+
+#endif
