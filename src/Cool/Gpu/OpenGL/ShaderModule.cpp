@@ -40,6 +40,21 @@ ShaderModule::ShaderModule(const ShaderDescription& desc)
 #endif
 }
 
+ShaderModule::ShaderModule(ShaderModule&& rhs) noexcept
+    : _id{rhs._id}
+{
+    rhs._id = GLuint{};
+}
+
+ShaderModule& ShaderModule::operator=(ShaderModule&& rhs) noexcept
+{
+    if (&rhs != this) {
+        _id     = rhs._id;
+        rhs._id = GLuint{};
+    }
+    return *this;
+}
+
 ShaderModule::~ShaderModule()
 {
     GLDebug(glDeleteShader(_id));
