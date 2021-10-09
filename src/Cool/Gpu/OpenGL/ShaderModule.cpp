@@ -1,4 +1,5 @@
 #include "ShaderModule.h"
+#include <exception>
 
 namespace Cool::OpenGL {
 
@@ -38,16 +39,14 @@ static void validate_shader_module(GLuint id)
         std::vector<char> error_message;
         error_message.reserve(length);
         GLDebug(glGetShaderInfoLog(id, length, &length, error_message.data()));
-        Log::error("Shader compilation failed :\n{}", error_message.data());
+        throw std::invalid_argument(std::string{"Compilation failed:\n"} + error_message.data());
     }
 }
 
 ShaderModule::ShaderModule(const ShaderDescription& desc)
     : _id{make_shader_module(desc)}
 {
-#if defined(DEBUG)
     validate_shader_module(_id);
-#endif
 }
 
 ShaderModule::ShaderModule(ShaderModule&& rhs) noexcept

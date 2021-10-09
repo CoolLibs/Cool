@@ -9,14 +9,19 @@ class Shader {
 public:
     Shader() = default;
 
-    /// Creates and compiles a full shader pipeline from the shader codes.
-    /// </summary>
-    /// <param name="shader_descriptions">A list of the shaders : for example a vertex and a fragment shader.</param>
+    /**
+     * @brief Throws if there is an error while compiling the shader source code.
+     */
     explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
 
-    /// Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
+    ///
     /// <param name="vertex_shader_file_path">Path to the vertex shader file</param>
     /// <param name="fragment_shader_file_path">Path to the fragment shader file</param>
+
+    /**
+     * @brief Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
+     * Throws if there is an error while compiling the shader source code
+     */
     Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path);
     ~Shader();
     Shader(Shader&& o) noexcept;

@@ -6,6 +6,11 @@ namespace Cool::OpenGL {
 
 class ShaderModule {
 public:
+    /**
+     * @brief Construct a new Shader Module object
+     * Throws if there is an error while compiling the shader source code
+     * @param desc 
+     */
     explicit ShaderModule(const ShaderDescription& desc);
     ~ShaderModule();
     ShaderModule(const ShaderModule&) = delete;
