@@ -73,13 +73,14 @@ void Shader::bind() const
 
 GLint Shader::uniform_location(std::string_view uniform_name) const
 {
-    auto it = _uniform_locations.find(uniform_name.data());
+    const auto name = std::string{uniform_name};
+    const auto it   = _uniform_locations.find(name);
     if (it != _uniform_locations.end()) {
         return it->second;
     }
     else {
-        GLDebug(GLint location = glGetUniformLocation(_program_id, uniform_name.data()));
-        _uniform_locations[uniform_name.data()] = location;
+        GLDebug(GLint location = glGetUniformLocation(_program_id, name.c_str()));
+        _uniform_locations[name] = location;
         return location;
     }
 }

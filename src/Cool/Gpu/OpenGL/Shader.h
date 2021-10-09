@@ -34,7 +34,7 @@ private:
 
 private:
     GLuint                                         _program_id;
-    mutable std::unordered_map<const char*, GLint> _uniform_locations;
+    mutable std::unordered_map<std::string, GLint> _uniform_locations;
 
     template<unsigned int, unsigned int, unsigned int>
     friend class ComputeShader;
