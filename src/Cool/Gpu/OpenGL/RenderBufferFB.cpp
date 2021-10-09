@@ -1,6 +1,6 @@
 #if defined(COOL_OPENGL)
 
-#include "../RenderBufferFB.h"
+#include "RenderBufferFB.h"
 
 namespace Cool {
 

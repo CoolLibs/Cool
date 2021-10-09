@@ -1,6 +1,6 @@
 #if defined(COOL_OPENGL)
 
-#include "../FrameBuffer.h"
+#include "FrameBuffer.h"
 
 namespace Cool {
 

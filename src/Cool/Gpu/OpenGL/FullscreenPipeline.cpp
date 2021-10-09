@@ -1,8 +1,8 @@
 #if defined(COOL_OPENGL)
 
-#include "../FullscreenPipeline.h"
+#include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
-#include "../../ShaderDescription.h"
+#include "../ShaderDescription.h"
 
 namespace Cool::OpenGL {
 
