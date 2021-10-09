@@ -17,42 +17,6 @@ namespace Cool::OpenGL {
 
 Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
 {
-    create_program(shader_descriptions);
-}
-
-Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-    : Shader({ShaderDescription{std::string{vertex_shader_file_path}, ShaderKind::Vertex},
-              ShaderDescription{std::string{fragment_shader_file_path}, ShaderKind::Fragment}})
-{
-}
-
-Shader::Shader(Shader&& o) noexcept
-    : _program_id(o._program_id)
-{
-    o._program_id = 0;
-}
-
-Shader& Shader::operator=(Shader&& o) noexcept
-{
-    if (&o != this) {
-        _program_id   = o._program_id;
-        o._program_id = 0;
-    }
-    return *this;
-}
-
-Shader::~Shader()
-{
-    glDeleteProgram(_program_id);
-}
-
-void Shader::create_program(const std::vector<ShaderDescription>& shader_descriptions)
-{
-    // Create program
-    if (_program_id != 0) {
-        GLDebug(glDeleteProgram(_program_id));
-        _uniform_locations.clear();
-    }
     GLDebug(_program_id = glCreateProgram());
     // Compile shaders
     std::vector<ShaderModule> shader_modules;
@@ -66,10 +30,30 @@ void Shader::create_program(const std::vector<ShaderDescription>& shader_descrip
     GLDebug(glValidateProgram(_program_id));
 }
 
-void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
+Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
+    : Shader({ShaderDescription{std::string{vertex_shader_file_path}, ShaderKind::Vertex},
+              ShaderDescription{std::string{fragment_shader_file_path}, ShaderKind::Fragment}})
 {
-    create_program({ShaderDescription{File::to_string(vertex_shader_file_path), ShaderKind::Vertex},
-                    ShaderDescription{File::to_string(fragment_shader_file_path), ShaderKind::Fragment}});
+}
+
+Shader::Shader(Shader&& o) noexcept
+    : _program_id(o._program_id)
+{
+    o._program_id = decltype(o._program_id){};
+}
+
+Shader& Shader::operator=(Shader&& o) noexcept
+{
+    if (&o != this) {
+        _program_id   = o._program_id;
+        o._program_id = decltype(o._program_id){};
+    }
+    return *this;
+}
+
+Shader::~Shader()
+{
+    glDeleteProgram(_program_id);
 }
 
 void Shader::bind() const
