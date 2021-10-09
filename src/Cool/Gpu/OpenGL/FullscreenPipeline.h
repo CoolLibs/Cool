@@ -7,18 +7,22 @@ namespace Cool::OpenGL {
 
 class FullscreenPipeline {
 public:
-    explicit FullscreenPipeline(std::string_view source);
+    FullscreenPipeline();
+    explicit FullscreenPipeline(std::string_view fragment_shader_source_code);
     FullscreenPipeline(const FullscreenPipeline&) = delete;            // non-copyable because we store a handle to a VAO
     FullscreenPipeline& operator=(const FullscreenPipeline&) = delete; // non-copyable because we store a handle to a VAO
     ~FullscreenPipeline();
 
-    void recompile(std::string_view source);
+    /**
+     * @brief Compiles the fragment shader source code and creates a new pipeline using this new shader.
+     */
+    void compile(std::string_view fragment_shader_source_code);
 
     auto shader() -> std::optional<Shader>& { return _shader; }
     void draw();
 
 private:
-    std::optional<Shader> _shader;
+    std::optional<Shader> _shader{};
     GLuint                _dummy_vao_id{};
 };
 

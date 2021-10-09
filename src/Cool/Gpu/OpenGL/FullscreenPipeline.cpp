@@ -6,16 +6,15 @@
 
 namespace Cool::OpenGL {
 
-static std::vector<ShaderDescription> shader_descriptions(std::string_view source)
-{
-    return {ShaderDescription{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), ShaderKind::Vertex},
-            ShaderDescription{std::string{source}, ShaderKind::Fragment}};
-}
-
-FullscreenPipeline::FullscreenPipeline(std::string_view source)
-    : _shader{try_make_shader(shader_descriptions(source))}
+FullscreenPipeline::FullscreenPipeline()
 {
     GLDebug(glGenVertexArrays(1, &_dummy_vao_id));
+}
+
+FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code)
+    : FullscreenPipeline{}
+{
+    compile(fragment_shader_source_code);
 }
 
 FullscreenPipeline::~FullscreenPipeline()
@@ -23,9 +22,10 @@ FullscreenPipeline::~FullscreenPipeline()
     GLDebug(glDeleteVertexArrays(1, &_dummy_vao_id));
 }
 
-void FullscreenPipeline::recompile(std::string_view source)
+void FullscreenPipeline::compile(std::string_view fragment_shader_source_code)
 {
-    _shader = try_make_shader(shader_descriptions(source));
+    _shader = try_make_shader({ShaderDescription{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), ShaderKind::Vertex},
+                               ShaderDescription{std::string{fragment_shader_source_code}, ShaderKind::Fragment}});
 }
 
 void FullscreenPipeline::draw()
