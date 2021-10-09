@@ -1,13 +1,13 @@
 #pragma once
 #if defined(COOL_VULKAN)
 
-#include <Cool/Gpu/ShaderKind.h>
+#include "../ShaderDescription.h"
 
 namespace Cool::Vulkan {
 
 class ShaderModule {
 public:
-    ShaderModule(std::string_view file_path, Cool::ShaderKind shader_kind);
+    explicit ShaderModule(const ShaderDescription& shader_description);
 
     const vku::ShaderModule& vku() const { return _vku_shader_module; }
 

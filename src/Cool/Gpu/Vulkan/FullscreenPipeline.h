@@ -8,7 +8,7 @@ namespace Cool::Vulkan {
 
 class FullscreenPipeline {
 public:
-    FullscreenPipeline(std::string_view fragment_shader_path);
+    explicit FullscreenPipeline(std::string_view fragment_shader_source_code);
 
     void rebuild_for_render_target(const RenderTargetInfo& render_target_info);
 

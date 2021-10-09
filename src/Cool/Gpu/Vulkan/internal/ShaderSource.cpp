@@ -2,13 +2,6 @@
 
 #include "../ShaderSource.h"
 
-namespace Cool::Vulkan {
-
-ShaderSource::ShaderSource(std::string_view vulkan_glsl_source, ShaderKind shader_kind)
-    : _vulkan_glsl_source{vulkan_glsl_source}, _shader_kind{shader_kind}
-{
-}
-
 static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind)
 {
     switch (shader_kind) {
@@ -21,18 +14,20 @@ static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind
     case Cool::ShaderKind::Compute:
         return shaderc_shader_kind::shaderc_compute_shader;
     default:
-        Log::error("[ShaderSource::shader_kind_cool2shaderc] Unkown enum value \"{}\"", static_cast<int>(shader_kind));
+        Cool::Log::error("[ShaderSource::shader_kind_cool2shaderc] Unkown enum value \"{}\"", static_cast<int>(shader_kind));
         return shaderc_shader_kind::shaderc_vertex_shader;
     }
 }
 
-shaderc::SpvCompilationResult ShaderSource::to_spirv() const
+namespace Cool::Vulkan::ShaderSource {
+
+shaderc::SpvCompilationResult to_spirv(const ShaderDescription& shader_description)
 {
     shaderc::Compiler       compiler;
     shaderc::CompileOptions options;
     options.AddMacroDefinition("COOL_VULKAN");
 
-    auto res = compiler.CompileGlslToSpv(_vulkan_glsl_source, shader_kind_cool2shaderc(_shader_kind), "Unknown", options);
+    auto res = compiler.CompileGlslToSpv(shader_description.source_code, shader_kind_cool2shaderc(shader_description.kind), "Unknown", options);
 
     if (!res.GetErrorMessage().empty()) {
         Log::warn(res.GetErrorMessage());
@@ -41,6 +36,6 @@ shaderc::SpvCompilationResult ShaderSource::to_spirv() const
     return res;
 }
 
-} // namespace Cool::Vulkan
+} // namespace Cool::Vulkan::ShaderSource
 
 #endif
