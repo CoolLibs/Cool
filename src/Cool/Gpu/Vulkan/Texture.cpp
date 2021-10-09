@@ -1,8 +1,8 @@
 #if defined(COOL_VULKAN)
 
-#include "../../Texture.h"
+#include "../Texture.h"
 #include <imgui/backends/imgui_impl_vulkan.h>
-#include "../Context.h"
+#include "Context.h"
 
 namespace Cool::Vulkan {
 

@@ -1,9 +1,9 @@
 #if defined(COOL_VULKAN)
 
-#include "../ShaderModule.h"
+#include "ShaderModule.h"
 #include <Cool/File/File.h>
-#include "../Context.h "
-#include "../ShaderSource.h"
+#include "Context.h "
+#include "ShaderSource.h"
 
 namespace Cool::Vulkan {
 

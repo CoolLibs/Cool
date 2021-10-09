@@ -1,9 +1,9 @@
 #if defined(COOL_VULKAN)
 
-#include "../Context.h"
+#include "Context.h"
 #include <Cool/Utils/Version.h>
 #include <GLFW/glfw3.h>
-#include "check_result.h"
+#include "internal/check_result.h"
 
 namespace Cool::Vulkan {
 #if defined(DEBUG)

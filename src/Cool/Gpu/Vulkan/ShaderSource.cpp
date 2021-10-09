@@ -1,6 +1,6 @@
 #if defined(COOL_VULKAN)
 
-#include "../ShaderSource.h"
+#include "ShaderSource.h"
 
 static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind)
 {
