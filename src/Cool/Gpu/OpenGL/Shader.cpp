@@ -20,8 +20,8 @@ Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
 }
 
 Shader::Shader(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
-    : Shader({ShaderDescription{ShaderSource{vertex_shader_file_path}, ShaderKind::Vertex},
-              ShaderDescription{ShaderSource{fragment_shader_file_path}, ShaderKind::Fragment}})
+    : Shader({ShaderDescription{std::string{vertex_shader_file_path}, ShaderKind::Vertex},
+              ShaderDescription{std::string{fragment_shader_file_path}, ShaderKind::Fragment}})
 {
 }
 
@@ -71,8 +71,8 @@ void Shader::create_program(const std::vector<ShaderDescription>& shader_descrip
 
 void Shader::create_program(std::string_view vertex_shader_file_path, std::string_view fragment_shader_file_path)
 {
-    create_program({ShaderDescription{ShaderSource{File::to_string(vertex_shader_file_path)}, ShaderKind::Vertex},
-                    ShaderDescription{ShaderSource{File::to_string(fragment_shader_file_path)}, ShaderKind::Fragment}});
+    create_program({ShaderDescription{File::to_string(vertex_shader_file_path), ShaderKind::Vertex},
+                    ShaderDescription{File::to_string(fragment_shader_file_path), ShaderKind::Fragment}});
 }
 
 GLuint Shader::CreateShader(const ShaderDescription& shader_description)
@@ -96,7 +96,7 @@ GLuint Shader::CreateShader(const ShaderDescription& shader_description)
     // Create
     GLDebug(GLuint shader_id = glCreateShader(shader_type));
     // Compile
-    const char* src = shader_description.source_code.glsl_source().c_str();
+    const char* src = shader_description.source_code.c_str();
     GLDebug(glShaderSource(shader_id, 1, &src, nullptr));
     GLDebug(glCompileShader(shader_id));
 // Debug

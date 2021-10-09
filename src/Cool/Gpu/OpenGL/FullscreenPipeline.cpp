@@ -6,9 +6,14 @@
 
 namespace Cool::OpenGL {
 
-FullscreenPipeline::FullscreenPipeline(const ShaderSource& source)
-    : _shader{{ShaderDescription{ShaderSource{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert")}, ShaderKind::Vertex},
-               ShaderDescription{source, ShaderKind::Fragment}}}
+static Shader make_shader(std::string_view source)
+{
+    return Shader{{ShaderDescription{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), ShaderKind::Vertex},
+                   ShaderDescription{std::string{source}, ShaderKind::Fragment}}};
+}
+
+FullscreenPipeline::FullscreenPipeline(std::string_view source)
+    : _shader{make_shader(source)}
 {
     GLDebug(glGenVertexArrays(1, &_dummy_vao_id));
 }
@@ -18,10 +23,9 @@ FullscreenPipeline::~FullscreenPipeline()
     GLDebug(glDeleteVertexArrays(1, &_dummy_vao_id));
 }
 
-void FullscreenPipeline::recompile(const ShaderSource& source)
+void FullscreenPipeline::recompile(std::string_view source)
 {
-    _shader = Shader{{{ShaderSource{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert")}, ShaderKind::Vertex},
-                      {source, ShaderKind::Fragment}}};
+    _shader = make_shader(source);
 }
 
 void FullscreenPipeline::draw()
