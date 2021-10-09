@@ -1,7 +1,6 @@
 #if defined(COOL_OPENGL)
 
 #include "Shader.h"
-#include <Cool/File/File.h>
 #include "ShaderModule.h"
 
 namespace Cool::OpenGL {
