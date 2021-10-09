@@ -17,7 +17,7 @@ void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, c
                                ShaderDescription{std::string{fragment_shader_source_code}, ShaderKind::Fragment, name}});
 }
 
-void FullscreenPipeline::draw()
+void FullscreenPipeline::draw() const
 {
     if (_shader.has_value()) {
         // We use a smart trick to render fullscreen, as explained here : https://stackoverflow.com/a/59739538
