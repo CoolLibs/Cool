@@ -20,15 +20,6 @@ static GLenum opengl_shader_kind(ShaderKind kind)
     }
 }
 
-static GLuint make_shader_module(const ShaderDescription& desc)
-{
-    GLDebug(GLuint id = glCreateShader(opengl_shader_kind(desc.kind)));
-    auto src = desc.source_code.c_str();
-    GLDebug(glShaderSource(id, 1, &src, nullptr));
-    GLDebug(glCompileShader(id));
-    return id;
-}
-
 static void validate_shader_module(GLuint id)
 {
     int result; // NOLINT
@@ -39,14 +30,24 @@ static void validate_shader_module(GLuint id)
         std::vector<char> error_message;
         error_message.reserve(length);
         GLDebug(glGetShaderInfoLog(id, length, &length, error_message.data()));
+        GLDebug(glDeleteShader(id));
         throw std::invalid_argument(std::string{"Compilation failed:\n"} + error_message.data());
     }
+}
+
+static GLuint make_shader_module(const ShaderDescription& desc)
+{
+    GLDebug(GLuint id = glCreateShader(opengl_shader_kind(desc.kind)));
+    auto src = desc.source_code.c_str();
+    GLDebug(glShaderSource(id, 1, &src, nullptr));
+    GLDebug(glCompileShader(id));
+    validate_shader_module(id);
+    return id;
 }
 
 ShaderModule::ShaderModule(const ShaderDescription& desc)
     : _id{make_shader_module(desc)}
 {
-    validate_shader_module(_id);
 }
 
 ShaderModule::ShaderModule(ShaderModule&& rhs) noexcept
