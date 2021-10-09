@@ -17,7 +17,7 @@ public:
     virtual bool               imgui(
                       Action on_edit_ended, std::function<void()> on_value_change = []() {}) = 0;
 #if defined(COOL_OPENGL)
-    virtual void set_uniform_in_shader(OpenGL::Shader& shader) = 0;
+    virtual void set_uniform_in_shader(const OpenGL::Shader& shader) const = 0;
 #endif
 
 protected:

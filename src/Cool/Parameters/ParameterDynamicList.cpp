@@ -10,7 +10,7 @@ void ParameterDynamicList::imgui(std::function<void()> on_value_change)
 }
 
 #if defined(COOL_OPENGL)
-void ParameterDynamicList::set_uniforms_in_shader(OpenGL::Shader& shader)
+void ParameterDynamicList::set_uniforms_in_shader(const OpenGL::Shader& shader) const
 {
     for (auto& param : _parameters) {
         std::visit([&](auto&& arg) { arg.set_uniform_in_shader(shader); }, param);

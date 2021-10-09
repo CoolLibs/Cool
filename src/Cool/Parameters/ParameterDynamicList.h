@@ -23,7 +23,7 @@ public:
        * 
        * @param shader 
        */
-    void set_uniforms_in_shader(OpenGL::Shader& shader);
+    void set_uniforms_in_shader(const OpenGL::Shader& shader) const;
 #endif
 
     /**

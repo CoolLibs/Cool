@@ -46,7 +46,7 @@ public:
     }
 
 #if defined(COOL_OPENGL)
-    void set_uniform_in_shader(OpenGL::Shader& shader) override
+    void set_uniform_in_shader(const OpenGL::Shader& shader) const override
     {
         shader.set_uniform(name(), operator*());
     }
