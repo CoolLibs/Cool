@@ -9,12 +9,16 @@ namespace Cool::OpenGL {
 class FullscreenPipeline {
 public:
     FullscreenPipeline() = default;
-    explicit FullscreenPipeline(std::string_view fragment_shader_source_code);
+    /**
+     * @param name The name that will be displayed in the error message if the compilation fails 
+     */
+    FullscreenPipeline(std::string_view fragment_shader_source_code, const std::string& name);
 
     /**
      * @brief Compiles the fragment shader source code and creates a new pipeline using this new shader.
+     * @param name The name that will be displayed in the error message if the compilation fails 
      */
-    void compile(std::string_view fragment_shader_source_code);
+    void compile(std::string_view fragment_shader_source_code, const std::string& name);
     void draw();
     auto shader() -> std::optional<Shader>& { return _shader; }
 

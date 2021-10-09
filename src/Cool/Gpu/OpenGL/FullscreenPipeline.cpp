@@ -6,15 +6,15 @@
 
 namespace Cool::OpenGL {
 
-FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code)
+FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code, const std::string& name)
 {
-    compile(fragment_shader_source_code);
+    compile(fragment_shader_source_code, name);
 }
 
-void FullscreenPipeline::compile(std::string_view fragment_shader_source_code)
+void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, const std::string& name)
 {
-    _shader = try_make_shader({ShaderDescription{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), ShaderKind::Vertex},
-                               ShaderDescription{std::string{fragment_shader_source_code}, ShaderKind::Fragment}});
+    _shader = try_make_shader({ShaderDescription{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), ShaderKind::Vertex, "Cool's fullscreen vertex shader"},
+                               ShaderDescription{std::string{fragment_shader_source_code}, ShaderKind::Fragment, name}});
 }
 
 void FullscreenPipeline::draw()
