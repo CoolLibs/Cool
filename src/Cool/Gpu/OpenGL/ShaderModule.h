@@ -7,9 +7,7 @@ namespace Cool::OpenGL {
 class ShaderModule {
 public:
     /**
-     * @brief Construct a new Shader Module object
-     * Throws if there is an error while compiling the shader source code
-     * @param desc 
+     * @brief Throws if there is an error while compiling the shader source code
      */
     explicit ShaderModule(const ShaderDescription& desc);
     ~ShaderModule();

@@ -14,10 +14,6 @@ public:
      */
     explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
 
-    ///
-    /// <param name="vertex_shader_file_path">Path to the vertex shader file</param>
-    /// <param name="fragment_shader_file_path">Path to the fragment shader file</param>
-
     /**
      * @brief Creates and compiles a full shader pipeline made out of a vertex and a fragment shader.
      * Throws if there is an error while compiling the shader source code
