@@ -19,6 +19,7 @@ public:
      * @param name The name that will be displayed in the error message if the compilation fails 
      */
     void compile(std::string_view fragment_shader_source_code, std::string_view name);
+    void reset() { _shader.reset(); }
     void draw() const;
     auto shader() const -> const std::optional<Shader>& { return _shader; }
 
