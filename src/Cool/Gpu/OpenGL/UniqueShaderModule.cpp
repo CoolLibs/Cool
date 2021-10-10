@@ -1,3 +1,4 @@
+#if defined(COOL_OPENGL)
 #include "UniqueShaderModule.h"
 
 namespace Cool {
@@ -45,3 +46,5 @@ UniqueShaderModule& UniqueShaderModule::operator=(UniqueShaderModule&& rhs) noex
 }
 
 } // namespace Cool
+
+#endif

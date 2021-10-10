@@ -1,4 +1,5 @@
 #pragma once
+#if defined(COOL_OPENGL)
 
 #include "../ShaderKind.h"
 
@@ -20,3 +21,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif

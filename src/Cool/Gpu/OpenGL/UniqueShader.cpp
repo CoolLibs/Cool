@@ -1,3 +1,4 @@
+#if defined(COOL_OPENGL)
 #include "UniqueShader.h"
 
 namespace Cool {
@@ -28,3 +29,5 @@ UniqueShader& UniqueShader::operator=(UniqueShader&& rhs) noexcept
 }
 
 } // namespace Cool
+
+#endif
