@@ -24,15 +24,16 @@ void FileWatcher::update() const
 {
     std::visit([&](auto&& validity) { update_validity(validity, is_valid_file_path(_path)); }, _path_validity);
     if (path_is_valid()) {
+        using clock = std::chrono::steady_clock;
         // Init static variable (it is static so that we don't need to include chrono in the header file)
-        static auto _time_of_last_check = std::chrono::steady_clock::now();
+        static auto _time_of_last_check = clock::now();
         // Wait for delay between checks
-        const auto                   now          = std::chrono::steady_clock::now();
-        std::chrono::duration<float> elapsed_time = now - _time_of_last_check;
+        const auto now          = clock::now();
+        const auto elapsed_time = std::chrono::duration<float>{now - _time_of_last_check};
         if (elapsed_time.count() > _delay_between_checks) {
             _time_of_last_check = now;
             // Check file was updated since last check
-            auto last_change = std::filesystem::last_write_time(_path);
+            const auto last_change = std::filesystem::last_write_time(_path);
             if (last_change != _time_of_last_change) {
                 on_file_changed();
             }
