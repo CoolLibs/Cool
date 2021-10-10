@@ -5,26 +5,24 @@
 
 namespace Cool {
 
+struct FileWatcherConfig {
+    // Callback called whenever the file changes. Receives the currently watched path as a parameter.
+    std::function<void(std::string_view)> on_file_changed;
+    // Callback called whenever the path becomes invalid. Receives the currently watched path as a parameter.
+    std::function<void(std::string_view)> on_path_invalid = [](auto path) { Log::ToUser::error("File Watcher", "Invalid file path : \"{}\"", path); };
+    // In seconds. The smaller the delay the bigger the performance cost.
+    float delay_between_checks = 0.5f;
+};
+
 /**
- * @brief Regularily looks for updates of a file and triggers a callback when the file changes. You must call the update() method on every frame
- * 
+ * @brief Regularily looks for updates of a file and triggers a callback when the file changes. You must call the update() method on every frame.
  */
 class FileWatcher {
 public:
-    /**
-	 * @brief Regularily looks for updates of a file and triggers the callback when the file changes. The callback is also called when the path is set
-	 * 
-	 * @param on_file_changed Callback function called whenever the file changes. Receives the path as parameter, just for convenience
-	 * @param In seconds : time between two checks. The smaller the delay the bigger the performance cost 
-	 */
-    explicit FileWatcher(
-        std::filesystem::path                 path,
-        std::function<void(std::string_view)> on_file_changed,
-        std::function<void(std::string_view)> on_path_invalid      = [](auto path) { Log::ToUser::error("FileWatcher", "Invalid file path : \"{}\"", path); },
-        float                                 delay_between_checks = 0.5f);
+    explicit FileWatcher(std::filesystem::path path, FileWatcherConfig config);
 
     /**
-	 * @brief Must be called on every frame. Checks if the delay is elapsed, if so checks if the file has changed, and if so calls the callback
+	 * @brief Must be called on every frame. Checks if the delay is elapsed, if so checks if the file has changed, and if so calls the callback.
 	 */
     void update() const;
 
@@ -64,9 +62,7 @@ private:
     std::filesystem::path                   _path;
     mutable PathValidity                    _path_validity = Unknown{};
     mutable std::filesystem::file_time_type _time_of_last_change;
-    std::function<void(std::string_view)>   _on_file_changed;
-    std::function<void(std::string_view)>   _on_path_invalid;
-    float                                   _delay_between_checks;
+    FileWatcherConfig                       _config;
 };
 
 } // namespace Cool
