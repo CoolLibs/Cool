@@ -2,6 +2,7 @@
 #if defined(COOL_OPENGL)
 
 #include <Cool/Gpu/ShaderDescription.h>
+#include "UniqueShader.h"
 
 namespace Cool::OpenGL {
 
@@ -11,11 +12,6 @@ public:
      * @brief Throws if there is an error while compiling the shader source code.
      */
     explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
-    ~Shader();
-    Shader(const Shader&) = delete;
-    Shader& operator=(const Shader&) = delete;
-    Shader(Shader&& o) noexcept;
-    Shader& operator=(Shader&& o) noexcept;
 
     void bind() const;
     void set_uniform(std::string_view uniform_name, int v) const;
@@ -33,7 +29,7 @@ private:
     GLint uniform_location(std::string_view uniform_name) const;
 
 private:
-    GLuint                                         _program_id;
+    UniqueShader                                   _shader;
     mutable std::unordered_map<std::string, GLint> _uniform_locations;
 
     template<unsigned int, unsigned int, unsigned int>
