@@ -29,18 +29,18 @@ void validate_shader(GLuint id)
     }
 }
 
-static void compile_shader(GLuint id, const std::vector<ShaderDescription>& shader_descriptions)
+static void compile_shader(GLuint id, const std::vector<const ShaderModule*>& modules)
 {
-    for (const auto& shader_desc : shader_descriptions) {
-        GLDebug(glAttachShader(id, ShaderModule{shader_desc}.id()));
+    for (const auto& shader_module : modules) {
+        GLDebug(glAttachShader(id, shader_module->id()));
     }
     GLDebug(glLinkProgram(id));
     validate_shader(id);
 }
 
-Shader::Shader(const std::vector<ShaderDescription>& shader_descriptions)
+Shader::Shader(const std::vector<const ShaderModule*>& modules)
 {
-    compile_shader(_shader.id(), shader_descriptions);
+    compile_shader(_shader.id(), modules);
 }
 
 void Shader::bind() const

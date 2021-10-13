@@ -1,7 +1,7 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
-#include <Cool/Gpu/ShaderDescription.h>
+#include "ShaderModule.h"
 #include "UniqueShader.h"
 
 namespace Cool::OpenGL {
@@ -11,7 +11,7 @@ public:
     /**
      * @brief Throws if there is an error while compiling the shader source code.
      */
-    explicit Shader(const std::vector<ShaderDescription>& shader_descriptions);
+    explicit Shader(const std::vector<const ShaderModule*>& modules);
 
     void bind() const;
     void set_uniform(std::string_view uniform_name, int v) const;
