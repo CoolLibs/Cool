@@ -6,11 +6,11 @@
 
 namespace Cool::OpenGL {
 
-const ShaderModule& vertex_module()
+std::optional<ShaderModule>& vertex_module()
 {
-    static const ShaderModule shader_module{{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"),
-                                             ShaderKind::Vertex,
-                                             "Cool's fullscreen vertex shader"}};
+    static std::optional<ShaderModule> shader_module = ShaderModule{{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"),
+                                                                     ShaderKind::Vertex,
+                                                                     "Cool's fullscreen vertex shader"}};
     return shader_module;
 }
 
@@ -19,13 +19,18 @@ FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_c
     compile(fragment_shader_source_code, name);
 }
 
+void FullscreenPipeline::shut_down()
+{
+    vertex_module().reset();
+}
+
 void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name)
 {
     try {
         const ShaderModule fragment_module{{std::string{fragment_shader_source_code},
                                             ShaderKind::Fragment,
                                             std::string{name}}};
-        _shader = Shader{{&vertex_module(), &fragment_module}};
+        _shader = Shader{{&*vertex_module(), &fragment_module}};
     }
     catch (const std::exception& e) {
         _shader.reset();

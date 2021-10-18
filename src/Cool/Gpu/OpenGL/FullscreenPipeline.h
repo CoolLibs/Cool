@@ -14,6 +14,8 @@ public:
      */
     FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name);
 
+    static void shut_down();
+
     /**
      * @brief Compiles the fragment shader source code and creates a new pipeline using this new shader.
      * @param name The name that will be displayed in the error message if the compilation fails 

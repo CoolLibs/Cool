@@ -5,6 +5,7 @@
 #endif
 
 #include <Cool/AppManager/AppManager.h>
+#include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Window/internal/WindowFactory.h>
 
@@ -20,6 +21,7 @@ inline void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Icons::shut_down();
+    FullscreenPipeline::shut_down();
 }
 
 template<typename App>
