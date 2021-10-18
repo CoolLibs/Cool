@@ -2,7 +2,6 @@
 
 #include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
-#include "try_make_shader.h"
 
 namespace Cool::OpenGL {
 
