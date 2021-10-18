@@ -9,9 +9,10 @@ namespace Cool::OpenGL {
 class Shader {
 public:
     /**
-     * @brief Throws if there is an error while compiling the shader source code.
+     * @brief Throws if there is an error while linking the modules.
      */
-    explicit Shader(const std::vector<const ShaderModule*>& modules);
+    template<typename... ShaderModules>
+    explicit Shader(ShaderModules&&... shader_modules);
 
     void bind() const;
     void set_uniform(std::string_view uniform_name, int v) const;
@@ -37,5 +38,7 @@ private:
 };
 
 } // namespace Cool::OpenGL
+
+#include "Shader.tpp"
 
 #endif

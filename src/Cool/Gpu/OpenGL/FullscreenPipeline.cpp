@@ -27,10 +27,11 @@ void FullscreenPipeline::shut_down()
 void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name)
 {
     try {
-        const ShaderModule fragment_module{{std::string{fragment_shader_source_code},
-                                            ShaderKind::Fragment,
-                                            std::string{name}}};
-        _shader = Shader{{&*vertex_module(), &fragment_module}};
+        _shader = Shader{
+            *vertex_module(),
+            ShaderModule{{std::string{fragment_shader_source_code},
+                          ShaderKind::Fragment,
+                          std::string{name}}}};
     }
     catch (const std::exception& e) {
         _shader.reset();

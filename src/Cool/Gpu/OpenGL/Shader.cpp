@@ -14,35 +14,6 @@ static void assert_shader_is_bound(GLuint id)
 #endif
 }
 
-void validate_shader(GLuint id)
-{
-    GLDebug(glValidateProgram(id));
-    GLint result;
-    GLDebug(glGetProgramiv(id, GL_VALIDATE_STATUS, &result));
-    if (result == GL_FALSE) {
-        GLsizei length;
-        GLDebug(glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length));
-        std::vector<GLchar> error_message;
-        error_message.reserve(length);
-        GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
-        throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
-    }
-}
-
-static void compile_shader(GLuint id, const std::vector<const ShaderModule*>& modules)
-{
-    for (const auto& shader_module : modules) {
-        GLDebug(glAttachShader(id, shader_module->id()));
-    }
-    GLDebug(glLinkProgram(id));
-    validate_shader(id);
-}
-
-Shader::Shader(const std::vector<const ShaderModule*>& modules)
-{
-    compile_shader(_shader.id(), modules);
-}
-
 void Shader::bind() const
 {
     GLDebug(glUseProgram(_shader.id()));
