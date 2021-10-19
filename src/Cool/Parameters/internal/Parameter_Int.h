@@ -4,24 +4,29 @@
 
 namespace Cool::Parameter {
 
+struct IntDesc {
+    int min_value = 0;
+    int max_value = 20;
+};
+
 class Int : public Internal::Parameter<int> {
 public:
-    Int(std::string_view name = "", int default_value = 0, int min_value = 0, int max_value = 20)
-        : Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
+    Int(const ParameterDesc<int>& base_desc = {}, IntDesc desc = {})
+        : Parameter{base_desc}, _desc{desc}
     {
     }
 
 protected:
     bool imgui_widget() override
     {
-        bool b = ImGui::SliderInt(name().c_str(), &_value, _min_value, _max_value);
+        bool b = ImGui::SliderInt(name().c_str(), &_value, _desc.min_value, _desc.max_value);
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem()) {
-            ImGui::DragInt("", &_min_value);
+            ImGui::DragInt("", &_desc.min_value);
             ImGui::SameLine();
             ImGui::Text("to");
             ImGui::SameLine();
-            ImGui::DragInt(" ", &_max_value);
+            ImGui::DragInt(" ", &_desc.max_value);
             ImGui::EndPopup();
         }
         ImGui::PopID();
@@ -29,8 +34,7 @@ protected:
     }
 
 private:
-    int _min_value;
-    int _max_value;
+    IntDesc _desc;
 };
 
 } // namespace Cool::Parameter

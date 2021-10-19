@@ -6,8 +6,8 @@ namespace Cool::Parameter {
 
 class Color : public Internal::Parameter<glm::vec3> {
 public:
-    Color(std::string_view name = "", const glm::vec3& default_value = glm::vec3(0.f))
-        : Parameter(name, default_value)
+    Color(const ParameterDesc<glm::vec3>& desc = {})
+        : Parameter{desc}
     {
     }
 

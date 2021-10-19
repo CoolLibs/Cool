@@ -7,8 +7,8 @@ namespace Cool::Internal {
 
 class Dir3Angles : public Internal::Parameter<glm::vec2> {
 public:
-    Dir3Angles(std::string_view name, float default_angle_ground = 0.f, float default_angle_up = 0.f)
-        : Parameter(name, glm::vec2(default_angle_ground, default_angle_up))
+    Dir3Angles(const ParameterDesc<glm::vec2>& base_desc = {})
+        : Parameter{base_desc}
     {
     }
 
@@ -24,8 +24,8 @@ namespace Cool::Parameter {
 
 class Dir3 : public Cool::Internal::IParameter {
 public:
-    Dir3(std::string_view name = "", float default_angle_ground = 0.f, float default_angle_up = 0.f)
-        : _angles(name, default_angle_ground, default_angle_up)
+    Dir3(const ParameterDesc<glm::vec2>& base_desc = {})
+        : _angles{base_desc}
     {
     }
 

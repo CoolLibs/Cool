@@ -4,24 +4,29 @@
 
 namespace Cool::Parameter {
 
+struct FloatDesc {
+    float min_value = 0.f;
+    float max_value = 1.f;
+};
+
 class Float : public Internal::Parameter<float> {
 public:
-    Float(std::string_view name = "", float default_value = 0.f, float min_value = 0.f, float max_value = 1.f)
-        : Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
+    explicit Float(const ParameterDesc<float>& base_desc = {}, FloatDesc desc = {})
+        : Parameter{base_desc}, _desc{desc}
     {
     }
 
 protected:
     bool imgui_widget() override
     {
-        bool b = ImGui::SliderFloat(name().c_str(), &_value, _min_value, _max_value);
+        bool b = ImGui::SliderFloat(name().c_str(), &_value, _desc.min_value, _desc.max_value);
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem()) {
-            ImGui::DragFloat("", &_min_value);
+            ImGui::DragFloat("", &_desc.min_value);
             ImGui::SameLine();
             ImGui::Text("to");
             ImGui::SameLine();
-            ImGui::DragFloat(" ", &_max_value);
+            ImGui::DragFloat(" ", &_desc.max_value);
             ImGui::EndPopup();
         }
         ImGui::PopID();
@@ -29,8 +34,7 @@ protected:
     }
 
 private:
-    float _min_value;
-    float _max_value;
+    FloatDesc _desc;
 };
 
 } // namespace Cool::Parameter

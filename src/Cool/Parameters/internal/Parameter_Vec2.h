@@ -4,10 +4,15 @@
 
 namespace Cool::Parameter {
 
+struct Vec2Desc {
+    glm::vec2 min_value = glm::vec2{0.f};
+    glm::vec2 max_value = glm::vec2{1.f};
+};
+
 class Vec2 : public Internal::Parameter<glm::vec2> {
 public:
-    Vec2(std::string_view name = "", glm::vec2 default_value = glm::vec2(0.f), glm::vec2 min_value = glm::vec2(0.f), glm::vec2 max_value = glm::vec2(1.f))
-        : Parameter(name, default_value), _min_value(min_value), _max_value(max_value)
+    Vec2(const ParameterDesc<glm::vec2>& base_desc = {}, Vec2Desc desc = {})
+        : Parameter{base_desc}, _desc{desc}
     {
     }
 
@@ -16,10 +21,10 @@ protected:
     {
         ImGui::PushID(this + 34);
         ImGui::PushItemWidth(150);
-        bool b = ImGui::SliderFloat("", &_value.x, _min_value.x, _max_value.x);
+        bool b = ImGui::SliderFloat("", &_value.x, _desc.min_value.x, _desc.max_value.x);
         ImGui::PopID();
         ImGui::SameLine();
-        b |= ImGui::SliderFloat(name().c_str(), &_value.y, _min_value.y, _max_value.y);
+        b |= ImGui::SliderFloat(name().c_str(), &_value.y, _desc.min_value.y, _desc.max_value.y);
         ImGui::PopItemWidth();
         //ImGui::PushID(this);
         //if (ImGui::BeginPopupContextItem()) {
@@ -35,8 +40,7 @@ protected:
     }
 
 private:
-    glm::vec2 _min_value;
-    glm::vec2 _max_value;
+    Vec2Desc _desc;
 };
 
 } // namespace Cool::Parameter

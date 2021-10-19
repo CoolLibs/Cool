@@ -2,6 +2,7 @@
 
 #include "../ParametersHistory.h"
 #include "IParameter.h"
+#include "ParameterDesc.h"
 
 namespace Cool::Internal {
 
@@ -13,13 +14,13 @@ namespace Cool::Internal {
 template<typename T>
 class Parameter : public IParameter {
 public:
-    Parameter(std::string_view name, const T& default_value = T(0))
-        : _name(name), _value(default_value), _value_before_edit(default_value)
+    Parameter(const ParameterDesc<T>& desc = {})
+        : _desc{desc}, _value{desc.default_value}, _value_before_edit{desc.default_value}
     {
     }
     virtual ~Parameter() = default;
-    inline const T&       operator*() const { return _value; }
-    inline const T* const operator->() const { return &_value; }
+    const T& operator*() const { return _value; }
+    const T* operator->() const { return &_value; }
 
     bool imgui(
         Action on_edit_ended = {}, std::function<void()> on_value_change = []() {}) override
@@ -32,10 +33,10 @@ public:
         return b;
     }
 
-    inline const std::string& name() const override { return _name; }
+    const std::string& name() const override { return _desc.name; }
 
 #if defined(COOL_OPENGL)
-    inline void set_uniform_in_shader(const OpenGL::Shader& shader) const override
+    void set_uniform_in_shader(const OpenGL::Shader& shader) const override
     {
         shader.set_uniform(name(), _value);
     }
@@ -74,7 +75,7 @@ protected:
     T _value_before_edit;
 
 private:
-    std::string _name;
+    ParameterDesc<T> _desc;
 
 private:
     //Serialization
@@ -83,14 +84,14 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Name", _name),
+            cereal::make_nvp("Description", _desc),
             cereal::make_nvp("Value", _value));
     }
     template<class Archive>
     void load(Archive& archive)
     {
         archive(
-            _name,
+            _desc,
             _value);
         _value_before_edit = _value;
     }
