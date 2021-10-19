@@ -5,28 +5,26 @@
 namespace Cool::Parameter {
 
 struct FloatDesc {
-    float min_value = 0.f;
-    float max_value = 1.f;
-};
+    using Rep = float;
+    using Out = float;
 
-class Float : public Internal::Parameter<float> {
-public:
-    explicit Float(const ParameterDesc<float>& base_desc = {}, FloatDesc desc = {})
-        : Parameter{base_desc}, _desc{desc}
-    {
-    }
+    std::string name;
+    float       default_value = 0.f;
+    float       min_value     = 0.f;
+    float       max_value     = 1.f;
 
-protected:
-    bool imgui_widget() override
+    float value(float rep) const { return rep; }
+
+    bool imgui(Rep& value)
     {
-        bool b = ImGui::SliderFloat(name().c_str(), &_value, _desc.min_value, _desc.max_value);
+        bool b = ImGui::SliderFloat(name.c_str(), &value, min_value, max_value);
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem()) {
-            ImGui::DragFloat("", &_desc.min_value);
+            ImGui::DragFloat("", &min_value);
             ImGui::SameLine();
             ImGui::Text("to");
             ImGui::SameLine();
-            ImGui::DragFloat(" ", &_desc.max_value);
+            ImGui::DragFloat(" ", &max_value);
             ImGui::EndPopup();
         }
         ImGui::PopID();
@@ -34,7 +32,18 @@ protected:
     }
 
 private:
-    FloatDesc _desc;
+    //Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Name", name),
+                cereal::make_nvp("Default value", default_value),
+                cereal::make_nvp("Min value", min_value),
+                cereal::make_nvp("Max value", max_value));
+    }
 };
+
+using Float = Parameter_Base<FloatDesc>;
 
 } // namespace Cool::Parameter

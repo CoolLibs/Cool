@@ -15,4 +15,11 @@ using AnyParameter = std::variant<
     Parameter::Dir3,
     Parameter::Color>;
 
+using ParameterDescription = std::variant<
+    Parameter::IntDesc,
+    Parameter::FloatDesc,
+    Parameter::Vec2Desc,
+    Parameter::Dir3Desc,
+    Parameter::ColorDesc>;
+
 } // namespace Cool

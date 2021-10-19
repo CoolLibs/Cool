@@ -1,31 +1,30 @@
 #pragma once
 
+#include <Cool/Gpu/OpenGL/Shader.h>
 #include "../ParametersHistory.h"
-#include "IParameter.h"
-#include "ParameterDesc.h"
 
-namespace Cool::Internal {
+namespace Cool::Parameter {
 
 /**
  * @brief A parameter that holds a value of type T. Groups all behaviours common to all parameters (All changes to the value are saved in an history)
  * 
  * @tparam T 
  */
-template<typename T>
-class Parameter : public IParameter {
+template<typename Desc>
+class Parameter_Base {
 public:
-    Parameter(const ParameterDesc<T>& desc = {})
+    Parameter_Base(const Desc& desc = {})
         : _desc{desc}, _value{desc.default_value}, _value_before_edit{desc.default_value}
     {
     }
-    virtual ~Parameter() = default;
-    const T& operator*() const { return _value; }
-    const T* operator->() const { return &_value; }
+
+    Desc::Out operator*() const { return _desc.value(_value); }
+    // const Value* operator->() const { return &_value; }
 
     bool imgui(
-        Action on_edit_ended = {}, std::function<void()> on_value_change = []() {}) override
+        Action on_edit_ended = {}, std::function<void()> on_value_change = []() {})
     {
-        bool b = imgui_widget();
+        bool b = _desc.imgui(_value);
         push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
         if (b) {
             on_value_change();
@@ -33,12 +32,12 @@ public:
         return b;
     }
 
-    const std::string& name() const override { return _desc.name; }
+    const std::string& name() const { return _desc.name; }
 
 #if defined(COOL_OPENGL)
-    void set_uniform_in_shader(const OpenGL::Shader& shader) const override
+    void set_uniform_in_shader(const OpenGL::Shader& shader) const
     {
-        shader.set_uniform(name(), _value);
+        shader.set_uniform(name(), operator*());
     }
 #endif
 
@@ -56,8 +55,8 @@ private:
     void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change)
     {
         ParametersHistory::get().begin_undo_group();
-        T val      = _value;
-        T prev_val = _value_before_edit;
+        const auto val      = _value;
+        const auto prev_val = _value_before_edit;
         ParametersHistory::get().add_action({[&, val, on_value_change]() {
                                                  _value = val;
                                                  on_value_change();
@@ -70,12 +69,10 @@ private:
         ParametersHistory::get().end_undo_group();
     }
 
-protected:
-    T _value;
-    T _value_before_edit;
-
 private:
-    ParameterDesc<T> _desc;
+    Desc      _desc;
+    Desc::Rep _value;
+    Desc::Rep _value_before_edit;
 
 private:
     //Serialization
@@ -83,18 +80,16 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        archive(
-            cereal::make_nvp("Description", _desc),
-            cereal::make_nvp("Value", _value));
+        archive(cereal::make_nvp("Description", _desc),
+                cereal::make_nvp("Value", _value));
     }
     template<class Archive>
     void load(Archive& archive)
     {
-        archive(
-            _desc,
-            _value);
+        archive(_desc,
+                _value);
         _value_before_edit = _value;
     }
 };
 
-} // namespace Cool::Internal
+} // namespace Cool::Parameter

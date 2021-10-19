@@ -5,42 +5,41 @@
 namespace Cool::Parameter {
 
 struct Vec2Desc {
-    glm::vec2 min_value = glm::vec2{0.f};
-    glm::vec2 max_value = glm::vec2{1.f};
-};
+    using Rep = glm::vec2;
+    using Out = glm::vec2;
 
-class Vec2 : public Internal::Parameter<glm::vec2> {
-public:
-    Vec2(const ParameterDesc<glm::vec2>& base_desc = {}, Vec2Desc desc = {})
-        : Parameter{base_desc}, _desc{desc}
-    {
-    }
+    std::string name;
+    glm::vec2   default_value = glm::vec2{0.f};
+    glm::vec2   min_value     = glm::vec2{0.f};
+    glm::vec2   max_value     = glm::vec2{1.f};
 
-protected:
-    bool imgui_widget() override
+    glm::vec2 value(const glm::vec2& rep) const { return rep; }
+
+    bool imgui(Rep& value) const
     {
         ImGui::PushID(this + 34);
         ImGui::PushItemWidth(150);
-        bool b = ImGui::SliderFloat("", &_value.x, _desc.min_value.x, _desc.max_value.x);
+        bool b = ImGui::SliderFloat("", &value.x, min_value.x, max_value.x);
         ImGui::PopID();
         ImGui::SameLine();
-        b |= ImGui::SliderFloat(name().c_str(), &_value.y, _desc.min_value.y, _desc.max_value.y);
+        b |= ImGui::SliderFloat(name.c_str(), &value.y, min_value.y, max_value.y);
         ImGui::PopItemWidth();
-        //ImGui::PushID(this);
-        //if (ImGui::BeginPopupContextItem()) {
-        //	ImGui::DragFloat("", &_min_value);
-        //	ImGui::SameLine();
-        //	ImGui::Text("to");
-        //	ImGui::SameLine();
-        //	ImGui::DragFloat(" ", &_max_value);
-        //	ImGui::EndPopup();
-        //}
-        //ImGui::PopID();
         return b;
     }
 
 private:
-    Vec2Desc _desc;
+    //Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Name", name),
+                cereal::make_nvp("Default value", default_value),
+                cereal::make_nvp("Min value", min_value),
+                cereal::make_nvp("Max value", max_value));
+    }
 };
+
+using Vec2 = Parameter_Base<Vec2Desc>;
 
 } // namespace Cool::Parameter
