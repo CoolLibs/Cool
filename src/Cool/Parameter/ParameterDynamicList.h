@@ -17,15 +17,6 @@ public:
        */
     void imgui(std::function<void()> on_value_change = []() {});
 
-#if defined(COOL_OPENGL)
-    /**
-       * @brief Sets all the uniforms for all the parameters
-       * 
-       * @param shader 
-       */
-    void set_uniforms_in_shader(const OpenGL::Shader& shader) const;
-#endif
-
     /**
        * @brief Tries to find the parameter in the list
        * 
@@ -34,8 +25,10 @@ public:
        */
     size_t index_of(std::string_view parameter_name);
 
-    inline std::vector<Parameter::Any>& operator*() { return _parameters; }
-    inline std::vector<Parameter::Any>* operator->() { return &operator*(); }
+    std::vector<Parameter::Any>&       operator*() { return _parameters; }
+    std::vector<Parameter::Any>*       operator->() { return &operator*(); }
+    const std::vector<Parameter::Any>& operator*() const { return _parameters; }
+    const std::vector<Parameter::Any>* operator->() const { return &operator*(); }
 
 private:
     std::vector<Parameter::Any> _parameters;

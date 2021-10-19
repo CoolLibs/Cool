@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/Gpu/OpenGL/Shader.h>
 #include "../ParametersHistory.h"
 
 namespace Cool {
@@ -25,13 +24,6 @@ public:
         Action on_edit_ended = {}, std::function<void()> on_value_change = []() {});
 
     const std::string& name() const { return _desc.name; }
-
-#if defined(COOL_OPENGL)
-    void set_uniform_in_shader(const OpenGL::Shader& shader) const
-    {
-        shader.set_uniform(name(), operator*());
-    }
-#endif
 
 protected:
     void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change);
