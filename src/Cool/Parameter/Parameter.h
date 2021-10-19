@@ -6,20 +6,20 @@
 #include "internal/Parameter_Int.h"
 #include "internal/Parameter_Vec2.h"
 
-namespace Cool {
+namespace Cool::Parameter {
 
-using AnyParameter = std::variant<
+using Any = std::variant<
     Parameter::Int,
     Parameter::Float,
     Parameter::Vec2,
     Parameter::Dir3,
     Parameter::Color>;
 
-using ParameterDescription = std::variant<
+using AnyDesc = std::variant<
     Parameter::IntDesc,
     Parameter::FloatDesc,
     Parameter::Vec2Desc,
     Parameter::Dir3Desc,
     Parameter::ColorDesc>;
 
-} // namespace Cool
+} // namespace Cool::Parameter

@@ -3,7 +3,7 @@
 #include <Cool/Gpu/OpenGL/Shader.h>
 #include "../ParametersHistory.h"
 
-namespace Cool::Parameter {
+namespace Cool {
 
 /**
  * @brief A parameter that holds a value of type T. Groups all behaviours common to all parameters (All changes to the value are saved in an history)
@@ -92,4 +92,4 @@ private:
     }
 };
 
-} // namespace Cool::Parameter
+} // namespace Cool

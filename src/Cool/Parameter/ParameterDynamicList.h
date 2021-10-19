@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnyParameter.h"
+#include "Parameter.h"
 
 namespace Cool {
 
@@ -34,11 +34,11 @@ public:
        */
     size_t index_of(std::string_view parameter_name);
 
-    inline std::vector<AnyParameter>& operator*() { return _parameters; }
-    inline std::vector<AnyParameter>* operator->() { return &operator*(); }
+    inline std::vector<Parameter::Any>& operator*() { return _parameters; }
+    inline std::vector<Parameter::Any>* operator->() { return &operator*(); }
 
 private:
-    std::vector<AnyParameter> _parameters;
+    std::vector<Parameter::Any> _parameters;
 
 private:
     // Serialization

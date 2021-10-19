@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiExtras.h>
-#include "Parameter.h"
+#include "Parameter_Base.h"
 
 namespace Cool::Parameter {
 

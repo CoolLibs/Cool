@@ -1,7 +1,7 @@
 #include "DefaultApp.h"
 #include <Cool/Input/Input.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/Parameters/ParametersHistory.h>
+#include <Cool/Parameter/ParametersHistory.h>
 #include <Cool/Time/ClockU.h>
 
 namespace CoolDefault {
