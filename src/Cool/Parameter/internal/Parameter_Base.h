@@ -5,9 +5,7 @@
 namespace Cool {
 
 /**
- * @brief A parameter that holds a value of type T. Groups all behaviours common to all parameters (All changes to the value are saved in an history)
- * 
- * @tparam T 
+ * @brief Holds a parameter description and the current value of that parameter. All changes to the value are saved in a history.
  */
 template<typename Desc>
 class Parameter_Base {
@@ -17,18 +15,14 @@ public:
     {
     }
 
-    Desc::Out operator*() const { return _desc.value(_value); }
-    // const Value* operator->() const { return &_value; }
-
-    bool imgui(
-        Action on_edit_ended = {}, std::function<void()> on_value_change = []() {});
-
+    Desc::Out          operator*() const { return _desc.value(_value); }
     const std::string& name() const { return _desc.name; }
-
-protected:
-    void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change);
+    // clang-format off
+    bool imgui(Action on_edit_ended = {}, std::function<void()> on_value_change = []() {});
+    // clang-format on
 
 private:
+    void push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change);
     void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change);
 
 private:
