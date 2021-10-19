@@ -32,7 +32,7 @@ void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
                           ShaderKind::Fragment,
                           std::string{name}}}};
     }
-    catch (const std::exception& e) {
+    catch (...) {
         _shader.reset();
     }
 }

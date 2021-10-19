@@ -108,7 +108,7 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
             std::filesystem::create_directories(folder_path);
             return true;
         }
-        catch (std::exception& e) {
+        catch (const std::exception& e) {
             Log::ToUser::warn("File::create_folders_if_they_dont_exist", "Failed :\n{}", e.what());
             return false;
         }
