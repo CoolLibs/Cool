@@ -8,7 +8,7 @@ namespace Cool {
  * @brief Wrapper around a std::vector<Parameter::Any>
  * 
  */
-class ParameterDynamicList {
+class ParameterList {
 public:
     /**
      * @brief Displays all the imgui widgets of all the parameters
