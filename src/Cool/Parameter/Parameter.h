@@ -23,3 +23,18 @@ using AnyDesc = std::variant<
     Parameter::ColorDesc>;
 
 } // namespace Cool::Parameter
+
+namespace Cool {
+
+template<typename T>
+concept ParameterDesc = requires(T desc)
+{
+    // clang-format off
+    typename T::Value;
+    typename T::InternalValue;
+    {desc.name} -> std::convertible_to<std::string>;
+    {desc.default_value} -> std::convertible_to<typename T::InternalValue>;
+    // clang-format on
+};
+
+} // namespace Cool
