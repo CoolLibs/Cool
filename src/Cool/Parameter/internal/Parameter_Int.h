@@ -5,8 +5,8 @@
 namespace Cool::Parameter {
 
 struct IntDesc {
-    using Rep = int;
-    using Out = int;
+    using Value         = int;
+    using InternalValue = int;
 
     std::string name;
     int         default_value = 0;
@@ -15,7 +15,7 @@ struct IntDesc {
 
     int value(int rep) const { return rep; }
 
-    bool imgui(Rep& value)
+    bool imgui(int& value)
     {
         bool b = ImGui::SliderInt(name.c_str(), &value, min_value, max_value);
         ImGui::PushID(this);

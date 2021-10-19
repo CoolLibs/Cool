@@ -5,8 +5,8 @@
 namespace Cool::Parameter {
 
 struct FloatDesc {
-    using Rep = float;
-    using Out = float;
+    using Value         = float;
+    using InternalValue = float;
 
     std::string name;
     float       default_value = 0.f;
@@ -15,7 +15,7 @@ struct FloatDesc {
 
     float value(float rep) const { return rep; }
 
-    bool imgui(Rep& value)
+    bool imgui(float& value)
     {
         bool b = ImGui::SliderFloat(name.c_str(), &value, min_value, max_value);
         ImGui::PushID(this);

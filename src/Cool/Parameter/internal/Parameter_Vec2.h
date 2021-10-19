@@ -5,8 +5,8 @@
 namespace Cool::Parameter {
 
 struct Vec2Desc {
-    using Rep = glm::vec2;
-    using Out = glm::vec2;
+    using Value         = glm::vec2;
+    using InternalValue = glm::vec2;
 
     std::string name;
     glm::vec2   default_value = glm::vec2{0.f};
@@ -15,7 +15,7 @@ struct Vec2Desc {
 
     glm::vec2 value(const glm::vec2& rep) const { return rep; }
 
-    bool imgui(Rep& value) const
+    bool imgui(glm::vec2& value) const
     {
         ImGui::PushID(this + 34);
         ImGui::PushItemWidth(150);

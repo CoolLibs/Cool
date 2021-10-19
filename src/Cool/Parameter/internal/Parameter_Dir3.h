@@ -6,8 +6,8 @@
 namespace Cool::Parameter {
 
 struct Dir3Desc {
-    using Rep = glm::vec2;
-    using Out = glm::vec3;
+    using Value         = glm::vec3;
+    using InternalValue = glm::vec2;
 
     std::string name;
     glm::vec2   default_value = glm::vec2{0.f};
@@ -20,7 +20,7 @@ struct Dir3Desc {
             -sin(rep.y)};
     }
 
-    bool imgui(Rep& value) const
+    bool imgui(glm::vec2& value) const
     {
         return ImGuiExtras::direction_3d(name.c_str(), &value.x, &value.y);
     }

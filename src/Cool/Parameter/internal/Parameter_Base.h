@@ -15,7 +15,7 @@ public:
     {
     }
 
-    Desc::Out          operator*() const { return _desc.value(_value); }
+    Desc::Value        operator*() const { return _desc.value(_value); }
     const std::string& name() const { return _desc.name; }
     // clang-format off
     bool imgui(Action on_edit_ended = {}, std::function<void()> on_value_change = []() {});
@@ -26,9 +26,9 @@ private:
     void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change);
 
 private:
-    Desc      _desc;
-    Desc::Rep _value;
-    Desc::Rep _value_before_edit;
+    Desc                _desc;
+    Desc::InternalValue _value;
+    Desc::InternalValue _value_before_edit;
 
 private:
     //Serialization
