@@ -21,9 +21,9 @@ public:
      * @brief Tries to find the parameter in the list
      * 
      * @param parameter_name The name of the parameter to look for
-     * @return The index of the parameter in the list, or -1 if it was not found 
+     * @return The index of the parameter in the list, or std::nullopt if it was not found 
      */
-    size_t index_of(std::string_view parameter_name);
+    std::optional<size_t> index_of(std::string_view parameter_name);
 
     std::vector<Parameter::Any>&       operator*() { return _parameters; }
     std::vector<Parameter::Any>*       operator->() { return &operator*(); }
