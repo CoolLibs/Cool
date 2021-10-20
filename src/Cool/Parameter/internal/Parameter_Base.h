@@ -10,13 +10,16 @@ namespace Cool {
 template<typename Desc>
 class Parameter_Base {
 public:
+    using Description = Desc;
+
     Parameter_Base(const Desc& desc = {})
         : _desc{desc}, _value{desc.default_value}, _value_before_edit{desc.default_value}
     {
     }
 
-    Desc::Value        operator*() const { return _desc.value(_value); }
-    const std::string& name() const { return _desc.name; }
+    auto operator*() const -> typename Desc::Value { return _desc.value(_value); }
+    auto name() const -> const std::string& { return _desc.name; }
+    auto description() const -> const Desc& { return _desc; }
     // clang-format off
     bool imgui(Action on_edit_ended = {}, std::function<void()> on_value_change = []() {});
     // clang-format on
@@ -26,9 +29,9 @@ private:
     void push_change_in_history(Action on_edit_ended, std::function<void()> on_value_change);
 
 private:
-    Desc                _desc;
-    Desc::InternalValue _value;
-    Desc::InternalValue _value_before_edit;
+    Desc                         _desc;
+    typename Desc::InternalValue _value;
+    typename Desc::InternalValue _value_before_edit;
 
 private:
     //Serialization
