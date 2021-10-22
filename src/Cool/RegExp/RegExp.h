@@ -6,7 +6,7 @@ namespace Cool::RegExp {
 
 static const std::regex includes{R"(#include *\"(.*)\")"};
 
-auto file_path_to_include(const std::string& text) -> std::optional<std::string>
+inline auto file_path_to_include(const std::string& text) -> std::optional<std::string>
 {
     std::smatch matches;
     if (std::regex_search(text, matches, includes)) {
@@ -19,7 +19,7 @@ auto file_path_to_include(const std::string& text) -> std::optional<std::string>
 
 } // namespace Cool::RegExp
 
-TEST_CASE("[RegularExpressions] #include")
+TEST_CASE("[Cool::RegExp] #include")
 {
     // Given
     const auto text =
