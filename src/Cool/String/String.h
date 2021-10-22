@@ -43,4 +43,28 @@ std::string to_string(T val, int min_nb_of_characters = 0)
     }
     return str;
 }
+
+struct ReplacementInput {
+    std::string                                      text;
+    std::vector<std::pair<std::string, std::string>> replacements;
+};
+
+std::string replace(const ReplacementInput& in);
+
+size_t replace_next(const ReplacementInput& in, size_t start_pos);
+
+std::string replace_at(size_t begin, size_t end, const ReplacementInput& in);
+
 } // namespace Cool::String
+
+
+TEST_CASE("[Cool::String] replace()")
+{
+    // Given
+    const std::string                                      text         = "ssdgd ${hello}ssd{c}v";
+    const std::vector<std::pair<std::string, std::string>> replacements = {std::make_pair(std::string{"hello"}, std::string{"has_been_replaced"})};
+    // When
+    const auto result = Cool::String::replace({text, replacements});
+    // Then
+    CHECK(result == "ssdgd has_been_replacedssd{c}v");
+}

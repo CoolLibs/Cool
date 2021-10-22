@@ -28,4 +28,38 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
+std::string replace_at(size_t begin, size_t end, const ReplacementInput& in)
+{
+    const auto substr = in.text.substr(begin, end - begin);
+    const auto res    = std::find_if(in.replacements.begin(), in.replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
+        return pair.first == substr;
+    });
+    return substr;
+}
+
+size_t replace_next(const ReplacementInput& in, size_t start_pos)
+{
+    const auto begin = in.text.find("${", start_pos);
+    if (begin == std::string::npos) {
+        return std::string::npos;
+    }
+    else {
+        const auto end = in.text.find("}", begin);
+        if (end == std::string::npos) {
+            throw std::invalid_argument{"No closing } found."};
+        }
+        else {
+            Cool::Log::info(replace_at(begin + 2, end, in));
+            return end;
+        }
+    }
+}
+
+std::string replace(const ReplacementInput& in)
+{
+    const size_t next_pos = replace_next(in, 0);
+    return "";
+}
+
+
 } // namespace Cool::String
