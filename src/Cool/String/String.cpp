@@ -28,13 +28,23 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
-std::string replace_at(size_t begin, size_t end, const ReplacementInput& in)
+std::string replace(const ReplacementInput& in)
 {
-    const auto substr = in.text.substr(begin, end - begin);
-    const auto res    = std::find_if(in.replacements.begin(), in.replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
-        return pair.first == substr;
+    const size_t next_pos = replace_next(in, 0);
+    return "";
+}
+
+std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements)
+{
+    const auto res = std::find_if(replacements.begin(), replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
+        return pair.first == string_to_replace;
     });
-    return substr;
+    if (res == replacements.end()) {
+        return std::nullopt;
+    }
+    else {
+        return res->second;
+    }
 }
 
 size_t replace_next(const ReplacementInput& in, size_t start_pos)
@@ -49,17 +59,23 @@ size_t replace_next(const ReplacementInput& in, size_t start_pos)
             throw std::invalid_argument{"No closing } found."};
         }
         else {
-            Cool::Log::info(replace_at(begin + 2, end, in));
             return end;
         }
     }
 }
 
-std::string replace(const ReplacementInput& in)
+std::string replace_at(size_t begin, size_t end, const ReplacementInput& in)
 {
-    const size_t next_pos = replace_next(in, 0);
-    return "";
+    const auto substr = in.text.substr(begin, end - begin);
+    const auto res    = std::find_if(in.replacements.begin(), in.replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
+        return pair.first == substr;
+    });
+    return substr;
 }
 
+std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring)
+{
+    return input_string.substr(0, begin) + new_substring + input_string.substr(end, input_string.length() - end);
+}
 
 } // namespace Cool::String

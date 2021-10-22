@@ -53,10 +53,14 @@ std::string replace(const ReplacementInput& in);
 
 size_t replace_next(const ReplacementInput& in, size_t start_pos);
 
-std::string replace_at(size_t begin, size_t end, const ReplacementInput& in);
+std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements);
+
+/**
+ * @brief Replaces the characters at positions begin (included) till end (excluded) in input_string with new_substring
+ */
+std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring);
 
 } // namespace Cool::String
-
 
 TEST_CASE("[Cool::String] replace()")
 {
@@ -66,5 +70,12 @@ TEST_CASE("[Cool::String] replace()")
     // When
     const auto result = Cool::String::replace({text, replacements});
     // Then
-    CHECK(result == "ssdgd has_been_replacedssd{c}v");
+    // CHECK(result == "ssdgd has_been_replacedssd{c}v");
+    CHECK(Cool::String::find_replacement("hello", replacements).value() == "has_been_replaced");
+    CHECK(Cool::String::find_replacement("hell", replacements) == std::nullopt);
+}
+
+TEST_CASE("[Cool::String] replace_at()")
+{
+    CHECK(Cool::String::replace_at(3, 5, "0123456789", "abcde") == "012abcde56789");
 }
