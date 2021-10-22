@@ -61,3 +61,25 @@ class ITrackballState {
 ```
 
 actually never modify the camera, no matter the state we are in. So why don't we use ```Camera const&``` instead of ```Camera&``` ? That is because *conceptually* it could. What we mean by that is that a user of this interface should accept that every user input like ```on_wheel_up``` *could* modify the camera. Even though the current implementation does not, we could make a change in the future that would. By making the camera reference non-const, we state that this is a possibility and that users shouldn't rely on the fact that ```on_wheel_up``` will not modify the camera.
+
+
+
+## Separate the data from the controller
+
+Especially since there can be different ways of controlling a camera (trackball, freefly, turntable, etc.)
+
+## How separate should the view and the projection be ?
+
+Although we tend to separate these into two matrices (and for good reasons), they should still stay together in a same class, because we need both to define a camera frustum. For example, to compute a ray passing through a given pixel, we need both the view and the projection.
+```
+Ray Camera::rayThroughPixel(const glm::vec2& positionInPixels) {
+	glm::vec3 pos = position();
+	glm::vec3 pixelPos = glm::unProject(glm::vec3(positionInPixels, 0.0f), viewMatrix(), projMatrix(), glm::vec4(0.0f, 0.0f, RenderState::Size().width(), RenderState::Size().height()));
+	glm::vec3 dir = pixelPos - pos;
+	return Ray(pos, dir);
+}
+```
+
+## What's the point of clipping at a near and far plane ?
+
+## Don't confuse projection and perspective
