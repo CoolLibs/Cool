@@ -10,15 +10,6 @@ namespace Cool::String {
 std::string to_lower(std::string_view str);
 
 /**
- * @brief 
- * 
- * @param to_find 
- * @param str 
- * @return true iff *str* starts with *to_find*
- */
-bool starts_with(std::string_view to_find, std::string_view str);
-
-/**
  * @brief Modifies *str* by replacing all occurences of *from* with *to*
  * 
  * @param str 
