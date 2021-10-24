@@ -45,8 +45,8 @@ std::string to_string(T val, int min_nb_of_characters = 0)
 }
 
 struct ReplacementInput {
-    std::string                                      text;
-    std::vector<std::pair<std::string, std::string>> replacements;
+    const std::string&                                      text;
+    const std::vector<std::pair<std::string, std::string>>& replacements;
 };
 
 std::string replace(const ReplacementInput& in);
