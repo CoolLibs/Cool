@@ -37,7 +37,7 @@ std::string replace(const ReplacementInput& in)
     return next.first;
 }
 
-std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements)
+std::optional<std::string> find_replacement(const std::string& string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements)
 {
     const auto res = std::find_if(replacements.begin(), replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
         return pair.first == string_to_replace;
@@ -74,15 +74,6 @@ std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInpu
             }
         }
     }
-}
-
-std::string replace_at(size_t begin, size_t end, const ReplacementInput& in)
-{
-    const auto substr = in.text.substr(begin, end - begin);
-    const auto res    = std::find_if(in.replacements.begin(), in.replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
-        return pair.first == substr;
-    });
-    return substr;
 }
 
 std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring)

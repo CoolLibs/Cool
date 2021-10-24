@@ -53,7 +53,7 @@ std::string replace(const ReplacementInput& in);
 
 std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos);
 
-std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements);
+std::optional<std::string> find_replacement(const std::string& string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements);
 
 /**
  * @brief Replaces the characters at positions begin (included) till end (excluded) in input_string with new_substring
