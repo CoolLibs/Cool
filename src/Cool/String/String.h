@@ -51,7 +51,7 @@ struct ReplacementInput {
 
 std::string replace(const ReplacementInput& in);
 
-size_t replace_next(const ReplacementInput& in, size_t start_pos);
+std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos);
 
 std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements);
 
@@ -64,14 +64,20 @@ std::string replace_at(size_t begin, size_t end, const std::string& input_string
 
 TEST_CASE("[Cool::String] replace()")
 {
+    using namespace std::string_literals;
     // Given
-    const std::string                                      text         = "ssdgd ${hello}ssd{c}v";
-    const std::vector<std::pair<std::string, std::string>> replacements = {std::make_pair(std::string{"hello"}, std::string{"has_been_replaced"})};
+    const std::string                                      text         = "ssdgd ${hello}${world}ssd{c}v"s;
+    const std::vector<std::pair<std::string, std::string>> replacements = {std::make_pair("hello"s, "1"s),
+                                                                           std::make_pair("world"s, "2"s)};
     // When
     const auto result = Cool::String::replace({text, replacements});
     // Then
-    // CHECK(result == "ssdgd has_been_replacedssd{c}v");
-    CHECK(Cool::String::find_replacement("hello", replacements).value() == "has_been_replaced");
+    CHECK(result == "ssdgd 12ssd{c}v");
+    const auto replace_next_res = Cool::String::replace_next({text, replacements}, 0);
+    CHECK(replace_next_res.second.has_value());
+    CHECK(replace_next_res.first == "ssdgd 1${world}ssd{c}v");
+    CHECK(replace_next_res.second.value() == 7);
+    CHECK(Cool::String::find_replacement("hello", replacements).value() == "1");
     CHECK(Cool::String::find_replacement("hell", replacements) == std::nullopt);
 }
 

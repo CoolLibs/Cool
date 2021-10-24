@@ -30,8 +30,11 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
 
 std::string replace(const ReplacementInput& in)
 {
-    const size_t next_pos = replace_next(in, 0);
-    return "";
+    auto next = replace_next(in, 0);
+    while (next.second.has_value()) {
+        next = replace_next({next.first, in.replacements}, *next.second);
+    }
+    return next.first;
 }
 
 std::optional<std::string> find_replacement(std::string string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements)
@@ -47,11 +50,11 @@ std::optional<std::string> find_replacement(std::string string_to_replace, const
     }
 }
 
-size_t replace_next(const ReplacementInput& in, size_t start_pos)
+std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos)
 {
     const auto begin = in.text.find("${", start_pos);
     if (begin == std::string::npos) {
-        return std::string::npos;
+        return std::make_pair(in.text, std::nullopt);
     }
     else {
         const auto end = in.text.find("}", begin);
@@ -59,7 +62,16 @@ size_t replace_next(const ReplacementInput& in, size_t start_pos)
             throw std::invalid_argument{"No closing } found."};
         }
         else {
-            return end;
+            const auto replacement_begin = begin + 2;
+            const auto to_replace        = in.text.substr(replacement_begin, end - replacement_begin);
+            const auto replacement       = find_replacement(to_replace, in.replacements);
+            if (replacement.has_value()) {
+                return std::make_pair(replace_at(begin, end + 1, in.text, *replacement),
+                                      begin + replacement->length());
+            }
+            else {
+                throw std::invalid_argument{"'" + to_replace + "' was not found in the list of replacements."};
+            }
         }
     }
 }
