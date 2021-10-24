@@ -4,11 +4,13 @@ TEST_CASE("[Cool::String] replace()")
 {
     using namespace std::string_literals;
     const std::string                                      text         = "ssdgd ${hello}${world}ssd{c}v"s;
+    const std::string                                      text2        = "ssdgd _{{hello}}}_{{world}}}ssd{c}v"s;
     const std::vector<std::pair<std::string, std::string>> replacements = {std::make_pair("hello"s, "1"s),
                                                                            std::make_pair("world"s, "2"s)};
     SUBCASE("replace()")
     {
         CHECK(Cool::String::replace({text, replacements}) == "ssdgd 12ssd{c}v");
+        CHECK(Cool::String::replace({text2, replacements, "_{{", "}}}"}) == "ssdgd 12ssd{c}v");
     }
     SUBCASE("replace_next()")
     {

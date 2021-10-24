@@ -27,7 +27,7 @@ std::string replace(const ReplacementInput& in)
 {
     auto next = replace_next(in, 0);
     while (next.second.has_value()) {
-        next = replace_next({next.first, in.replacements}, *next.second);
+        next = replace_next({next.first, in.replacements, in.delimiter_begin, in.delimiter_end}, *next.second);
     }
     return next.first;
 }
@@ -47,21 +47,21 @@ std::optional<std::string> find_replacement(const std::string& string_to_replace
 
 std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos)
 {
-    const auto begin = in.text.find("${", start_pos);
+    const auto begin = in.text.find(in.delimiter_begin, start_pos);
     if (begin == std::string::npos) {
         return std::make_pair(in.text, std::nullopt);
     }
     else {
-        const auto end = in.text.find("}", begin);
+        const auto end = in.text.find(in.delimiter_end, begin);
         if (end == std::string::npos) {
-            throw std::invalid_argument{"No closing } found."};
+            throw std::invalid_argument{"No closing " + std::string{in.delimiter_end} + " found."};
         }
         else {
-            const auto replacement_begin = begin + 2;
+            const auto replacement_begin = begin + in.delimiter_begin.length();
             const auto to_replace        = in.text.substr(replacement_begin, end - replacement_begin);
             const auto replacement       = find_replacement(to_replace, in.replacements);
             if (replacement.has_value()) {
-                return std::make_pair(replace_at(begin, end + 1, in.text, *replacement),
+                return std::make_pair(replace_at(begin, end + in.delimiter_end.length(), in.text, *replacement),
                                       begin + replacement->length());
             }
             else {
