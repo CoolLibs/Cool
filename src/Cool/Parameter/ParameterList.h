@@ -10,6 +10,8 @@ namespace Cool {
  */
 class ParameterList {
 public:
+    ParameterList(const std::vector<Parameter::AnyDesc>& descriptions = {});
+
     /**
      * @brief Displays all the imgui widgets of all the parameters
      * 
