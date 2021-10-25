@@ -5,14 +5,14 @@ namespace Cool {
 class Uuid {
 public:
     Uuid();
-    explicit Uuid(int64_t uuid)
+    explicit Uuid(uint64_t uuid)
         : _uuid{uuid}
     {
     }
-    operator int64_t() const { return _uuid; }
+    operator uint64_t() const { return _uuid; }
 
 private:
-    int64_t _uuid;
+    uint64_t _uuid;
 };
 
 } // namespace Cool

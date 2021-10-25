@@ -2,11 +2,11 @@
 
 namespace Cool {
 
-std::random_device                     Random::_true_random_generator;
-std::default_random_engine             Random::_generator(_true_random_generator());
-std::uniform_real_distribution<float>  Random::_distribution_0to1(0.0f, 1.0f);
-std::uniform_real_distribution<float>  Random::distribution_minus1to1(-1.0f, 1.0f);
-std::uniform_int_distribution<int64_t> Random::distribution_long_int(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+std::random_device                      Random::_true_random_generator;
+std::default_random_engine              Random::_generator(_true_random_generator());
+std::uniform_real_distribution<float>   Random::_distribution_0to1(0.0f, 1.0f);
+std::uniform_real_distribution<float>   Random::_distribution_minus1to1(-1.0f, 1.0f);
+std::uniform_int_distribution<uint64_t> Random::_distribution_uint64(0, std::numeric_limits<uint64_t>::max());
 
 float Random::range_0to1()
 {
@@ -15,12 +15,12 @@ float Random::range_0to1()
 
 float Random::range_minus1to1()
 {
-    return distribution_minus1to1(_generator);
+    return _distribution_minus1to1(_generator);
 }
 
-int64_t Random::long_int()
+uint64_t Random::uint64()
 {
-    return distribution_long_int(_generator);
+    return _distribution_uint64(_generator);
 }
 
 } // namespace Cool

@@ -4,7 +4,7 @@
 namespace Cool {
 
 Uuid::Uuid()
-    : _uuid{Random::long_int()}
+    : _uuid{Random::uint64()}
 {
 }
 

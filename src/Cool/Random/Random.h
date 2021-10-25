@@ -21,18 +21,16 @@ public:
     static float range_minus1to1();
 
     /**
-	 * @brief
-	 * 
-	 * @return A random int64_t (between std::numeric_limits<int64_t>::min() and std::numeric_limits<int64_t>::max())
+	 * @return A random uint64_t (between 0 and std::numeric_limits<uint64_t>::max())
 	 */
-    static int64_t long_int();
+    static uint64_t uint64();
 
 private:
-    static std::random_device                     _true_random_generator;
-    static std::default_random_engine             _generator;
-    static std::uniform_real_distribution<float>  _distribution_0to1;
-    static std::uniform_real_distribution<float>  distribution_minus1to1;
-    static std::uniform_int_distribution<int64_t> distribution_long_int;
+    static std::random_device                      _true_random_generator;
+    static std::default_random_engine              _generator;
+    static std::uniform_real_distribution<float>   _distribution_0to1;
+    static std::uniform_real_distribution<float>   _distribution_minus1to1;
+    static std::uniform_int_distribution<uint64_t> _distribution_uint64;
 
     Random()  = delete;
     ~Random() = delete;
