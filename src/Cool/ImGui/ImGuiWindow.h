@@ -24,6 +24,8 @@ public:
     }
     void close() { _is_open = false; }
 
+    void open_close_checkbox();
+
     struct OpenEvent {
     };
 
