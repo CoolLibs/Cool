@@ -13,6 +13,15 @@ public:
 
 private:
     uint64_t _uuid;
+
+private:
+    //Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Value", _uuid));
+    }
 };
 
 } // namespace Cool
