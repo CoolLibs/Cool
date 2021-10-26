@@ -2,6 +2,7 @@
 
 #include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
+#include <Cool/Log/ToUser.h>
 
 namespace Cool::OpenGL {
 
@@ -32,8 +33,9 @@ void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
                           ShaderKind::Fragment,
                           std::string{name}}}};
     }
-    catch (...) {
+    catch (const std::exception& e) {
         _shader.reset();
+        Cool::Log::ToUser::warn("FullscreenPipeline", "{}", e.what());
     }
 }
 
