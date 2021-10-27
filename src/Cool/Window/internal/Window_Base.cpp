@@ -55,8 +55,7 @@ void Window_Base::switch_fullscreen()
         glfwGetWindowPos(_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
         glfwGetWindowSize(_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
         glfwSetWindowMonitor(_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-        // if (m_bIsVSyncEnabled)
-        //     setSwapInterval(GLFW_TRUE);
+        cap_framerate_if(framerate_is_capped()); // Turning fullscreen disables VSync so we have to reenable it
         _is_fullscreen = true;
     }
 }
@@ -67,8 +66,6 @@ void Window_Base::escape_fullscreen()
         GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
         glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, mode->refreshRate);
-        // if (m_bIsVSyncEnabled)
-        //     setSwapInterval(GLFW_TRUE);
         _is_fullscreen = false;
     }
 }
