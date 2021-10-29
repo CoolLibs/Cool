@@ -51,12 +51,8 @@ void ToUser::imgui_console_window()
                     return ImVec4{0, 0, 0, 0};
                 }
             }();
-            // Get minutes and seconds
-            const std::time_t time = std::chrono::system_clock::to_time_t(message.timestamp);
-            std::stringstream min_sec;
-            min_sec << std::put_time(std::localtime(&time), "%M'%S\"");
-            //
-            ImGui::TextColored(color, "[%s] [%s]", min_sec.str().c_str(), message.category.c_str());
+            const auto time = std::chrono::hh_mm_ss{message.timestamp.time_since_epoch()};
+            ImGui::TextColored(color, "[%d'%lld\"] [%s]", time.minutes().count(), time.seconds().count(), message.category.c_str());
             ImGui::SameLine();
             ImGui::Text("%s", message.body.c_str());
         }
