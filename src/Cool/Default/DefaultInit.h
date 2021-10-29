@@ -17,12 +17,11 @@ namespace CoolDefault {
  */
 inline void init()
 {
+    Cool::Log::initialize();
 #if defined(DEBUG)
     // Run the tests !
     doctest::Context{}.run();
 #endif
-
-    Cool::Log::initialize();
 
 #if defined(DEBUG)
     // When launching from an IDE (which almost always means we are in Debug mode)
