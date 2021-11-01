@@ -25,7 +25,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(cereal::make_nvp("Name", name),
-                cereal::make_nvp("Default value", default_value));
+                cereal::make_nvp("Default", default_value));
     }
 };
 

@@ -38,9 +38,9 @@ private:
     void serialize(Archive& archive)
     {
         archive(cereal::make_nvp("Name", name),
-                cereal::make_nvp("Default value", default_value),
-                cereal::make_nvp("Min value", min_value),
-                cereal::make_nvp("Max value", max_value));
+                cereal::make_nvp("Default", default_value),
+                cereal::make_nvp("Min", min_value),
+                cereal::make_nvp("Max", max_value));
     }
 };
 
