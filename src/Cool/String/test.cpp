@@ -30,3 +30,29 @@ TEST_CASE("[Cool::String] replace_at()")
 {
     CHECK(Cool::String::replace_at(3, 5, "0123456789", "abcde") == "012abcde56789");
 }
+
+TEST_CASE("[Cool::String] find_matching_pair()")
+{
+    SUBCASE("When there is nested delimiters")
+    {
+        CHECK(Cool::String::find_matching_pair("abc(de(fg)h)ij") == std::make_pair<size_t, size_t>(3, 11));
+        CHECK(Cool::String::find_matching_pair("abc(de(fgh)ij") == std::nullopt);
+    }
+    SUBCASE("When the delimiters are the first and last characters of the text")
+    {
+        CHECK(Cool::String::find_matching_pair("(abc)") == std::make_pair<size_t, size_t>(0, 4));
+    }
+    SUBCASE("When the text is empty")
+    {
+        CHECK(Cool::String::find_matching_pair("") == std::nullopt);
+    }
+    SUBCASE("When the first opening delimiter is at the end of the text")
+    {
+        CHECK(Cool::String::find_matching_pair("abc(") == std::nullopt);
+    }
+    SUBCASE("When the opening and closing delimiters are the same")
+    {
+        CHECK(Cool::String::find_matching_pair("ab|cde|fg", '|', '|').value() == std::make_pair<size_t, size_t>(2, 6));
+        CHECK(Cool::String::find_matching_pair("ab|cde|fg|hi", '|', '|').value() == std::make_pair<size_t, size_t>(2, 6));
+    }
+}

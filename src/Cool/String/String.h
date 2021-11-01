@@ -53,4 +53,6 @@ std::optional<std::string> find_replacement(const std::string& string_to_replace
  */
 std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring);
 
+std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening = '(', char closing = ')');
+
 } // namespace Cool::String

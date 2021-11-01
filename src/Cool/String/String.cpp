@@ -76,4 +76,25 @@ std::string replace_at(size_t begin, size_t end, const std::string& input_string
     return input_string.substr(0, begin) + new_substring + input_string.substr(end, input_string.length() - end);
 }
 
+std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening, char closing)
+{
+    const size_t first_open = text.find(opening);
+    if (first_open == std::string::npos) {
+        return std::nullopt;
+    }
+    size_t counter = 1;
+    for (size_t pos = first_open + 1; pos != text.length(); ++pos) {
+        if (text[pos] == closing) {
+            counter--;
+        }
+        else if (text[pos] == opening) {
+            counter++;
+        }
+        if (counter == 0) {
+            return std::make_pair(first_open, pos);
+        }
+    }
+    return std::nullopt;
+}
+
 } // namespace Cool::String
