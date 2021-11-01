@@ -97,4 +97,15 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
     return std::nullopt;
 }
 
+std::vector<std::string> split_into_words(const std::string& text)
+{
+    std::istringstream       ss{text};
+    std::string              word;
+    std::vector<std::string> res;
+    while (ss >> word) {
+        res.push_back(word);
+    }
+    return res;
+}
+
 } // namespace Cool::String

@@ -53,6 +53,16 @@ std::optional<std::string> find_replacement(const std::string& string_to_replace
  */
 std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring);
 
+/**
+ * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
+ * or std::nullopt if no such pair was found
+ */
 std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening = '(', char closing = ')');
+
+/**
+ * @brief Splits the text on each space and returns the list of words.
+ * The words appear in the same order in the list as they do in the text
+ */
+std::vector<std::string> split_into_words(const std::string& text);
 
 } // namespace Cool::String

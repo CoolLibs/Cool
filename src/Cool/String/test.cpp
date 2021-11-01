@@ -56,3 +56,8 @@ TEST_CASE("[Cool::String] find_matching_pair()")
         CHECK(Cool::String::find_matching_pair("ab|cde|fg|hi", '|', '|').value() == std::make_pair<size_t, size_t>(2, 6));
     }
 }
+
+TEST_CASE("[Cool::String] split_into_words()")
+{
+    CHECK(Cool::String::split_into_words("hello wor  ld") == std::vector<std::string>({"hello", "wor", "ld"}));
+}
