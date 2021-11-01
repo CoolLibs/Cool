@@ -65,4 +65,6 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
  */
 std::vector<std::string> split_into_words(const std::string& text);
 
+std::string remove_whitespaces(std::string_view text);
+
 } // namespace Cool::String

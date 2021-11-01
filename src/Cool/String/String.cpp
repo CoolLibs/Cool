@@ -108,4 +108,13 @@ std::vector<std::string> split_into_words(const std::string& text)
     return res;
 }
 
+std::string remove_whitespaces(std::string_view text)
+{
+    auto res = std::string{text};
+    replace_all(res, " ", "");
+    replace_all(res, "\n", "");
+    replace_all(res, "\t", "");
+    return res;
+}
+
 } // namespace Cool::String
