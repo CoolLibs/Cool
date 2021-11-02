@@ -2,6 +2,17 @@
 
 namespace Cool::ParameterU {
 
+Parameter::Any make_param(const ParameterList& previous_parameters, const Parameter::AnyDesc& desc)
+{
+    const auto param_idx = index_of(desc, previous_parameters);
+    if (param_idx.has_value()) {
+        return (*previous_parameters)[*param_idx];
+    }
+    else {
+        return make_any_parameter(desc);
+    }
+}
+
 bool is_matching_desc_type(const Parameter::Any& param, const Parameter::AnyDesc& desc)
 {
     return std::visit([&](auto&& param) { return is_matching_desc_type(param, desc); }, param);

@@ -4,10 +4,7 @@
 
 namespace Cool::ParameterU {
 
-template<ParameterType Param>
-Param make_param(const ParameterList& previous_parameters, const typename Param::Description& desc)
-{
-}
+Parameter::Any make_param(const ParameterList& previous_parameters, const Parameter::AnyDesc& desc);
 
 std::optional<size_t> index_of(const Parameter::AnyDesc& description, const ParameterList& list);
 
