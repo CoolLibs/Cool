@@ -53,6 +53,17 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
 }
 
 template<typename T>
+concept ParameterType = requires(T param)
+{
+    // clang-format off
+    typename T::Description;
+    // typename T::InternalValue;
+    // {desc.name} -> std::convertible_to<std::string>;
+    // {desc.default_value} -> std::convertible_to<typename T::InternalValue>;
+    // clang-format on
+};
+
+template<typename T>
 concept ParameterDesc = requires(T desc)
 {
     // clang-format off
