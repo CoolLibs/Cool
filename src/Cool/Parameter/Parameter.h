@@ -28,22 +28,22 @@ namespace Cool {
 
 inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
 {
-    return std::visit([](auto&& desc) {
+    return std::visit([](auto&& desc) -> Parameter::Any {
         using T = std::decay_t<decltype(desc)>;
         if constexpr (std::is_same_v<T, Parameter::IntDesc>) {
-            return Parameter::Any{Parameter::Int{desc}};
+            return Parameter::Int{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::FloatDesc>) {
-            return Parameter::Any{Parameter::Float{desc}};
+            return Parameter::Float{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::Vec2Desc>) {
-            return Parameter::Any{Parameter::Vec2{desc}};
+            return Parameter::Vec2{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::Dir3Desc>) {
-            return Parameter::Any{Parameter::Dir3{desc}};
+            return Parameter::Dir3{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::ColorDesc>) {
-            return Parameter::Any{Parameter::Color{desc}};
+            return Parameter::Color{desc};
         }
         else {
             static_assert(false, "non-exhaustive visitor!");
