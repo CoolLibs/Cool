@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+
 # Define DEBUG in debug mode
 add_compile_definitions($<$<CONFIG:Debug>:DEBUG>)
 
