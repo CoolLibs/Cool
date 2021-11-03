@@ -60,10 +60,16 @@ std::string replace_at(size_t begin, size_t end, const std::string& input_string
 std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening = '(', char closing = ')');
 
 /**
- * @brief Splits the text on each space and returns the list of words.
+ * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
+ * Words are considered to be separated by one or more characters of "delimiters".
+ */
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, std::string_view delimiters, size_t offset);
+
+/**
+ * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
  * The words appear in the same order in the list as they do in the text
  */
-std::vector<std::string> split_into_words(const std::string& text);
+std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = " ");
 
 std::string remove_whitespaces(std::string_view text);
 

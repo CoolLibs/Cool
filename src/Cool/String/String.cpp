@@ -97,13 +97,26 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
     return std::nullopt;
 }
 
-std::vector<std::string> split_into_words(const std::string& text)
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, std::string_view delimiters, size_t offset)
 {
-    std::istringstream       ss{text};
-    std::string              word;
+    const size_t idx1 = text.find_first_not_of(delimiters, offset);
+    if (idx1 == std::string_view::npos) {
+        return std::nullopt;
+    }
+    size_t idx2 = text.find_first_of(delimiters, idx1);
+    if (idx2 == std::string_view::npos) {
+        idx2 = text.size();
+    }
+    return std::make_pair(idx1, idx2);
+}
+
+std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters)
+{
     std::vector<std::string> res;
-    while (ss >> word) {
-        res.push_back(word);
+    auto                     word_pos = find_next_word(text, delimiters, 0);
+    while (word_pos.has_value()) {
+        res.emplace_back(text.substr(word_pos->first, word_pos->second - word_pos->first));
+        word_pos = find_next_word(text, delimiters, word_pos->second);
     }
     return res;
 }

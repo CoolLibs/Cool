@@ -60,4 +60,9 @@ TEST_CASE("[Cool::String] find_matching_pair()")
 TEST_CASE("[Cool::String] split_into_words()")
 {
     CHECK(Cool::String::split_into_words("hello wor  ld") == std::vector<std::string>({"hello", "wor", "ld"}));
+    CHECK(Cool::String::split_into_words("hello wor  ld ") == std::vector<std::string>({"hello", "wor", "ld"}));
+    CHECK(Cool::String::split_into_words(" hello wor  ld ") == std::vector<std::string>({"hello", "wor", "ld"}));
+    CHECK(Cool::String::split_into_words(" ") == std::vector<std::string>({}));
+    CHECK(Cool::String::split_into_words("   ") == std::vector<std::string>({}));
+    CHECK(Cool::String::split_into_words("hello, wor, ,   ld", " ,") == std::vector<std::string>({"hello", "wor", "ld"}));
 }
