@@ -45,9 +45,6 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
         else if constexpr (std::is_same_v<T, Parameter::ColorDesc>) {
             return Parameter::Color{desc};
         }
-        else {
-            static_assert(false, "non-exhaustive visitor!");
-        }
     },
                       desc);
 }
