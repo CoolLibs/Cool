@@ -25,12 +25,18 @@ public:
 	 */
     static uint64_t uint64();
 
+    /**
+	 * @return Any random int
+	 */
+    static int integer();
+
 private:
     static std::random_device                      _true_random_generator;
     static std::default_random_engine              _generator;
     static std::uniform_real_distribution<float>   _distribution_0to1;
     static std::uniform_real_distribution<float>   _distribution_minus1to1;
     static std::uniform_int_distribution<uint64_t> _distribution_uint64;
+    static std::uniform_int_distribution<int>      _distribution_integer;
 
     Random()  = delete;
     ~Random() = delete;
