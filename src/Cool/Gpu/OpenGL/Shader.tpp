@@ -16,10 +16,15 @@ static void validate_shader(GLuint id)
     if (result == GL_FALSE) {
         GLsizei length;
         GLDebug(glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length));
-        std::vector<GLchar> error_message;
-        error_message.reserve(length);
-        GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
-        throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
+        if (length > 0) {
+            std::vector<GLchar> error_message;
+            error_message.reserve(length);
+            GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
+            throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
+        }
+        else {
+            throw std::invalid_argument("Linking failed:\nNo error message available.");
+        }
     }
 }
 
