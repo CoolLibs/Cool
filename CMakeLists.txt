@@ -10,7 +10,6 @@ cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_
 target_compile_definitions(Cool
     PUBLIC
         $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
-    PRIVATE
         COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
         $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
