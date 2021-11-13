@@ -7,22 +7,6 @@ namespace Cool {
 class File {
 public:
     /**
-     * @brief Root directory where the program was started from. Use this to describe your ressources by an absolute path, especially if you play at runtime with the directories and your relative paths get messed up
-     * 
-     * @return 
-     */
-    static const std::string& root_dir();
-
-    /// Directory where Cool/res is located, or where the Cool resources have been copied. This path will always be valid to refer to Cool/res
-    static const std::string& cool_res();
-
-    /**
-     * @brief Initializes root_dir. This must be called once, at the start of your application
-     * 
-     */
-    static void initialize_root_dir(std::string_view path);
-
-    /**
      * @brief 
      * 
      * @return true iff file_path corresponds to an existing file or folder
@@ -98,12 +82,6 @@ public:
      * @return std::string A file name that isn't in use yet ; it will be file_name, eventually postfixed with a number in parenthesis
      */
     static std::string find_available_name(std::string_view folder_path, std::string_view file_name, std::string_view extension);
-
-private:
-    static std::string _root_dir;
-#if defined(DEBUG)
-    static bool _root_dir_is_initialized;
-#endif
 };
 
 } // namespace Cool

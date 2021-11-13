@@ -3,12 +3,13 @@
 #include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
 #include <Cool/Log/ToUser.h>
+#include <Cool/Path/Path.h>
 
 namespace Cool::OpenGL {
 
 std::optional<ShaderModule>& vertex_module()
 {
-    static std::optional<ShaderModule> shader_module = ShaderModule{{File::to_string(File::cool_res() + "/shaders/fullscreen.vert"),
+    static std::optional<ShaderModule> shader_module = ShaderModule{{File::to_string(Path::cool_res() + "/shaders/fullscreen.vert"),
                                                                      ShaderKind::Vertex,
                                                                      "Cool's fullscreen vertex shader"}};
     return shader_module;

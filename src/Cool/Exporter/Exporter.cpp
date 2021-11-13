@@ -3,13 +3,14 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
+#include <Cool/Path/Path.h>
 #include "ExporterU.h"
 
 namespace Cool {
 
 Exporter::Exporter()
-    : _folder_path_for_image{File::root_dir() + "/out"}
-    , _folder_path_for_video{File::root_dir() + "/exports"}
+    : _folder_path_for_image{Path::root() + "/out"}
+    , _folder_path_for_video{Path::root() + "/exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
         _file_name = File::find_available_name(_folder_path_for_image, _file_name, ".png");

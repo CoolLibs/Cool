@@ -4,6 +4,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include <Cool/Constants/Constants.h>
+#include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui_internal.h>
 

@@ -4,8 +4,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
 #endif
-#include <Cool/File/File.h>
 #include <Cool/Log/Log.h>
+#include <Cool/Path/Path.h>
+#include <filesystem>
 
 namespace CoolDefault {
 
@@ -30,8 +31,8 @@ void init()
     // So it is better to always work with the assets at the root while in development.
     std::filesystem::current_path(COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR);
 #endif
-    Cool::File::initialize_root_dir(std::filesystem::current_path().string());
-    Cool::File::cool_res();
+    Cool::Path::initialize_root(std::filesystem::current_path().string());
+    Cool::Path::initialize_cool_res(std::filesystem::current_path().string() + "/" + COOL_PATH + "/res");
 }
 
 } // namespace CoolDefault

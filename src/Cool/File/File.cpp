@@ -6,33 +6,6 @@
 
 namespace Cool {
 
-std::string File::_root_dir;
-#if defined(DEBUG)
-bool File::_root_dir_is_initialized = false;
-#endif
-
-const std::string& File::root_dir()
-{
-    assert(_root_dir_is_initialized);
-    return _root_dir;
-}
-
-void File::initialize_root_dir(std::string_view path)
-{
-#if defined(DEBUG)
-    assert(!_root_dir_is_initialized);
-    _root_dir_is_initialized = true;
-#endif
-    _root_dir = path;
-    Log::info("[File::initialize_root_dir] \"{}\" is the root directory", _root_dir);
-}
-
-const std::string& File::cool_res()
-{
-    static std::string path = std::filesystem::current_path().string() + "/" + COOL_PATH + "/res";
-    return path;
-}
-
 bool File::exists(std::string_view file_path)
 {
     struct stat buffer; // NOLINT
