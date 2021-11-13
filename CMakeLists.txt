@@ -4,11 +4,6 @@ add_library(Cool)
 add_library(Cool:: ALIAS Cool)
 target_compile_features(Cool PUBLIC cxx_std_20)
 
-file(GLOB_RECURSE COOL_SOURCES
-    src/*
-)
-target_sources(Cool PRIVATE ${COOL_SOURCES})
-
 # Define DEBUG in debug mode
 target_compile_definitions(Cool PUBLIC $<$<CONFIG:Debug>:DEBUG>)
 
@@ -206,18 +201,12 @@ if (COOL_USE_OPENGL)
     )
 endif()
 
-# Post build : copy some files and folder to the output folder (where the executable is generated)
-# imgui.ini 
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy
-#         ${CMAKE_SOURCE_DIR}/imgui.ini
-#         $<TARGET_FILE_DIR:${PROJECT_NAME}>/imgui.ini
-# )
-# # res
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         ${CMAKE_SOURCE_DIR}/Cool/res
-#         $<TARGET_FILE_DIR:${PROJECT_NAME}>/Cool/res
-# )
+# ---Add Cool sources---
+file(GLOB_RECURSE COOL_SOURCES src/*)
+target_sources(Cool PRIVATE ${COOL_SOURCES})
+# ------
+
+file(APPEND ${CMAKE_SOURCE_DIR}/imgui.ini "") # Create imgui.ini it it doesn't exist. This prevents to following copy command from failing
+include("cmake/copy_to_output.cmake")
+copy_file_to_output(imgui.ini)
+copy_folder_to_output(Cool/res)
