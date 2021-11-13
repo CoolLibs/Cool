@@ -26,9 +26,6 @@ void init()
     // This means that if for example we do hot reloading of shaders
     // we can modify the source assets (at the root), instead of the ones that have been copied.
     // This is important because only the ones at the root are tracked in Git.
-    // Also, if you modify an asset at the root whithout modifying some code, and then restart the program
-    // the asset won't be copied (because I couldn't figure out how to configure CMake to do so)
-    // So it is better to always work with the assets at the root while in development.
     std::filesystem::current_path(COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR);
 #endif
     Cool::Path::initialize_root(std::filesystem::current_path().string());
