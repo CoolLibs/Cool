@@ -212,5 +212,5 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 
 file(APPEND ${CMAKE_SOURCE_DIR}/imgui.ini "") # Create imgui.ini it it doesn't exist. This prevents the following copy command from failing
 include("cmake/copy_to_output.cmake")
-copy_file_to_output(imgui.ini)
-copy_folder_to_output(${COOL_PATH}/res)
+Cool__copy_file_to_output(imgui.ini)
+Cool__copy_folder_to_output(${COOL_PATH}/res)

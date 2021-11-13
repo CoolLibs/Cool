@@ -14,10 +14,10 @@ function(internal_cool_copy FILE_OR_DIR COMMAND_NAME)
     add_dependencies(${PROJECT_NAME} ${TARGET_NAME}) # Mark our custom target as a dependency of the main project, so that whenever the main project is launched our custom target is triggered and files are copied
 endfunction()
 
-function(copy_file_to_output FILENAME)
+function(Cool__copy_file_to_output FILENAME)
     internal_cool_copy(${FILENAME} copy)
 endfunction()
 
-function(copy_folder_to_output FOLDERNAME)
+function(Cool__copy_folder_to_output FOLDERNAME)
     internal_cool_copy(${FOLDERNAME} copy_directory)
 endfunction()
