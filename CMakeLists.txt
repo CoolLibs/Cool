@@ -202,7 +202,7 @@ if (COOL_USE_OPENGL)
 endif()
 
 # ---Add Cool sources---
-file(GLOB_RECURSE COOL_SOURCES src/*)
+file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
 target_sources(Cool PRIVATE ${COOL_SOURCES})
 # ------
 
