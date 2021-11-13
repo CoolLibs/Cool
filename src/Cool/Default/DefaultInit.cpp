@@ -31,6 +31,7 @@ void init()
     std::filesystem::current_path(COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR);
 #endif
     Cool::File::initialize_root_dir(std::filesystem::current_path().string());
+    Cool::File::cool_res();
 }
 
 } // namespace CoolDefault

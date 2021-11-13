@@ -7,7 +7,7 @@
 namespace Cool::Vulkan {
 
 FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code)
-    : _vertex_shader_module{{File::to_string(File::root_dir() + "/Cool/res/shaders/fullscreen.vert"), Cool::ShaderKind::Vertex}}
+    : _vertex_shader_module{{File::to_string(File::cool_res() + "/shaders/fullscreen.vert"), Cool::ShaderKind::Vertex}}
     , _fragment_shader_module{{std::string{fragment_shader_source_code}, Cool::ShaderKind::Fragment}}
 {
 }

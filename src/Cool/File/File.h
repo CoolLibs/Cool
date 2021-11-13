@@ -13,6 +13,9 @@ public:
      */
     static const std::string& root_dir();
 
+    /// Directory where Cool/res is located, or where the Cool resources have been copied. This path will always be valid to refer to Cool/res
+    static const std::string& cool_res();
+
     /**
      * @brief Initializes root_dir. This must be called once, at the start of your application
      * 

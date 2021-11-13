@@ -3,6 +3,7 @@
 #include "preprocess_shader_source.h"
 #include <Cool/File/File.h>
 #include <Cool/RegExp/RegExp.h>
+#include <Cool/String/String.h>
 #include <sstream>
 
 namespace Cool::OpenGL {
@@ -25,6 +26,7 @@ std::string preprocess_shader_source(const std::string& source)
 
     std::string line;
     while (std::getline(stream, line)) {
+        String::replace_all(line, "_COOL_RES_", File::cool_res());
         output << line_or_include(line) << '\n';
     }
 

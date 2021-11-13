@@ -1,14 +1,19 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 add_library(Cool)
 add_library(Cool:: ALIAS Cool)
 target_compile_features(Cool PUBLIC cxx_std_20)
 
-# Define DEBUG in debug mode
-target_compile_definitions(Cool PUBLIC $<$<CONFIG:Debug>:DEBUG>)
+# Set COOL_PATH to the path to Cool, relative to the main project's CMakeLists.txt. It will look like third-party/Cool
+cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
 
-# Define COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR in debug mode. This is useful to set the current working directory in debug mode.
-target_compile_definitions(Cool PRIVATE $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\">)
+target_compile_definitions(Cool
+    PUBLIC
+        $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
+    PRIVATE
+        COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
+        $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
+)
 
 target_include_directories(Cool PUBLIC
     src
@@ -206,7 +211,7 @@ file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
 target_sources(Cool PRIVATE ${COOL_SOURCES})
 # ------
 
-file(APPEND ${CMAKE_SOURCE_DIR}/imgui.ini "") # Create imgui.ini it it doesn't exist. This prevents to following copy command from failing
+file(APPEND ${CMAKE_SOURCE_DIR}/imgui.ini "") # Create imgui.ini it it doesn't exist. This prevents the following copy command from failing
 include("cmake/copy_to_output.cmake")
 copy_file_to_output(imgui.ini)
-copy_folder_to_output(Cool/res)
+copy_folder_to_output(${COOL_PATH}/res)

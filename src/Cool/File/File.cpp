@@ -27,6 +27,12 @@ void File::initialize_root_dir(std::string_view path)
     Log::info("[File::initialize_root_dir] \"{}\" is the root directory", _root_dir);
 }
 
+const std::string& File::cool_res()
+{
+    static std::string path = std::filesystem::current_path().string() + "/" + COOL_PATH + "/res";
+    return path;
+}
+
 bool File::exists(std::string_view file_path)
 {
     struct stat buffer; // NOLINT

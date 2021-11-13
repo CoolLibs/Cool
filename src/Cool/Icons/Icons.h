@@ -12,21 +12,21 @@ public:
 	 * 
 	 * @return The texture ID of the "play" icon 
 	 */
-    static const Texture& play() { return get(File::root_dir() + "/Cool/res/icons/play.png"); }
+    static const Texture& play() { return get(File::cool_res() + "/icons/play.png"); }
 
     /**
 	 * @brief 
 	 * 
 	 * @return The texture ID of the "pause" icon 
 	 */
-    static const Texture& pause() { return get(File::root_dir() + "/Cool/res/icons/pause.png"); }
+    static const Texture& pause() { return get(File::cool_res() + "/icons/pause.png"); }
 
     /**
 	 * @brief 
 	 * 
 	 * @return The texture ID of the "folder" icon 
 	 */
-    static const Texture& folder() { return get(File::root_dir() + "/Cool/res/icons/folder.png"); }
+    static const Texture& folder() { return get(File::cool_res() + "/icons/folder.png"); }
 
     /**
 	 * @brief Returns the OpenGL texture containing the image. The first time get() is called for a given image path, the file is read and a texture is generated. Subsequent calls to get() for this same file will serve the texture from a cache (i.e. really fast). If you want to force textures to be preloaded, you can call get("myImage.png") at the beginning of your app. /!\ Once get() is called and a texture is generated, it remains in GPU memory until the end of the application. If you don't need a texture anymore, you can use cleanup_texture().
