@@ -82,6 +82,11 @@ if (COOL_USE_VULKAN)
         COOL_VULKAN
         COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     include("Cool/cmake/vookoo.cmake")
+    add_subdirectory(lib/shaderc-and-deps)
+    target_link_libraries(Cool PUBLIC
+        Vulkan::Vulkan
+        shaderc
+    )
 elseif (COOL_USE_OPENGL)
     target_compile_definitions(Cool PUBLIC
         COOL_OPENGL
@@ -102,6 +107,9 @@ target_include_directories(Cool PUBLIC ${GLFW_DIR}/include)
 target_include_directories(Cool PUBLIC ${GLFW_DIR}/deps)
 
 
+target_link_libraries(Cool PUBLIC
+    glfw
+)
 
 
 target_include_directories(Cool PUBLIC lib)
@@ -158,40 +166,23 @@ target_include_directories( IMGUI
 # )
 target_link_libraries(Cool PUBLIC IMGUI)
 
+# -------------------
+# ---Add libraries---
+# -------------------
+
 # Boxer
 add_subdirectory(lib/Boxer)
-
+target_link_libraries(Cool PUBLIC Boxer)
 # Native File Dialog
 add_subdirectory(lib/nfd/src)
-
+target_link_libraries(Cool PUBLIC nfd)
 # Stb image
-add_library(STB_IMAGE STATIC "lib/stb_image/stb_image.cpp")
-target_link_libraries(Cool PUBLIC
-    STB_IMAGE
-)
-add_library(STB_IMAGE_WRITE STATIC "lib/stb_image/stb_image_write.cpp")
-target_link_libraries(Cool PUBLIC
-    STB_IMAGE_WRITE
-)
-
+add_library(STB_IMAGE
+    "lib/stb_image/stb_image.cpp"
+    "lib/stb_image/stb_image_write.cpp")
+target_link_libraries(Cool PRIVATE STB_IMAGE)
 # doctest
-# Strip tests from release builds
-target_compile_definitions(Cool PUBLIC $<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>)
-
-# Add libraries to the project
-target_link_libraries(Cool PUBLIC
-    Boxer
-    nfd
-    glfw
-)
-if (COOL_USE_VULKAN)
-    # shaderc
-    add_subdirectory(lib/shaderc-and-deps)
-    target_link_libraries(Cool PUBLIC
-        Vulkan::Vulkan
-        shaderc
-    )
-endif()
+target_compile_definitions(Cool PUBLIC $<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>) # Strip tests from release builds
 
 # ---Add Cool sources---
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
