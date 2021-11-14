@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 add_library(Cool)
-add_library(Cool:: ALIAS Cool)
+add_library(Cool::Core ALIAS Cool)
 target_compile_features(Cool PUBLIC cxx_std_20)
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
@@ -13,21 +13,12 @@ target_compile_definitions(Cool PUBLIC
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
 
-target_include_directories(Cool PUBLIC
-    src
-    lib
-    lib/imgui
-    lib/glm
-    lib/nfd/src/include
-    lib/cereal/include
-    lib/spdlog/include
-    lib/doctest
-    lib/Vookoo/include
-    lib/smart/src
-)
+# -----------------------------
+# ---Set include directories---
+# -----------------------------
 
-# More infos on precompiled headers : https://www.youtube.com/watch?v=eSI4wctZUto&ab_channel=TheCherno
-target_precompile_headers(Cool PUBLIC
+target_include_directories(Cool PUBLIC src)
+target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <vector>
     <string>
     <memory>
@@ -41,50 +32,48 @@ target_precompile_headers(Cool PUBLIC
     <utility>
     <chrono>
     <list>
-
     <imgui/imgui.h>
     <imgui/misc/cpp/imgui_stdlib.h>
-    
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
-
     <cereal/access.hpp>
     <cereal/types/vector.hpp>
     <cereal/types/string.hpp>
     <cereal/types/memory.hpp>
     <cereal/types/variant.hpp>
-    
     <boxer/boxer.h>
     <nfd.hpp>
     <doctest/doctest.h>
     <scope_guard/scope_guard.hpp>
-
     <Cool/Log/Log.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h>                             # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h>                          # must be included after <vector> because it depends on it
 )
-if (COOL_USE_OPENGL)
-    target_precompile_headers(Cool PUBLIC
-        <glad/glad.h>
-        <Cool/Gpu/OpenGL/GLDebug.h>
-    )
-elseif (COOL_USE_VULKAN)
+if (COOL_USE_VULKAN)
     target_precompile_headers(Cool PUBLIC
         <vulkan/vulkan.hpp>
         <vku/vku.hpp>
     )
+elseif (COOL_USE_OPENGL)
+    target_precompile_headers(Cool PUBLIC
+        <glad/glad.h>
+        <Cool/Gpu/OpenGL/GLDebug.h>
+    )
 endif()
 
-# Include Vulkan / OpenGL
+# -------------------------
+# ---Add Vulkan / OpenGL---
+# -------------------------
+
 if (COOL_USE_VULKAN)
     target_compile_definitions(Cool PUBLIC 
         COOL_VULKAN
         COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
-    include("Cool/cmake/vookoo.cmake")
+    include("Cool/cmake/vookoo.cmake") # TODO ?
     add_subdirectory(lib/shaderc-and-deps)
     target_link_libraries(Cool PUBLIC
-        Vulkan::Vulkan
+        Vulkan::Vulkan # TODO ?
         shaderc
     )
 elseif (COOL_USE_OPENGL)
@@ -92,8 +81,12 @@ elseif (COOL_USE_OPENGL)
         COOL_OPENGL
         COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     add_subdirectory(lib/glpp)
-    target_link_libraries(Cool PUBLIC glpp::)
+    target_link_libraries(Cool PUBLIC glpp::glpp)
 endif()
+
+# -------------------
+# ---Add libraries---
+# -------------------
 
 # GLFW
 set(GLFW_DIR lib/glfw)
@@ -166,10 +159,17 @@ target_include_directories( IMGUI
 # )
 target_link_libraries(Cool PUBLIC IMGUI)
 
-# -------------------
-# ---Add libraries---
-# -------------------
-
+# glm
+add_subdirectory(lib/glm)
+target_link_libraries(Cool PUBLIC glm::glm)
+# cereal
+target_include_directories(Cool PUBLIC lib/cereal/include)
+# spdlog
+add_subdirectory(lib/spdlog)
+target_link_libraries(Cool PUBLIC spdlog::spdlog_header_only)
+# smart
+add_subdirectory(lib/smart)
+target_link_libraries(Cool PUBLIC smart::smart)
 # Boxer
 add_subdirectory(lib/Boxer)
 target_link_libraries(Cool PUBLIC Boxer)
@@ -182,12 +182,20 @@ add_library(STB_IMAGE
     "lib/stb_image/stb_image_write.cpp")
 target_link_libraries(Cool PRIVATE STB_IMAGE)
 # doctest
+add_subdirectory(lib/doctest)
+target_link_libraries(Cool PUBLIC doctest::doctest)
 target_compile_definitions(Cool PUBLIC $<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>) # Strip tests from release builds
 
+# ----------------------
 # ---Add Cool sources---
+# ----------------------
+
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
 target_sources(Cool PRIVATE ${COOL_SOURCES})
-# ------
+
+# ----------------
+# ---Copy files---
+# ----------------
 
 file(APPEND ${CMAKE_SOURCE_DIR}/imgui.ini "") # Create imgui.ini if it doesn't exist. This prevents the following copy command from failing
 include("cmake/copy_to_output.cmake")
