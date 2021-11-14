@@ -4,14 +4,13 @@ add_library(Cool)
 add_library(Cool:: ALIAS Cool)
 target_compile_features(Cool PUBLIC cxx_std_20)
 
-# Set COOL_PATH to the path to Cool, relative to the main project's CMakeLists.txt. It will look like third-party/Cool
+# Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
 
-target_compile_definitions(Cool
-    PUBLIC
-        $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
-        COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
-        $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
+target_compile_definitions(Cool PUBLIC
+    $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
+    COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
+    $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
 
 target_include_directories(Cool PUBLIC
@@ -70,8 +69,7 @@ if (COOL_USE_OPENGL)
         <glad/glad.h>
         <Cool/Gpu/OpenGL/GLDebug.h>
     )
-endif()
-if (COOL_USE_VULKAN)
+elseif (COOL_USE_VULKAN)
     target_precompile_headers(Cool PUBLIC
         <vulkan/vulkan.hpp>
         <vku/vku.hpp>
@@ -83,8 +81,7 @@ if (COOL_USE_VULKAN)
     target_compile_definitions(Cool PUBLIC COOL_VULKAN)
     target_compile_definitions(Cool PUBLIC COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     include("Cool/cmake/vookoo.cmake")
-endif()
-if (COOL_USE_OPENGL)
+elseif (COOL_USE_OPENGL)
     target_compile_definitions(Cool PUBLIC COOL_OPENGL)
     target_compile_definitions(Cool PUBLIC COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     find_package(OpenGL REQUIRED)
