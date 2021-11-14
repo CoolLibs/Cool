@@ -3,7 +3,7 @@
 # Otherwise you will get a "Cyclic dependencies" error
 
 function(internal_cool_copy FILE_OR_DIR COMMAND_NAME)
-    string(SHA1 TARGET_HASH ${FILE_OR_DIR})      # Create a unique name for our target. We can't use ${FILE_OR_DIR} directly because it could contain invalid characters like spaces
+    string(SHA1 TARGET_HASH ${FILE_OR_DIR})      # Create a unique name for our custom target. We can't use ${FILE_OR_DIR} directly because it could contain invalid characters like spaces
     set(TARGET_NAME CopyToOutput_${TARGET_HASH}) #
     add_custom_target(${TARGET_NAME}
         COMMENT "Copying \"${FILE_OR_DIR}\""
