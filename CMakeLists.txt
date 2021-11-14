@@ -78,12 +78,14 @@ endif()
 
 # Include Vulkan / OpenGL
 if (COOL_USE_VULKAN)
-    target_compile_definitions(Cool PUBLIC COOL_VULKAN)
-    target_compile_definitions(Cool PUBLIC COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
+    target_compile_definitions(Cool PUBLIC 
+        COOL_VULKAN
+        COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     include("Cool/cmake/vookoo.cmake")
 elseif (COOL_USE_OPENGL)
-    target_compile_definitions(Cool PUBLIC COOL_OPENGL)
-    target_compile_definitions(Cool PUBLIC COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
+    target_compile_definitions(Cool PUBLIC
+        COOL_OPENGL
+        COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     add_subdirectory(lib/glpp)
     target_link_libraries(Cool PUBLIC glpp::)
 endif()
@@ -131,8 +133,8 @@ target_include_directories( IMGUI
 
 
 
-    find_package(OpenGL REQUIRED)
-    target_link_libraries(IMGUI PUBLIC ${OPENGL_LIBRARIES})
+    # find_package(OpenGL REQUIRED)
+    # target_link_libraries(IMGUI PUBLIC ${OPENGL_LIBRARIES})
 
 
 
