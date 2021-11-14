@@ -84,13 +84,8 @@ if (COOL_USE_VULKAN)
 elseif (COOL_USE_OPENGL)
     target_compile_definitions(Cool PUBLIC COOL_OPENGL)
     target_compile_definitions(Cool PUBLIC COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
-    find_package(OpenGL REQUIRED)
-    add_library(GLAD STATIC lib/glad/src/glad.c)
-    target_include_directories(GLAD PUBLIC lib/glad/include)
-    target_include_directories(Cool PUBLIC
-        ${OPENGL_INCLUDE_DIR}
-        lib/glad/include
-    )
+    add_subdirectory(lib/glpp)
+    target_link_libraries(Cool PUBLIC glpp::)
 endif()
 
 # GLFW
@@ -193,12 +188,6 @@ if (COOL_USE_VULKAN)
     target_link_libraries(Cool PUBLIC
         Vulkan::Vulkan
         shaderc
-    )
-endif()
-if (COOL_USE_OPENGL)
-    target_link_libraries(Cool PUBLIC
-        ${OPENGL_LIBRARIES}
-        GLAD
     )
 endif()
 

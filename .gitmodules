@@ -43,3 +43,6 @@
 [submodule "lib/smart"]
 	path = lib/smart
 	url = https://github.com/JulesFouchy/smart
+[submodule "lib/glpp"]
+	path = lib/glpp
+	url = https://github.com/coollibs/glpp
