@@ -13,11 +13,18 @@ target_compile_definitions(Cool PUBLIC
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
 
+# ----------------------
+# ---Add Cool sources---
+# ----------------------
+
+file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
+target_sources(Cool PRIVATE ${COOL_SOURCES})
+
 # -----------------------------
 # ---Set include directories---
 # -----------------------------
 
-target_include_directories(Cool PUBLIC src)
+target_include_directories(Cool PUBLIC src lib)
 target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <vector>
     <string>
@@ -89,24 +96,8 @@ endif()
 # -------------------
 
 # GLFW
-set(GLFW_DIR lib/glfw)
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-option(GLFW_INSTALL "Generate installation target" OFF)
-option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
-add_subdirectory(${GLFW_DIR} binary_dir EXCLUDE_FROM_ALL)
-target_include_directories(Cool PUBLIC ${GLFW_DIR}/include)
-target_include_directories(Cool PUBLIC ${GLFW_DIR}/deps)
-
-
-target_link_libraries(Cool PUBLIC
-    glfw
-)
-
-
-target_include_directories(Cool PUBLIC lib)
-
+add_subdirectory(lib/glfw)
+target_link_libraries(Cool PUBLIC glfw)
 # glm
 add_subdirectory(lib/glm)
 target_link_libraries(Cool PUBLIC glm::glm)
@@ -145,13 +136,6 @@ add_subdirectory(lib/imgui)
         target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_opengl3.cpp)
     endif()
 target_link_libraries(Cool PUBLIC ImGui::ImGui)
-
-# ----------------------
-# ---Add Cool sources---
-# ----------------------
-
-file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
-target_sources(Cool PRIVATE ${COOL_SOURCES})
 
 # ----------------
 # ---Copy files---
