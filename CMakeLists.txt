@@ -107,58 +107,6 @@ target_link_libraries(Cool PUBLIC
 
 target_include_directories(Cool PUBLIC lib)
 
-# Dear ImGui
-
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui)
-add_library(IMGUI STATIC)
-
-target_sources( IMGUI
-                PRIVATE
-                    ${IMGUI_DIR}/imgui_demo.cpp
-                    ${IMGUI_DIR}/imgui_draw.cpp
-                    ${IMGUI_DIR}/imgui_tables.cpp
-                    ${IMGUI_DIR}/imgui_widgets.cpp
-                    ${IMGUI_DIR}/imgui.cpp
-                    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
-                    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
-                    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-                )
-
-target_include_directories( IMGUI
-                            PUBLIC ${IMGUI_DIR}
-                            # PUBLIC ${IMGUI_DIR}/backends
-                            # PUBLIC ${SDL2_DIR}/include
-                            ${GLFW_DIR}/include
-                            )
-
-
-
-
-    # find_package(OpenGL REQUIRED)
-    # target_link_libraries(IMGUI PUBLIC ${OPENGL_LIBRARIES})
-
-
-
-# target_link_libraries(IMGUI PUBLIC SDL2main SDL2 ${CMAKE_DL_LIBS})
-
-
-
-
-# file(GLOB_RECURSE IMGUI_SOURCES lib/imgui/*)
-# if (COOL_USE_VULKAN)
-#     list(REMOVE_ITEM IMGUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/backends/imgui_impl_opengl3.cpp")
-# endif()
-# if (COOL_USE_OPENGL)
-#     list(REMOVE_ITEM IMGUI_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/lib/imgui/backends/imgui_impl_vulkan.cpp")
-# endif()
-# add_library(IMGUI STATIC ${IMGUI_SOURCES})
-# target_include_directories(IMGUI PUBLIC 
-#     Cool/lib/imgui
-#     Cool/lib/imgui/backends
-#     Cool/lib/imgui/misc
-# )
-target_link_libraries(Cool PUBLIC IMGUI)
-
 # glm
 add_subdirectory(lib/glm)
 target_link_libraries(Cool PUBLIC glm::glm)
@@ -185,6 +133,18 @@ target_link_libraries(Cool PRIVATE STB_IMAGE)
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
 target_compile_definitions(Cool PUBLIC $<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>) # Strip tests from release builds
+# Dear ImGui
+add_subdirectory(lib/imgui)
+    # Build ImGui with glfw
+    target_link_libraries(ImGui PRIVATE glfw)
+    target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
+    # Build ImGui with Vulkan / OpenGL
+    if (COOL_USE_VULKAN)
+        target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_vulkan.cpp)
+    elseif (COOL_USE_OPENGL)
+        target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_opengl3.cpp)
+    endif()
+target_link_libraries(Cool PUBLIC ImGui::ImGui)
 
 # ----------------------
 # ---Add Cool sources---
