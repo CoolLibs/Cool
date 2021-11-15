@@ -77,12 +77,12 @@ if (COOL_USE_VULKAN)
     target_compile_definitions(Cool PUBLIC 
         COOL_VULKAN
         COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
-    include("Cool/cmake/vookoo.cmake") # TODO ?
+    find_package(Vulkan REQUIRED)
+    target_link_libraries(Cool PUBLIC Vulkan::Vulkan)
+    include("cmake/vookoo_spirv_support.cmake")
+    target_include_directories(Cool PUBLIC lib/Vookoo/include)
     add_subdirectory(lib/shaderc-and-deps)
-    target_link_libraries(Cool PUBLIC
-        Vulkan::Vulkan # TODO ?
-        shaderc
-    )
+    target_link_libraries(Cool PUBLIC shaderc)
 elseif (COOL_USE_OPENGL)
     target_compile_definitions(Cool PUBLIC
         COOL_OPENGL
@@ -132,6 +132,7 @@ add_subdirectory(lib/imgui)
     # Build ImGui with Vulkan / OpenGL
     if (COOL_USE_VULKAN)
         target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_vulkan.cpp)
+        target_link_libraries(ImGui PRIVATE Vulkan::Vulkan)
     elseif (COOL_USE_OPENGL)
         target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_opengl3.cpp)
     endif()

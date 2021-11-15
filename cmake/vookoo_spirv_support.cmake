@@ -1,11 +1,3 @@
-
-find_package(Vulkan REQUIRED)
-
-include_directories(
-    ${Vulkan_INCLUDE_DIR}
-)
-
-# Try to set SPIR-V support
 function(set_spirv_support)
     message(STATUS "[Vookoo] Found " ${SPIR_V_FILE})
     message(STATUS "[Vookoo] Setting VOOKOO_SPIRV_SUPPORT definition")
