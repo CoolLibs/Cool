@@ -19,9 +19,6 @@
 [submodule "lib/scope_guard"]
 	path = lib/scope_guard
 	url = https://github.com/ricab/scope_guard
-[submodule "lib/smart"]
-	path = lib/smart
-	url = https://github.com/JulesFouchy/smart
 [submodule "lib/glpp"]
 	path = lib/glpp
 	url = https://github.com/CoolLibs/glpp
