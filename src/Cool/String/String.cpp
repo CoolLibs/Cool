@@ -6,7 +6,7 @@ std::string to_lower(std::string_view str)
 {
     std::string res = "";
     std::for_each(str.begin(), str.end(), [&res](char c) {
-        res += std::tolower(c);
+        res += static_cast<char>(std::tolower(c));
     });
     return res;
 }

@@ -31,9 +31,9 @@ public:
 
     ScreenCoordinates as_screen_coordinates(GLFWwindow* window) const
     {
-        int x, y;
-        glfwGetWindowPos(window, &x, &y);
-        return ScreenCoordinates{*this + glm::vec2{x, y}};
+        int xx, yy;
+        glfwGetWindowPos(window, &xx, &yy);
+        return ScreenCoordinates{*this + glm::vec2{xx, yy}};
     }
 };
 

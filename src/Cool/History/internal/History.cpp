@@ -1,5 +1,8 @@
 #include "../History.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4267)
+
 namespace Cool {
 
 void History::begin_undo_group()
@@ -66,3 +69,5 @@ int History::nb_of_actions_between_this_and_previous_undo_group(int index)
 }
 
 } // namespace Cool
+
+#pragma warning(pop)

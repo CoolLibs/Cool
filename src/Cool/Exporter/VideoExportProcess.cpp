@@ -5,10 +5,10 @@
 namespace Cool {
 
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, ImageSize size)
-    : _folder_path{folder_path}
-    , _size{size}
-    , _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
+    : _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
     , _max_nb_digits_of_frame_count{static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)))}
+    , _folder_path{folder_path}
+    , _size{size}
     , _clock{params.fps, params.beginning}
 {
 }

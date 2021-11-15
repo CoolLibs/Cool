@@ -22,8 +22,8 @@ public:
     vk::PipelineLayout layout() const { return *_pipeline_layout; }
 
 public:
-    ShaderModule             _fragment_shader_module;
     ShaderModule             _vertex_shader_module;
+    ShaderModule             _fragment_shader_module;
     vk::UniquePipeline       _pipeline;
     vk::UniquePipelineLayout _pipeline_layout;
 };

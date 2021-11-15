@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.20)
 add_library(Cool)
 add_library(Cool::Core ALIAS Cool)
 target_compile_features(Cool PUBLIC cxx_std_20)
+if (MSVC)
+    target_compile_options(Cool PRIVATE /WX /W3)
+else()
+    target_compile_options(Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
+endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)

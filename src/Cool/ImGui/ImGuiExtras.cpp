@@ -189,7 +189,7 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f))) {
         NFD::UniquePath outPath;
 
         nfdresult_t result = NFD::PickFolder(outPath, std::filesystem::absolute(base_folder).string().c_str());
@@ -208,13 +208,13 @@ bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1, 1, 1, 1), ImVec4(0.1, 0.1, 0.1, 1))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f))) {
         NFD::UniquePath outPath;
         // clang-format off
         nfdresult_t result = NFD::OpenDialog(
             outPath,
             file_type_filters.data(),
-            file_type_filters.size(),
+            static_cast<nfdfiltersize_t>(file_type_filters.size()),
             std::filesystem::absolute(base_folder).string().c_str()
 		);
         // clang-format on

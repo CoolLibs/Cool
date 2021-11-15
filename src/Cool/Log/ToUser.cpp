@@ -53,8 +53,18 @@ void ToUser::imgui_console_window()
             }();
             // const auto time = std::chrono::hh_mm_ss{message.timestamp.time_since_epoch()}; // hh_mm_ss isn't yet supported on GCC :(
             // ImGui::TextColored(color, "[%d'%lld\"] [%s]", time.minutes().count(), time.seconds().count(), message.category.c_str());
-            const auto time       = std::chrono::system_clock::to_time_t(message.timestamp);
+            const auto time = std::chrono::system_clock::to_time_t(message.timestamp);
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
             const auto local_time = localtime(&time);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+#pragma warning(pop)
             if (local_time) {
                 ImGui::TextColored(color, "[%d'%d\"] [%s]", local_time->tm_min, local_time->tm_sec, message.category.c_str());
             }

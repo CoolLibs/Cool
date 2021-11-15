@@ -40,7 +40,7 @@ void WindowFactory_Vulkan::setup_secondary_window(Window_Vulkan&, WindowManager&
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
 // Your real engine/app may not use them.
-void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceKHR surface, int width, int height)
+void SetupVulkanWindow(VulkanWindowState& vulkan_window_state, VkSurfaceKHR surface, int /*width*/, int /*height*/)
 {
     ImGui_ImplVulkanH_Window* wd = &vulkan_window_state.g_MainWindowData;
     wd->Surface                  = surface;
