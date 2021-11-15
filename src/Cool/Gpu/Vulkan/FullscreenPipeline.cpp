@@ -2,14 +2,20 @@
 
 #include "../FullscreenPipeline.h"
 #include <Cool/File/File.h>
+#include <Cool/Path/Path.h>
 #include "Context.h"
 
 namespace Cool::Vulkan {
 
-FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code)
-    : _vertex_shader_module{{File::to_string(File::cool_res() + "/shaders/fullscreen.vert"), Cool::ShaderKind::Vertex}}
+FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name)
+    : _vertex_shader_module{{File::to_string(Path::cool_res() + "/shaders/fullscreen.vert"), Cool::ShaderKind::Vertex}}
     , _fragment_shader_module{{std::string{fragment_shader_source_code}, Cool::ShaderKind::Fragment}}
 {
+}
+
+void FullscreenPipeline::shut_down()
+{
+    // vertex_module().reset(); // TODO
 }
 
 void FullscreenPipeline::rebuild_for_render_target(const RenderTargetInfo& render_target_info)

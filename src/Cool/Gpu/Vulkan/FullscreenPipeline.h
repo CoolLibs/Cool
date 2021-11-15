@@ -8,7 +8,12 @@ namespace Cool::Vulkan {
 
 class FullscreenPipeline {
 public:
-    explicit FullscreenPipeline(std::string_view fragment_shader_source_code);
+    /**
+     * @param name The name that will be displayed in the error message if the compilation fails 
+     */
+    FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name);
+
+    static void shut_down();
 
     void rebuild_for_render_target(const RenderTargetInfo& render_target_info);
 
