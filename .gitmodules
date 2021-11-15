@@ -34,3 +34,6 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/CoolLibs/imgui
+[submodule "lib/smart"]
+	path = lib/smart
+	url = https://github.com/CoolLibs/smart
