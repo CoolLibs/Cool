@@ -25,9 +25,6 @@
 [submodule "lib/shaderc-and-deps/shaderc"]
 	path = lib/shaderc-and-deps/shaderc
 	url = https://github.com/google/shaderc
-[submodule "lib/shaderc-and-deps/SPIRV-Tools"]
-	path = lib/shaderc-and-deps/SPIRV-Tools
-	url = https://github.com/KhronosGroup/SPIRV-Tools
 [submodule "lib/shaderc-and-deps/glslang"]
 	path = lib/shaderc-and-deps/glslang
 	url = https://github.com/KhronosGroup/glslang
