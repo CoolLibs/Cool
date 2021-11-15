@@ -22,9 +22,6 @@
 [submodule "lib/Vookoo"]
 	path = lib/Vookoo
 	url = https://github.com/CoolLibs/Vookoo
-[submodule "lib/shaderc-and-deps/shaderc"]
-	path = lib/shaderc-and-deps/shaderc
-	url = https://github.com/google/shaderc
 [submodule "lib/scope_guard"]
 	path = lib/scope_guard
 	url = https://github.com/ricab/scope_guard
