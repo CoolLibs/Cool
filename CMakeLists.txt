@@ -113,7 +113,7 @@ target_link_libraries(Cool PUBLIC smart::smart)
 add_subdirectory(lib/Boxer)
 target_link_libraries(Cool PUBLIC Boxer)
 # Native File Dialog
-add_subdirectory(lib/nfd/src)
+add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool PUBLIC nfd)
 # Stb image
 add_library(STB_IMAGE
