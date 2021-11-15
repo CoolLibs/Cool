@@ -34,3 +34,6 @@
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
 	url = https://github.com/CoolLibs/nativefiledialog-extended
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/CoolLibs/imgui
