@@ -33,7 +33,7 @@ struct ImageData {
      * 
      * @return size_t 
      */
-    size_t data_array_size() const { return width() * height() * nb_of_channels; }
+    size_t data_array_size() const { return width() * height() * static_cast<size_t>(nb_of_channels); }
 };
 
 } // namespace Cool

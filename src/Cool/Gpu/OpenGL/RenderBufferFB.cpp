@@ -14,7 +14,7 @@ void RenderBufferFB::createAttachments(ImageSize size)
     FrameBuffer::createAttachments(size);
     GLDebug(glGenRenderbuffers(1, &m_colorRenderBufferId));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_colorRenderBufferId));
-    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, size.width(), size.height()));
+    GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 }
 

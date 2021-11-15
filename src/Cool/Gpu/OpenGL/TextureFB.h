@@ -19,7 +19,7 @@ private:
     void attachAttachments() override;
 
 private:
-    GLuint m_colorTextureId = -1;
+    GLuint m_colorTextureId = static_cast<GLuint>(-1);
 };
 
 } // namespace Cool

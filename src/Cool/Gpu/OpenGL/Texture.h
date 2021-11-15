@@ -111,7 +111,7 @@ public:
     inline GLuint ID() { return m_textureID; }
 
 private:
-    GLuint m_textureID = -1;
+    GLuint m_textureID = static_cast<GLuint>(-1);
 #if defined(DEBUG)
     bool m_bDataUploaded = false;
 #endif

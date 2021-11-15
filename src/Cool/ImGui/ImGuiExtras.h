@@ -91,6 +91,8 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
  */
 bool input_uint(const char* label, unsigned int* value_p);
 
+bool slider_uint32(const char* label, uint32_t* v, uint32_t v_min, uint32_t v_max, const char* format = NULL, float power = 1.0f);
+
 /**
  * @brief Writes some red text
  * 

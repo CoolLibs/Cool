@@ -14,7 +14,7 @@ void as_png(std::string_view file_path, ImageSize::DataType width, ImageSize::Da
 {
     if (File::create_folders_for_file_if_they_dont_exist(file_path)) {
         stbi_flip_vertically_on_write(flip_vertically ? 1 : 0);
-        stbi_write_png(file_path.data(), width, height, 4, data, 0);
+        stbi_write_png(file_path.data(), static_cast<int>(width), static_cast<int>(height), 4, data, 0);
     }
     else {
         Log::ToUser::warn("ExportImage::as_png", "Couldn't export because folder creation failed !");

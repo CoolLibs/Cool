@@ -8,6 +8,7 @@ namespace Cool::Vulkan {
 
 class FullscreenPipeline {
 public:
+    FullscreenPipeline() = default;
     /**
      * @param name The name that will be displayed in the error message if the compilation fails 
      */

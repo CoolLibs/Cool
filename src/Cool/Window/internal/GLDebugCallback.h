@@ -11,9 +11,9 @@ void APIENTRY GLDebugCallback(
     GLenum       type,
     unsigned int id,
     GLenum       severity,
-    GLsizei      length,
-    const char*  openGLMessage,
-    const void*  userParam)
+    GLsizei /*length*/,
+    const char* openGLMessage,
+    const void* /*userParam*/)
 {
     // Check if we have already seen the message
     if (std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end()) {

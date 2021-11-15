@@ -1,7 +1,14 @@
 #include "../History.h"
 
+#if !defined(__GNUC__)
 #pragma warning(push)
 #pragma warning(disable : 4267)
+#else
+#if !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+#endif
 
 namespace Cool {
 
@@ -70,4 +77,6 @@ int History::nb_of_actions_between_this_and_previous_undo_group(int index)
 
 } // namespace Cool
 
+#if !defined(__GNUC__)
 #pragma warning(pop)
+#endif

@@ -22,7 +22,7 @@ static void validate_shader(GLuint id)
         GLDebug(glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length));
         if (length > 0) {
             std::vector<GLchar> error_message;
-            error_message.reserve(length);
+            error_message.reserve(static_cast<size_t>(length));
             GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
             throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
         }

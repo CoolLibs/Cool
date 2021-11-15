@@ -18,7 +18,8 @@ public:
     void push(T value)
     {
         _N++;
-        _average = (_average * (_N - 1) + value) / _N;
+        const auto N = static_cast<T>(_N);
+        _average     = (_average * (N - 1) + value) / N;
     }
 
     operator T()

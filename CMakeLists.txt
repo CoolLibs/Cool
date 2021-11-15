@@ -6,7 +6,7 @@ target_compile_features(Cool PUBLIC cxx_std_20)
 if (MSVC)
     target_compile_options(Cool PRIVATE /WX /W3)
 else()
-    target_compile_options(Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
+    target_compile_options(Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors)
 endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"

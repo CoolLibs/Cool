@@ -40,14 +40,14 @@ public:
 	 * 
 	 * @return Position expressed in number of pixels, ranging from 0 to width-1
 	 */
-    inline int x_as_int() { return _x; }
+    int x_as_int() { return static_cast<int>(_x); }
 
     /**
 	 * @brief 
 	 * 
 	 * @return Position expressed in number of pixels, ranging from 0 to height-1 
 	 */
-    inline int y_as_int() { return _y; }
+    int y_as_int() { return static_cast<int>(_y); }
 
 private:
     CpuImage&    _image;

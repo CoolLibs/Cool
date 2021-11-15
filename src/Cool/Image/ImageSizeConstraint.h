@@ -34,7 +34,7 @@ private:
     bool              _is_controlling_nb_pixels    = false;
     bool              _is_controlling_aspect_ratio = false;
     InterpolationMode _interpolation_mode          = InterpolationMode::NearestNeighbor;
-    int               _nb_pixels                   = 250'000;
+    uint32_t          _nb_pixels                   = 250'000;
     AspectRatio       _aspect_ratio;
 };
 

@@ -71,7 +71,7 @@ std::string File::to_string(std::string_view file_path)
     }
     stream.seekg(0, std::ios::end);
     std::string str;
-    str.reserve(stream.tellg());
+    str.reserve(static_cast<size_t>(stream.tellg()));
     stream.seekg(0, std::ios::beg);
     str.assign(
         (std::istreambuf_iterator<char>(stream)),

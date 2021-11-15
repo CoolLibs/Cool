@@ -13,14 +13,14 @@ Texture::~Texture()
 Texture::Texture(Texture&& rhs) noexcept
     : m_textureID{rhs.m_textureID}
 {
-    rhs.m_textureID = -1;
+    rhs.m_textureID = static_cast<GLuint>(-1);
 }
 
 Texture& Texture::operator=(Texture&& rhs) noexcept
 {
     if (this != &rhs) {
         m_textureID     = rhs.m_textureID;
-        rhs.m_textureID = -1;
+        rhs.m_textureID = static_cast<GLuint>(-1);
     }
     return *this;
 }
@@ -59,7 +59,7 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
     GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
     // Upload data
     GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(image.width()), static_cast<GLsizei>(image.height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
     //
     return texID;
 }
@@ -67,7 +67,7 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode)
 {
 #if defined(DEBUG)
-    if (m_textureID != -1) {
+    if (m_textureID != static_cast<GLuint>(-1)) {
         Log::error("[Texture::genTexture] You have already generated that texture !");
     }
 #endif
@@ -78,7 +78,7 @@ void Texture::uploadRGB(int width, int height, unsigned char* data)
 {
 #if defined(DEBUG)
     m_bDataUploaded = true;
-    if (m_textureID == -1) {
+    if (m_textureID == static_cast<GLuint>(-1)) {
         Log::error("[Texture::uploadRGB] You haven't generated that texture yet !");
     }
 #endif
@@ -91,7 +91,7 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 {
 #if defined(DEBUG)
     m_bDataUploaded = true;
-    if (m_textureID == -1) {
+    if (m_textureID == static_cast<GLuint>(-1)) {
         Log::error("[Texture::uploadRGBA] You haven't generated that texture yet !");
     }
 #endif
@@ -103,14 +103,14 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 void Texture::attachToSlot(int slot) const
 {
 #if defined(DEBUG)
-    if (m_textureID == -1) {
+    if (m_textureID == static_cast<GLuint>(-1)) {
         Log::error("[Texture::attachToSlot] You haven't generated that texture yet !");
     }
     if (!m_bDataUploaded) {
         Log::error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
     }
 #endif
-    GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+    GLDebug(glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(slot)));
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
 }
 

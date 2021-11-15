@@ -14,7 +14,7 @@ static void validate_shader_module(GLuint id, const std::string& name)
         GLsizei length; // NOLINT
         GLDebug(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         std::vector<GLchar> error_message;
-        error_message.reserve(length);
+        error_message.reserve(static_cast<size_t>(length));
         GLDebug(glGetShaderInfoLog(id, length, nullptr, error_message.data()));
         throw std::invalid_argument(std::string{name + "\nCompilation failed:\n"} + error_message.data());
     }

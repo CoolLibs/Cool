@@ -16,7 +16,7 @@ private:
     void attachAttachments() override;
 
 private:
-    GLuint m_colorRenderBufferId = -1;
+    GLuint m_colorRenderBufferId = static_cast<GLuint>(-1);
 };
 
 } // namespace Cool

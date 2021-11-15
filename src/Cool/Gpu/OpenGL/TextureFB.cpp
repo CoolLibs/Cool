@@ -14,7 +14,7 @@ void TextureFB::createAttachments(ImageSize size)
     FrameBuffer::createAttachments(size);
     GLDebug(glGenTextures(1, &m_colorTextureId));
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_colorTextureId));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, size.width(), size.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height()), 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
