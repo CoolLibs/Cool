@@ -46,3 +46,6 @@
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/CoolLibs/glm
+[submodule "lib/easy-shaderc"]
+	path = lib/easy-shaderc
+	url = https://github.com/CoolLibs/easy-shaderc
