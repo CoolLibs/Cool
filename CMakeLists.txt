@@ -81,8 +81,8 @@ if (COOL_USE_VULKAN)
     target_link_libraries(Cool PUBLIC Vulkan::Vulkan)
     include("cmake/vookoo_spirv_support.cmake")
     target_include_directories(Cool PUBLIC lib/Vookoo/include)
-    add_subdirectory(lib/shaderc-and-deps)
-    target_link_libraries(Cool PUBLIC shaderc)
+    add_subdirectory(lib/easy-shaderc)
+    target_link_libraries(Cool PUBLIC easy_shaderc::shaderc)
 elseif (COOL_USE_OPENGL)
     target_compile_definitions(Cool PUBLIC
         COOL_OPENGL
