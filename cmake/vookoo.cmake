@@ -1,8 +1,13 @@
+add_library(Vookoo INTERFACE)
+add_library(Vookoo::Vookoo ALIAS Vookoo)
+target_include_directories(Vookoo INTERFACE lib/Vookoo/include)
+
+# Try to set SPIR-V support
 function(set_spirv_support)
     message(STATUS "[Vookoo] Found " ${SPIR_V_FILE})
     message(STATUS "[Vookoo] Setting VOOKOO_SPIRV_SUPPORT definition")
-    include_directories(${SPIR_V_INCLUDE_DIR})
-    add_definitions(-DVOOKOO_SPIRV_SUPPORT)
+    target_include_directories(Vookoo INTERFACE ${SPIR_V_INCLUDE_DIR})
+    target_compile_definitions(Vookoo INTERFACE VOOKOO_SPIRV_SUPPORT)
 endfunction()
 
 get_filename_component(VULKAN_DIR ${Vulkan_INCLUDE_DIR} DIRECTORY)
