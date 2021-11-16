@@ -8,6 +8,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Window/internal/WindowFactory.h>
+#include "InitConfig.h"
 
 namespace Cool {
 
@@ -25,14 +26,22 @@ inline void shut_down()
 }
 
 template<typename App>
-void run(std::vector<WindowConfig> windows_configs, AppManagerConfig app_manager_config = {})
+void run(const std::vector<WindowConfig>& windows_configs,
+         InitConfig                       init_config        = {},
+         AppManagerConfig                 app_manager_config = {})
 {
+    // Init
+    Cool::Log::initialize(init_config.log_pattern);
+    init_config.run_the_tests();
+    init_config.set_paths();
+    // Create window.s
     assert(windows_configs.size() >= 1);
     auto window_factory = Cool::WindowFactory{};
     window_factory.make_main_window(windows_configs[0]);
     for (size_t i = 1; i < windows_configs.size(); ++i) {
         window_factory.make_secondary_window(windows_configs[i]);
     }
+    // Create and run the App
     {
         auto app         = App{window_factory.window_manager()};
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};

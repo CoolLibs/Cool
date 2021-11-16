@@ -8,7 +8,7 @@ namespace Cool::Log {
  * 
  * @param spdlog_pattern The pattern to use. See https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
  */
-inline void initialize(std::string_view spdlog_pattern = "%^[%e] %n: %v%$")
+inline void initialize(std::string_view spdlog_pattern)
 {
     spdlog::set_pattern(std::string(spdlog_pattern));
 }
