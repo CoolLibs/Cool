@@ -10,7 +10,7 @@ ImageData::ImageData(std::string_view file_path, int nb_of_channels, bool flip_v
     int w, h; // NOLINT
     data.reset(stbi_load(file_path.data(), &w, &h, nullptr, nb_of_channels));
     if (!data || w < 1 || h < 1) {
-        Log::error("[LoadImage::load] Couldn't open file \"{}\"", file_path);
+        Log::error("[LoadImage::load] Couldn't load image from \"{}\":\n{}", file_path, stbi_failure_reason());
     }
     else {
         size.set_width(static_cast<ImageSize::DataType>(w));
