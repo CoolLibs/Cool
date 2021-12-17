@@ -41,3 +41,7 @@ function(Cool__target_copy_folder TARGET FOLDER)
         Cool__target_copy_file(${TARGET} ${FILE} ${OUT_DIR})
     endforeach()
 endfunction()
+
+function(Cool__create_file_if_it_doesnt_exist FILE)
+    file(APPEND ${FILE} "")
+endfunction()
