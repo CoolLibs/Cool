@@ -37,3 +37,6 @@
 [submodule "lib/smart"]
 	path = lib/smart
 	url = https://github.com/CoolLibs/smart
+[submodule "CMakeUtils"]
+	path = CMakeUtils
+	url = https://github.com/CoolLibs/CMakeUtils
