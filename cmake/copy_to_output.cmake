@@ -1,23 +1,43 @@
-# NB: these functions require policy CMP0112 which was set to NEW in CMake 3.19 (https://cmake.org/cmake/help/latest/policy/CMP0112.html#policy:CMP0112)
-# If you are using a version of CMake lower than 3.19 then you need to call `cmake_policy(SET CMP0112 NEW)` just after `cmake_minimum_required(...)` in your main CMakeLists.txt file
-# Otherwise you will get a "Cyclic dependencies" error
-
-function(internal_cool_copy FILE_OR_DIR COMMAND_NAME)
-    string(SHA1 TARGET_HASH ${FILE_OR_DIR})      # Create a unique name for our custom target. We can't use ${FILE_OR_DIR} directly because it could contain invalid characters like spaces
-    set(TARGET_NAME CopyToOutput_${TARGET_HASH}) #
-    add_custom_target(${TARGET_NAME}
-        COMMENT "Copying \"${FILE_OR_DIR}\""
-        COMMAND ${CMAKE_COMMAND} -E ${COMMAND_NAME}
-            ${CMAKE_SOURCE_DIR}/${FILE_OR_DIR}
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>/${FILE_OR_DIR}
+# Copies FILE to the directory where the executable of your TARGET will be created (you can also specify a third argument to override that destination folder)
+# FILE can be either an absolute or a relative path. If it is relative it will be relative to ${CMAKE_SOURCE_DIR}.
+# If the FILE doesn't already exist it will be created.
+function(Cool__target_copy_file TARGET FILE)
+    # Get OUT_DIR as an optional parameter
+    if (${ARGC} GREATER_EQUAL 3)
+        set(OUT_DIR ${ARGV2})
+    else()
+        set(OUT_DIR $<TARGET_FILE_DIR:${TARGET}>)
+    endif()
+    # Get the part of the file path relative to the current CMakeLists.txt
+    cmake_path(RELATIVE_PATH FILE BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE FILE_RELATIVE_PATH)
+    if (NOT FILE_RELATIVE_PATH)
+        set(FILE_RELATIVE_PATH ${FILE})
+    endif()
+    # Create the file if it doesn't exist. This prevents the following copy command from failing
+    # file(APPEND ${CMAKE_SOURCE_DIR}/${FILE_RELATIVE_PATH} "")
+    # Add the copy command
+    add_custom_command(
+        COMMENT "Copying \"${FILE_RELATIVE_PATH}\""
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/DUMMY${FILE_RELATIVE_PATH}
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${FILE_RELATIVE_PATH} ${OUT_DIR}/${FILE_RELATIVE_PATH} # Actual copy of the file to the destination
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/DUMMY${FILE_RELATIVE_PATH} # Create a dummy directory that Cmake will use as a timestamp reference to know if the actual file has changed, when it checks for the OUTPUT (unfortunately OUTPUT can't use a generator expression so we can't use our actual output file as the OUTPUT)
+        MAIN_DEPENDENCY ${FILE}
     )
-    add_dependencies(${PROJECT_NAME} ${TARGET_NAME}) # Mark our custom target as a dependency of the main project, so that whenever the main project is launched our custom target is triggered and files are copied
+    target_sources(${TARGET} PRIVATE ${FILE}) # Required for the custom command to be run when we build our target
 endfunction()
 
-function(Cool__copy_file_to_output FILENAME)
-    internal_cool_copy(${FILENAME} copy)
-endfunction()
-
-function(Cool__copy_folder_to_output FOLDERNAME)
-    internal_cool_copy(${FOLDERNAME} copy_directory)
+# Copies FOLDER and all its files to the directory where the executable of your TARGET will be created (you can also specify a third argument to override that destination folder)
+# FOLDER can be either an absolute or a relative path. If it is relative it will be relative to ${CMAKE_SOURCE_DIR}.
+function(Cool__target_copy_folder TARGET FOLDER)
+    # Get OUT_DIR as an optional parameter
+    if (${ARGC} GREATER_EQUAL 3)
+        set(OUT_DIR ${ARGV2})
+    else()
+        set(OUT_DIR $<TARGET_FILE_DIR:${TARGET}>)
+    endif()
+    # Copy each file
+    file(GLOB_RECURSE FILES CONFIGURE_DEPENDS ${FOLDER}/*)
+    foreach(FILE ${FILES})
+        Cool__target_copy_file(${TARGET} ${FILE} ${OUT_DIR})
+    endforeach()
 endfunction()
