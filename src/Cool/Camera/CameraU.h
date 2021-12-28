@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Geometry/Ray.h>
+#include <Cool/Image/ImageSize.h>
 #include "Camera.h"
 
 namespace Cool::CameraU {

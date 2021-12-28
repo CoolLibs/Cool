@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cool/Constants/Constants.h>
-#include <Cool/Image/ImageSize.h>
 
 namespace Cool {
 
