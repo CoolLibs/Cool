@@ -8,13 +8,13 @@ class Camera {
 public:
     Camera(glm::vec3 const& position = Constants::default_camera_position, glm::vec3 const& look_at = glm::vec3{0.f});
 
-    inline const glm::mat4& transform_matrix() const { return _transform_matrix; }
-    inline glm::mat4        view_matrix() const { return glm::inverse(_transform_matrix); }
-    inline const glm::mat4& projection_matrix() const { return _projection_matrix; }
-    glm::vec3               right_axis() const;
-    glm::vec3               up_axis() const;
-    glm::vec3               front_axis() const;
-    glm::vec3               position() const;
+    glm::mat4 transform_matrix() const { return _transform_matrix; }
+    glm::mat4 view_matrix() const { return glm::inverse(_transform_matrix); }
+    glm::mat4 projection_matrix() const { return _projection_matrix; }
+    glm::vec3 right_axis() const;
+    glm::vec3 up_axis() const;
+    glm::vec3 front_axis() const;
+    glm::vec3 position() const;
 
     inline void set_transform_matrix(const glm::mat4& transform_matrix) { _transform_matrix = transform_matrix; }
     inline void set_view_matrix(const glm::mat4& view_matrix) { _transform_matrix = glm::inverse(view_matrix); }
