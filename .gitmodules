@@ -40,3 +40,6 @@
 [submodule "CMakeUtils"]
 	path = CMakeUtils
 	url = https://github.com/CoolLibs/CMakeUtils
+[submodule "lib/img"]
+	path = lib/img
+	url = https://github.com/CoolLibs/img
