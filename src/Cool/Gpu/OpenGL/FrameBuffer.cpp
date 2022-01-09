@@ -15,7 +15,7 @@ FrameBuffer::~FrameBuffer()
     GLDebug(glDeleteFramebuffers(1, &m_frameBufferId));
 }
 
-void FrameBuffer::setSize(ImageSize size)
+void FrameBuffer::setSize(img::Size size)
 {
     m_size = size;
     destroyAttachments();
@@ -79,7 +79,7 @@ void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLenum interpolationMode) con
     blitTo({0, 0}, {width(), height()}, frameBuffer.frameBufferId(), interpolationMode);
 }
 
-void FrameBuffer::createAttachments(ImageSize size)
+void FrameBuffer::createAttachments(img::Size size)
 {
     GLDebug(glGenRenderbuffers(1, &m_depthRenderBufferId));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId));

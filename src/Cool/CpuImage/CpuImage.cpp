@@ -1,6 +1,6 @@
 #include "CpuImage.h"
 #include <Cool/File/File.h>
-#include <Cool/Image/ExportImage.h>
+#include <Cool/Image/SaveImage.h>
 
 namespace Cool {
 
@@ -12,7 +12,7 @@ CpuImage::CpuImage(unsigned int width, unsigned int height)
 
 void CpuImage::save_as(const char* filepath)
 {
-    Cool::ExportImage::as_png(filepath, _width, _height, _pixel_colors.data());
+    Cool::ImageU::save_png(filepath, _width, _height, _pixel_colors.data(), 4);
 }
 
 CpuImageIterator CpuImage::begin()

@@ -1,7 +1,7 @@
 #if defined(COOL_OPENGL)
 
 #include "../Texture.h"
-#include <Cool/Image/ImageData.h>
+#include <img/img.hpp>
 
 namespace Cool::OpenGL {
 
@@ -54,12 +54,12 @@ Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapM
 GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
 {
     // Load image
-    auto image = ImageData{filepath, 4};
+    const auto image = img::load(filepath.data(), 4);
     // Create texture
     GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
     // Upload data
     GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(image.width()), static_cast<GLsizei>(image.height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data.get()));
+    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(image.size().width()), static_cast<GLsizei>(image.size().height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data()));
     //
     return texID;
 }

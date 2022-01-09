@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-RenderTarget_ImplOpenGL::RenderTarget_ImplOpenGL(ImageSize size)
+RenderTarget_ImplOpenGL::RenderTarget_ImplOpenGL(img::Size size)
 {
     resize(size);
 }
@@ -24,21 +24,21 @@ RenderTargetInfo RenderTarget_ImplOpenGL::info() const
             .bottom_left_corner = {0, 0}}};
 }
 
-void RenderTarget_ImplOpenGL::resize(ImageSize size)
+void RenderTarget_ImplOpenGL::resize(img::Size size)
 {
     _texture.setSize(size);
 }
 
-ImageData RenderTarget_ImplOpenGL::download_pixels() const
+img::Image RenderTarget_ImplOpenGL::download_pixels() const
 {
     _texture.bind();
     std::unique_ptr<uint8_t[]> data{new uint8_t[4 * width() * height()]};
     glReadPixels(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()), GL_RGBA, GL_UNSIGNED_BYTE, data.get());
     _texture.unbind();
-    return ImageData{
-        ImageSize{width(), height()},
+    return img::Image{
+        img::Size{width(), height()},
         4,
-        std::move(data)};
+        data.release()};
 }
 
 } // namespace Cool

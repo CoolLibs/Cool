@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Cool/Gpu/InterpolationMode.h>
+#include <img/img.hpp>
 #include "AspectRatio.h"
-#include "ImageSize.h"
 
 namespace Cool {
 
@@ -23,12 +23,12 @@ public:
 
     bool      wants_to_constrain_size() const { return _is_controlling_aspect_ratio || _is_controlling_nb_pixels; }
     bool      wants_to_constrain_aspect_ratio() const { return _is_controlling_aspect_ratio; }
-    ImageSize applied_to(ImageSize frame_size) const;
+    img::Size applied_to(img::Size frame_size) const;
 
     void imgui();
 
 private:
-    ImageSize compute_constraints_on(ImageSize frame_size) const;
+    img::Size compute_constraints_on(img::Size frame_size) const;
 
 private:
     bool              _is_controlling_nb_pixels    = false;

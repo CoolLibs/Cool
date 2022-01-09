@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiWindow.h>
-#include <Cool/Image/ImageSize.h>
+#include <img/img.hpp>
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"
 
@@ -52,7 +52,7 @@ private:
     void        imgui_window_export_video();
 
 private:
-    ImageSize _export_size{1920, 1080};
+    img::Size _export_size{1920, 1080};
 
     std::string _folder_path_for_image;
     std::string _file_name = "img(0)";

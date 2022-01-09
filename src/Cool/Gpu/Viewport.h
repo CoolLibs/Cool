@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Cool/Image/ImageSize.h>
+#include <img/img.hpp>
 
 namespace Cool {
 
 struct Viewport {
-    ImageSize  size;
+    img::Size  size;
     glm::ivec2 bottom_left_corner;
 };
 

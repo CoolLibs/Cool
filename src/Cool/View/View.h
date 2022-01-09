@@ -18,7 +18,7 @@ public:
      */
     void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
     void                     imgui_open_close_checkbox();
-    std::optional<ImageSize> size() const { return _size; }
+    std::optional<img::Size> size() const { return _size; }
 
     void dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event);
     void dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event);
@@ -45,7 +45,7 @@ private:
     std::string                           _name              = "";
     bool                                  _is_open           = true;
     bool                                  _window_is_hovered = false;
-    std::optional<ImageSize>              _size              = std::nullopt; // Can be nullopt when the window is closed
+    std::optional<img::Size>              _size              = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                     _position{};
     MouveEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
 };

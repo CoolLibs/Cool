@@ -120,11 +120,9 @@ target_link_libraries(Cool PUBLIC Boxer)
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool PUBLIC nfd)
-# Stb image
-add_library(STB_IMAGE
-    "lib/stb_image/stb_image.cpp"
-    "lib/stb_image/stb_image_write.cpp")
-target_link_libraries(Cool PRIVATE STB_IMAGE)
+# img
+add_subdirectory(lib/img)
+target_link_libraries(Cool PUBLIC img)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)

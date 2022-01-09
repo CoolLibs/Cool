@@ -3,10 +3,10 @@
 
 namespace Cool::ImageSizeU {
 
-bool imgui(ImageSize& size)
+bool imgui(img::Size& size)
 {
     bool was_used = false;
-    ImGui::Text("Resolution : ");
+    ImGui::Text("Resolution: ");
     ImGui::SameLine();
     {
         ImGui::PushItemWidth(50);

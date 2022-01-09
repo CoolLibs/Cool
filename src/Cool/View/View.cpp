@@ -110,8 +110,8 @@ void View::grab_window_size()
     auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
         _size.emplace(
-            static_cast<ImageSize::DataType>(size.x),
-            static_cast<ImageSize::DataType>(size.y));
+            static_cast<img::Size::DataType>(size.x),
+            static_cast<img::Size::DataType>(size.y));
     }
     else {
         _size.reset();

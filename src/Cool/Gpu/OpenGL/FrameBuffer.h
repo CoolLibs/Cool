@@ -1,8 +1,7 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
-#include <Cool/Image/ImageSize.h>
-#include <Cool/Image/ImageSizeU.h>
+#include <img/img.hpp>
 
 namespace Cool {
 
@@ -13,7 +12,7 @@ public:
     FrameBuffer();
     virtual ~FrameBuffer();
 
-    void setSize(ImageSize size);
+    void setSize(img::Size size);
 
     void bind() const;
     void unbind() const;
@@ -37,14 +36,14 @@ public:
     /// </param>
     void blitTo(FrameBuffer& frameBuffer, GLenum interpolationMode = GL_LINEAR) const;
 
-    inline ImageSize::DataType width() const { return m_size.width(); }
-    inline ImageSize::DataType height() const { return m_size.height(); }
-    inline ImageSize           size() const { return m_size; }
-    inline float               aspectRatio() const { return ImageSizeU::aspect_ratio(m_size); }
+    inline img::Size::DataType width() const { return m_size.width(); }
+    inline img::Size::DataType height() const { return m_size.height(); }
+    inline img::Size           size() const { return m_size; }
+    inline float               aspectRatio() const { return img::SizeU::aspect_ratio(m_size); }
 
 protected:
     virtual void destroyAttachments();
-    virtual void createAttachments(ImageSize size);
+    virtual void createAttachments(img::Size size);
     virtual void attachAttachments();
 
     inline GLuint frameBufferId() { return m_frameBufferId; }
@@ -52,7 +51,7 @@ protected:
 private:
     GLuint      m_frameBufferId       = static_cast<GLuint>(-1);
     GLuint      m_depthRenderBufferId = static_cast<GLuint>(-1);
-    ImageSize   m_size;
+    img::Size   m_size;
     mutable int m_prevViewport[4] = {};
 };
 

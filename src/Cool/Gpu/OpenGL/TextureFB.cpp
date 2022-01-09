@@ -9,7 +9,7 @@ TextureFB::~TextureFB()
     destroyAttachments();
 }
 
-void TextureFB::createAttachments(ImageSize size)
+void TextureFB::createAttachments(img::Size size)
 {
     FrameBuffer::createAttachments(size);
     GLDebug(glGenTextures(1, &m_colorTextureId));

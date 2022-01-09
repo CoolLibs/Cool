@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-ImageSize ImageSizeConstraint::applied_to(ImageSize frame_size) const
+img::Size ImageSizeConstraint::applied_to(img::Size frame_size) const
 {
     if (wants_to_constrain_size()) {
         return compute_constraints_on(frame_size);
@@ -14,19 +14,19 @@ ImageSize ImageSizeConstraint::applied_to(ImageSize frame_size) const
     }
 }
 
-ImageSize ImageSizeConstraint::compute_constraints_on(ImageSize frame_size) const
+img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const
 {
     float aspect_ratio = _is_controlling_aspect_ratio
                              ? _aspect_ratio.asFloat()
-                             : ImageSizeU::aspect_ratio(frame_size);
+                             : img::SizeU::aspect_ratio(frame_size);
 
     auto nb_pixels = static_cast<float>(_is_controlling_nb_pixels
                                             ? _nb_pixels
                                             : frame_size.width() * frame_size.height());
 
     return {
-        std::max(static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))), static_cast<ImageSize::DataType>(1)),
-        std::max(static_cast<ImageSize::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<ImageSize::DataType>(1))};
+        std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))), static_cast<img::Size::DataType>(1)),
+        std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<img::Size::DataType>(1))};
 }
 
 void ImageSizeConstraint::imgui()

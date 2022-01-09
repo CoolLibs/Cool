@@ -9,7 +9,7 @@ RenderBufferFB::~RenderBufferFB()
     destroyAttachments();
 }
 
-void RenderBufferFB::createAttachments(ImageSize size)
+void RenderBufferFB::createAttachments(img::Size size)
 {
     FrameBuffer::createAttachments(size);
     GLDebug(glGenRenderbuffers(1, &m_colorRenderBufferId));

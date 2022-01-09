@@ -11,7 +11,7 @@ namespace Cool {
 
 class VideoExportProcess {
 public:
-    VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, ImageSize size);
+    VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, img::Size size);
     bool update(Polaroid polaroid);
     void imgui();
 
@@ -27,7 +27,7 @@ private:
     Averager<float>            _frame_time_average;
     std::string                _folder_path;
     bool                       _should_stop_asap = false;
-    ImageSize                  _size;
+    img::Size                  _size;
     Clock_FixedTimestep        _clock;
 };
 

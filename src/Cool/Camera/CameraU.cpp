@@ -19,7 +19,7 @@ void reset_roll(Camera& camera)
                          camera.front_axis());
 }
 
-Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, ImageSizeT<float> image_size)
+Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, img::SizeT<float> image_size)
 {
     const auto pos       = camera.position();
     const auto pixel_pos = glm::unProject(glm::vec3{position_in_pixels, 0.f},

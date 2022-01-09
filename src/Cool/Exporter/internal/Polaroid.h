@@ -14,7 +14,7 @@ struct Polaroid {
     {
         render_fn(render_target, time);
     }
-    void render(float time, ImageSize size)
+    void render(float time, img::Size size)
     {
         render_target.set_size(size);
         render(time);
