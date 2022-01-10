@@ -8,7 +8,7 @@ vec3 __apply_camera(vec3 pos)
 
 vec2 __point_on_face()
 {
-    return mix(vec2(-1.), vec2(1.), vTexCoords);
+    return mix(vec2(-1.), vec2(1.), _uv);
 }
 
 vec3 cool_ray_origin()
