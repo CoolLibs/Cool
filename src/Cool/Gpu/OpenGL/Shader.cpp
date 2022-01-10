@@ -11,6 +11,8 @@ static void assert_shader_is_bound(GLuint id)
     GLint current_id;
     glGetIntegerv(GL_CURRENT_PROGRAM, &current_id);
     assert(static_cast<GLuint>(current_id) == id && "The shader must be bound before setting any uniform.");
+#else
+    (void)id;
 #endif
 }
 
