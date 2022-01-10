@@ -127,6 +127,7 @@ std::string remove_whitespaces(std::string_view text)
     replace_all(res, " ", "");
     replace_all(res, "\n", "");
     replace_all(res, "\t", "");
+    replace_all(res, "\r", "");
     return res;
 }
 
