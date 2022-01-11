@@ -17,10 +17,8 @@ struct Vec2Desc {
 
     bool imgui(glm::vec2& value) const
     {
-        ImGui::PushID(this + 34);
         ImGui::PushItemWidth(150);
         bool b = ImGui::SliderFloat("", &value.x, min_value.x, max_value.x);
-        ImGui::PopID();
         ImGui::SameLine();
         b |= ImGui::SliderFloat(name.c_str(), &value.y, min_value.y, max_value.y);
         ImGui::PopItemWidth();
