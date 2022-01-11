@@ -39,6 +39,9 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
         else if (type == "direction3D") {
             return parse<Parameter::Dir3Desc>(body);
         }
+        else if (type == "rotation3D") {
+            return parse<Parameter::Rot3Desc>(body);
+        }
         else {
             throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'color' or 'direction3D'");
         }
