@@ -33,6 +33,9 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
         else if (type == "vec2") {
             return parse<Parameter::Vec2Desc>(body);
         }
+        else if (type == "vec3") {
+            return parse<Parameter::Vec3Desc>(body);
+        }
         else if (type == "color") {
             return parse<Parameter::ColorDesc>(body);
         }
@@ -43,7 +46,7 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
             return parse<Parameter::Rot3Desc>(body);
         }
         else {
-            throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'color' or 'direction3D'");
+            throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'vec3', 'color' or 'direction3D'");
         }
     }();
     return std::make_pair(desc, body_pos->second);
