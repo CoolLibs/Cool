@@ -17,14 +17,18 @@ struct Vec3Desc {
 
     bool imgui(glm::vec3& value) const
     {
-        ImGui::PushID(this + 34);
         ImGui::PushItemWidth(150);
+        ImGui::PushID(this + 34);
         bool b = ImGui::SliderFloat("", &value.x, min_value.x, max_value.x);
         ImGui::PopID();
         ImGui::SameLine();
-        b |= ImGui::SliderFloat(name.c_str(), &value.y, min_value.y, max_value.y);
+        ImGui::PushID(this + 35);
+        b |= ImGui::SliderFloat("", &value.y, min_value.y, max_value.y);
+        ImGui::PopID();
+        ImGui::SameLine();
         b |= ImGui::SliderFloat(name.c_str(), &value.z, min_value.z, max_value.z);
         ImGui::PopItemWidth();
+
         return b;
     }
 
