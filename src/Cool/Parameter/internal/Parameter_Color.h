@@ -15,11 +15,14 @@ struct ColorDesc {
 
     bool imgui(glm::vec3& value) const
     {
-        return ImGui::ColorEdit3(name.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
+        ImGui::PushID(this);
+        bool colImg = ImGui::ColorEdit3(name.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
+        ImGui::PopID();
+        return colImg;
     }
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
