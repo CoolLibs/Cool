@@ -1,5 +1,6 @@
 #pragma once
 
+#include "internal/Parameter_Bool.h"
 #include "internal/Parameter_Color.h"
 #include "internal/Parameter_Dir3.h"
 #include "internal/Parameter_Float.h"
@@ -11,6 +12,7 @@
 namespace Cool::Parameter {
 
 using Any = std::variant<
+    Parameter::Bool,
     Parameter::Int,
     Parameter::Float,
     Parameter::Vec2,
@@ -20,6 +22,7 @@ using Any = std::variant<
     Parameter::Color>;
 
 using AnyDesc = std::variant<
+    Parameter::BoolDesc,
     Parameter::IntDesc,
     Parameter::FloatDesc,
     Parameter::Vec2Desc,
@@ -36,7 +39,10 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
 {
     return std::visit([](auto&& desc) -> Parameter::Any {
         using T = std::decay_t<decltype(desc)>;
-        if constexpr (std::is_same_v<T, Parameter::IntDesc>) {
+        if constexpr (std::is_same_v<T, Parameter::BoolDesc>) {
+            return Parameter::Bool{desc};
+        }
+        else if constexpr (std::is_same_v<T, Parameter::IntDesc>) {
             return Parameter::Int{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::FloatDesc>) {
@@ -51,11 +57,11 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
         else if constexpr (std::is_same_v<T, Parameter::Dir3Desc>) {
             return Parameter::Dir3{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::ColorDesc>) {
-            return Parameter::Color{desc};
-        }
         else if constexpr (std::is_same_v<T, Parameter::Rot3Desc>) {
             return Parameter::Rot3{desc};
+        }
+        else if constexpr (std::is_same_v<T, Parameter::ColorDesc>) {
+            return Parameter::Color{desc};
         }
     },
                       desc);
