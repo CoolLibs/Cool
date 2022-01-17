@@ -40,3 +40,11 @@ vec3 hash_minus_1_to_1(vec3 p)
 
     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
+
+mat2 rotation_2D(float angle)
+{
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat2(c, -s,
+                s, c);
+}
