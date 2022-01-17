@@ -1,3 +1,6 @@
+const float TAU = 6.283185307180;
+const float PI  = 3.141592653590;
+
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
 {
@@ -24,4 +27,7 @@ float hash_0_to_1(vec3 p)
     return fract((p.x + p.y) * p.z);
 }
 
-#define saturate(v) clamp(v, 0., 1.)
+float length_squared(vec3 p)
+{
+    return dot(p, p);
+}
