@@ -20,6 +20,11 @@ float ndot(vec2 a, vec2 b)
     return a.x * b.x - a.y * b.y;
 }
 
+float length_squared(vec3 p)
+{
+    return dot(p, p);
+}
+
 float hash_0_to_1(vec3 p)
 {
     p = fract(p * .1031);
@@ -27,7 +32,11 @@ float hash_0_to_1(vec3 p)
     return fract((p.x + p.y) * p.z);
 }
 
-float length_squared(vec3 p)
+vec3 hash_minus_1_to_1(vec3 p)
 {
-    return dot(p, p);
+    p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
+             dot(p, vec3(269.5, 183.3, 246.1)),
+             dot(p, vec3(113.5, 271.9, 124.6)));
+
+    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }

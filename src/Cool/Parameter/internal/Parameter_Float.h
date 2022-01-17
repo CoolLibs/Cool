@@ -17,7 +17,9 @@ struct FloatDesc {
 
     bool imgui(float& value)
     {
+        ImGui::PushID(this + 17);
         bool b = ImGui::SliderFloat(name.c_str(), &value, min_value, max_value);
+        ImGui::PopID();
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem()) {
             ImGui::DragFloat("", &min_value);
@@ -32,7 +34,7 @@ struct FloatDesc {
     }
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
