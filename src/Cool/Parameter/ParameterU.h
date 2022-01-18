@@ -6,6 +6,8 @@ namespace Cool::ParameterU {
 
 Parameter::Any make_param(const ParameterList& previous_parameters, const Parameter::AnyDesc& desc);
 
+Cool::ParameterList parameters_update(std::vector<Cool::Parameter::AnyDesc> description, Cool::ParameterList param);
+
 std::optional<size_t> index_of(const Parameter::AnyDesc& description, const ParameterList& list);
 
 bool is_matching_desc_type(const Parameter::Any& param, const Parameter::AnyDesc& desc);
