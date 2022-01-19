@@ -1,24 +1,24 @@
 uniform mat4 cool_camera_inverse_view_projection;
 
-vec3 __apply_camera(vec3 pos)
+vec3 _apply_camera(vec3 pos)
 {
     vec4 v = (cool_camera_inverse_view_projection * vec4(pos, 1.));
     return v.xyz / v.w;
 }
 
-vec2 __point_on_face()
+vec2 _point_on_face()
 {
     return mix(vec2(-1.), vec2(1.), _uv);
 }
 
 vec3 cool_ray_origin()
 {
-    return __apply_camera(vec3(__point_on_face(), -1.));
+    return _apply_camera(vec3(_point_on_face(), -1.));
 }
 
 vec3 cool_ray_direction()
 {
-    vec3 begin = vec3(__point_on_face(), -1.);
-    vec3 end   = vec3(__point_on_face(), 0.);
-    return normalize(__apply_camera(end) - __apply_camera(begin));
+    vec3 begin = vec3(_point_on_face(), -1.);
+    vec3 end   = vec3(_point_on_face(), 0.);
+    return normalize(_apply_camera(end) - _apply_camera(begin));
 }

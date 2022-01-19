@@ -30,6 +30,9 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
         else if (type == "int") {
             return parse<Parameter::IntDesc>(body);
         }
+        else if (type == "bool") {
+            return parse<Parameter::BoolDesc>(body);
+        }
         else if (type == "vec2") {
             return parse<Parameter::Vec2Desc>(body);
         }

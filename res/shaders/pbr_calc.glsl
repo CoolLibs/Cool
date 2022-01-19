@@ -1,4 +1,3 @@
-
 vec3 Fresnel1Term(vec3 specularCol, float vdoth)
 {
     vec3 fresnel = specularCol + (1. - specularCol) * pow((1. - vdoth), 5.);
