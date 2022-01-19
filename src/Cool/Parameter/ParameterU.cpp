@@ -13,7 +13,7 @@ Parameter::Any make_param(const ParameterList& previous_parameters, const Parame
     }
 }
 
-Cool::ParameterList parameters_update(std::vector<Cool::Parameter::AnyDesc> description, Cool::ParameterList param)
+Cool::ParameterList update_parameters(std::vector<Cool::Parameter::AnyDesc> description, Cool::ParameterList param)
 {
     Cool::ParameterList new_parameters{};
     new_parameters->reserve(param->size());
@@ -23,7 +23,7 @@ Cool::ParameterList parameters_update(std::vector<Cool::Parameter::AnyDesc> desc
     return new_parameters;
 }
 
-Cool::ParameterList parameters_update(std::vector<Cool::Parameter::Any> description, Cool::ParameterList param)
+Cool::ParameterList update_parameters(std::vector<Cool::Parameter::Any> description, Cool::ParameterList param)
 {
     Cool::ParameterList new_parameters{};
     new_parameters->reserve(param->size());
