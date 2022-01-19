@@ -21,7 +21,7 @@ struct FloatDesc {
         bool b = ImGui::SliderFloat(name.c_str(), &value, min_value, max_value);
         ImGui::PopID();
         ImGui::PushID(this);
-        if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::BeginPopupContextItem(name.c_str())) {
             ImGui::DragFloat("", &min_value);
             ImGui::SameLine();
             ImGui::Text("to");
