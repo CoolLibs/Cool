@@ -13,6 +13,27 @@ Parameter::Any make_param(const ParameterList& previous_parameters, const Parame
     }
 }
 
+Cool::ParameterList update_parameters(std::vector<Cool::Parameter::AnyDesc> description, Cool::ParameterList param)
+{
+    Cool::ParameterList new_parameters{};
+    new_parameters->reserve(param->size());
+    for (const auto& desc : description) {
+        new_parameters->push_back(Cool::ParameterU::make_param(param, desc));
+    }
+    return new_parameters;
+}
+
+Cool::ParameterList update_parameters(std::vector<Cool::Parameter::Any> description, Cool::ParameterList param)
+{
+    Cool::ParameterList new_parameters{};
+    new_parameters->reserve(param->size());
+    for (const auto& descript : description) {
+        const auto desc = std::visit([&](auto&& descript) { return Cool::Parameter::AnyDesc(descript.description()); }, descript);
+        new_parameters->push_back(Cool::ParameterU::make_param(param, desc));
+    }
+    return new_parameters;
+}
+
 bool is_matching_desc_type(const Parameter::Any& param, const Parameter::AnyDesc& desc)
 {
     return std::visit([&](auto&& param) { return is_matching_desc_type(param, desc); }, param);
