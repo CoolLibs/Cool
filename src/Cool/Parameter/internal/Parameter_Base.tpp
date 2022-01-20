@@ -9,6 +9,7 @@ bool Parameter_Base<Desc>::imgui(Action on_edit_ended, std::function<void()> on_
         if (ImGui::Selectable("Reset parameter")) {
             _value = _desc.default_value;
             push_change_in_history(on_edit_ended, on_value_change);
+            b = true;
         }
         ImGui::EndPopup();
     }
