@@ -48,3 +48,5 @@ mat2 rotation_2D(float angle)
     return mat2(c, -s,
                 s, c);
 }
+
+#define saturate(v) clamp(v, 0., 1.)
