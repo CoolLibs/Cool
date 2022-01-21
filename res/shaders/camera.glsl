@@ -1,4 +1,5 @@
 uniform mat4 cool_camera_inverse_view_projection;
+uniform float cool_camera_far_plane;
 
 vec3 _apply_camera(vec3 pos)
 {

@@ -13,6 +13,7 @@ public:
 private:
     float _field_of_view_in_radians = glm::pi<float>() * 0.5f;
     float _near_plane               = 0.1f;
+    float _far_plane                = 200.f;
 
 private:
     // Serialization
@@ -21,7 +22,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(cereal::make_nvp("FOV", _field_of_view_in_radians),
-                cereal::make_nvp("Near Plane", _near_plane));
+                cereal::make_nvp("Near Plane", _near_plane),
+                cereal::make_nvp("Far Plane", _far_plane));
     }
 };
 

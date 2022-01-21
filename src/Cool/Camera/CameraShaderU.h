@@ -10,6 +10,7 @@ namespace Cool::CameraShaderU {
 inline void set_uniform(const OpenGL::Shader& shader, const Camera& camera)
 {
     shader.set_uniform("cool_camera_inverse_view_projection", camera.transform_matrix() * glm::inverse(camera.projection_matrix()));
+    shader.set_uniform("cool_camera_far_plane", camera.far_plane());
 }
 
 } // namespace Cool::CameraShaderU
