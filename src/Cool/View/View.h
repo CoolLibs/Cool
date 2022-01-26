@@ -26,8 +26,8 @@ public:
     auto mouse_events() -> MouveEventDispatcher<ViewCoordinates>& { return _mouse_event_dispatcher; }
 
 private:
-    void grab_window_size();
-    void grab_window_position();
+    void store_window_size();
+    void store_window_position();
     void display_image(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
 
     /**

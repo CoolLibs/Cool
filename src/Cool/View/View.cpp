@@ -8,8 +8,8 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image
 {
     if (_is_open) {
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
-        grab_window_size();
-        grab_window_position();
+        store_window_size();
+        store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
         display_image(image_texture_id, _image_size_inside_view);
         ImGui::End();
@@ -105,9 +105,9 @@ void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCo
     }
 }
 
-void View::grab_window_size()
+void View::store_window_size()
 {
-    auto size = ImGui::GetContentRegionAvail();
+    const auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
         _size.emplace(
             static_cast<img::Size::DataType>(size.x),
@@ -118,7 +118,7 @@ void View::grab_window_size()
     }
 }
 
-void View::grab_window_position()
+void View::store_window_position()
 {
     const auto pos = ImGui::GetCursorScreenPos();
     _position      = ScreenCoordinates{pos.x, pos.y};
