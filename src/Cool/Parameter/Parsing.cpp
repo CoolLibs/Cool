@@ -48,8 +48,11 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
         else if (type == "rotation3D") {
             return parse<Parameter::Rot3Desc>(body);
         }
+        else if (type == "transform3D") {
+            return parse<Parameter::TransformDesc>(body);
+        }
         else {
-            throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'vec3', 'color' or 'direction3D'");
+            throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'vec3', 'color', 'transform3D' or 'direction3D'");
         }
     }();
     return std::make_pair(desc, body_pos->second);

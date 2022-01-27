@@ -98,6 +98,7 @@ static void imgui_new_frame()
 #endif
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
     imgui_dockspace();
 }
 

@@ -18,6 +18,7 @@ public:
     }
 
     auto operator*() const -> typename Desc::Value { return _desc.value(_value); }
+    auto internal_value_ref() -> typename Desc::InternalValue& { return _value; }
     auto name() const -> const std::string& { return _desc.name; }
     auto description() const -> const Desc& { return _desc; }
     // clang-format off
@@ -34,7 +35,7 @@ private:
     typename Desc::InternalValue _value_before_edit;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void save(Archive& archive) const

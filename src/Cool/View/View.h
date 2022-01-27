@@ -13,10 +13,10 @@ public:
     }
     /**
      * @brief Displays the render target's image in an ImGui window
-     * 
+     *
      * @param name The name of the window
      */
-    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
+    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view, std::function<bool()> extra);
     void                     imgui_open_close_checkbox();
     std::optional<img::Size> size() const { return _size; }
 
@@ -42,10 +42,11 @@ private:
     bool contains(ViewCoordinates pos, ImageSizeInsideView image_size);
 
 private:
-    std::string                           _name              = "";
-    bool                                  _is_open           = true;
-    bool                                  _window_is_hovered = false;
-    std::optional<img::Size>              _size              = std::nullopt; // Can be nullopt when the window is closed
+    std::string                           _name                = "";
+    bool                                  _is_open             = true;
+    bool                                  _window_is_hovered   = false;
+    bool                                  _is_hidden_by_widget = false;
+    std::optional<img::Size>              _size                = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                     _position{};
     MouveEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
 };

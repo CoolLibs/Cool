@@ -43,3 +43,6 @@
 [submodule "lib/img"]
 	path = lib/img
 	url = https://github.com/CoolLibs/img
+[submodule "lib/ImGuizmo"]
+	path = lib/ImGuizmo
+	url = https://github.com/CoolLibs/ImGuizmo

@@ -4,12 +4,14 @@
 #include <Cool/Window/WindowManager.h>
 #include "AppManagerConfig.h"
 #include "IApp.h"
+#include "imguizmo/ImGuizmo.h"
+
 
 namespace Cool {
 
 /**
  * @brief Wrapper for an App. It handles the user events, the ImGui UI, and the windows' updates.
- * 
+ *
  */
 class AppManager {
 public:
@@ -22,7 +24,7 @@ public:
 
     /**
      * @brief Runs the app's update loop continuously, until the user closes the main window
-     * 
+     *
      */
     void run();
 

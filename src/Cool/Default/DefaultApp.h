@@ -5,11 +5,13 @@
 #include <Cool/Exporter/Exporter.h>
 #include <Cool/Exporter/internal/Polaroid.h>
 #include <Cool/Gpu/FullscreenPipeline.h>
+#include <Cool/Guizmo3D/DisplayGuizmo.h>
 #include <Cool/Image/ImageSizeConstraint.h>
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/Time/Clock_Realtime.h>
 #include <Cool/View/RenderableViewManager.h>
 #include <Cool/Window/WindowManager.h>
+
 
 namespace CoolDefault {
 

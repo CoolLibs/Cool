@@ -55,7 +55,8 @@ void DefaultApp::imgui_windows()
 {
     // Views
     for (auto& view : _views) {
-        view.imgui_window(aspect_ratio_is_constrained());
+        Cool::CameraManager camera = _camera;
+        view.imgui_window(aspect_ratio_is_constrained(), [camera]() { return Cool::display_guizmo(camera); });
     }
     // Exporter
     _exporter.imgui_windows(polaroid(), _clock.time());

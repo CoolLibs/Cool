@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view, std::function<bool()> extra)
 {
     if (_is_open) {
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
@@ -12,6 +12,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image
         grab_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
         display_image(image_texture_id, _image_size_inside_view);
+        _is_hidden_by_widget = extra();
         ImGui::End();
     }
     else {
@@ -74,9 +75,11 @@ bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
 void View::dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event)
 {
     const auto pos = to_view_space(event.event.position, event.window);
-    _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
-    if (contains(pos, event.image_size)) {
-        _mouse_event_dispatcher.move_event().dispatch({pos});
+    if (!_is_hidden_by_widget) {
+        _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
+        if (contains(pos, event.image_size)) {
+            _mouse_event_dispatcher.move_event().dispatch({pos});
+        }
     }
 }
 
@@ -95,10 +98,10 @@ void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCo
     const auto pos          = to_view_space(event.event.position, event.window);
     const bool contains_pos = contains(pos, event.image_size);
     const auto new_event    = MouseButtonEvent<ViewCoordinates>{
-        .position = pos,
-        .button   = event.event.button,
-        .action   = event.event.action,
-        .mods     = event.event.mods};
+           .position = pos,
+           .button   = event.event.button,
+           .action   = event.event.action,
+           .mods     = event.event.mods};
     _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos) {
         _mouse_event_dispatcher.button_event().dispatch(new_event);

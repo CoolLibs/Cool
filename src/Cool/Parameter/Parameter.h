@@ -6,8 +6,10 @@
 #include "internal/Parameter_Float.h"
 #include "internal/Parameter_Int.h"
 #include "internal/Parameter_Rot3.h"
+#include "internal/Parameter_Transform.h"
 #include "internal/Parameter_Vec2.h"
 #include "internal/Parameter_Vec3.h"
+
 
 namespace Cool::Parameter {
 
@@ -17,6 +19,7 @@ using Any = std::variant<
     Parameter::Float,
     Parameter::Vec2,
     Parameter::Vec3,
+    Parameter::Transform,
     Parameter::Dir3,
     Parameter::Rot3,
     Parameter::Color>;
@@ -27,6 +30,7 @@ using AnyDesc = std::variant<
     Parameter::FloatDesc,
     Parameter::Vec2Desc,
     Parameter::Vec3Desc,
+    Parameter::TransformDesc,
     Parameter::Dir3Desc,
     Parameter::Rot3Desc,
     Parameter::ColorDesc>;
@@ -53,6 +57,9 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
         }
         else if constexpr (std::is_same_v<T, Parameter::Vec3Desc>) {
             return Parameter::Vec3{desc};
+        }
+        else if constexpr (std::is_same_v<T, Parameter::TransformDesc>) {
+            return Parameter::Transform{desc};
         }
         else if constexpr (std::is_same_v<T, Parameter::Dir3Desc>) {
             return Parameter::Dir3{desc};

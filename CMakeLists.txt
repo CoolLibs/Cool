@@ -48,6 +48,7 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <imgui/misc/cpp/imgui_stdlib.h>
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
+    <imguizmo/ImGuizmo.h>
     <cereal/access.hpp>
     <cereal/types/vector.hpp>
     <cereal/types/string.hpp>
@@ -123,6 +124,12 @@ target_link_libraries(Cool PUBLIC nfd)
 # img
 add_subdirectory(lib/img)
 target_link_libraries(Cool PUBLIC img)
+#imguizmo
+add_library(imguizmo    "lib/imguizmo/ImCurveEdit.cpp"
+                        "lib/imguizmo/ImGradient.cpp"
+                        "lib/imguizmo/ImGuizmo.cpp"
+                        "lib/imguizmo/ImSequencer.cpp")
+target_link_libraries(Cool PUBLIC imguizmo)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
