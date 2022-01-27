@@ -1,30 +1,49 @@
-vec3 Fresnel1Term(vec3 specularCol, float vdoth)
+float G1V(float NdotV, float k)
 {
-    vec3 fresnel = specularCol + (1. - specularCol) * pow((1. - vdoth), 5.);
-    return fresnel;
+    return 1.0/(NdotV*(1.0-k)+k); 
 }
 
-float DistributionTerm(float roughtness, float ndoth)
+float fresnel(vec3 normal, float metallic)
 {
-    float r2 = roughtness * roughtness;
-    float d  = (ndoth * r2 - ndoth) * ndoth + 1.0;
-    return r2 / (d * d * 3.1415);
+    float NdotV = clamp(dot(normal, vec3(0.0,0.0,-1.0)), 0.0, 1.0);
+    NdotV = pow(1.0 - NdotV, 5.0);
+    return metallic + ( 1.0 - metallic ) * (NdotV);
 }
 
-float VisibilityTerm(float roughtness, float ndotv, float ndot1)
+float Fresnel1Term(float LdotH, float metallic)
 {
-    float r2 = roughtness * roughtness;
-    float gv = ndot1 * sqrt(ndotv * (ndotv - ndotv * r2) + r2);
-    float g1 = ndotv * sqrt(ndot1 * (ndot1 - ndot1 * r2) + r2);
-    return 0.5 / max(gv + g1, 0.00001);
+    float LdotH5 = 1.0 - LdotH;
+    LdotH5 = LdotH5*LdotH5*LdotH5*LdotH5*LdotH5;
+    return metallic + (1.0 - metallic) * (LdotH5);
 }
 
-vec3 EnvBRDFApprox(vec3 specularCol, float roughtness, float ndotv)
+float VisibilityTerm(float roughtness, float NdotV, float NdotL)
 {
-    const vec4 c0   = vec4(-1, -0.0275, -0.572, 0.022);
-    const vec4 c1   = vec4(1, 0.0425, 1.04, -0.04);
-    vec4       r    = roughtness * c0 + c1;
-    float      a004 = min(r.x * r.x, exp2(-9.28 * ndotv)) * r.x + r.y;
-    vec2       AB   = vec2(-1.04, 1.04) * a004 + r.zw;
-    return specularCol * AB.x + AB.y;
+    float k = (roughtness * roughtness) / 2;
+    return G1V(NdotL, k) * G1V(NdotV, k);
+}
+
+float GeoTerm(float roughtness, float NdotH)
+{
+    float r4 = roughtness * roughtness * roughtness * roughtness;
+    float pi = 3.14159;
+    float d  = NdotH * NdotH * (r4 - 1.0) + 1.0;
+    return r4 / (pi * d * d);
+}
+
+float specular(vec3 normal, vec3 lightdir, float roughtness, float metallic)
+{
+    vec3 v = vec3(0.0,0.0,-1.0);
+    vec3 h = normalize(v + lightdir);
+    float NdotL = clamp(dot(normal, lightdir), 0.0, 1.0);
+    float NdotV = clamp(dot(normal, v), 0.0, 1.0);
+    float NdotH = clamp(dot(normal, h), 0.0, 1.0);
+    float LdotH = clamp(dot(lightdir, h), 0.0, 1.0);
+
+    return NdotL * GeoTerm(roughtness, NdotH) * Fresnel1Term(LdotH, metallic) * VisibilityTerm(roughtness, NdotV, NdotL);
+}
+
+vec3 AmbReflect()
+{
+    return vec3(.10,.10,.10);
 }
