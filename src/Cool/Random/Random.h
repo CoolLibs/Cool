@@ -30,6 +30,12 @@ public:
 	 */
     static int integer();
 
+    /// Returns a random int between min (included) and max (included)
+    static int integer(int min, int max);
+
+    /// Returns a random size_t between min (included) and max (included)
+    static size_t size_type(size_t min, size_t max);
+
 private:
     static std::random_device                      _true_random_generator;
     static std::default_random_engine              _generator;

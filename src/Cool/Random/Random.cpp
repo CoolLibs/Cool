@@ -30,4 +30,14 @@ int Random::integer()
     return _distribution_integer(_generator);
 }
 
+int Random::integer(int min, int max)
+{
+    return std::uniform_int_distribution<int>(min, max)(_generator);
+}
+
+size_t Random::size_type(size_t min, size_t max)
+{
+    return std::uniform_int_distribution<size_t>(min, max)(_generator);
+}
+
 } // namespace Cool
