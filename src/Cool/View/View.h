@@ -1,5 +1,4 @@
 #pragma once
-#include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Input/MouveEventDispatcher.h>
 #include "ViewEvent.h"
 
