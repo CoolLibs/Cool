@@ -4,14 +4,14 @@
 
 namespace Cool {
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
 {
     if (_is_open) {
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
         store_window_size();
         store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
-        display_image(image_texture_id, _image_size_inside_view);
+        display_image(image_texture_id, image_size_inside_view);
         ImGui::End();
     }
     else {
