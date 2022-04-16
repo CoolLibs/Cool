@@ -93,6 +93,7 @@ elseif (COOL_USE_OPENGL)
         COOL_OPENGL
         COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     add_subdirectory(lib/glpp)
+    target_compile_definitions(glpp PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
     target_link_libraries(Cool PUBLIC glpp::glpp)
 endif()
 
