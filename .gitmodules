@@ -43,3 +43,6 @@
 [submodule "lib/img"]
 	path = lib/img
 	url = https://github.com/CoolLibs/img
+[submodule "lib/exe_path"]
+	path = lib/exe_path
+	url = https://github.com/CoolLibs/exe_path

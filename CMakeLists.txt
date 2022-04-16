@@ -123,7 +123,10 @@ add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool PUBLIC nfd)
 # img
 add_subdirectory(lib/img)
-target_link_libraries(Cool PUBLIC img)
+target_link_libraries(Cool PUBLIC img::img)
+# exe_path
+add_subdirectory(lib/exe_path)
+target_link_libraries(Cool PUBLIC exe_path::exe_path)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
