@@ -1,3 +1,9 @@
+### Warning: Cool's CMakeLists.txt currently assumes that the project using Cool created its executable target with the same name as its project:
+### ```cmake
+### project(CoolLab)                # Choose a name
+### add_executable(${PROJECT_NAME}) # Use that name
+### ```
+
 cmake_minimum_required(VERSION 3.20)
 
 add_library(Cool)
