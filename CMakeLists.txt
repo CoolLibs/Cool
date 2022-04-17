@@ -151,9 +151,7 @@ target_link_libraries(Cool PUBLIC ImGui::ImGui)
 
 include("CMakeUtils/files_and_folders.cmake")
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
-Cool__target_copy_file(Cool
-    ${CMAKE_SOURCE_DIR}/imgui.ini
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-Cool__target_copy_folder(Cool
-    ${CMAKE_SOURCE_DIR}/${COOL_PATH}/res
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+Cool__target_copy_file(${PROJECT_NAME} Cool
+    imgui.ini)
+Cool__target_copy_folder(${PROJECT_NAME} Cool
+    ${COOL_PATH}/res)
