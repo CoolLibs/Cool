@@ -53,14 +53,21 @@ void WindowFactory_Base<T>::initialize_glfw()
     }
 }
 
+static void set_imgui_ini_filepath()
+{
+    static const std::string path = Cool::Path::root() + "/imgui.ini"; // Needs to be static to keep the char* passed to io.IniFilename alive
+
+    ImGui::GetIO().IniFilename = path.c_str();
+}
+
 template<typename T>
 void WindowFactory_Base<T>::initialize_imgui()
 {
     // Setup context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    set_imgui_ini_filepath();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 #if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO : need to investigate that bug ; it is probably comming directly from ImGui)
