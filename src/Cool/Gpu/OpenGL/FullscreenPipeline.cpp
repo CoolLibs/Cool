@@ -36,7 +36,7 @@ void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
     }
     catch (const std::exception& e) {
         _shader.reset();
-        Cool::Log::ToUser::warn("FullscreenPipeline", "{}", e.what());
+        Cool::Log::ToUser::error("FullscreenPipeline", "{}\nThe source code we tried to compile was:\n{}", e.what(), fragment_shader_source_code);
     }
 }
 
