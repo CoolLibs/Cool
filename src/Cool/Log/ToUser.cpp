@@ -14,6 +14,7 @@ void ToUser::add_message(Message message)
 {
     // Merge messages of the same category together
     if (!_messages.empty() && _messages.back().category == message.category) {
+        message.count    = _messages.back().count + 1;
         _messages.back() = message;
     }
     // or add the message to the list
@@ -71,7 +72,13 @@ void ToUser::imgui_console_window()
 #pragma warning(pop)
 #endif
             if (local_time) {
-                ImGui::TextColored(color, "[%d'%d\"] [%s]", local_time->tm_min, local_time->tm_sec, message.category.c_str());
+                ImGui::TextColored(color, "[%d:%d'%d\"%d] [#%lld] [%s]",
+                                   local_time->tm_hour,
+                                   local_time->tm_min,
+                                   local_time->tm_sec,
+                                   std::chrono::duration_cast<std::chrono::milliseconds>(message.timestamp.time_since_epoch()).count() % 1000,
+                                   message.count,
+                                   message.category.c_str());
             }
             ImGui::SameLine();
             ImGui::Text("%s", message.body.c_str());
