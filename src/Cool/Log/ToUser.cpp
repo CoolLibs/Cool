@@ -72,7 +72,7 @@ void ToUser::imgui_console_window()
 #pragma warning(pop)
 #endif
             if (local_time) {
-                ImGui::TextColored(color, "[%d:%d'%d\"%d] [#%lld] [%s]",
+                ImGui::TextColored(color, "[%d:%d'%d\"%lld] [#%lld] [%s]",
                                    local_time->tm_hour,
                                    local_time->tm_min,
                                    local_time->tm_sec,
