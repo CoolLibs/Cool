@@ -133,6 +133,9 @@ target_link_libraries(Cool PUBLIC img::img)
 # exe_path
 add_subdirectory(lib/exe_path)
 target_link_libraries(Cool PUBLIC exe_path::exe_path)
+# serv
+add_subdirectory(lib/serv)
+target_link_libraries(Cool PUBLIC serv::serv)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)

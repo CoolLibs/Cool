@@ -46,3 +46,6 @@
 [submodule "lib/exe_path"]
 	path = lib/exe_path
 	url = https://github.com/CoolLibs/exe_path
+[submodule "lib/serv"]
+	path = lib/serv
+	url = https://github.com/CoolLibs/serv
