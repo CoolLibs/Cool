@@ -7,12 +7,14 @@ namespace Cool {
 void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
 {
     if (_is_open) {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
         store_window_size();
         store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
         display_image(image_texture_id, image_size_inside_view);
         ImGui::End();
+        ImGui::PopStyleVar();
     }
     else {
         _size.reset();
