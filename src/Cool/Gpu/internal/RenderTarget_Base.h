@@ -14,6 +14,7 @@ public:
     RenderTargetInfo info() const { return _impl.info(); }
     img::Size        current_size() const { return _impl.size(); }
     img::Size        desired_size() const { return _desired_size; }
+    auto             needs_resizing() const -> bool { return _impl.size() != desired_size(); }
     void             set_size(img::Size size) { _desired_size = size; }
 
 private:
