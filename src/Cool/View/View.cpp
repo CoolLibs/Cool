@@ -111,9 +111,14 @@ void View::store_window_size()
 {
     const auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
-        _size.emplace(
-            static_cast<img::Size::DataType>(size.x),
-            static_cast<img::Size::DataType>(size.y));
+        const auto new_size = std::make_optional(img::Size{static_cast<img::Size::DataType>(size.x),
+                                                           static_cast<img::Size::DataType>(size.y)});
+
+        const bool has_changed = new_size != _size;
+        _size                  = new_size;
+        if (has_changed) {
+            resize_event().dispatch({});
+        }
     }
     else {
         _size.reset();

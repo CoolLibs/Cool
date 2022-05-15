@@ -11,4 +11,7 @@ struct ViewEvent {
     ImageSizeInsideView image_size;
 };
 
+struct ViewResizeEvent {
+};
+
 } // namespace Cool
