@@ -49,3 +49,6 @@
 [submodule "lib/serv"]
 	path = lib/serv
 	url = https://github.com/CoolLibs/serv
+[submodule "lib/stringify"]
+	path = lib/stringify
+	url = https://github.com/CoolLibs/stringify

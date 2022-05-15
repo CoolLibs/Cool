@@ -136,6 +136,9 @@ target_link_libraries(Cool PUBLIC exe_path::exe_path)
 # serv
 add_subdirectory(lib/serv)
 target_link_libraries(Cool PUBLIC serv::serv)
+# stringify
+add_subdirectory(lib/stringify)
+target_link_libraries(Cool PUBLIC stringify::stringify)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
