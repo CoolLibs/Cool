@@ -88,12 +88,16 @@ void DefaultApp::imgui_windows()
     }
 }
 
-void DefaultApp::imgui_menus()
+void DefaultApp::menu_preview()
 {
     if (ImGui::BeginMenu("Preview")) {
         _preview_constraint.imgui();
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::menu_windows()
+{
     if (ImGui::BeginMenu("Windows")) {
         Cool::Log::ToUser::imgui_toggle_console();
         for (auto& view : _views) {
@@ -105,10 +109,21 @@ void DefaultApp::imgui_menus()
 #endif
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::menu_export()
+{
     if (ImGui::BeginMenu("Export")) {
         _exporter.imgui_menu_items();
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::imgui_menus()
+{
+    menu_preview();
+    menu_windows();
+    menu_export();
 }
 
 void DefaultApp::on_keyboard_event(const Cool::KeyboardEvent& event)
