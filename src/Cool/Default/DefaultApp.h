@@ -51,7 +51,6 @@ protected:
     Cool::RenderableView&       _view;
     Cool::Exporter              _exporter;
 
-private:
     std::function<void(Cool::RenderTarget&, float time)> _render_fn;
 #ifdef DEBUG
     bool _show_imgui_debug = true;
