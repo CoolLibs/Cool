@@ -8,9 +8,19 @@ static bool is_valid_file_path(std::filesystem::path path)
     return File::exists(path.string()) && !std::filesystem::is_directory(path);
 }
 
+static auto time_of_last_change(std::filesystem::path path) -> std::filesystem::file_time_type
+{
+    try {
+        return std::filesystem::last_write_time(path);
+    }
+    catch (...) {
+        return {};
+    }
+}
+
 FileWatcher::FileWatcher(std::filesystem::path path, FileWatcherConfig config)
     : _path{path}
-    , _time_of_last_change{std::filesystem::last_write_time(_path)}
+    , _time_of_last_change{time_of_last_change(path)}
     , _config{config}
 {
 }
@@ -28,7 +38,7 @@ void FileWatcher::update() const
         if (elapsed_time.count() > _config.delay_between_checks) {
             _time_of_last_check = now;
             // Check file was updated since last check
-            const auto last_change = std::filesystem::last_write_time(_path);
+            const auto last_change = time_of_last_change(_path);
             if (last_change != _time_of_last_change) {
                 on_file_changed();
             }
@@ -39,7 +49,7 @@ void FileWatcher::update() const
 void FileWatcher::on_file_changed() const
 {
     _path_validity       = Valid{};
-    _time_of_last_change = std::filesystem::last_write_time(_path);
+    _time_of_last_change = time_of_last_change(_path);
     _config.on_file_changed(_path.string());
 }
 
