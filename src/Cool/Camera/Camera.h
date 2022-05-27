@@ -39,6 +39,8 @@ public:
     void rotate_around(glm::vec3 const& center, float angle, glm::vec3 const& axis);
     void rotate(float angle, glm::vec3 const& axis);
 
+    auto operator<=>(const Camera&) const = default;
+
 private:
     glm::mat4 _transform_matrix  = glm::mat4{1.f};
     glm::mat4 _projection_matrix = glm::mat4{1.f};

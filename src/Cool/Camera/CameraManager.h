@@ -20,6 +20,8 @@ public:
 
     const Camera& operator*() const { return _camera; }
     const Camera* operator->() const { return &operator*(); }
+    Camera&       operator*() { return _camera; }
+    Camera*       operator->() { return &operator*(); }
 
 private:
     Camera                           _camera;
