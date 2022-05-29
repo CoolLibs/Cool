@@ -26,10 +26,14 @@ public:
     inline void set_state(OrbitalState state) { _state = state; }
 
     // clang-format off
-    inline void on_drag        (Camera& camera, glm::vec2 const& delta) { std::visit([&](auto&& state) { state.on_drag         (*this, camera, delta); }, _state); }
-	inline void on_drag_start  (Camera& camera, ModifierKeys mods)      { std::visit([&](auto&& state) { state.on_drag_start   (*this, camera, mods);  }, _state); }
-	inline void on_drag_stop   (Camera& camera)                         { std::visit([&](auto&& state) { state.on_drag_stop    (*this, camera);        }, _state); }
-	inline void on_wheel_scroll(Camera& camera, float dl)               { std::visit([&](auto&& state) { state.on_wheel_scroll (*this, camera, dl);    }, _state); }
+    /// Returns true iff the camera values have changed
+    inline auto on_drag        (Camera& camera, glm::vec2 const& delta) -> bool{ return std::visit([&](auto&& state) { return state.on_drag         (*this, camera, delta); }, _state); }
+	/// Returns true iff the camera values have changed
+    inline auto on_drag_start  (Camera& camera, ModifierKeys mods)      -> bool{ return std::visit([&](auto&& state) { return state.on_drag_start   (*this, camera, mods);  }, _state); }
+	/// Returns true iff the camera values have changed
+    inline auto on_drag_stop   (Camera& camera)                         -> bool{ return std::visit([&](auto&& state) { return state.on_drag_stop    (*this, camera);        }, _state); }
+	/// Returns true iff the camera values have changed
+    inline auto on_wheel_scroll(Camera& camera, float dl)               -> bool{ return std::visit([&](auto&& state) { return state.on_wheel_scroll (*this, camera, dl);    }, _state); }
     // clang-format on
 
 private:

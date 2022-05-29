@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods)
+auto OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods) -> bool
 {
     if (mods.shift()) {
         controller.set_state(OrbitalState_Translation{});
@@ -14,9 +14,10 @@ void OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera
     else {
         controller.set_state(OrbitalState_Rotation{camera});
     }
+    return false;
 }
 
-void OrbitalState_Idle::on_wheel_scroll(ViewController_Orbital& controller, Camera& camera, float dl)
+auto OrbitalState_Idle::on_wheel_scroll(ViewController_Orbital& controller, Camera& camera, float dl) -> bool
 {
     // Update controller's distance to look at
     const float previous_distance = controller._distance_to_orbit_center;
@@ -24,6 +25,7 @@ void OrbitalState_Idle::on_wheel_scroll(ViewController_Orbital& controller, Came
     // Update camera
     const float delta = previous_distance - controller._distance_to_orbit_center;
     camera.translate(camera.front_axis() * delta);
+    return true;
 }
 
 } // namespace Cool
