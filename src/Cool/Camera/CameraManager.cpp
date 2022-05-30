@@ -15,11 +15,6 @@ void CameraManager::hook_events(MouveEventDispatcher<ViewCoordinates>& dispatche
     CameraU::hook_events(dispatcher, _view_controller, _camera);
 }
 
-void CameraManager::apply(float aspect_ratio)
-{
-    _projection_controller.apply_to(_camera, aspect_ratio);
-}
-
 void CameraManager::reset_transform()
 {
     ViewController_OrbitalU::reset_transform(_view_controller, _camera);
@@ -34,7 +29,7 @@ void CameraManager::imgui()
     if (ImGui::Button("Reset transform")) {
         reset_transform();
     }
-    _projection_controller.ImGui();
+    Cool::imgui(_camera.projection());
 }
 
 } // namespace Cool

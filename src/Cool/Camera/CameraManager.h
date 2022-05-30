@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/Camera/ProjectionController_Perspective.h>
 #include <Cool/Camera/ViewController_Orbital.h>
 #include <Cool/Constants/Constants.h>
 #include <Cool/Input/MouseCoordinates.h>
@@ -14,7 +13,7 @@ public:
     explicit CameraManager(const glm::vec3& position = Constants::default_camera_position, const glm::vec3& look_at = glm::vec3{0.f});
 
     void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher);
-    void apply(float aspect_ratio);
+    auto inverse_view_projection_matrix(float aspect_ratio) const -> glm::mat4;
     void reset_transform();
     void imgui();
 
@@ -24,9 +23,8 @@ public:
     Camera*       operator->() { return &operator*(); }
 
 private:
-    Camera                           _camera;
-    ViewController_Orbital           _view_controller;
-    ProjectionController_Perspective _projection_controller;
+    Camera                 _camera;
+    ViewController_Orbital _view_controller;
 
 private:
     // Serialization
@@ -35,8 +33,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(cereal::make_nvp("Camera", _camera),
-                cereal::make_nvp("ViewController", _view_controller),
-                cereal::make_nvp("ProjectionController", _projection_controller));
+                cereal::make_nvp("ViewController", _view_controller));
     }
 };
 
