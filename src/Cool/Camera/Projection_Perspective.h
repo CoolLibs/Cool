@@ -7,6 +7,8 @@ struct Projection_Perspective {
     float near_plane               = 0.1f;
     float far_plane                = 200.f;
 
+    auto operator==(const Projection_Perspective&) const -> bool = default;
+
 private:
     // Serialization
     friend class cereal::access;
