@@ -57,7 +57,7 @@ protected:
     Cool::Exporter              _exporter;
 
     std::function<void(Cool::RenderTarget&, float time)> _render_fn;
-#ifdef DEBUG
+#if DEBUG
     bool _show_imgui_debug = true;
     bool _show_imgui_demo  = false;
 #endif

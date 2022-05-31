@@ -71,7 +71,7 @@ void DefaultApp::imgui_windows()
         ImGui::Begin("Camera");
         _camera.imgui();
         ImGui::End();
-#if defined(DEBUG)
+#if DEBUG
         if (_show_imgui_debug) {
             ImGui::Begin("Debug", &_show_imgui_debug);
             ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
@@ -103,7 +103,7 @@ void DefaultApp::menu_windows()
         for (auto& view : _views) {
             view.view.imgui_open_close_checkbox();
         }
-#if defined(DEBUG)
+#if DEBUG
         ImGui::Separator();
         ImGui::Checkbox("Debug", &_show_imgui_debug);
 #endif
