@@ -18,14 +18,14 @@ static auto time_of_last_change(std::filesystem::path path) -> std::filesystem::
     }
 }
 
-FileWatcher::FileWatcher(std::filesystem::path path, Config config)
+FileWatcher::FileWatcher(std::filesystem::path path, FileWatcher_Config config)
     : _path{path}
     , _time_of_last_change{time_of_last_change(path)}
     , _config{config}
 {
 }
 
-void FileWatcher::update(Callbacks callbacks) const
+void FileWatcher::update(FileWatcher_Callbacks callbacks) const
 {
     std::visit([&](auto&& validity) { update_validity(validity, is_valid_file_path(_path), callbacks); }, _path_validity);
     if (path_is_valid()) {
@@ -46,14 +46,14 @@ void FileWatcher::update(Callbacks callbacks) const
     }
 }
 
-void FileWatcher::on_file_changed(Callbacks callbacks) const
+void FileWatcher::on_file_changed(FileWatcher_Callbacks callbacks) const
 {
     _path_validity       = Valid{};
     _time_of_last_change = time_of_last_change(_path);
     callbacks.on_file_changed(_path.string());
 }
 
-void FileWatcher::on_path_invalid(Callbacks callbacks) const
+void FileWatcher::on_path_invalid(FileWatcher_Callbacks callbacks) const
 {
     _path_validity = Invalid{};
     callbacks.on_path_invalid(_path.string());
@@ -65,21 +65,21 @@ void FileWatcher::set_path(std::string_view path)
     _path_validity = Unknown{};
 }
 
-void FileWatcher::update_validity(Valid, bool is_valid, Callbacks callbacks) const
+void FileWatcher::update_validity(Valid, bool is_valid, FileWatcher_Callbacks callbacks) const
 {
     if (!is_valid) {
         on_path_invalid(callbacks);
     }
 }
 
-void FileWatcher::update_validity(Invalid, bool is_valid, Callbacks callbacks) const
+void FileWatcher::update_validity(Invalid, bool is_valid, FileWatcher_Callbacks callbacks) const
 {
     if (is_valid) {
         on_file_changed(callbacks);
     }
 }
 
-void FileWatcher::update_validity(Unknown, bool is_valid, Callbacks callbacks) const
+void FileWatcher::update_validity(Unknown, bool is_valid, FileWatcher_Callbacks callbacks) const
 {
     if (is_valid) {
         on_file_changed(callbacks);
