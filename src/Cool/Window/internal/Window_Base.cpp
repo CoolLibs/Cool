@@ -65,9 +65,7 @@ void Window_Base::switch_fullscreen()
 void Window_Base::escape_fullscreen()
 {
     if (_is_fullscreen) {
-        GLFWmonitor*       monitor = current_monitor();
-        const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, mode->refreshRate);
+        glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, 0);
         _is_fullscreen = false;
     }
 }
