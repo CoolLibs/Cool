@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/ImGui/ImGuiExtras.h>
 #include "Variable.h"
 
 namespace Cool {
@@ -46,6 +47,8 @@ inline auto imgui_widget(VariableMetadata<Color>& meta) -> bool
 {
     bool b = false;
     b |= ImGui::Checkbox("HDR", &meta.is_hdr);
+    ImGui::SameLine();
+    ImGuiExtras::help_marker("Allows the RGB values to go outside of the [0, 1] range.");
     return b;
 }
 
