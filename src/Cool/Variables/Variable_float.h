@@ -22,7 +22,7 @@ private:
     }
 };
 
-auto imgui_widget(Variable<float>& var) -> bool
+inline auto imgui_widget(Variable<float>& var) -> bool
 {
     return ImGui::SliderFloat(var.name.c_str(),
                               &var.value,
@@ -30,7 +30,7 @@ auto imgui_widget(Variable<float>& var) -> bool
                               var.metadata.max_value);
 }
 
-auto imgui_widget(VariableMetadata<float>& meta) -> bool
+inline auto imgui_widget(VariableMetadata<float>& meta) -> bool
 {
     bool b = false;
     b |= ImGui::DragFloat("", &meta.min_value);

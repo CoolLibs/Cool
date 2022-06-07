@@ -24,7 +24,7 @@ private:
     }
 };
 
-auto imgui_widget(Variable<Color>& var) -> bool
+inline auto imgui_widget(Variable<Color>& var) -> bool
 {
     return ImGui::ColorEdit3(var.name.c_str(),
                              glm::value_ptr(var.value.rgb),
@@ -33,7 +33,7 @@ auto imgui_widget(Variable<Color>& var) -> bool
                                                               : 0));
 }
 
-auto imgui_widget(VariableMetadata<Color>& meta) -> bool
+inline auto imgui_widget(VariableMetadata<Color>& meta) -> bool
 {
     bool b = false;
     b |= ImGui::Checkbox("HDR", &meta.is_hdr);

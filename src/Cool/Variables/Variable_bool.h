@@ -17,12 +17,12 @@ private:
     }
 };
 
-auto imgui_widget(Variable<bool>& var) -> bool
+inline auto imgui_widget(Variable<bool>& var) -> bool
 {
     return ImGui::Checkbox(var.name.c_str(), &var.value);
 }
 
-auto imgui_widget(VariableMetadata<bool>&) -> bool
+inline auto imgui_widget(VariableMetadata<bool>&) -> bool
 {
     return false;
 }
