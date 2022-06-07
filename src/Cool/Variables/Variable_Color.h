@@ -6,6 +6,15 @@ namespace Cool {
 
 struct Color {
     glm::vec3 rgb;
+
+private:
+    //Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("RGB", rgb));
+    }
 };
 
 template<>
