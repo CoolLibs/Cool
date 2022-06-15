@@ -8,6 +8,8 @@ namespace Cool {
 struct Color {
     glm::vec3 rgb;
 
+    friend auto operator==(const Color&, const Color&) -> bool = default;
+
 private:
     //Serialization
     friend class cereal::access;

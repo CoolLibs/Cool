@@ -32,12 +32,14 @@ inline auto imgui_widget(Variable<float>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<float>& meta) -> bool
 {
+    ImGui::PushID(&meta);
     bool b = false;
     b |= ImGui::DragFloat("", &meta.min_value);
     ImGui::SameLine();
     ImGui::Text("to");
     ImGui::SameLine();
     b |= ImGui::DragFloat(" ", &meta.max_value);
+    ImGui::PopID();
     return b;
 }
 
