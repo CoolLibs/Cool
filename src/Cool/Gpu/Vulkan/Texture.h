@@ -1,7 +1,7 @@
 #pragma once
 #if defined(COOL_VULKAN)
 
-#include <Cool/Image/ImageData.h>
+#include <img/img.hpp>
 
 namespace Cool::Vulkan {
 
@@ -9,11 +9,11 @@ class Texture {
 public:
     struct Id;
     Texture() = default;
-    Texture(ImageSize              size,
+    Texture(img::Size              size,
             vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
             vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
             vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0);
-    Texture(const ImageData&       image_data,
+    Texture(const img::Image&      image_data,
             vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
             vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
             vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0);
@@ -24,14 +24,14 @@ public:
      * 
      * @param size
      */
-    void resize(ImageSize size);
+    void resize(img::Size size);
 
     Id                         id();
     ImTextureID                imgui_texture_id() const { return _imgui_texture_id; }
     const vku::TextureImage2D& image() const { return _vku; }
     vku::TextureImage2D&       image() { return _vku; }
     int                        nb_channels() const { return 4; } // TODO fix me
-    ImageData                  download_pixels() const;
+    img::Image                 download_pixels() const;
 
     struct Id {
         operator ImTextureID() const

@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, ImageSize size)
+RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, img::Size size)
     : _texture{size, format, vk::ImageLayout::eGeneral, vk::ImageUsageFlagBits::eColorAttachment}
 {
     VkCommandBufferAllocateInfo allocInfo{};
@@ -79,7 +79,7 @@ RenderTargetInfo RenderTarget_ImplVulkan::info() const
         .render_pass = *_render_pass};
 }
 
-void RenderTarget_ImplVulkan::resize(ImageSize size)
+void RenderTarget_ImplVulkan::resize(img::Size size)
 {
     _texture.resize(size);
     build_framebuffer();
@@ -120,7 +120,7 @@ void RenderTarget_ImplVulkan::build_framebuffer()
     _framebuffer = vk::Device{Vulkan::context().g_Device}.createFramebufferUnique(fbci);
 }
 
-ImageData RenderTarget_ImplVulkan::download_pixels() const
+img::Image RenderTarget_ImplVulkan::download_pixels() const
 {
     return _texture.download_pixels();
 }
