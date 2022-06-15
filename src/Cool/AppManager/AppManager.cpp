@@ -235,6 +235,7 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     auto& app_manager = get_app_manager(window);
     if (app_manager._app.inputs_are_allowed()) {
         app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
