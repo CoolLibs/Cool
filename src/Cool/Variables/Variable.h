@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Cool/ImGui/ImGuiExtras.h>
+#include <stringify/stringify.hpp>
+
 namespace Cool {
 
 template<typename Value>
@@ -35,10 +38,12 @@ template<typename Value>
 auto imgui_variable_reset_buttons(Variable<Value>& var) -> bool
 {
     bool b = false;
-    if (ImGui::Button("Reset Value")) {
-        var.value = var.default_value;
-        b         = true;
-    }
+    ImGuiExtras::maybe_disabled(var.value == var.default_value, "Disabled because it is already equal to the default value", [&]() {
+        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value) + ")").c_str())) {
+            var.value = var.default_value;
+            b         = true;
+        }
+    });
     if (var.metadata != var.default_metadata) {
         ImGui::SameLine();
         if (ImGui::Button("Reset Metadata")) {
