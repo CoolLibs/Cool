@@ -154,4 +154,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
  */
 bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu);
 
+/// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
+void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
+
 } // namespace Cool::ImGuiExtras
