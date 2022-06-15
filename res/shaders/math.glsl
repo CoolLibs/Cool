@@ -43,6 +43,13 @@ vec3 hash_minus_1_to_1(vec3 p)
 
 vec2 hash_0_to_1_1D_to_2D(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453123, 22578.1459123)); }
 
+vec2 hash_0_to_1_2D_to_2D(vec2 p)
+{
+    vec3 a = fract(p.xyx * vec3(123.34, 234.34, 345.65));
+    a += dot(a, a + 34.45);
+    return fract(vec2(a.x * a.y, a.y * a.z));
+}
+
 mat2 rotation_2D(float angle)
 {
     float c = cos(angle);
