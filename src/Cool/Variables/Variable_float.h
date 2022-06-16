@@ -7,7 +7,7 @@ namespace Cool {
 template<>
 struct VariableMetadata<float> {
     float min_value{0.f};
-    float max_value{10.f};
+    float max_value{1.f};
 
     friend auto operator<=>(const VariableMetadata<float>&, const VariableMetadata<float>&) = default;
 
@@ -32,14 +32,12 @@ inline auto imgui_widget(Variable<float>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<float>& meta) -> bool
 {
-    ImGui::PushID(&meta);
     bool b = false;
     b |= ImGui::DragFloat("", &meta.min_value);
     ImGui::SameLine();
     ImGui::Text("to");
     ImGui::SameLine();
     b |= ImGui::DragFloat(" ", &meta.max_value);
-    ImGui::PopID();
     return b;
 }
 
