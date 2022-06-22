@@ -28,6 +28,7 @@ std::string preprocess_shader_source(const std::string& source)
     std::string line;
     while (std::getline(stream, line)) {
         String::replace_all(line, "_COOL_RES_", Path::cool_res());
+        String::replace_all(line, "_ROOT_FOLDER_", Path::root());
         output << line_or_include(line) << '\n';
     }
 
