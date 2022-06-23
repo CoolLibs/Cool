@@ -19,7 +19,7 @@ public:
 private:
     static std::string _root;
     static std::string _cool_res;
-#if defined(DEBUG)
+#if DEBUG
     static bool _root_is_initialized;
     static bool _cool_res_is_initialized;
 #endif

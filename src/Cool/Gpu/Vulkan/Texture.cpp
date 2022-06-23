@@ -6,7 +6,7 @@
 
 namespace Cool::Vulkan {
 
-Texture::Texture(ImageSize size, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
+Texture::Texture(img::Size size, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
     : _vku{
           Cool::Vulkan::context().g_Device,
           Cool::Vulkan::context().memory_properties,
@@ -22,27 +22,27 @@ Texture::Texture(ImageSize size, vk::Format format, vk::ImageLayout layout_when_
     _imgui_texture_id = ImGui_ImplVulkan_AddTexture(*_sampler, _vku.imageView(), static_cast<VkImageLayout>(layout_when_read_by_imgui_shader));
 }
 
-Texture::Texture(const ImageData& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
-    : Texture{image_data.size,
+Texture::Texture(const img::Image& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
+    : Texture{image_data.size(),
               format,
               layout_when_read_by_imgui_shader,
               additional_usage_flags}
 {
     _vku.upload(
         Vulkan::context().g_Device,
-        image_data.data.get(),
-        image_data.data_array_size(),
+        image_data.data(),
+        image_data.data_size(),
         Vulkan::context().command_pool,
         Vulkan::context().memory_properties,
         Vulkan::context().g_Queue);
 }
 
 Texture::Texture(std::string_view path)
-    : Texture{ImageData{path}}
+    : Texture{img::load(path.data())}
 {
 }
 
-void Texture::resize(ImageSize size)
+void Texture::resize(img::Size size)
 {
     vkDeviceWaitIdle(Vulkan::context().g_Device); // We must wait for all curent users of the image to finish before destroying it
     _vku = vku::TextureImage2D{
@@ -62,7 +62,7 @@ Texture::Id Texture::id()
     return {_vku.image()};
 }
 
-ImageData Texture::download_pixels() const
+img::Image Texture::download_pixels() const
 {
     auto w  = image().extent().width;
     auto h  = image().extent().height;
@@ -78,14 +78,14 @@ ImageData Texture::download_pixels() const
         region.imageExtent      = _vku.extent();
         cb.copyImageToBuffer(_vku.image(), _vku.layout(), buf, {region});
     });
-    std::unique_ptr<uint8_t[]> data{new uint8_t[sz]};
-    void*                      mem = stagingBuffer.map(Vulkan::context().g_Device);
-    memcpy(data.get(), mem, sz);
+    auto* data = new uint8_t[sz];
+    void* mem  = stagingBuffer.map(Vulkan::context().g_Device);
+    memcpy(data, mem, sz);
     stagingBuffer.unmap(Vulkan::context().g_Device);
-    return ImageData{
-        ImageSize{w, h},
+    return img::Image{
+        img::Size{w, h},
         nb_channels(),
-        std::move(data)};
+        data};
 }
 
 } // namespace Cool::Vulkan

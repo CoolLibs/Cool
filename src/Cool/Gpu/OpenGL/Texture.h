@@ -112,7 +112,7 @@ public:
 
 private:
     GLuint m_textureID = static_cast<GLuint>(-1);
-#if defined(DEBUG)
+#if DEBUG
     bool m_bDataUploaded = false;
 #endif
 };

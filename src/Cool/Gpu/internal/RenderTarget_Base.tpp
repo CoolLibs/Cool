@@ -10,7 +10,7 @@ void RenderTarget_Base<T>::render(typename T::RenderFuncType render_fn)
 template<typename T>
 void RenderTarget_Base<T>::resize_if_necessary()
 {
-    if (_impl.size() != desired_size()) {
+    if (needs_resizing()) {
         _impl.resize(desired_size());
     }
 }

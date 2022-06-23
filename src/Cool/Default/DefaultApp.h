@@ -15,7 +15,7 @@ namespace CoolDefault {
 
 class DefaultApp : public Cool::IApp {
 public:
-    explicit DefaultApp(Cool::WindowManager& windows, std::function<void(Cool::RenderTarget&, float time)> render_fn);
+    DefaultApp(Cool::WindowManager& windows, std::function<void(Cool::RenderTarget&, float time)> render_fn);
 
     void update() override;
     bool inputs_are_allowed() const override;
@@ -30,6 +30,11 @@ public:
 
 protected:
     Cool::Polaroid polaroid();
+
+    void menu_preview();
+    void menu_windows();
+    void menu_export();
+    void menu_settings();
 
 private:
     bool aspect_ratio_is_constrained() const;
@@ -51,9 +56,8 @@ protected:
     Cool::RenderableView&       _view;
     Cool::Exporter              _exporter;
 
-private:
     std::function<void(Cool::RenderTarget&, float time)> _render_fn;
-#ifdef DEBUG
+#if DEBUG
     bool _show_imgui_debug = true;
     bool _show_imgui_demo  = false;
 #endif

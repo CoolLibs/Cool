@@ -34,6 +34,11 @@ void Camera::rotate(float angle, glm::vec3 const& axis)
     _transform_matrix = glm::rotate(glm::mat4{1.f}, angle, axis) * _transform_matrix;
 }
 
+auto Camera::inverse_view_projection_matrix(float aspect_ratio) const -> glm::mat4
+{
+    return transform_matrix() * inverse_projection_matrix(aspect_ratio);
+}
+
 } // namespace Cool
 
 TEST_CASE("Translating the camera only affects its position")

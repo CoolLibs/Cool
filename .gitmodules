@@ -34,9 +34,6 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/CoolLibs/imgui
-[submodule "lib/smart"]
-	path = lib/smart
-	url = https://github.com/CoolLibs/smart
 [submodule "CMakeUtils"]
 	path = CMakeUtils
 	url = https://github.com/CoolLibs/CMakeUtils
@@ -46,3 +43,15 @@
 [submodule "lib/exe_path"]
 	path = lib/exe_path
 	url = https://github.com/CoolLibs/exe_path
+[submodule "lib/serv"]
+	path = lib/serv
+	url = https://github.com/CoolLibs/serv
+[submodule "lib/stringify"]
+	path = lib/stringify
+	url = https://github.com/CoolLibs/stringify
+[submodule "lib/smart"]
+	path = lib/smart
+	url = https://github.com/CoolLibs/smart
+[submodule "tooling"]
+	path = tooling
+	url = https://github.com/CoolLibs/tooling

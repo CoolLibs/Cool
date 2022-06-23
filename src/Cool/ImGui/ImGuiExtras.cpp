@@ -260,4 +260,25 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
     return checkbox_was_used;
 }
 
+void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)
+{
+    if (condition) {
+        ImGui::BeginGroup();
+        ImGui::BeginDisabled(true);
+
+        widgets();
+
+        ImGui::EndDisabled();
+        ImGui::EndGroup();
+        ImGuiExtras::tooltip(reason_to_disable);
+    }
+    else {
+        ImGui::BeginGroup();
+
+        widgets();
+
+        ImGui::EndGroup();
+    }
+}
+
 } // namespace Cool::ImGuiExtras

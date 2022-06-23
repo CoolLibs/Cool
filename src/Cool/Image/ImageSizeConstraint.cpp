@@ -29,21 +29,25 @@ img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) cons
         std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<img::Size::DataType>(1))};
 }
 
-void ImageSizeConstraint::imgui()
+bool ImageSizeConstraint::imgui()
 {
+    bool was_triggered = false;
     // Aspect Ratio
-    ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {
-        _aspect_ratio.ImGuiPicker(15754);
+    was_triggered |= ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {
+        was_triggered |= _aspect_ratio.ImGuiPicker(15754);
     });
     // Nb Pixels
-    ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
+    was_triggered |= ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
         auto previewNbPixels = _nb_pixels;
         if (ImGuiExtras::slider_uint32("Number of Pixels", &previewNbPixels, 10'000, 500'000)) {
-            _nb_pixels = previewNbPixels;
+            _nb_pixels    = previewNbPixels;
+            was_triggered = true;
         }
     });
     // Interpolation mode
     ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
+
+    return was_triggered;
 }
 
 } // namespace Cool
