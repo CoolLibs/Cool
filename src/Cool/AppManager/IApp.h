@@ -42,7 +42,7 @@ public:
      * 
      * @param event 
      */
-    virtual void on_keyboard_event(const KeyboardEvent& event) = 0;
+    virtual void on_keyboard_event(const KeyboardEvent& event){};
 
     /**
      * @brief This is where you receive and handle mouse click events.
