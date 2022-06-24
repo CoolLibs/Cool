@@ -23,6 +23,7 @@ public:
 
     void        set_orbit_center(glm::vec3 const& orbit_center, Camera& camera);
     inline void set_distance_to_orbit_center(float distance) { _distance_to_orbit_center = distance; }
+    inline auto get_distance_to_orbit_center() const -> float { return _distance_to_orbit_center; }
     inline void set_state(OrbitalState state) { _state = state; }
 
     // clang-format off

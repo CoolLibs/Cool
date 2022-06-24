@@ -1,5 +1,6 @@
 #include "CameraU.h"
 #include <Cool/Constants/Constants.h>
+#include <glm/gtc/matrix_access.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <smart/smart.hpp>
 
@@ -17,6 +18,15 @@ void reset_roll(Camera& camera)
     camera.rotate_around(camera.position(),
                          roll(camera),
                          camera.front_axis());
+}
+
+void set_translation(Camera& camera, const glm::vec3& new_position)
+{
+    auto transform = camera.transform_matrix();
+    for (int i = 0; i < 3; ++i) {
+        transform[3][i] = new_position[i];
+    }
+    camera.set_transform_matrix(transform);
 }
 
 Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels, img::SizeT<float> image_size)
