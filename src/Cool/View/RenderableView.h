@@ -15,7 +15,7 @@ struct RenderableView {
     RenderTarget render_target;
 
     void update_size(ImageSizeConstraint constraint);
-    void imgui_window(bool aspect_ratio_is_constrained);
+    void imgui_window();
 };
 
 } // namespace Cool

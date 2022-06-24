@@ -35,12 +35,6 @@ Cool::Polaroid DefaultApp::polaroid()
         .render_fn     = _render_fn};
 }
 
-bool DefaultApp::aspect_ratio_is_constrained() const
-{
-    return _exporter.is_exporting() ||
-           _preview_constraint.wants_to_constrain_aspect_ratio();
-}
-
 bool DefaultApp::inputs_are_allowed() const
 {
     return !_exporter.is_exporting();
@@ -55,7 +49,7 @@ void DefaultApp::imgui_windows()
 {
     // Views
     for (auto& view : _views) {
-        view.imgui_window(aspect_ratio_is_constrained());
+        view.imgui_window();
     }
     // Exporter
     _exporter.imgui_windows(polaroid(), _clock.time());
