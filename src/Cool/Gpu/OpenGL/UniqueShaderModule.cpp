@@ -5,7 +5,8 @@ namespace Cool {
 
 static GLenum opengl_shader_kind(ShaderKind kind)
 {
-    switch (kind) {
+    switch (kind)
+    {
     case ShaderKind::Vertex:
         return GL_VERTEX_SHADER;
     case ShaderKind::Fragment:
@@ -38,7 +39,8 @@ UniqueShaderModule::UniqueShaderModule(UniqueShaderModule&& rhs) noexcept
 
 UniqueShaderModule& UniqueShaderModule::operator=(UniqueShaderModule&& rhs) noexcept
 {
-    if (&rhs != this) {
+    if (&rhs != this)
+    {
         _id     = rhs._id;
         rhs._id = decltype(rhs._id){};
     }

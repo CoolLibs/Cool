@@ -15,7 +15,7 @@ private:
     uint64_t _uuid;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)

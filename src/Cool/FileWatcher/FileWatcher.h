@@ -14,7 +14,9 @@ struct FileWatcher_Callbacks {
     /// Callback called whenever the file changes. Receives the currently watched path as a parameter.
     std::function<void(std::string_view)> on_file_changed;
     /// Callback called whenever the path becomes invalid. Receives the currently watched path as a parameter.
-    std::function<void(std::string_view)> on_path_invalid = [](auto path) { Log::ToUser::error("File Watcher", "Invalid file path : \"{}\"", path); };
+    std::function<void(std::string_view)> on_path_invalid = [](auto path) {
+        Log::ToUser::error("File Watcher", "Invalid file path : \"{}\"", path);
+    };
 };
 
 /**
@@ -25,13 +27,13 @@ public:
     explicit FileWatcher(std::filesystem::path path = {}, FileWatcher_Config config = {});
 
     /**
-	 * @brief Must be called on every frame. Checks if the delay is elapsed, if so checks if the file has changed, and if so calls the appropriate callback.
-	 */
+     * @brief Must be called on every frame. Checks if the delay is elapsed, if so checks if the file has changed, and if so calls the appropriate callback.
+     */
     void update(FileWatcher_Callbacks) const;
 
     /**
-	 * @brief The path we are currently watching
-	 */
+     * @brief The path we are currently watching
+     */
     auto path() const -> std::filesystem::path { return _path; }
 
     /**
@@ -40,9 +42,9 @@ public:
     auto path_is_valid() const -> bool { return std::holds_alternative<Valid>(_path_validity); };
 
     /**
-	 * @brief Sets the path to watch.
+     * @brief Sets the path to watch.
      * The appropriate callback will then be called in the next update(), depending on the path validity (either on_file_changed() or on_path_invalid())
-	 */
+     */
     void set_path(std::string_view path);
 
 private:

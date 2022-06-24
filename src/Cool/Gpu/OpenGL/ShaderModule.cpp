@@ -10,7 +10,8 @@ static void validate_shader_module(GLuint id, const std::string& name)
 {
     int result; // NOLINT
     GLDebug(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
-    if (result == GL_FALSE) {
+    if (result == GL_FALSE)
+    {
         GLsizei length; // NOLINT
         GLDebug(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         std::vector<GLchar> error_message;

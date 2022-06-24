@@ -4,7 +4,8 @@ namespace Cool {
 
 void RenderableView::update_size(ImageSizeConstraint constraint)
 {
-    if (view.size()) {
+    if (view.size())
+    {
         render_target.set_size(constraint.applied_to(*view.size()));
     }
 }

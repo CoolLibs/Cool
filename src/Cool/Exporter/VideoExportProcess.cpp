@@ -15,15 +15,18 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
 
 bool VideoExportProcess::update(Polaroid polaroid)
 {
-    if (!_should_stop_asap && _nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence) {
-        if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker()) {
+    if (!_should_stop_asap && _nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence)
+    {
+        if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker())
+        {
             export_frame(polaroid, _folder_path + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
             _nb_frames_sent_to_thread_pool++;
             _clock.update();
         }
         return false;
     }
-    else {
+    else
+    {
         return true;
     }
 }
@@ -35,7 +38,8 @@ void VideoExportProcess::imgui()
     ImGuiExtras::time_formated_hms(static_cast<float>(_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average / static_cast<float>(_thread_pool.size()));
     ImGui::SameLine();
     ImGui::Text("remaining");
-    if (ImGui::Button("Stop exporting")) {
+    if (ImGui::Button("Stop exporting"))
+    {
         _should_stop_asap = true;
     }
 }

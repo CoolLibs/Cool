@@ -7,7 +7,7 @@ class UniqueVAO {
 public:
     UniqueVAO();
     ~UniqueVAO();
-    UniqueVAO(const UniqueVAO&) = delete;
+    UniqueVAO(const UniqueVAO&)            = delete;
     UniqueVAO& operator=(const UniqueVAO&) = delete;
     UniqueVAO(UniqueVAO&& rhs) noexcept;
     UniqueVAO& operator=(UniqueVAO&& rhs) noexcept;

@@ -13,7 +13,7 @@ public:
 
     /**
      * @brief Shows the windows if it is open
-     * 
+     *
      * @param widgets A function that renders all the desired widgets
      */
     void show(std::function<void()> widgets);

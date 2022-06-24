@@ -22,10 +22,12 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     , _config{config}
 {
     // Set callbacks
-    for (auto& window : _window_manager.windows()) {
+    for (auto& window : _window_manager.windows())
+    {
         GLFWwindow* glfw_window = window.glfw();
         glfwSetWindowUserPointer(glfw_window, reinterpret_cast<void*>(this)); // NOLINT
-        if (glfw_window != _window_manager.main_window().glfw()) {
+        if (glfw_window != _window_manager.main_window().glfw())
+        {
             glfwSetKeyCallback(glfw_window, AppManager::key_callback_for_secondary_windows);
             glfwSetWindowCloseCallback(glfw_window, AppManager::window_close_callback_for_secondary_windows);
         }
@@ -48,16 +50,19 @@ void AppManager::run()
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD_Init();
-        while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+        while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+        {
             update();
         }
         should_stop = true;
     }};
-    while (!should_stop) {
+    while (!should_stop)
+    {
         glfwWaitEvents();
     }
 #else
-    while (!glfwWindowShouldClose(_window_manager.main_window().glfw())) {
+    while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+    {
         glfwPollEvents();
         update();
     }
@@ -79,7 +84,8 @@ void AppManager::update()
 static void prepare_windows(WindowManager& window_manager)
 {
 #if defined(COOL_VULKAN)
-    for (auto& window : window_manager.windows()) {
+    for (auto& window : window_manager.windows())
+    {
         window.check_for_swapchain_rebuild();
     }
 #elif defined(COOL_OPENGL)
@@ -104,7 +110,8 @@ static void imgui_new_frame()
 static void imgui_render(IApp& app)
 {
     // Menu bar
-    if (app.wants_to_show_menu_bar()) {
+    if (app.wants_to_show_menu_bar())
+    {
         ImGui::BeginMainMenuBar();
         app.imgui_menus();
         ImGui::EndMainMenuBar();
@@ -119,21 +126,25 @@ static void end_frame(WindowManager& window_manager)
 #if defined(COOL_VULKAN)
     ImDrawData* main_draw_data    = ImGui::GetDrawData();
     const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-    if (!main_is_minimized) {
+    if (!main_is_minimized)
+    {
         window_manager.main_window().FrameRender(main_draw_data);
     }
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
-    if (!main_is_minimized) {
+    if (!main_is_minimized)
+    {
         window_manager.main_window().FramePresent();
     }
 #elif defined(COOL_OPENGL)
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) { // NOLINT
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) // NOLINT
+    {
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
@@ -145,7 +156,8 @@ static void end_frame(WindowManager& window_manager)
 
 static void imgui_dockspace()
 {
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) { // NOLINT
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) // NOLINT
+    {
         constexpr ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
         constexpr ImGuiWindowFlags   window_flags    = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
@@ -186,7 +198,8 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
     app_manager._window_manager.main_window().check_for_fullscreen_toggles(key, scancode, action, mods);
-    if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed()) {
+    if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed())
+    {
         app_manager._app.on_keyboard_event({.key      = key,
                                             .scancode = scancode,
                                             .action   = action,
@@ -204,7 +217,8 @@ void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int
 void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_window)
 {
     Window& window = get_app_manager(glfw_window)._window_manager.find(glfw_window);
-    if (window.is_visible() && glfwWindowShouldClose(window.glfw())) {
+    if (window.is_visible() && glfwWindowShouldClose(window.glfw()))
+    {
         window.set_visibility(false);
         glfwSetWindowShouldClose(window.glfw(), GLFW_FALSE);
     }
@@ -214,7 +228,8 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed()) {
+    if (app_manager._app.inputs_are_allowed())
+    {
         app_manager._app.on_mouse_button({.position = mouse_position(window),
                                           .button   = button,
                                           .action   = action,
@@ -226,7 +241,8 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
 {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed()) {
+    if (app_manager._app.inputs_are_allowed())
+    {
         app_manager._app.on_mouse_scroll({.position = mouse_position(window),
                                           .dx       = static_cast<float>(xoffset),
                                           .dy       = static_cast<float>(yoffset)});
@@ -237,7 +253,8 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
 {
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed()) {
+    if (app_manager._app.inputs_are_allowed())
+    {
         app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
     }
 }

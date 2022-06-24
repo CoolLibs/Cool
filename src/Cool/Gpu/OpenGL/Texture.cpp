@@ -18,7 +18,8 @@ Texture::Texture(Texture&& rhs) noexcept
 
 Texture& Texture::operator=(Texture&& rhs) noexcept
 {
-    if (this != &rhs) {
+    if (this != &rhs)
+    {
         m_textureID     = rhs.m_textureID;
         rhs.m_textureID = static_cast<GLuint>(-1);
     }
@@ -67,7 +68,8 @@ GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, 
 void Texture::genTexture(GLint interpolationMode, GLint wrapMode)
 {
 #if DEBUG
-    if (m_textureID != static_cast<GLuint>(-1)) {
+    if (m_textureID != static_cast<GLuint>(-1))
+    {
         Log::error("[Texture::genTexture] You have already generated that texture !");
     }
 #endif
@@ -78,7 +80,8 @@ void Texture::uploadRGB(int width, int height, unsigned char* data)
 {
 #if DEBUG
     m_bDataUploaded = true;
-    if (m_textureID == static_cast<GLuint>(-1)) {
+    if (m_textureID == static_cast<GLuint>(-1))
+    {
         Log::error("[Texture::uploadRGB] You haven't generated that texture yet !");
     }
 #endif
@@ -91,7 +94,8 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 {
 #if DEBUG
     m_bDataUploaded = true;
-    if (m_textureID == static_cast<GLuint>(-1)) {
+    if (m_textureID == static_cast<GLuint>(-1))
+    {
         Log::error("[Texture::uploadRGBA] You haven't generated that texture yet !");
     }
 #endif
@@ -103,10 +107,12 @@ void Texture::uploadRGBA(int width, int height, unsigned char* data)
 void Texture::attachToSlot(int slot) const
 {
 #if DEBUG
-    if (m_textureID == static_cast<GLuint>(-1)) {
+    if (m_textureID == static_cast<GLuint>(-1))
+    {
         Log::error("[Texture::attachToSlot] You haven't generated that texture yet !");
     }
-    if (!m_bDataUploaded) {
+    if (!m_bDataUploaded)
+    {
         Log::error("[Texture::attachToSlot] You must upload some data (at least a width and height) before using the texture.");
     }
 #endif

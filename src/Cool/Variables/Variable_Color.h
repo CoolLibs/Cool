@@ -11,7 +11,7 @@ struct Color {
     friend auto operator==(const Color&, const Color&) -> bool = default;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
@@ -27,7 +27,7 @@ struct VariableMetadata<Color> {
     friend auto operator<=>(const VariableMetadata<Color>&, const VariableMetadata<Color>&) = default;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)

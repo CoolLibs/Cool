@@ -7,12 +7,14 @@ namespace Cool::ClockU {
 
 void imgui_timeline(auto& clock)
 {
-    if (ImGuiExtras::button_with_icon((clock.is_playing() ? Icons::pause() : Icons::play()).imgui_texture_id())) {
+    if (ImGuiExtras::button_with_icon((clock.is_playing() ? Icons::pause() : Icons::play()).imgui_texture_id()))
+    {
         clock.toggle_play_pause();
     }
     ImGui::SameLine();
     float t = clock.time();
-    if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f")) {
+    if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f"))
+    {
         clock.set_time(t);
     }
 }

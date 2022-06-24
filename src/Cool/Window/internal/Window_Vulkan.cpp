@@ -23,10 +23,12 @@ Window_Vulkan::~Window_Vulkan()
 
 void Window_Vulkan::check_for_swapchain_rebuild()
 {
-    if (_vulkan_window_state.g_SwapChainRebuild) {
+    if (_vulkan_window_state.g_SwapChainRebuild)
+    {
         int width, height;
         glfwGetFramebufferSize(glfw(), &width, &height);
-        if (width > 0 && height > 0) {
+        if (width > 0 && height > 0)
+        {
             ImGui_ImplVulkan_SetMinImageCount(_vulkan_window_state.g_MinImageCount);
             _vulkan_window_state.g_MainWindowData.Width  = width;
             _vulkan_window_state.g_MainWindowData.Height = height;
@@ -45,7 +47,8 @@ void Window_Vulkan::FrameRender(ImDrawData* draw_data)
     VkSemaphore image_acquired_semaphore  = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
     VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
     err                                   = vkAcquireNextImageKHR(Vulkan::context().g_Device, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
-    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR) {
+    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+    {
         _vulkan_window_state.g_SwapChainRebuild = true;
         return;
     }
@@ -118,7 +121,8 @@ void Window_Vulkan::FramePresent()
     info.pSwapchains                           = &wd->Swapchain;
     info.pImageIndices                         = &wd->FrameIndex;
     VkResult err                               = vkQueuePresentKHR(Vulkan::context().g_Queue, &info);
-    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR) {
+    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+    {
         _vulkan_window_state.g_SwapChainRebuild = true;
         return;
     }
@@ -142,13 +146,15 @@ void Window_Vulkan::rebuild_swapchain()
 
 void Window_Vulkan::cap_framerate_if(bool should_cap)
 {
-    if (_present_mode_mailbox_is_avaible) {
+    if (_present_mode_mailbox_is_avaible)
+    {
         _vulkan_window_state.g_MainWindowData.PresentMode = should_cap ? VK_PRESENT_MODE_FIFO_KHR
                                                                        : VK_PRESENT_MODE_MAILBOX_KHR;
         vkDeviceWaitIdle(Vulkan::context().g_Device); // Safety measure but we could probably do more efficient (who cares though ?)
         rebuild_swapchain();
     }
-    else {
+    else
+    {
         Log::warn("[Window_Vulkan::cap_framerate] Cannot un-cap framerate because VK_PRESENT_MODE_MAILBOX_KHR is not available.");
     }
 }

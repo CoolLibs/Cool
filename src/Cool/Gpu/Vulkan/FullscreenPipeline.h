@@ -9,7 +9,7 @@ namespace Cool::Vulkan {
 class FullscreenPipeline {
 public:
     /**
-     * @param name The name that will be displayed in the error message if the compilation fails 
+     * @param name The name that will be displayed in the error message if the compilation fails
      */
     FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name);
 

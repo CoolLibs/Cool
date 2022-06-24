@@ -13,17 +13,21 @@ bool imgui(img::Size& size)
         auto restore_item_width = sg::make_scope_guard([]() { ImGui::PopItemWidth(); });
 
         auto w = size.width();
-        if (ImGuiExtras::input_uint("W", &w)) {
+        if (ImGuiExtras::input_uint("W", &w))
+        {
             was_used = true;
-            if (w >= 1) {
+            if (w >= 1)
+            {
                 size.set_width(w);
             }
         }
         ImGui::SameLine();
         auto h = size.height();
-        if (ImGuiExtras::input_uint("H", &h)) {
+        if (ImGuiExtras::input_uint("H", &h))
+        {
             was_used = true;
-            if (h >= 1) {
+            if (h >= 1)
+            {
                 size.set_height(h);
             }
         }

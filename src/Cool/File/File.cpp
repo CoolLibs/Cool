@@ -31,10 +31,12 @@ std::string File::file_name_without_extension(std::string_view file_path)
 std::string File::extension(std::string_view file_path)
 {
     auto pos = file_path.find_last_of('.');
-    if (pos < file_path.size()) {
+    if (pos < file_path.size())
+    {
         return std::string{file_path.substr(pos, file_path.size())};
     }
-    else {
+    else
+    {
         return "";
     }
 }
@@ -42,21 +44,25 @@ std::string File::extension(std::string_view file_path)
 std::string File::whithout_extension(std::string_view file_path)
 {
     auto pos = file_path.find_last_of('.');
-    if (pos < file_path.size()) {
+    if (pos < file_path.size())
+    {
         return std::string{file_path.substr(0, pos)};
     }
-    else {
+    else
+    {
         return std::string{file_path};
     }
 }
 
 std::string File::whithout_file_name(std::string_view file_path)
 {
-    if (file_path.find_last_of('.') < file_path.size()) { // There is a "." of an extension, so the thing after the last "/" must be a file name
+    if (file_path.find_last_of('.') < file_path.size()) // There is a "." of an extension, so the thing after the last "/" must be a file name
+    {
         auto pos = file_path.find_last_of("/\\");
         return std::string{file_path.substr(0, pos)};
     }
-    else {
+    else
+    {
         return std::string{file_path};
     }
 }
@@ -65,7 +71,8 @@ std::string File::to_string(std::string_view file_path)
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(file_path.data());
-    if (!stream.is_open()) {
+    if (!stream.is_open())
+    {
         Log::ToUser::warn("File::to_string", "Failed to open file : \"{}\"", file_path);
         return "";
     }
@@ -82,12 +89,15 @@ std::string File::to_string(std::string_view file_path)
 
 bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
 {
-    if (!exists(folder_path)) {
-        try {
+    if (!exists(folder_path))
+    {
+        try
+        {
             std::filesystem::create_directories(folder_path);
             return true;
         }
-        catch (const std::exception& e) {
+        catch (const std::exception& e)
+        {
             Log::ToUser::warn("File::create_folders_if_they_dont_exist", "Failed :\n{}", e.what());
             return false;
         }
@@ -105,14 +115,17 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
     auto [k, base_name] = [&]() {
         if (auto pos = file_name.find_last_of('(');
-            pos != std::string::npos) {
+            pos != std::string::npos)
+        {
             auto end_pos = file_name.find_last_of(')');
-            try {
+            try
+            {
                 return std::make_pair(
                     std::stoi(std::string{file_name.substr(pos + 1, end_pos - pos)}),
                     std::string{file_name.substr(0, pos)});
             }
-            catch (std::exception&) {
+            catch (std::exception&)
+            {
             }
         }
         return std::make_pair(0, std::string{file_name});
@@ -120,7 +133,8 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
 
     // Find an available name
     auto out_name = std::string{file_name};
-    while (File::exists(std::string{folder_path} + "/" + out_name + std::string{extension})) {
+    while (File::exists(std::string{folder_path} + "/" + out_name + std::string{extension}))
+    {
         out_name = base_name + "(" + std::to_string(k) + ")";
         k++;
     }

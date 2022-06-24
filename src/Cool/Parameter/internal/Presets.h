@@ -23,7 +23,7 @@ struct ValuesWithUUID {
     }
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
@@ -67,23 +67,27 @@ public:
     bool imgui_dropdown(const char* label, T* setting_values, std::function<void()> on_value_change)
     {
         bool b = false;
-        if (ImGui::BeginCombo(label, current_name().c_str(), 0)) {
-            for (size_t i = 0; i < _presets.size(); i++) {
-                if (ImGui::Selectable(_presets[i].name.c_str(), false)) {
-                    if (i != _current_preset_idx) {
+        if (ImGui::BeginCombo(label, current_name().c_str(), 0))
+        {
+            for (size_t i = 0; i < _presets.size(); i++)
+            {
+                if (ImGui::Selectable(_presets[i].name.c_str(), false))
+                {
+                    if (i != _current_preset_idx)
+                    {
                         const auto   cur_setting_values = *setting_values;
                         const auto   new_setting_values = _presets[i].values_with_uuid.values;
                         const auto   cur_uuid           = current_uuid();
                         const auto   new_uuid           = _presets[i].values_with_uuid.uuid;
                         const auto   last_uuid_copy     = last_uuid();
                         const Action action             = {
-                            [&, setting_values, new_setting_values, new_uuid, on_value_change]() {
+                                        [&, setting_values, new_setting_values, new_uuid, on_value_change]() {
                                 *setting_values = new_setting_values;
                                 on_value_change();
                                 compute_current_preset_idx(new_uuid);
                                 _last_uuid = new_uuid;
                             },
-                            [&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
+                                        [&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
                                 *setting_values = cur_setting_values;
                                 on_value_change();
                                 compute_current_preset_idx(cur_uuid);
@@ -106,25 +110,32 @@ public:
     {
         bool b = imgui_dropdown("Presets", setting_values, on_value_change);
         // Save preset
-        if (_current_preset_idx == -1) {
-            if (_name_available) {
-                if (!_name_contains_dots) {
-                    if (ImGui::Button("Save settings")) {
+        if (_current_preset_idx == -1)
+        {
+            if (_name_available)
+            {
+                if (!_name_contains_dots)
+                {
+                    if (ImGui::Button("Save settings"))
+                    {
                         save_preset(*setting_values);
                     }
                     ImGui::SameLine();
                     ImGui::Text("as");
                 }
-                else {
+                else
+                {
                     ImGui::warning_text("You can't have dots (.) in the name");
                 }
             }
-            else {
+            else
+            {
                 ImGui::warning_text("Name already used :");
             }
             ImGui::SameLine();
             ImGui::PushID(138571);
-            if (ImGui::InputText("", &_save_preset_as)) {
+            if (ImGui::InputText("", &_save_preset_as))
+            {
                 _name_available     = !File::exists(full_path(_save_preset_as)) && _save_preset_as.compare(_placeholder_name);
                 _name_contains_dots = _save_preset_as.find(".") != std::string::npos;
             }
@@ -132,11 +143,15 @@ public:
             _rename_popup_open_this_frame = false;
         }
         // Rename / Delete preset
-        else {
+        else
+        {
             ImGui::invisible_wrapper_around_previous_line("ovsidhsdh"); // Necessary otherwise we can't open a context menu on the dropdown
-            if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::begin_popup_context_menu_from_button("Rename")) {
-                    if (!_rename_popup_open_last_frame) {
+            if (ImGui::BeginPopupContextItem())
+            {
+                if (ImGui::begin_popup_context_menu_from_button("Rename"))
+                {
+                    if (!_rename_popup_open_last_frame)
+                    {
                         _new_preset_name = current_name();
                     }
                     ImGui::PushID(16879654123594);
@@ -145,11 +160,14 @@ public:
                     ImGui::EndPopup();
                     _rename_popup_open_this_frame = true;
                 }
-                else {
+                else
+                {
                     on_rename_popup_close();
                 }
-                if (ImGui::Button("Delete")) {
-                    if (boxer::show(("\"" + current_name() + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes) {
+                if (ImGui::Button("Delete"))
+                {
+                    if (boxer::show(("\"" + current_name() + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes)
+                    {
                         std::filesystem::remove(full_path(current_name()));
                         _presets.erase(_current_preset_idx + _presets.begin());
                         find_placeholder_name();
@@ -158,7 +176,8 @@ public:
                 }
                 ImGui::EndPopup();
             }
-            else {
+            else
+            {
                 on_rename_popup_close();
             }
         }
@@ -184,8 +203,10 @@ private:
             return String::to_lower(l.name) < String::to_lower(r.name);
         });
         // Put Default first
-        for (size_t i = 0; i < _presets.size(); ++i) {
-            if (!_presets[i].name.compare("Default")) {
+        for (size_t i = 0; i < _presets.size(); ++i)
+        {
+            if (!_presets[i].name.compare("Default"))
+            {
                 Preset<T> prst = _presets[i];
                 std::copy_backward(_presets.begin(), i + _presets.begin(), i + 1 + _presets.begin());
                 _presets[0] = prst;
@@ -199,21 +220,26 @@ private:
     void on_rename_popup_close()
     {
         _rename_popup_open_this_frame = false;
-        if (_rename_popup_open_last_frame) {
-            if (_new_preset_name.find(".") == std::string::npos) {
+        if (_rename_popup_open_last_frame)
+        {
+            if (_new_preset_name.find(".") == std::string::npos)
+            {
                 const std::string new_path = full_path(_new_preset_name);
-                if (!File::exists(new_path)) {
+                if (!File::exists(new_path))
+                {
                     std::filesystem::rename(
                         full_path(current_name()),
                         new_path);
                     _presets[_current_preset_idx].name = _new_preset_name;
                     sort();
                 }
-                else {
+                else
+                {
                     boxer::show(("\"" + _new_preset_name + "\" already exists.").c_str(), "Renaming failed", boxer::Style::Warning);
                 }
             }
-            else {
+            else
+            {
                 boxer::show("You can't have dots (.) in the name.", "Renaming failed", boxer::Style::Warning);
             }
         }
@@ -222,8 +248,10 @@ private:
     void compute_current_preset_idx(long int uuid)
     {
         _current_preset_idx = -1;
-        for (size_t i = 0; i < _presets.size(); ++i) {
-            if (_presets[i].values_with_uuid.uuid == uuid) {
+        for (size_t i = 0; i < _presets.size(); ++i)
+        {
+            if (_presets[i].values_with_uuid.uuid == uuid)
+            {
                 _current_preset_idx = i;
                 break;
             }
@@ -234,7 +262,8 @@ private:
     {
         int         i    = 1;
         std::string name = "MyPreset";
-        while (File::exists(full_path(name))) {
+        while (File::exists(full_path(name)))
+        {
             name = "MyPreset(" + std::to_string(i) + ")";
             i++;
         }
@@ -243,19 +272,24 @@ private:
 
     void load_presets()
     {
-        if (File::exists(_folder_path)) {
-            for (const auto& file : std::filesystem::directory_iterator(_folder_path)) {
-                if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension)) {
+        if (File::exists(_folder_path))
+        {
+            for (const auto& file : std::filesystem::directory_iterator(_folder_path))
+            {
+                if (!file.path().filename().replace_extension("").replace_extension(".").string().compare(_file_extension))
+                {
                     std::string       name = file.path().filename().replace_extension("").extension().string().erase(0, 1);
                     ValuesWithUUID<T> values_with_uuid;
                     std::ifstream     is(file.path());
-                    try {
+                    try
+                    {
                         cereal::JSONInputArchive archive(is);
                         archive(
                             values_with_uuid);
                         _presets.push_back({name, values_with_uuid.values, values_with_uuid.uuid});
                     }
-                    catch (...) {
+                    catch (...)
+                    {
                         Log::ToUser::warn("Load Preset", "Invalid file '{}'\n{}", file.path().string(), e.what());
                     }
                 }

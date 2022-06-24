@@ -14,7 +14,8 @@ bool ViewController_Orbital::ImGui(Camera& camera)
     const auto prev_mode = _mode;
 
     int current_combo_item = [&]() {
-        switch (_mode) {
+        switch (_mode)
+        {
         case Mode::Turntable:
             return 0;
         case Mode::Trackball:
@@ -26,8 +27,10 @@ bool ViewController_Orbital::ImGui(Camera& camera)
             return 0;
         }
     }();
-    if (ImGui::Combo("Orbit Mode", &current_combo_item, " Turntable\0 Trackball\0 AxisFree\0\0")) {
-        switch (current_combo_item) {
+    if (ImGui::Combo("Orbit Mode", &current_combo_item, " Turntable\0 Trackball\0 AxisFree\0\0"))
+    {
+        switch (current_combo_item)
+        {
         case 0:
             _mode = Mode::Turntable;
             break;
@@ -38,12 +41,14 @@ bool ViewController_Orbital::ImGui(Camera& camera)
             _mode = Mode::AxisFree;
             break;
         }
-        if (prev_mode == Mode::AxisFree && _mode != Mode::AxisFree) {
+        if (prev_mode == Mode::AxisFree && _mode != Mode::AxisFree)
+        {
             CameraU::reset_roll(camera);
         }
         return true;
     }
-    else {
+    else
+    {
         return false;
     }
 }

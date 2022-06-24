@@ -4,7 +4,8 @@
 
 static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind)
 {
-    switch (shader_kind) {
+    switch (shader_kind)
+    {
     case Cool::ShaderKind::Vertex:
         return shaderc_shader_kind::shaderc_vertex_shader;
     case Cool::ShaderKind::Fragment:
@@ -29,7 +30,8 @@ shaderc::SpvCompilationResult to_spirv(const ShaderDescription& shader_descripti
 
     auto res = compiler.CompileGlslToSpv(shader_description.source_code, shader_kind_cool2shaderc(shader_description.kind), "Unknown", options);
 
-    if (!res.GetErrorMessage().empty()) {
+    if (!res.GetErrorMessage().empty())
+    {
         Log::warn(res.GetErrorMessage());
     }
 

@@ -5,7 +5,8 @@ namespace Cool {
 
 bool Input::matches_char(const char* character, int key)
 {
-    if (key == -1) {
+    if (key == -1)
+    {
         return false;
     }
     const char* name = glfwGetKeyName(key, 0);

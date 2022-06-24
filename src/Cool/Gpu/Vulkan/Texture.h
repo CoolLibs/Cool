@@ -21,7 +21,7 @@ public:
 
     /**
      * @brief Recreates the underlying image with a new size. Warning : the data is lost and the image is reset to black !
-     * 
+     *
      * @param size
      */
     void resize(img::Size size);

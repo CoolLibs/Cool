@@ -24,9 +24,11 @@ void FrameBuffer::setSize(img::Size size)
 #if DEBUG
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
-    if (status != GL_FRAMEBUFFER_COMPLETE) {
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
         const auto statusStr = [status]() {
-            switch (status) {
+            switch (status)
+            {
             case GL_FRAMEBUFFER_UNDEFINED:
                 return "GL_FRAMEBUFFER_UNDEFINED";
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:

@@ -41,7 +41,10 @@ vec3 hash_minus_1_to_1(vec3 p)
     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
 
-vec2 hash_0_to_1_1D_to_2D(float n) { return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453123, 22578.1459123)); }
+vec2 hash_0_to_1_1D_to_2D(float n)
+{
+    return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453123, 22578.1459123));
+}
 
 vec2 hash_0_to_1_2D_to_2D(vec2 p)
 {

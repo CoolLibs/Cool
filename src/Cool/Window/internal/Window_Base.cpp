@@ -15,7 +15,8 @@ Window_Base::Window_Base(Window_Base&& o) noexcept
 
 Window_Base& Window_Base::operator=(Window_Base&& o) noexcept
 {
-    if (this != &o) {
+    if (this != &o)
+    {
         _glfw_window   = o._glfw_window;
         o._glfw_window = nullptr;
     }
@@ -24,19 +25,23 @@ Window_Base& Window_Base::operator=(Window_Base&& o) noexcept
 
 Window_Base::~Window_Base()
 {
-    if (_glfw_window != nullptr) { // Could have been moved
+    if (_glfw_window != nullptr) // Could have been moved
+    {
         glfwDestroyWindow(_glfw_window);
     }
 }
 
 bool Window_Base::check_for_fullscreen_toggles(int key, int /*scancode*/, int action, int /*mods*/)
 {
-    if (action == GLFW_RELEASE) {
-        if (key == GLFW_KEY_F11) {
+    if (action == GLFW_RELEASE)
+    {
+        if (key == GLFW_KEY_F11)
+        {
             switch_fullscreen();
             return true;
         }
-        if (key == GLFW_KEY_ESCAPE && _is_fullscreen) {
+        if (key == GLFW_KEY_ESCAPE && _is_fullscreen)
+        {
             escape_fullscreen();
             return true;
         }
@@ -46,10 +51,12 @@ bool Window_Base::check_for_fullscreen_toggles(int key, int /*scancode*/, int ac
 
 void Window_Base::switch_fullscreen()
 {
-    if (_is_fullscreen) {
+    if (_is_fullscreen)
+    {
         escape_fullscreen();
     }
-    else {
+    else
+    {
         GLFWmonitor*       monitor = current_monitor();
         const GLFWvidmode* mode    = glfwGetVideoMode(monitor);
         glfwGetWindowPos(_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
@@ -64,7 +71,8 @@ void Window_Base::switch_fullscreen()
 
 void Window_Base::escape_fullscreen()
 {
-    if (_is_fullscreen) {
+    if (_is_fullscreen)
+    {
         glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, 0);
         _is_fullscreen = false;
     }
@@ -73,10 +81,12 @@ void Window_Base::escape_fullscreen()
 void Window_Base::set_visibility(bool is_visible)
 {
     _is_visible = is_visible;
-    if (is_visible) {
+    if (is_visible)
+    {
         glfwShowWindow(_glfw_window);
     }
-    else {
+    else
+    {
         escape_fullscreen(); // If fullscreen, glfwHideWindow does nothing
         glfwHideWindow(_glfw_window);
     }
@@ -86,7 +96,8 @@ bool Window_Base::imgui_cap_framerate()
 {
     bool should_cap_framerate = framerate_is_capped();
     bool checkbox_triggered   = ImGui::Checkbox("Framerate capped", &should_cap_framerate);
-    if (checkbox_triggered) {
+    if (checkbox_triggered)
+    {
         cap_framerate_if(should_cap_framerate);
     }
     return checkbox_triggered;
@@ -110,17 +121,18 @@ GLFWmonitor* Window_Base::current_monitor() const
     glfwGetWindowSize(_glfw_window, &ww, &wh);
     monitors = glfwGetMonitors(&nmonitors);
 
-    for (i = 0; i < nmonitors; i++) {
+    for (i = 0; i < nmonitors; i++)
+    {
         mode = glfwGetVideoMode(monitors[i]);
         glfwGetMonitorPos(monitors[i], &mx, &my);
         mw = mode->width;
         mh = mode->height;
 
-        overlap =
-            std::max(0, std::min(wx + ww, mx + mw) - std::max(wx, mx)) *
-            std::max(0, std::min(wy + wh, my + mh) - std::max(wy, my));
+        overlap = std::max(0, std::min(wx + ww, mx + mw) - std::max(wx, mx)) *
+                  std::max(0, std::min(wy + wh, my + mh) - std::max(wy, my));
 
-        if (bestoverlap < overlap) {
+        if (bestoverlap < overlap)
+        {
             bestoverlap = overlap;
             bestmonitor = monitors[i];
         }

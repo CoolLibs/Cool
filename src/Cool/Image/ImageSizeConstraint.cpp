@@ -6,10 +6,12 @@ namespace Cool {
 
 img::Size ImageSizeConstraint::applied_to(img::Size frame_size) const
 {
-    if (wants_to_constrain_size()) {
+    if (wants_to_constrain_size())
+    {
         return compute_constraints_on(frame_size);
     }
-    else {
+    else
+    {
         return frame_size;
     }
 }
@@ -39,7 +41,8 @@ bool ImageSizeConstraint::imgui()
     // Nb Pixels
     was_triggered |= ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
         auto previewNbPixels = _nb_pixels;
-        if (ImGuiExtras::slider_uint32("Number of Pixels", &previewNbPixels, 10'000, 500'000)) {
+        if (ImGuiExtras::slider_uint32("Number of Pixels", &previewNbPixels, 10'000, 500'000))
+        {
             _nb_pixels    = previewNbPixels;
             was_triggered = true;
         }

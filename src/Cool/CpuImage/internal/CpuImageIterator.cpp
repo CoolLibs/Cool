@@ -16,7 +16,8 @@ Pixel CpuImageIterator::operator*() const
 void CpuImageIterator::operator++()
 {
     _x++;
-    if (_x == _image.width()) {
+    if (_x == _image.width())
+    {
         _x = 0;
         _y++;
     }

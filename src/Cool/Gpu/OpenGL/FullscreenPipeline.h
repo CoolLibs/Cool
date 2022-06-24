@@ -10,7 +10,7 @@ class FullscreenPipeline {
 public:
     FullscreenPipeline() = default;
     /**
-     * @param name The name that will be displayed in the error message if the compilation fails 
+     * @param name The name that will be displayed in the error message if the compilation fails
      */
     FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name);
 
@@ -18,7 +18,7 @@ public:
 
     /**
      * @brief Compiles the fragment shader source code and creates a new pipeline using this new shader.
-     * @param name The name that will be displayed in the error message if the compilation fails 
+     * @param name The name that will be displayed in the error message if the compilation fails
      */
     void compile(std::string_view fragment_shader_source_code, std::string_view name);
     void reset() { _shader.reset(); }

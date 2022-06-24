@@ -7,27 +7,27 @@ namespace Cool {
 class Random {
 public:
     /**
-	 * @brief 
-	 * 
-	 * @return A random float between 0 and 1 
-	 */
+     * @brief
+     *
+     * @return A random float between 0 and 1
+     */
     static float range_0to1();
 
     /**
-	 * @brief
-	 * 
-	 * @return A random float between -1 and 1 
-	 */
+     * @brief
+     *
+     * @return A random float between -1 and 1
+     */
     static float range_minus1to1();
 
     /**
-	 * @return A random uint64_t (between 0 and std::numeric_limits<uint64_t>::max())
-	 */
+     * @return A random uint64_t (between 0 and std::numeric_limits<uint64_t>::max())
+     */
     static uint64_t uint64();
 
     /**
-	 * @return Any random int
-	 */
+     * @return Any random int
+     */
     static int integer();
 
     /// Returns a random int between min (included) and max (included)

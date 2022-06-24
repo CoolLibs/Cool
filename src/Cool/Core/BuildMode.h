@@ -11,7 +11,8 @@ enum class BuildMode {
 
 [[nodiscard]] inline constexpr bool is_building_as(BuildMode build_mode)
 {
-    switch (build_mode) {
+    switch (build_mode)
+    {
     case BuildMode::Debug:
 #if DEBUG
         return true;
@@ -28,7 +29,8 @@ enum class BuildMode {
         return true;
     case BuildMode::None:
         return false;
-    default: {
+    default:
+    {
         Log::error("[is_building_as] Unknown enum value");
         return false;
     }

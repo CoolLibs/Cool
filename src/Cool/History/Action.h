@@ -14,8 +14,10 @@ public:
     inline void revert() const { _revert(); }
 
 private:
-    std::function<void()> _apply  = []() {};
-    std::function<void()> _revert = []() {};
+    std::function<void()> _apply = []() {
+    };
+    std::function<void()> _revert = []() {
+    };
 };
 
 } // namespace Cool

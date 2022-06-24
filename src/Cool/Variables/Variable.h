@@ -19,7 +19,7 @@ struct Variable {
     VariableMetadata<Value> default_metadata{metadata};
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
@@ -33,10 +33,14 @@ private:
 };
 
 struct ImGuiVariableCallbacks {
-    std::function<void()> on_value_changed             = []() {};
-    std::function<void()> on_metadata_changed          = []() {};
-    std::function<void()> on_value_editing_finished    = []() {};
-    std::function<void()> on_metadata_editing_finished = []() {};
+    std::function<void()> on_value_changed = []() {
+    };
+    std::function<void()> on_metadata_changed = []() {
+    };
+    std::function<void()> on_value_editing_finished = []() {
+    };
+    std::function<void()> on_metadata_editing_finished = []() {
+    };
 };
 
 /// Returns true iff the `value` of the variable changed
@@ -46,16 +50,19 @@ auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks c
 {
     bool b = false;
     ImGuiExtras::maybe_disabled(var.value == var.default_value, "Disabled because it is already equal to the default value", [&]() {
-        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value) + ")").c_str())) {
+        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value) + ")").c_str()))
+        {
             var.value = var.default_value;
             b         = true;
             callbacks.on_value_changed();
             callbacks.on_value_editing_finished();
         }
     });
-    if (var.metadata != var.default_metadata) {
+    if (var.metadata != var.default_metadata)
+    {
         ImGui::SameLine();
-        if (ImGui::Button("Reset Metadata")) {
+        if (ImGui::Button("Reset Metadata"))
+        {
             var.metadata = var.default_metadata;
             callbacks.on_metadata_changed();
             callbacks.on_metadata_editing_finished();
@@ -75,28 +82,33 @@ auto imgui(Variable<Value>&       var,
     ImGui::PushID(&var);
     ImGui::BeginGroup();
     {
-        if (imgui_widget(var)) {
+        if (imgui_widget(var))
+        {
             b = true;
             callbacks.on_value_changed();
         }
     }
     ImGui::EndGroup();
     ImGui::PopID();
-    if (ImGui::IsItemDeactivatedAfterEdit()) {
+    if (ImGui::IsItemDeactivatedAfterEdit())
+    {
         callbacks.on_value_editing_finished();
     }
 
-    if (ImGui::BeginPopupContextItem(var.name.c_str())) {
+    if (ImGui::BeginPopupContextItem(var.name.c_str()))
+    {
         ImGui::PushID(&var + 1);
         ImGui::BeginGroup();
         {
-            if (imgui_widget(var.metadata)) {
+            if (imgui_widget(var.metadata))
+            {
                 callbacks.on_metadata_changed();
             }
         }
         ImGui::EndGroup();
         ImGui::PopID();
-        if (ImGui::IsItemDeactivatedAfterEdit()) {
+        if (ImGui::IsItemDeactivatedAfterEdit())
+        {
             callbacks.on_metadata_editing_finished();
         }
         b |= imgui_variable_reset_buttons(var, callbacks);

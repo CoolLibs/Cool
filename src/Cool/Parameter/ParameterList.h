@@ -6,7 +6,7 @@ namespace Cool {
 
 /**
  * @brief Wrapper around a std::vector<Parameter::Any>
- * 
+ *
  */
 class ParameterList {
 public:
@@ -14,7 +14,7 @@ public:
 
     /**
      * @brief Displays all the imgui widgets of all the parameters
-     * 
+     *
      * @param on_value_change Callback that is triggered whenever one of the parameters changes
      */
     void imgui(std::function<void()> on_value_change = []() {});

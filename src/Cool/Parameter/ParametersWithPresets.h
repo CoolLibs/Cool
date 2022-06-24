@@ -8,19 +8,19 @@ namespace Cool {
 
 /**
  * @brief Wraps a struct made of Parameter::xxx and handles presets for that struct
- * 
+ *
  * @tparam ParameterValues This struct must implement a "bool imgui(Action on_edit_ended, std::function<void()> on_value_change)" method as well as the cereal serialization
  */
 template<typename ParameterValues>
 class ParametersWithPresets {
 public:
     /**
-	 * @brief 
-	 * 
-	 * @param file_extension The common identifier for the files storing the presets
-	 * @param folder_path The folder where the presets will be stored
-	 * @param on_value_change A callback that will be trigerred whenever a value changes
-	 */
+     * @brief
+     *
+     * @param file_extension The common identifier for the files storing the presets
+     * @param folder_path The folder where the presets will be stored
+     * @param on_value_change A callback that will be trigerred whenever a value changes
+     */
     ParametersWithPresets(
         const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
         : _presets(file_extension, folder_path)
@@ -29,10 +29,10 @@ public:
     }
 
     /**
-	 * @brief Displays the imgui widgets for all the parameters, as well as the presets menu
-	 * 
-	 * @return true iff a value was modified from the UI. /!\ You should rely on the callback passed in the constructor to check for value changes, because this boolean will not be set to true when you move around the history, but the callback will be triggered properly
-	 */
+     * @brief Displays the imgui widgets for all the parameters, as well as the presets menu
+     *
+     * @return true iff a value was modified from the UI. /!\ You should rely on the callback passed in the constructor to check for value changes, because this boolean will not be set to true when you move around the history, but the callback will be triggered properly
+     */
     bool imgui()
     {
         const auto   uuid   = _presets.last_uuid();
@@ -47,11 +47,13 @@ public:
             },
         };
         bool b = false;
-        if (b |= _values.imgui(action, _on_value_change)) {
+        if (b |= _values.imgui(action, _on_value_change))
+        {
             _presets.set_to_placeholder_setting();
         }
         ImGui::Separator();
-        if (b |= _presets.imgui(&_values, _on_value_change)) {
+        if (b |= _presets.imgui(&_values, _on_value_change))
+        {
             _on_value_change();
         }
         return b;
@@ -65,7 +67,7 @@ private:
     std::function<void()>    _on_value_change;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)

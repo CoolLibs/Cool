@@ -9,10 +9,12 @@ static const std::regex includes{R"(#include *\"(.*)\")"};
 inline auto file_path_to_include(const std::string& text) -> std::optional<std::string>
 {
     std::smatch matches;
-    if (std::regex_search(text, matches, includes)) {
+    if (std::regex_search(text, matches, includes))
+    {
         return matches[1];
     }
-    else {
+    else
+    {
         return std::nullopt;
     }
 }

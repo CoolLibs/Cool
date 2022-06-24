@@ -7,7 +7,7 @@ class UniqueShader {
 public:
     UniqueShader();
     ~UniqueShader();
-    UniqueShader(const UniqueShader&) = delete;
+    UniqueShader(const UniqueShader&)            = delete;
     UniqueShader& operator=(const UniqueShader&) = delete;
     UniqueShader(UniqueShader&& rhs) noexcept;
     UniqueShader& operator=(UniqueShader&& rhs) noexcept;

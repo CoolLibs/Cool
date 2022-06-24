@@ -8,7 +8,7 @@ std::uniform_real_distribution<float>   Random::_distribution_0to1(0.0f, 1.0f);
 std::uniform_real_distribution<float>   Random::_distribution_minus1to1(-1.0f, 1.0f);
 std::uniform_int_distribution<uint64_t> Random::_distribution_uint64(0, std::numeric_limits<uint64_t>::max());
 std::uniform_int_distribution<int>      Random::_distribution_integer(std::numeric_limits<int>::min(),
-                                                                 std::numeric_limits<int>::max());
+                                                                      std::numeric_limits<int>::max());
 
 float Random::range_0to1()
 {

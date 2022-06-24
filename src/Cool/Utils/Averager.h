@@ -4,7 +4,7 @@ namespace Cool {
 
 /**
  * @brief An average that gets built over time as you push values into it. Useful to measure your average frame time for example
- * 
+ *
  * @tparam T The type of the the values and the average. Should be a floating point type like float or double.
  */
 template<typename T>

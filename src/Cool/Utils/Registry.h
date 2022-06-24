@@ -2,8 +2,8 @@
 
 /**
  * @brief Based on https://youtu.be/ejF6qqohp3M?t=2896
- * 
- * 
+ *
+ *
  */
 
 namespace Cool {
@@ -40,10 +40,12 @@ public:
     {
         auto p = std::lower_bound(list_.begin(), list_.end(), id,
                                   [](const auto& a, const auto& b) { return a.first.id < b.id; });
-        if (p == list_.end() || p->first.id != id.id || !p->second) {
+        if (p == list_.end() || p->first.id != id.id || !p->second)
+        {
             return nullptr;
         }
-        else {
+        else
+        {
             return &p->second.value();
         }
     }
@@ -58,7 +60,8 @@ public:
         p->second.reset();
         --nb_non_empty_slots_;
 
-        if (nb_non_empty_slots_ < list_.size() / 2) {
+        if (nb_non_empty_slots_ < list_.size() / 2)
+        {
             list_.erase(
                 std::remove_if(list_.begin(), list_.end(), [](const auto& e) { return !e.second; }),
                 list_.end());

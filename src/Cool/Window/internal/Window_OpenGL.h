@@ -9,7 +9,7 @@ class Window_OpenGL : public Window_Base {
 public:
     // To construct a window, use WindowFactory_OpenGL::make_window()
     explicit Window_OpenGL(GLFWwindow* window);
-    Window_OpenGL(Window_OpenGL&&) noexcept = default;
+    Window_OpenGL(Window_OpenGL&&) noexcept            = default;
     Window_OpenGL& operator=(Window_OpenGL&&) noexcept = default;
 
     inline void make_current() { glfwMakeContextCurrent(glfw()); }

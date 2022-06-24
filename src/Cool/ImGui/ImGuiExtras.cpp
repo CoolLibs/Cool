@@ -13,7 +13,8 @@ namespace Cool::ImGuiExtras {
 void help_marker(const char* text)
 {
     ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered()) {
+    if (ImGui::IsItemHovered())
+    {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
         ImGui::TextUnformatted(text);
@@ -25,7 +26,8 @@ void help_marker(const char* text)
 bool angle_wheel(const char* label, float* value_p, float thickness, float radius, int nb_segments_for_circle)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems) {
+    if (window->SkipItems)
+    {
         return false;
     }
     //
@@ -39,7 +41,8 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     bool is_active  = ImGui::IsItemActive();
     bool is_hovered = ImGui::IsItemHovered();
 
-    if (is_active) {
+    if (is_active)
+    {
         ImVec2 mp = ImGui::GetIO().MousePos;
         *value_p  = atan2f(center.y - mp.y, mp.x - center.x);
     }
@@ -58,7 +61,8 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
     const ImGuiID id = window->GetID(label);
-    if (is_active) {
+    if (is_active)
+    {
         ImGui::MarkItemEdited(id);
     }
     return is_active;
@@ -81,24 +85,29 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2)
 
 void time_formated_hms(float time_in_sec, float total_duration)
 {
-    if (total_duration == 0.f) {
+    if (total_duration == 0.f)
+    {
         total_duration = time_in_sec;
     }
     auto t = static_cast<uint32_t>(time_in_sec);
-    if (total_duration < 60.f) {
+    if (total_duration < 60.f)
+    {
         ImGui::Text("%us", t);
     }
-    else if (total_duration < 3600.f) {
+    else if (total_duration < 3600.f)
+    {
         ImGui::Text("%um %02us", t / 60, t % 60);
     }
-    else {
+    else
+    {
         ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
     }
 }
 
 void tooltip(const char* text)
 {
-    if (ImGui::IsItemHovered()) {
+    if (ImGui::IsItemHovered())
+    {
         ImGui::BeginTooltip();
         ImGui::Text("%s", text);
         ImGui::EndTooltip();
@@ -129,7 +138,8 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    if (window->SkipItems) {
+    if (window->SkipItems)
+    {
         return;
     }
 
@@ -145,7 +155,8 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
     const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
     ImGui::ItemSize(bb);
-    if (!ImGui::ItemAdd(bb, id)) {
+    if (!ImGui::ItemAdd(bb, id))
+    {
         return;
     }
 
@@ -175,12 +186,14 @@ void warning_text(const char* text)
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
 {
     ImGuiWindow* window = GImGui->CurrentWindow;
-    if (window->SkipItems) {
+    if (window->SkipItems)
+    {
         return false;
     }
     ImGuiID id = label ? window->GetID(label) : GImGui->LastItemData.ID; // If user hasn't passed an ID, we can use the LastItemID. Using LastItemID as a Popup ID won't conflict!
     IM_ASSERT(id != 0);                                                  // You cannot pass a NULL str_id if the last item has no identifier (e.g. a Text() item)
-    if (ImGui::Button(label)) {
+    if (ImGui::Button(label))
+    {
         ImGui::OpenPopupEx(id, popup_flags);
     }
     return ImGui::BeginPopupEx(id, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
@@ -194,26 +207,31 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 
 bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
+    {
         NFD::UniquePath outPath;
 
         nfdresult_t result = NFD::PickFolder(outPath, std::filesystem::absolute(base_folder).string().c_str());
-        if (result == NFD_OKAY) {
+        if (result == NFD_OKAY)
+        {
             *out_path = outPath.get();
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
-    else {
+    else
+    {
         return false;
     }
 }
 
 bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder)
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f))) {
+    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
+    {
         NFD::UniquePath outPath;
         // clang-format off
         nfdresult_t result = NFD::OpenDialog(
@@ -223,15 +241,18 @@ bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_t
             std::filesystem::absolute(base_folder).string().c_str()
 		);
         // clang-format on
-        if (result == NFD_OKAY) {
+        if (result == NFD_OKAY)
+        {
             *out_path = outPath.get();
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
-    else {
+    else
+    {
         return false;
     }
 }
@@ -248,13 +269,16 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
     bool checkbox_was_used = ImGui::Checkbox("", bool_p);
     ImGui::PopID();
     ImGui::SameLine();
-    if (*bool_p) {
-        if (ImGui::BeginMenu(label)) {
+    if (*bool_p)
+    {
+        if (ImGui::BeginMenu(label))
+        {
             submenu();
             ImGui::EndMenu();
         }
     }
-    else {
+    else
+    {
         ImGui::Text("%s", label);
     }
     return checkbox_was_used;
@@ -262,7 +286,8 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
 
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)
 {
-    if (condition) {
+    if (condition)
+    {
         ImGui::BeginGroup();
         ImGui::BeginDisabled(true);
 
@@ -272,7 +297,8 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
         ImGui::EndGroup();
         ImGuiExtras::tooltip(reason_to_disable);
     }
-    else {
+    else
+    {
         ImGui::BeginGroup();
 
         widgets();

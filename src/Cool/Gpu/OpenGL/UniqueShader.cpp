@@ -21,7 +21,8 @@ UniqueShader::UniqueShader(UniqueShader&& rhs) noexcept
 
 UniqueShader& UniqueShader::operator=(UniqueShader&& rhs) noexcept
 {
-    if (&rhs != this) {
+    if (&rhs != this)
+    {
         _id     = rhs._id;
         rhs._id = decltype(rhs._id){};
     }

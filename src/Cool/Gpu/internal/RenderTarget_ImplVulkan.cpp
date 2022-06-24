@@ -16,7 +16,8 @@ RenderTarget_ImplVulkan::RenderTarget_ImplVulkan(vk::Format format, img::Size si
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer _cb_;
-    if (vkAllocateCommandBuffers(Vulkan::context().g_Device, &allocInfo, &_cb_) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(Vulkan::context().g_Device, &allocInfo, &_cb_) != VK_SUCCESS)
+    {
         throw std::runtime_error("failed to allocate command buffers!");
     }
     _command_buffer = _cb_;

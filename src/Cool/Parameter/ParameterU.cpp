@@ -5,10 +5,12 @@ namespace Cool::ParameterU {
 Parameter::Any make_param(const ParameterList& previous_parameters, const Parameter::AnyDesc& desc)
 {
     const auto param_idx = index_of(desc, previous_parameters);
-    if (param_idx.has_value()) {
+    if (param_idx.has_value())
+    {
         return (*previous_parameters)[*param_idx];
     }
-    else {
+    else
+    {
         return make_any_parameter(desc);
     }
 }
@@ -17,7 +19,8 @@ Cool::ParameterList update_parameters(std::vector<Cool::Parameter::AnyDesc> desc
 {
     Cool::ParameterList new_parameters{};
     new_parameters->reserve(param->size());
-    for (const auto& desc : description) {
+    for (const auto& desc : description)
+    {
         new_parameters->push_back(Cool::ParameterU::make_param(param, desc));
     }
     return new_parameters;
@@ -27,7 +30,8 @@ Cool::ParameterList update_parameters(std::vector<Cool::Parameter::Any> descript
 {
     Cool::ParameterList new_parameters{};
     new_parameters->reserve(param->size());
-    for (const auto& descript : description) {
+    for (const auto& descript : description)
+    {
         const auto desc = std::visit([&](auto&& descript) { return Cool::Parameter::AnyDesc(descript.description()); }, descript);
         new_parameters->push_back(Cool::ParameterU::make_param(param, desc));
     }
@@ -41,10 +45,12 @@ bool is_matching_desc_type(const Parameter::Any& param, const Parameter::AnyDesc
 
 std::optional<size_t> index_of(const Parameter::AnyDesc& description, const ParameterList& list)
 {
-    for (size_t i = 0; i < list->size(); ++i) {
+    for (size_t i = 0; i < list->size(); ++i)
+    {
         const std::string& name      = std::visit([&](auto&& param) { return param.name(); }, (*list)[i]);
         const std::string& desc_name = std::visit([&](auto&& desc) { return desc.name; }, description);
-        if (desc_name == name && is_matching_desc_type((*list)[i], description)) {
+        if (desc_name == name && is_matching_desc_type((*list)[i], description))
+        {
             return i;
         }
     }

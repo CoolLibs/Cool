@@ -5,7 +5,7 @@
 namespace Cool::Log {
 /**
  * @brief Sets the log messages pattern.
- * 
+ *
  * @param spdlog_pattern The pattern to use. See https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
  */
 inline void initialize(std::string_view spdlog_pattern)
@@ -15,8 +15,8 @@ inline void initialize(std::string_view spdlog_pattern)
 
 /**
  * @brief Displays a green message to the console in debug mode (in release mode this function does nothing).
- * 
- * @tparam Args 
+ *
+ * @tparam Args
  * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
  */
 template<typename... Args>
@@ -29,8 +29,8 @@ inline void info(Args&&... args)
 
 /**
  * @brief Displays a yellow message to the console in debug mode (in release mode this function does nothing).
- * 
- * @tparam Args 
+ *
+ * @tparam Args
  * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
  */
 template<typename... Args>
@@ -43,8 +43,8 @@ inline void warn(Args&&... args)
 
 /**
  * @brief Displays a red message to the console and triggers a breakpoint in debug mode (in release mode this function does nothing).
- * 
- * @tparam Args 
+ *
+ * @tparam Args
  * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
  */
 template<typename... Args>
@@ -58,8 +58,8 @@ inline void error(Args&&... args)
 
 /**
  * @brief Displays a red message to the console in debug mode (in release mode this function does nothing).
- * 
- * @tparam Args 
+ *
+ * @tparam Args
  * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
  */
 template<typename... Args>

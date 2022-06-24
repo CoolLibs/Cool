@@ -22,7 +22,8 @@ UniqueVAO::UniqueVAO(UniqueVAO&& rhs) noexcept
 
 UniqueVAO& UniqueVAO::operator=(UniqueVAO&& rhs) noexcept
 {
-    if (&rhs != this) {
+    if (&rhs != this)
+    {
         _id     = rhs._id;
         rhs._id = decltype(rhs._id){};
     }

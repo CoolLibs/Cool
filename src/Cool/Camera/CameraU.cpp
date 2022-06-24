@@ -23,7 +23,8 @@ void reset_roll(Camera& camera)
 void set_translation(Camera& camera, const glm::vec3& new_position)
 {
     auto transform = camera.transform_matrix();
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i)
+    {
         transform[3][i] = new_position[i];
     }
     camera.set_transform_matrix(transform);

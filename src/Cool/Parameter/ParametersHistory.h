@@ -6,7 +6,7 @@ namespace Cool {
 
 /**
  * @brief History where all the changes made to any parameter are stored
- * 
+ *
  */
 class ParametersHistory {
 public:

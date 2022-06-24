@@ -18,7 +18,7 @@ class Window_Vulkan : public Window_Base {
 public:
     // To construct a window, use WindowFactory_Vulkan::make_window()
     Window_Vulkan(GLFWwindow* window);
-    Window_Vulkan(Window_Vulkan&&) noexcept = default;
+    Window_Vulkan(Window_Vulkan&&) noexcept            = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
     ~Window_Vulkan();
 

@@ -7,7 +7,8 @@ std::vector<Parameter::AnyDesc> parse_all_parameter_desc(std::string_view source
 {
     auto res       = std::vector<Parameter::AnyDesc>{};
     auto parse_res = parse_one_parameter_desc(source);
-    while (parse_res.has_value()) {
+    while (parse_res.has_value())
+    {
         res.push_back(parse_res->first);
         source    = source.substr(parse_res->second + 1, source.length() - parse_res->second);
         parse_res = parse_one_parameter_desc(source);
@@ -18,37 +19,47 @@ std::vector<Parameter::AnyDesc> parse_all_parameter_desc(std::string_view source
 std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(std::string_view source)
 {
     const auto body_pos = String::find_matching_pair(source, '{', '}');
-    if (!body_pos.has_value()) {
+    if (!body_pos.has_value())
+    {
         return std::nullopt;
     }
     const auto type = String::remove_whitespaces(source.substr(0, body_pos->first));
     const auto body = "{\"\":" + std::string{source.substr(body_pos->first, body_pos->second - body_pos->first + 1)} + "}";
     const auto desc = [&]() -> Parameter::AnyDesc {
-        if (type == "float") {
+        if (type == "float")
+        {
             return parse<Parameter::FloatDesc>(body);
         }
-        else if (type == "int") {
+        else if (type == "int")
+        {
             return parse<Parameter::IntDesc>(body);
         }
-        else if (type == "bool") {
+        else if (type == "bool")
+        {
             return parse<Parameter::BoolDesc>(body);
         }
-        else if (type == "vec2") {
+        else if (type == "vec2")
+        {
             return parse<Parameter::Vec2Desc>(body);
         }
-        else if (type == "vec3") {
+        else if (type == "vec3")
+        {
             return parse<Parameter::Vec3Desc>(body);
         }
-        else if (type == "color") {
+        else if (type == "color")
+        {
             return parse<Parameter::ColorDesc>(body);
         }
-        else if (type == "direction3D") {
+        else if (type == "direction3D")
+        {
             return parse<Parameter::Dir3Desc>(body);
         }
-        else if (type == "rotation3D") {
+        else if (type == "rotation3D")
+        {
             return parse<Parameter::Rot3Desc>(body);
         }
-        else {
+        else
+        {
             throw std::invalid_argument("'" + type + "' is not a valid parameter type. You can use 'int', 'float', 'vec2', 'vec3', 'color' or 'direction3D'");
         }
     }();

@@ -9,7 +9,7 @@ struct VariableMetadata<bool> {
     friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive&)

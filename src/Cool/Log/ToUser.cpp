@@ -13,12 +13,14 @@ bool                 ToUser::_scroll_to_bottom = false;
 void ToUser::add_message(Message message)
 {
     // Merge messages of the same category together
-    if (!_messages.empty() && _messages.back().category == message.category) {
+    if (!_messages.empty() && _messages.back().category == message.category)
+    {
         message.count    = _messages.back().count + 1;
         _messages.back() = message;
     }
     // or add the message to the list
-    else {
+    else
+    {
         _messages.push_back(message);
     }
     // Update console
@@ -28,19 +30,24 @@ void ToUser::add_message(Message message)
 
 void ToUser::imgui_console_window()
 {
-    if (!_is_open) {
+    if (!_is_open)
+    {
         _messages.clear();
     }
-    else {
+    else
+    {
         ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
         ImGui::BeginMenuBar();
-        if (ImGui::Button("Clear")) {
+        if (ImGui::Button("Clear"))
+        {
             _messages.clear();
         }
         ImGui::EndMenuBar();
-        for (auto const& message : _messages) {
+        for (auto const& message : _messages)
+        {
             const ImVec4 color = [&]() {
-                switch (message.severity) {
+                switch (message.severity)
+                {
                 case Message::Severity::Info:
                     return Constants::imvec4_green;
                 case Message::Severity::Warn:
@@ -71,7 +78,8 @@ void ToUser::imgui_console_window()
 #if !defined(__GNUC__)
 #pragma warning(pop)
 #endif
-            if (local_time) {
+            if (local_time)
+            {
                 ImGui::TextColored(color, "[%d:%d'%d\"%lld] [#%lld] [%s]",
                                    local_time->tm_hour,
                                    local_time->tm_min,
@@ -83,7 +91,8 @@ void ToUser::imgui_console_window()
             ImGui::SameLine();
             ImGui::Text("%s", message.body.c_str());
         }
-        if (_scroll_to_bottom) {
+        if (_scroll_to_bottom)
+        {
             ImGui::SetScrollHereY(1.f);
             _scroll_to_bottom = false;
         }

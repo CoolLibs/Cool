@@ -16,10 +16,12 @@ auto OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
 {
     const auto orbit_center = controller.get_orbit_center(camera);
     const auto up_axis      = [&]() {
-        switch (controller._mode) {
+        switch (controller._mode)
+        {
         case ViewController_Orbital::Mode::Trackball:
             return Constants::world_up;
-        case ViewController_Orbital::Mode::Turntable: {
+        case ViewController_Orbital::Mode::Turntable:
+        {
             return Constants::world_up * _sign_of_alignment_with_up;
         }
         case ViewController_Orbital::Mode::AxisFree:

@@ -34,7 +34,7 @@ private:
     typename Desc::InternalValue _value_before_edit;
 
 private:
-    //Serialization
+    // Serialization
     friend class cereal::access;
     template<class Archive>
     void save(Archive& archive) const

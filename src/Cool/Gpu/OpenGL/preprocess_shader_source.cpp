@@ -12,10 +12,12 @@ namespace Cool::OpenGL {
 static std::string line_or_include(const std::string& line)
 {
     const auto path = RegExp::file_path_to_include(line);
-    if (path.has_value()) {
+    if (path.has_value())
+    {
         return preprocess_shader_source(File::to_string(*path));
     }
-    else {
+    else
+    {
         return line;
     }
 }
@@ -26,7 +28,8 @@ std::string preprocess_shader_source(const std::string& source)
     std::ostringstream output;
 
     std::string line;
-    while (std::getline(stream, line)) {
+    while (std::getline(stream, line))
+    {
         String::replace_all(line, "_COOL_RES_", Path::cool_res());
         String::replace_all(line, "_ROOT_FOLDER_", Path::root());
         output << line_or_include(line) << '\n';

@@ -41,7 +41,8 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version(COOL_OPENGL_VERSION));
 #if DEBUG
-    if (COOL_OPENGL_VERSION >= 430) {
+    if (COOL_OPENGL_VERSION >= 430)
+    {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     }
 #endif
@@ -56,7 +57,8 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
     window.make_current();
     WindowFactoryU::apply_config(config, window);
     // Load Glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { // NOLINT
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // NOLINT
+    {
         Log::error("Failed to initialize Glad");
     }
     //
@@ -66,16 +68,19 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
 void WindowFactory_OpenGL::setupGLDebugging()
 {
 #if DEBUG
-    if (COOL_OPENGL_VERSION >= 430) {
+    if (COOL_OPENGL_VERSION >= 430)
+    {
         int flags; // NOLINT
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+        {
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(GLDebugCallback, nullptr);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
         }
-        else {
+        else
+        {
             Log::warn("Couldn't setup OpenGL Debugging");
         }
     }

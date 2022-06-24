@@ -9,34 +9,34 @@ public:
     History() = default;
 
     /**
-	 * @brief Begins an undo group. An undo group contains actions that will all be done / undone at once as we move forward / backward in the history
-	 * 
-	 */
+     * @brief Begins an undo group. An undo group contains actions that will all be done / undone at once as we move forward / backward in the history
+     *
+     */
     void begin_undo_group();
 
     /**
-	 * @brief Adds an action to the current undo group
-	 * 
-	 * @param action 
-	 */
+     * @brief Adds an action to the current undo group
+     *
+     * @param action
+     */
     void add_action(Action action);
 
     /**
-	 * @brief Ends the current undo group and pushes it in the history
-	 * 
-	 */
+     * @brief Ends the current undo group and pushes it in the history
+     *
+     */
     void end_undo_group();
 
     /**
-	 * @brief Undoes one undo group. Does nothing if we are already at the beginning of the history
-	 * 
-	 */
+     * @brief Undoes one undo group. Does nothing if we are already at the beginning of the history
+     *
+     */
     void move_backward();
 
     /**
-	 * @brief Applies one undo group. Does nothing if we are already at the end of the history
-	 * 
-	 */
+     * @brief Applies one undo group. Does nothing if we are already at the end of the history
+     *
+     */
     void move_forward();
 
 private:
@@ -52,7 +52,7 @@ private:
     bool _an_undo_group_is_open = false;
 #endif
     /*
-	Class invariant : We are always in the state _actions[_index] (and _index == -1 means that we are in the initial state, no action ever performed)
+    Class invariant : We are always in the state _actions[_index] (and _index == -1 means that we are in the initial state, no action ever performed)
 */
 };
 

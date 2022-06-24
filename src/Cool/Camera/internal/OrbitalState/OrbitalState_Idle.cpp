@@ -8,10 +8,12 @@ namespace Cool {
 
 auto OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods) -> bool
 {
-    if (mods.shift()) {
+    if (mods.shift())
+    {
         controller.set_state(OrbitalState_Translation{});
     }
-    else {
+    else
+    {
         controller.set_state(OrbitalState_Rotation{camera});
     }
     return false;

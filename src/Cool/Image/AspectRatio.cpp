@@ -12,8 +12,10 @@ bool AspectRatio::ImGuiPicker(int uniqueID)
     ImGui::PushID(uniqueID);
     bool bUsed = false;
     ImGui::PushID("__AspectRatioComboBox");
-    if (ImGui::Combo("", &m_ImGuiCurrentRatioItem, " 16/9\0 3/2\0 4/3\0 1/1\0 9/16\0 2/3\0 3/4\0\0")) {
-        switch (m_ImGuiCurrentRatioItem) {
+    if (ImGui::Combo("", &m_ImGuiCurrentRatioItem, " 16/9\0 3/2\0 4/3\0 1/1\0 9/16\0 2/3\0 3/4\0\0"))
+    {
+        switch (m_ImGuiCurrentRatioItem)
+        {
         case 0:
             m_ratio = 16.f / 9.f;
             break;
@@ -40,7 +42,8 @@ bool AspectRatio::ImGuiPicker(int uniqueID)
     }
     ImGui::PopID();
     ImGui::PushID("__AspectRatioSlider");
-    if (ImGui::SliderFloat("", &m_ratio, 0.5f, 2.f)) {
+    if (ImGui::SliderFloat("", &m_ratio, 0.5f, 2.f))
+    {
         m_ImGuiCurrentRatioItem = -1;
         bUsed                   = true;
     }

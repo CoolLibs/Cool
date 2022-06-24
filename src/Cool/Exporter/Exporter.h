@@ -17,33 +17,33 @@ public:
 
     /**
      * @brief Displays all the currently active windows
-     * 
+     *
      */
     void imgui_windows(Polaroid polaroid, float time);
 
     /**
-	 * @brief The buttons to open the different export windows
-	 * 
-	 */
+     * @brief The buttons to open the different export windows
+     *
+     */
     void imgui_menu_items();
 
     /**
-	 * @brief Starts the export of the image sequence. You must then call update() on every frame after your rendering code
-	 * 
-	 */
+     * @brief Starts the export of the image sequence. You must then call update() on every frame after your rendering code
+     *
+     */
     void begin_video_export();
 
     /**
-	 * @brief Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue
-	 * 
-	 * @param frame_buffer The frame buffer that your renderer has just rendered to
-	 */
+     * @brief Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue
+     *
+     * @param frame_buffer The frame buffer that your renderer has just rendered to
+     */
     void update(Polaroid polaroid);
 
     /**
-	 * @brief Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export
-	 * 
-	 */
+     * @brief Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export
+     *
+     */
     void end_video_export();
 
 private:

@@ -18,7 +18,8 @@ void APIENTRY GLDebugCallback(
     const void* /*userParam*/)
 {
     // Check if we have already seen the message
-    if (std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end()) {
+    if (std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end())
+    {
         return;
     }
     AlreadydisplayedIds.push_back(id);
@@ -27,7 +28,8 @@ void APIENTRY GLDebugCallback(
     std::string message;
     message += "OpenGL Debug message (id=" + std::to_string(id) + ")\n" + openGLMessage;
 
-    switch (source) {
+    switch (source)
+    {
     case GL_DEBUG_SOURCE_API: message += "\n\nSource: API"; break;
     case GL_DEBUG_SOURCE_WINDOW_SYSTEM: message += "\n\nSource: Window System"; break;
     case GL_DEBUG_SOURCE_SHADER_COMPILER: message += "\n\nSource: Shader Compiler"; break;
@@ -36,7 +38,8 @@ void APIENTRY GLDebugCallback(
     case GL_DEBUG_SOURCE_OTHER: message += "\n\nSource: Other"; break;
     }
 
-    switch (type) {
+    switch (type)
+    {
     case GL_DEBUG_TYPE_ERROR: message += "\nType: Error"; break;
     case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: message += "\nType: Deprecated Behaviour"; break;
     case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: message += "\nType: Undefined Behaviour"; break;
@@ -48,7 +51,8 @@ void APIENTRY GLDebugCallback(
     case GL_DEBUG_TYPE_OTHER: message += "\nType: Other"; break;
     }
 
-    switch (severity) {
+    switch (severity)
+    {
     case GL_DEBUG_SEVERITY_HIGH: message += "\nSeverity: high"; break;
     case GL_DEBUG_SEVERITY_MEDIUM: message += "\nSeverity: medium"; break;
     case GL_DEBUG_SEVERITY_LOW: message += "\nSeverity: low"; break;
@@ -56,13 +60,16 @@ void APIENTRY GLDebugCallback(
     }
 
     // Log
-    if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
+    if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH)
+    {
         Log::ToUser::error("OpenGL Error", message);
     }
-    else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY) {
+    else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY)
+    {
         Log::ToUser::warn("OpenGL Warning", message);
     }
-    else {
+    else
+    {
         // Log::info(message);
     }
 }

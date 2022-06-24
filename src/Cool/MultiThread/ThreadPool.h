@@ -4,40 +4,40 @@ namespace Cool {
 
 /**
  * @brief Manages a given number of threads and gives them jobs
- * 
+ *
  */
 template<typename Job>
 class ThreadPool {
 public:
     /**
-	 * @brief Creates a thread pool using the maximum number of concurrent threads supported by the machine
-	 * 
-	 */
+     * @brief Creates a thread pool using the maximum number of concurrent threads supported by the machine
+     *
+     */
     ThreadPool();
 
     /**
-	 * @brief
-	 * 
-	 * @param nb_threads Number of threads to create in the pool
-	 */
+     * @brief
+     *
+     * @param nb_threads Number of threads to create in the pool
+     */
     ThreadPool(size_t nb_threads);
 
     ~ThreadPool();
 
     /**
-	 * @brief 
-	 * 
-	 * @return The number of threads in the pool
-	 */
+     * @brief
+     *
+     * @return The number of threads in the pool
+     */
     auto size() { return _threads.size(); }
 
     bool has_available_worker() { return _jobs_queue.size() < size(); }
 
     /**
-	 * @brief Adds a job to the queue.
-	 * 
-	 * @param job Any function pointer / lambda with signature void -> void
-	 */
+     * @brief Adds a job to the queue.
+     *
+     * @param job Any function pointer / lambda with signature void -> void
+     */
     void push_job(Job&& job);
 
 private:

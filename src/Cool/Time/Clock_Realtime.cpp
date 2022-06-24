@@ -9,11 +9,13 @@ Clock_Realtime::Clock_Realtime()
 
 float Clock_Realtime::delta_time() const
 {
-    if (is_playing()) {
+    if (is_playing())
+    {
         std::chrono::duration<float> dt = _current_time - _last_time;
         return dt.count();
     }
-    else {
+    else
+    {
         return 0.f;
     }
 }
@@ -31,7 +33,8 @@ void Clock_Realtime::set_time(float new_time)
 
 void Clock_Realtime::update()
 {
-    if (is_playing()) {
+    if (is_playing())
+    {
         _last_time    = _current_time;
         _current_time = std_time();
     }

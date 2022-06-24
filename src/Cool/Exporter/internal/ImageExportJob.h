@@ -12,7 +12,7 @@ public:
         : _file_path(file_path), _image{std::move(image)}, _frame_time_average(frame_time_average), _nb_frames_which_finished_exporting(nb_frames_which_finished_exporting)
     {
     }
-    ImageExportJob(ImageExportJob&& o) noexcept = default;
+    ImageExportJob(ImageExportJob&& o) noexcept            = default;
     ImageExportJob& operator=(ImageExportJob&& o) noexcept = default;
 
     void operator()();

@@ -8,8 +8,8 @@ class Window_Base {
 public:
     Window_Base(GLFWwindow* glfw_window);
     Window_Base(Window_Base&&) noexcept;
-    Window_Base& operator           =(Window_Base&&) noexcept;
-    Window_Base(const Window_Base&) = delete;            // Non-copyable because there should only be one owner of the window.
+    Window_Base& operator=(Window_Base&&) noexcept;
+    Window_Base(const Window_Base&)            = delete; // Non-copyable because there should only be one owner of the window.
     Window_Base& operator=(const Window_Base&) = delete; // Non-copyable because there should only be one owner of the window.
     virtual ~Window_Base();
 
@@ -26,7 +26,7 @@ public:
 
     /**
      * @brief Adds an imgui widget that allows users to choose if the framerate should be capped or not
-     * 
+     *
      * @return true iff the widget was triggered
      */
     bool         imgui_cap_framerate();
@@ -35,23 +35,23 @@ public:
 
     /**
      * @brief Returns the underlying glfw window pointer
-     * 
-     * @return GLFWwindow* 
+     *
+     * @return GLFWwindow*
      */
     GLFWwindow* glfw() { return _glfw_window; }
 
     /**
      * @brief Returns the underlying glfw window pointer
-     * 
-     * @return GLFWwindow* 
+     *
+     * @return GLFWwindow*
      */
     const GLFWwindow* glfw() const { return _glfw_window; }
 
     /**
      * @brief Returns the monitor that the window is in
      * (if it is over multiple monitors, returns the one which contains most of the window)
-     * 
-     * @return GLFWmonitor* 
+     *
+     * @return GLFWmonitor*
      */
     GLFWmonitor* current_monitor() const;
 

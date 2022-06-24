@@ -4,7 +4,8 @@
 
 void CoolGlDebug::clearFromPreviousErrors()
 {
-    while (glGetError() != GL_NO_ERROR) {
+    while (glGetError() != GL_NO_ERROR)
+    {
     }
 }
 
@@ -12,7 +13,8 @@ bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename,
 {
     GLenum error; // NOLINT
     bool   bFoundErrors = false;
-    while ((error = glGetError()) != GL_NO_ERROR) {
+    while ((error = glGetError()) != GL_NO_ERROR)
+    {
         Cool::Log::error_without_breakpoint("[OpenGL Error] {} : {} {} {}", glErrorString(error), functionName, filename, line);
         bFoundErrors = true;
     }
@@ -21,7 +23,8 @@ bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename,
 
 char const* CoolGlDebug::glErrorString(GLenum const err)
 {
-    switch (err) {
+    switch (err)
+    {
     case GL_NO_ERROR:
         return "GL_NO_ERROR";
 

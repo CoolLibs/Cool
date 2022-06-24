@@ -16,12 +16,14 @@ public:
 
     void dispatch_mouse_button_event(const MouseButtonEvent<Coords>& event, bool is_inside_view)
     {
-        if (event.action == GLFW_PRESS && is_inside_view && !_dragged_button.has_value()) {
+        if (event.action == GLFW_PRESS && is_inside_view && !_dragged_button.has_value())
+        {
             _dragged_button.emplace(event.button);
             _last_mouse_position = event.position;
             start().dispatch({event.position, event.mods});
         }
-        if (event.action == GLFW_RELEASE && _dragged_button.has_value() && *_dragged_button == event.button) {
+        if (event.action == GLFW_RELEASE && _dragged_button.has_value() && *_dragged_button == event.button)
+        {
             _dragged_button.reset();
             stop().dispatch({event.position, event.mods});
         }
@@ -29,7 +31,8 @@ public:
 
     void dispatch_mouse_move_event(const MouseMoveEvent<Coords>& event)
     {
-        if (_dragged_button.has_value()) {
+        if (_dragged_button.has_value())
+        {
             update().dispatch({event.position,
                                event.position - _last_mouse_position});
             _last_mouse_position = event.position;

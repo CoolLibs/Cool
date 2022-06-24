@@ -12,7 +12,7 @@ public:
     }
     /**
      * @brief Displays the render target's image in an ImGui window
-     * 
+     *
      * @param name The name of the window
      */
     void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);

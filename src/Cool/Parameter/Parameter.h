@@ -39,28 +39,36 @@ inline Parameter::Any make_any_parameter(const Parameter::AnyDesc& desc)
 {
     return std::visit([](auto&& desc) -> Parameter::Any {
         using T = std::decay_t<decltype(desc)>;
-        if constexpr (std::is_same_v<T, Parameter::BoolDesc>) {
+        if constexpr (std::is_same_v<T, Parameter::BoolDesc>)
+        {
             return Parameter::Bool{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::IntDesc>) {
+        else if constexpr (std::is_same_v<T, Parameter::IntDesc>)
+        {
             return Parameter::Int{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::FloatDesc>) {
+        else if constexpr (std::is_same_v<T, Parameter::FloatDesc>)
+        {
             return Parameter::Float{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::Vec2Desc>) {
+        else if constexpr (std::is_same_v<T, Parameter::Vec2Desc>)
+        {
             return Parameter::Vec2{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::Vec3Desc>) {
+        else if constexpr (std::is_same_v<T, Parameter::Vec3Desc>)
+        {
             return Parameter::Vec3{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::Dir3Desc>) {
+        else if constexpr (std::is_same_v<T, Parameter::Dir3Desc>)
+        {
             return Parameter::Dir3{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::Rot3Desc>) {
+        else if constexpr (std::is_same_v<T, Parameter::Rot3Desc>)
+        {
             return Parameter::Rot3{desc};
         }
-        else if constexpr (std::is_same_v<T, Parameter::ColorDesc>) {
+        else if constexpr (std::is_same_v<T, Parameter::ColorDesc>)
+        {
             return Parameter::Color{desc};
         }
     },

@@ -16,10 +16,12 @@ void Clock::pause()
 
 void Clock::toggle_play_pause()
 {
-    if (_is_playing) {
+    if (_is_playing)
+    {
         pause();
     }
-    else {
+    else
+    {
         play();
     }
 }

@@ -22,20 +22,23 @@ void History::begin_undo_group()
 
 void History::end_undo_group()
 {
-    if (!_tmp_action_buffer.empty()) {
+    if (!_tmp_action_buffer.empty())
+    {
         //
         _cumul_nb_of_actions_to_get_to_this_undo_group.resize(_index_of_cumul_nb_of_actions + 1);
         _cumul_nb_of_actions_to_get_to_this_undo_group.push_back(_tmp_action_buffer.size() + (_index_of_cumul_nb_of_actions > -1 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions] : 0));
         _index_of_cumul_nb_of_actions++;
         //
         _actions.resize(_index_of_cumul_nb_of_actions > 0 ? _cumul_nb_of_actions_to_get_to_this_undo_group[_index_of_cumul_nb_of_actions - 1] : 0);
-        for (const auto& action : _tmp_action_buffer) {
+        for (const auto& action : _tmp_action_buffer)
+        {
             _actions.push_back(action);
             _index++;
         }
     }
 #if DEBUG
-    else {
+    else
+    {
         Log::warn("[History::end_undo_group] Empty undo group");
     }
     _an_undo_group_is_open = false;
@@ -50,8 +53,10 @@ void History::add_action(Action action)
 
 void History::move_backward()
 {
-    if (_index_of_cumul_nb_of_actions > -1) {
-        for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions); ++i) {
+    if (_index_of_cumul_nb_of_actions > -1)
+    {
+        for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions); ++i)
+        {
             _actions[_index].revert();
             _index--;
         }
@@ -61,8 +66,10 @@ void History::move_backward()
 
 void History::move_forward()
 {
-    if (_index_of_cumul_nb_of_actions < static_cast<int>(_cumul_nb_of_actions_to_get_to_this_undo_group.size() - 1)) { // cast to an int because size_t is an unsigned type and it causes a bug when _index_of_cumul_nb_of_actions == -1
-        for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions + 1); ++i) {
+    if (_index_of_cumul_nb_of_actions < static_cast<int>(_cumul_nb_of_actions_to_get_to_this_undo_group.size() - 1)) // cast to an int because size_t is an unsigned type and it causes a bug when _index_of_cumul_nb_of_actions == -1
+    {
+        for (int i = 0; i < nb_of_actions_between_this_and_previous_undo_group(_index_of_cumul_nb_of_actions + 1); ++i)
+        {
             _index++;
             _actions[_index].apply();
         }
