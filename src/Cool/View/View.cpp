@@ -59,7 +59,8 @@ auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> View
 
 bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
 {
-    if (!_window_is_hovered)
+    if (!_window_is_hovered ||
+        ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow) // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
     {
         return false;
     }
