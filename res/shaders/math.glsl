@@ -34,9 +34,11 @@ float hash_0_to_1(vec3 p)
 
 vec3 hash_minus_1_to_1(vec3 p)
 {
-    p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
-             dot(p, vec3(269.5, 183.3, 246.1)),
-             dot(p, vec3(113.5, 271.9, 124.6)));
+    p = vec3(
+        dot(p, vec3(127.1, 311.7, 74.7)),
+        dot(p, vec3(269.5, 183.3, 246.1)),
+        dot(p, vec3(113.5, 271.9, 124.6))
+    );
 
     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
@@ -57,8 +59,10 @@ mat2 rotation_2D(float angle)
 {
     float c = cos(angle);
     float s = sin(angle);
-    return mat2(c, -s,
-                s, c);
+    return mat2(
+        +c, -s,
+        +s, +c
+    );
 }
 
 vec3 rotation_around_axis(vec3 p, vec3 ax, float ro)

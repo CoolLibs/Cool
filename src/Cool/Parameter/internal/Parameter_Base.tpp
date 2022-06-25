@@ -5,8 +5,10 @@ bool Parameter_Base<Desc>::imgui(Action on_edit_ended, std::function<void()> on_
 {
     bool b = _desc.imgui(_value);
     ImGui::PushID(this);
-    if (ImGui::BeginPopupContextItem(_desc.name.c_str())) {
-        if (ImGui::Selectable("Reset parameter")) {
+    if (ImGui::BeginPopupContextItem(_desc.name.c_str()))
+    {
+        if (ImGui::Selectable("Reset parameter"))
+        {
             _value = _desc.default_value;
             push_change_in_history(on_edit_ended, on_value_change);
             b = true;
@@ -15,7 +17,8 @@ bool Parameter_Base<Desc>::imgui(Action on_edit_ended, std::function<void()> on_
     }
     ImGui::PopID();
     push_change_in_history_if_edit_ended(on_edit_ended, on_value_change);
-    if (b) {
+    if (b)
+    {
         on_value_change();
     }
     return b;
@@ -24,7 +27,8 @@ bool Parameter_Base<Desc>::imgui(Action on_edit_ended, std::function<void()> on_
 template<typename Desc>
 void Parameter_Base<Desc>::push_change_in_history_if_edit_ended(Action on_edit_ended, std::function<void()> on_value_change)
 {
-    if (ImGui::IsItemDeactivatedAfterEdit()) {
+    if (ImGui::IsItemDeactivatedAfterEdit())
+    {
         push_change_in_history(on_edit_ended, on_value_change);
     }
 }

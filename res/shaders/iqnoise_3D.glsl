@@ -17,6 +17,7 @@ float iqnoise_3D(vec3 p)
 
     int n = ip.x + ip.y * 57 + 113 * ip.z;
 
+    // clang-format off
     return mix(mix(mix(_fn3D_hash(n + (0 + 57 * 0 + 113 * 0)),
                        _fn3D_hash(n + (1 + 57 * 0 + 113 * 0)), w.x),
                    mix(_fn3D_hash(n + (0 + 57 * 1 + 113 * 0)),
@@ -28,4 +29,5 @@ float iqnoise_3D(vec3 p)
                        _fn3D_hash(n + (1 + 57 * 1 + 113 * 1)), w.x),
                    w.y),
                w.z);
+    // clang-format on
 }

@@ -46,7 +46,8 @@ template<typename T>
 void WindowFactory_Base<T>::initialize_glfw()
 {
     glfwSetErrorCallback(WindowFactory_Base::glfw_error_callback);
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         const char* error_description;
         glfwGetError(&error_description);
         Log::error("[WindowFactory_Base::initialize_glfw] Initialization failed :\n{}", error_description);
@@ -73,14 +74,15 @@ void WindowFactory_Base<T>::initialize_imgui()
 #if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO : need to investigate that bug ; it is probably comming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
-    //io.ConfigViewportsNoAutoMerge = true;
-    //io.ConfigViewportsNoTaskBarIcon = true;
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+    // io.ConfigViewportsNoAutoMerge = true;
+    // io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup style
     ImGui::StyleColorsClassic();
     ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
         style.WindowRounding              = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
