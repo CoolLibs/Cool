@@ -14,7 +14,8 @@ void RenderableView::imgui_window()
 {
     view.imgui_window(
         render_target.imgui_texture_id(),
-        ImageSizeInsideView{render_target.current_size()});
+        ImageSizeInsideView{render_target.current_size()}
+    );
 }
 
 } // namespace Cool

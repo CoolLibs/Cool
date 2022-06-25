@@ -24,11 +24,13 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Name", name),
-                cereal::make_nvp("Value", value),
-                cereal::make_nvp("Metadata", metadata),
-                cereal::make_nvp("Default Value", default_value),
-                cereal::make_nvp("Default Metadata", default_metadata));
+        archive(
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("Value", value),
+            cereal::make_nvp("Metadata", metadata),
+            cereal::make_nvp("Default Value", default_value),
+            cereal::make_nvp("Default Metadata", default_metadata)
+        );
     }
 };
 
@@ -74,8 +76,11 @@ auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks c
 /// Returns true iff the `value` of the variable changed
 /// Calls the corresponding callback if either `value` or `metadata` change
 template<typename Value>
-auto imgui(Variable<Value>&       var,
-           ImGuiVariableCallbacks callbacks = {}) -> bool
+auto imgui(
+    Variable<Value>&       var,
+    ImGuiVariableCallbacks callbacks = {}
+)
+    -> bool
 {
     bool b = false;
 

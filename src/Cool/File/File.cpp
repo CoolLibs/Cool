@@ -82,7 +82,8 @@ std::string File::to_string(std::string_view file_path)
     stream.seekg(0, std::ios::beg);
     str.assign(
         (std::istreambuf_iterator<char>(stream)),
-        std::istreambuf_iterator<char>());
+        std::istreambuf_iterator<char>()
+    );
     stream.close();
     return str;
 }
@@ -122,7 +123,8 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
             {
                 return std::make_pair(
                     std::stoi(std::string{file_name.substr(pos + 1, end_pos - pos)}),
-                    std::string{file_name.substr(0, pos)});
+                    std::string{file_name.substr(0, pos)}
+                );
             }
             catch (std::exception&)
             {

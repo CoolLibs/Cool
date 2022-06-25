@@ -22,7 +22,8 @@ public:
      * @param on_value_change A callback that will be trigerred whenever a value changes
      */
     ParametersWithPresets(
-        const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {})
+        const std::string& file_extension, const std::string& folder_path, std::function<void()> on_value_change = []() {}
+    )
         : _presets(file_extension, folder_path)
         , _on_value_change(on_value_change)
     {
@@ -74,7 +75,8 @@ private:
     {
         archive(
             _values,
-            _presets);
+            _presets
+        );
     }
 };
 

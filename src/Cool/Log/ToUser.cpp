@@ -80,13 +80,16 @@ void ToUser::imgui_console_window()
 #endif
             if (local_time)
             {
-                ImGui::TextColored(color, "[%d:%d'%d\"%lld] [#%lld] [%s]",
-                                   local_time->tm_hour,
-                                   local_time->tm_min,
-                                   local_time->tm_sec,
-                                   std::chrono::duration_cast<std::chrono::milliseconds>(message.timestamp.time_since_epoch()).count() % 1000,
-                                   message.count,
-                                   message.category.c_str());
+                ImGui::TextColored(
+                    color,
+                    "[%d:%d'%d\"%lld] [#%lld] [%s]",
+                    local_time->tm_hour,
+                    local_time->tm_min,
+                    local_time->tm_sec,
+                    std::chrono::duration_cast<std::chrono::milliseconds>(message.timestamp.time_since_epoch()).count() % 1000,
+                    message.count,
+                    message.category.c_str()
+                );
             }
             ImGui::SameLine();
             ImGui::Text("%s", message.body.c_str());

@@ -71,8 +71,14 @@ std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInpu
             const auto replacement       = find_replacement(to_replace, in.replacements);
             if (replacement.has_value())
             {
-                return std::make_pair(replace_at(begin, end + in.delimiter_end.length(), in.text, *replacement),
-                                      begin + replacement->length());
+                return std::make_pair(
+                    replace_at(
+                        begin,
+                        end + in.delimiter_end.length(),
+                        in.text, *replacement
+                    ),
+                    begin + replacement->length()
+                );
             }
             else
             {

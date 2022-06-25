@@ -39,14 +39,18 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        archive(cereal::make_nvp("Description", _desc),
-                cereal::make_nvp("Value", _value));
+        archive(
+            cereal::make_nvp("Description", _desc),
+            cereal::make_nvp("Value", _value)
+        );
     }
     template<class Archive>
     void load(Archive& archive)
     {
-        archive(_desc,
-                _value);
+        archive(
+            _desc,
+            _value
+        );
         _value_before_edit = _value;
     }
 };

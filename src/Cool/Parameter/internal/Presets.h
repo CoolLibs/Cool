@@ -30,7 +30,8 @@ private:
     {
         archive(
             cereal::make_nvp("Values", values),
-            cereal::make_nvp("uuid", uuid));
+            cereal::make_nvp("uuid", uuid)
+        );
     }
 };
 
@@ -229,7 +230,8 @@ private:
                 {
                     std::filesystem::rename(
                         full_path(current_name()),
-                        new_path);
+                        new_path
+                    );
                     _presets[_current_preset_idx].name = _new_preset_name;
                     sort();
                 }
@@ -285,7 +287,8 @@ private:
                     {
                         cereal::JSONInputArchive archive(is);
                         archive(
-                            values_with_uuid);
+                            values_with_uuid
+                        );
                         _presets.push_back({name, values_with_uuid.values, values_with_uuid.uuid});
                     }
                     catch (...)
@@ -360,14 +363,16 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Current Preset uuid", current_uuid()));
+            cereal::make_nvp("Current Preset uuid", current_uuid())
+        );
     }
     template<class Archive>
     void load(Archive& archive)
     {
         long int preset_uuid;
         archive(
-            preset_uuid);
+            preset_uuid
+        );
         compute_current_preset_idx(preset_uuid);
         _last_uuid = preset_uuid;
     }

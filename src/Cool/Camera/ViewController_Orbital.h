@@ -55,10 +55,12 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Mode", _mode),
-                cereal::make_nvp("Translation Speed", _translation_speed),
-                cereal::make_nvp("Rotation Speed", _rotation_speed),
-                cereal::make_nvp("Distance to Orbit Center", _distance_to_orbit_center));
+        archive(
+            cereal::make_nvp("Mode", _mode),
+            cereal::make_nvp("Translation Speed", _translation_speed),
+            cereal::make_nvp("Rotation Speed", _rotation_speed),
+            cereal::make_nvp("Distance to Orbit Center", _distance_to_orbit_center)
+        );
     }
 };
 

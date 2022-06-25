@@ -38,10 +38,12 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Name", name),
-                cereal::make_nvp("Default", default_value),
-                cereal::make_nvp("Min", min_value),
-                cereal::make_nvp("Max", max_value));
+        archive(
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("Default", default_value),
+            cereal::make_nvp("Min", min_value),
+            cereal::make_nvp("Max", max_value)
+        );
     }
 };
 

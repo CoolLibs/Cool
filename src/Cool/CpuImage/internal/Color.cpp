@@ -19,7 +19,8 @@ void Color::set(float r, float g, float b)
     set(
         static_cast<unsigned char>(std::clamp(r * 255.f, 0.f, 255.f)),
         static_cast<unsigned char>(std::clamp(g * 255.f, 0.f, 255.f)),
-        static_cast<unsigned char>(std::clamp(b * 255.f, 0.f, 255.f)));
+        static_cast<unsigned char>(std::clamp(b * 255.f, 0.f, 255.f))
+    );
 }
 
 } // namespace Cool

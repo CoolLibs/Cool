@@ -23,10 +23,12 @@ Texture::Texture(img::Size size, vk::Format format, vk::ImageLayout layout_when_
 }
 
 Texture::Texture(const img::Image& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
-    : Texture{image_data.size(),
-              format,
-              layout_when_read_by_imgui_shader,
-              additional_usage_flags}
+    : Texture{
+          image_data.size(),
+          format,
+          layout_when_read_by_imgui_shader,
+          additional_usage_flags,
+      }
 {
     _vku.upload(
         Vulkan::context().g_Device,
@@ -34,7 +36,8 @@ Texture::Texture(const img::Image& image_data, vk::Format format, vk::ImageLayou
         image_data.data_size(),
         Vulkan::context().command_pool,
         Vulkan::context().memory_properties,
-        Vulkan::context().g_Queue);
+        Vulkan::context().g_Queue
+    );
 }
 
 Texture::Texture(std::string_view path)

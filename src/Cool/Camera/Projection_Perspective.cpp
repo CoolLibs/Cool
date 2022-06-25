@@ -4,10 +4,12 @@ namespace Cool {
 
 auto projection_matrix(const Projection_Perspective& proj, float aspect_ratio) -> glm::mat4
 {
-    return glm::perspective(proj.field_of_view_in_radians,
-                            aspect_ratio,
-                            proj.near_plane,
-                            proj.far_plane);
+    return glm::perspective(
+        proj.field_of_view_in_radians,
+        aspect_ratio,
+        proj.near_plane,
+        proj.far_plane
+    );
 }
 
 auto imgui(Projection_Perspective& proj) -> bool

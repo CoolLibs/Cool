@@ -200,10 +200,12 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
     app_manager._window_manager.main_window().check_for_fullscreen_toggles(key, scancode, action, mods);
     if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed())
     {
-        app_manager._app.on_keyboard_event({.key      = key,
-                                            .scancode = scancode,
-                                            .action   = action,
-                                            .mods     = ModifierKeys{mods}});
+        app_manager._app.on_keyboard_event({
+            .key      = key,
+            .scancode = scancode,
+            .action   = action,
+            .mods     = ModifierKeys{mods},
+        });
     }
 }
 
@@ -230,10 +232,12 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
     auto& app_manager = get_app_manager(window);
     if (app_manager._app.inputs_are_allowed())
     {
-        app_manager._app.on_mouse_button({.position = mouse_position(window),
-                                          .button   = button,
-                                          .action   = action,
-                                          .mods     = ModifierKeys{mods}});
+        app_manager._app.on_mouse_button({
+            .position = mouse_position(window),
+            .button   = button,
+            .action   = action,
+            .mods     = ModifierKeys{mods},
+        });
     }
 }
 
@@ -243,9 +247,11 @@ void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoff
     auto& app_manager = get_app_manager(window);
     if (app_manager._app.inputs_are_allowed())
     {
-        app_manager._app.on_mouse_scroll({.position = mouse_position(window),
-                                          .dx       = static_cast<float>(xoffset),
-                                          .dy       = static_cast<float>(yoffset)});
+        app_manager._app.on_mouse_scroll({
+            .position = mouse_position(window),
+            .dx       = static_cast<float>(xoffset),
+            .dy       = static_cast<float>(yoffset),
+        });
     }
 }
 

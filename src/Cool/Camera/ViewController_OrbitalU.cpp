@@ -15,8 +15,10 @@ void reset_transform(ViewController_Orbital& controller, Camera& camera)
 
 void set_distance_to_orbit_center(ViewController_Orbital& controller, Camera& camera, float distance)
 {
-    CameraU::set_translation(camera,
-                             controller.get_orbit_center(camera) - distance * camera.front_axis());
+    CameraU::set_translation(
+        camera,
+        controller.get_orbit_center(camera) - distance * camera.front_axis()
+    );
     controller.set_distance_to_orbit_center(distance);
 }
 

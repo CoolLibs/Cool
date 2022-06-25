@@ -54,7 +54,8 @@ auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> View
     return screen_to_view(
         window_to_screen(position, window),
         _position,
-        _size ? static_cast<float>(_size->height()) : 0.f);
+        _size ? static_cast<float>(_size->height()) : 0.f
+    );
 }
 
 bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
@@ -69,8 +70,10 @@ bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
         if (_size)
         {
             const auto img_size   = image_size.fit_into(*_size);
-            const auto pos_in_img = pos + glm::vec2{(img_size.width() - _size->width()) * 0.5f,
-                                                    (img_size.height() - _size->height()) * 0.5f};
+            const auto pos_in_img = pos + glm::vec2{
+                                              (img_size.width() - _size->width()) * 0.5f,
+                                              (img_size.height() - _size->height()) * 0.5f,
+                                          };
             return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width() &&
                    pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
         }
@@ -96,9 +99,11 @@ void View::dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCo
     const auto pos = to_view_space(event.event.position, event.window);
     if (contains(pos, event.image_size))
     {
-        _mouse_event_dispatcher.scroll_event().dispatch({.position = pos,
-                                                         .dx       = event.event.dx,
-                                                         .dy       = event.event.dy});
+        _mouse_event_dispatcher.scroll_event().dispatch({
+            .position = pos,
+            .dx       = event.event.dx,
+            .dy       = event.event.dy,
+        });
     }
 }
 
@@ -123,8 +128,10 @@ void View::store_window_size()
     const auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f)
     {
-        const auto new_size = std::make_optional(img::Size{static_cast<img::Size::DataType>(size.x),
-                                                           static_cast<img::Size::DataType>(size.y)});
+        const auto new_size = std::make_optional(img::Size{
+            static_cast<img::Size::DataType>(size.x),
+            static_cast<img::Size::DataType>(size.y),
+        });
 
         const bool has_changed = new_size != _size;
         _size                  = new_size;

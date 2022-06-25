@@ -83,14 +83,16 @@ Window_Vulkan& WindowFactory_Vulkan::make_window(const WindowConfig& config, Win
         Vulkan::context().g_PhysicalDevice,
         surface,
         &presentModeCount,
-        nullptr);
+        nullptr
+    );
 
     std::vector<VkPresentModeKHR> present_modes{presentModeCount};
     vkGetPhysicalDeviceSurfacePresentModesKHR(
         Vulkan::context().g_PhysicalDevice,
         surface,
         &presentModeCount,
-        present_modes.data());
+        present_modes.data()
+    );
 
     window._present_mode_mailbox_is_avaible =
         std::find(present_modes.begin(), present_modes.end(), VK_PRESENT_MODE_MAILBOX_KHR) != present_modes.end();

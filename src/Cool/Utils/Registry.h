@@ -38,8 +38,10 @@ public:
 
     T* get(Id id)
     {
-        auto p = std::lower_bound(list_.begin(), list_.end(), id,
-                                  [](const auto& a, const auto& b) { return a.first.id < b.id; });
+        auto p = std::lower_bound(
+            list_.begin(), list_.end(), id,
+            [](const auto& a, const auto& b) { return a.first.id < b.id; }
+        );
         if (p == list_.end() || p->first.id != id.id || !p->second)
         {
             return nullptr;
@@ -52,8 +54,10 @@ public:
 
     void remove(Id id)
     {
-        auto p = std::lower_bound(list_.begin(), list_.end(), id,
-                                  [](const auto& a, const auto& b) { return a.first.id < b.id; });
+        auto p = std::lower_bound(
+            list_.begin(), list_.end(), id,
+            [](const auto& a, const auto& b) { return a.first.id < b.id; }
+        );
         if (p == list_.end() || p->first.id != id.id || !p->second)
             return;
 
@@ -64,7 +68,8 @@ public:
         {
             list_.erase(
                 std::remove_if(list_.begin(), list_.end(), [](const auto& e) { return !e.second; }),
-                list_.end());
+                list_.end()
+            );
         }
     }
 

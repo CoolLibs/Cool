@@ -19,8 +19,10 @@ private:
 
 inline auto imgui_widget(Variable<glm::vec2>& var) -> bool
 {
-    return ImGui::DragFloat2(var.name.c_str(),
-                             glm::value_ptr(var.value));
+    return ImGui::DragFloat2(
+        var.name.c_str(),
+        glm::value_ptr(var.value)
+    );
 }
 
 inline auto imgui_widget(VariableMetadata<glm::vec2>&) -> bool

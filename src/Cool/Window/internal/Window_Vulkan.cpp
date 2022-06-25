@@ -18,7 +18,8 @@ Window_Vulkan::~Window_Vulkan()
         Vulkan::context().g_Instance,
         Vulkan::context().g_Device,
         &_vulkan_window_state.g_MainWindowData,
-        Vulkan::context().g_Allocator);
+        Vulkan::context().g_Allocator
+    );
 }
 
 void Window_Vulkan::check_for_swapchain_rebuild()
@@ -141,7 +142,8 @@ void Window_Vulkan::rebuild_swapchain()
         Vulkan::context().g_Allocator,
         _vulkan_window_state.g_MainWindowData.Width,
         _vulkan_window_state.g_MainWindowData.Height,
-        _vulkan_window_state.g_MinImageCount);
+        _vulkan_window_state.g_MinImageCount
+    );
 }
 
 void Window_Vulkan::cap_framerate_if(bool should_cap)

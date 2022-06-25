@@ -22,7 +22,8 @@ public:
         add_message(
             {Message::Severity::Info,
              std::string{category},
-             fmt::format(std::forward<Args>(args)...)});
+             fmt::format(std::forward<Args>(args)...)}
+        );
     }
 
     /**
@@ -37,7 +38,8 @@ public:
         add_message(
             {Message::Severity::Warn,
              std::string{category},
-             fmt::format(std::forward<Args>(args)...)});
+             fmt::format(std::forward<Args>(args)...)}
+        );
     }
 
     /**
@@ -52,7 +54,8 @@ public:
         add_message(
             {Message::Severity::Error,
              std::string{category},
-             fmt::format(std::forward<Args>(args)...)});
+             fmt::format(std::forward<Args>(args)...)}
+        );
     }
 
     /**

@@ -67,7 +67,8 @@ public:
     {
         _shader.create_program({ShaderCode::FromCode(
             ShaderType::Compute,
-            _boilerplate_source_code + std::string(source_code))});
+            _boilerplate_source_code + std::string(source_code)
+        )});
     }
     /// <summary>
     /// Calls the compute shader.
@@ -90,7 +91,8 @@ public:
         GLDebug(glDispatchCompute(
             (nb_computations_x - 1) / WorkGroupSizeX + 1,
             (nb_computations_y - 1) / WorkGroupSizeY + 1,
-            (nb_computations_z - 1) / WorkGroupSizeZ + 1));
+            (nb_computations_z - 1) / WorkGroupSizeZ + 1
+        ));
         GLDebug(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
     }
 

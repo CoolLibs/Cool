@@ -32,8 +32,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Camera", _camera),
-                cereal::make_nvp("ViewController", _view_controller));
+        archive(
+            cereal::make_nvp("Camera", _camera),
+            cereal::make_nvp("ViewController", _view_controller)
+        );
     }
 };
 

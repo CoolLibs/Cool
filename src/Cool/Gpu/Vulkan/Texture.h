@@ -9,14 +9,18 @@ class Texture {
 public:
     struct Id;
     Texture() = default;
-    Texture(img::Size              size,
-            vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
-            vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0);
-    Texture(const img::Image&      image_data,
-            vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
-            vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
-            vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0);
+    Texture(
+        img::Size              size,
+        vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
+        vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
+        vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0
+    );
+    Texture(
+        const img::Image&      image_data,
+        vk::Format             format                           = vk::Format::eR8G8B8A8Unorm,
+        vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
+        vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0
+    );
     Texture(std::string_view path);
 
     /**

@@ -50,9 +50,13 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     float x2 = cosf(*value_p) * radius + center.x;
     float y2 = -sinf(*value_p) * radius + center.y;
 
-    ImU32       col32     = ImGui::GetColorU32(is_active    ? ImGuiCol_FrameBgActive
-                                               : is_hovered ? ImGuiCol_FrameBgHovered
-                                                            : ImGuiCol_FrameBg);
+    ImU32 col32 = ImGui::GetColorU32(
+        is_active
+            ? ImGuiCol_FrameBgActive
+        : is_hovered
+            ? ImGuiCol_FrameBgHovered
+            : ImGuiCol_FrameBg
+    );
     ImU32       col32line = ImGui::GetColorU32(ImGuiCol_SliderGrabActive);
     ImU32       col32text = ImGui::GetColorU32(ImGuiCol_Text);
     ImDrawList* draw_list = ImGui::GetWindowDrawList();

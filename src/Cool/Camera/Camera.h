@@ -56,8 +56,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Transform", _transform_matrix),
-                cereal::make_nvp("Projection", _projection));
+        archive(
+            cereal::make_nvp("Transform", _transform_matrix),
+            cereal::make_nvp("Projection", _projection)
+        );
     }
 };
 

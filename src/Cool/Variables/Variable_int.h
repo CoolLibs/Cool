@@ -17,17 +17,21 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Min Value", min_value),
-                cereal::make_nvp("Max Value", max_value));
+        archive(
+            cereal::make_nvp("Min Value", min_value),
+            cereal::make_nvp("Max Value", max_value)
+        );
     }
 };
 
 inline auto imgui_widget(Variable<int>& var) -> bool
 {
-    return ImGui::SliderInt(var.name.c_str(),
-                            &var.value,
-                            var.metadata.min_value,
-                            var.metadata.max_value);
+    return ImGui::SliderInt(
+        var.name.c_str(),
+        &var.value,
+        var.metadata.min_value,
+        var.metadata.max_value
+    );
 }
 
 inline auto imgui_widget(VariableMetadata<int>& meta) -> bool

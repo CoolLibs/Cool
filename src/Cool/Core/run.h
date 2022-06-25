@@ -26,9 +26,11 @@ inline void shut_down()
 }
 
 template<typename App>
-void run(const std::vector<WindowConfig>& windows_configs,
-         InitConfig                       init_config        = {},
-         AppManagerConfig                 app_manager_config = {})
+void run(
+    const std::vector<WindowConfig>& windows_configs,
+    InitConfig                       init_config        = {},
+    AppManagerConfig                 app_manager_config = {}
+)
 {
     // Init
     Cool::Log::initialize(init_config.log_pattern);

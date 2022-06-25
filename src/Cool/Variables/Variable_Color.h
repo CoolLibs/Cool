@@ -38,11 +38,13 @@ private:
 
 inline auto imgui_widget(Variable<Color>& var) -> bool
 {
-    return ImGui::ColorEdit3(var.name.c_str(),
-                             glm::value_ptr(var.value.rgb),
-                             ImGuiColorEditFlags_Float | (var.metadata.is_hdr
-                                                              ? ImGuiColorEditFlags_HDR
-                                                              : 0));
+    return ImGui::ColorEdit3(
+        var.name.c_str(),
+        glm::value_ptr(var.value.rgb),
+        // Flags:
+        ImGuiColorEditFlags_Float |
+            (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
+    );
 }
 
 inline auto imgui_widget(VariableMetadata<Color>& meta) -> bool

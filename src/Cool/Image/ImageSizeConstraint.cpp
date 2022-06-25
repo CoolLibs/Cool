@@ -22,9 +22,11 @@ img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) cons
                              ? _aspect_ratio.asFloat()
                              : img::SizeU::aspect_ratio(frame_size);
 
-    auto nb_pixels = static_cast<float>(_is_controlling_nb_pixels
-                                            ? _nb_pixels
-                                            : frame_size.width() * frame_size.height());
+    auto nb_pixels = static_cast<float>(
+        _is_controlling_nb_pixels
+            ? _nb_pixels
+            : frame_size.width() * frame_size.height()
+    );
 
     return {
         std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))), static_cast<img::Size::DataType>(1)),

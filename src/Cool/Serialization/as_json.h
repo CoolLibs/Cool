@@ -24,7 +24,8 @@ void from_json(T& data, std::string_view file_path)
         {
             cereal::JSONInputArchive archive(is);
             archive(
-                data);
+                data
+            );
         }
         catch (const std::exception& e)
         {
@@ -54,7 +55,8 @@ void to_json(const T& data, std::string_view file_path, std::string_view field_n
         {
             cereal::JSONOutputArchive archive(os);
             archive(
-                cereal::make_nvp(field_name.data(), data));
+                cereal::make_nvp(field_name.data(), data)
+            );
         }
     }
 }
