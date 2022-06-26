@@ -19,7 +19,7 @@ struct Vec2Desc {
     {
         ImGui::PushItemWidth(150);
         ImGui::PushID(this);
-        bool b = ImGui::SliderFloat("", &value.x, min_value.x, max_value.x);
+        bool b = ImGui::SliderFloat("##1", &value.x, min_value.x, max_value.x);
         ImGui::SameLine();
         b |= ImGui::SliderFloat(name.c_str(), &value.y, min_value.y, max_value.y);
         ImGui::PopID();

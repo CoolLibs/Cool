@@ -23,11 +23,11 @@ struct FloatDesc {
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem(name.c_str()))
         {
-            ImGui::DragFloat("", &min_value);
+            ImGui::DragFloat("##1", &min_value);
             ImGui::SameLine();
             ImGui::Text("to");
             ImGui::SameLine();
-            ImGui::DragFloat(" ", &max_value);
+            ImGui::DragFloat("##2", &max_value);
             ImGui::EndPopup();
         }
         ImGui::PopID();

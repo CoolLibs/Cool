@@ -37,11 +37,11 @@ inline auto imgui_widget(Variable<int>& var) -> bool
 inline auto imgui_widget(VariableMetadata<int>& meta) -> bool
 {
     bool b = false;
-    b |= ImGui::DragInt("", &meta.min_value);
+    b |= ImGui::DragInt("##1", &meta.min_value);
     ImGui::SameLine();
     ImGui::Text("to");
     ImGui::SameLine();
-    b |= ImGui::DragInt(" ", &meta.max_value);
+    b |= ImGui::DragInt("##2", &meta.max_value);
     return b;
 }
 

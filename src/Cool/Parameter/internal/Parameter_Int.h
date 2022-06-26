@@ -21,11 +21,11 @@ struct IntDesc {
         ImGui::PushID(this);
         if (ImGui::BeginPopupContextItem(name.c_str()))
         {
-            ImGui::DragInt("", &min_value);
+            ImGui::DragInt("##1", &min_value);
             ImGui::SameLine();
             ImGui::Text("to");
             ImGui::SameLine();
-            ImGui::DragInt(" ", &max_value);
+            ImGui::DragInt("##2", &max_value);
             ImGui::EndPopup();
         }
         ImGui::PopID();
