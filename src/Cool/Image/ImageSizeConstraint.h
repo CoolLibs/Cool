@@ -25,7 +25,7 @@ public:
     bool      wants_to_constrain_aspect_ratio() const { return _is_controlling_aspect_ratio; }
     img::Size applied_to(img::Size frame_size) const;
 
-    void imgui();
+    bool imgui();
 
 private:
     img::Size compute_constraints_on(img::Size frame_size) const;

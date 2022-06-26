@@ -13,13 +13,13 @@ enum class BuildMode {
 {
     switch (build_mode) {
     case BuildMode::Debug:
-#if defined(DEBUG)
+#if DEBUG
         return true;
 #else
         return false;
 #endif
     case BuildMode::Release:
-#if defined(DEBUG)
+#if DEBUG
         return false;
 #else
         return true;

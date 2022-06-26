@@ -48,7 +48,7 @@ private:
     std::vector<Action> _tmp_action_buffer;
     int                 _index                        = -1;
     int                 _index_of_cumul_nb_of_actions = -1;
-#if defined(DEBUG)
+#if DEBUG
     bool _an_undo_group_is_open = false;
 #endif
     /*

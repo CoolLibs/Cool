@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-#if defined(DEBUG)
+#if DEBUG
 #define ASSERT_SHADER_IS_BOUND              \
     GLint id;                               \
     glGetIntegerv(GL_CURRENT_PROGRAM, &id); \

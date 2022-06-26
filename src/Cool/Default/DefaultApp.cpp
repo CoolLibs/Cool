@@ -71,7 +71,7 @@ void DefaultApp::imgui_windows()
         ImGui::Begin("Camera");
         _camera.imgui();
         ImGui::End();
-#if defined(DEBUG)
+#if DEBUG
         if (_show_imgui_debug) {
             ImGui::Begin("Debug", &_show_imgui_debug);
             ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
@@ -88,27 +88,42 @@ void DefaultApp::imgui_windows()
     }
 }
 
-void DefaultApp::imgui_menus()
+void DefaultApp::menu_preview()
 {
     if (ImGui::BeginMenu("Preview")) {
         _preview_constraint.imgui();
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::menu_windows()
+{
     if (ImGui::BeginMenu("Windows")) {
         Cool::Log::ToUser::imgui_toggle_console();
         for (auto& view : _views) {
             view.view.imgui_open_close_checkbox();
         }
-#if defined(DEBUG)
+#if DEBUG
         ImGui::Separator();
         ImGui::Checkbox("Debug", &_show_imgui_debug);
 #endif
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::menu_export()
+{
     if (ImGui::BeginMenu("Export")) {
         _exporter.imgui_menu_items();
         ImGui::EndMenu();
     }
+}
+
+void DefaultApp::imgui_menus()
+{
+    menu_preview();
+    menu_windows();
+    menu_export();
 }
 
 void DefaultApp::on_keyboard_event(const Cool::KeyboardEvent& event)

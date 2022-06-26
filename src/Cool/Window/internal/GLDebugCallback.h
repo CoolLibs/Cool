@@ -2,6 +2,8 @@
 
 #if defined(COOL_OPENGL) && defined(DEBUG)
 
+#include <Cool/Log/ToUser.h>
+
 namespace Cool {
 
 static std::vector<unsigned int> AlreadydisplayedIds;
@@ -55,10 +57,10 @@ void APIENTRY GLDebugCallback(
 
     // Log
     if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH) {
-        Log::error(message);
+        Log::ToUser::error("OpenGL Error", message);
     }
     else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY) {
-        Log::warn(message);
+        Log::ToUser::warn("OpenGL Warning", message);
     }
     else {
         // Log::info(message);

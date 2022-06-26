@@ -15,7 +15,7 @@ namespace Cool {
 void History::begin_undo_group()
 {
     _tmp_action_buffer.resize(0);
-#if defined(DEBUG)
+#if DEBUG
     _an_undo_group_is_open = true;
 #endif
 }
@@ -34,7 +34,7 @@ void History::end_undo_group()
             _index++;
         }
     }
-#if defined(DEBUG)
+#if DEBUG
     else {
         Log::warn("[History::end_undo_group] Empty undo group");
     }

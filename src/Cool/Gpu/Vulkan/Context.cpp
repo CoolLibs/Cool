@@ -6,7 +6,7 @@
 #include "internal/check_result.h"
 
 namespace Cool::Vulkan {
-#if defined(DEBUG)
+#if DEBUG
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT /*flags*/, VkDebugReportObjectTypeEXT /*objectType*/, uint64_t /*object*/, size_t /*location*/, int32_t /*messageCode*/, const char* /*pLayerPrefix*/, const char* pMessage, void* /*pUserData*/)
 {
     Log::warn("[vulkan] {}\n", pMessage);
@@ -29,7 +29,7 @@ Context::Context()
         app_info.sType                      = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         app_info.apiVersion                 = VK_MAKE_VERSION(major_version(COOL_VULKAN_VERSION), minor_version(COOL_VULKAN_VERSION), 0),
         create_info.pApplicationInfo        = &app_info;
-#if defined(DEBUG)
+#if DEBUG
         // Enabling validation layers
         const char* layers[]            = {"VK_LAYER_KHRONOS_validation"};
         create_info.enabledLayerCount   = 1;
@@ -180,7 +180,7 @@ void Context::destroy1()
 {
     vkDestroyCommandPool(g_Device, command_pool, g_Allocator);
     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
-#if defined(DEBUG)
+#if DEBUG
     // Remove the debug report callback
     auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
     vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);

@@ -3,7 +3,7 @@
 #include <Cool/Path/Path.h>
 #include <exe_path/exe_path.h>
 #include <filesystem>
-#if defined(DEBUG)
+#if DEBUG
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <doctest/doctest.h>
 #endif
@@ -18,7 +18,7 @@ struct InitConfig {
 
     /// Describes which (if any) tests you want to run
     std::function<void()> run_the_tests = []() {
-#if defined(DEBUG)
+#if DEBUG
         doctest::Context{}.run();
 #endif
     };

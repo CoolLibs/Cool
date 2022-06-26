@@ -7,12 +7,14 @@ namespace Cool {
 void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
 {
     if (_is_open) {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
         ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
         store_window_size();
         store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
         display_image(image_texture_id, image_size_inside_view);
         ImGui::End();
+        ImGui::PopStyleVar();
     }
     else {
         _size.reset();
@@ -109,9 +111,14 @@ void View::store_window_size()
 {
     const auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f) {
-        _size.emplace(
-            static_cast<img::Size::DataType>(size.x),
-            static_cast<img::Size::DataType>(size.y));
+        const auto new_size = std::make_optional(img::Size{static_cast<img::Size::DataType>(size.x),
+                                                           static_cast<img::Size::DataType>(size.y)});
+
+        const bool has_changed = new_size != _size;
+        _size                  = new_size;
+        if (has_changed) {
+            resize_event().dispatch({});
+        }
     }
     else {
         _size.reset();

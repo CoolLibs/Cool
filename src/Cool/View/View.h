@@ -22,7 +22,8 @@ public:
     void dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event);
     void dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event);
     void dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event);
-    auto mouse_events() -> MouveEventDispatcher<ViewCoordinates>& { return _mouse_event_dispatcher; }
+    auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
+    auto resize_event() -> auto& { return _resize_event_dispatcher; }
 
 private:
     void store_window_size();
@@ -47,6 +48,7 @@ private:
     std::optional<img::Size>              _size              = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                     _position{};
     MouveEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
+    EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
 };
 
 } // namespace Cool

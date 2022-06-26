@@ -21,7 +21,7 @@ void FrameBuffer::setSize(img::Size size)
     destroyAttachments();
     createAttachments(size);
     attachAttachments();
-#if defined(DEBUG)
+#if DEBUG
     bind();
     GLDebug(auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE) {

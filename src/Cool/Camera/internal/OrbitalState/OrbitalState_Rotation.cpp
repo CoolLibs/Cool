@@ -12,7 +12,7 @@ OrbitalState_Rotation::OrbitalState_Rotation(const Camera& camera)
 {
 }
 
-void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta)
+auto OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta) -> bool
 {
     const auto orbit_center = controller.get_orbit_center(camera);
     const auto up_axis      = [&]() {
@@ -33,11 +33,13 @@ void OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
     camera.rotate(-controller._rotation_speed * delta.x, up_axis);
     camera.rotate(+controller._rotation_speed * delta.y, camera.right_axis());
     camera.translate(+orbit_center);
+    return true;
 }
 
-void OrbitalState_Rotation::on_drag_stop(ViewController_Orbital& controller, Camera&)
+auto OrbitalState_Rotation::on_drag_stop(ViewController_Orbital& controller, Camera&) -> bool
 {
     controller.set_state(OrbitalState_Idle{});
+    return false;
 }
 
 } // namespace Cool

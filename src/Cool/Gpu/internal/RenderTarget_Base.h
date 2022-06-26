@@ -16,6 +16,7 @@ public:
     img::Size          desired_size() const { return _desired_size; }
     void               set_size(img::Size size) { _desired_size = size; }
     RenderTarget_Impl& get() { return _impl; } // TODO(JF) This is a temporary solution until the abstraction is fully done
+    auto               needs_resizing() const -> bool { return _impl.size() != desired_size(); }
 
 private:
     void resize_if_necessary();

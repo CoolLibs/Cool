@@ -6,8 +6,8 @@ namespace Cool {
 
 class OrbitalState_Idle : public IOrbitalState {
 public:
-    void on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods) override;
-    void on_wheel_scroll(ViewController_Orbital& controller, Camera& camera, float dl) override;
+    auto on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods) -> bool override;
+    auto on_wheel_scroll(ViewController_Orbital& controller, Camera& camera, float dl) -> bool override;
 };
 
 } // namespace Cool
