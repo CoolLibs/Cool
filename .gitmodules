@@ -55,3 +55,6 @@
 [submodule "tooling"]
 	path = tooling
 	url = https://github.com/CoolLibs/tooling
+[submodule "lib/op"]
+	path = lib/op
+	url = https://github.com/CoolLibs/op
