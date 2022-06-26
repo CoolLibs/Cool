@@ -1,6 +1,7 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
+#include "Cool/StrongTypes/Angle.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
@@ -15,16 +16,17 @@ public:
     explicit Shader(ShaderModules&&... shader_modules);
 
     void bind() const;
-    void set_uniform(std::string_view uniform_name, int v) const;
-    void set_uniform(std::string_view uniform_name, unsigned int v) const;
-    void set_uniform(std::string_view uniform_name, bool v) const;
-    void set_uniform(std::string_view uniform_name, float v) const;
-    void set_uniform(std::string_view uniform_name, const glm::vec2& v) const;
-    void set_uniform(std::string_view uniform_name, const glm::vec3& v) const;
-    void set_uniform(std::string_view uniform_name, const glm::vec4& v) const;
-    void set_uniform(std::string_view uniform_name, const glm::mat2& mat) const;
-    void set_uniform(std::string_view uniform_name, const glm::mat3& mat) const;
-    void set_uniform(std::string_view uniform_name, const glm::mat4& mat) const;
+    void set_uniform(std::string_view uniform_name, int) const;
+    void set_uniform(std::string_view uniform_name, unsigned int) const;
+    void set_uniform(std::string_view uniform_name, bool) const;
+    void set_uniform(std::string_view uniform_name, float) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec2&) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec3&) const;
+    void set_uniform(std::string_view uniform_name, const glm::vec4&) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat2&) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat3&) const;
+    void set_uniform(std::string_view uniform_name, const glm::mat4&) const;
+    void set_uniform(std::string_view uniform_name, Angle) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

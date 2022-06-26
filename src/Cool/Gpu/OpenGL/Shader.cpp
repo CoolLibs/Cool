@@ -85,6 +85,10 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::mat4& mat) co
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniformMatrix4fv(uniform_location(uniform_name), 1, GL_FALSE, glm::value_ptr(mat)));
 }
+void Shader::set_uniform(std::string_view uniform_name, Angle angle) const
+{
+    set_uniform(uniform_name, angle.as_radians());
+}
 
 } // namespace Cool::OpenGL
 

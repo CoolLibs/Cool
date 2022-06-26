@@ -5,7 +5,7 @@
 
 namespace Cool {
 
-constexpr float TAU = std::numbers::pi * 2.f;
+constexpr float TAU = std::numbers::pi_v<float> * 2.f;
 
 struct Radians
     : public op::Addable<Radians>
@@ -18,6 +18,15 @@ struct Radians
 
     constexpr explicit Radians(float value)
         : value{value} {}
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Radians", value));
+    }
 };
 
 constexpr Radians turns_to_radians(float turns)
@@ -56,6 +65,15 @@ public:
     float as_degrees() const { return radians_to_degrees(value); }
 
     Radians value{};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(cereal::make_nvp("Radians", value));
+    }
 };
 
 } // namespace Cool
