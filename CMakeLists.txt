@@ -139,6 +139,9 @@ target_link_libraries(Cool PUBLIC serv::serv)
 # stringify
 add_subdirectory(lib/stringify)
 target_link_libraries(Cool PUBLIC stringify::stringify)
+# op
+add_subdirectory(lib/op)
+target_link_libraries(Cool PUBLIC op::op)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
