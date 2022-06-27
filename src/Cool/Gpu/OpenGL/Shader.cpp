@@ -90,6 +90,11 @@ void Shader::set_uniform(std::string_view uniform_name, Angle angle) const
     set_uniform(uniform_name, angle.as_radians());
 }
 
+void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
+{
+    set_uniform(uniform_name, color.value);
+}
+
 } // namespace Cool::OpenGL
 
 #endif

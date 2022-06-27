@@ -2,6 +2,7 @@
 #if defined(COOL_OPENGL)
 
 #include "Cool/StrongTypes/Angle.h"
+#include "Cool/StrongTypes/RgbColor.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
@@ -27,6 +28,7 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::mat3&) const;
     void set_uniform(std::string_view uniform_name, const glm::mat4&) const;
     void set_uniform(std::string_view uniform_name, Angle) const;
+    void set_uniform(std::string_view uniform_name, RgbColor) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;
