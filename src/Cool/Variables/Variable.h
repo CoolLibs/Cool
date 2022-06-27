@@ -79,8 +79,7 @@ template<typename Value>
 auto imgui(
     Variable<Value>&       var,
     ImGuiVariableCallbacks callbacks = {}
-)
-    -> bool
+) -> bool
 {
     bool b = false;
 
