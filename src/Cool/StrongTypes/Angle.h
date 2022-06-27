@@ -76,6 +76,11 @@ private:
     }
 };
 
+inline auto to_string(Cool::Angle angle) -> std::string
+{
+    return std::to_string(angle.as_turns()) + " turn";
+}
+
 } // namespace Cool
 
 constexpr Cool::Angle operator""_turn(long double turns)
@@ -106,9 +111,4 @@ constexpr Cool::Angle operator""_degrees(unsigned long long int degrees)
 constexpr Cool::Angle operator""_radians(unsigned long long int radians)
 {
     return operator""_radians(static_cast<long double>(radians));
-}
-
-inline auto to_string(Cool::Angle angle) -> std::string
-{
-    return std::to_string(angle.as_turns()) + " turn";
 }
