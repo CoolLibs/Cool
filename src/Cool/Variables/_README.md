@@ -8,7 +8,7 @@
 
 - Add your new type in the type-from-string associations in "Cool/lib/type_from_string/generator.py" and run the script.
 
-- _If you are working on CoolLab:_ Add your new type in "code_generator.py" and run the script.
+- _If you are working on CoolLab:_ Add your new type in "generate_variables.py" and run the script.
 
 - You might need to delete "last-session-cache.json" if you get weird errors like "An Input has an invalid default variable!".
 
