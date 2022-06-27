@@ -9,3 +9,4 @@
 #include "Variable_int.h"
 #include "Variable_vec2.h"
 #include "Variable_vec3.h"
+#include "Variable_vec4.h"
