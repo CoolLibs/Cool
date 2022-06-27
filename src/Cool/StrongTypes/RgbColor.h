@@ -3,15 +3,13 @@
 #include <op/op.hpp>
 
 namespace Cool {
-struct RgbColor : public op::Addable<RgbColor>
+struct RgbColor
+    : public op::Addable<RgbColor>
     , public op::Subtractable<RgbColor>
     , public op::Multipliable<RgbColor>
     , public op::Scalable<RgbColor>
     , public op::EqualityComparable<RgbColor> {
-    glm::vec3 value;
-    constexpr RgbColor() = default;
-    constexpr explicit RgbColor(glm::vec3 value)
-        : value{value} {}
+    glm::vec3 value{};
 
 private:
     // Serialization
