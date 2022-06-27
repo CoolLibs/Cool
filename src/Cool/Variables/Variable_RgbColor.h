@@ -1,30 +1,16 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <Cool/StrongTypes/RgbColor.h>
 #include "Variable.h"
 
 namespace Cool {
 
-struct Color {
-    glm::vec3 rgb;
-
-    friend auto operator==(const Color&, const Color&) -> bool = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(cereal::make_nvp("RGB", rgb));
-    }
-};
-
 template<>
-struct VariableMetadata<Color> {
+struct VariableMetadata<RgbColor> {
     bool is_hdr = true;
 
-    friend auto operator<=>(const VariableMetadata<Color>&, const VariableMetadata<Color>&) = default;
+    friend auto operator<=>(const VariableMetadata<RgbColor>&, const VariableMetadata<RgbColor>&) = default;
 
 private:
     // Serialization
@@ -36,18 +22,18 @@ private:
     }
 };
 
-inline auto imgui_widget(Variable<Color>& var) -> bool
+inline auto imgui_widget(Variable<RgbColor>& var) -> bool
 {
     return ImGui::ColorEdit3(
         var.name.c_str(),
-        glm::value_ptr(var.value.rgb),
+        glm::value_ptr(var.value.value),
         // Flags:
         ImGuiColorEditFlags_Float |
             (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
     );
 }
 
-inline auto imgui_widget(VariableMetadata<Color>& meta) -> bool
+inline auto imgui_widget(VariableMetadata<RgbColor>& meta) -> bool
 {
     bool b = false;
     b |= ImGui::Checkbox("HDR", &meta.is_hdr);
