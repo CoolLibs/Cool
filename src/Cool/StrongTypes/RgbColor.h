@@ -22,10 +22,10 @@ private:
         archive(cereal::make_nvp("RGB", value));
     }
 };
-} // namespace Cool
 
 inline auto to_string(Cool::RgbColor color) -> std::string
 {
     return to_string(color.value);
-    // return "(" + std::to_string(color.value.r) + "," + std::to_string(color.value.g) + "," + std::to_string(color.value.b) + ")";
 }
+
+} // namespace Cool
