@@ -61,3 +61,6 @@
 [submodule "lib/type_from_string"]
 	path = lib/type_from_string
 	url = https://github.com/CoolLibs/type_from_string
+[submodule "lib/reg"]
+	path = lib/reg
+	url = https://github.com/CoolLibs/reg

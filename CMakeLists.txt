@@ -142,6 +142,9 @@ target_link_libraries(Cool PUBLIC stringify::stringify)
 # op
 add_subdirectory(lib/op)
 target_link_libraries(Cool PUBLIC op::op)
+# reg
+add_subdirectory(lib/reg)
+target_link_libraries(Cool PUBLIC reg::reg)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
