@@ -10,6 +10,10 @@ struct RgbColor
     , public op::Scalable<RgbColor>
     , public op::EqualityComparable<RgbColor> {
     glm::vec3 value{};
+    constexpr RgbColor() = default;
+    constexpr explicit RgbColor(const glm::vec3& value)
+        : value{value}
+    {}
 
 private:
     // Serialization
