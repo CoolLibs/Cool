@@ -3,6 +3,7 @@
 #include "Variable_Angle.h"
 #include "Variable_Camera.h"
 #include "Variable_Direction2D.h"
+#include "Variable_Hue.h"
 #include "Variable_RgbColor.h"
 #include "Variable_bool.h"
 #include "Variable_float.h"
