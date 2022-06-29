@@ -7,7 +7,7 @@ namespace Cool {
 
 namespace internal {
 
-struct ErrorMessage {
+struct ErrorWithMetadata{
     Error                                 error;
     std::chrono::system_clock::time_point timestamp;
     size_t                                count;
@@ -15,6 +15,6 @@ struct ErrorMessage {
 
 } // namespace internal
 
-using ErrorId = reg::Id<internal::ErrorMessage>;
+using ErrorId = reg::Id<internal::ErrorWithMetadata>;
 
 } // namespace Cool

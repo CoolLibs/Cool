@@ -21,7 +21,7 @@ void ErrorLogger::refresh(ErrorId& id, const Error& error)
     }
     else
     {
-        _errors.with_mutable_ref(id, [&](internal::ErrorMessage& err) {
+        _errors.with_mutable_ref(id, [&](internal::ErrorWithMetadata& err) {
             err.error = error;
             err.count++;
             err.timestamp = std::chrono::system_clock::now();

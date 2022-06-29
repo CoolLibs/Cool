@@ -3,7 +3,8 @@
 namespace Cool {
 
 struct Error {
-    std::string name;
+    std::string category;
+    std::string detailed_message;
 };
 
 } // namespace Cool
