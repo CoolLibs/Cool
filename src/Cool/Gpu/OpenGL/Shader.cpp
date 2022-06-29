@@ -97,7 +97,7 @@ void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
 
 void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) const
 {
-    set_uniform(uniform_name, direction.value.as_radians());
+    set_uniform(uniform_name, direction.value);
 }
 
 } // namespace Cool::OpenGL
