@@ -23,7 +23,7 @@ inline auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
     return ImGuiExtras::angle_wheel(
         var.name.c_str(),
-        &var.value.value.value.value
+        &var.value.angle.value.value
     );
 }
 
