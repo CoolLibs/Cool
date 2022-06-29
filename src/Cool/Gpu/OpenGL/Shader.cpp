@@ -100,6 +100,11 @@ void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) c
     set_uniform(uniform_name, direction.value);
 }
 
+void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
+{
+    set_uniform(uniform_name, hue.value);
+}
+
 } // namespace Cool::OpenGL
 
 #endif
