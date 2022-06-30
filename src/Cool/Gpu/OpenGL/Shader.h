@@ -2,11 +2,13 @@
 #if defined(COOL_OPENGL)
 
 #include "Cool/StrongTypes/Angle.h"
+#include "Cool/StrongTypes/ColorPalette.h"
 #include "Cool/StrongTypes/Direction2D.h"
 #include "Cool/StrongTypes/Hue.h"
 #include "Cool/StrongTypes/RgbColor.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
+
 
 namespace Cool::OpenGL {
 
@@ -33,6 +35,7 @@ public:
     void set_uniform(std::string_view uniform_name, RgbColor) const;
     void set_uniform(std::string_view uniform_name, Direction2D) const;
     void set_uniform(std::string_view uniform_name, Hue) const;
+    void set_uniform(std::string_view uniform_name, ColorPalette) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

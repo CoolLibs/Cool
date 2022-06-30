@@ -105,6 +105,11 @@ void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
     set_uniform(uniform_name, hue.get());
 }
 
+void Shader::set_uniform(std::string_view uniform_name, ColorPalette palette) const
+{
+    set_uniform(uniform_name, palette.value);
+}
+
 } // namespace Cool::OpenGL
 
 #endif
