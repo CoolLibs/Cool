@@ -22,14 +22,10 @@ private:
 inline auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
     auto angle       = var.value.as_angle();
-    bool has_changed = ImGuiExtras::angle_wheel(
-        var.name.c_str(),
-        &angle.value.value
-    );
+    bool has_changed = angle_widget(var.name, angle);
     var.value.set_direction_from_angle(angle);
     return has_changed;
 }
-// bool has_changed = angle_widget(var.name, angle);
 
 inline auto imgui_widget(VariableMetadata<Direction2D>&) -> bool
 {
