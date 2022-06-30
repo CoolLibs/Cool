@@ -313,246 +313,8 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
     }
 }
 
-// Helper for ColorPicker4()
-static void RenderArrowsForVerticalBar(ImDrawList* draw_list, ImVec2 pos, ImVec2 half_sz, float bar_w, float alpha)
+bool hue_wheel(const char* label, float* hue)
 {
-    ImU32 alpha8 = IM_F32_TO_INT8_SAT(alpha);
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x, pos.y + half_sz.x + 1), ImVec2(half_sz.x + 2, half_sz.y + 1), ImGuiDir_Down, IM_COL32(0, 0, 0, alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x, pos.y + half_sz.x), half_sz, ImGuiDir_Down, IM_COL32(255, 255, 255, alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x, pos.y + bar_w - half_sz.x - 1), ImVec2(half_sz.x + 2, half_sz.y + 1), ImGuiDir_Up, IM_COL32(0, 0, 0, alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x, pos.y + bar_w - half_sz.x), half_sz, ImGuiDir_Up, IM_COL32(255, 255, 255, alpha8));
-}
-
-// Note: ColorPicker4() only accesses 3 floats if ImGuiColorEditFlags_NoAlpha flag is set.
-// (In C++ the 'float col[4]' notation for a function argument is equivalent to 'float* col', we only specify a size to facilitate understanding of the code.)
-// FIXME: we adjust the big color square height based on item width, which may cause a flickering feedback loop (if automatic height makes a vertical scrollbar appears, affecting automatic width..)
-// FIXME: this is trying to be aware of style.Alpha but not fully correct. Also, the color wheel will have overlapping glitches with (style.Alpha < 1.0)
-bool hue_widget(const char* label, float* h, ImGuiColorEditFlags flags)
-{
-    float         col[4] = {*h, 0., 0., 0.};
-    ImGuiContext& g      = *GImGui;
-    ImGuiWindow*  window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImDrawList* draw_list = window->DrawList;
-    ImGuiStyle& style     = g.Style;
-    ImGuiIO&    io        = g.IO;
-
-    const float width = ImGui::CalcItemWidth();
-    g.NextItemData.ClearFlags();
-
-    ImGui::PushID(label);
-    ImGui::BeginGroup();
-
-    if (!(flags & ImGuiColorEditFlags_NoSidePreview))
-        flags |= ImGuiColorEditFlags_NoSmallPreview;
-
-    // Context menu: display and store options.
-    if (!(flags & ImGuiColorEditFlags_NoOptions))
-        ImGui::ColorPickerOptionsPopup(col, flags);
-
-    // Read stored options
-    if (!(flags & ImGuiColorEditFlags_PickerMask_))
-        flags |= ((g.ColorEditOptions & ImGuiColorEditFlags_PickerMask_) ? g.ColorEditOptions : ImGuiColorEditFlags_DefaultOptions_) & ImGuiColorEditFlags_PickerMask_;
-    if (!(flags & ImGuiColorEditFlags_InputMask_))
-        flags |= ((g.ColorEditOptions & ImGuiColorEditFlags_InputMask_) ? g.ColorEditOptions : ImGuiColorEditFlags_DefaultOptions_) & ImGuiColorEditFlags_InputMask_;
-    IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_PickerMask_)); // Check that only 1 is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_InputMask_));  // Check that only 1 is selected
-    if (!(flags & ImGuiColorEditFlags_NoOptions))
-        flags |= (g.ColorEditOptions & ImGuiColorEditFlags_AlphaBar);
-
-    // Setup
-    ImVec2 widget_pos             = ImGui::GetCursorScreenPos();
-    int    components             = (flags & ImGuiColorEditFlags_NoAlpha) ? 3 : 4;
-    bool   alpha_bar              = (flags & ImGuiColorEditFlags_AlphaBar) && !(flags & ImGuiColorEditFlags_NoAlpha);
-    ImVec2 picker_pos             = window->DC.CursorPos;
-    float  square_sz              = ImGui::GetFrameHeight();
-    float  bars_width             = square_sz;                                                                                    // Arbitrary smallish width of Hue/Alpha picking bars
-    float  sv_picker_size         = ImMax(bars_width * 1, width - (alpha_bar ? 2 : 1) * (bars_width + style.ItemInnerSpacing.x)); // Saturation/Value picking box
-    float  bars_triangles_half_sz = IM_FLOOR(bars_width * 0.20f);
-    float  backup_initial_col[4];
-    memcpy(backup_initial_col, col, components * sizeof(float));
-
-    float  wheel_thickness = sv_picker_size * 0.015f;
-    float  wheel_r_outer   = sv_picker_size * 0.015f * 6.25f * 0.5f;
-    float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
-    ImVec2 wheel_center(picker_pos.x + wheel_r_outer, picker_pos.y + wheel_r_outer);
-
-    bool value_changed = false;
-
-    ImGui::PushItemFlag(ImGuiItemFlags_NoNav, true);
-    if (flags & ImGuiColorEditFlags_PickerHueWheel)
-    {
-        // Hue wheel + SV triangle logic
-        ImGui::InvisibleButton("hsv", ImVec2(wheel_r_outer * 2.f + style.ItemInnerSpacing.x + bars_width, wheel_r_outer * 2.f));
-        if (ImGui::IsItemActive())
-        {
-            ImVec2 initial_off   = g.IO.MouseClickedPos[0] - wheel_center;
-            ImVec2 current_off   = g.IO.MousePos - wheel_center;
-            float  initial_dist2 = ImLengthSqr(initial_off);
-            if (initial_dist2 >= (wheel_r_inner - 1) * (wheel_r_inner - 1) && initial_dist2 <= (wheel_r_outer + 1) * (wheel_r_outer + 1))
-            {
-                // Interactive with Hue wheel
-                *h = ImAtan2(current_off.y, current_off.x) / IM_PI * 0.5f;
-                if (*h < 0.0f)
-                    *h += 1.0f;
-                value_changed = true;
-            }
-        }
-        if (!(flags & ImGuiColorEditFlags_NoOptions))
-            ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-    }
-    else if (flags & ImGuiColorEditFlags_PickerHueBar)
-    {
-        if (!(flags & ImGuiColorEditFlags_NoOptions))
-            ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-
-        // Hue bar logic
-
-        ImGui::SetCursorScreenPos(ImVec2(widget_pos.x, widget_pos.y));
-        ImGui::InvisibleButton("hue", ImVec2(sv_picker_size, bars_width));
-        if (ImGui::IsItemActive())
-        {
-            *h            = ImSaturate((io.MousePos.x - picker_pos.x) / (sv_picker_size - 1));
-            value_changed = true;
-        }
-    }
-
-    ImGui::PopItemFlag(); // ImGuiItemFlags_NoNav
-
-    if (!(flags & ImGuiColorEditFlags_NoSidePreview))
-    {
-        ImGui::SameLine(0, style.ItemInnerSpacing.x);
-    }
-
-    const int style_alpha8 = IM_F32_TO_INT8_SAT(style.Alpha);
-    // const ImU32 col_black       = IM_COL32(0, 0, 0, style_alpha8);
-    const ImU32 col_white       = IM_COL32(255, 255, 255, style_alpha8);
-    const ImU32 col_midgrey     = IM_COL32(128, 128, 128, style_alpha8);
-    const ImU32 col_hues[6 + 1] = {IM_COL32(255, 0, 0, style_alpha8), IM_COL32(255, 255, 0, style_alpha8), IM_COL32(0, 255, 0, style_alpha8), IM_COL32(0, 255, 255, style_alpha8), IM_COL32(0, 0, 255, style_alpha8), IM_COL32(255, 0, 255, style_alpha8), IM_COL32(255, 0, 0, style_alpha8)};
-
-    ImVec4 hue_color_f(1, 1, 1, style.Alpha);
-    ImU32  hue_color32 = ImGui::ColorConvertFloat4ToU32(hue_color_f);
-
-    if (flags & ImGuiColorEditFlags_PickerHueWheel)
-    {
-        // Render Hue Wheel
-        const float aeps            = 0.5f / wheel_r_outer; // Half a pixel arc length in radians (2pi cancels out).
-        const int   segment_per_arc = ImMax(4, (int)wheel_r_outer / 12);
-        for (int n = 0; n < 6; n++)
-        {
-            const float a0             = (n) / 6.0f * 2.0f * IM_PI - aeps;
-            const float a1             = (n + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
-            const int   vert_start_idx = draw_list->VtxBuffer.Size;
-            draw_list->PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
-            draw_list->PathStroke(col_white, 0, wheel_thickness);
-            const int vert_end_idx = draw_list->VtxBuffer.Size;
-
-            // Paint colors over existing vertices
-            ImVec2 gradient_p0(wheel_center.x + ImCos(a0) * wheel_r_inner, wheel_center.y + ImSin(a0) * wheel_r_inner);
-            ImVec2 gradient_p1(wheel_center.x + ImCos(a1) * wheel_r_inner, wheel_center.y + ImSin(a1) * wheel_r_inner);
-            ImGui::ShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col_hues[n], col_hues[n + 1]);
-        }
-
-        // Render Cursor + preview on Hue Wheel
-        float  cos_hue_angle = ImCos(*h * 2.0f * IM_PI);
-        float  sin_hue_angle = ImSin(*h * 2.0f * IM_PI);
-        ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
-        float  hue_cursor_rad      = value_changed ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
-        int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32);
-        draw_list->AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
-        draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
-        draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
-        draw_list->AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
-    }
-    else if (flags & ImGuiColorEditFlags_PickerHueBar)
-    {
-        // Render Hue Bar
-        for (int i = 0; i < 6; ++i)
-            draw_list->AddRectFilledMultiColor(ImVec2(widget_pos.x + i * (sv_picker_size / 6), widget_pos.y), ImVec2(widget_pos.x + (i + 1) * (sv_picker_size / 6), widget_pos.y + bars_width), col_hues[i], col_hues[i + 1], col_hues[i + 1], col_hues[i]);
-        float bar0_line_y = IM_ROUND(widget_pos.x + *h * sv_picker_size);
-        ImGui::RenderFrameBorder(ImVec2(widget_pos.x, widget_pos.y), ImVec2(widget_pos.x + sv_picker_size, widget_pos.y + bars_width), 0.0f);
-        RenderArrowsForVerticalBar(draw_list, ImVec2(bar0_line_y - 1, widget_pos.y), ImVec2(bars_triangles_half_sz, bars_triangles_half_sz + 1), bars_width, style.Alpha);
-        draw_list->AddText(ImVec2(widget_pos.x + sv_picker_size + style.ItemInnerSpacing.x * 2.f, widget_pos.y + style.ItemInnerSpacing.y), col_white, label);
-    }
-    ImGui::EndGroup();
-
-    if (value_changed && memcmp(backup_initial_col, col, components * sizeof(float)) == 0)
-        value_changed = false;
-    if (value_changed)
-        ImGui::MarkItemEdited(g.LastItemData.ID);
-
-    ImGui::PopID();
-
-    return value_changed;
-}
-
-bool hue_bar(const char* label, float* h)
-{
-    float         col[4] = {*h, 0., 0., 0.};
-    ImGuiContext& g      = *GImGui;
-    ImGuiWindow*  window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
-        return false;
-
-    ImDrawList* draw_list = window->DrawList;
-    ImGuiStyle& style     = g.Style;
-    ImGuiIO&    io        = g.IO;
-
-    const float width = ImGui::CalcItemWidth();
-    g.NextItemData.ClearFlags();
-    const int   style_alpha8 = IM_F32_TO_INT8_SAT(style.Alpha);
-    const ImU32 col_white    = IM_COL32(255, 255, 255, style_alpha8);
-
-    const ImU32 col_hues[6 + 1] = {IM_COL32(255, 0, 0, style_alpha8), IM_COL32(255, 255, 0, style_alpha8), IM_COL32(0, 255, 0, style_alpha8), IM_COL32(0, 255, 255, style_alpha8), IM_COL32(0, 0, 255, style_alpha8), IM_COL32(255, 0, 255, style_alpha8), IM_COL32(255, 0, 0, style_alpha8)};
-
-    ImVec4 hue_color_f(1, 1, 1, style.Alpha);
-
-    ImGui::PushID(label);
-    ImGui::BeginGroup();
-    // Setup
-    ImVec2 widget_pos             = ImGui::GetCursorScreenPos();
-    int    components             = (ImGuiColorEditFlags_NoAlpha) ? 3 : 4;
-    bool   alpha_bar              = (ImGuiColorEditFlags_AlphaBar) && !(ImGuiColorEditFlags_NoAlpha);
-    ImVec2 picker_pos             = window->DC.CursorPos;
-    float  square_sz              = ImGui::GetFrameHeight();
-    float  bars_width             = square_sz;                                                                                    // Arbitrary smallish width of Hue/Alpha picking bars
-    float  sv_picker_size         = ImMax(bars_width * 1, width - (alpha_bar ? 2 : 1) * (bars_width + style.ItemInnerSpacing.x)); // Saturation/Value picking box
-    float  bars_triangles_half_sz = IM_FLOOR(bars_width * 0.20f);
-    float  backup_initial_col[4];
-    memcpy(backup_initial_col, col, components * sizeof(float));
-
-    bool value_changed = false;
-    ImGui::SetCursorScreenPos(ImVec2(widget_pos.x, widget_pos.y));
-    ImGui::InvisibleButton("hue", ImVec2(sv_picker_size, bars_width));
-    if (ImGui::IsItemActive())
-    {
-        *h            = ImSaturate((io.MousePos.x - picker_pos.x) / (sv_picker_size - 1));
-        value_changed = true;
-    }
-    for (int i = 0; i < 6; ++i)
-        draw_list->AddRectFilledMultiColor(ImVec2(widget_pos.x + i * (sv_picker_size / 6), widget_pos.y), ImVec2(widget_pos.x + (i + 1) * (sv_picker_size / 6), widget_pos.y + bars_width), col_hues[i], col_hues[i + 1], col_hues[i + 1], col_hues[i]);
-    float bar0_line_y = IM_ROUND(widget_pos.x + *h * sv_picker_size);
-    ImGui::RenderFrameBorder(ImVec2(widget_pos.x, widget_pos.y), ImVec2(widget_pos.x + sv_picker_size, widget_pos.y + bars_width), 0.0f);
-    RenderArrowsForVerticalBar(draw_list, ImVec2(bar0_line_y - 1, widget_pos.y), ImVec2(bars_triangles_half_sz, bars_triangles_half_sz + 1), bars_width, style.Alpha);
-    draw_list->AddText(ImVec2(widget_pos.x + sv_picker_size + style.ItemInnerSpacing.x * 2.f, widget_pos.y + style.ItemInnerSpacing.y), col_white, label);
-
-    ImGui::EndGroup();
-
-    if (value_changed && memcmp(backup_initial_col, col, components * sizeof(float)) == 0)
-        value_changed = false;
-    if (value_changed)
-        ImGui::MarkItemEdited(g.LastItemData.ID);
-
-    ImGui::PopID();
-
-    return value_changed;
-}
-
-bool hue_wheel(const char* label, float* h)
-{
-    float         col[4] = {*h, 0., 0., 0.};
     ImGuiContext& g      = *GImGui;
     ImGuiWindow*  window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -568,24 +330,18 @@ bool hue_wheel(const char* label, float* h)
     ImGui::BeginGroup();
 
     // Setup
-    ImVec2 widget_pos     = ImGui::GetCursorScreenPos();
-    int    components     = (ImGuiColorEditFlags_NoAlpha) ? 3 : 4;
-    bool   alpha_bar      = (ImGuiColorEditFlags_AlphaBar) && !(ImGuiColorEditFlags_NoAlpha);
-    float  square_sz      = ImGui::GetFrameHeight();
-    float  bars_width     = square_sz;                                                                                    // Arbitrary smallish width of Hue/Alpha picking bars
-    float  sv_picker_size = ImMax(bars_width * 1, width - (alpha_bar ? 2 : 1) * (bars_width + style.ItemInnerSpacing.x)); // Saturation/Value picking box
-    float  backup_initial_col[4];
-    memcpy(backup_initial_col, col, components * sizeof(float));
+    ImVec2 widget_pos         = ImGui::GetCursorScreenPos();
+    float  backup_initial_hue = *hue;
 
-    float  wheel_thickness = sv_picker_size * 0.015f;
-    float  wheel_r_outer   = sv_picker_size * 0.015f * 6.25f * 0.5f;
+    float  wheel_thickness = width * 0.004f * 2.7f;
+    float  wheel_r_outer   = width * 0.004f * 6.25f;
     float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
     ImVec2 wheel_center(widget_pos.x + wheel_r_outer, widget_pos.y + wheel_r_outer);
 
     bool value_changed = false;
 
     // Hue wheel + SV triangle logic
-    ImGui::InvisibleButton("hsv", ImVec2(wheel_r_outer * 2.f + style.ItemInnerSpacing.x + bars_width, wheel_r_outer * 2.f));
+    ImGui::InvisibleButton("Hue", ImVec2(wheel_r_outer * 2.f + style.ItemInnerSpacing.x, wheel_r_outer * 2.f));
     if (ImGui::IsItemActive())
     {
         ImVec2 initial_off   = g.IO.MouseClickedPos[0] - wheel_center;
@@ -594,9 +350,9 @@ bool hue_wheel(const char* label, float* h)
         if (initial_dist2 >= (wheel_r_inner - 1) * (wheel_r_inner - 1) && initial_dist2 <= (wheel_r_outer + 1) * (wheel_r_outer + 1))
         {
             // Interactive with Hue wheel
-            *h = ImAtan2(current_off.y, current_off.x) / IM_PI * 0.5f;
-            if (*h < 0.0f)
-                *h += 1.0f;
+            *hue = ImAtan2(current_off.y, current_off.x) / IM_PI * 0.5f;
+            if (*hue < 0.0f)
+                *hue += 1.0f;
             value_changed = true;
         }
     }
@@ -628,8 +384,8 @@ bool hue_wheel(const char* label, float* h)
     }
 
     // Render Cursor + preview on Hue Wheel
-    float  cos_hue_angle = ImCos(*h * 2.0f * IM_PI);
-    float  sin_hue_angle = ImSin(*h * 2.0f * IM_PI);
+    float  cos_hue_angle = ImCos(*hue * 2.0f * IM_PI);
+    float  sin_hue_angle = ImSin(*hue * 2.0f * IM_PI);
     ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
     float  hue_cursor_rad      = value_changed ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
     int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32);
@@ -640,7 +396,7 @@ bool hue_wheel(const char* label, float* h)
 
     ImGui::EndGroup();
 
-    if (value_changed && memcmp(backup_initial_col, col, components * sizeof(float)) == 0)
+    if (value_changed && backup_initial_hue != *hue)
         value_changed = false;
     if (value_changed)
         ImGui::MarkItemEdited(g.LastItemData.ID);
