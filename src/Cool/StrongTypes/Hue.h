@@ -3,14 +3,14 @@
 #include <op/op.hpp>
 
 namespace Cool {
-struct Hue : public op::Addable<Hue>
+struct Hue
+    : public op::Addable<Hue>
     , public op::Subtractable<Hue>
-    , public op::Multipliable<Hue>
-    , public op::Scalable<Hue>
+    , public op::Negatable<Radians>
     , public op::EqualityComparable<Hue> {
     float value{};
-    constexpr Hue() = default;
-    constexpr explicit Hue(const float& value)
+    constexpr Hue() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
+    constexpr explicit Hue(float value)
         : value{value}
     {}
 
@@ -24,8 +24,7 @@ private:
     }
 };
 
-inline auto
-    to_string(Cool::Hue hue) -> std::string
+inline auto to_string(Cool::Hue hue) -> std::string
 {
     return std::to_string(hue.value);
 }
