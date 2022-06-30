@@ -20,11 +20,10 @@ private:
 
 inline auto imgui_widget(Variable<Hue>& var) -> bool
 {
-    return ImGuiExtras::hue_bar(
-        var.name.c_str(),
-        &var.value.value
-        // Flags:
-    );
+    auto hue         = var.value.get();
+    bool has_changed = hue_widget(var.name, hue);
+    var.value.set(hue);
+    return has_changed;
 }
 
 inline auto imgui_widget(VariableMetadata<Hue>&) -> bool

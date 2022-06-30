@@ -14,6 +14,9 @@ struct Hue
     constexpr explicit Hue(float value)
         : value{value}
     {}
+    auto get() const -> float { return from_0_to_1(); }
+    void set(const float hue) { value = hue; }
+    auto from_0_to_1() const -> float { return fmod(value, 1.f); }
 
 private:
     // Serialization
@@ -27,7 +30,8 @@ private:
 
 inline auto to_string(Cool::Hue hue) -> std::string
 {
-    return std::to_string(hue.value);
+    return std::to_string(hue.get());
+}
 
 inline auto hue_widget(const std::string& name, float& hue) -> bool
 {
