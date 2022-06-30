@@ -1,11 +1,10 @@
 #pragma once
 
-#include <numbers>
+#include <Cool/Math/constants.h>
 #include <op/op.hpp>
 
 namespace Cool {
 
-constexpr float TAU = std::numbers::pi_v<float> * 2.f;
 
 struct Radians
     : public op::Addable<Radians>
@@ -31,22 +30,22 @@ private:
 
 constexpr Radians turns_to_radians(float turns)
 {
-    return Radians{turns * TAU};
+    return Radians{turns * tau};
 }
 
 constexpr Radians degrees_to_radians(float degrees)
 {
-    return Radians{degrees / 360.f * TAU};
+    return Radians{degrees / 360.f * tau};
 }
 
 inline float radians_to_degrees(Radians radians)
 {
-    return radians.value / TAU * 360.f;
+    return radians.value / tau * 360.f;
 }
 
 inline float radians_to_turns(Radians radians)
 {
-    return radians.value / TAU;
+    return radians.value / tau;
 }
 
 class Angle
