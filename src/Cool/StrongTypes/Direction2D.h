@@ -1,25 +1,43 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 #include <op/op.hpp>
 #include "Angle.h"
 
-inline auto get_angle_from_vector(const glm::vec2& direction) -> Cool::Angle
-{
-    return Cool::Angle(Cool::Radians(atan2(direction.y, direction.x)));
-}
-
 namespace Cool {
-struct Direction2D : public op::Addable<Direction2D>
-    , public op::Subtractable<Direction2D>
-    , public op::Negatable<Direction2D>
+inline auto constexpr get_angle_from_vector(const glm::vec2& direction) -> Cool::Angle
+{
+    return Cool::Angle{Cool::Radians{
+        // glm::angle(direction)
+        atan2(direction.x, direction.y)}};
+}
+class Direction2D
+    : public op::Negatable<Direction2D>
     , public op::EqualityComparable<Direction2D> {
-    glm::vec2   value{};
-    Cool::Angle angle{};
+public:
+    void rotate(const Cool::Angle angle) { value += angle; };
+
+    auto as_unit_vec2() const -> glm::vec2
+    {
+        return glm::vec2{glm::cos(value.value.value), glm::sin(value.value.value)};
+    }
+
+    auto as_angle() const -> Cool::Angle { return value; };
+
+    void set_direction_from_angle(const Cool::Angle& angle) { value = angle; };
+    void set_direction_from_vec2(const glm::vec2& vector) { value = get_angle_from_vector(vector); };
+
     constexpr Direction2D() = default;
-    explicit Direction2D(glm::vec2 value)
-        : value{normalize(value)}, angle{get_angle_from_vector(value)}
+    explicit constexpr Direction2D(glm::vec2 value)
+        : value{get_angle_from_vector(value)}
     {}
+
+    explicit constexpr Direction2D(Angle angle)
+        : value{angle}
+    {}
+
+public:
+    Cool::Angle value{};
 
 private:
     // Serialization
@@ -27,17 +45,12 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Direction", value));
+        archive(cereal::make_nvp("Angle", value));
     }
 };
 
 inline auto to_string(Cool::Direction2D direction) -> std::string
 {
-    return "(" + std::to_string(direction.value.x) + "," + std::to_string(direction.value.y) + ")";
+    return glm::to_string(direction.as_unit_vec2());
 }
 } // namespace Cool
-
-// inline auto get_angle_from_direction(Cool::Direction2D direction) -> Cool::Angle
-// {
-//     return Cool::Angle(Cool::Radians(atan2(direction.value.y, direction.value.x)));
-// }
