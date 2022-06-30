@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Math/constants.h>
 #include <op/op.hpp>
 
@@ -77,6 +78,14 @@ private:
 inline auto to_string(Cool::Angle angle) -> std::string
 {
     return std::to_string(angle.as_turns()) + " turn";
+}
+
+inline auto angle_widget(const std::string& name, Cool::Angle& angle) -> bool
+{
+    return ImGuiExtras::angle_wheel(
+        name.c_str(),
+        &angle.value.value
+    );
 }
 
 } // namespace Cool
