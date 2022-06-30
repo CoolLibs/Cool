@@ -11,8 +11,8 @@ TEST_CASE("[Cool::String] replace()")
     };
     SUBCASE("replace()")
     {
-        CHECK(Cool::String::replace({text, replacements}) == "ssdgd 12ssd{c}v");
-        CHECK(Cool::String::replace({text2, replacements, "_{{", "}}}"}) == "ssdgd 12ssd{c}v");
+        CHECK(Cool::String::replace_between_delimiters({text, replacements}) == "ssdgd 12ssd{c}v");
+        CHECK(Cool::String::replace_between_delimiters({text2, replacements, "_{{", "}}}"}) == "ssdgd 12ssd{c}v");
     }
     SUBCASE("replace_next()")
     {
