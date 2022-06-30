@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/StrongTypes/Hue.h>
 #include "Variable.h"
 
@@ -8,8 +7,6 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Hue> {
-    bool is_hdr = true;
-
     friend auto operator<=>(const VariableMetadata<Hue>&, const VariableMetadata<Hue>&) = default;
 
 private:
@@ -30,13 +27,9 @@ inline auto imgui_widget(Variable<Hue>& var) -> bool
     );
 }
 
-inline auto imgui_widget(VariableMetadata<Hue>& meta) -> bool
+inline auto imgui_widget(VariableMetadata<Hue>&) -> bool
 {
-    bool b = false;
-    b |= ImGui::Checkbox("HDR", &meta.is_hdr);
-    ImGui::SameLine();
-    ImGuiExtras::help_marker("Allows the RGB values to go outside of the [0, 1] range.");
-    return b;
+    return false;
 }
 
 } // namespace Cool
