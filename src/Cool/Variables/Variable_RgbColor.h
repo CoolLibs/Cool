@@ -24,9 +24,9 @@ private:
 
 inline auto imgui_widget(Variable<RgbColor>& var) -> bool
 {
-    return ImGui::ColorEdit3(
-        var.name.c_str(),
-        glm::value_ptr(var.value.value),
+    return color_widget(
+        var.name,
+        var.value.value,
         // Flags:
         ImGuiColorEditFlags_Float |
             (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
