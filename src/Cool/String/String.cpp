@@ -25,7 +25,7 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
-std::string replace(const ReplacementInput& in)
+std::string replace_between_delimiters(const ReplacementInput& in)
 {
     auto next = replace_next(in, 0);
     while (next.second.has_value())
@@ -119,7 +119,7 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
     return std::nullopt;
 }
 
-std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, std::string_view delimiters, size_t offset)
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters)
 {
     const size_t idx1 = text.find_first_not_of(delimiters, offset);
     if (idx1 == std::string_view::npos)
@@ -137,11 +137,11 @@ std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, s
 std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters)
 {
     std::vector<std::string> res;
-    auto                     word_pos = find_next_word(text, delimiters, 0);
+    auto                     word_pos = find_next_word(text, 0, delimiters);
     while (word_pos.has_value())
     {
         res.emplace_back(text.substr(word_pos->first, word_pos->second - word_pos->first));
-        word_pos = find_next_word(text, delimiters, word_pos->second);
+        word_pos = find_next_word(text, word_pos->second, delimiters);
     }
     return res;
 }
