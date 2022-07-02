@@ -48,6 +48,22 @@ static auto color(MessageSeverity severity) -> ImVec4
     }
 }
 
+static auto to_string(MessageSeverity severity) -> std::string
+{
+    switch (severity)
+    {
+    case MessageSeverity::Info:
+        return "info";
+    case MessageSeverity::Warning:
+        return "warning";
+    case MessageSeverity::Error:
+        return "error";
+    default:
+        Log::error("[MessageConsole::to_string] Unknown enum value");
+        return "";
+    }
+}
+
 static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
 {
     return msg.message.severity != MessageSeverity::Error;
@@ -84,7 +100,7 @@ void MessageConsole::imgui()
             {
                 msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
             }
-            ImGuiExtras::tooltip("Clear message");
+            ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
         }
 
         ImGui::EndGroup();
