@@ -86,4 +86,34 @@ auto next_word(
     std::string_view delimiters = internal::default_word_delimiters
 ) -> std::string;
 
+auto find_value_for_given_key_as_string(
+    std::string_view text,
+    std::string_view key
+) -> std::string;
+
+template<typename T>
+auto find_value_for_given_key(
+    std::string_view text,
+    std::string_view key
+) -> std::optional<T>
+{
+    return value_from_string<T>(
+        find_value_for_given_key_as_string(text, key)
+    );
+}
+
+template<typename T>
+auto value_from_string(std::string_view str) -> std::optional<T>
+{
+    // static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
+    return std::nullopt;
+}
+
+template<>
+auto value_from_string<int>(std::string_view str) -> std::optional<int>;
+template<>
+auto value_from_string<float>(std::string_view str) -> std::optional<float>;
+template<>
+auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
+
 } // namespace Cool::String

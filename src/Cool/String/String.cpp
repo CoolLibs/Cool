@@ -169,4 +169,61 @@ auto next_word(std::string_view text, size_t starting_pos, std::string_view deli
     }
 }
 
+/// Finds in `text` the value associated with a given `key` (e.g. "default", "min", "max"), as a string.
+auto find_value_for_given_key_as_string(
+    std::string_view text,
+    std::string_view key
+) -> std::string
+{
+    auto start_position_of_key = text.find(key);
+    if (start_position_of_key == std::string_view::npos)
+    {
+        return "";
+    }
+    else
+    {
+        return Cool::String::next_word(
+            text,
+            start_position_of_key + key.length()
+        );
+    }
+}
+
+template<typename T>
+static auto value_from_string_impl(std::string_view str) -> std::optional<T>
+{
+    T                            out;
+    const std::from_chars_result result = std::from_chars(str.data(), str.data() + str.size(), out);
+    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+    {
+        return std::nullopt;
+    }
+    return out;
+}
+
+template<>
+auto value_from_string<int>(std::string_view str) -> std::optional<int>
+{
+    return value_from_string_impl<int>(str);
+}
+
+template<>
+auto value_from_string<float>(std::string_view str) -> std::optional<float>
+{
+    return value_from_string_impl<float>(str);
+}
+
+template<>
+auto value_from_string<bool>(std::string_view str) -> std::optional<bool>
+{
+    if (str == "true")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 } // namespace Cool::String
