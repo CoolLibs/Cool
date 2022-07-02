@@ -156,4 +156,17 @@ std::string remove_whitespaces(std::string_view text)
     return res;
 }
 
+auto next_word(std::string_view text, size_t starting_pos, std::string_view delimiters) -> std::string
+{
+    const auto pos = Cool::String::find_next_word(text, starting_pos, delimiters);
+    if (pos)
+    {
+        return std::string{text.substr(pos->first, pos->second - pos->first)};
+    }
+    else
+    {
+        return "";
+    }
+}
+
 } // namespace Cool::String

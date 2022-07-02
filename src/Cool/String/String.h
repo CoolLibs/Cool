@@ -1,6 +1,11 @@
 #pragma once
 
 namespace Cool::String {
+
+namespace internal {
+static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
+};
+
 /**
  * @brief
  *
@@ -64,14 +69,21 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
  * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
  * Words are considered to be separated by one or more characters of "delimiters".
  */
-std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = " \n\t\r");
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
 
 /**
  * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
  * The words appear in the same order in the list as they do in the text
  */
-std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = " \n\t\r");
+std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = internal::default_word_delimiters);
 
 std::string remove_whitespaces(std::string_view text);
+
+/// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`
+auto next_word(
+    std::string_view text,
+    size_t           starting_pos,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::string;
 
 } // namespace Cool::String
