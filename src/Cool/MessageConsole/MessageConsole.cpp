@@ -32,7 +32,15 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
 
 void MessageConsole::clear(const MessageId& id)
 {
-    _messages.destroy(id);
+    if (_messages.contains(id))
+    {
+        _messages.destroy(id);
+
+        if (_messages.is_empty())
+        {
+            _is_open = false;
+        }
+    }
 }
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
