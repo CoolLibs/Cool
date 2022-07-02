@@ -1,5 +1,7 @@
 #include "MessageConsole.h"
 #include <Cool/Constants/Constants.h>
+#include <Cool/Icons/Icons.h>
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
 
 namespace Cool {
@@ -46,11 +48,18 @@ static auto color(MessageSeverity severity) -> ImVec4
     }
 }
 
+static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
+{
+    return msg.message.severity != MessageSeverity::Error;
+}
+
 void MessageConsole::imgui()
 {
     _selected_message = MessageId{};
+    MessageId msg_to_clear{};
     for (const auto& [id, msg] : _messages)
     {
+        ImGui::PushID(&id);
         ImGui::BeginGroup();
 
         ImGui::TextColored(
@@ -63,12 +72,29 @@ void MessageConsole::imgui()
         ImGui::SameLine();
         ImGui::Text("%s", msg.message.detailed_message.c_str());
 
+        if (is_closable(msg))
+        {
+            ImGui::SameLine();
+            if (ImGuiExtras::button_with_icon(
+                    Icons::close_button().imgui_texture_id(),
+                    ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+                    ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+                    11.f, 11.f
+                ))
+            {
+                msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
+            }
+            ImGuiExtras::tooltip("Clear message");
+        }
+
         ImGui::EndGroup();
+        ImGui::PopID();
         if (ImGui::IsItemHovered())
         {
             _selected_message = id;
         }
     }
+    clear(msg_to_clear);
 }
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
