@@ -6,11 +6,6 @@
 
 namespace Cool {
 
-void MessageConsole::clear(const MessageId& id)
-{
-    _messages.destroy(id);
-}
-
 void MessageConsole::send(MessageId& id, const MessageV2& message)
 {
     if (id.underlying_uuid().is_nil() ||
@@ -30,6 +25,20 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
             data.timestamp = std::chrono::system_clock::now();
         });
     }
+
+    _is_open          = true;
+    _scroll_to_bottom = true;
+}
+
+void MessageConsole::clear(const MessageId& id)
+{
+    _messages.destroy(id);
+}
+
+auto MessageConsole::should_highlight(const MessageId& id) -> bool
+{
+    return !id.underlying_uuid().is_nil() &&
+           id == _selected_message;
 }
 
 static auto color(MessageSeverity severity) -> ImVec4
@@ -69,54 +78,60 @@ static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
     return msg.message.severity != MessageSeverity::Error;
 }
 
-void MessageConsole::imgui()
+void MessageConsole::imgui_window()
 {
-    _selected_message = MessageId{};
-    MessageId msg_to_clear{};
-    for (const auto& [id, msg] : _messages)
+    if (_is_open)
     {
-        ImGui::PushID(&id);
-        ImGui::BeginGroup();
+        ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
+        _selected_message = MessageId{};
+        MessageId msg_to_clear{};
 
-        ImGui::TextColored(
-            color(msg.message.severity),
-            "[%s] [#%lld] [%s]",
-            Cool::stringify(msg.timestamp).c_str(),
-            msg.count,
-            msg.message.category.c_str()
-        );
-        ImGui::SameLine();
-        ImGui::Text("%s", msg.message.detailed_message.c_str());
-
-        if (is_closable(msg))
+        for (const auto& [id, msg] : _messages)
         {
+            ImGui::PushID(&id);
+            ImGui::BeginGroup();
+
+            ImGui::TextColored(
+                color(msg.message.severity),
+                "[%s] [#%lld] [%s]",
+                Cool::stringify(msg.timestamp).c_str(),
+                msg.count,
+                msg.message.category.c_str()
+            );
             ImGui::SameLine();
-            if (ImGuiExtras::button_with_icon(
-                    Icons::close_button().imgui_texture_id(),
-                    ImVec4(0.9f, 0.9f, 0.9f, 1.f),
-                    ImVec4(0.5f, 0.2f, 0.2f, 1.f),
-                    11.f, 11.f
-                ))
+            ImGui::Text("%s", msg.message.detailed_message.c_str());
+
+            if (is_closable(msg))
             {
-                msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
+                ImGui::SameLine();
+                if (ImGuiExtras::button_with_icon(
+                        Icons::close_button().imgui_texture_id(),
+                        ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+                        ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+                        11.f, 11.f
+                    ))
+                {
+                    msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
+                }
+                ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
             }
-            ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
-        }
 
-        ImGui::EndGroup();
-        ImGui::PopID();
-        if (ImGui::IsItemHovered())
+            ImGui::EndGroup();
+            ImGui::PopID();
+            if (ImGui::IsItemHovered())
+            {
+                _selected_message = id;
+            }
+        }
+        clear(msg_to_clear);
+
+        if (_scroll_to_bottom)
         {
-            _selected_message = id;
+            ImGui::SetScrollHereY(1.f);
+            _scroll_to_bottom = false;
         }
+        ImGui::End();
     }
-    clear(msg_to_clear);
-}
-
-auto MessageConsole::should_highlight(const MessageId& id) -> bool
-{
-    return !id.underlying_uuid().is_nil() &&
-           id == _selected_message;
 }
 
 } // namespace Cool

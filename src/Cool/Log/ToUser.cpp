@@ -36,7 +36,7 @@ void ToUser::imgui_console_window()
     }
     else
     {
-        ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("Console Legacy", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
         ImGui::BeginMenuBar();
         if (ImGui::Button("Clear"))
         {
@@ -105,7 +105,7 @@ void ToUser::imgui_console_window()
 
 void ToUser::imgui_toggle_console()
 {
-    ImGui::Checkbox("Console", &_is_open);
+    ImGui::Checkbox("Console Legacy", &_is_open);
 }
 
 } // namespace Cool::Log
