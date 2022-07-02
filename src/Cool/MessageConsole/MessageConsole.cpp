@@ -30,6 +30,22 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
     }
 }
 
+static auto color(MessageSeverity severity) -> ImVec4
+{
+    switch (severity)
+    {
+    case MessageSeverity::Info:
+        return Constants::imvec4_green;
+    case MessageSeverity::Warning:
+        return Constants::imvec4_yellow;
+    case MessageSeverity::Error:
+        return Constants::imvec4_red;
+    default:
+        Log::error("[MessageConsole::color] Unknown enum value");
+        return ImVec4{0, 0, 0, 0};
+    }
+}
+
 void MessageConsole::imgui()
 {
     _selected_message = MessageId{};
@@ -38,7 +54,7 @@ void MessageConsole::imgui()
         ImGui::BeginGroup();
 
         ImGui::TextColored(
-            Cool::Constants::imvec4_red,
+            color(msg.message.severity),
             "[%s] [#%lld] [%s]",
             Cool::stringify(msg.timestamp).c_str(),
             msg.count,
