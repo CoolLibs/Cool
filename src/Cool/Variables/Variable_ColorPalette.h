@@ -1,16 +1,16 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiExtras.h>
-#include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/StrongTypes/ColorPalette.h>
 #include "Variable.h"
 
 namespace Cool {
 
 template<>
-struct VariableMetadata<RgbColor> {
+struct VariableMetadata<ColorPalette> {
     bool is_hdr = true;
 
-    friend auto operator<=>(const VariableMetadata<RgbColor>&, const VariableMetadata<RgbColor>&) = default;
+    friend auto operator<=>(const VariableMetadata<ColorPalette>&, const VariableMetadata<ColorPalette>&) = default;
 
 private:
     // Serialization
@@ -22,18 +22,16 @@ private:
     }
 };
 
-inline auto imgui_widget(Variable<RgbColor>& var) -> bool
+inline auto imgui_widget(Variable<ColorPalette>& var) -> bool
 {
-    return color_widget(
+    return palette_widget(
         var.name,
-        var.value.value,
-        // Flags:
-        ImGuiColorEditFlags_Float |
-            (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
+        var.value,
+        (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
     );
 }
 
-inline auto imgui_widget(VariableMetadata<RgbColor>& meta) -> bool
+inline auto imgui_widget(VariableMetadata<ColorPalette>& meta) -> bool
 {
     bool b = false;
     b |= ImGui::Checkbox("HDR", &meta.is_hdr);

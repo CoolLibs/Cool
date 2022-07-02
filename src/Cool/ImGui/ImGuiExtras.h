@@ -157,4 +157,6 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
 
+bool hue_wheel(const char* label, float* hue);
+
 } // namespace Cool::ImGuiExtras

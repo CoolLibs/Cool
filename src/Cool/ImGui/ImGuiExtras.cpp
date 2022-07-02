@@ -6,7 +6,9 @@
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
+#include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+#include <ostream>
 
 namespace Cool::ImGuiExtras {
 
@@ -309,6 +311,99 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
 
         ImGui::EndGroup();
     }
+}
+
+bool hue_wheel(const char* label, float* hue)
+{
+    ImGuiContext& g      = *GImGui;
+    ImGuiWindow*  window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImDrawList* draw_list = window->DrawList;
+    ImGuiStyle& style     = g.Style;
+
+    const float width = ImGui::CalcItemWidth();
+    g.NextItemData.ClearFlags();
+
+    ImGui::PushID(label);
+    ImGui::BeginGroup();
+
+    // Setup
+    ImVec2 widget_pos         = ImGui::GetCursorScreenPos();
+    float  backup_initial_hue = *hue;
+
+    float  wheel_thickness = width * 0.004f * 2.7f;
+    float  wheel_r_outer   = width * 0.004f * 6.25f;
+    float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
+    ImVec2 wheel_center(widget_pos.x + wheel_r_outer, widget_pos.y + wheel_r_outer);
+
+    bool value_changed = false;
+
+    // Hue wheel + SV triangle logic
+    ImGui::InvisibleButton("Hue", ImVec2(wheel_r_outer * 2.f + style.ItemInnerSpacing.x, wheel_r_outer * 2.f));
+    if (ImGui::IsItemActive())
+    {
+        ImVec2 initial_off   = g.IO.MouseClickedPos[0] - wheel_center;
+        ImVec2 current_off   = g.IO.MousePos - wheel_center;
+        float  initial_dist2 = ImLengthSqr(initial_off);
+        if (initial_dist2 >= (wheel_r_inner - 1) * (wheel_r_inner - 1) && initial_dist2 <= (wheel_r_outer + 1) * (wheel_r_outer + 1))
+        {
+            // Interactive with Hue wheel
+            *hue = ImAtan2(current_off.y, current_off.x) / IM_PI * 0.5f;
+            if (*hue < 0.0f)
+                *hue += 1.0f;
+            value_changed = true;
+        }
+    }
+
+    const int   style_alpha8    = IM_F32_TO_INT8_SAT(style.Alpha);
+    const ImU32 col_white       = IM_COL32(255, 255, 255, style_alpha8);
+    const ImU32 col_midgrey     = IM_COL32(128, 128, 128, style_alpha8);
+    const ImU32 col_hues[6 + 1] = {IM_COL32(255, 0, 0, style_alpha8), IM_COL32(255, 255, 0, style_alpha8), IM_COL32(0, 255, 0, style_alpha8), IM_COL32(0, 255, 255, style_alpha8), IM_COL32(0, 0, 255, style_alpha8), IM_COL32(255, 0, 255, style_alpha8), IM_COL32(255, 0, 0, style_alpha8)};
+
+    ImVec4 hue_color_f(1, 1, 1, style.Alpha);
+    ImU32  hue_color32 = ImGui::ColorConvertFloat4ToU32(hue_color_f);
+
+    // Render Hue Wheel
+    const float aeps            = 0.5f / wheel_r_outer; // Half a pixel arc length in radians (2pi cancels out).
+    const int   segment_per_arc = ImMax(4, (int)wheel_r_outer / 12);
+    for (int n = 0; n < 6; n++)
+    {
+        const float a0             = (n) / 6.0f * 2.0f * IM_PI - aeps;
+        const float a1             = (n + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
+        const int   vert_start_idx = draw_list->VtxBuffer.Size;
+        draw_list->PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
+        draw_list->PathStroke(col_white, 0, wheel_thickness);
+        const int vert_end_idx = draw_list->VtxBuffer.Size;
+
+        // Paint colors over existing vertices
+        ImVec2 gradient_p0(wheel_center.x + ImCos(a0) * wheel_r_inner, wheel_center.y + ImSin(a0) * wheel_r_inner);
+        ImVec2 gradient_p1(wheel_center.x + ImCos(a1) * wheel_r_inner, wheel_center.y + ImSin(a1) * wheel_r_inner);
+        ImGui::ShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col_hues[n], col_hues[n + 1]);
+    }
+
+    // Render Cursor + preview on Hue Wheel
+    float  cos_hue_angle = ImCos(*hue * 2.0f * IM_PI);
+    float  sin_hue_angle = ImSin(*hue * 2.0f * IM_PI);
+    ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
+    float  hue_cursor_rad      = value_changed ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
+    int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32);
+    draw_list->AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
+    draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
+    draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
+    draw_list->AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
+
+    ImGui::EndGroup();
+
+    if (value_changed && backup_initial_hue != *hue)
+        value_changed = false;
+    if (value_changed)
+        ImGui::MarkItemEdited(g.LastItemData.ID);
+
+    ImGui::PopID();
+
+    return value_changed;
 }
 
 } // namespace Cool::ImGuiExtras

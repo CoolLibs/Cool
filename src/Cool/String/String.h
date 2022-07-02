@@ -1,6 +1,11 @@
 #pragma once
 
 namespace Cool::String {
+
+namespace internal {
+static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
+};
+
 /**
  * @brief
  *
@@ -43,7 +48,7 @@ struct ReplacementInput {
     std::string_view                                        delimiter_end   = "}";
 };
 
-std::string replace(const ReplacementInput& in);
+std::string replace_between_delimiters(const ReplacementInput& in);
 
 std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos);
 
@@ -64,14 +69,51 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
  * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
  * Words are considered to be separated by one or more characters of "delimiters".
  */
-std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, std::string_view delimiters, size_t offset);
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
 
 /**
  * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
  * The words appear in the same order in the list as they do in the text
  */
-std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = " ");
+std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = internal::default_word_delimiters);
 
 std::string remove_whitespaces(std::string_view text);
+
+/// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`
+auto next_word(
+    std::string_view text,
+    size_t           starting_pos,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::string;
+
+auto find_value_for_given_key_as_string(
+    std::string_view text,
+    std::string_view key
+) -> std::string;
+
+template<typename T>
+auto find_value_for_given_key(
+    std::string_view text,
+    std::string_view key
+) -> std::optional<T>
+{
+    return value_from_string<T>(
+        find_value_for_given_key_as_string(text, key)
+    );
+}
+
+template<typename T>
+auto value_from_string(std::string_view str) -> std::optional<T>
+{
+    // static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
+    return std::nullopt;
+}
+
+template<>
+auto value_from_string<int>(std::string_view str) -> std::optional<int>;
+template<>
+auto value_from_string<float>(std::string_view str) -> std::optional<float>;
+template<>
+auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
 
 } // namespace Cool::String

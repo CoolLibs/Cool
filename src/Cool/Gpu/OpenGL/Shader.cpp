@@ -97,7 +97,17 @@ void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
 
 void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) const
 {
-    set_uniform(uniform_name, direction.value.as_radians());
+    set_uniform(uniform_name, direction.as_unit_vec2());
+}
+
+void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
+{
+    set_uniform(uniform_name, hue.get());
+}
+
+void Shader::set_uniform(std::string_view uniform_name, ColorPalette palette) const
+{
+    // set_uniform(uniform_name, palette.value); // TODO ANAIS finit ton bazard
 }
 
 } // namespace Cool::OpenGL

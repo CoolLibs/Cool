@@ -25,7 +25,7 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
-std::string replace(const ReplacementInput& in)
+std::string replace_between_delimiters(const ReplacementInput& in)
 {
     auto next = replace_next(in, 0);
     while (next.second.has_value())
@@ -119,7 +119,7 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
     return std::nullopt;
 }
 
-std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, std::string_view delimiters, size_t offset)
+std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters)
 {
     const size_t idx1 = text.find_first_not_of(delimiters, offset);
     if (idx1 == std::string_view::npos)
@@ -137,11 +137,11 @@ std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, s
 std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters)
 {
     std::vector<std::string> res;
-    auto                     word_pos = find_next_word(text, delimiters, 0);
+    auto                     word_pos = find_next_word(text, 0, delimiters);
     while (word_pos.has_value())
     {
         res.emplace_back(text.substr(word_pos->first, word_pos->second - word_pos->first));
-        word_pos = find_next_word(text, delimiters, word_pos->second);
+        word_pos = find_next_word(text, word_pos->second, delimiters);
     }
     return res;
 }
@@ -154,6 +154,76 @@ std::string remove_whitespaces(std::string_view text)
     replace_all(res, "\t", "");
     replace_all(res, "\r", "");
     return res;
+}
+
+auto next_word(std::string_view text, size_t starting_pos, std::string_view delimiters) -> std::string
+{
+    const auto pos = Cool::String::find_next_word(text, starting_pos, delimiters);
+    if (pos)
+    {
+        return std::string{text.substr(pos->first, pos->second - pos->first)};
+    }
+    else
+    {
+        return "";
+    }
+}
+
+/// Finds in `text` the value associated with a given `key` (e.g. "default", "min", "max"), as a string.
+auto find_value_for_given_key_as_string(
+    std::string_view text,
+    std::string_view key
+) -> std::string
+{
+    auto start_position_of_key = text.find(key);
+    if (start_position_of_key == std::string_view::npos)
+    {
+        return "";
+    }
+    else
+    {
+        return Cool::String::next_word(
+            text,
+            start_position_of_key + key.length()
+        );
+    }
+}
+
+template<typename T>
+static auto value_from_string_impl(std::string_view str) -> std::optional<T>
+{
+    T                            out;
+    const std::from_chars_result result = std::from_chars(str.data(), str.data() + str.size(), out);
+    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+    {
+        return std::nullopt;
+    }
+    return out;
+}
+
+template<>
+auto value_from_string<int>(std::string_view str) -> std::optional<int>
+{
+    return value_from_string_impl<int>(str);
+}
+
+template<>
+auto value_from_string<float>(std::string_view str) -> std::optional<float>
+{
+    return value_from_string_impl<float>(str);
+}
+
+template<>
+auto value_from_string<bool>(std::string_view str) -> std::optional<bool>
+{
+    if (str == "true")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 } // namespace Cool::String

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/StrongTypes/Angle.h>
 #include "Variable.h"
 
@@ -21,9 +20,9 @@ private:
 
 inline auto imgui_widget(Variable<Angle>& var) -> bool
 {
-    return ImGuiExtras::angle_wheel(
-        var.name.c_str(),
-        &var.value.value.value
+    return Cool::angle_widget(
+        var.name,
+        var.value
     );
 }
 
