@@ -1,20 +1,20 @@
 #pragma once
 
 #include <reg/reg.hpp>
-#include "Error.h"
+#include "Message.h"
 
 namespace Cool {
 
 namespace internal {
 
-struct ErrorWithMetadata{
-    Error                                 error;
+struct MessageWithMetadata {
+    MessageV2                             message;
     std::chrono::system_clock::time_point timestamp;
     size_t                                count;
 };
 
 } // namespace internal
 
-using ErrorId = reg::Id<internal::ErrorWithMetadata>;
+using MessageId = reg::Id<internal::MessageWithMetadata>;
 
 } // namespace Cool
