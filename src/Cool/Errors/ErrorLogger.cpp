@@ -1,5 +1,6 @@
 #include "ErrorLogger.h"
 #include <Cool/Constants/Constants.h>
+#include <stringify/stringify.hpp>
 
 namespace Cool {
 
@@ -36,39 +37,17 @@ void ErrorLogger::imgui_show() const
         _selected_error = ErrorId{};
         for (const auto& [id, err] : _errors)
         {
-            const auto time = std::chrono::system_clock::to_time_t(err.timestamp);
             ImGui::BeginGroup();
 
-#if !defined(__GNUC__)
-#pragma warning(push)
-#pragma warning(disable : 4996)
-#endif
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#endif
-            const auto local_time = localtime(&time);
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-#if !defined(__GNUC__)
-#pragma warning(pop)
-#endif
-            if (local_time)
-            {
-                ImGui::TextColored(
-                    Cool::Constants::imvec4_red,
-                    "[%d:%d'%d\"%lld] [#%lld] [%s]",
-                    local_time->tm_hour,
-                    local_time->tm_min,
-                    local_time->tm_sec,
-                    std::chrono::duration_cast<std::chrono::milliseconds>(err.timestamp.time_since_epoch()).count() % 1000,
-                    err.count,
-                    "YOLO" // message.category.c_str()
-                );
-            }
+            ImGui::TextColored(
+                Cool::Constants::imvec4_red,
+                "[%s] [#%lld] [%s]",
+                Cool::stringify(err.timestamp).c_str(),
+                err.count,
+                err.error.category.c_str()
+            );
             ImGui::SameLine();
-            ImGui::Text("%s", err.error.name.c_str());
+            ImGui::Text("%s", err.error.detailed_message.c_str());
 
             ImGui::EndGroup();
             if (ImGui::IsItemHovered())

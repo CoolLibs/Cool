@@ -21,8 +21,8 @@ public:
     auto should_highlight(const ErrorId& id) -> bool;
 
 private:
-    reg::Registry<internal::ErrorMessage> _errors;
-    mutable ErrorId                       _selected_error;
+    reg::Registry<internal::ErrorWithMetadata> _errors;
+    mutable ErrorId                            _selected_error;
 };
 
 } // namespace Cool
