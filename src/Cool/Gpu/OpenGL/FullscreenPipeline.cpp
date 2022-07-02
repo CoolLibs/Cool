@@ -27,7 +27,7 @@ void FullscreenPipeline::shut_down()
     vertex_module().reset();
 }
 
-void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name)
+auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name) -> std::optional<std::string>
 {
     try
     {
@@ -38,11 +38,14 @@ void FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
                 ShaderKind::Fragment,
                 std::string{name},
             }}};
+        return std::nullopt;
     }
     catch (const std::exception& e)
     {
         _shader.reset();
-        Cool::Log::ToUser::error("FullscreenPipeline", "{}\nThe source code we tried to compile was:\n{}", e.what(), fragment_shader_source_code);
+        return e.what() +
+               std::string{"\nThe source code we tried to compile was:\n"} +
+               std::string{fragment_shader_source_code};
     }
 }
 

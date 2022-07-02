@@ -19,8 +19,9 @@ public:
     /**
      * @brief Compiles the fragment shader source code and creates a new pipeline using this new shader.
      * @param name The name that will be displayed in the error message if the compilation fails
+     * Returns an error message if the compilation failed.
      */
-    void compile(std::string_view fragment_shader_source_code, std::string_view name);
+    auto compile(std::string_view fragment_shader_source_code, std::string_view name) -> std::optional<std::string>;
     void reset() { _shader.reset(); }
     void draw() const;
     auto shader() const -> const std::optional<Shader>& { return _shader; }
