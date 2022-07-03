@@ -1,10 +1,16 @@
 #pragma once
+#include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/Direction2D.h>
+#include <Cool/StrongTypes/Hue.h>
+#include <Cool/StrongTypes/RgbColor.h>
 
 namespace Cool::String {
 
 namespace internal {
 static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
 };
+
+auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 
 /**
  * @brief
@@ -69,7 +75,9 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
  * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
  * Words are considered to be separated by one or more characters of "delimiters".
  */
-std::optional<std::pair<size_t, size_t>> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
+std::optional<std::pair<size_t, size_t>> find_next_word_position(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
+
+std::optional<std::string> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
 
 /**
  * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
@@ -105,7 +113,7 @@ auto find_value_for_given_key(
 template<typename T>
 auto value_from_string(std::string_view str) -> std::optional<T>
 {
-    // static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
+    static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
     return std::nullopt;
 }
 
@@ -115,5 +123,25 @@ template<>
 auto value_from_string<float>(std::string_view str) -> std::optional<float>;
 template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
+template<>
+auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::vec2>;
+template<>
+auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
+template<>
+auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>;
+template<>
+auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
+template<>
+auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>;
+template<>
+auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
+template<>
+auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>;
+template<>
+auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool::Angle>;
+template<>
+auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional<Cool::Direction2D>;
+template<>
+auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::Hue>;
 
 } // namespace Cool::String
