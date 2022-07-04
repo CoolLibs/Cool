@@ -1,4 +1,5 @@
 #include "String.h"
+#include <charconv>
 #include <glm/detail/qualifier.hpp>
 
 namespace Cool::String {
