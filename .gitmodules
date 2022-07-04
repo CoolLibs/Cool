@@ -64,6 +64,3 @@
 [submodule "lib/reg"]
 	path = lib/reg
 	url = https://github.com/CoolLibs/reg
-[submodule "lib/DearWidgets"]
-	path = lib/DearWidgets
-	url = https://github.com/soufianekhiat/DearWidgets.git
