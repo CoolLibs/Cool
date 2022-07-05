@@ -18,7 +18,7 @@ auto contains(std::string_view text, std::string_view characters) -> bool; // TO
  * @param str
  * @return A new string with all characters converted to lower case
  */
-std::string to_lower(std::string_view str);
+auto to_lower(std::string_view str) -> std::string;
 
 /**
  * @brief Modifies *str* by replacing all occurences of *from* with *to*
@@ -27,7 +27,7 @@ std::string to_lower(std::string_view str);
  * @param from
  * @param to
  */
-void replace_all(std::string& str, std::string_view from, std::string_view to);
+auto replace_all(std::string& str, std::string_view from, std::string_view to) -> void;
 
 /**
  * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
@@ -36,7 +36,7 @@ void replace_all(std::string& str, std::string_view from, std::string_view to);
  * @param min_nb_of_characters The minimum number of characters that will be present in the output string.
  */
 template<typename T>
-std::string to_string(T val, size_t min_nb_of_characters = 0)
+auto to_string(T val, size_t min_nb_of_characters = 0) -> std::string
 {
     std::string str = std::to_string(val);
     size_t      dn  = min_nb_of_characters - str.size();
@@ -54,45 +54,64 @@ struct ReplacementInput {
     std::string_view                                        delimiter_end   = "}";
 };
 
-std::string replace_between_delimiters(const ReplacementInput& in);
+auto replace_between_delimiters(const ReplacementInput& in) -> std::string;
 
-std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos);
+auto replace_next(
+    const ReplacementInput& in,
+    size_t                  start_pos
+) -> std::pair<std::string, std::optional<size_t>>;
 
-std::optional<std::string> find_replacement(const std::string& string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements);
+auto find_replacement(
+    const std::string&                                      string_to_replace,
+    const std::vector<std::pair<std::string, std::string>>& replacements
+) -> std::optional<std::string>;
 
 /**
  * @brief Replaces the characters at positions begin (included) till end (excluded) in input_string with new_substring
  */
-std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring);
+auto replace_at(
+    size_t             begin,
+    size_t             end,
+    const std::string& input_string,
+    const std::string& new_substring
+) -> std::string;
 
 /**
  * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
  * or std::nullopt if no such pair was found
  */
-std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening = '(', char closing = ')');
+auto find_matching_pair(
+    std::string_view text,
+    char opening = '(', char closing = ')'
+) -> std::optional<std::pair<size_t, size_t>>;
 
 /**
  * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
  * Words are considered to be separated by one or more characters of "delimiters".
  */
-std::optional<std::pair<size_t, size_t>> find_next_word_position(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
-
-std::optional<std::string> find_next_word(std::string_view text, size_t offset, std::string_view delimiters = internal::default_word_delimiters);
+auto find_next_word_position(
+    std::string_view text,
+    size_t           offset,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::optional<std::pair<size_t, size_t>>;
 
 /**
  * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
  * The words appear in the same order in the list as they do in the text
  */
-std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters = internal::default_word_delimiters);
+auto split_into_words(
+    std::string_view text,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::vector<std::string>;
 
-std::string remove_whitespaces(std::string_view text);
+auto remove_whitespaces(std::string_view text) -> std::string;
 
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters = internal::default_word_delimiters
-) -> std::string;
+) -> std::optional<std::string>;
 
 auto find_value_for_given_key_as_string(
     std::string_view text,

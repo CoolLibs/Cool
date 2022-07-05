@@ -9,7 +9,7 @@ auto contains(std::string_view text, std::string_view characters) -> bool // TOD
     return text.find(characters) != std::string_view::npos;
 }
 
-std::string to_lower(std::string_view str)
+auto to_lower(std::string_view str) -> std::string
 {
     std::string res = "";
     std::for_each(str.begin(), str.end(), [&res](char c) {
@@ -18,7 +18,7 @@ std::string to_lower(std::string_view str)
     return res;
 }
 
-void replace_all(std::string& str, std::string_view from, std::string_view to)
+auto replace_all(std::string& str, std::string_view from, std::string_view to) -> void
 {
     if (from.empty())
     {
@@ -32,21 +32,31 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
-std::string replace_between_delimiters(const ReplacementInput& in)
+auto replace_between_delimiters(const ReplacementInput& in) -> std::string
 {
     auto next = replace_next(in, 0);
     while (next.second.has_value())
     {
-        next = replace_next({next.first, in.replacements, in.delimiter_begin, in.delimiter_end}, *next.second);
+        next = replace_next(
+            {next.first, in.replacements, in.delimiter_begin, in.delimiter_end},
+            *next.second
+        );
     }
     return next.first;
 }
 
-std::optional<std::string> find_replacement(const std::string& string_to_replace, const std::vector<std::pair<std::string, std::string>>& replacements)
+auto find_replacement(
+    const std::string&                                      string_to_replace,
+    const std::vector<std::pair<std::string, std::string>>& replacements
+) -> std::optional<std::string>
 {
-    const auto res = std::find_if(replacements.begin(), replacements.end(), [&](const std::pair<std::string, std::string>& pair) {
-        return pair.first == string_to_replace;
-    });
+    const auto res = std::find_if(
+        replacements.begin(),
+        replacements.end(),
+        [&](const std::pair<std::string, std::string>& pair) {
+            return pair.first == string_to_replace;
+        }
+    );
     if (res == replacements.end())
     {
         return std::nullopt;
@@ -57,7 +67,10 @@ std::optional<std::string> find_replacement(const std::string& string_to_replace
     }
 }
 
-std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInput& in, size_t start_pos)
+auto replace_next(
+    const ReplacementInput& in,
+    size_t                  start_pos
+) -> std::pair<std::string, std::optional<size_t>>
 {
     const auto begin = in.text.find(in.delimiter_begin, start_pos);
     if (begin == std::string::npos)
@@ -95,12 +108,20 @@ std::pair<std::string, std::optional<size_t>> replace_next(const ReplacementInpu
     }
 }
 
-std::string replace_at(size_t begin, size_t end, const std::string& input_string, const std::string& new_substring)
+auto replace_at(
+    size_t             begin,
+    size_t             end,
+    const std::string& input_string, const std::string& new_substring
+) -> std::string
 {
     return input_string.substr(0, begin) + new_substring + input_string.substr(end, input_string.length() - end);
 }
 
-std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view text, char opening, char closing)
+auto find_matching_pair(
+    std::string_view text,
+    char             opening,
+    char             closing
+) -> std::optional<std::pair<size_t, size_t>>
 {
     const size_t first_open = text.find(opening);
     if (first_open == std::string::npos)
@@ -126,7 +147,11 @@ std::optional<std::pair<size_t, size_t>> find_matching_pair(std::string_view tex
     return std::nullopt;
 }
 
-std::optional<std::pair<size_t, size_t>> find_next_word_position(std::string_view text, size_t offset, std::string_view delimiters)
+auto find_next_word_position(
+    std::string_view text,
+    size_t           offset,
+    std::string_view delimiters
+) -> std::optional<std::pair<size_t, size_t>>
 {
     const size_t idx1 = text.find_first_not_of(delimiters, offset);
     if (idx1 == std::string_view::npos)
@@ -141,20 +166,10 @@ std::optional<std::pair<size_t, size_t>> find_next_word_position(std::string_vie
     return std::make_pair(idx1, idx2);
 }
 
-std::optional<std::string> find_next_word(std::string_view text, size_t offset, std::string_view delimiters)
-{
-    auto position = find_next_word_position(text, offset, delimiters);
-    if (position == std::nullopt)
-    {
-        return std::nullopt;
-    }
-    else
-    {
-        return std::string{text.substr(position->first, position->second - position->first)};
-    }
-}
-
-std::vector<std::string> split_into_words(std::string_view text, std::string_view delimiters)
+auto split_into_words(
+    std::string_view text,
+    std::string_view delimiters
+) -> std::vector<std::string>
 {
     std::vector<std::string> res;
     auto                     word_pos = find_next_word_position(text, 0, delimiters);
@@ -166,7 +181,7 @@ std::vector<std::string> split_into_words(std::string_view text, std::string_vie
     return res;
 }
 
-std::string remove_whitespaces(std::string_view text)
+auto remove_whitespaces(std::string_view text) -> std::string
 {
     auto res = std::string{text};
     replace_all(res, " ", "");
@@ -176,16 +191,20 @@ std::string remove_whitespaces(std::string_view text)
     return res;
 }
 
-auto next_word(std::string_view text, size_t starting_pos, std::string_view delimiters) -> std::string
+auto next_word(
+    std::string_view text,
+    size_t           starting_pos,
+    std::string_view delimiters
+) -> std::optional<std::string>
 {
-    const auto pos = Cool::String::find_next_word_position(text, starting_pos, delimiters);
-    if (pos)
+    auto position = find_next_word_position(text, starting_pos, delimiters);
+    if (position == std::nullopt)
     {
-        return std::string{text.substr(pos->first, pos->second - pos->first)};
+        return std::nullopt;
     }
     else
     {
-        return "";
+        return std::string{text.substr(position->first, position->second - position->first)};
     }
 }
 
@@ -197,10 +216,18 @@ auto next_block(
     auto start_position_of_block = text.find("(");
     if (start_position_of_block == std::string_view::npos)
     {
-        return Cool::String::next_word(
+        auto word = Cool::String::next_word(
             text,
             ending_key_pos
         );
+        if (word.has_value())
+        {
+            return *word;
+        }
+        else
+        {
+            return "";
+        }
     }
     else
     {
@@ -222,7 +249,7 @@ auto find_value_for_given_key_as_string(
     }
     else
     {
-        return Cool::String::next_block(
+        return next_block(
             text,
             start_position_of_key + key.length()
         );
@@ -242,12 +269,14 @@ static auto value_from_string_impl_scalar(std::string_view str) -> std::optional
 }
 
 template<typename ScalarType, int NbElements>
-static auto value_from_string_impl_vec(std::string_view str) -> std::optional<glm::vec<NbElements, ScalarType, glm::defaultp>>
+static auto value_from_string_impl_vec(
+    std::string_view str
+) -> std::optional<glm::vec<NbElements, ScalarType, glm::defaultp>>
 {
     std::string text(str);
 
     std::vector<std::pair<size_t, size_t>> out;
-    if (find_next_word_position(text, 1) != std::nullopt)
+    if (find_next_word_position(text, 1).has_value())
     {
         out.push_back(*find_next_word_position(text, 1));
     }
@@ -256,7 +285,7 @@ static auto value_from_string_impl_vec(std::string_view str) -> std::optional<gl
         return std::nullopt;
     }
 
-    while (find_next_word_position(text, out.back().second) != std::nullopt)
+    while (find_next_word_position(text, out.back().second).has_value())
     {
         out.push_back(*find_next_word_position(text, out.back().second));
     }
@@ -272,7 +301,7 @@ static auto value_from_string_impl_vec(std::string_view str) -> std::optional<gl
         auto value = value_from_string_impl_scalar<ScalarType>(
             text.substr(out[j].first, out[j].second - out[j].first)
         );
-        if (value != std::nullopt)
+        if (value.has_value())
         {
             ret[j] = *value;
         }
@@ -365,7 +394,7 @@ auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Co
 template<>
 auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool::Angle>
 {
-    if (value_from_string_impl_scalar<float>(str) != std::nullopt)
+    if (value_from_string_impl_scalar<float>(str).has_value())
     {
         return Cool::Angle{};
     }
@@ -378,7 +407,7 @@ auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool:
 template<>
 auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional<Cool::Direction2D>
 {
-    if (value_from_string_impl_scalar<float>(str) != std::nullopt)
+    if (value_from_string_impl_scalar<float>(str).has_value())
     {
         return Cool::Direction2D{};
     }
@@ -391,7 +420,7 @@ auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional
 template<>
 auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::Hue>
 {
-    if (value_from_string_impl_scalar<float>(str) != std::nullopt)
+    if (value_from_string_impl_scalar<float>(str).has_value())
     {
         return Cool::Hue{};
     }

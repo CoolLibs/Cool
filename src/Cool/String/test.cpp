@@ -68,3 +68,67 @@ TEST_CASE("[Cool::String] split_into_words()")
     CHECK(Cool::String::split_into_words("   ") == std::vector<std::string>({}));
     CHECK(Cool::String::split_into_words("hello, wor, ,   ld", " ,") == std::vector<std::string>({"hello", "wor", "ld"}));
 }
+
+TEST_CASE("Parsing a float")
+{
+    CHECK(
+        Cool::String::value_from_string<float>("2.f") ==
+        2.f
+    );
+    CHECK(
+        Cool::String::value_from_string<float>("2.") ==
+        2.f
+    );
+    CHECK(
+        Cool::String::value_from_string<float>("2") ==
+        2.f
+    );
+    CHECK(
+        Cool::String::value_from_string<float>("2.0") ==
+        2.f
+    );
+    CHECK(
+        Cool::String::value_from_string<float>("2.0f") ==
+        2.f
+    );
+}
+
+TEST_CASE("Parsing a vec")
+{
+    CHECK(
+        Cool::String::value_from_string<Cool::RgbColor>("(1, 3, 4)") ==
+        Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("  ( 1   ,  3)   ") ==
+        glm::vec2(1.f, 3.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(1 3)") ==
+        glm::vec2(1.f, 3.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(1.f, 3.f)") ==
+        glm::vec2(1.f, 3.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(1., 3.)") ==
+        glm::vec2(1.f, 3.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("1., 3.)") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(1., hello)") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(hello, 1.)") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("(hello, world)") ==
+        std::nullopt
+    );
+}
