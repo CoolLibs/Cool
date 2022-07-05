@@ -111,9 +111,9 @@ auto find_value_for_given_key(
 }
 
 template<typename T>
-auto value_from_string(std::string_view str) -> std::optional<T>
+auto value_from_string(std::string_view) -> std::optional<T>
 {
-    static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
+    // static_assert(false, "Type not supported yet!"); // TODO (Lucas) Implement value_from_string for all the types we use, then reenable the assert
     return std::nullopt;
 }
 
@@ -125,16 +125,16 @@ template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
 template<>
 auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::vec2>;
-template<>
-auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
+// template<>
+// auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
 template<>
 auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>;
-template<>
-auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
+// template<>
+// auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
 template<>
 auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>;
-template<>
-auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
+// template<>
+// auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>;
 template<>

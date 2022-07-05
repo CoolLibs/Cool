@@ -319,11 +319,11 @@ auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 2>(str);
 }
 
-template<>
-auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>
-{
-    return value_from_string_impl_vec<int, 2>(str);
-}
+// template<>
+// auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>
+// {
+//     return value_from_string_impl_vec<int, 2>(str);
+// }
 
 template<>
 auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>
@@ -331,11 +331,11 @@ auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 3>(str);
 }
 
-template<>
-auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>
-{
-    return value_from_string_impl_vec<int, 3>(str);
-}
+// template<>
+// auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>
+// {
+//     return value_from_string_impl_vec<int, 3>(str);
+// }
 
 template<>
 auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>
@@ -343,16 +343,16 @@ auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 4>(str);
 }
 
-template<>
-auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>
-{
-    return value_from_string_impl_vec<int, 4>(str);
-}
+// template<>
+// auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>
+// {
+//     return value_from_string_impl_vec<int, 4>(str);
+// }
 
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>
 {
-    if (value_from_string_impl_vec<float, 3>(str) != std::nullopt)
+    if (value_from_string_impl_vec<float, 3>(str).has_value())
     {
         return Cool::RgbColor{*value_from_string_impl_vec<float, 3>(str)};
     }
