@@ -43,16 +43,22 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
         {
             ImGui::SameLine();
         }
-        value_has_changed |= color_widget("", palette.value[i].value, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoInputs | flags);
+        value_has_changed |= color_widget("", palette.value[i].value, ImGuiColorEditFlags_NoInputs | flags);
         ImGui::PopID();
     }
     ImGui::EndGroup();
-
     ImGui::SameLine();
     if (ImGui::Button("+", ImVec2(button_size, button_size)))
     {
         palette.add_color();
+        ImGui::OpenPopup("picker");
         value_has_changed = true;
+    }
+    if (ImGui::BeginPopup("picker"))
+    {
+        ImGui::SetNextItemWidth(button_size * 12.0f);
+        value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(palette.value[number_of_colors - 1].value), flags);
+        ImGui::EndPopup();
     }
     Cool::ImGuiExtras::tooltip("Add a color");
 
