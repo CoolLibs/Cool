@@ -13,7 +13,6 @@ struct ColorPalette : public op::EqualityComparable<ColorPalette> {
     {}
     void remove_color() { value.pop_back(); }
     void add_color() { value.push_back(Cool::RgbColor{glm::vec3{1., 1., 1.}}); }
-    int  number_of_color() { return value.size() - 1; }
 
 private:
     // Serialization
@@ -31,31 +30,33 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
     size_t       number_of_colors  = palette.value.size();
     bool         value_has_changed = false;
     const float  width             = ImGui::CalcItemWidth();
-    const size_t palette_width     = size_t(width / button_size);
+    const size_t text_length       = ImGui::CalcTextSize(name.c_str()).y;
+    const size_t palette_width     = size_t(width / button_size) - text_length;
 
-    for (size_t i = 0; i < number_of_colors - 1; i++)
+    ImGui::Text("%s", name.c_str());
+    ImGui::SameLine();
+    ImGui::BeginGroup();
+    for (size_t i = 0; i < number_of_colors; i++)
     {
         ImGui::PushID(int(i));
-        if ((i != 0) && (i % palette_width != 0))
+        if ((i != 0) && (std::fmod(i, palette_width) != 0))
         {
             ImGui::SameLine();
         }
-        value_has_changed = value_has_changed || color_widget(name, palette.value[i].value, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | flags);
+        value_has_changed |= color_widget("", palette.value[i].value, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoInputs | flags);
         ImGui::PopID();
     }
-    if (ImGui::Button("-", ImVec2(button_size, button_size)) && number_of_colors > 1)
-    {
-        palette.remove_color();
-        value_has_changed = true;
-    }
+    ImGui::EndGroup();
+
     ImGui::SameLine();
     if (ImGui::Button("+", ImVec2(button_size, button_size)))
     {
         palette.add_color();
         value_has_changed = true;
     }
+    Cool::ImGuiExtras::tooltip("Add a color");
 
-    return value_has_changed || color_widget(name, palette.value[number_of_colors - 1].value, ImGuiColorEditFlags_NoInputs | flags);
+    return value_has_changed;
 }
 
 } // namespace Cool
