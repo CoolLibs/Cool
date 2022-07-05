@@ -11,7 +11,7 @@ struct ColorPalette : public op::EqualityComparable<ColorPalette> {
     explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
         : value{value}
     {}
-    void remove_color() { value.pop_back(); }
+    void remove_color(auto i) { value.erase(value.begin() + i); }
     void add_color() { value.push_back(Cool::RgbColor{glm::vec3{1., 1., 1.}}); }
 
 private:
@@ -26,6 +26,7 @@ private:
 
 inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
 {
+    // int          mouse_button      = (ImGuiPopupFlags_MouseButtonMiddle);
     const float  button_size       = ImGui::GetFrameHeight();
     size_t       number_of_colors  = palette.value.size();
     bool         value_has_changed = false;
@@ -44,6 +45,11 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
             ImGui::SameLine();
         }
         value_has_changed |= color_widget("", palette.value[i].value, ImGuiColorEditFlags_NoInputs | flags);
+        if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))
+        {
+            palette.remove_color(i);
+            number_of_colors--;
+        }
         ImGui::PopID();
     }
     ImGui::EndGroup();
@@ -61,6 +67,7 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
         ImGui::EndPopup();
     }
     Cool::ImGuiExtras::tooltip("Add a color");
+    Cool::ImGuiExtras::tooltip("Remove a color by middle click on it");
 
     return value_has_changed;
 }
