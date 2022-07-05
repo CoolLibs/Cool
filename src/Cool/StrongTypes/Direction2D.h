@@ -8,8 +8,7 @@ namespace Cool {
 inline auto constexpr get_angle_from_vector(const glm::vec2& direction) -> Cool::Angle
 {
     return Cool::Angle{Cool::Radians{
-        // glm::angle(direction)
-        atan2(direction.x, direction.y)}};
+        std::atan2(direction.x, direction.y)}};
 }
 class Direction2D
     : public op::Negatable<Direction2D>
