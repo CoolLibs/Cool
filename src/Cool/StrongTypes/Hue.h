@@ -7,7 +7,7 @@ namespace Cool {
 struct Hue
     : public op::Addable<Hue>
     , public op::Subtractable<Hue>
-    , public op::Negatable<Radians>
+    , public op::Negatable<Hue>
     , public op::EqualityComparable<Hue> {
     float value{};
     constexpr Hue() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff

@@ -313,7 +313,7 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
     }
 }
 
-bool hue_wheel(const char* label, float* hue)
+bool hue_wheel(const char* label, float* hue, float radius)
 {
     ImGuiContext& g      = *GImGui;
     ImGuiWindow*  window = ImGui::GetCurrentWindow();
@@ -323,7 +323,7 @@ bool hue_wheel(const char* label, float* hue)
     ImDrawList* draw_list = window->DrawList;
     ImGuiStyle& style     = g.Style;
 
-    const float width = ImGui::CalcItemWidth();
+    const float width = radius;
     g.NextItemData.ClearFlags();
 
     ImGui::PushID(label);
@@ -333,8 +333,8 @@ bool hue_wheel(const char* label, float* hue)
     ImVec2 widget_pos         = ImGui::GetCursorScreenPos();
     float  backup_initial_hue = *hue;
 
-    float  wheel_thickness = width * 0.004f * 2.7f;
-    float  wheel_r_outer   = width * 0.004f * 6.25f;
+    float  wheel_thickness = width * .5f;
+    float  wheel_r_outer   = width;
     float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
     ImVec2 wheel_center(widget_pos.x + wheel_r_outer, widget_pos.y + wheel_r_outer);
 
