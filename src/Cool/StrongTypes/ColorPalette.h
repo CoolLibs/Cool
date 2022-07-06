@@ -43,11 +43,9 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
     size_t       number_of_colors  = palette.value.size();
     bool         value_has_changed = false;
     const float  width             = ImGui::CalcItemWidth();
-    const size_t text_length       = ImGui::CalcTextSize(name.c_str()).y;
-    const size_t palette_width     = size_t(width / button_size) - text_length;
+    const size_t palette_width     = size_t((width - button_size) / button_size);
 
     ImGui::Text("%s", name.c_str());
-    ImGui::SameLine();
     ImGui::BeginGroup();
     for (size_t i = 0; i < number_of_colors; i++)
     {
