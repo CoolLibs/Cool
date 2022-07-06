@@ -12,6 +12,19 @@ struct ColorPalette : public op::EqualityComparable<ColorPalette> {
         : value{value}
     {}
     void remove_color(auto i) { value.erase(value.begin() + i); }
+    void move_color(size_t old_emplacement, size_t new_emplacement)
+    {
+        if (old_emplacement < new_emplacement)
+        {
+            new_emplacement++;
+        }
+        value.emplace(value.begin() + new_emplacement, value[old_emplacement]);
+        if (old_emplacement > new_emplacement)
+        {
+            old_emplacement++;
+        }
+        remove_color(old_emplacement);
+    }
     void add_color() { value.push_back(Cool::RgbColor{glm::vec3{1., 1., 1.}}); }
 
 private:
@@ -26,7 +39,6 @@ private:
 
 inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
 {
-    // int          mouse_button      = (ImGuiPopupFlags_MouseButtonMiddle);
     const float  button_size       = ImGui::GetFrameHeight();
     size_t       number_of_colors  = palette.value.size();
     bool         value_has_changed = false;
@@ -50,6 +62,24 @@ inline auto palette_widget(const std::string& name, Cool::ColorPalette& palette,
             palette.remove_color(i);
             number_of_colors--;
         }
+
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None | ImGuiDragDropFlags_SourceAllowNullID))
+        {
+            ImGui::SetDragDropPayload(" ", &i, sizeof(int));
+
+            ImGui::EndDragDropSource();
+        }
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(" "))
+            {
+                IM_ASSERT(payload->DataSize == sizeof(int));
+                int payload_n = *(const int*)payload->Data;
+                palette.move_color(payload_n, i);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImGui::PopID();
     }
     ImGui::EndGroup();
