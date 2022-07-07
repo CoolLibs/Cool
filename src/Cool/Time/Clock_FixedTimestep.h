@@ -17,7 +17,7 @@ public:
 
 private:
     const float  _dt;
-    unsigned int _frames_count; // store time as an int to avoid floating point imprecisions when adding a small number (dt) to a big one (time) [don't know if this is really necessary though]
+    long long int _frames_count; // store time as an int to avoid floating point imprecisions when adding a small number (dt) to a big one (time) [don't know if this is really necessary though]
 };
 
 } // namespace Cool

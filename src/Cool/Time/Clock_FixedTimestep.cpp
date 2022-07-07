@@ -5,7 +5,7 @@ namespace Cool {
 Clock_FixedTimestep::Clock_FixedTimestep(float fps, float initial_time)
     : _dt(1.f / fps)
 {
-    _frames_count = static_cast<unsigned int>(std::round(initial_time * fps));
+    _frames_count = static_cast<long long int>(std::round(initial_time * fps));
 }
 
 float Clock_FixedTimestep::delta_time() const
@@ -27,7 +27,7 @@ float Clock_FixedTimestep::time() const
 
 void Clock_FixedTimestep::set_time(float new_time)
 {
-    _frames_count = static_cast<unsigned int>(std::round(new_time / _dt));
+    _frames_count = static_cast<long long int>(std::round(new_time / _dt));
 }
 
 void Clock_FixedTimestep::update()
