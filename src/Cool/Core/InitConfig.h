@@ -19,7 +19,11 @@ struct InitConfig {
     /// Describes which (if any) tests you want to run
     std::function<void()> run_the_tests = []() {
 #if DEBUG
-        doctest::Context{}.run();
+        if (doctest::Context{}.run())
+        {
+            Cool::Log::error_without_breakpoint("Program closed because some tests failed.");
+            std::exit(1);
+        }
 #endif
     };
 
