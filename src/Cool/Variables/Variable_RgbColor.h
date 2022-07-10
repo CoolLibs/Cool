@@ -24,7 +24,7 @@ private:
 
 inline auto imgui_widget(Variable<RgbColor>& var) -> bool
 {
-    return color_widget(
+    return imgui_color_widget(
         var.name,
         var.value,
         // Flags:

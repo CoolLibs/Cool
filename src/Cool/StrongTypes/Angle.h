@@ -80,7 +80,7 @@ inline auto to_string(Cool::Angle angle) -> std::string
     return std::to_string(angle.as_turns()) + " turn";
 }
 
-inline auto angle_widget(std::string_view name, Cool::Angle& angle) -> bool
+inline auto imgui_angle_widget(std::string_view name, Cool::Angle& angle) -> bool
 {
     return ImGuiExtras::angle_wheel(
         name.data(),

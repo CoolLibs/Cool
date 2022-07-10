@@ -33,7 +33,7 @@ inline auto to_string(Cool::Hue hue) -> std::string
     return std::to_string(hue.get());
 }
 
-inline auto hue_widget(std::string_view name, float& hue) -> bool
+inline auto imgui_hue_widget(std::string_view name, float& hue) -> bool
 {
     return ImGuiExtras::hue_wheel(
         name.data(),
