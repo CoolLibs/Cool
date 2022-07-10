@@ -26,7 +26,7 @@ inline auto imgui_widget(Variable<RgbColor>& var) -> bool
 {
     return color_widget(
         var.name,
-        var.value.value,
+        var.value,
         // Flags:
         ImGuiColorEditFlags_Float |
             (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)

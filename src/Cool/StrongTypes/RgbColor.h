@@ -30,11 +30,11 @@ inline auto to_string(const Cool::RgbColor& color) -> std::string
     return glm::to_string(color.value);
 }
 
-inline auto color_widget(const std::string& name, glm::vec3& color, ImGuiColorEditFlags flags) -> bool
+inline auto color_widget(std::string_view name, RgbColor& color, ImGuiColorEditFlags flags) -> bool
 {
     return ImGui::ColorEdit3(
-        name.c_str(),
-        glm::value_ptr(color),
+        name.data(),
+        glm::value_ptr(color.value),
         flags
     );
 }
