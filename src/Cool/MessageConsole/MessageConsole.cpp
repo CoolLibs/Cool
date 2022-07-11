@@ -98,7 +98,7 @@ void MessageConsole::imgui_window()
     {
         if (_message_just_sent)
         {
-            ImGui::SetNextWindowFocus();
+            ImGui::SetNextWindowToFront();
         }
         ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
 

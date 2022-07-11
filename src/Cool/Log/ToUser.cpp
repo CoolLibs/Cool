@@ -38,7 +38,7 @@ void ToUser::imgui_console_window()
     {
         if (_message_just_sent)
         {
-            ImGui::SetNextWindowFocus();
+            ImGui::SetNextWindowToFront();
         }
         ImGui::Begin("Console Legacy", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
         ImGui::BeginMenuBar();
