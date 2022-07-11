@@ -14,9 +14,15 @@ auto must_be_in_same_line(size_t index) -> bool
     return (index % palette_width != 0);
 }
 
+struct PayloadData {
+    Cool::RgbColor        color;
+    std::optional<size_t> current_idx;
+};
+
 auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
 {
-    bool value_has_changed = false;
+    static std::string debug             = "";
+    bool               value_has_changed = false;
 
     ImGui::Text("%s", name.data());
     ImGui::BeginGroup();
@@ -27,21 +33,21 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
         {
             ImGui::SameLine();
         }
-        value_has_changed |= ImGui::ColorEdit3("", glm::value_ptr(palette.value[i].value), ImGuiColorEditFlags_NoInputs | flags);
+        value_has_changed |= ImGui::ColorEdit3("##1", glm::value_ptr(palette.value[i].value), ImGuiColorEditFlags_NoInputs | flags);
         if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))
         {
             palette.remove_color(i);
         }
 
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None | ImGuiDragDropFlags_SourceAllowNullID))
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoHoldToOpenOthers | ImGuiDragDropFlags_SourceAutoExpirePayload | ImGuiDragDropFlags_SourceAllowNullID))
         {
-            ImGui::SetDragDropPayload(" ", &i, sizeof(size_t));
+            ImGui::SetDragDropPayload("##2", &i, sizeof(size_t), ImGuiCond_Always);
 
             ImGui::EndDragDropSource();
         }
         if (ImGui::BeginDragDropTarget())
         {
-            if (const ImGuiPayload* payload_old = ImGui::AcceptDragDropPayload(" "))
+            if (const ImGuiPayload* payload_old = ImGui::AcceptDragDropPayload("##2")) //, ImGuiDragDropFlags_AcceptNoPreviewTooltip | ImGuiDragDropFlags_AcceptBeforeDelivery)
             {
                 IM_ASSERT(payload_old->DataSize == sizeof(size_t));
                 const size_t old_index = *reinterpret_cast<const size_t*>(payload_old->Data);
@@ -68,7 +74,22 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
     }
     Cool::ImGuiExtras::tooltip("Add a color");
     Cool::ImGuiExtras::tooltip("Remove a color by middle click on it");
-
+    ImGui::Separator();
+    const auto* ptr = ImGui::GetDragDropPayload();
+    if (ptr)
+    {
+        const auto drag_index_i = *reinterpret_cast<const size_t*>(ptr->Data);
+        ImGui::Text("%llu", drag_index_i);
+    }
+    else
+    {
+        ImGui::Text(".");
+    }
+    if (ImGui::Button("Clear"))
+    {
+        debug = "";
+    }
+    ImGui::Text("%s", debug.c_str());
     return value_has_changed;
 }
 } // namespace Cool
