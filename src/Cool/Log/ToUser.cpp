@@ -7,8 +7,8 @@
 namespace Cool::Log {
 
 std::vector<Message> ToUser::_messages;
-bool                 ToUser::_is_open          = false;
-bool                 ToUser::_scroll_to_bottom = false;
+bool                 ToUser::_is_open           = false;
+bool                 ToUser::_message_just_sent = false;
 
 void ToUser::add_message(Message message)
 {
@@ -24,8 +24,8 @@ void ToUser::add_message(Message message)
         _messages.push_back(message);
     }
     // Update console
-    _is_open          = true;
-    _scroll_to_bottom = true;
+    _is_open           = true;
+    _message_just_sent = true;
 }
 
 void ToUser::imgui_console_window()
@@ -36,6 +36,10 @@ void ToUser::imgui_console_window()
     }
     else
     {
+        if (_message_just_sent)
+        {
+            ImGui::SetNextWindowFocus();
+        }
         ImGui::Begin("Console Legacy", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
         ImGui::BeginMenuBar();
         if (ImGui::Button("Clear"))
@@ -94,13 +98,13 @@ void ToUser::imgui_console_window()
             ImGui::SameLine();
             ImGui::Text("%s", message.body.c_str());
         }
-        if (_scroll_to_bottom)
+        if (_message_just_sent)
         {
             ImGui::SetScrollHereY(1.f);
-            _scroll_to_bottom = false;
         }
         ImGui::End();
     }
+    _message_just_sent = false;
 }
 
 void ToUser::imgui_toggle_console()

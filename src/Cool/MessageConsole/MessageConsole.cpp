@@ -26,8 +26,8 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
         });
     }
 
-    _is_open          = true;
-    _scroll_to_bottom = true;
+    _is_open           = true;
+    _message_just_sent = true;
 }
 
 void MessageConsole::clear(const MessageId& id)
@@ -38,9 +38,15 @@ void MessageConsole::clear(const MessageId& id)
 
         if (_messages.is_empty())
         {
-            _is_open = false;
+            close_window();
         }
     }
+}
+
+void MessageConsole::close_window()
+{
+    _is_open          = false;
+    _selected_message = MessageId{};
 }
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
@@ -90,7 +96,12 @@ void MessageConsole::imgui_window()
 {
     if (_is_open)
     {
+        if (_message_just_sent)
+        {
+            ImGui::SetNextWindowFocus();
+        }
         ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
+
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
 
@@ -133,13 +144,13 @@ void MessageConsole::imgui_window()
         }
         clear(msg_to_clear);
 
-        if (_scroll_to_bottom)
+        if (_message_just_sent)
         {
             ImGui::SetScrollHereY(1.f);
-            _scroll_to_bottom = false;
         }
         ImGui::End();
     }
+    _message_just_sent = false;
 }
 
 } // namespace Cool

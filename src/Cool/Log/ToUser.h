@@ -76,6 +76,6 @@ private:
 private:
     static std::vector<Message> _messages;
     static bool                 _is_open;
-    static bool                 _scroll_to_bottom;
+    static bool                 _message_just_sent;
 };
 } // namespace Cool::Log
