@@ -27,7 +27,7 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
     }
 
     _is_open           = true;
-    _message_just_sent = true;
+    _message_just_sent = id;
 }
 
 void MessageConsole::clear(const MessageId& id)
@@ -141,16 +141,16 @@ void MessageConsole::imgui_window()
             {
                 _selected_message = id;
             }
+            if (_message_just_sent &&
+                *_message_just_sent == id)
+            {
+                ImGui::SetScrollHereY(0.5f);
+            }
         }
         clear(msg_to_clear);
-
-        if (_message_just_sent)
-        {
-            ImGui::SetScrollHereY(1.f);
-        }
         ImGui::End();
     }
-    _message_just_sent = false;
+    _message_just_sent.reset();
 }
 
 } // namespace Cool
