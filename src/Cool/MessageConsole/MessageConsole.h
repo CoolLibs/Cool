@@ -25,6 +25,9 @@ public:
     auto is_open() -> bool& { return _is_open; }
 
 private:
+    void close_window();
+
+private:
     reg::Registry<internal::MessageWithMetadata> _messages; // TODO(JF) Use an order-preserving registry
     MessageId                                    _selected_message;
     bool                                         _is_open{false};

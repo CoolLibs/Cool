@@ -38,9 +38,15 @@ void MessageConsole::clear(const MessageId& id)
 
         if (_messages.is_empty())
         {
-            _is_open = false;
+            close_window();
         }
     }
+}
+
+void MessageConsole::close_window()
+{
+    _is_open          = false;
+    _selected_message = MessageId{};
 }
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
