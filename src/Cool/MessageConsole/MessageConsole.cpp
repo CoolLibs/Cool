@@ -2,6 +2,7 @@
 #include <Cool/Constants/Constants.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <imgui/imgui_internal.h>
 #include <stringify/stringify.hpp>
 
 namespace Cool {
@@ -109,6 +110,22 @@ void MessageConsole::imgui_window()
         {
             ImGui::PushID(&id);
             ImGui::BeginGroup();
+
+            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+            // Draw gradients
+            // (note that those are currently exacerbating our sRGB/Linear issues)
+            // Calling ImGui::GetColorU32() multiplies the given colors by the current Style Alpha, but you may pass the IM_COL32() directly as well..
+            ImGui::Text("Gradients");
+            ImVec2 gradient_size = ImVec2(100.f, ImGui::GetFrameHeight());
+            {
+                ImVec2 p0    = ImGui::GetCursorScreenPos();
+                ImVec2 p1    = ImVec2(p0.x + gradient_size.x, p0.y + gradient_size.y);
+                ImU32  col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
+                ImU32  col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
+                draw_list->AddRectFilled(p0, p1, col_b);
+                // ImGui::InvisibleButton("##gradient1", gradient_size);
+            }
 
             ImGui::TextColored(
                 color(msg.message.severity),
