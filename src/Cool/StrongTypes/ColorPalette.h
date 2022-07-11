@@ -1,31 +1,32 @@
 #pragma once
 
+#include <algorithms/algorithms.hpp>
 #include <op/op.hpp>
 #include <vector>
 #include "RgbColor.h"
 
 namespace Cool {
+
 struct ColorPalette : public op::EqualityComparable<ColorPalette> {
     std::vector<Cool::RgbColor> value{};
+
     constexpr ColorPalette() = default;
     explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
         : value{value}
     {}
-    void remove_color(auto i) { value.erase(value.begin() + i); }
-    void move_color(size_t old_emplacement, size_t new_emplacement)
+
+    void remove_color(size_t index)
     {
-        if (old_emplacement < new_emplacement)
-        {
-            new_emplacement++;
-        }
-        value.emplace(value.begin() + new_emplacement, value[old_emplacement]);
-        if (old_emplacement > new_emplacement)
-        {
-            old_emplacement++;
-        }
-        remove_color(old_emplacement);
+        assert(index < value.size());
+        value.erase(value.begin() + index);
     }
-    void add_color() { value.push_back(Cool::RgbColor{glm::vec3{1., 1., 1.}}); }
+
+    void add_color(Cool::RgbColor color = {}) { value.push_back(color); }
+
+    void move_color(size_t old_index, size_t new_index)
+    {
+        algorithms::translocate(std::next(value.begin(), old_index), std::next(value.begin(), new_index));
+    }
 
 private:
     // Serialization
@@ -33,7 +34,7 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Palette", value));
+        archive(cereal::make_nvp("Color Palette", value));
     }
 };
 
