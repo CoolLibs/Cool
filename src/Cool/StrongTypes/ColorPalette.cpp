@@ -16,18 +16,14 @@ auto must_be_in_same_line(size_t index) -> bool
 
 auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
 {
-    const float  button_size       = ImGui::GetFrameHeight();
-    size_t       number_of_colors  = palette.value.size();
-    bool         value_has_changed = false;
-    const float  width             = ImGui::CalcItemWidth();
-    const size_t palette_width     = size_t((width - button_size) / button_size);
+    bool value_has_changed = false;
 
     ImGui::Text("%s", name.data());
     ImGui::BeginGroup();
-    for (size_t i = 0; i < number_of_colors; i++)
+    for (size_t i = 0; i < palette.value.size(); i++)
     {
-        ImGui::PushID(int(i));
-        if ((i != 0) && (std::fmod(i, palette_width) != 0))
+        ImGui::PushID(static_cast<int>(i));
+        if (must_be_in_same_line(i))
         {
             ImGui::SameLine();
         }
@@ -35,12 +31,11 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
         if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))
         {
             palette.remove_color(i);
-            number_of_colors--;
         }
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None | ImGuiDragDropFlags_SourceAllowNullID))
         {
-            ImGui::SetDragDropPayload(" ", &i, sizeof(int));
+            ImGui::SetDragDropPayload(" ", &i, sizeof(size_t));
 
             ImGui::EndDragDropSource();
         }
@@ -48,8 +43,8 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
         {
             if (const ImGuiPayload* payload_old = ImGui::AcceptDragDropPayload(" "))
             {
-                IM_ASSERT(payload_old->DataSize == sizeof(int));
-                int old_index = *(const int*)payload_old->Data;
+                IM_ASSERT(payload_old->DataSize == sizeof(size_t));
+                const size_t old_index = *reinterpret_cast<const size_t*>(payload_old->Data);
                 palette.move_color(old_index, i);
             }
             ImGui::EndDragDropTarget();
@@ -59,7 +54,7 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
     }
     ImGui::EndGroup();
     ImGui::SameLine();
-    if (ImGui::Button("+", ImVec2(button_size, button_size)))
+    if (ImGui::Button("+", ImVec2(button_size(), button_size())))
     {
         palette.add_color();
         ImGui::OpenPopup("picker");
@@ -67,8 +62,8 @@ auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palet
     }
     if (ImGui::BeginPopup("picker"))
     {
-        ImGui::SetNextItemWidth(button_size * 12.0f);
-        value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(palette.value[number_of_colors - 1].value), flags);
+        ImGui::SetNextItemWidth(button_size() * 12.0f);
+        value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(palette.value[palette.value.size() - 1].value), flags);
         ImGui::EndPopup();
     }
     Cool::ImGuiExtras::tooltip("Add a color");
