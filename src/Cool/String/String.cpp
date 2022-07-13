@@ -1,5 +1,6 @@
 #include "String.h"
 #include <charconv>
+#include <exception>
 #include <glm/detail/qualifier.hpp>
 
 namespace Cool::String {
@@ -259,13 +260,43 @@ auto find_value_for_given_key_as_string(
 template<typename T>
 static auto value_from_string_impl_scalar(std::string_view str) -> std::optional<T>
 {
-    T                            out;
-    const std::from_chars_result result = std::from_chars(str.data(), str.data() + str.size(), out);
-    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+    if constexpr (std::is_same_v<T, int>)
     {
-        return std::nullopt;
+        try
+        {
+            return std::stoi(std::string(str));
+        }
+        catch (std::exception& err)
+        {
+            return std::nullopt;
+        }
     }
-    return out;
+    else if constexpr (std::is_same_v<T, float>)
+    {
+        try
+        {
+            return std::stof(std::string(str));
+        }
+        catch (std::exception& err)
+        {
+            return std::nullopt;
+        }
+    }
+    else
+    {
+        const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
+        std::ignore           = debug_name;
+        assert(false);
+    }
+
+    // Waiting for Xcode to implement std::from_chars
+    // T out;
+    // const std::from_chars_result result = std::from_chars(str.data(), str.data() + str.size(), out);
+    // if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+    // {
+    //     return std::nullopt;
+    // }
+    // return out;
 }
 
 template<typename ScalarType, int NbElements>
