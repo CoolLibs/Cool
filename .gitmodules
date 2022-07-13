@@ -67,3 +67,9 @@
 [submodule "lib/DearWidgets"]
 	path = lib/DearWidgets
 	url = https://github.com/CoolLibs/DearWidgets
+[submodule "lib/wafl"]
+	path = lib/wafl
+	url = https://github.com/CoolLibs/wafl.git
+[submodule "lib/algorithms"]
+	path = lib/algorithms
+	url = https://github.com/CoolLibs/algorithms.git

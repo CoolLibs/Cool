@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/StrongTypes/ColorPalette.h>
 #include "Variable.h"
 
@@ -24,7 +23,7 @@ private:
 
 inline auto imgui_widget(Variable<ColorPalette>& var) -> bool
 {
-    return palette_widget(
+    return imgui_color_palette_widget(
         var.name,
         var.value,
         (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)

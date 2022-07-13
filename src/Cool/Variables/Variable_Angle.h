@@ -20,7 +20,7 @@ private:
 
 inline auto imgui_widget(Variable<Angle>& var) -> bool
 {
-    return Cool::angle_widget(
+    return Cool::imgui_angle_widget(
         var.name,
         var.value
     );

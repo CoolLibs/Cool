@@ -7,7 +7,7 @@ namespace Cool {
 struct Hue
     : public op::Addable<Hue>
     , public op::Subtractable<Hue>
-    , public op::Negatable<Radians>
+    , public op::Negatable<Hue>
     , public op::EqualityComparable<Hue> {
     float value{};
     constexpr Hue() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
@@ -33,10 +33,10 @@ inline auto to_string(Cool::Hue hue) -> std::string
     return std::to_string(hue.get());
 }
 
-inline auto hue_widget(const std::string& name, float& hue) -> bool
+inline auto imgui_hue_widget(std::string_view name, float& hue) -> bool
 {
     return ImGuiExtras::hue_wheel(
-        name.c_str(),
+        name.data(),
         &hue
     );
 }

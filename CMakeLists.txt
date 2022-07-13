@@ -107,6 +107,9 @@ endif()
 # ---Add libraries---
 # -------------------
 
+# algorithms
+add_subdirectory(lib/algorithms)
+target_link_libraries(Cool PUBLIC algorithms::algorithms)
 # GLFW
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool PUBLIC glfw)
@@ -151,6 +154,9 @@ target_link_libraries(Cool PUBLIC op::op)
 # reg
 add_subdirectory(lib/reg)
 target_link_libraries(Cool PUBLIC reg::reg)
+# wafl
+add_subdirectory(lib/wafl)
+target_link_libraries(Cool PUBLIC wafl::wafl)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)

@@ -313,7 +313,7 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
     }
 }
 
-bool hue_wheel(const char* label, float* hue)
+bool hue_wheel(const char* label, float* hue, float radius)
 {
     ImGuiContext& g      = *GImGui;
     ImGuiWindow*  window = ImGui::GetCurrentWindow();
@@ -323,7 +323,7 @@ bool hue_wheel(const char* label, float* hue)
     ImDrawList* draw_list = window->DrawList;
     ImGuiStyle& style     = g.Style;
 
-    const float width = ImGui::CalcItemWidth();
+    const float width = radius;
     g.NextItemData.ClearFlags();
 
     ImGui::PushID(label);
@@ -333,8 +333,8 @@ bool hue_wheel(const char* label, float* hue)
     ImVec2 widget_pos         = ImGui::GetCursorScreenPos();
     float  backup_initial_hue = *hue;
 
-    float  wheel_thickness = width * 0.004f * 2.7f;
-    float  wheel_r_outer   = width * 0.004f * 6.25f;
+    float  wheel_thickness = width * .5f;
+    float  wheel_r_outer   = width;
     float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
     ImVec2 wheel_center(widget_pos.x + wheel_r_outer, widget_pos.y + wheel_r_outer);
 
@@ -362,7 +362,7 @@ bool hue_wheel(const char* label, float* hue)
     const ImU32 col_midgrey     = IM_COL32(128, 128, 128, style_alpha8);
     const ImU32 col_hues[6 + 1] = {IM_COL32(255, 0, 0, style_alpha8), IM_COL32(255, 255, 0, style_alpha8), IM_COL32(0, 255, 0, style_alpha8), IM_COL32(0, 255, 255, style_alpha8), IM_COL32(0, 0, 255, style_alpha8), IM_COL32(255, 0, 255, style_alpha8), IM_COL32(255, 0, 0, style_alpha8)};
 
-    ImVec4 hue_color_f(1, 1, 1, style.Alpha);
+    ImVec4 hue_color_f(1, 1, 1, 0);
     ImU32  hue_color32 = ImGui::ColorConvertFloat4ToU32(hue_color_f);
 
     // Render Hue Wheel
@@ -388,7 +388,7 @@ bool hue_wheel(const char* label, float* hue)
     float  sin_hue_angle = ImSin(*hue * 2.0f * IM_PI);
     ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
     float  hue_cursor_rad      = value_changed ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
-    int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32);
+    int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32) * 10.f;
     draw_list->AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
     draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
     draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
