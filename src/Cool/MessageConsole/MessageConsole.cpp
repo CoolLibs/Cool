@@ -92,6 +92,17 @@ static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
     return msg.message.severity != MessageSeverity::Error;
 }
 
+static auto highlight_color(float mix_factor) -> ImU32
+{
+    const auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    return ImGui::GetColorU32(IM_COL32(
+        col.x * 255.f,
+        col.y * 255.f,
+        col.z * 255.f,
+        mix_factor * 255.f
+    ));
+}
+
 void MessageConsole::imgui_window()
 {
     if (_is_open)
@@ -107,6 +118,11 @@ void MessageConsole::imgui_window()
 
         for (const auto& [id, msg] : _messages)
         {
+            ImDrawList& draw_list = *ImGui::GetWindowDrawList();
+            draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the text,
+            draw_list.ChannelsSetCurrent(1);                              // even though the text is drawn first.
+            const auto rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the size of the text before drawing the rectangle.
+
             ImGui::PushID(&id);
             ImGui::BeginGroup();
 
@@ -137,6 +153,7 @@ void MessageConsole::imgui_window()
 
             ImGui::EndGroup();
             ImGui::PopID();
+
             if (ImGui::IsItemHovered())
             {
                 _selected_message = id;
@@ -146,7 +163,27 @@ void MessageConsole::imgui_window()
             {
                 ImGui::SetScrollHereY(0.5f);
             }
+
+            // Draw highlight of recent messages
+            const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
+            static constexpr float highlight_duration = 0.5f;
+            if (dt.count() < highlight_duration)
+            {
+                const auto rectangle_end_pos = ImVec2(
+                    rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
+                    ImGui::GetCursorScreenPos().y
+                );
+
+                draw_list.ChannelsSetCurrent(0);
+                draw_list.AddRectFilled(
+                    rectangle_start_pos,
+                    rectangle_end_pos,
+                    highlight_color(1.f - dt.count() / highlight_duration)
+                );
+            }
+            draw_list.ChannelsMerge();
         }
+
         clear(msg_to_clear);
         ImGui::End();
     }
