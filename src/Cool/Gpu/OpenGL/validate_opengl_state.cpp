@@ -1,8 +1,7 @@
 #if COOL_OPENGL
 #include "validate_opengl_state.h"
 
-/// This function must be called just before a draw call.
-/// It will make sure that everything is set up correctly.
+/// This function can be called just before a draw call to make sure everything is set up correctly.
 void validate_opengl_state(GLuint id)
 {
     GLint result;
