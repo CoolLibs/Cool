@@ -266,7 +266,7 @@ static auto value_from_string_impl_scalar(std::string_view str) -> std::optional
         {
             return std::stoi(std::string(str));
         }
-        catch (std::exception& err)
+        catch (const std::exception&)
         {
             return std::nullopt;
         }
@@ -277,7 +277,7 @@ static auto value_from_string_impl_scalar(std::string_view str) -> std::optional
         {
             return std::stof(std::string(str));
         }
-        catch (std::exception& err)
+        catch (const std::exception&)
         {
             return std::nullopt;
         }
