@@ -128,7 +128,7 @@ void MessageConsole::imgui_window()
 
             ImGui::TextColored(
                 color(msg.message.severity),
-                "[%s] [#%lld] [%s]",
+                "[%s] [#%lu] [%s]",
                 Cool::stringify(msg.timestamp).c_str(),
                 msg.count,
                 msg.message.category.c_str()
