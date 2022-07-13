@@ -16,10 +16,9 @@ void help_marker(const char* text);
  * @param value_p A pointer to the variable that the widget should modify
  * @param thickness Thickness of the line indicating the direction
  * @param radius Radius of the wheel (a.k.a. size of the widget)
- * @param nb_segments_for_circle Number of segments used to render the wheel (which is actually a polygon with a huge number of sides)
  * @return true iff the widget was just used
  */
-bool angle_wheel(const char* label, float* value_p, float thickness = 2.0f, float radius = 25.0f, int nb_segments_for_circle = 26);
+bool angle_wheel(const char* label, float* value_p, float thickness = 2.0f, float radius = 25.0f);
 
 bool direction_3d(const char* label, float* value_p1, float* value_p2);
 

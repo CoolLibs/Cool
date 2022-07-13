@@ -25,7 +25,7 @@ void help_marker(const char* text)
     }
 }
 
-bool angle_wheel(const char* label, float* value_p, float thickness, float radius, int nb_segments_for_circle)
+bool angle_wheel(const char* label, float* value_p, float thickness, float radius)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -62,7 +62,7 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     ImU32       col32line = ImGui::GetColorU32(ImGuiCol_SliderGrabActive);
     ImU32       col32text = ImGui::GetColorU32(ImGuiCol_Text);
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddCircleFilled(center, radius, col32, nb_segments_for_circle);
+    draw_list->AddCircleFilled(center, radius, col32);
     draw_list->AddLine(center, ImVec2(x2, y2), col32line, thickness);
     draw_list->AddText(ImVec2(p.x + radius * 2.0f + style.ItemInnerSpacing.y, p.y + radius - line_height * 0.5f), col32text, label);
 
