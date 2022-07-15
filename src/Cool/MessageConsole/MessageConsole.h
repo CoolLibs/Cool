@@ -15,7 +15,7 @@ public:
     /// Removes the message from the list.
     void clear(const MessageId& id);
 
-    /// Returns true iff the message is currently selected / hovered by the user
+    /// Returns true iff the message is currently selected / hovered by the user.
     /// Allows us to focus the corresponding window / highlight the corresponding part of the UI that requires attention.
     auto should_highlight(const MessageId&) -> bool;
 
@@ -28,10 +28,10 @@ private:
     void close_window();
 
 private:
-    reg::Registry<internal::MessageWithMetadata> _messages; // TODO(JF) Use an order-preserving registry
-    MessageId                                    _selected_message;
-    bool                                         _is_open{false};
-    std::optional<MessageId>                     _message_just_sent{};
+    reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
+    MessageId                                           _selected_message;
+    bool                                                _is_open{false};
+    std::optional<MessageId>                            _message_just_sent{};
 };
 
 } // namespace Cool
