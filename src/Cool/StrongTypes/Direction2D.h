@@ -46,9 +46,15 @@ public:
     void rotate(Cool::Angle angle) { value += angle; };
     void set(Cool::Angle angle) { value = angle; };
     void set(glm::vec2 vector) { value = get_angle_from_vector(vector); };
+    auto imgui_widget(std::string_view name) -> bool
+    {
+        return Cool::imgui_widget(
+            name.data(),
+            value
+        );
+    }
 
 private:
-    friend class op::Negatable<Direction2D>;
     Cool::Angle value{};
 
 private:
@@ -64,6 +70,11 @@ private:
 inline auto to_string(Cool::Direction2D direction) -> std::string
 {
     return to_string(direction.as_angle());
+}
+
+inline auto imgui_widget(std::string_view name, Cool::Direction2D& direction)
+{
+    return direction.imgui_widget(name);
 }
 
 } // namespace Cool

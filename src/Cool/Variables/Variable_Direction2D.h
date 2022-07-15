@@ -21,10 +21,7 @@ private:
 
 inline auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
-    auto angle       = var.value.as_angle();
-    bool has_changed = imgui_angle_widget(var.name, angle);
-    var.value.set(angle);
-    return has_changed;
+    return imgui_widget(var.name, var.value);
 }
 
 inline auto imgui_widget(VariableMetadata<Direction2D>&) -> bool
