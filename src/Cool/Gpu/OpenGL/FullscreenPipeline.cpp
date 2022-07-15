@@ -29,6 +29,14 @@ void FullscreenPipeline::shut_down()
 
 auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name) -> std::optional<std::string>
 {
+    const auto on_error = [&]() {
+        _shader.reset();
+    };
+    if (fragment_shader_source_code == "")
+    {
+        on_error();
+        return "Shader is empty";
+    }
     try
     {
         _shader = Shader{
