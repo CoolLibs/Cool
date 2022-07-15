@@ -2,6 +2,7 @@
 
 #include <Cool/StrongTypes/ColorPalette.h>
 #include "Variable.h"
+#include "internal/rgb_color_utils.h"
 
 namespace Cool {
 
@@ -26,17 +27,13 @@ inline auto imgui_widget(Variable<ColorPalette>& var) -> bool
     return imgui_widget(
         var.name,
         var.value,
-        (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
+        rgb_color_imgui_flags(var.metadata.is_hdr)
     );
 }
 
 inline auto imgui_widget(VariableMetadata<ColorPalette>& meta) -> bool
 {
-    bool b = false;
-    b |= ImGui::Checkbox("HDR", &meta.is_hdr);
-    ImGui::SameLine();
-    ImGuiExtras::help_marker("Allows the RGB values to go outside of the [0, 1] range.");
-    return b;
+    return rgb_color_metadata_widget(meta.is_hdr);
 }
 
 } // namespace Cool

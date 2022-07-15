@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include "Variable.h"
+#include "internal/rgb_color_utils.h"
 
 namespace Cool {
 
@@ -27,19 +27,13 @@ inline auto imgui_widget(Variable<RgbColor>& var) -> bool
     return imgui_color_widget(
         var.name,
         var.value,
-        // Flags:
-        ImGuiColorEditFlags_Float |
-            (var.metadata.is_hdr ? ImGuiColorEditFlags_HDR : 0)
+        rgb_color_imgui_flags(var.metadata.is_hdr)
     );
 }
 
 inline auto imgui_widget(VariableMetadata<RgbColor>& meta) -> bool
 {
-    bool b = false;
-    b |= ImGui::Checkbox("HDR", &meta.is_hdr);
-    ImGui::SameLine();
-    ImGuiExtras::help_marker("Allows the RGB values to go outside of the [0, 1] range.");
-    return b;
+    return rgb_color_metadata_widget(meta.is_hdr);
 }
 
 } // namespace Cool
