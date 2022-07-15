@@ -32,11 +32,13 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
     const auto on_error = [&]() {
         _shader.reset();
     };
-    if (fragment_shader_source_code == "")
+
+    if (fragment_shader_source_code.empty())
     {
         on_error();
-        return "Shader is empty";
+        return "Shader '" + std::string{name} + "' is empty";
     }
+
     try
     {
         _shader = Shader{
@@ -50,7 +52,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
     }
     catch (const std::exception& e)
     {
-        _shader.reset();
+        on_error();
         return e.what() +
                std::string{"\nThe source code we tried to compile was:\n"} +
                std::string{fragment_shader_source_code};
