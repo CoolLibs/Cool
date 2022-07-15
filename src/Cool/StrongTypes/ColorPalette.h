@@ -7,11 +7,12 @@
 
 namespace Cool {
 
-struct ColorPalette : public op::EqualityComparable<ColorPalette> {
+struct ColorPalette
+    : public op::EqualityComparable<ColorPalette> {
     std::vector<Cool::RgbColor> value{};
 
     constexpr ColorPalette() = default;
-    explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
+    constexpr explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
         : value{value}
     {}
 
@@ -25,7 +26,10 @@ struct ColorPalette : public op::EqualityComparable<ColorPalette> {
 
     void move_color(size_t old_index, size_t new_index)
     {
-        algorithms::translocate(std::next(value.begin(), old_index), std::next(value.begin(), new_index));
+        algorithms::translocate(
+            std::next(value.begin(), old_index),
+            std::next(value.begin(), new_index)
+        );
     }
 
 private:
@@ -38,6 +42,6 @@ private:
     }
 };
 
-auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool;
+auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool;
 
 } // namespace Cool

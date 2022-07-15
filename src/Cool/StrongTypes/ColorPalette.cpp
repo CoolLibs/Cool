@@ -1,6 +1,7 @@
 #include "ColorPalette.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <imgui/imgui_internal.h>
+
 namespace Cool {
 
 static auto button_size() -> float
@@ -10,11 +11,14 @@ static auto button_size() -> float
 
 auto must_be_in_same_line(size_t index) -> bool
 {
-    const auto palette_width = std::max(static_cast<size_t>(1u), static_cast<size_t>((ImGui::CalcItemWidth() - button_size()) / button_size()));
+    const auto palette_width = std::max(
+        static_cast<size_t>(1u),
+        static_cast<size_t>((ImGui::CalcItemWidth() - button_size()) / button_size())
+    );
     return (index % palette_width != 0);
 }
 
-auto imgui_color_palette_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
+auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool
 {
     bool value_has_changed = false;
 
