@@ -13,10 +13,11 @@ struct Radians
     , public op::Scalable<Radians>
     , public op::EqualityComparable<Radians> {
     float value{0.f};
-    constexpr Radians() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
 
-    constexpr explicit Radians(float value)
-        : value{value} {}
+    constexpr Radians() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
+
+    constexpr explicit Radians(float radians)
+        : value{radians} {}
 
 private:
     // Serialization
@@ -51,18 +52,26 @@ inline auto radians_to_turns(Radians radians) -> float
 class Angle
     : public op::Addable<Angle>
     , public op::Subtractable<Angle>
-    , public op::Negatable<Angle>
-    , public op::Scalable<Angle>
-    , public op::EqualityComparable<Angle> {
+    , public op::Negatable<Angle> {
 public:
-    constexpr Angle() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
-    constexpr explicit Angle(Radians value)
-        : value{value} {}
+    constexpr Angle() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
+    constexpr explicit Angle(Radians radians)
+        : value{radians} {}
+
+    friend auto operator==(const Angle& a, const Angle& b) -> bool { return a.value == b.value; }
+    friend auto operator!=(const Angle& a, const Angle& b) -> bool { return !(a == b); }
 
     auto as_turns() const -> float { return radians_to_turns(value); }
     auto as_radians() const -> float { return value.value; }
     auto as_degrees() const -> float { return radians_to_degrees(value); }
 
+    auto imgui_widget(std::string_view name) { return ImGuiExtras::angle_wheel(
+        name.data(),
+        &value.value
+    ); }
+
+private:
+    friend class op::Addable<Angle>;
     Radians value{};
 
 private:
@@ -82,10 +91,7 @@ inline auto to_string(Cool::Angle angle) -> std::string
 
 inline auto imgui_widget(std::string_view name, Cool::Angle& angle) -> bool
 {
-    return ImGuiExtras::angle_wheel(
-        name.data(),
-        &angle.value.value
-    );
+    return angle.imgui_widget(name);
 }
 
 } // namespace Cool

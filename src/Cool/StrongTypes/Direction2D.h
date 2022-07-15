@@ -34,8 +34,8 @@ public:
     auto as_unit_vec2() const -> glm::vec2
     {
         return glm::vec2{
-            glm::cos(value.value.value),
-            glm::sin(value.value.value)};
+            glm::cos(value.as_radians()),
+            glm::sin(value.as_radians())};
     }
 
     auto as_angle() const -> Cool::Angle
