@@ -23,7 +23,7 @@ inline auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
     auto angle       = var.value.as_angle();
     bool has_changed = imgui_angle_widget(var.name, angle);
-    var.value.set_direction_from_angle(angle);
+    var.value.set(angle);
     return has_changed;
 }
 
