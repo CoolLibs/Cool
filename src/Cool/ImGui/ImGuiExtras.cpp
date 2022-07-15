@@ -313,43 +313,46 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
     }
 }
 
-bool hue_wheel(const char* label, float* hue, float radius)
+auto hue_wheel(const char* label, float* hue, float radius) -> bool
 {
-    ImGuiContext& g      = *GImGui;
-    ImGuiWindow*  window = ImGui::GetCurrentWindow();
-    if (window->SkipItems)
+    ImGuiContext&      g      = *GImGui;
+    const ImGuiWindow& window = *ImGui::GetCurrentWindow();
+    if (window.SkipItems)
+    {
         return false;
+    }
 
-    ImDrawList* draw_list = window->DrawList;
-    ImGuiStyle& style     = g.Style;
+    ImDrawList&       draw_list = *window.DrawList;
+    const ImGuiStyle& style     = g.Style;
 
-    const float width = radius;
     g.NextItemData.ClearFlags();
 
     ImGui::PushID(label);
     ImGui::BeginGroup();
 
     // Setup
-    ImVec2 widget_pos         = ImGui::GetCursorScreenPos();
-    float  backup_initial_hue = *hue;
+    const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
 
-    float  wheel_thickness = width * .5f;
-    float  wheel_r_outer   = width;
-    float  wheel_r_inner   = wheel_r_outer - wheel_thickness;
-    ImVec2 wheel_center(widget_pos.x + wheel_r_outer, widget_pos.y + wheel_r_outer);
+    const float wheel_thickness = radius * .5f;
+    const float wheel_r_outer   = radius;
+    const float wheel_r_inner   = wheel_r_outer - wheel_thickness;
+    const auto  wheel_center    = ImVec2{
+        widget_pos.x + wheel_r_outer,
+        widget_pos.y + wheel_r_outer};
 
-    bool value_changed = false;
+    bool        value_changed = false;
+    const float initial_hue   = *hue;
 
-    // Hue wheel + SV triangle logic
+    // Hue wheel
     ImGui::InvisibleButton("Hue", ImVec2(wheel_r_outer * 2.f + style.ItemInnerSpacing.x, wheel_r_outer * 2.f));
     if (ImGui::IsItemActive())
     {
-        ImVec2 initial_off   = g.IO.MouseClickedPos[0] - wheel_center;
-        ImVec2 current_off   = g.IO.MousePos - wheel_center;
-        float  initial_dist2 = ImLengthSqr(initial_off);
+        const ImVec2 initial_off   = g.IO.MouseClickedPos[0] - wheel_center;
+        const ImVec2 current_off   = g.IO.MousePos - wheel_center;
+        const float  initial_dist2 = ImLengthSqr(initial_off);
         if (initial_dist2 >= (wheel_r_inner - 1) * (wheel_r_inner - 1) && initial_dist2 <= (wheel_r_outer + 1) * (wheel_r_outer + 1))
         {
-            // Interactive with Hue wheel
+            // Interaction with Hue wheel
             *hue = ImAtan2(current_off.y, current_off.x) / IM_PI * 0.5f;
             if (*hue < 0.0f)
                 *hue += 1.0f;
@@ -367,20 +370,20 @@ bool hue_wheel(const char* label, float* hue, float radius)
 
     // Render Hue Wheel
     const float aeps            = 0.5f / wheel_r_outer; // Half a pixel arc length in radians (2pi cancels out).
-    const int   segment_per_arc = ImMax(4, (int)wheel_r_outer / 12);
+    const int   segment_per_arc = ImMax(4, static_cast<int>(wheel_r_outer) / 12);
     for (int n = 0; n < 6; n++)
     {
         const float a0             = (n) / 6.0f * 2.0f * IM_PI - aeps;
         const float a1             = (n + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
-        const int   vert_start_idx = draw_list->VtxBuffer.Size;
-        draw_list->PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
-        draw_list->PathStroke(col_white, 0, wheel_thickness);
-        const int vert_end_idx = draw_list->VtxBuffer.Size;
+        const int   vert_start_idx = draw_list.VtxBuffer.Size;
+        draw_list.PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
+        draw_list.PathStroke(col_white, 0, wheel_thickness);
+        const int vert_end_idx = draw_list.VtxBuffer.Size;
 
         // Paint colors over existing vertices
         ImVec2 gradient_p0(wheel_center.x + ImCos(a0) * wheel_r_inner, wheel_center.y + ImSin(a0) * wheel_r_inner);
         ImVec2 gradient_p1(wheel_center.x + ImCos(a1) * wheel_r_inner, wheel_center.y + ImSin(a1) * wheel_r_inner);
-        ImGui::ShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col_hues[n], col_hues[n + 1]);
+        ImGui::ShadeVertsLinearColorGradientKeepAlpha(&draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col_hues[n], col_hues[n + 1]);
     }
 
     // Render Cursor + preview on Hue Wheel
@@ -388,18 +391,23 @@ bool hue_wheel(const char* label, float* hue, float radius)
     float  sin_hue_angle = ImSin(*hue * 2.0f * IM_PI);
     ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
     float  hue_cursor_rad      = value_changed ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
-    int    hue_cursor_segments = ImClamp((int)(hue_cursor_rad / 1.4f), 9, 32) * 10;
-    draw_list->AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
-    draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
-    draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
-    draw_list->AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
+    int    hue_cursor_segments = ImClamp(static_cast<int>(hue_cursor_rad / 1.4f), 9, 32) * 10;
+    draw_list.AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
+    draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
+    draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
+    draw_list.AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
 
     ImGui::EndGroup();
 
-    if (value_changed && backup_initial_hue != *hue)
+    if (initial_hue == *hue)
+    {
         value_changed = false;
+    }
+
     if (value_changed)
+    {
         ImGui::MarkItemEdited(g.LastItemData.ID);
+    }
 
     ImGui::PopID();
 
