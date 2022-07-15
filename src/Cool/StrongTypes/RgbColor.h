@@ -3,6 +3,7 @@
 #include <op/op.hpp>
 
 namespace Cool {
+
 struct RgbColor
     : public op::Addable<RgbColor>
     , public op::Subtractable<RgbColor>
@@ -10,9 +11,10 @@ struct RgbColor
     , public op::Scalable<RgbColor>
     , public op::EqualityComparable<RgbColor> {
     glm::vec3 value{};
-    constexpr RgbColor() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
-    constexpr explicit RgbColor(const glm::vec3& value)
-        : value{value}
+
+    constexpr RgbColor() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
+    constexpr explicit RgbColor(const glm::vec3& rgb)
+        : value{rgb}
     {}
 
 private:
