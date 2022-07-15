@@ -1,4 +1,4 @@
-#version 430
+#version 410
 #if !defined(COOL_VULKAN) // COOL_OPENGL
 #define gl_VertexIndex gl_VertexID
 #endif

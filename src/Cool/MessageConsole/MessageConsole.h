@@ -31,7 +31,7 @@ private:
     reg::Registry<internal::MessageWithMetadata> _messages; // TODO(JF) Use an order-preserving registry
     MessageId                                    _selected_message;
     bool                                         _is_open{false};
-    bool                                         _message_just_sent{false};
+    std::optional<MessageId>                     _message_just_sent{};
 };
 
 } // namespace Cool

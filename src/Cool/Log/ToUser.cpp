@@ -38,7 +38,7 @@ void ToUser::imgui_console_window()
     {
         if (_message_just_sent)
         {
-            ImGui::SetNextWindowFocus();
+            ImGui::SetNextWindowToFront();
         }
         ImGui::Begin("Console Legacy", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
         ImGui::BeginMenuBar();
@@ -86,7 +86,7 @@ void ToUser::imgui_console_window()
             {
                 ImGui::TextColored(
                     color,
-                    "[%d:%d'%d\"%lld] [#%lld] [%s]",
+                    "[%d:%d'%d\"%lld] [#%lu] [%s]",
                     local_time->tm_hour,
                     local_time->tm_min,
                     local_time->tm_sec,

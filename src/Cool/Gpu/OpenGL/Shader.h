@@ -1,5 +1,5 @@
 #pragma once
-#if defined(COOL_OPENGL)
+#if COOL_OPENGL
 
 #include "Cool/StrongTypes/Angle.h"
 #include "Cool/StrongTypes/ColorPalette.h"
@@ -8,7 +8,6 @@
 #include "Cool/StrongTypes/RgbColor.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
-
 
 namespace Cool::OpenGL {
 

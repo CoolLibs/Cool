@@ -100,7 +100,7 @@ private:
     Shader _shader;
 
     static inline std::string _boilerplate_source_code = std::string(R"V0G0N(
-#version 430
+#version 410
 
 uniform int NumberOfComputationsX;
 uniform int NumberOfComputationsY;

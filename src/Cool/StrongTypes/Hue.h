@@ -4,19 +4,35 @@
 #include <op/op.hpp>
 
 namespace Cool {
+
 struct Hue
     : public op::Addable<Hue>
     , public op::Subtractable<Hue>
-    , public op::Negatable<Hue>
-    , public op::EqualityComparable<Hue> {
-    float value{};
-    constexpr Hue() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
-    constexpr explicit Hue(float value)
-        : value{value}
+    , public op::Negatable<Hue> {
+    constexpr Hue() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
+    /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
+    explicit Hue(float hue)
+        : value{std::fmod(hue, 1.f)}
     {}
-    auto get() const -> float { return from_0_to_1(); }
-    void set(const float hue) { value = hue; }
-    auto from_0_to_1() const -> float { return fmod(value, 1.f); }
+
+    friend auto operator==(const Hue& a, const Hue& b) -> bool { return a.value == b.value; }
+    friend auto operator!=(const Hue& a, const Hue& b) -> bool { return !(a == b); }
+
+    /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
+    auto from_0_to_1() const -> float { return value; }
+    /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
+    void set(float hue) { value = std::fmod(hue, 1.f); }
+
+    auto imgui_widget(std::string_view name) -> bool
+    {
+        return ImGuiExtras::hue_wheel(
+            name.data(),
+            &value
+        );
+    }
+
+private:
+    float value{};
 
 private:
     // Serialization
@@ -30,15 +46,12 @@ private:
 
 inline auto to_string(Cool::Hue hue) -> std::string
 {
-    return std::to_string(hue.get());
+    return std::to_string(hue.from_0_to_1());
 }
 
-inline auto imgui_hue_widget(std::string_view name, float& hue) -> bool
+inline auto imgui_widget(std::string_view name, Cool::Hue& hue) -> bool
 {
-    return ImGuiExtras::hue_wheel(
-        name.data(),
-        &hue
-    );
+    return hue.imgui_widget(name);
 }
 
 } // namespace Cool

@@ -20,10 +20,7 @@ private:
 
 inline auto imgui_widget(Variable<Hue>& var) -> bool
 {
-    auto hue         = var.value.get();
-    bool has_changed = imgui_hue_widget(var.name, hue);
-    var.value.set(hue);
-    return has_changed;
+    return imgui_widget(var.name, var.value);
 }
 
 inline auto imgui_widget(VariableMetadata<Hue>&) -> bool
