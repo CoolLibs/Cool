@@ -12,7 +12,8 @@ struct ColorPalette
     std::vector<Cool::RgbColor> value{};
 
     constexpr ColorPalette() = default;
-    constexpr explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
+    // This constructor is no constexp because std::vector is not constexpt on macos
+    explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
         : value{value}
     {}
 
