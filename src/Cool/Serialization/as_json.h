@@ -7,6 +7,21 @@
 
 namespace Cool::Serialization {
 
+class Exception : public std::exception {
+public:
+    explicit Exception(std::string_view message)
+        : _message{message}
+    {}
+
+    auto what() const -> const char*
+    {
+        return _message.c_str();
+    }
+
+private:
+    std::string _message;
+};
+
 /**
  * @brief Loads data from a JSON file.
  *
@@ -15,8 +30,15 @@ namespace Cool::Serialization {
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
 template<typename T>
-void from_json(T& data, std::string_view file_path)
+void from_json(T& data, std::string_view file_path, bool is_allowed_to_throw = false)
 {
+    const auto on_error = [&](std::string_view message) {
+        Log::ToUser::warn("Serialization::from_json", message);
+        if (is_allowed_to_throw)
+        {
+            throw Exception{message};
+        }
+    };
     if (File::exists(file_path))
     {
         std::ifstream is(file_path.data());
@@ -29,12 +51,12 @@ void from_json(T& data, std::string_view file_path)
         }
         catch (const std::exception& e)
         {
-            Log::ToUser::warn("Serialization::from_json", "Invalid \"{}\" file. Starting with default values instead.\n{}", file_path, e.what());
+            on_error("Invalid \"" + std::string{file_path} + "\" file. Starting with default values instead.\n" + e.what());
         }
     }
     else
     {
-        Log::ToUser::warn("Serialization::from_json", "\"{}\" not found. Starting with default values instead.", file_path);
+        on_error("\"" + std::string{file_path} + "\" not found. Starting with default values instead.");
     }
 }
 
