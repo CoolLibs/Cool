@@ -3,7 +3,7 @@
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
-#include <imgui/backends/imgui_impl_vulkan.h> // TODO remove me when VulkanWindowState stops using ImGui_ImplVulkanH_Window
+#include <imgui/backends/imgui_impl_vulkan.h> // TODO(JF) remove me when VulkanWindowState stops using ImGui_ImplVulkanH_Window
 #include "Window_Base.h"
 
 namespace Cool {

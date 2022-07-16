@@ -34,7 +34,7 @@ public:
     ImTextureID                imgui_texture_id() const { return _imgui_texture_id; }
     const vku::TextureImage2D& image() const { return _vku; }
     vku::TextureImage2D&       image() { return _vku; }
-    int                        nb_channels() const { return 4; } // TODO fix me
+    int                        nb_channels() const { return 4; } // TODO(JF) fix me
     img::Image                 download_pixels() const;
 
     struct Id {

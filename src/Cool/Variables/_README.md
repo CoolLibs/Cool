@@ -11,5 +11,3 @@
 - _If you are working on CoolLab:_ Add your new type in "generate_variables.py" and run the script.
 
 - You might need to delete "last-session-cache.json" if you get weird errors like "An Input has an invalid default variable!".
-
-TODO: in the shader we can `#define Color vec3` so that the shader compiles just fine and when we parse we can distinguish color from vec3.
