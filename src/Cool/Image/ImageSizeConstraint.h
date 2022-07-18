@@ -37,13 +37,14 @@ private:
     uint32_t          _nb_pixels                   = 250'000;
     AspectRatio       _aspect_ratio;
 
+private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Is Controling umber of pixels", _is_controlling_nb_pixels),
+            cereal::make_nvp("Is controlling the number of pixels", _is_controlling_nb_pixels),
             cereal::make_nvp("Number of pixels", _nb_pixels)
         );
     }

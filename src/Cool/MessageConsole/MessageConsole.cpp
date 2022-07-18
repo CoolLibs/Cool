@@ -105,7 +105,7 @@ void MessageConsole::imgui_window()
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
 
-        for (auto& message : _messages)
+        for (const auto& message : _messages)
         {
             const auto& id     = message.first;
             const auto& msg    = message.second;
