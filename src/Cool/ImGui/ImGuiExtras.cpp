@@ -414,4 +414,37 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     return value_changed;
 }
 
+static auto highlight_color(float opacity) -> ImU32
+{
+    const auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    return ImGui::GetColorU32(IM_COL32(
+        col.x * 255.f,
+        col.y * 255.f,
+        col.z * 255.f,
+        opacity * 255.f
+    ));
+}
+
+void highlight(std::function<void()> widget, float opacity)
+{
+    ImDrawList& draw_list = *ImGui::GetWindowDrawList();
+    draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the widget,
+    draw_list.ChannelsSetCurrent(1);                              // even though the widget is drawn first.
+    const auto rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widget before drawing the rectangle.
+
+    widget();
+
+    const auto rectangle_end_pos = ImVec2(
+        rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
+        ImGui::GetCursorScreenPos().y
+    );
+    draw_list.ChannelsSetCurrent(0);
+    draw_list.AddRectFilled(
+        rectangle_start_pos,
+        rectangle_end_pos,
+        highlight_color(opacity)
+    );
+    draw_list.ChannelsMerge();
+}
+
 } // namespace Cool::ImGuiExtras

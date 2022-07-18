@@ -71,7 +71,7 @@ void WindowFactory_Base<T>::initialize_imgui()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO : need to investigate that bug ; it is probably comming directly from ImGui)
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably comming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
