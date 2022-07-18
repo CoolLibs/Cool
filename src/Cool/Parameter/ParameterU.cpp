@@ -1,4 +1,5 @@
 #include "ParameterU.h"
+#include <doctest/doctest.h>
 
 namespace Cool::ParameterU {
 

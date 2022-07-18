@@ -61,7 +61,6 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <cereal/types/variant.hpp>
     <boxer/boxer.h>
     <nfd.hpp>
-    <doctest/doctest.h>
     <scope_guard/scope_guard.hpp>
     <Cool/Log/Log.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
@@ -185,3 +184,21 @@ Cool__target_copy_file(${PROJECT_NAME} Cool
     imgui.ini)
 Cool__target_copy_folder(${PROJECT_NAME} Cool
     ${COOL_PATH}/res)
+    
+function(cool_setup TARGET_NAME)
+    Cool__target_copy_file(${TARGET_NAME} Cool imgui.ini)
+    Cool__target_copy_folder(${TARGET_NAME} Cool ${COOL_PATH}/res)
+endfunction()
+
+# ---------------------
+# ---Setup the tests---
+# ---------------------
+
+add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
+target_compile_features(Tests-Cool PRIVATE cxx_std_20)
+if(MSVC)
+    target_compile_options(Tests-Cool PRIVATE /WX /W4)
+else()
+    target_compile_options(Tests-Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
+endif()
+target_link_libraries(Tests-Cool PRIVATE Cool::Core)

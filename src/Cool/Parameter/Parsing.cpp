@@ -1,5 +1,6 @@
 #include "Parsing.h"
 #include <Cool/String/String.h>
+#include <doctest/doctest.h>
 
 namespace Cool {
 

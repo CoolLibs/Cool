@@ -1,4 +1,5 @@
 #include "String.h"
+#include "doctest/doctest.h"
 
 TEST_CASE("[Cool::String] replace()")
 {

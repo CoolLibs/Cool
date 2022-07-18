@@ -1,13 +1,9 @@
 #pragma once
 
+#include <Cool/Core/hide_console_in_release.h>
 #include <Cool/Path/Path.h>
 #include <exe_path/exe_path.h>
 #include <filesystem>
-#if DEBUG
-#define DOCTEST_CONFIG_IMPLEMENT
-#include <doctest/doctest.h>
-#endif
-#include <Cool/Core/hide_console_in_release.h>
 
 namespace Cool {
 
@@ -15,17 +11,6 @@ struct InitConfig {
     /// Pattern used by all the Log and Log::ToUser functions
     /// To learn how to configure it: https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
     std::string_view log_pattern = "%^[%e] %n: %v%$";
-
-    /// Describes which (if any) tests you want to run
-    std::function<void()> run_the_tests = []() {
-#if DEBUG
-        if (doctest::Context{}.run())
-        {
-            Cool::Log::error_without_breakpoint("Program closed because some tests failed.");
-            std::exit(1);
-        }
-#endif
-    };
 
     /// Sets the paths to the root directory and to Cool/res
     std::function<void()> set_paths = []() {
