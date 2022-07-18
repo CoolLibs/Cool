@@ -28,6 +28,13 @@ TEST_CASE("[Cool::String] replace()")
     }
 }
 
+TEST_CASE("replace_all()")
+{
+    std::string text = "Effect_intensity";
+    Cool::String::replace_all(text, "_", " ");
+    CHECK(text == "Effect intensity");
+}
+
 TEST_CASE("[Cool::String] replace_at()")
 {
     CHECK(Cool::String::replace_at(3, 5, "0123456789", "abcde") == "012abcde56789");
@@ -69,6 +76,30 @@ TEST_CASE("[Cool::String] split_into_words()")
     CHECK(Cool::String::split_into_words("hello, wor, ,   ld", " ,") == std::vector<std::string>({"hello", "wor", "ld"}));
 }
 
+TEST_CASE("Parsing an int")
+{
+    CHECK(
+        Cool::String::value_from_string<int>("2.f") ==
+        2
+    );
+    CHECK(
+        Cool::String::value_from_string<int>("2.") ==
+        2
+    );
+    CHECK(
+        Cool::String::value_from_string<int>("2") ==
+        2
+    );
+    CHECK(
+        Cool::String::value_from_string<int>("2.0") ==
+        2
+    );
+    CHECK(
+        Cool::String::value_from_string<int>("2.0f") ==
+        2
+    );
+}
+
 TEST_CASE("Parsing a float")
 {
     CHECK(
@@ -93,12 +124,8 @@ TEST_CASE("Parsing a float")
     );
 }
 
-TEST_CASE("Parsing a vec")
+TEST_CASE("Parsing a vec2")
 {
-    CHECK(
-        Cool::String::value_from_string<Cool::RgbColor>("(1, 3, 4)") ==
-        Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
-    );
     CHECK(
         Cool::String::value_from_string<glm::vec2>("  ( 1   ,  3)   ") ==
         glm::vec2(1.f, 3.f)
@@ -130,5 +157,13 @@ TEST_CASE("Parsing a vec")
     CHECK(
         Cool::String::value_from_string<glm::vec2>("(hello, world)") ==
         std::nullopt
+    );
+}
+
+TEST_CASE("Parsing a RgbColor")
+{
+    CHECK(
+        Cool::String::value_from_string<Cool::RgbColor>("(1, 3, 4)") ==
+        Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
     );
 }

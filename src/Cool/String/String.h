@@ -70,10 +70,10 @@ auto find_replacement(
  * @brief Replaces the characters at positions begin (included) till end (excluded) in input_string with new_substring
  */
 auto replace_at(
-    size_t             begin,
-    size_t             end,
-    const std::string& input_string,
-    const std::string& new_substring
+    size_t           begin,
+    size_t           end,
+    std::string_view input_string,
+    std::string_view new_substring
 ) -> std::string;
 
 /**
@@ -106,17 +106,18 @@ auto split_into_words(
 
 auto remove_whitespaces(std::string_view text) -> std::string;
 
-/// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`
+/// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters = internal::default_word_delimiters
 ) -> std::optional<std::string>;
 
-auto find_value_for_given_key_as_string(
+// TODO doc
+auto find_word_following(
     std::string_view text,
     std::string_view key
-) -> std::string;
+) -> std::optional<std::string>;
 
 template<typename T>
 auto find_value_for_given_key(
@@ -124,15 +125,25 @@ auto find_value_for_given_key(
     std::string_view key
 ) -> std::optional<T>
 {
-    return value_from_string<T>(
-        find_value_for_given_key_as_string(text, key)
-    );
+    const auto default_value = find_word_following(text, key);
+    if (default_value)
+    {
+        return value_from_string<T>(*default_value);
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }
 
 template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>
 {
-    // static_assert(false, "Type not supported yet!"); // TODO(LD) Implement value_from_string for all the types we use, then reenable the assert
+    static_assert(false, "Type not supported yet!");
+    /// NB: Use the folliwing code if you need to know the type which is failing:
+    // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
+    // std::ignore           = debug_name;
+    // assert(false);
     return std::nullopt;
 }
 
@@ -144,16 +155,16 @@ template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
 template<>
 auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::vec2>;
-// template<>
-// auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
+template<>
+auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
 template<>
 auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>;
-// template<>
-// auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
+template<>
+auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
 template<>
 auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>;
-// template<>
-// auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
+template<>
+auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>;
 template<>

@@ -14,7 +14,7 @@ struct Message {
     std::string body;
 
     std::chrono::system_clock::time_point timestamp;
-    size_t                                count;
+    uint64_t                              count;
 
     Message(Severity severity, std::string_view category, std::string_view body)
         : severity{severity}
