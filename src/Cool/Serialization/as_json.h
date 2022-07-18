@@ -13,7 +13,7 @@ public:
         : _message{message}
     {}
 
-    auto what() const -> const char*
+    auto what() const noexcept -> const char* override
     {
         return _message.c_str();
     }
