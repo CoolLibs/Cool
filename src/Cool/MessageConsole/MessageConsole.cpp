@@ -105,19 +105,21 @@ void MessageConsole::imgui_window()
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
 
-        for (const auto& [id, msg] : _messages)
+        for (auto& message : _messages)
         {
-            const auto widget = [&]() {
+            const auto& id     = message.first;
+            const auto& msg    = message.second;
+            const auto  widget = [&]() {
                 ImGui::PushID(&id);
                 ImGui::BeginGroup();
 
                 ImGui::TextColored(
-                    color(msg.message.severity),
-                    "[%s] [#%lu] [%s]",
-                    Cool::stringify(msg.timestamp).c_str(),
-                    msg.count,
-                    msg.message.category.c_str()
-                );
+                     color(msg.message.severity),
+                     "[%s] [#%lu] [%s]",
+                     Cool::stringify(msg.timestamp).c_str(),
+                     msg.count,
+                     msg.message.category.c_str()
+                 );
                 ImGui::SameLine();
                 ImGui::Text("%s", msg.message.detailed_message.c_str());
 
@@ -125,11 +127,11 @@ void MessageConsole::imgui_window()
                 {
                     ImGui::SameLine();
                     if (ImGuiExtras::button_with_icon(
-                            Icons::close_button().imgui_texture_id(),
-                            ImVec4(0.9f, 0.9f, 0.9f, 1.f),
-                            ImVec4(0.5f, 0.2f, 0.2f, 1.f),
-                            11.f, 11.f
-                        ))
+                             Icons::close_button().imgui_texture_id(),
+                             ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+                             ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+                             11.f, 11.f
+                         ))
                     {
                         msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
                     }
