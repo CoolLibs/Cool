@@ -36,7 +36,7 @@ auto replace_all(std::string& str, std::string_view from, std::string_view to) -
 auto replace_between_delimiters(const ReplacementInput& in) -> std::string
 {
     auto next = replace_next(in, 0);
-    while (next.second.has_value())
+    while (next.second)
     {
         next = replace_next(
             {next.first, in.replacements, in.delimiter_begin, in.delimiter_end},
@@ -90,7 +90,7 @@ auto replace_next(
             const auto replacement_begin = begin + in.delimiter_begin.length();
             const auto to_replace        = in.text.substr(replacement_begin, end - replacement_begin);
             const auto replacement       = find_replacement(to_replace, in.replacements);
-            if (replacement.has_value())
+            if (replacement)
             {
                 return std::make_pair(
                     replace_at(
@@ -110,12 +110,12 @@ auto replace_next(
 }
 
 auto replace_at(
-    size_t             begin,
-    size_t             end,
-    const std::string& input_string, const std::string& new_substring
+    size_t           begin,
+    size_t           end,
+    std::string_view input_string, std::string_view new_substring
 ) -> std::string
 {
-    return input_string.substr(0, begin) + new_substring + input_string.substr(end, input_string.length() - end);
+    return std::string(input_string.substr(0, begin)) + std::string(new_substring) + std::string(input_string.substr(end, input_string.length() - end));
 }
 
 auto find_matching_pair(
@@ -174,7 +174,7 @@ auto split_into_words(
 {
     std::vector<std::string> res;
     auto                     word_pos = find_next_word_position(text, 0, delimiters);
-    while (word_pos.has_value())
+    while (word_pos)
     {
         res.emplace_back(text.substr(word_pos->first, word_pos->second - word_pos->first));
         word_pos = find_next_word_position(text, word_pos->second, delimiters);
@@ -199,7 +199,7 @@ auto next_word(
 ) -> std::optional<std::string>
 {
     auto position = find_next_word_position(text, starting_pos, delimiters);
-    if (position == std::nullopt)
+    if (!position)
     {
         return std::nullopt;
     }
@@ -209,44 +209,36 @@ auto next_word(
     }
 }
 
+/// Obtain the next block text between parentheses, next word if no parentheses.
 auto next_block(
     std::string_view text,
     size_t           ending_key_pos
-) -> std::string
+) -> std::optional<std::string>
 {
-    auto start_position_of_block = text.find("(");
-    if (start_position_of_block == std::string_view::npos)
+    const auto start_position_of_block = text.find("(") + 1;
+    if (start_position_of_block != std::string_view::npos)
     {
-        auto word = Cool::String::next_word(
-            text,
-            ending_key_pos
-        );
-        if (word.has_value())
-        {
-            return *word;
-        }
-        else
-        {
-            return "";
-        }
+        return next_word(text, start_position_of_block, ")");
     }
     else
     {
-        auto block_bounds = find_next_word_position(text, start_position_of_block, ")");
-        return std::string{text.substr(block_bounds->first, block_bounds->second - block_bounds->first)};
+        return Cool::String::next_word(
+            text,
+            ending_key_pos
+        );
     }
 }
 
-/// Finds in `text` the value associated with a given `key` (e.g. "default", "min", "max"), as a string.
-auto find_value_for_given_key_as_string(
+/// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
+auto find_word_following(
     std::string_view text,
     std::string_view key
-) -> std::string
+) -> std::optional<std::string>
 {
-    auto start_position_of_key = text.find(key);
+    const auto start_position_of_key = text.find(key);
     if (start_position_of_key == std::string_view::npos)
     {
-        return "";
+        return std::nullopt;
     }
     else
     {
@@ -300,41 +292,44 @@ static auto value_from_string_impl_scalar(std::string_view str) -> std::optional
 }
 
 template<typename ScalarType, int NbElements>
-static auto value_from_string_impl_vec(
-    std::string_view str
-) -> std::optional<glm::vec<NbElements, ScalarType, glm::defaultp>>
+static auto value_from_string_impl_vec(std::string_view str)
+    -> std::optional<glm::vec<NbElements, ScalarType, glm::defaultp>>
 {
-    std::string text(str);
+    std::vector<std::pair<size_t, size_t>> words_positions;
 
-    std::vector<std::pair<size_t, size_t>> out;
-    if (find_next_word_position(text, 1).has_value())
+    std::optional<size_t> ptr_in_string = 0; // Offset by 1 to skip the parenthesis
+
+    while (ptr_in_string)
     {
-        out.push_back(*find_next_word_position(text, 1));
-    }
-    else
-    {
-        return std::nullopt;
+        const auto pos = find_next_word_position(str, *ptr_in_string);
+        if (pos)
+        {
+            words_positions.push_back(*pos);
+            ptr_in_string = pos->second;
+        }
+        else
+        {
+            ptr_in_string = std::nullopt;
+        }
     }
 
-    while (find_next_word_position(text, out.back().second).has_value())
-    {
-        out.push_back(*find_next_word_position(text, out.back().second));
-    }
-
-    if (out.size() != NbElements)
+    if (words_positions.size() != NbElements)
     {
         return std::nullopt; // TODO Return an error message instead of std::nullopt (cf std::expected)
     }
 
-    glm::vec<NbElements, float, glm::defaultp> ret;
-    for (int j = 0; j < NbElements; ++j)
+    auto ret = glm::vec<NbElements, ScalarType, glm::defaultp>{};
+    for (int i = 0; i < NbElements; ++i)
     {
-        auto value = value_from_string_impl_scalar<ScalarType>(
-            text.substr(out[j].first, out[j].second - out[j].first)
+        const auto value = value_from_string_impl_scalar<ScalarType>(
+            str.substr(
+                words_positions[i].first,
+                words_positions[i].second - words_positions[i].first
+            )
         );
-        if (value.has_value())
+        if (value)
         {
-            ret[j] = *value;
+            ret[i] = *value;
         }
         else
         {
@@ -359,11 +354,12 @@ auto value_from_string<float>(std::string_view str) -> std::optional<float>
 template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>
 {
-    if (str == "true")
+    const auto string = to_lower(str);
+    if (string == "true")
     {
         return true;
     }
-    else if (str == "false")
+    else if (string == "false")
     {
         return false;
     }
@@ -379,11 +375,11 @@ auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 2>(str);
 }
 
-// template<>
-// auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>
-// {
-//     return value_from_string_impl_vec<int, 2>(str);
-// }
+template<>
+auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>
+{
+    return value_from_string_impl_vec<int, 2>(str);
+}
 
 template<>
 auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>
@@ -391,11 +387,11 @@ auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 3>(str);
 }
 
-// template<>
-// auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>
-// {
-//     return value_from_string_impl_vec<int, 3>(str);
-// }
+template<>
+auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>
+{
+    return value_from_string_impl_vec<int, 3>(str);
+}
 
 template<>
 auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>
@@ -403,18 +399,19 @@ auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::ve
     return value_from_string_impl_vec<float, 4>(str);
 }
 
-// template<>
-// auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>
-// {
-//     return value_from_string_impl_vec<int, 4>(str);
-// }
+template<>
+auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>
+{
+    return value_from_string_impl_vec<int, 4>(str);
+}
 
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>
 {
-    if (value_from_string_impl_vec<float, 3>(str).has_value())
+    const auto val = value_from_string_impl_vec<float, 3>(str);
+    if (val)
     {
-        return Cool::RgbColor{*value_from_string_impl_vec<float, 3>(str)};
+        return Cool::RgbColor{*val};
     }
     else
     {
@@ -425,9 +422,10 @@ auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Co
 template<>
 auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool::Angle>
 {
-    if (value_from_string_impl_scalar<float>(str).has_value())
+    const auto val = value_from_string_impl_scalar<float>(str);
+    if (val)
     {
-        return Cool::Angle{};
+        return Cool::Angle{Cool::Radians{degrees_to_radians(*val)}};
     }
     else
     {
@@ -438,9 +436,10 @@ auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool:
 template<>
 auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional<Cool::Direction2D>
 {
-    if (value_from_string_impl_scalar<float>(str).has_value())
+    const auto val = value_from_string_impl_scalar<float>(str);
+    if (val)
     {
-        return Cool::Direction2D{};
+        return Cool::Direction2D{Cool::Angle{Cool::Radians{degrees_to_radians(*val)}}};
     }
     else
     {
@@ -451,9 +450,10 @@ auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional
 template<>
 auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::Hue>
 {
-    if (value_from_string_impl_scalar<float>(str).has_value())
+    const auto val = value_from_string_impl_scalar<float>(str);
+    if (val)
     {
-        return Cool::Hue{};
+        return Cool::Hue{*val};
     }
     else
     {
