@@ -85,6 +85,13 @@ static void draw_bar_border(ImDrawList& draw_list, const ImVec2 vec1, const ImVe
     draw_list.AddRectFilled(vec1 - margin, vec2 + margin, color);
 }
 
+static void draw_background_if(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color, bool condition)
+{
+    if (condition)
+    {
+        draw_list.AddRectFilled(vec1, vec2, color);
+    }
+}
 
 static void multicolor_fill(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
 {
@@ -96,16 +103,8 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
     const float bar_bottom = bar_pos.y + height;
 
-    // TODO(ASG) Why?
-    if (gradient.get_marks().empty())
-    {
-        draw_list.AddRectFilled(
-            bar_pos,
-            ImVec2(bar_pos.x + max_width, bar_bottom),
-            IM_COL32(255, 255, 255, 255)
-        );
-    }
     draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(100, 100, 100, 255));
+    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_marks().empty());
 
     float current_starting_x = bar_pos.x;
     for (auto markIt = gradient.get_marks().begin(); markIt != gradient.get_marks().end(); ++markIt)
