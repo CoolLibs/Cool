@@ -43,7 +43,7 @@ ImVec4 ImGradient::compute_color_at(RelativePosition position) const
     }
     if (!lower && !upper)
     {
-        return ImVec4{0.f, 0.f, 0.f, 0.f};
+        return ImVec4{0.f, 0.f, 0.f, 1.f};
     }
     else if (upper && !lower)
     {
