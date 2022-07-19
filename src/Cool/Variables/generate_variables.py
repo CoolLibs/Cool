@@ -9,7 +9,7 @@
 
 from dataclasses import dataclass
 
-# TODO(LD) Move to Cool and generate the Variable files from this script
+# TODO(LD) Generate the Variable files from this script
 
 
 @dataclass
@@ -182,8 +182,19 @@ if ({variable_metadatas.field_name})
 
 
 if __name__ == '__main__':
-    from tooling.generate_files import generate
-    generate(
+    # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
+    # So we need to add the path manually to sys.path
+    import os
+    import sys
+    from pathlib import Path
+    sys.path.append(os.path.join(
+        Path(os.path.abspath(__file__)).parent.parent.parent.parent,
+        "tooling")
+    )
+    # End of HACK
+
+    import generate_files
+    generate_files.generate(
         folder="generated",
         files=[
             register_set_variable_commands,
