@@ -4,6 +4,7 @@
 #include "Variable_Camera.h"
 #include "Variable_ColorPalette.h"
 #include "Variable_Direction2D.h"
+#include "Variable_Gradient.h"
 #include "Variable_Hue.h"
 #include "Variable_RgbColor.h"
 #include "Variable_bool.h"
