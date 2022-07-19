@@ -93,7 +93,7 @@ static void draw_background_if(ImDrawList& draw_list, const ImVec2 vec1, const I
     }
 }
 
-static void multicolor_fill(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
+static void draw_gradient(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
 {
     draw_list.AddRectFilledMultiColor(vec1, vec2, colorA, colorB, colorB, colorA);
 }
@@ -110,9 +110,6 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     for (auto markIt = gradient.get_marks().begin(); markIt != gradient.get_marks().end(); ++markIt)
     {
         ImGradientMark& mark = *markIt;
-        const float     from = current_starting_x;
-        const float     to   = bar_pos.x + mark.position.get() * max_width;
-        current_starting_x   = to;
 
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
         ImU32 colorAU32;
@@ -125,16 +122,19 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
             colorAU32 = colorBU32;
         }
 
+        const float from = current_starting_x;
+        const float to   = bar_pos.x + mark.position.get() * max_width;
         if (mark.position != 0.f)
         {
-            multicolor_fill(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
+            draw_gradient(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
         }
+        current_starting_x = to;
     }
 
     if (!gradient.get_marks().empty() && gradient.get_marks().back().position != 1.f)
     {
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_marks().back().color);
-        multicolor_fill(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + max_width, bar_bottom), colorBU32, colorBU32);
+        draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + max_width, bar_bottom), colorBU32, colorBU32);
     }
 
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 10.0f));
@@ -154,33 +154,37 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
             selected_mark = &mark;
         }
 
-        float to = bar_pos.x + mark.position.get() * max_width;
-        // TO DO(ASG) duplicated code with function above
-        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
-        ImU32 colorAU32;
-        if (markIt != gradient.get_marks().begin())
-        {
-            colorAU32 = ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color);
-        }
-        else
-        {
-            colorAU32 = colorBU32;
-        }
+        const float to = bar_pos.x + mark.position.get() * max_width;
 
-        draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - 6)), ImVec2(to - 6, bar_bottom), ImVec2(to + 6, bar_bottom), IM_COL32(100, 100, 100, 255));
-        draw_list.AddRectFilled(ImVec2(to - 6, bar_bottom), ImVec2(to + 6, bar_pos.y + (height + 12)), IM_COL32(100, 100, 100, 255), 1.0f, ImDrawFlags_Closed);
-        draw_list.AddRectFilled(ImVec2(to - 5, bar_pos.y + (height + 1)), ImVec2(to + 5, bar_pos.y + (height + 11)), IM_COL32(0, 0, 0, 255), 1.0f, ImDrawFlags_Closed);
+        const ImU32 arrow_color               = IM_COL32(100, 100, 100, 255);
+        const ImU32 arrow_inside_border_color = IM_COL32(0, 0, 0, 255);
+        const float arrow_border              = 6.f;
+        const float offset                    = 1.f;
+        const float arrow_inside_border       = arrow_border - offset;
+
+        draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), arrow_color);
+        draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), arrow_color, 1.0f, ImDrawFlags_Closed);
+        draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), arrow_inside_border_color, 1.0f, ImDrawFlags_Closed);
 
         if (selected_mark == &mark)
         {
-            draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - 3)), ImVec2(to - 4, bar_bottom + 1), ImVec2(to + 4, bar_bottom + 1), IM_COL32(0, 255, 0, 255));
-            draw_list.AddRect(ImVec2(to - 5, bar_pos.y + (height + 1)), ImVec2(to + 5, bar_pos.y + (height + 11)), IM_COL32(0, 255, 0, 255), 1.0f, ImDrawFlags_Closed);
+            const ImU32 selected_color = IM_COL32(0, 255, 0, 255);
+            const float arrow_selected = 4.f;
+            draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_selected - offset)), ImVec2(to - arrow_selected, bar_bottom + offset), ImVec2(to + arrow_selected, bar_bottom + offset), selected_color);
+            draw_list.AddRect(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), selected_color, 1.0f, ImDrawFlags_Closed);
         }
+        const float square_height = 3.f;
+        draw_gradient(
+            draw_list,
+            ImVec2(to - square_height, bar_pos.y + (height + square_height)),
+            ImVec2(to + square_height, bar_pos.y + (height + square_height * square_height)),
+            ImGui::ColorConvertFloat4ToU32(mark.color),
+            ImGui::ColorConvertFloat4ToU32(mark.color)
+        );
 
-        draw_list.AddRectFilledMultiColor(ImVec2(to - 3, bar_pos.y + (height + 3)), ImVec2(to + 3, bar_pos.y + (height + 9)), colorBU32, colorBU32, colorBU32, colorBU32);
-
-        ImGui::SetCursorScreenPos(ImVec2(to - 6, bar_bottom));
-        ImGui::InvisibleButton("mark", ImVec2(12, 12));
+        ImGui::SetCursorScreenPos(ImVec2(to - arrow_border, bar_bottom));
+        const ImVec2 button_size = {arrow_border * 2.f, arrow_border * 2.f};
+        ImGui::InvisibleButton("mark", button_size);
 
         if (ImGui::IsItemHovered())
         {
@@ -198,9 +202,8 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
 bool gradient_button(ImGradient& gradient)
 {
     const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
-
-    const float max_width = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
-    const bool  clicked   = ImGui::InvisibleButton("gradient_bar", ImVec2(max_width, GRADIENT_BAR_WIDGET_HEIGHT));
+    const float  max_width  = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
+    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(max_width, GRADIENT_BAR_WIDGET_HEIGHT));
 
     draw_gradient_bar(gradient, widget_pos, max_width, GRADIENT_BAR_WIDGET_HEIGHT);
 
@@ -209,9 +212,8 @@ bool gradient_button(ImGradient& gradient)
 
 bool ImGradientWidget::gradient_editor()
 {
-    bool modified = false;
-
-    ImVec2 bar_pos = ImGui::GetCursorScreenPos();
+    bool   modified = false;
+    ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
     bar_pos.x += 10.f;
     const float max_width  = ImGui::GetContentRegionAvail().x - 20.f;
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
@@ -236,7 +238,6 @@ bool ImGradientWidget::gradient_editor()
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && dragging_mark)
     {
         const float map = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
-
         if (dragging_mark->position.get() != map &&
             map >= 0.f &&
             map <= 1.f)
@@ -247,7 +248,6 @@ bool ImGradientWidget::gradient_editor()
         }
 
         float diffY = ImGui::GetIO().MousePos.y - bar_bottom;
-
         if (diffY >= GRADIENT_MARK_DELETE_DIFFY)
         {
             gradient.remove_mark(*dragging_mark);
@@ -265,14 +265,12 @@ bool ImGradientWidget::gradient_editor()
     if (selected_mark)
     {
         bool colorModified = ImGui::ColorPicker4("##1", reinterpret_cast<float*>(&selected_mark->color));
-
         if (selected_mark && colorModified)
         {
             modified = true;
             // gradient.refreshCache();
         }
     }
-
     return modified;
 }
 
