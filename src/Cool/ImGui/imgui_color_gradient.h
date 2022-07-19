@@ -125,7 +125,8 @@ public:
     {
         m_marks.remove_mark(mark);
     };
-    std::list<ImGradientMark>& get_marks() { return m_marks._marks; }
+    std::list<ImGradientMark>& get_list() { return m_marks._marks; }
+    Marks&                     get_marks() { return m_marks; }
     friend auto                operator==(const ImGradient& a, const ImGradient& b) -> bool { return a.m_marks._marks == b.m_marks._marks; }
 
 private:

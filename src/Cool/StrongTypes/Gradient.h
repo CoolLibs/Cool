@@ -52,7 +52,6 @@ inline auto gradient_widget(Cool::Gradient& gradient) -> bool
     // TO DO(ASG) better fix for out of screen
     // TO DO(ASG) dragging mark selected when created
     // TO DO(ASG) open a popup when created mark
-    // TO DO(ASG) when moving re-order
     return gradient_wid.gradient_editor();
 }
 

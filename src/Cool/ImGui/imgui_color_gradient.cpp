@@ -104,16 +104,16 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     const float bar_bottom = bar_pos.y + height;
 
     draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(100, 100, 100, 255));
-    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_marks().empty());
+    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
 
     float current_starting_x = bar_pos.x;
-    for (auto markIt = gradient.get_marks().begin(); markIt != gradient.get_marks().end(); ++markIt)
+    for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
     {
         ImGradientMark& mark = *markIt;
 
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
         ImU32 colorAU32;
-        if (markIt != gradient.get_marks().begin())
+        if (markIt != gradient.get_list().begin())
         {
             colorAU32 = ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color);
         }
@@ -131,9 +131,9 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
         current_starting_x = to;
     }
 
-    if (!gradient.get_marks().empty() && gradient.get_marks().back().position != 1.f)
+    if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
     {
-        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_marks().back().color);
+        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
         draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + max_width, bar_bottom), colorBU32, colorBU32);
     }
 
@@ -145,7 +145,7 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
     const float bar_bottom = bar_pos.y + height;
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
 
-    for (auto markIt = gradient.get_marks().begin(); markIt != gradient.get_marks().end(); ++markIt)
+    for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
     {
         ImGradientMark& mark = *markIt;
 
@@ -243,6 +243,7 @@ bool ImGradientWidget::gradient_editor()
             map <= 1.f)
         {
             dragging_mark->position.set(map);
+            gradient.get_marks().sorted();
             // gradient.refreshCache();
             modified = true;
         }
@@ -257,9 +258,9 @@ bool ImGradientWidget::gradient_editor()
         }
     }
 
-    if (!selected_mark && gradient.get_marks().size() > 0)
+    if (!selected_mark && gradient.get_list().size() > 0)
     {
-        selected_mark = &gradient.get_marks().front();
+        selected_mark = &gradient.get_list().front();
     }
 
     if (selected_mark)
