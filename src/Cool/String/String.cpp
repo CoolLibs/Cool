@@ -209,7 +209,6 @@ auto next_word(
     }
 }
 
-/// Obtain the next block text between parentheses, next word if no parentheses.
 auto next_block(
     std::string_view text,
     size_t           ending_key_pos
@@ -229,7 +228,6 @@ auto next_block(
     }
 }
 
-/// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
 auto find_word_following(
     std::string_view text,
     std::string_view key

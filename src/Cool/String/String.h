@@ -113,12 +113,19 @@ auto next_word(
     std::string_view delimiters = internal::default_word_delimiters
 ) -> std::optional<std::string>;
 
-// TODO doc
+/// Obtain the next block text between parentheses, next word if no parentheses.
+auto next_block(
+    std::string_view text,
+    size_t           ending_key_pos
+) -> std::optional<std::string>;
+
+/// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
 auto find_word_following(
     std::string_view text,
     std::string_view key
 ) -> std::optional<std::string>;
 
+/// Finds default value string in `text` following the `key` and returns the correspondant value
 template<typename T>
 auto find_value_for_given_key(
     std::string_view text,
@@ -136,10 +143,27 @@ auto find_value_for_given_key(
     }
 }
 
+/// Converts the given string into the correspondant value by type
 template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>
 {
-    static_assert(false, "Type not supported yet!");
+    static_assert(
+        std::is_same_v<T, bool> == false ||
+            std::is_same_v<T, int> == false ||
+            std::is_same_v<T, float> == false ||
+            std::is_same_v<T, glm::vec2> == false ||
+            std::is_same_v<T, glm::vec3> == false ||
+            std::is_same_v<T, glm::vec4> == false ||
+            std::is_same_v<T, glm::ivec2> == false ||
+            std::is_same_v<T, glm::ivec3> == false ||
+            std::is_same_v<T, glm::ivec4> == false ||
+            std::is_same_v<T, Cool::RgbColor> == false ||
+            std::is_same_v<T, Cool::Camera> == false ||
+            std::is_same_v<T, Cool::Angle> == false ||
+            std::is_same_v<T, Cool::Direction2D> == false ||
+            std::is_same_v<T, Cool::Hue> == false,
+        "Type not supported yet!"
+    );
     /// NB: Use the folliwing code if you need to know the type which is failing:
     // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
     // std::ignore           = debug_name;

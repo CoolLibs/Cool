@@ -77,6 +77,28 @@ TEST_CASE("[Cool::String] split_into_words()")
     CHECK(Cool::String::split_into_words("hello, wor, ,   ld", " ,") == std::vector<std::string>({"hello", "wor", "ld"}));
 }
 
+TEST_CASE("Next block")
+{
+    CHECK(
+        Cool::String::next_block("// default (1.f, 3.f)", 10) == "1.f, 3.f"
+    );
+    CHECK(
+        Cool::String::next_block("// min (1.f, 3.f)", 6) == "1.f, 3.f"
+    );
+    CHECK(
+        Cool::String::next_block("// max (1.f, 3.f)", 6) == "1.f, 3.f"
+    );
+    CHECK(
+        Cool::String::next_block("bla // bla max some text (1.f, 3.f) blabla", 1) == "1.f, 3.f"
+    );
+    CHECK(
+        Cool::String::next_block("// ma(x (1.f,) 3.f)", 3) == "x (1.f,"
+    );
+    CHECK(
+        Cool::String::next_block("// max 1.f, 3.f", 3) == "max" // doesn't work
+    );
+}
+
 TEST_CASE("Parsing an int")
 {
     CHECK(
@@ -142,10 +164,6 @@ TEST_CASE("Parsing a vec2")
     CHECK(
         Cool::String::value_from_string<glm::vec2>("(1., 3.)") ==
         glm::vec2(1.f, 3.f)
-    );
-    CHECK(
-        Cool::String::value_from_string<glm::vec2>("1., 3.)") ==
-        std::nullopt
     );
     CHECK(
         Cool::String::value_from_string<glm::vec2>("(1., hello)") ==
