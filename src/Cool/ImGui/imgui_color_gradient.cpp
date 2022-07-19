@@ -5,6 +5,7 @@
 //  Created by David Gallardo on 11/06/16.
 
 #include "imgui_color_gradient.h"
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
 
 namespace Cool {
@@ -251,12 +252,24 @@ bool ImGradientWidget::gradient_editor()
         float diffY = ImGui::GetIO().MousePos.y - bar_bottom;
         if (diffY >= GRADIENT_MARK_DELETE_DIFFY)
         {
-            gradient.remove_mark(*dragging_mark);
+            gradient.remove_mark(*dragging_mark); // TODO(ASG) hide it when dragging and remove it when released
             dragging_mark = nullptr;
             selected_mark = nullptr;
             modified      = true;
         }
     }
+    if (
+        (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
+         ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup)) ||
+        ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))
+    )
+    {
+        gradient.remove_mark(*selected_mark);
+        selected_mark = nullptr;
+        modified      = true;
+    }
+    Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it");
+    Cool::ImGuiExtras::tooltip("or by dragging it down");
 
     if (!selected_mark && gradient.get_list().size() > 0)
     {
