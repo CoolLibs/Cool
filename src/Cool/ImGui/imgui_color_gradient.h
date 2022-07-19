@@ -94,6 +94,7 @@ struct ImGradientMark {
 };
 
 struct Marks {
+    // Use std::list instead of vector because it is easier to remove a mark when we do not know the index
     std::list<ImGradientMark> _marks{};
 
     void sorted()
