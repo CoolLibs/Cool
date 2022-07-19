@@ -133,8 +133,6 @@ public:
 private:
     ImVec4 compute_color_at(RelativePosition position) const;
     Marks  m_marks{};
-    // void                         refreshCache();
-    // float                       m_cachedValues[256 * 3];
 };
 namespace ImGuiExtras {
 
@@ -146,8 +144,6 @@ public:
 
     bool        gradient_editor();
     friend auto operator==(const ImGradientWidget& a, const ImGradientWidget& b) -> bool { return a.get_gradient() == b.get_gradient(); }
-
-    // friend auto operator<=>(const ImGradientWidget&, const ImGradientWidget&) = default;
 
 private:
     ImGradient      gradient{};

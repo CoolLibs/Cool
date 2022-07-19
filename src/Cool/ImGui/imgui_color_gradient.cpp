@@ -9,6 +9,7 @@
 #include <iterator>
 
 namespace Cool {
+
 static constexpr float GRADIENT_BAR_WIDGET_HEIGHT = 25.f;
 static constexpr float GRADIENT_BAR_EDITOR_HEIGHT = 40.f;
 static constexpr float GRADIENT_MARK_DELETE_DIFFY = 40.f;
@@ -69,14 +70,6 @@ ImVec4 ImGradient::compute_color_at(RelativePosition position) const
                ImVec4{mix, mix, mix, mix} * upper->color;
     }
 }
-
-// void ImGradient::refreshCache()
-// {
-//     for (int i = 0; i < 256; ++i)
-//     {
-//         computeColorAt(i / 255.0f, &m_cachedValues[i * 3]);
-//     }
-// }
 
 namespace ImGuiExtras {
 
@@ -189,7 +182,7 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
 
         if (ImGui::IsItemHovered())
         {
-            if (ImGui::IsMouseClicked(0))
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
             {
                 selected_mark = &mark;
                 dragging_mark = &mark;
@@ -221,7 +214,7 @@ bool ImGradientWidget::gradient_editor()
 
     ImGui::InvisibleButton("gradient_editor_bar", ImVec2(max_width, GRADIENT_BAR_EDITOR_HEIGHT));
 
-    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0))
+    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
         const float  pos        = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
         const ImVec4 newMarkCol = gradient.get_color_at(pos);
@@ -245,7 +238,6 @@ bool ImGradientWidget::gradient_editor()
         {
             dragging_mark->position.set(map);
             gradient.get_marks().sorted();
-            // gradient.refreshCache();
             modified = true;
         }
 
@@ -271,7 +263,7 @@ bool ImGradientWidget::gradient_editor()
     Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it");
     Cool::ImGuiExtras::tooltip("or by dragging it down");
 
-    if (!selected_mark && gradient.get_list().size() > 0)
+    if (!selected_mark && !gradient.get_list().empty())
     {
         selected_mark = &gradient.get_list().front();
     }
@@ -282,7 +274,6 @@ bool ImGradientWidget::gradient_editor()
         if (selected_mark && colorModified)
         {
             modified = true;
-            // gradient.refreshCache();
         }
     }
     return modified;
