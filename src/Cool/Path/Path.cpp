@@ -22,7 +22,6 @@ void Path::initialize_root(std::string_view path)
     _root_is_initialized = true;
 #endif
     _root = path;
-    Log::info("[Path::initialize_root]     \"{}\" is the root directory", _root);
 }
 
 const std::string& Path::cool_res()
@@ -38,7 +37,6 @@ void Path::initialize_cool_res(std::string_view path)
     _cool_res_is_initialized = true;
 #endif
     _cool_res = path;
-    Log::info("[Path::initialize_cool_res] \"{}\" is the path to Cool/res", _cool_res);
 }
 
 } // namespace Cool

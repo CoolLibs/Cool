@@ -12,7 +12,6 @@ namespace Cool {
 WindowFactory_OpenGL::WindowFactory_OpenGL()
 {
     static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
-    Log::info("[Gpu] Using OpenGL {}.{}", major_version(COOL_OPENGL_VERSION), minor_version(COOL_OPENGL_VERSION));
 }
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
