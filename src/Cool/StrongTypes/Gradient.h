@@ -47,18 +47,16 @@ inline auto to_string(Cool::Gradient gradient) -> std::string
     return "Gradient [...]";
 }
 
-inline auto gradient_widget(Cool::Gradient& gradient) -> bool
+inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
 {
-    static ImGuiExtras::ImGradientWidget gradient_wid{};
+    ImGui::Text(name.data());
     // TODO(ASG) better fix for out of screen
     // TODO(ASG) hitbox bigger
     // TODO(ASG) border around gradient
     // TODO(ASG) colorpicker widget
     // TODO(ASG) slider position
-    // TODO(ASG) text gradient name
     // TODO(ASG) delete bug with middle click
-    // TODO why can't we reset to default value?????????
-    return gradient_wid.gradient_editor();
+    return gradient.value.gradient_editor(flags);
 }
 
 } // namespace Cool
