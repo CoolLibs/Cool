@@ -232,7 +232,7 @@ def cereal_serialize_body(metadatas: List[VariableMetadata]):
 
 
 def metadatas_definitions(metadatas: List[VariableMetadata]):
-    return "\n    ".join(map(
+    return "\n".join(map(
         lambda metadata:
             f"{metadata.type} {metadata.field_name}{{{metadata.default_value}}};",
             metadatas))
@@ -259,6 +259,13 @@ def variable_definition_factory(variable_type_and_metadatas):
     return variable_definition
 
 
+def T_is_a_variable_type():
+    return " || \n".join(map(
+        lambda variable_type:
+            f"std::is_same_v<T, {variable_type}>",
+            all_variable_types()))
+
+
 def files():
     res = [
         register_set_variable_commands,
@@ -270,6 +277,7 @@ def files():
         all_variable_includes,
         find_metadatas_in_string,
         variables_includes,
+        T_is_a_variable_type,
     ]
     for variable_types_and_metadatas in all_variable_types_and_metadatas():
         variable_definition = variable_definition_factory(

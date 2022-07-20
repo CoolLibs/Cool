@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Hue.h>
@@ -148,21 +149,8 @@ template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>
 {
     static_assert(
-        std::is_same_v<T, bool> == false ||
-            std::is_same_v<T, int> == false ||
-            std::is_same_v<T, float> == false ||
-            std::is_same_v<T, glm::vec2> == false ||
-            std::is_same_v<T, glm::vec3> == false ||
-            std::is_same_v<T, glm::vec4> == false ||
-            std::is_same_v<T, glm::ivec2> == false ||
-            std::is_same_v<T, glm::ivec3> == false ||
-            std::is_same_v<T, glm::ivec4> == false ||
-            std::is_same_v<T, Cool::RgbColor> == false ||
-            std::is_same_v<T, Cool::Camera> == false ||
-            std::is_same_v<T, Cool::Angle> == false ||
-            std::is_same_v<T, Cool::Direction2D> == false ||
-            std::is_same_v<T, Cool::Hue> == false,
-        "Type not supported yet!"
+#include "Cool/Variables/generated/T_is_a_variable_type.inl"
+        , "Type not supported yet!"
     );
     /// NB: Use the folliwing code if you need to know the type which is failing:
     // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
