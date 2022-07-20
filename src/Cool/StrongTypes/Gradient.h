@@ -50,7 +50,6 @@ inline auto to_string(Cool::Gradient gradient) -> std::string
 inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags, float horizontal_margin = 10.f) -> bool
 {
     // TODO(ASG) hitbox bigger
-    // TODO(ASG) border around gradient
     return gradient.value.gradient_editor(name, horizontal_margin, flags);
 }
 

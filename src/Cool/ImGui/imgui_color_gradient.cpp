@@ -69,6 +69,11 @@ ImVec4 ImGradient::compute_color_at(RelativePosition position) const
 
 namespace ImGuiExtras {
 
+static void draw_border_widget(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
+{
+    draw_list.AddRect(vec1, vec2, color, 1.f, ImDrawFlags_None, 2.f);
+}
+
 static void draw_bar_border(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
 {
     const auto margin = ImVec2{2.f, 2.f};
@@ -207,11 +212,17 @@ bool gradient_button(ImGradient& gradient)
 bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_margin, ImGuiColorEditFlags flags)
 {
     ImGui::Text("%s", name.data());
-    bool         modified = false;
-    const ImVec2 bar_pos  = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
-    ImGui::SetCursorScreenPos(bar_pos);
-    const float width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
-    const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
+    const float  width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
+    bool         modified   = false;
+    const ImVec2 bar_pos    = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
+    const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
+    ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
+    draw_border_widget(
+        draw_list,
+        bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
+        ImVec2(width + horizontal_margin * 3.f, bar_bottom + ImGui::GetFrameHeight() * 3.f),
+        IM_COL32(100, 100, 100, 255)
+    );
 
     ImGui::BeginGroup();
     ImGui::InvisibleButton("gradient_editor_bar", ImVec2(width, GRADIENT_BAR_EDITOR_HEIGHT));
