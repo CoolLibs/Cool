@@ -264,10 +264,15 @@ bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFl
     }
     Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it\nor by dragging it down");
 
+    ImGui::SameLine();
+    if (selected_mark && ImGui::ColorEdit4("##picker1", reinterpret_cast<float*>(&selected_mark->color), ImGuiColorEditFlags_NoInputs | flags))
+    {
+        modified = true;
+    }
     if (ImGui::BeginPopup("picker") && selected_mark)
     {
         ImGui::SetNextItemWidth(ImGui::GetFrameHeight() * 12.f);
-        bool colorModified = ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_mark->color), flags);
+        bool colorModified = ImGui::ColorPicker4("##picker2", reinterpret_cast<float*>(&selected_mark->color), flags);
         if (selected_mark && colorModified)
         {
             modified = true;

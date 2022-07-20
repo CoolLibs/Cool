@@ -52,7 +52,6 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
     ImGui::Text(name.data());
     // TODO(ASG) hitbox bigger
     // TODO(ASG) border around gradient
-    // TODO(ASG) colorpicker widget
     // TODO(ASG) slider position
     return gradient.value.gradient_editor(horizontal_margin, flags);
 }
