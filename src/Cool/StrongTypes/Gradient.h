@@ -8,14 +8,15 @@
 namespace Cool {
 struct Gradient
     : public op::Addable<Gradient>
-    , public op::Subtractable<Gradient>
-    , public op::EqualityComparable<Gradient> {
+    , public op::Subtractable<Gradient> {
     ImGuiExtras::ImGradientWidget value{};
     constexpr Gradient() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
     explicit Gradient(const ImGuiExtras::ImGradientWidget& value)
         : value{value}
     {
     }
+
+    friend auto operator==(const Gradient& a, const Gradient& b) -> bool { return a.value.get_gradient() == b.value.get_gradient(); }
 
     // auto inigo_formula(const glm::vec3 a, const glm::vec3 b, const glm::vec3 c, const glm::vec3 d) -> Cool::RgbColor
     // {

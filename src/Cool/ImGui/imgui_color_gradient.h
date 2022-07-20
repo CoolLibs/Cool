@@ -139,8 +139,7 @@ public:
     const ImGradient& get_gradient() const { return gradient; }
     ImGradient&       get_gradient() { return gradient; }
 
-    bool        gradient_editor();
-    friend auto operator==(const ImGradientWidget& a, const ImGradientWidget& b) -> bool { return a.get_gradient() == b.get_gradient(); }
+    bool gradient_editor();
 
 private:
     ImGradient      gradient{};
