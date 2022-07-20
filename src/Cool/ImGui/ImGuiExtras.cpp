@@ -8,6 +8,7 @@
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+#include <open_link/open_link.hpp>
 #include <ostream>
 
 namespace Cool::ImGuiExtras {
@@ -445,6 +446,25 @@ void highlight(std::function<void()> widget, float opacity)
         highlight_color(opacity)
     );
     draw_list.ChannelsMerge();
+}
+
+auto link(std::string_view url) -> bool
+{
+    return link(url, url);
+}
+
+auto link(std::string_view url, std::string_view label) -> bool
+{
+    const bool opened = ImGui::Selectable(label.data(), true);
+    if (opened)
+    {
+        open_link::open(url.data());
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
+    return opened;
 }
 
 } // namespace Cool::ImGuiExtras

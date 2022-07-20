@@ -73,3 +73,6 @@
 [submodule "lib/algorithms"]
 	path = lib/algorithms
 	url = https://github.com/CoolLibs/algorithms.git
+[submodule "lib/open_link"]
+	path = lib/open_link
+	url = https://github.com/CoolLibs/open_link

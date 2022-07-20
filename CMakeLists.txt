@@ -156,6 +156,9 @@ target_link_libraries(Cool PUBLIC reg::reg)
 # wafl
 add_subdirectory(lib/wafl)
 target_link_libraries(Cool PUBLIC wafl::wafl)
+# open_link
+add_subdirectory(lib/open_link)
+target_link_libraries(Cool PUBLIC open_link::open_link)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
