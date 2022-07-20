@@ -50,7 +50,6 @@ inline auto gradient_widget(Cool::Gradient& gradient) -> bool
 {
     static ImGuiExtras::ImGradientWidget gradient_wid{};
     // TO DO(ASG) better fix for out of screen
-    // TO DO(ASG) open a popup when created mark
     return gradient_wid.gradient_editor();
 }
 

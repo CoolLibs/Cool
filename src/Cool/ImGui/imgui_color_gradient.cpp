@@ -187,6 +187,11 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
                 selected_mark = &mark;
                 dragging_mark = &mark;
             }
+            if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonLeft))
+            {
+                selected_mark = &mark;
+                ImGui::OpenPopup("picker");
+            }
         }
     }
 
@@ -212,6 +217,7 @@ bool ImGradientWidget::gradient_editor()
     const float max_width  = ImGui::GetContentRegionAvail().x - 20.f;
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
 
+    ImGui::BeginGroup();
     ImGui::InvisibleButton("gradient_editor_bar", ImVec2(max_width, GRADIENT_BAR_EDITOR_HEIGHT));
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -219,6 +225,7 @@ bool ImGradientWidget::gradient_editor()
         const float  pos          = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
         const ImVec4 new_mark_col = gradient.get_color_at(pos);
         selected_mark             = gradient.add_mark(ImGradientMark{pos, new_mark_col});
+        ImGui::OpenPopup("picker");
     }
 
     draw_gradient_bar(gradient, bar_pos, max_width, GRADIENT_BAR_EDITOR_HEIGHT);
@@ -250,6 +257,8 @@ bool ImGradientWidget::gradient_editor()
             modified      = true;
         }
     }
+    ImGui::EndGroup();
+
     if (
         (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
          ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup)) ||
@@ -268,13 +277,15 @@ bool ImGradientWidget::gradient_editor()
         selected_mark = &gradient.get_list().front();
     }
 
-    if (selected_mark)
+    if (ImGui::BeginPopup("picker") && selected_mark)
     {
-        bool colorModified = ImGui::ColorPicker4("##1", reinterpret_cast<float*>(&selected_mark->color));
+        ImGui::SetNextItemWidth(ImGui::GetFrameHeight() * 12.f);
+        bool colorModified = ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_mark->color), ImGuiColorEditFlags_Float); // TODO receive flags as parameters
         if (selected_mark && colorModified)
         {
             modified = true;
         }
+        ImGui::EndPopup();
     }
     return modified;
 }
