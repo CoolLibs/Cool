@@ -269,6 +269,15 @@ bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFl
     {
         modified = true;
     }
+
+    ImGui::PushItemWidth(width * .25f);
+    ImGui::SameLine();
+    if (selected_mark && ImGui::DragFloat("##3", &selected_mark->position.get(), 1.f / width, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+    {
+        gradient.get_marks().sorted();
+        modified = true;
+    }
+
     if (ImGui::BeginPopup("picker") && selected_mark)
     {
         ImGui::SetNextItemWidth(ImGui::GetFrameHeight() * 12.f);
