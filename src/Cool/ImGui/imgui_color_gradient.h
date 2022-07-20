@@ -101,10 +101,12 @@ struct Marks {
     {
         _marks.sort([](const ImGradientMark& a, const ImGradientMark& b) { return a.position < b.position; });
     }
-    void add_mark(ImGradientMark mark)
+    ImGradientMark* add_mark(ImGradientMark mark)
     {
         _marks.push_back(mark);
+        ImGradientMark* ptr = &_marks.back();
         sorted();
+        return ptr;
     }
     void remove_mark(const ImGradientMark& mark)
     {
@@ -117,10 +119,10 @@ struct Marks {
 class ImGradient {
 public:
     ImGradient();
-    ImVec4 get_color_at(float position) const;
-    void   add_mark(const ImGradientMark& mark)
+    ImVec4          get_color_at(float position) const;
+    ImGradientMark* add_mark(const ImGradientMark& mark)
     {
-        m_marks.add_mark(mark);
+        return m_marks.add_mark(mark);
     };
     void remove_mark(const ImGradientMark& mark)
     {

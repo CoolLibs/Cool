@@ -216,9 +216,9 @@ bool ImGradientWidget::gradient_editor()
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
-        const float  pos        = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
-        const ImVec4 newMarkCol = gradient.get_color_at(pos);
-        gradient.add_mark(ImGradientMark{pos, newMarkCol});
+        const float  pos          = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
+        const ImVec4 new_mark_col = gradient.get_color_at(pos);
+        selected_mark             = gradient.add_mark(ImGradientMark{pos, new_mark_col});
     }
 
     draw_gradient_bar(gradient, bar_pos, max_width, GRADIENT_BAR_EDITOR_HEIGHT);
