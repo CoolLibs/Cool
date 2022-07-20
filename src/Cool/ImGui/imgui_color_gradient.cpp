@@ -139,11 +139,6 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
     {
         ImGradientMark& mark = *markIt;
 
-        if (!selected_mark)
-        {
-            selected_mark = &mark;
-        }
-
         const float to = bar_pos.x + mark.position.get() * width;
 
         const ImU32 arrow_color               = IM_COL32(100, 100, 100, 255);
@@ -182,6 +177,10 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
             {
                 selected_mark = &mark;
                 dragging_mark = &mark;
+            }
+            if (ImGui::IsMouseClicked(ImGuiPopupFlags_MouseButtonMiddle))
+            {
+                selected_mark = &mark;
             }
             if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonLeft))
             {
@@ -255,7 +254,7 @@ bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFl
 
     if (
         (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
-         ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup)) ||
+         ImGui::IsItemHovered()) ||
         ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))
     )
     {
@@ -264,11 +263,6 @@ bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFl
         modified      = true;
     }
     Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it\nor by dragging it down");
-
-    if (!selected_mark && !gradient.get_list().empty())
-    {
-        selected_mark = &gradient.get_list().front();
-    }
 
     if (ImGui::BeginPopup("picker") && selected_mark)
     {

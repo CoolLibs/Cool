@@ -54,7 +54,6 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
     // TODO(ASG) border around gradient
     // TODO(ASG) colorpicker widget
     // TODO(ASG) slider position
-    // TODO(ASG) delete bug with middle click
     return gradient.value.gradient_editor(horizontal_margin, flags);
 }
 
