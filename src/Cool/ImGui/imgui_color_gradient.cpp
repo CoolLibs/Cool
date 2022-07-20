@@ -88,13 +88,13 @@ static void draw_gradient(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2
     draw_list.AddRectFilledMultiColor(vec1, vec2, colorA, colorB, colorB, colorA);
 }
 
-static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float max_width, float height)
+static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float width, float height)
 {
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
     const float bar_bottom = bar_pos.y + height;
 
-    draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(100, 100, 100, 255));
-    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + max_width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
+    draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(100, 100, 100, 255));
+    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
 
     float current_starting_x = bar_pos.x;
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
@@ -113,7 +113,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
         }
 
         const float from = current_starting_x;
-        const float to   = bar_pos.x + mark.position.get() * max_width;
+        const float to   = bar_pos.x + mark.position.get() * width;
         if (mark.position != 0.f)
         {
             draw_gradient(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
@@ -124,13 +124,13 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
     {
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
-        draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + max_width, bar_bottom), colorBU32, colorBU32);
+        draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32, colorBU32);
     }
 
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 10.0f));
 }
 
-static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_mark, ImGradientMark*& selected_mark, const ImVec2& bar_pos, float max_width, float height)
+static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_mark, ImGradientMark*& selected_mark, const ImVec2& bar_pos, float width, float height)
 {
     const float bar_bottom = bar_pos.y + height;
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
@@ -144,7 +144,7 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
             selected_mark = &mark;
         }
 
-        const float to = bar_pos.x + mark.position.get() * max_width;
+        const float to = bar_pos.x + mark.position.get() * width;
 
         const ImU32 arrow_color               = IM_COL32(100, 100, 100, 255);
         const ImU32 arrow_inside_border_color = IM_COL32(0, 0, 0, 255);
@@ -197,10 +197,10 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
 bool gradient_button(ImGradient& gradient)
 {
     const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
-    const float  max_width  = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
-    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(max_width, GRADIENT_BAR_WIDGET_HEIGHT));
+    const float  width      = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
+    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(width, GRADIENT_BAR_WIDGET_HEIGHT));
 
-    draw_gradient_bar(gradient, widget_pos, max_width, GRADIENT_BAR_WIDGET_HEIGHT);
+    draw_gradient_bar(gradient, widget_pos, width, GRADIENT_BAR_WIDGET_HEIGHT);
 
     return clicked;
 }
@@ -210,22 +210,22 @@ bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
     bool   modified = false;
     ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
     bar_pos.x += 10.f;
-    const float max_width  = ImGui::GetContentRegionAvail().x - 20.f; // TODO(ASG) Rename as width // TODO(ASG) make sure it's at least 1
+    const float width      = ImGui::GetContentRegionAvail().x - 20.f; // TODO(ASG) make sure it's at least 1
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
 
     ImGui::BeginGroup();
-    ImGui::InvisibleButton("gradient_editor_bar", ImVec2(max_width, GRADIENT_BAR_EDITOR_HEIGHT));
+    ImGui::InvisibleButton("gradient_editor_bar", ImVec2(width, GRADIENT_BAR_EDITOR_HEIGHT));
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
-        const float  pos          = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
+        const float  pos          = (ImGui::GetIO().MousePos.x - bar_pos.x) / width;
         const ImVec4 new_mark_col = gradient.get_color_at(pos);
         selected_mark             = gradient.add_mark(ImGradientMark{pos, new_mark_col});
         ImGui::OpenPopup("picker");
     }
 
-    draw_gradient_bar(gradient, bar_pos, max_width, GRADIENT_BAR_EDITOR_HEIGHT);
-    draw_gradient_marks(gradient, dragging_mark, selected_mark, bar_pos, max_width, GRADIENT_BAR_EDITOR_HEIGHT);
+    draw_gradient_bar(gradient, bar_pos, width, GRADIENT_BAR_EDITOR_HEIGHT);
+    draw_gradient_marks(gradient, dragging_mark, selected_mark, bar_pos, width, GRADIENT_BAR_EDITOR_HEIGHT);
 
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && dragging_mark)
     {
@@ -234,7 +234,7 @@ bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
 
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && dragging_mark)
     {
-        const float map = (ImGui::GetIO().MousePos.x - bar_pos.x) / max_width;
+        const float map = (ImGui::GetIO().MousePos.x - bar_pos.x) / width;
         if (dragging_mark->position.get() != map &&
             map >= 0.f &&
             map <= 1.f)
