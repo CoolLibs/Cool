@@ -5,18 +5,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<Cool::Camera> {
-    friend auto operator<=>(const VariableMetadata<Cool::Camera>&, const VariableMetadata<Cool::Camera>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&)
-    {
-    }
-};
+#include "generated/Variable_Camera.inl"
 
 inline auto imgui_widget(Variable<Cool::Camera>&) -> bool
 {

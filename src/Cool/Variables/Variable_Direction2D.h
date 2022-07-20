@@ -6,18 +6,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<Direction2D> {
-    friend auto operator<=>(const VariableMetadata<Direction2D>&, const VariableMetadata<Direction2D>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&)
-    {
-    }
-};
+#include "generated/Variable_Direction2D.inl"
 
 inline auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
