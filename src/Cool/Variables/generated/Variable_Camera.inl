@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<Cool::Camera> {
-    
-
     friend auto operator<=>(const VariableMetadata<Cool::Camera>&, const VariableMetadata<Cool::Camera>&) = default;
 
 private:

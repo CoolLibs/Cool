@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<Cool::Direction2D> {
-    
-
     friend auto operator<=>(const VariableMetadata<Cool::Direction2D>&, const VariableMetadata<Cool::Direction2D>&) = default;
 
 private:

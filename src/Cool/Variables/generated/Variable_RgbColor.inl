@@ -5,7 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<Cool::RgbColor> {
     bool is_hdr{true};
@@ -19,7 +18,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-           cereal::make_nvp("Is HDR", is_hdr)
+            cereal::make_nvp("Is HDR", is_hdr)
         );
     }
 };

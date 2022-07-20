@@ -299,4 +299,9 @@ if __name__ == '__main__':
         folder="generated",
         files=files(),
     )
-    # print(files())
+
+    import apply_clang_format
+    apply_clang_format.apply_clang_format(
+        folder="src/Cool/Variables/generated",
+        print_result=False,
+    )

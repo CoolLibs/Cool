@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<bool> {
-    
-
     friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
 
 private:

@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<Cool::Angle> {
-    
-
     friend auto operator<=>(const VariableMetadata<Cool::Angle>&, const VariableMetadata<Cool::Angle>&) = default;
 
 private:

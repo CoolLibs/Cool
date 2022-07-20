@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<glm::vec4> {
-    
-
     friend auto operator<=>(const VariableMetadata<glm::vec4>&, const VariableMetadata<glm::vec4>&) = default;
 
 private:

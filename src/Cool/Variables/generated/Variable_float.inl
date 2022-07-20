@@ -5,7 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<float> {
     float min_value{0.f};
@@ -20,8 +19,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-           cereal::make_nvp("Min Value", min_value),
-           cereal::make_nvp("Max Value", max_value)
+            cereal::make_nvp("Min Value", min_value),
+            cereal::make_nvp("Max Value", max_value)
         );
     }
 };

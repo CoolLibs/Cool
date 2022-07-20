@@ -5,11 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct VariableMetadata<Cool::Hue> {
-    
-
     friend auto operator<=>(const VariableMetadata<Cool::Hue>&, const VariableMetadata<Cool::Hue>&) = default;
 
 private:
