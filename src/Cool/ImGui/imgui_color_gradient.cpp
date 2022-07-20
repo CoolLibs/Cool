@@ -210,7 +210,7 @@ bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
     bool   modified = false;
     ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
     bar_pos.x += 10.f;
-    const float width      = ImGui::GetContentRegionAvail().x - 20.f; // TODO(ASG) make sure it's at least 1
+    const float width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 20.f);
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
 
     ImGui::BeginGroup();
