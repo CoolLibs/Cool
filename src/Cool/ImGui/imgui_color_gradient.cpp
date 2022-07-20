@@ -234,10 +234,8 @@ bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
 
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && dragging_mark)
     {
-        const float map = (ImGui::GetIO().MousePos.x - bar_pos.x) / width;
-        if (dragging_mark->position.get() != map &&
-            map >= 0.f &&
-            map <= 1.f)
+        const float map = ImClamp((ImGui::GetIO().MousePos.x - bar_pos.x) / width, 0.f, 1.f);
+        if (dragging_mark->position.get() != map)
         {
             dragging_mark->position.set(map);
             gradient.get_marks().sorted();

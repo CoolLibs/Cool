@@ -50,7 +50,6 @@ inline auto to_string(Cool::Gradient gradient) -> std::string
 inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
 {
     ImGui::Text(name.data());
-    // TODO(ASG) better fix for out of screen
     // TODO(ASG) hitbox bigger
     // TODO(ASG) border around gradient
     // TODO(ASG) colorpicker widget
