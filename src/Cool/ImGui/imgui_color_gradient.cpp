@@ -1,8 +1,4 @@
-//
-//  imgui_color_gradient.cpp
-//  imgui extension
-//
-//  Created by David Gallardo on 11/06/16.
+
 
 #include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
@@ -214,7 +210,7 @@ bool ImGradientWidget::gradient_editor()
     bool   modified = false;
     ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
     bar_pos.x += 10.f;
-    const float max_width  = ImGui::GetContentRegionAvail().x - 20.f;
+    const float max_width  = ImGui::GetContentRegionAvail().x - 20.f; // TODO(ASG) Rename as width // TODO(ASG) make sure it's at least 1
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
 
     ImGui::BeginGroup();

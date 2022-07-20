@@ -49,7 +49,14 @@ inline auto to_string(Cool::Gradient gradient) -> std::string
 inline auto gradient_widget(Cool::Gradient& gradient) -> bool
 {
     static ImGuiExtras::ImGradientWidget gradient_wid{};
-    // TO DO(ASG) better fix for out of screen
+    // TODO(ASG) better fix for out of screen
+    // TODO(ASG) hitbox bigger
+    // TODO(ASG) border around gradient
+    // TODO(ASG) colorpicker widget
+    // TODO(ASG) slider position
+    // TODO(ASG) text gradient name
+    // TODO(ASG) delete bug with middle click
+    // TODO why can't we reset to default value?????????
     return gradient_wid.gradient_editor();
 }
 
