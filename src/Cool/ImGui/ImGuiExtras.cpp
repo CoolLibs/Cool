@@ -458,7 +458,7 @@ auto link(std::string_view url, std::string_view label) -> bool
     const bool opened = ImGui::Selectable(label.data(), true);
     if (opened)
     {
-        open_link::open(url.data());
+        Cool::open_link(url.data());
     }
     if (ImGui::IsItemHovered())
     {
