@@ -139,7 +139,7 @@ public:
     const ImGradient& get_gradient() const { return gradient; }
     ImGradient&       get_gradient() { return gradient; }
 
-    bool gradient_editor();
+    bool gradient_editor(ImGuiColorEditFlags flags = 0);
 
 private:
     ImGradient      gradient{};

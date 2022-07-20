@@ -205,7 +205,7 @@ bool gradient_button(ImGradient& gradient)
     return clicked;
 }
 
-bool ImGradientWidget::gradient_editor()
+bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
 {
     bool   modified = false;
     ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
@@ -275,7 +275,7 @@ bool ImGradientWidget::gradient_editor()
     if (ImGui::BeginPopup("picker") && selected_mark)
     {
         ImGui::SetNextItemWidth(ImGui::GetFrameHeight() * 12.f);
-        bool colorModified = ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_mark->color), ImGuiColorEditFlags_Float); // TODO receive flags as parameters
+        bool colorModified = ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_mark->color), flags);
         if (selected_mark && colorModified)
         {
             modified = true;
