@@ -265,8 +265,7 @@ bool ImGradientWidget::gradient_editor()
         selected_mark = nullptr;
         modified      = true;
     }
-    Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it");
-    Cool::ImGuiExtras::tooltip("or by dragging it down");
+    Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it\nor by dragging it down");
 
     if (!selected_mark && !gradient.get_list().empty())
     {
