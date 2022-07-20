@@ -214,14 +214,14 @@ auto next_block(
     size_t           ending_key_pos
 ) -> std::optional<std::string>
 {
-    const auto start_position_of_block = text.find("(") + 1;
+    const auto start_position_of_block = text.find("(");
     if (start_position_of_block != std::string_view::npos)
     {
-        return next_word(text, start_position_of_block, ")");
+        return next_word(text, start_position_of_block + 1, ")");
     }
     else
     {
-        return Cool::String::next_word(
+        return next_word(
             text,
             ending_key_pos
         );
