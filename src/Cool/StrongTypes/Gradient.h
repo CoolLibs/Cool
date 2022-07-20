@@ -47,7 +47,7 @@ inline auto to_string(Cool::Gradient gradient) -> std::string
     return "Gradient [...]";
 }
 
-inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
+inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags, float horizontal_margin = 10.f) -> bool
 {
     ImGui::Text(name.data());
     // TODO(ASG) hitbox bigger
@@ -55,7 +55,7 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
     // TODO(ASG) colorpicker widget
     // TODO(ASG) slider position
     // TODO(ASG) delete bug with middle click
-    return gradient.value.gradient_editor(flags);
+    return gradient.value.gradient_editor(horizontal_margin, flags);
 }
 
 } // namespace Cool

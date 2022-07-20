@@ -198,19 +198,19 @@ bool gradient_button(ImGradient& gradient)
 {
     const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
     const float  width      = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
-    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(width, GRADIENT_BAR_WIDGET_HEIGHT));
+    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(widget_pos.x + width, GRADIENT_BAR_WIDGET_HEIGHT));
 
     draw_gradient_bar(gradient, widget_pos, width, GRADIENT_BAR_WIDGET_HEIGHT);
 
     return clicked;
 }
 
-bool ImGradientWidget::gradient_editor(ImGuiColorEditFlags flags)
+bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFlags flags)
 {
-    bool   modified = false;
-    ImVec2 bar_pos  = ImGui::GetCursorScreenPos();
-    bar_pos.x += 10.f;
-    const float width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 20.f);
+    bool         modified = false;
+    const ImVec2 bar_pos  = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
+    ImGui::SetCursorScreenPos(bar_pos);
+    const float width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
     const float bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
 
     ImGui::BeginGroup();
