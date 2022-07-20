@@ -145,9 +145,9 @@ def all_variable_types_and_metadatas_without_namespaces():
 
 def all_variable_includes():
     return f"""
-#include <Cool/Camera/Camera.h>
-#include <Cool/Variables/Variables.h>
-"""
+            #include <Cool/Camera/Camera.h>
+            #include <Cool/Variables/Variables.h>
+            """
 
 
 def register_set_variable_commands():
@@ -171,22 +171,22 @@ def register_set_variable_metadata_commands():
 
 def VariableRegistries():
     return "\n" + "using VariableRegistries = reg::Registries<\n" + ",\n".join(
-        map(lambda var_type: f"    Cool::Variable<{var_type}>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"Cool::Variable<{var_type}>", all_variable_types())) + "\n>;"
 
 
 def AnyInput():
     return "\n" + "using AnyInput = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"    Input<{var_type}>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"Input<{var_type}>", all_variable_types())) + "\n>;"
 
 
 def AnyInputRef():
     return "\n" + "using AnyInputRef = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"    std::reference_wrapper<Input<{var_type}>>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"std::reference_wrapper<Input<{var_type}>>", all_variable_types())) + "\n>;"
 
 
 def AnyInputRefToConst():
     return "\n" + "using AnyInputRefToConst = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"    std::reference_wrapper<const Input<{var_type}>>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>", all_variable_types())) + "\n>;"
 
 
 def find_metadatas_in_string():
@@ -194,34 +194,33 @@ def find_metadatas_in_string():
     for variable_types_and_metadatas in all_variable_types_and_metadatas():
         if variable_types_and_metadatas.do_generate_get_default_metadata == True:
             out += f'''
-template<>
-auto get_default_metadata(std::string_view{" key_values" if variable_types_and_metadatas.metadatas else ""}) -> Cool::VariableMetadata<{variable_types_and_metadatas.type}>
-{{
-    Cool::VariableMetadata<{variable_types_and_metadatas.type}> metadata{{}};
-'''
+                template<>
+                auto get_default_metadata(std::string_view{" key_values" if variable_types_and_metadatas.metadatas else ""}) -> Cool::VariableMetadata<{variable_types_and_metadatas.type}>
+                {{
+                    Cool::VariableMetadata<{variable_types_and_metadatas.type}> metadata{{}};
+                '''
             for variable_metadatas in variable_types_and_metadatas.metadatas:
                 out += f'''
-    const auto {variable_metadatas.field_name} = Cool::String::find_value_for_given_key<{variable_metadatas.type}>(key_values, "{variable_metadatas.name_in_shader}");
-    if ({variable_metadatas.field_name})
-    {{
-        metadata.{variable_metadatas.field_name} = *{variable_metadatas.field_name};
-    }}
-'''
-            out += "    return metadata;\n}\n"
+                    const auto {variable_metadatas.field_name} = Cool::String::find_value_for_given_key<{variable_metadatas.type}>(key_values, "{variable_metadatas.name_in_shader}");
+                    if ({variable_metadatas.field_name})
+                    {{
+                        metadata.{variable_metadatas.field_name} = *{variable_metadatas.field_name};
+                    }}
+                    '''
+            out += "return metadata;\n}\n"
     return out
 
 
 def variables_includes():
     out = "\n"
     for variable_type in all_variable_types_without_namespaces():
-        out += f'''#include <Cool/Variables/Variable_{variable_type}.h>
-'''
+        out += f"#include <Cool/Variables/Variable_{variable_type}.h>\n"
     return out
 
 
 def cereal_make_nvp(metadatas: List[VariableMetadata]):
     return ",\n".join(map(lambda meta:
-                          f'           cereal::make_nvp("{meta.pretty_name}", {meta.field_name})', metadatas)
+                          f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})', metadatas)
                       )
 
 
@@ -242,23 +241,21 @@ def metadatas_definitions(metadatas: List[VariableMetadata]):
 def variable_definition_factory(variable_type_and_metadatas):
     def variable_definition():
         has_metadatas = len(variable_type_and_metadatas.metadatas) > 0
-        out = "\n"
-        out += f'''
-template<>
-struct VariableMetadata<{variable_type_and_metadatas.type}> {{
-    {metadatas_definitions(variable_type_and_metadatas.metadatas)}
+        return f'''
+            template<>
+            struct VariableMetadata<{variable_type_and_metadatas.type}> {{
+                {metadatas_definitions(variable_type_and_metadatas.metadatas)}
 
-    friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.type}>&, const VariableMetadata<{variable_type_and_metadatas.type}>&) = default;
+                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.type}>&, const VariableMetadata<{variable_type_and_metadatas.type}>&) = default;
 
-private:
-    // Serialisation
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&{" archive" if has_metadatas else ""})
-    {{{cereal_serialize_body(variable_type_and_metadatas.metadatas) if has_metadatas else ""}
-    }}
-}};'''
-        return out
+            private:
+                // Serialisation
+                friend class cereal::access;
+                template<class Archive>
+                void serialize(Archive&{" archive" if has_metadatas else ""})
+                {{{cereal_serialize_body(variable_type_and_metadatas.metadatas) if has_metadatas else ""}
+                }}
+            }};'''
     return variable_definition
 
 
