@@ -204,8 +204,9 @@ bool gradient_button(ImGradient& gradient)
     return clicked;
 }
 
-bool ImGradientWidget::gradient_editor(float horizontal_margin, ImGuiColorEditFlags flags)
+bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_margin, ImGuiColorEditFlags flags)
 {
+    ImGui::Text("%s", name.data());
     bool         modified = false;
     const ImVec2 bar_pos  = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
     ImGui::SetCursorScreenPos(bar_pos);

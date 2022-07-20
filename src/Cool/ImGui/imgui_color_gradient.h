@@ -140,7 +140,7 @@ public:
     const ImGradient& get_gradient() const { return gradient; }
     ImGradient&       get_gradient() { return gradient; }
 
-    bool gradient_editor(float horizontal_margin = 10.f, ImGuiColorEditFlags flags = 0);
+    bool gradient_editor(std::string_view name, float horizontal_margin = 10.f, ImGuiColorEditFlags flags = 0);
 
 private:
     ImGradient      gradient{};
