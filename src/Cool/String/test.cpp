@@ -1,6 +1,7 @@
 #include "String.h"
 #include "doctest/doctest.h"
 
+#if DEBUG
 TEST_CASE("[Cool::String] replace()")
 {
     using namespace std::string_literals;
@@ -186,3 +187,4 @@ TEST_CASE("Parsing a RgbColor")
         Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
     );
 }
+#endif
