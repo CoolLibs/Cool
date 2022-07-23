@@ -3,29 +3,11 @@
 #include <list>
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include "RelativePosition.h"
 #include "imgui_internal.h"
 
+
 namespace Cool {
-class RelativePosition { // TODO(ASG) Move to its own file in Cool/StrongTypes
-public:
-    RelativePosition(float position)
-        : value(position)
-    {
-        IM_ASSERT(0.f <= position && position <= 1.f);
-    }
-
-    auto   get() const -> float { return value; }
-    float& get() { return value; }
-    void   set(const float pos) { value = pos; }
-
-    friend auto operator<(const RelativePosition& a, const RelativePosition& b) -> bool { return a.get() < b.get(); }
-    friend auto operator>(const RelativePosition& a, const RelativePosition& b) -> bool { return a.get() > b.get(); }
-    friend auto operator==(const RelativePosition& a, const RelativePosition& b) -> bool { return a.get() == b.get(); }
-    friend auto operator!=(const RelativePosition& a, const RelativePosition& b) -> bool { return !(a == b); }
-
-private:
-    float value{};
-};
 
 struct ImGradientMark {
     RelativePosition position{0.f};
