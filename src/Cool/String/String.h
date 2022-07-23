@@ -152,7 +152,7 @@ auto value_from_string(std::string_view) -> std::optional<T>
 #include "Cool/Variables/generated/T_is_a_variable_type.inl"
         , "Type not supported yet!"
     );
-    /// NB: Use the folliwing code if you need to know the type which is failing:
+    /// NB: Use the following code if you need to know the type which is failing:
     // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
     // std::ignore           = debug_name;
     // assert(false);
