@@ -53,18 +53,18 @@ namespace ImGuiExtras {
 class GradientWidget {
 public:
     GradientWidget() = default;
-    const GradientMarks& get_gradient() const { return gradient; }
-    GradientMarks&       get_gradient() { return gradient; }
+    const Gradient::GradientMarks& get_gradient() const { return gradient; }
+    Gradient::GradientMarks&       get_gradient() { return gradient; }
 
     bool gradient_editor(std::string_view name, float horizontal_margin = 10.f, ImGuiColorEditFlags flags = 0);
 
 private:
-    GradientMarks gradient{};
-    Mark*         dragging_mark{};
-    Mark*         selected_mark{};
+    Gradient::GradientMarks gradient{};
+    Gradient::Mark*         dragging_mark{};
+    Gradient::Mark*         selected_mark{};
 };
 
-bool gradient_button(GradientMarks* gradient);
+bool gradient_button(Gradient::GradientMarks* gradient);
 
 }
 
