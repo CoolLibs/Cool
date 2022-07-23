@@ -42,7 +42,7 @@ private:
     }
 };
 
-inline auto to_string(Cool::Gradient gradient) -> std::string
+inline auto to_string(Cool::Gradient) -> std::string
 {
     return "Gradient [...]";
 }

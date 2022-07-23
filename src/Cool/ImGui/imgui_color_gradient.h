@@ -73,8 +73,8 @@ private:
 };
 
 struct ImGradientMark {
-    ImVec4           color{0.f, 0.f, 0.f, 1.f};
     RelativePosition position{0.f};
+    ImVec4           color{0.f, 0.f, 0.f, 1.f};
 
     ImGradientMark(RelativePosition position, ImVec4 color)
         : position{position}, color{color}
