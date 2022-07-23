@@ -3,13 +3,10 @@
 #include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
+#include "gradient_variables.h"
 #include "imgui_draw.h"
 
 namespace Cool {
-
-static constexpr float GRADIENT_BAR_WIDGET_HEIGHT = 25.f;
-static constexpr float GRADIENT_BAR_EDITOR_HEIGHT = 40.f;
-static constexpr float GRADIENT_MARK_DELETE_DIFFY = 40.f;
 
 ImGradient::ImGradient()
 {
@@ -76,7 +73,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     const float bar_bottom = bar_pos.y + height;
 
     internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), border_color());
-    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
+    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), empty_backgroung_color(), gradient.get_list().empty());
 
     float current_starting_x = bar_pos.x;
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
@@ -123,22 +120,19 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
 
         const float to = bar_pos.x + mark.position.get() * width;
 
-        const ImU32 arrow_color               = IM_COL32(100, 100, 100, 255);
-        const ImU32 arrow_inside_border_color = IM_COL32(0, 0, 0, 255);
-        const float arrow_border              = 6.f;
-        const float offset                    = 1.f;
-        const float arrow_inside_border       = arrow_border - offset;
+        const float arrow_border        = 6.f;
+        const float offset              = 1.f;
+        const float arrow_inside_border = arrow_border - offset;
 
-        draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), arrow_color);
-        draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), arrow_color, 1.0f, ImDrawFlags_Closed);
-        draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), arrow_inside_border_color, 1.0f, ImDrawFlags_Closed);
+        draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), border_color());
+        draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), border_color(), 1.0f, ImDrawFlags_Closed);
+        draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), inside_arrow_border_color(), 1.0f, ImDrawFlags_Closed);
 
         if (selected_mark == &mark)
         {
-            const ImU32 selected_color = IM_COL32(0, 255, 0, 255);
             const float arrow_selected = 4.f;
-            draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_selected - offset)), ImVec2(to - arrow_selected, bar_bottom + offset), ImVec2(to + arrow_selected, bar_bottom + offset), selected_color);
-            draw_list.AddRect(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), selected_color, 1.0f, ImDrawFlags_Closed);
+            draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_selected - offset)), ImVec2(to - arrow_selected, bar_bottom + offset), ImVec2(to + arrow_selected, bar_bottom + offset), selected_mark_color());
+            draw_list.AddRect(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), selected_mark_color(), 1.0f, ImDrawFlags_Closed);
         }
         const float square_height = 3.f;
         internal::draw_gradient(
@@ -197,8 +191,8 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     internal::draw_border_widget(
         draw_list,
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
-        ImVec2(width + horizontal_margin * 3.f, bar_bottom + ImGui::GetFrameHeight() * 3.f),
-        IM_COL32(100, 100, 100, 255)
+        ImVec2(width + horizontal_margin * 3.f, bar_bottom + button_size() * 3.f),
+        border_color()
     );
 
     ImGui::BeginGroup();
@@ -244,7 +238,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     if (
         (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
          ImGui::IsItemHovered()) ||
-        ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))
+        ImGui::Button("-", ImVec2(button_size(), button_size()))
     )
     {
         gradient.remove_mark(*selected_mark);
@@ -269,7 +263,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
 
     if (ImGui::BeginPopup("picker") && selected_mark)
     {
-        ImGui::SetNextItemWidth(ImGui::GetFrameHeight() * 12.f);
+        ImGui::SetNextItemWidth(button_size() * 12.f);
         bool colorModified = ImGui::ColorPicker4("##picker2", reinterpret_cast<float*>(&selected_mark->color), flags);
         if (selected_mark && colorModified)
         {
