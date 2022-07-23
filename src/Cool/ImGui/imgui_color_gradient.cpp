@@ -119,16 +119,14 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
         {
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
             {
-                selected_mark = &mark;
                 dragging_mark = &mark;
             }
-            if (ImGui::IsMouseClicked(ImGuiPopupFlags_MouseButtonMiddle))
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiPopupFlags_MouseButtonMiddle) || ImGui::IsMouseDoubleClicked(ImGuiPopupFlags_MouseButtonLeft))
             {
                 selected_mark = &mark;
             }
             if (ImGui::IsMouseDoubleClicked(ImGuiPopupFlags_MouseButtonLeft))
             {
-                selected_mark = &mark;
                 ImGui::OpenPopup("picker");
             }
         }
