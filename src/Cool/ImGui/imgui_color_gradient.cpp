@@ -1,5 +1,3 @@
-
-
 #include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
@@ -132,10 +130,8 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     bool         modified   = false;
     const ImVec2 bar_pos    = Cool::variables::bar_position(horizontal_margin);
     const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
-    ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
 
     internal::draw_border_widget(
-        draw_list,
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
         ImVec2(width + horizontal_margin * 3.f, bar_bottom + variables::button_size() * 3.f),
         variables::border_color()

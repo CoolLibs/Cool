@@ -5,8 +5,9 @@
 
 namespace internal {
 
-static void draw_border_widget(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
+static void draw_border_widget(const ImVec2 vec1, const ImVec2 vec2, ImColor color)
 {
+    ImDrawList& draw_list = *ImGui::GetWindowDrawList();
     draw_list.AddRect(vec1, vec2, color, 1.f, ImDrawFlags_None, 2.f);
 }
 
