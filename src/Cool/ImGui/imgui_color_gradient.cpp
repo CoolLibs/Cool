@@ -81,15 +81,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
         ImGradientMark& mark = *markIt;
 
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
-        ImU32 colorAU32;
-        if (markIt != gradient.get_list().begin())
-        {
-            colorAU32 = ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color);
-        }
-        else
-        {
-            colorAU32 = colorBU32;
-        }
+        ImU32 colorAU32 = (markIt != gradient.get_list().begin()) ? ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color) : colorBU32;
 
         const float from = current_starting_x;
         const float to   = bar_pos.x + mark.position.get() * width;
