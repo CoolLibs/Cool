@@ -95,7 +95,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
     {
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
-        internal::draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32, colorBU32);
+        internal::draw_uniform_square(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32);
     }
 
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 10.0f));
@@ -116,22 +116,34 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
         const float offset              = 1.f;
         const float arrow_inside_border = arrow_border - offset;
 
-        draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), border_color());
-        draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), border_color(), 1.0f, ImDrawFlags_Closed);
-        draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), inside_arrow_border_color(), 1.0f, ImDrawFlags_Closed);
+        internal::draw_background_mark(
+            draw_list,
+            ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom),
+            ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)),
+            ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)),
+            border_color(), inside_arrow_border_color()
+        );
+        // draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), border_color());
+        // draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), border_color(), 1.0f, ImDrawFlags_Closed);
+        // draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), inside_arrow_border_color(), 1.0f, ImDrawFlags_Closed);
 
-        if (selected_mark == &mark)
-        {
-            const float arrow_selected = 4.f;
-            draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_selected - offset)), ImVec2(to - arrow_selected, bar_bottom + offset), ImVec2(to + arrow_selected, bar_bottom + offset), selected_mark_color());
-            draw_list.AddRect(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), selected_mark_color(), 1.0f, ImDrawFlags_Closed);
-        }
+        const float arrow_selected = 4.f;
+        internal::arrow_selected(
+            draw_list,
+            ImVec2(to, bar_pos.y + (height - arrow_selected - offset)),
+            ImVec2(to - arrow_selected, bar_bottom + offset),
+            ImVec2(to + arrow_selected, bar_bottom + offset),
+            ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)),
+            ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)),
+            selected_mark_color(),
+            selected_mark == &mark
+        );
+
         const float square_height = 3.f;
-        internal::draw_gradient(
+        internal::draw_uniform_square(
             draw_list,
             ImVec2(to - square_height, bar_pos.y + (height + square_height)),
             ImVec2(to + square_height, bar_pos.y + (height + square_height * square_height)),
-            ImGui::ColorConvertFloat4ToU32(mark.color),
             ImGui::ColorConvertFloat4ToU32(mark.color)
         );
 
