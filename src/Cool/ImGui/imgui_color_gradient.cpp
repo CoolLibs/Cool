@@ -3,6 +3,7 @@
 #include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
+#include "imgui_draw.h"
 
 namespace Cool {
 
@@ -69,37 +70,13 @@ ImVec4 ImGradient::compute_color_at(RelativePosition position) const
 
 namespace ImGuiExtras {
 
-static void draw_border_widget(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
-{
-    draw_list.AddRect(vec1, vec2, color, 1.f, ImDrawFlags_None, 2.f);
-}
-
-static void draw_bar_border(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
-{
-    const auto margin = ImVec2{2.f, 2.f};
-    draw_list.AddRectFilled(vec1 - margin, vec2 + margin, color);
-}
-
-static void draw_background_if(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color, bool condition)
-{
-    if (condition)
-    {
-        draw_list.AddRectFilled(vec1, vec2, color);
-    }
-}
-
-static void draw_gradient(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
-{
-    draw_list.AddRectFilledMultiColor(vec1, vec2, colorA, colorB, colorB, colorA);
-}
-
 static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float width, float height)
 {
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
     const float bar_bottom = bar_pos.y + height;
 
-    draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(100, 100, 100, 255));
-    draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
+    internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), border_color());
+    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), IM_COL32(0, 0, 0, 255), gradient.get_list().empty());
 
     float current_starting_x = bar_pos.x;
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
@@ -121,7 +98,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
         const float to   = bar_pos.x + mark.position.get() * width;
         if (mark.position != 0.f)
         {
-            draw_gradient(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
+            internal::draw_gradient(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
         }
         current_starting_x = to;
     }
@@ -129,7 +106,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
     {
         ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
-        draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32, colorBU32);
+        internal::draw_gradient(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32, colorBU32);
     }
 
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 10.0f));
@@ -164,7 +141,7 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
             draw_list.AddRect(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), selected_color, 1.0f, ImDrawFlags_Closed);
         }
         const float square_height = 3.f;
-        draw_gradient(
+        internal::draw_gradient(
             draw_list,
             ImVec2(to - square_height, bar_pos.y + (height + square_height)),
             ImVec2(to + square_height, bar_pos.y + (height + square_height * square_height)),
@@ -217,7 +194,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     const ImVec2 bar_pos    = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
     const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
     ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
-    draw_border_widget(
+    internal::draw_border_widget(
         draw_list,
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
         ImVec2(width + horizontal_margin * 3.f, bar_bottom + ImGui::GetFrameHeight() * 3.f),
