@@ -103,53 +103,18 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
 
 static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_mark, ImGradientMark*& selected_mark, const ImVec2& bar_pos, float width, float height)
 {
-    const float bar_bottom = bar_pos.y + height;
-    ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
+    ImDrawList& draw_list = *ImGui::GetWindowDrawList();
 
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
     {
         ImGradientMark& mark = *markIt;
 
-        const float to = bar_pos.x + mark.position.get() * width;
-
-        const float arrow_border        = 6.f;
-        const float offset              = 1.f;
-        const float arrow_inside_border = arrow_border - offset;
-
-        internal::draw_background_mark(
+        internal::mark_button(
             draw_list,
-            ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom),
-            ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)),
-            ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)),
-            border_color(), inside_arrow_border_color()
-        );
-        // draw_list.AddTriangleFilled(ImVec2(to, bar_pos.y + (height - arrow_border)), ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_bottom), border_color());
-        // draw_list.AddRectFilled(ImVec2(to - arrow_border, bar_bottom), ImVec2(to + arrow_border, bar_pos.y + (height + 2.f * arrow_border)), border_color(), 1.0f, ImDrawFlags_Closed);
-        // draw_list.AddRectFilled(ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)), ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)), inside_arrow_border_color(), 1.0f, ImDrawFlags_Closed);
-
-        const float arrow_selected = 4.f;
-        internal::arrow_selected(
-            draw_list,
-            ImVec2(to, bar_pos.y + (height - arrow_selected - offset)),
-            ImVec2(to - arrow_selected, bar_bottom + offset),
-            ImVec2(to + arrow_selected, bar_bottom + offset),
-            ImVec2(to - arrow_inside_border, bar_pos.y + (height + offset)),
-            ImVec2(to + arrow_inside_border, bar_pos.y + (height + 2.f * arrow_inside_border + offset)),
-            selected_mark_color(),
+            bar_pos + ImVec2(mark.position.get() * width, height),
+            border_color(), inside_arrow_border_color(), selected_mark_color(), ImGui::ColorConvertFloat4ToU32(mark.color),
             selected_mark == &mark
         );
-
-        const float square_height = 3.f;
-        internal::draw_uniform_square(
-            draw_list,
-            ImVec2(to - square_height, bar_pos.y + (height + square_height)),
-            ImVec2(to + square_height, bar_pos.y + (height + square_height * square_height)),
-            ImGui::ColorConvertFloat4ToU32(mark.color)
-        );
-
-        ImGui::SetCursorScreenPos(ImVec2(to - arrow_border, bar_bottom));
-        const ImVec2 button_size = {arrow_border * 2.f, arrow_border * 2.f};
-        ImGui::InvisibleButton("mark", button_size);
 
         if (ImGui::IsItemHovered())
         {
@@ -192,6 +157,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     const ImVec2 bar_pos    = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
     const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
     ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
+
     internal::draw_border_widget(
         draw_list,
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
