@@ -50,21 +50,21 @@ namespace Cool {
 
 namespace ImGuiExtras {
 
-class ImGradientWidget {
+class GradientWidget {
 public:
-    ImGradientWidget() = default;
-    const ImGradient& get_gradient() const { return gradient; }
-    ImGradient&       get_gradient() { return gradient; }
+    GradientWidget() = default;
+    const GradientMarks& get_gradient() const { return gradient; }
+    GradientMarks&       get_gradient() { return gradient; }
 
     bool gradient_editor(std::string_view name, float horizontal_margin = 10.f, ImGuiColorEditFlags flags = 0);
 
 private:
-    ImGradient      gradient{};
-    ImGradientMark* dragging_mark{};
-    ImGradientMark* selected_mark{};
+    GradientMarks gradient{};
+    Mark*         dragging_mark{};
+    Mark*         selected_mark{};
 };
 
-bool gradient_button(ImGradient* gradient);
+bool gradient_button(GradientMarks* gradient);
 
 }
 

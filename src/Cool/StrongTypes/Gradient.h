@@ -9,9 +9,9 @@ namespace Cool {
 struct Gradient
     : public op::Addable<Gradient>
     , public op::Subtractable<Gradient> {
-    ImGuiExtras::ImGradientWidget value{};
+    ImGuiExtras::GradientWidget value{};
     constexpr Gradient() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
-    explicit Gradient(const ImGuiExtras::ImGradientWidget& value)
+    explicit Gradient(const ImGuiExtras::GradientWidget& value)
         : value{value}
     {
     }
