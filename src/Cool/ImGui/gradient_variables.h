@@ -6,7 +6,7 @@ static constexpr float GRADIENT_BAR_WIDGET_HEIGHT = 25.f;
 static constexpr float GRADIENT_BAR_EDITOR_HEIGHT = 40.f;
 static constexpr float GRADIENT_MARK_DELETE_DIFFY = 40.f;
 
-namespace ImGuiExtras {
+namespace variables {
 
 static auto button_size() -> float
 {
@@ -38,6 +38,6 @@ static auto selected_mark_color() -> ImU32
     return IM_COL32(0, 255, 0, 255);
 }
 
-} // namespace ImGuiExtras
+} // namespace variables
 
 } // namespace Cool

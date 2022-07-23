@@ -1,5 +1,8 @@
 #pragma once
 
+#include "gradient_type.h"
+#include "gradient_variables.h"
+
 namespace internal {
 
 static void draw_border_widget(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
@@ -74,14 +77,14 @@ static void mark_button(const ImVec2 vec, const float arrow_border)
     ImGui::InvisibleButton("mark", button_size);
 }
 
-static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor border_color, ImColor inside_border_color, ImColor selected_color, ImColor mark_color, const float arrow_border, bool cond)
+static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor mark_color, const float arrow_border, bool cond)
 {
     const float offset = 1.f;
 
     internal::draw_background_mark(
         draw_list,
         pos,
-        border_color, inside_border_color,
+        Cool::variables::border_color(), Cool::variables::inside_arrow_border_color(),
         arrow_border, offset
     );
     if (cond)
@@ -92,8 +95,8 @@ static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor border_co
         internal::arrow_selected(
             draw_list,
             pos,
-            selected_color,
-            arrow_border, arrow_selected, offset
+            Cool::variables::selected_mark_color(),
+            arrow_inside_border, arrow_selected, offset
         );
     }
 
@@ -108,10 +111,10 @@ static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor border_co
     );
 }
 
-static void mark_button(ImDrawList& draw_list, const ImVec2 pos, ImColor border_color, ImColor inside_border_color, ImColor selected_color, ImColor mark_color, bool cond)
+static void mark_button(ImDrawList& draw_list, const ImVec2 pos, ImColor mark_color, bool cond)
 {
     const float arrow_border = 6.f;
-    draw_mark(draw_list, pos, border_color, inside_border_color, selected_color, mark_color, arrow_border, cond);
+    draw_mark(draw_list, pos, mark_color, arrow_border, cond);
     internal::mark_button(pos, arrow_border);
 }
 

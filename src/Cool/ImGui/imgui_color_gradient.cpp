@@ -3,7 +3,6 @@
 #include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
-#include "gradient_variables.h"
 #include "imgui_draw.h"
 
 namespace Cool {
@@ -72,8 +71,8 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
     const float bar_bottom = bar_pos.y + height;
 
-    internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), border_color());
-    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), empty_backgroung_color(), gradient.get_list().empty());
+    internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::border_color());
+    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::empty_backgroung_color(), gradient.get_list().empty());
 
     float current_starting_x = bar_pos.x;
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
@@ -107,12 +106,12 @@ static void draw_gradient_marks(ImGradient& gradient, ImGradientMark*& dragging_
 
     for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
     {
-        ImGradientMark& mark = *markIt;
+        Cool::ImGradientMark& mark = *markIt;
 
         internal::mark_button(
             draw_list,
             bar_pos + ImVec2(mark.position.get() * width, height),
-            border_color(), inside_arrow_border_color(), selected_mark_color(), ImGui::ColorConvertFloat4ToU32(mark.color),
+            ImGui::ColorConvertFloat4ToU32(mark.color),
             selected_mark == &mark
         );
 
@@ -154,15 +153,15 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     ImGui::Text("%s", name.data());
     const float  width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
     bool         modified   = false;
-    const ImVec2 bar_pos    = bar_position(horizontal_margin);
+    const ImVec2 bar_pos    = Cool::variables::bar_position(horizontal_margin);
     const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
     ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
 
     internal::draw_border_widget(
         draw_list,
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
-        ImVec2(width + horizontal_margin * 3.f, bar_bottom + button_size() * 3.f),
-        border_color()
+        ImVec2(width + horizontal_margin * 3.f, bar_bottom + variables::button_size() * 3.f),
+        variables::border_color()
     );
 
     ImGui::BeginGroup();
@@ -208,7 +207,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     if (
         (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
          ImGui::IsItemHovered()) ||
-        ImGui::Button("-", ImVec2(button_size(), button_size()))
+        ImGui::Button("-", ImVec2(variables::button_size(), variables::button_size()))
     )
     {
         gradient.remove_mark(*selected_mark);
@@ -233,7 +232,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
 
     if (ImGui::BeginPopup("picker") && selected_mark)
     {
-        ImGui::SetNextItemWidth(button_size() * 12.f);
+        ImGui::SetNextItemWidth(variables::button_size() * 12.f);
         bool colorModified = ImGui::ColorPicker4("##picker2", reinterpret_cast<float*>(&selected_mark->color), flags);
         if (selected_mark && colorModified)
         {
