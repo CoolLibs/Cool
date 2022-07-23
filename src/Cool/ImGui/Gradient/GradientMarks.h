@@ -27,25 +27,25 @@ struct Mark {
 
 struct Marks {
     // Use std::list instead of vector because it is easier to remove a mark when we do not know the index
-    std::list<Mark> _marks{};
+    std::list<Mark> m_list{};
 
     void sorted()
     {
-        _marks.sort([](const Mark& a, const Mark& b) { return a.position < b.position; });
+        m_list.sort([](const Mark& a, const Mark& b) { return a.position < b.position; });
     }
     Mark* add_mark(Mark mark)
     {
-        _marks.push_back(mark);
-        Mark* ptr = &_marks.back();
+        m_list.push_back(mark);
+        Mark* ptr = &m_list.back();
         sorted();
         return ptr;
     }
     void remove_mark(const Mark& mark)
     {
-        _marks.remove(mark);
+        m_list.remove(mark);
         sorted();
     };
-    friend auto operator==(const Marks& a, const Marks& b) -> bool { return a._marks == b._marks; }
+    friend auto operator==(const Marks& a, const Marks& b) -> bool { return a.m_list == b.m_list; }
 };
 
 class GradientMarks {
@@ -60,9 +60,9 @@ public:
     {
         m_marks.remove_mark(mark);
     };
-    std::list<Mark>& get_list() { return m_marks._marks; }
+    std::list<Mark>& get_list() { return m_marks.m_list; }
     Marks&           get_marks() { return m_marks; }
-    friend auto      operator==(const GradientMarks& a, const GradientMarks& b) -> bool { return a.m_marks._marks == b.m_marks._marks; }
+    friend auto      operator==(const GradientMarks& a, const GradientMarks& b) -> bool { return a.m_marks.m_list == b.m_marks.m_list; }
 
 private:
     ImVec4 compute_color_at(RelativePosition position) const;
