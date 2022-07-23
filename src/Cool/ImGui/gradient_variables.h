@@ -13,6 +13,11 @@ static auto button_size() -> float
     return ImGui::GetFrameHeight();
 }
 
+static auto bar_position(const float offset) -> ImVec2
+{
+    return ImGui::GetCursorScreenPos() + ImVec2(offset, 0.f);
+}
+
 static auto empty_backgroung_color() -> ImU32 // TODO(ASG) randomize color
 {
     return IM_COL32(0, 0, 0, 255);

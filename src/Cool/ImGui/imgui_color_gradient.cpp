@@ -154,7 +154,7 @@ bool ImGradientWidget::gradient_editor(std::string_view name, float horizontal_m
     ImGui::Text("%s", name.data());
     const float  width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
     bool         modified   = false;
-    const ImVec2 bar_pos    = ImGui::GetCursorScreenPos() + ImVec2(horizontal_margin, 0.f);
+    const ImVec2 bar_pos    = bar_position(horizontal_margin);
     const float  bar_bottom = bar_pos.y + GRADIENT_BAR_EDITOR_HEIGHT;
     ImDrawList&  draw_list  = *ImGui::GetWindowDrawList();
 
