@@ -10,81 +10,97 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 {
     Cool::VariableMetadata<Cool::RgbColor> metadata{};
 
-    if (key_values.find("hdr") != std::string::npos)
-    {
-        metadata.is_hdr = true;
-    }
-    else
-    {
-        metadata.is_hdr = false;
-    }
+    metadata.is_hdr = key_values.find("hdr") != std::string::npos;
+
     return metadata;
 }
 
 #include "Cool/Variables/generated/find_metadatas_in_string.inl"
 
 auto make_any_input(
-    const std::string_view type,
-    const std::string_view name,
-    DirtyFlag              dirty_flag,
-    InputFactory_Ref       input_factory,
-    std::string_view       key_values
+    std::string_view type,
+    std::string_view name,
+    DirtyFlag        dirty_flag,
+    InputFactory_Ref input_factory,
+    std::string_view key_values
 ) -> AnyInput
 {
     return TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
 }
 
-auto is_input_declaration(std::string line) -> bool
-{
-    return line.find("input") != std::string::npos;
-}
-
-auto is_commented_out(std::string line) -> bool
+// TODO(LD) Move to String, and accept any first word, not just INPUT
+auto is_commented_out(std::string_view line) -> bool
 {
     const auto comment_pos = line.find("//");
-    const auto input_pos   = line.find("input");
-    if (comment_pos != std::string::npos &&
-        input_pos != std::string::npos)
-    {
-        if (comment_pos < input_pos)
-        {
-            return true;
-        }
-    }
-    return false;
+    const auto input_pos   = line.find("INPUT");
+    return comment_pos != std::string_view::npos &&
+           input_pos != std::string_view::npos &&
+           comment_pos < input_pos;
 }
 
-auto try_parse_input(
-    std::string      line,
-    DirtyFlag        dirty_flag,
-    InputFactory_Ref input_factory
-) -> std::optional<AnyInput>
+struct Type_and_name {
+    std::string_view type;
+    std::string_view name;
+};
+
+auto find_type_and_name(
+    std::string_view line
+) -> std::optional<Type_and_name>
 {
-    if (!is_input_declaration(line) ||
-        is_commented_out(line))
+    if (line.find("INPUT") == std::string::npos)
     {
         return std::nullopt;
     }
+    const auto current_pos = line.find("INPUT") + 5;
 
-    auto current_pos = Cool::String::find_next_word_position(line, 0);
-    if (!current_pos)
-    {
-        return std::nullopt;
-    }
-
-    const auto type_position = Cool::String::find_next_word_position(line, current_pos->second);
-    if (type_position)
-    {
-        current_pos->second = type_position->second; // find_next_word_position to find current_pos even if there are whitespaces between words
-    }
-    else
+    const auto type_position = Cool::String::find_next_word_position(line, current_pos);
+    if (!type_position)
     {
         return std::nullopt;
     }
     const auto type = line.substr(type_position->first, type_position->second - type_position->first);
 
-    const auto name = Cool::String::next_word(line, current_pos->second);
+    // TODO(LD) Cool::String::substr(line, *type_position);
+
+    const auto name = Cool::String::next_word(line, type_position->second);
     if (!name)
+    {
+        return std::nullopt;
+    }
+
+    return Type_and_name{*name, type};
+}
+
+auto find_key_values(
+    std::string_view line
+) -> std::optional<std::string_view>
+{
+    const auto comment_pos = line.find("//");
+    if (comment_pos == std::string_view::npos)
+    {
+        return "";
+    }
+    const auto key_values_pos = Cool::String::find_next_word_position(line, comment_pos);
+    if (!key_values_pos)
+    {
+        return std::nullopt;
+    }
+    return line.substr(key_values_pos->first, line.length() - key_values_pos->first);
+}
+
+auto try_parse_input(
+    std::string_view line,
+    DirtyFlag        dirty_flag,
+    InputFactory_Ref input_factory
+) -> std::optional<AnyInput>
+{
+    if (is_commented_out(line))
+    {
+        return std::nullopt;
+    }
+
+    const auto type_and_name = find_type_and_name(line);
+    if (!type_and_name)
     {
         return std::nullopt;
     }
@@ -95,19 +111,9 @@ auto try_parse_input(
     // };
     // Cool::String::replace_all(name, "_", " ");
 
-    const auto comment_pos = line.find("//");
-    if (comment_pos == std::string_view::npos)
-    {
-        return make_any_input(type, *name, dirty_flag, input_factory, "");
-    }
-    const auto key_values_pos = Cool::String::find_next_word_position(line, comment_pos);
-    if (!key_values_pos)
-    {
-        return std::nullopt;
-    }
-    const auto key_values = line.substr(key_values_pos->first, line.length() - key_values_pos->first);
+    const auto key_values = find_key_values(line);
 
-    return make_any_input(type, *name, dirty_flag, input_factory, key_values);
+    return make_any_input(type_and_name->type, type_and_name->name, dirty_flag, input_factory, *key_values);
 }
 
 auto get_inputs_from_shader_code(

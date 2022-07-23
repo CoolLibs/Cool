@@ -68,7 +68,7 @@ auto is_input_declaration(std::string line) -> bool;
 auto is_commented_out(std::string line) -> bool;
 
 auto try_parse_input(
-    std::string      line,
+    std::string_view line,
     DirtyFlag        dirty_flag,
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>;

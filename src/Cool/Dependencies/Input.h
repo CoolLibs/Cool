@@ -32,7 +32,7 @@ private:
     {
     }
 
-private:
+public: // private: TODO(JF) make this private
     friend class InputProvider_Ref;
     friend class Ui_Ref;
     friend class InputDestructor_Ref;
@@ -73,7 +73,7 @@ public:
         );
     }
 
-private:
+public: // private: // TODO(JF) Make this private!
     friend class Ui_Ref;
     friend class InputProvider_Ref;
     friend class InputDestructor_Ref;
