@@ -74,28 +74,7 @@ static void draw_gradient_bar(ImGradient& gradient, const ImVec2& bar_pos, float
     internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::border_color());
     internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::empty_backgroung_color(), gradient.get_list().empty());
 
-    float current_starting_x = bar_pos.x;
-    for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
-    {
-        ImGradientMark& mark = *markIt;
-
-        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
-        ImU32 colorAU32 = (markIt != gradient.get_list().begin()) ? ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color) : colorBU32;
-
-        const float from = current_starting_x;
-        const float to   = bar_pos.x + mark.position.get() * width;
-        if (mark.position != 0.f)
-        {
-            internal::draw_gradient(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
-        }
-        current_starting_x = to;
-    }
-
-    if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
-    {
-        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
-        internal::draw_uniform_square(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32);
-    }
+    internal::draw_gradient(gradient, draw_list, bar_pos, bar_bottom, width);
 
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 10.0f));
 }

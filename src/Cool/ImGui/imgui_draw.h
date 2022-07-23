@@ -24,14 +24,39 @@ static void draw_background_if(ImDrawList& draw_list, const ImVec2 vec1, const I
     }
 }
 
-static void draw_gradient(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
+static void draw_gradient_partial(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor colorA, ImColor colorB)
 {
     draw_list.AddRectFilledMultiColor(vec1, vec2, colorA, colorB, colorB, colorA);
 }
-
 static void draw_uniform_square(ImDrawList& draw_list, const ImVec2 vec1, const ImVec2 vec2, ImColor color)
 {
     draw_list.AddRectFilled(vec1, vec2, color, 1.0f, ImDrawFlags_Closed);
+}
+
+static void draw_gradient(Cool::ImGradient& gradient, ImDrawList& draw_list, const ImVec2& bar_pos, const float bar_bottom, float width)
+{
+    float current_starting_x = bar_pos.x;
+    for (auto markIt = gradient.get_list().begin(); markIt != gradient.get_list().end(); ++markIt)
+    {
+        Cool::ImGradientMark& mark = *markIt;
+
+        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(mark.color);
+        ImU32 colorAU32 = (markIt != gradient.get_list().begin()) ? ImGui::ColorConvertFloat4ToU32(std::prev(markIt)->color) : colorBU32;
+
+        const float from = current_starting_x;
+        const float to   = bar_pos.x + mark.position.get() * width;
+        if (mark.position != 0.f)
+        {
+            internal::draw_gradient_partial(draw_list, ImVec2(from, bar_pos.y), ImVec2(to, bar_bottom), colorAU32, colorBU32);
+        }
+        current_starting_x = to;
+    }
+
+    if (!gradient.get_list().empty() && gradient.get_list().back().position != 1.f)
+    {
+        ImU32 colorBU32 = ImGui::ColorConvertFloat4ToU32(gradient.get_list().back().color);
+        internal::draw_uniform_square(draw_list, ImVec2(current_starting_x, bar_pos.y), ImVec2(bar_pos.x + width, bar_bottom), colorBU32);
+    }
 }
 
 static void draw_triangle(ImDrawList& draw_list, const ImVec2 vec_triangle_up, const ImVec2 vec_triangle_down_left, const ImVec2 vec_triangle_down_right, ImColor color)
