@@ -44,7 +44,7 @@
 
 #pragma once
 
-#include "gradient_type.h"
+#include "GradientMarks.h"
 
 namespace Cool {
 

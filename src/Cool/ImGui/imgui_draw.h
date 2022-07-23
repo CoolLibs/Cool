@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gradient_type.h"
+#include "GradientMarks.h"
 #include "gradient_variables.h"
 
 namespace internal {
