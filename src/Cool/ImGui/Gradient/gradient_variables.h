@@ -1,12 +1,9 @@
 #pragma once
 
-namespace Cool {
-
+namespace variables {
 static constexpr float GRADIENT_BAR_WIDGET_HEIGHT = 25.f;
 static constexpr float GRADIENT_BAR_EDITOR_HEIGHT = 40.f;
 static constexpr float GRADIENT_MARK_DELETE_DIFFY = 40.f;
-
-namespace variables {
 
 static auto button_size() -> float
 {
@@ -39,5 +36,3 @@ static auto selected_mark_color() -> ImU32
 }
 
 } // namespace variables
-
-} // namespace Cool

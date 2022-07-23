@@ -46,9 +46,7 @@
 
 #include "GradientMarks.h"
 
-namespace Cool {
-
-namespace ImGuiExtras {
+namespace ImGuiGradient {
 
 class GradientWidget {
 public:
@@ -66,6 +64,4 @@ private:
 
 bool gradient_button(Gradient::GradientMarks* gradient);
 
-}
-
-} // namespace Cool::ImGuiExtras
+} // namespace ImGuiGradient

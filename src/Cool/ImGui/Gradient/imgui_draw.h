@@ -110,7 +110,7 @@ static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor mark_colo
     internal::draw_background_mark(
         draw_list,
         pos,
-        Cool::variables::border_color(), Cool::variables::inside_arrow_border_color(),
+        variables::border_color(), variables::inside_arrow_border_color(),
         arrow_border, offset
     );
     if (cond)
@@ -121,7 +121,7 @@ static void draw_mark(ImDrawList& draw_list, const ImVec2 pos, ImColor mark_colo
         internal::arrow_selected(
             draw_list,
             pos,
-            Cool::variables::selected_mark_color(),
+            variables::selected_mark_color(),
             arrow_inside_border, arrow_selected, offset
         );
     }

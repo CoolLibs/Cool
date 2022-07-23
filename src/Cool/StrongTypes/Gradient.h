@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/ImGui/Gradient/imgui_color_gradient.h>
+#include <Cool/ImGui/Gradient/GradientWidget.h>
 #include <Cool/Math/constants.h>
 #include <op/op.hpp>
 #include "RgbColor.h"
@@ -9,9 +9,9 @@ namespace Cool {
 struct Gradient
     : public op::Addable<Gradient>
     , public op::Subtractable<Gradient> {
-    ImGuiExtras::GradientWidget value{};
+    ImGuiGradient::GradientWidget value{};
     constexpr Gradient() = default; // Constructors are not implcitly created by the compiler because we inherit from some stuff
-    explicit Gradient(const ImGuiExtras::GradientWidget& value)
+    explicit Gradient(const ImGuiGradient::GradientWidget& value)
         : value{value}
     {
     }

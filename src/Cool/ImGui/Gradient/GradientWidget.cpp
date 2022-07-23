@@ -1,6 +1,6 @@
-#include "imgui_color_gradient.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
+#include "GradientWidget.h"
 #include "imgui_draw.h"
 
 namespace Gradient {
@@ -67,8 +67,8 @@ static void draw_gradient_bar(Gradient::GradientMarks& GradientMarks, const ImVe
     ImDrawList& draw_list  = *ImGui::GetWindowDrawList();
     const float bar_bottom = bar_pos.y + height;
 
-    internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::border_color());
-    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), Cool::variables::empty_backgroung_color(), GradientMarks.get_list().empty());
+    internal::draw_bar_border(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), variables::border_color());
+    internal::draw_background_if(draw_list, bar_pos, ImVec2(bar_pos.x + width, bar_bottom), variables::empty_backgroung_color(), GradientMarks.get_list().empty());
 
     internal::draw_gradient(GradientMarks, draw_list, bar_pos, bar_bottom, width);
 
@@ -110,15 +110,15 @@ static void draw_gradient_marks(Gradient::GradientMarks& gradient, Mark*& draggi
     ImGui::SetCursorScreenPos(ImVec2(bar_pos.x, bar_pos.y + height + 20.0f));
 }
 } // namespace Gradient
-namespace Cool {
-namespace ImGuiExtras {
+
+namespace ImGuiGradient {
 bool gradient_button(Gradient::GradientMarks& gradient)
 {
     const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
     const float  width      = ImMax(250.0f, ImGui::GetContentRegionAvail().x - 100.0f);
-    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(widget_pos.x + width, Cool::GRADIENT_BAR_WIDGET_HEIGHT));
+    const bool   clicked    = ImGui::InvisibleButton("gradient_bar", ImVec2(widget_pos.x + width, variables::GRADIENT_BAR_WIDGET_HEIGHT));
 
-    draw_gradient_bar(gradient, widget_pos, width, Cool::GRADIENT_BAR_WIDGET_HEIGHT);
+    draw_gradient_bar(gradient, widget_pos, width, variables::GRADIENT_BAR_WIDGET_HEIGHT);
 
     return clicked;
 }
@@ -128,8 +128,8 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     ImGui::Text("%s", name.data());
 
     const float  width      = std::max(1.f, ImGui::GetContentRegionAvail().x - 2.f * horizontal_margin);
-    const ImVec2 bar_pos    = Cool::variables::bar_position(horizontal_margin);
-    const float  bar_bottom = bar_pos.y + Cool::GRADIENT_BAR_EDITOR_HEIGHT;
+    const ImVec2 bar_pos    = variables::bar_position(horizontal_margin);
+    const float  bar_bottom = bar_pos.y + variables::GRADIENT_BAR_EDITOR_HEIGHT;
 
     internal::draw_border_widget(
         bar_pos - ImVec2(horizontal_margin, ImGui::CalcTextSize(name.data()).y * 1.5f),
@@ -138,7 +138,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     );
 
     ImGui::BeginGroup();
-    ImGui::InvisibleButton("gradient_editor_bar", ImVec2(width, Cool::GRADIENT_BAR_EDITOR_HEIGHT));
+    ImGui::InvisibleButton("gradient_editor_bar", ImVec2(width, variables::GRADIENT_BAR_EDITOR_HEIGHT));
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
@@ -148,8 +148,8 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
         ImGui::OpenPopup("picker");
     }
 
-    draw_gradient_bar(gradient, bar_pos, width, Cool::GRADIENT_BAR_EDITOR_HEIGHT);
-    draw_gradient_marks(gradient, dragging_mark, selected_mark, bar_pos, width, Cool::GRADIENT_BAR_EDITOR_HEIGHT);
+    draw_gradient_bar(gradient, bar_pos, width, variables::GRADIENT_BAR_EDITOR_HEIGHT);
+    draw_gradient_marks(gradient, dragging_mark, selected_mark, bar_pos, width, variables::GRADIENT_BAR_EDITOR_HEIGHT);
 
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && dragging_mark)
     {
@@ -168,7 +168,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
         }
 
         float diffY = ImGui::GetIO().MousePos.y - bar_bottom;
-        if (diffY >= Cool::GRADIENT_MARK_DELETE_DIFFY)
+        if (diffY >= variables::GRADIENT_MARK_DELETE_DIFFY)
         {
             gradient.remove_mark(*dragging_mark); // TODO(ASG) hide it when dragging and remove it when released
             dragging_mark = nullptr;
@@ -217,6 +217,4 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     return modified;
 }
 
-}
-
-}; // namespace Cool::ImGuiExtras
+}; // namespace ImGuiGradient
