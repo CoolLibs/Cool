@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/ImGui/imgui_color_gradient.h>
+#include <Cool/ImGui/Gradient/imgui_color_gradient.h>
 #include <Cool/Math/constants.h>
 #include <op/op.hpp>
 #include "RgbColor.h"
