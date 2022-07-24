@@ -92,25 +92,98 @@ TEST_CASE("[Cool::String] split_into_words()")
     CHECK(Cool::String::split_into_words("hello, wor, ,   ld", " ,") == std::vector<std::string>({"hello", "wor", "ld"}));
 }
 
-TEST_CASE("Next block")
+TEST_CASE("find_block")
 {
     CHECK(
-        Cool::String::next_block("// default (1.f, 3.f)", 10) == "1.f, 3.f"
+        //                              |
+        Cool::String::find_block("// max 3.", 6) == "3."
     );
     CHECK(
-        Cool::String::next_block("// min (1.f, 3.f)", 6) == "1.f, 3.f"
+        //                              |
+        Cool::String::find_block("// max (3., 6., 2.)", 6) ==
+        std::make_optional<std::string_view>("(3., 6., 2.)")
     );
     CHECK(
-        Cool::String::next_block("// max (1.f, 3.f)", 6) == "1.f, 3.f"
+        Cool::String::find_block("// max (1.f, 3.f)", 7) == "(1.f, 3.f)"
     );
     CHECK(
-        Cool::String::next_block("bla // bla max some text (1.f, 3.f) blabla", 1) == "1.f, 3.f"
+        Cool::String::find_block(")3., 6., 2.(", 0) ==
+        std::make_optional<std::string_view>("3.")
     );
     CHECK(
-        Cool::String::next_block("// ma(x (1.f,) 3.f)", 3) == "x (1.f,"
+        Cool::String::find_block(") 3., 6., 2.(", 0) ==
+        std::make_optional<std::string_view>("3.")
     );
     CHECK(
-        Cool::String::next_block("// max 1.f, 3.f", 2) == "max"
+        Cool::String::find_block("(3., (6., 2.))", 0) ==
+        std::make_optional<std::string_view>("(3., (6., 2.))")
+    );
+    CHECK(
+        Cool::String::find_block("(1.f, 3.f)", 0) == "(1.f, 3.f)"
+    );
+    CHECK(
+        Cool::String::find_block("(1.f, 3.f)", 0) == "(1.f, 3.f)"
+    );
+    CHECK(
+        Cool::String::find_block("bla // bla max some text (1.f, 3.f) blabla", 1) == "la"
+    );
+    CHECK(Cool::String::find_block("ma(x (1.f,) 3.f)", 0) == "ma(x (1.f,) 3.f)");
+    CHECK(Cool::String::find_block("ma (x (1.f,) 3.f)", 0) == "ma");
+    CHECK(Cool::String::find_block("vec3(0, 1, 0)", 0) == "vec3(0, 1, 0)");
+    CHECK(
+        Cool::String::find_block("max 1.f, 3.f", 0) == "max"
+    );
+    CHECK(
+        Cool::String::find_block("hello world (lol yo)", 0) == "hello"
+    );
+    CHECK(
+        Cool::String::find_block("(hello world) lol", 0) == "(hello world)"
+    );
+}
+
+TEST_CASE("find_block_following")
+{
+    CHECK(
+        Cool::String::find_block_following("// default (1.f, 3.f)", "default") ==
+        std::make_optional<std::string>("(1.f, 3.f)")
+    );
+    CHECK(
+        Cool::String::find_block_following("// min (1.f, 3.f)", "min") ==
+        std::make_optional<std::string>("(1.f, 3.f)")
+    );
+    CHECK(
+        Cool::String::find_block_following("// max (1.f, 3.f)", "max") ==
+        std::make_optional<std::string>("(1.f, 3.f)")
+    );
+    CHECK(
+        Cool::String::find_block_following("bla // bla max some text (1.f, 3.f) blabla", "max") ==
+        std::make_optional<std::string>("some")
+    );
+    CHECK(
+        Cool::String::find_block_following("// ma(x (1.f,) 3.f)", "max") == std::nullopt
+    );
+    CHECK(
+        Cool::String::find_block_following("// max 1.f, 3.f", "min") == std::nullopt
+    );
+}
+
+TEST_CASE("find_value_for_given_key")
+{
+    CHECK(
+        Cool::String::find_value_for_given_key<int>("// default 1", "default") ==
+        std::make_optional<int>(1)
+    );
+    CHECK(
+        Cool::String::find_value_for_given_key<float>("// min 1.f", "min") ==
+        std::make_optional<float>(1.f)
+    );
+    CHECK(
+        Cool::String::find_value_for_given_key<glm::vec2>("// max (1.f, 3.f)", "max") ==
+        std::make_optional<glm::vec2>(glm::vec2(1.f, 3.f))
+    );
+    CHECK(
+        Cool::String::find_value_for_given_key<bool>("// max true", "max") ==
+        std::make_optional<bool>(true)
     );
 }
 
@@ -135,6 +208,34 @@ TEST_CASE("Parsing an int")
     CHECK(
         Cool::String::value_from_string<int>("2.0f") ==
         2
+    );
+}
+
+TEST_CASE("Parsing an bool")
+{
+    CHECK(
+        Cool::String::value_from_string<bool>("true") ==
+        true
+    );
+    CHECK(
+        Cool::String::value_from_string<bool>("false") ==
+        false
+    );
+    CHECK(
+        Cool::String::value_from_string<bool>("True") ==
+        true
+    );
+    CHECK(
+        Cool::String::value_from_string<bool>("FALSE") ==
+        false
+    );
+    CHECK(
+        Cool::String::value_from_string<bool>("true false") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<bool>("truefalse") ==
+        std::nullopt
     );
 }
 
@@ -192,6 +293,54 @@ TEST_CASE("Parsing a vec2")
         Cool::String::value_from_string<glm::vec2>("(hello, world)") ==
         std::nullopt
     );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("vec2(3., 2.)") ==
+        glm::vec2(3.f, 2.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("vec(3., 2.)") ==
+        glm::vec2(3.f, 2.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("hello(3., 2.)") ==
+        glm::vec2(3.f, 2.f)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::vec2>("vec2( 3., 2.)") ==
+        glm::vec2(3.f, 2.f)
+    );
+}
+
+TEST_CASE("Parsing a ivec2")
+{
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("  ( 1   ,  3)   ") ==
+        glm::ivec2(1, 3)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(1 3)") ==
+        glm::ivec2(1, 3)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(1, 3)") ==
+        glm::ivec2(1, 3)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(1., 3.)") ==
+        glm::ivec2(1, 3)
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(1., hello)") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(hello, 1.)") ==
+        std::nullopt
+    );
+    CHECK(
+        Cool::String::value_from_string<glm::ivec2>("(hello, world)") ==
+        std::nullopt
+    );
 }
 
 TEST_CASE("Parsing a RgbColor")
@@ -200,4 +349,40 @@ TEST_CASE("Parsing a RgbColor")
         Cool::String::value_from_string<Cool::RgbColor>("(1, 3, 4)") ==
         Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
     );
+}
+
+TEST_CASE("Parsing an Angle")
+{
+    CHECK(
+        Cool::String::value_from_string<Cool::Angle>("180") ==
+        Cool::Angle{Cool::Radians{Cool::degrees_to_radians(180)}}
+    );
+}
+
+TEST_CASE("Parsing a Direction2D")
+{
+    CHECK(
+        Cool::String::value_from_string<Cool::Direction2D>("180") ==
+        Cool::Direction2D{Cool::Angle{Cool::Radians{Cool::degrees_to_radians(180)}}}
+    );
+    CHECK(
+        Cool::String::value_from_string<Cool::Direction2D>("180") ==
+        Cool::Direction2D{Cool::get_angle_from_vector(glm::vec2(-1.f, 0.f))}
+    );
+}
+
+TEST_CASE("is_commented_out()")
+{
+    CHECK(Cool::String::is_commented_out("Hello // World") == false);
+    CHECK(Cool::String::is_commented_out("/ Hello") == false);
+    CHECK(Cool::String::is_commented_out("/ Hello //") == false);
+    CHECK(Cool::String::is_commented_out("a / b") == false);
+    CHECK(Cool::String::is_commented_out("a // b") == false);
+    CHECK(Cool::String::is_commented_out("//") == true);
+    CHECK(Cool::String::is_commented_out("//Hello") == true);
+    CHECK(Cool::String::is_commented_out("// Hello") == true);
+    CHECK(Cool::String::is_commented_out("  //") == true);
+    CHECK(Cool::String::is_commented_out("  // Hello") == true);
+    CHECK(Cool::String::is_commented_out("      //") == true);
+    CHECK(Cool::String::is_commented_out("      // Hello") == true);
 }

@@ -1,6 +1,8 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
 #include <Cool/String/String.h>
+#include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/Variables/Variable.h>
 #include <sstream>
 #include <type_from_string/type_from_string.hpp>
 
@@ -105,7 +107,6 @@ static auto find_type_and_name(std::string_view line)
     {
         return std::nullopt;
     }
-    const auto type = Cool::String::substring(line, *type_position);
 
     const auto name = Cool::String::next_word(line, type_position->second);
     if (!name)
@@ -114,11 +115,13 @@ static auto find_type_and_name(std::string_view line)
     }
 
     return TypeAndName_Ref{
-        .type = type,
+        .type = Cool::String::substring(line, *type_position),
         .name = *name,
     };
 }
 
+/// Returns the string containing all the key<->values associations.
+/// That is, the string that is after the // on a line
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
 static auto find_key_values(
     std::string_view line
@@ -129,11 +132,7 @@ static auto find_key_values(
     {
         return "";
     }
-    const auto key_values_start = line.find_first_not_of(Cool::String::internal::default_word_delimiters, comment_pos);
-    if (key_values_start == std::string_view::npos)
-    {
-        return "";
-    }
+    const auto key_values_start = comment_pos + 2; // +2 to skip the two slashes
     return Cool::String::substring(line, key_values_start, line.length());
 }
 
@@ -190,7 +189,7 @@ auto parse_all_inputs(
         }
         catch (const std::exception& e)
         {
-            Cool::Log::ToUser::error("ShaderManager_FromText::parse_shader_for_params", "Error while parsing :\n{}", e.what());
+            Cool::Log::ToUser::error("InputParser::parse_all_inputs", "Error while parsing:\n{}", e.what());
         }
     }
     return new_inputs;
@@ -198,7 +197,6 @@ auto parse_all_inputs(
 
 } // namespace Cool
 
-#include "InputParser.h"
 #include "doctest/doctest.h"
 
 namespace doctest {
@@ -218,9 +216,12 @@ doctest::String toString(const std::optional<T>& value)
 
 TEST_CASE("")
 {
-    // TODO(LD)
-    // CHECK(Cool::try_parse_input("/*hello world*/ INPUT float;") == 0.f);
-    // CHECK(Cool::try_parse_input("INPUT float; //") == 0.f);
-    // CHECK(Cool::try_parse_input("INPUT float;") == 0.f);
-    // CHECK(Cool::try_parse_input("INPT float;") == std::nullopt);
+    CHECK(Cool::find_key_values("//") == "");
+    CHECK(Cool::find_key_values("// ") == " ");
+    CHECK(Cool::find_key_values("// Hello") == " Hello");
+    CHECK(Cool::find_key_values("/ Hello") == "");
+    CHECK(Cool::find_key_values("Hello") == "");
+    CHECK(Cool::find_key_values("Hello //") == "");
+    CHECK(Cool::find_key_values("Hello // ") == " ");
+    CHECK(Cool::find_key_values("Hello // World") == " World");
 }

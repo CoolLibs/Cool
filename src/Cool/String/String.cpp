@@ -194,55 +194,57 @@ auto remove_whitespaces(std::string_view text) -> std::string
 
 auto is_commented_out(std::string_view text) -> bool
 {
-    const auto comment_pos = text.find("//");
-    const auto input_pos   = text.find_first_not_of("//");
+    const auto comment_pos    = text.find("//");
+    const auto first_word_pos = text.find_first_not_of("/ ");
     return comment_pos != std::string_view::npos &&
-           input_pos != std::string_view::npos &&
-           comment_pos < input_pos;
+           comment_pos < first_word_pos;
 }
 
 template<typename String>
 static auto substring_impl(
     const String& text,
-    size_t        word_start_position,
-    size_t        word_final_position
+    size_t        begin,
+    size_t        end
 ) -> String
 {
-    return text.substr(word_start_position, word_final_position - word_start_position);
+    assert(begin != String::npos);
+    assert(end != String::npos);
+    assert(begin <= end);
+    return text.substr(begin, end - begin);
 }
 
 auto substring(
     const std::string&        text,
-    std::pair<size_t, size_t> word_position
+    std::pair<size_t, size_t> begin_end
 ) -> std::string
 {
-    return substring_impl(text, word_position.first, word_position.second);
+    return substring_impl(text, begin_end.first, begin_end.second);
 }
 
 auto substring(
     std::string_view          text,
-    std::pair<size_t, size_t> word_position
+    std::pair<size_t, size_t> begin_end
 ) -> std::string_view
 {
-    return substring_impl(text, word_position.first, word_position.second);
+    return substring_impl(text, begin_end.first, begin_end.second);
 }
 
 auto substring(
     const std::string& text,
-    size_t             word_start_position,
-    size_t             word_final_position
+    size_t             begin,
+    size_t             end
 ) -> std::string
 {
-    return substring_impl(text, word_start_position, word_final_position);
+    return substring_impl(text, begin, end);
 }
 
 auto substring(
     std::string_view text,
-    size_t           word_start_position,
-    size_t           word_final_position
+    size_t           begin,
+    size_t           end
 ) -> std::string_view
 {
-    return substring_impl(text, word_start_position, word_final_position);
+    return substring_impl(text, begin, end);
 }
 
 auto next_word(
@@ -262,26 +264,56 @@ auto next_word(
     }
 }
 
-auto next_block(
+auto find_block_position(
+    std::string_view text,
+    size_t           ending_key_pos
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    auto text_at_key_pos      = substring(text, ending_key_pos, text.length());
+    auto first_word_position  = find_next_word_position(text, ending_key_pos);
+    auto parentheses_position = find_matching_pair(text_at_key_pos);
+    if (first_word_position == std::nullopt)
+    {
+        return std::nullopt;
+    }
+    if (!parentheses_position)
+    {
+        return first_word_position;
+    }
+    parentheses_position->first += ending_key_pos;
+    parentheses_position->second += ending_key_pos;
+    if (first_word_position->second == parentheses_position->first)
+    {
+        return std::make_pair(first_word_position->first, parentheses_position->second + 1);
+    }
+    if (first_word_position->first != parentheses_position->first + 1)
+    {
+        return first_word_position;
+    }
+    else
+    {
+        parentheses_position->second++;
+        return parentheses_position;
+    }
+}
+
+auto find_block(
     std::string_view text,
     size_t           ending_key_pos
 ) -> std::optional<std::string_view>
 {
-    const auto start_position_of_block = text.find("(");
-    if (start_position_of_block != std::string_view::npos)
+    auto block_position = find_block_position(text, ending_key_pos);
+    if (block_position == std::nullopt)
     {
-        return next_word(text, start_position_of_block + 1, ")");
+        return std::nullopt;
     }
     else
     {
-        return next_word(
-            text,
-            ending_key_pos
-        );
+        return substring(text, *block_position);
     }
 }
 
-auto find_word_following(
+auto find_block_following(
     std::string_view text,
     std::string_view key
 ) -> std::optional<std::string_view>
@@ -293,7 +325,7 @@ auto find_word_following(
     }
     else
     {
-        return next_block(
+        return find_block(
             text,
             start_position_of_key + key.length()
         );
@@ -348,7 +380,13 @@ static auto value_from_string_impl_vec(std::string_view str)
 {
     std::vector<std::pair<size_t, size_t>> words_positions;
 
-    std::optional<size_t> ptr_in_string = 0; // Offset by 1 to skip the parenthesis
+    std::optional<size_t> ptr_in_string = 0;
+
+    auto opening_parenthesis_position = str.find_first_of("(");
+    if (opening_parenthesis_position != std::string_view::npos)
+    {
+        str = substring(str, opening_parenthesis_position, str.length());
+    }
 
     while (ptr_in_string)
     {

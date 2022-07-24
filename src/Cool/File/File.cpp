@@ -20,8 +20,11 @@ std::string File::absolute_path(std::string_view file_path)
 
 std::string File::file_name(std::string_view file_path)
 {
-    auto pos = file_path.find_last_of("/\\") + 1;
-    return std::string{Cool::String::substring(file_path, pos, file_path.size())};
+    return std::string{Cool::String::substring(
+        file_path,
+        file_path.find_last_of("/\\") + 1,
+        file_path.size()
+    )};
 }
 
 std::string File::file_name_without_extension(std::string_view file_path)
@@ -59,8 +62,11 @@ std::string File::whithout_file_name(std::string_view file_path)
 {
     if (file_path.find_last_of('.') < file_path.size()) // There is a "." of an extension, so the thing after the last "/" must be a file name
     {
-        auto pos = file_path.find_last_of("/\\");
-        return std::string{Cool::String::substring(file_path, 0, pos)};
+        return std::string{Cool::String::substring(
+            file_path,
+            0,
+            file_path.find_last_of("/\\")
+        )};
     }
     else
     {

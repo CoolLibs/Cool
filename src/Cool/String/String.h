@@ -107,34 +107,39 @@ auto split_into_words(
 
 auto remove_whitespaces(std::string_view text) -> std::string;
 
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
-/// Return true if `text` begin by `//`, false otherwise.
+/// Returns true iff all the words in `text` are after a `//`.
 auto is_commented_out(std::string_view text) -> bool;
 
-/// Same as std::substr but second parameters is a pair of position of desired word
-auto substring(
-    const std::string&        text,
-    std::pair<size_t, size_t> word_position
-) -> std::string;
-
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
-auto substring(
-    std::string_view          text,
-    std::pair<size_t, size_t> word_position
-) -> std::string_view;
-
-/// Same as std::substr but third parameters is the final position of desired word
+/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
 auto substring(
     const std::string& text,
-    size_t             word_start_position,
-    size_t             word_final_position
+    size_t             begin,
+    size_t             end
 ) -> std::string;
 
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
+/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
 auto substring(
     std::string_view text,
-    size_t           word_start_position,
-    size_t           word_final_position
+    size_t           begin,
+    size_t           end
+) -> std::string_view;
+
+/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    const std::string&        text,
+    std::pair<size_t, size_t> begin_end
+) -> std::string;
+
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
+/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    std::string_view          text,
+    std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
@@ -147,14 +152,19 @@ auto next_word(
 
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Obtain the next block text between parentheses, next word if no parentheses.
-auto next_block(
+auto find_block_position(
+    std::string_view text,
+    size_t           ending_key_pos
+) -> std::optional<std::pair<size_t, size_t>>;
+
+auto find_block(
     std::string_view text,
     size_t           ending_key_pos
 ) -> std::optional<std::string_view>;
 
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
-/// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
-auto find_word_following(
+/// Finds in `text` the block following a given `key` (e.g. "default", "min", "max").
+auto find_block_following(
     std::string_view text,
     std::string_view key
 ) -> std::optional<std::string_view>;
@@ -166,10 +176,10 @@ auto find_value_for_given_key(
     std::string_view key
 ) -> std::optional<T>
 {
-    const auto default_value = find_word_following(text, key);
-    if (default_value)
+    const auto value_as_string = find_block_following(text, key);
+    if (value_as_string)
     {
-        return value_from_string<T>(*default_value);
+        return value_from_string<T>(*value_as_string);
     }
     else
     {
