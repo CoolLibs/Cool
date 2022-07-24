@@ -53,8 +53,8 @@ ImVec4 GradientMarks::compute_color_at(RelativePosition position) const
     }
     else
     {
-        float distance = upper->position.get() - lower->position.get();
-        float mix      = (position.get() - lower->position.get()) / distance;
+        float distance = upper->get_position() - lower->get_position();
+        float mix      = (position.get() - lower->get_position()) / distance;
 
         // lerp
         return ImVec4{(1.f - mix), (1.f - mix), (1.f - mix), (1.f - mix)} * lower->color +
@@ -85,7 +85,7 @@ static void draw_gradient_marks(Gradient::GradientMarks& gradient, Mark*& draggi
 
         internal::mark_button(
             draw_list,
-            bar_pos + ImVec2(mark.position.get() * width, height),
+            bar_pos + ImVec2(mark.get_position() * width, height),
             ImGui::ColorConvertFloat4ToU32(mark.color),
             selected_mark == &mark
         );
@@ -158,7 +158,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && dragging_mark)
     {
         const float map = ImClamp((ImGui::GetIO().MousePos.x - bar_pos.x) / width, 0.f, 1.f);
-        if (dragging_mark->position.get() != map)
+        if (dragging_mark->get_position() != map)
         {
             dragging_mark->position.set(map);
             gradient.get_marks().sorted();
@@ -196,7 +196,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     {
         if (selected_mark)
         {
-            const float select_pos = ImClamp(selected_mark->position.get(), 0.f, 1.f);
+            const float select_pos = ImClamp(selected_mark->get_position(), 0.f, 1.f);
 
             float closer_pos = 0.f;
             if (gradient.get_list().size() == 1)
@@ -215,11 +215,11 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
             {
                 closer_pos =
                     (abs(select_pos - ImClamp(
-                                          gradient.get_marks().previous_mark(selected_mark).position.get(), 0.f, 1.f
+                                          gradient.previous_mark(selected_mark).get_position(), 0.f, 1.f
                                       )) >
-                     abs(ImClamp(gradient.get_marks().next_mark(selected_mark).position.get(), 0.f, 1.f) - select_pos))
-                        ? ImClamp(gradient.get_marks().previous_mark(selected_mark).position.get(), 0.f, 1.f)
-                        : ImClamp(gradient.get_marks().next_mark(selected_mark).position.get(), 0.f, 1.f);
+                     abs(ImClamp(gradient.next_mark(selected_mark).get_position(), 0.f, 1.f) - select_pos))
+                        ? ImClamp(gradient.previous_mark(selected_mark).get_position(), 0.f, 1.f)
+                        : ImClamp(gradient.next_mark(selected_mark).get_position(), 0.f, 1.f);
             }
             add_mark((select_pos + closer_pos) / 2.f);
         }
@@ -238,7 +238,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
 
     ImGui::PushItemWidth(width * .25f);
     ImGui::SameLine();
-    if (selected_mark && ImGui::DragFloat("##3", &selected_mark->position.get(), 1.f / width, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+    if (selected_mark && ImGui::DragFloat("##3", &selected_mark->get_position(), 1.f / width, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
     {
         gradient.get_marks().sorted();
         modified = true;

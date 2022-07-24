@@ -15,6 +15,9 @@ struct Mark {
     Mark(RelativePosition position, ImVec4 color)
         : position{position}, color{color}
     {}
+    auto   get_position() const -> float { return position.get(); }
+    float& get_position() { return position.get(); }
+
     friend auto operator==(const Mark& a, const Mark& b) -> bool
     {
         return (a.position == b.position) &&
@@ -68,9 +71,13 @@ public:
     {
         m_marks.remove_mark(mark);
     };
+    Mark next_mark(Mark* mark) { return m_marks.next_mark(mark); };         // Be carefull do not use if there is no next mark
+    Mark previous_mark(Mark* mark) { return m_marks.previous_mark(mark); }; // Be carefull do not use if there is no previous mark
+
     std::list<Mark>& get_list() { return m_marks.m_list; }
     Marks&           get_marks() { return m_marks; }
-    friend auto      operator==(const GradientMarks& a, const GradientMarks& b) -> bool { return a.m_marks.m_list == b.m_marks.m_list; }
+
+    friend auto operator==(const GradientMarks& a, const GradientMarks& b) -> bool { return a.m_marks.m_list == b.m_marks.m_list; }
 
 private:
     ImVec4 compute_color_at(RelativePosition position) const;
