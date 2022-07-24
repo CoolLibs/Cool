@@ -10,7 +10,7 @@
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 
-namespace Lab {
+namespace Cool {
 
 class DebugOptions {
 public:
@@ -76,4 +76,4 @@ private:
     }
 };
 
-} // namespace Lab
+} // namespace Cool

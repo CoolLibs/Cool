@@ -48,14 +48,14 @@ def reset_all(debug_options: list[DebugOption]):
                          debug_options))
 
 
-def DebugOptions(debug_options: list[DebugOption]):
+def DebugOptions(debug_options: list[DebugOption], namespace: str):
     return f"""
 #pragma once
 
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 
-namespace Lab {{
+namespace {namespace} {{
 
 class DebugOptions {{
 public:
@@ -120,12 +120,13 @@ private:
     }}
 }};
 
-}} // namespace Lab
+}} // namespace {namespace}
 """
 
 
 def generate_debug_options(
     output_folder: str,
+    namespace: str,
     debug_options: list[DebugOption],
 ):
     import os
@@ -137,7 +138,7 @@ def generate_debug_options(
                           ).parent.parent.parent.parent, "tooling", "generate_files.py")).load_module()
 
     def fn():
-        return DebugOptions(debug_options)
+        return DebugOptions(debug_options=debug_options, namespace=namespace)
     fn.__name__ = "DebugOptions"
     generate_files.generate(
         folder=output_folder,

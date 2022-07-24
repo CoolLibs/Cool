@@ -17,5 +17,6 @@ def all_debug_options():
 if __name__ == '__main__':
     generate_debug_options(
         output_folder="generated",
+        namespace="Cool",
         debug_options=all_debug_options(),
     )
