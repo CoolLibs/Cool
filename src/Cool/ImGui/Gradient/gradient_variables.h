@@ -18,6 +18,15 @@ static float r_empty_color = variables::rand(0, 255);
 static float g_empty_color = variables::rand(0, 255);
 static float b_empty_color = variables::rand(0, 255);
 
+static auto random_color() -> ImVec4
+{
+    const auto color         = ImVec4{variables::r_empty_color / 255.f, variables::g_empty_color / 255.f, variables::b_empty_color / 255.f, 255.f};
+    variables::r_empty_color = variables::rand(0, 255);
+    variables::g_empty_color = variables::rand(0, 255);
+    variables::b_empty_color = variables::rand(0, 255);
+    return color;
+}
+
 static auto button_size() -> float
 {
     return ImGui::GetFrameHeight();
