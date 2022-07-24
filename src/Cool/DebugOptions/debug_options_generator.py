@@ -62,7 +62,7 @@ namespace {namespace} {{
 class DebugOptions {{
 public:
     // clang-format off
-    {getters_for_debug_build(debug_options)}
+{getters_for_debug_build(debug_options)}
     // clang-format on
 
 private:

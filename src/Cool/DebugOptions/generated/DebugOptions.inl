@@ -17,7 +17,7 @@ namespace Cool {
 class DebugOptions {
 public:
     // clang-format off
-    [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
+[[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     // clang-format on
 
 private:
