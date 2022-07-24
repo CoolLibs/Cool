@@ -1,6 +1,21 @@
 #include "String.h"
 #include "doctest/doctest.h"
 
+namespace doctest {
+template<typename T>
+doctest::String toString(const std::optional<T>& value)
+{
+    if (value)
+    {
+        return "Some(" + toString(*value) + ")";
+    }
+    else
+    {
+        return "None";
+    }
+}
+} // namespace doctest
+
 TEST_CASE("[Cool::String] replace()")
 {
     using namespace std::string_literals;
@@ -95,7 +110,7 @@ TEST_CASE("Next block")
         Cool::String::next_block("// ma(x (1.f,) 3.f)", 3) == "x (1.f,"
     );
     CHECK(
-        Cool::String::next_block("// max 1.f, 3.f", 3) == "max" // doesn't work
+        Cool::String::next_block("// max 1.f, 3.f", 2) == "max"
     );
 }
 

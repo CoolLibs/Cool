@@ -4,25 +4,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<int> {
-    int min_value{0};
-    int max_value{10};
-
-    friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(
-            cereal::make_nvp("Min Value", min_value),
-            cereal::make_nvp("Max Value", max_value)
-        );
-    }
-};
+#include "generated/Variable_int.inl"
 
 inline auto imgui_widget(Variable<int>& var) -> bool
 {

@@ -135,22 +135,22 @@ void DefaultApp::on_keyboard_event(const Cool::KeyboardEvent& event)
 {
     if (event.action == GLFW_RELEASE)
     {
-        if (Cool::Input::matches_char("s", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("s", event.key) && event.mods.ctrl())
         {
             _exporter.image_export_window().open();
         }
-        if (Cool::Input::matches_char("e", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("e", event.key) && event.mods.ctrl())
         {
             _exporter.video_export_window().open();
         }
     }
     if (event.action == GLFW_PRESS || event.action == GLFW_REPEAT)
     {
-        if (Cool::Input::matches_char("z", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("z", event.key) && event.mods.ctrl())
         {
             Cool::ParametersHistory::get().move_backward();
         }
-        if (Cool::Input::matches_char("y", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("y", event.key) && event.mods.ctrl())
         {
             Cool::ParametersHistory::get().move_forward();
         }

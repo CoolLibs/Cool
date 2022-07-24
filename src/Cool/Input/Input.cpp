@@ -3,7 +3,7 @@
 
 namespace Cool {
 
-bool Input::matches_char(const char* character, int key)
+bool UserInput::matches_char(const char* character, int key)
 {
     if (key == -1)
     {

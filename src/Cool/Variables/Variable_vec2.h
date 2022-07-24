@@ -4,18 +4,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<glm::vec2> {
-    friend auto operator<=>(const VariableMetadata<glm::vec2>&, const VariableMetadata<glm::vec2>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&)
-    {
-    }
-};
+#include "generated/Variable_vec2.inl"
 
 inline auto imgui_widget(Variable<glm::vec2>& var) -> bool
 {
