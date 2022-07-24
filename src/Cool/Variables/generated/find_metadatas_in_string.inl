@@ -72,13 +72,6 @@ auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec4>
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Camera>
-{
-    Cool::VariableMetadata<Cool::Camera> metadata{};
-    return metadata;
-}
-
-template<>
 auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Angle>
 {
     Cool::VariableMetadata<Cool::Angle> metadata{};

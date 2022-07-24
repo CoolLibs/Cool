@@ -99,6 +99,7 @@ def all_variable_types_and_metadatas():
         VariableType(
             type="Cool::Camera",
             metadatas=[],
+            do_generate_get_default_metadata=False,
         ),
         VariableType(
             type="Cool::Angle",
