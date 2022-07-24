@@ -6,7 +6,9 @@
  */
 
 #pragma once
+#if DEBUG
 
+#include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 
@@ -14,19 +16,13 @@ namespace Cool {
 
 class DebugOptions {
 public:
-#if DEBUG
     // clang-format off
-[[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
-#else
-[[nodiscard]] static auto constexpr log_when_creating_icon() -> bool { return false; }
-#endif
+    [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     // clang-format on
 
 private:
-#if DEBUG
     struct Instance {
-        bool            log_when_creating_icon{false};
-        ImGuiTextFilter filter;
+        bool log_when_creating_icon{false};
 
     private:
         // Serialization
@@ -42,14 +38,22 @@ private:
 
     static void reset_all()
     {
-        instance().filter.Clear();
         instance().log_when_creating_icon = false;
+    }
+
+    static void save_to_file()
+    {
+        Cool::Serialization::to_json(
+            instance(),
+            Cool::Path::root() + "/cache--debug-options-cool.json",
+            "Debug Options"
+        );
     }
 
     static auto load_debug_options() -> Instance
     {
         auto the_instance = Instance{};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options.json");
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options-cool.json");
         return the_instance;
     }
 
@@ -58,22 +62,16 @@ private:
         static auto the_instance = Instance{load_debug_options()};
         return the_instance;
     }
-#endif
 
-    friend class DebugOptionsDetails; // We go through this indirection so that only the files which include "DebugOptionsDetails" can call `imgui_checkboxes_for_all_options()`
-    static void imgui_checkboxes_for_all_options()
+    template<typename... Ts>
+    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
+    static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
     {
-#if DEBUG
-        instance().filter.Draw("Filter");
-        if (ImGui::Button("Reset all debug options"))
-        {
-            reset_all();
-        }
-        ImGui::Separator();
-        if (instance().filter.PassFilter("Log when creating icon"))
+        if (filter.PassFilter("Log when creating icon"))
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
-#endif
     }
 };
 
 } // namespace Cool
+
+#endif

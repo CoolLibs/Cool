@@ -32,7 +32,7 @@ def getters_for_release_build(debug_options: list[DebugOption]):
 
 def imgui_checkboxes_for_all_options(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f'if (instance().filter.PassFilter("{debug_option.name_in_ui}")) ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});',
+                         f'if (filter.PassFilter("{debug_option.name_in_ui}")) ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});',
                          debug_options))
 
 
@@ -48,30 +48,26 @@ def reset_all(debug_options: list[DebugOption]):
                          debug_options))
 
 
-def DebugOptions(debug_options: list[DebugOption], namespace: str):
+def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
     return f"""
 #pragma once
+#if DEBUG
 
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
+#include <Cool/DebugOptions/DebugOptionsManager.h>
 
 namespace {namespace} {{
 
 class DebugOptions {{
 public:
-#if DEBUG
-// clang-format off
-{getters_for_debug_build(debug_options)}
-#else
-{getters_for_release_build(debug_options)}
-#endif
-// clang-format on
+    // clang-format off
+    {getters_for_debug_build(debug_options)}
+    // clang-format on
 
 private:
-#if DEBUG
     struct Instance {{
         {debug_options_variables(debug_options)}
-        ImGuiTextFilter filter;
 
     private:
         // Serialization
@@ -87,14 +83,22 @@ private:
 
     static void reset_all()
     {{
-        instance().filter.Clear();
         {reset_all(debug_options)}
+    }}
+
+    static void save_to_file()
+    {{
+        Cool::Serialization::to_json(
+            instance(),
+            Cool::Path::root() + "/{cache_file_name}.json",
+            "Debug Options"
+        );
     }}
 
     static auto load_debug_options() -> Instance
     {{
         auto the_instance = Instance{{}};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options.json");
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/{cache_file_name}.json");
         return the_instance;
     }}
 
@@ -103,30 +107,25 @@ private:
         static auto the_instance = Instance{{load_debug_options()}};
         return the_instance;
     }}
-#endif
 
-    friend class DebugOptionsDetails; // We go through this indirection so that only the files which include "DebugOptionsDetails" can call `imgui_checkboxes_for_all_options()`
-    static void imgui_checkboxes_for_all_options()
+    template<typename... Ts>
+    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
+    static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
     {{
-#if DEBUG
-        instance().filter.Draw("Filter");
-        if (ImGui::Button("Reset all debug options"))
-        {{
-            reset_all();
-        }}
-        ImGui::Separator();
         {imgui_checkboxes_for_all_options(debug_options)}
-#endif
     }}
 }};
 
 }} // namespace {namespace}
+
+#endif
 """
 
 
 def generate_debug_options(
     output_folder: str,
     namespace: str,
+    cache_file_name: str,
     debug_options: list[DebugOption],
 ):
     import os
@@ -138,7 +137,7 @@ def generate_debug_options(
                           ).parent.parent.parent.parent, "tooling", "generate_files.py")).load_module()
 
     def fn():
-        return DebugOptions(debug_options=debug_options, namespace=namespace)
+        return DebugOptions(debug_options=debug_options, namespace=namespace, cache_file_name=cache_file_name)
     fn.__name__ = "DebugOptions"
     generate_files.generate(
         folder=output_folder,
