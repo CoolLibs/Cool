@@ -142,9 +142,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
-        const float  pos          = ImClamp((ImGui::GetIO().MousePos.x - bar_pos.x) / width, 0.f, 1.f);
-        const ImVec4 new_mark_col = gradient.get_color_at(pos);
-        selected_mark             = gradient.add_mark(Gradient::Mark{pos, new_mark_col});
+        add_mark((ImGui::GetIO().MousePos.x - bar_pos.x) / width);
         ImGui::OpenPopup("picker");
     }
 
