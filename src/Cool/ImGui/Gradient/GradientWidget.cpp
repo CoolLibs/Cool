@@ -1,6 +1,6 @@
+#include "GradientWidget.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <iterator>
-#include "GradientWidget.h"
 #include "imgui_draw.h"
 
 namespace Gradient {
@@ -36,7 +36,11 @@ ImVec4 GradientMarks::compute_color_at(RelativePosition position) const
     }
     if (!lower && !upper)
     {
-        return ImVec4{0.f, 0.f, 0.f, 1.f};
+        const auto color         = ImVec4{variables::r_empty_color / 255.f, variables::g_empty_color / 255.f, variables::b_empty_color / 255.f, 255.f};
+        variables::r_empty_color = variables::rand(0, 255);
+        variables::g_empty_color = variables::rand(0, 255);
+        variables::b_empty_color = variables::rand(0, 255);
+        return color;
     }
     else if (upper && !lower)
     {
