@@ -16,31 +16,16 @@ class DebugOptions {
 public:
 #if DEBUG
     // clang-format off
-[[nodiscard]] static auto show_framerate_window() -> bool& { return instance().show_framerate_window; }
-[[nodiscard]] static auto show_imgui_demo_window() -> bool& { return instance().show_imgui_demo_window; }
-[[nodiscard]] static auto show_commands_and_registries_debug_windows() -> bool& { return instance().show_commands_and_registries_debug_windows; }
-[[nodiscard]] static auto log_when_rendering() -> bool& { return instance().log_when_rendering; }
-[[nodiscard]] static auto test_all_variable_widgets() -> bool& { return instance().test_all_variable_widgets; }
-[[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
+[[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
 #else
-[[nodiscard]] static auto constexpr show_framerate_window() -> bool { return false; }
-[[nodiscard]] static auto constexpr show_imgui_demo_window() -> bool { return false; }
-[[nodiscard]] static auto constexpr show_commands_and_registries_debug_windows() -> bool { return false; }
-[[nodiscard]] static auto constexpr log_when_rendering() -> bool { return false; }
-[[nodiscard]] static auto constexpr test_all_variable_widgets() -> bool { return false; }
-[[nodiscard]] static auto constexpr test_message_console() -> bool { return false; }
+[[nodiscard]] static auto constexpr log_when_creating_icon() -> bool { return false; }
 #endif
     // clang-format on
 
 private:
 #if DEBUG
     struct Instance {
-        bool            show_framerate_window{true};
-        bool            show_imgui_demo_window{false};
-        bool            show_commands_and_registries_debug_windows{false};
-        bool            log_when_rendering{false};
-        bool            test_all_variable_widgets{false};
-        bool            test_message_console{false};
+        bool            log_when_creating_icon{false};
         ImGuiTextFilter filter;
 
     private:
@@ -50,12 +35,7 @@ private:
         void serialize(Archive& archive)
         {
             archive(
-                cereal::make_nvp("Framerate window", show_framerate_window),
-                cereal::make_nvp("ImGui Demo window", show_imgui_demo_window),
-                cereal::make_nvp("Commands and Registries windows", show_commands_and_registries_debug_windows),
-                cereal::make_nvp("Log when rendering", log_when_rendering),
-                cereal::make_nvp("Test all Variable Widgets", test_all_variable_widgets),
-                cereal::make_nvp("Test Message Console", test_message_console)
+                cereal::make_nvp("Log when creating icon", log_when_creating_icon)
             );
         }
     };
@@ -63,12 +43,7 @@ private:
     static void reset_all()
     {
         instance().filter.Clear();
-        instance().show_framerate_window                      = true;
-        instance().show_imgui_demo_window                     = false;
-        instance().show_commands_and_registries_debug_windows = false;
-        instance().log_when_rendering                         = false;
-        instance().test_all_variable_widgets                  = false;
-        instance().test_message_console                       = false;
+        instance().log_when_creating_icon = false;
     }
 
     static auto load_debug_options() -> Instance
@@ -95,18 +70,8 @@ private:
             reset_all();
         }
         ImGui::Separator();
-        if (instance().filter.PassFilter("Framerate window"))
-            ImGui::Checkbox("Framerate window", &instance().show_framerate_window);
-        if (instance().filter.PassFilter("ImGui Demo window"))
-            ImGui::Checkbox("ImGui Demo window", &instance().show_imgui_demo_window);
-        if (instance().filter.PassFilter("Commands and Registries windows"))
-            ImGui::Checkbox("Commands and Registries windows", &instance().show_commands_and_registries_debug_windows);
-        if (instance().filter.PassFilter("Log when rendering"))
-            ImGui::Checkbox("Log when rendering", &instance().log_when_rendering);
-        if (instance().filter.PassFilter("Test all Variable Widgets"))
-            ImGui::Checkbox("Test all Variable Widgets", &instance().test_all_variable_widgets);
-        if (instance().filter.PassFilter("Test Message Console"))
-            ImGui::Checkbox("Test Message Console", &instance().test_message_console);
+        if (instance().filter.PassFilter("Log when creating icon"))
+            ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
 #endif
     }
 };
