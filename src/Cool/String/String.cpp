@@ -88,7 +88,7 @@ auto replace_next(
         else
         {
             const auto replacement_begin = begin + in.delimiter_begin.length();
-            const auto to_replace        = in.text.substr(replacement_begin, end - replacement_begin);
+            const auto to_replace        = substring(in.text, replacement_begin, end);
             const auto replacement       = find_replacement(to_replace, in.replacements);
             if (replacement)
             {
@@ -115,7 +115,7 @@ auto replace_at(
     std::string_view input_string, std::string_view new_substring
 ) -> std::string
 {
-    return std::string(input_string.substr(0, begin)) + std::string(new_substring) + std::string(input_string.substr(end, input_string.length() - end));
+    return std::string(substring(input_string, 0, begin)) + std::string(new_substring) + std::string(substring(input_string, end, input_string.length()));
 }
 
 auto find_matching_pair(
@@ -176,7 +176,7 @@ auto split_into_words(
     auto                     word_pos = find_next_word_position(text, 0, delimiters);
     while (word_pos)
     {
-        res.emplace_back(text.substr(word_pos->first, word_pos->second - word_pos->first));
+        res.emplace_back(substring(text, *word_pos));
         word_pos = find_next_word_position(text, word_pos->second, delimiters);
     }
     return res;
@@ -192,11 +192,64 @@ auto remove_whitespaces(std::string_view text) -> std::string
     return res;
 }
 
+auto is_commented_out(std::string_view text) -> bool
+{
+    const auto comment_pos = text.find("//");
+    const auto input_pos   = text.find_first_not_of("//");
+    return comment_pos != std::string_view::npos &&
+           input_pos != std::string_view::npos &&
+           comment_pos < input_pos;
+}
+
+template<typename String>
+static auto substring_impl(
+    const String& text,
+    size_t        word_start_position,
+    size_t        word_final_position
+) -> String
+{
+    return text.substr(word_start_position, word_final_position - word_start_position);
+}
+
+auto substring(
+    const std::string&        text,
+    std::pair<size_t, size_t> word_position
+) -> std::string
+{
+    return substring_impl(text, word_position.first, word_position.second);
+}
+
+auto substring(
+    std::string_view          text,
+    std::pair<size_t, size_t> word_position
+) -> std::string_view
+{
+    return substring_impl(text, word_position.first, word_position.second);
+}
+
+auto substring(
+    const std::string& text,
+    size_t             word_start_position,
+    size_t             word_final_position
+) -> std::string
+{
+    return substring_impl(text, word_start_position, word_final_position);
+}
+
+auto substring(
+    std::string_view text,
+    size_t           word_start_position,
+    size_t           word_final_position
+) -> std::string_view
+{
+    return substring_impl(text, word_start_position, word_final_position);
+}
+
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters
-) -> std::optional<std::string>
+) -> std::optional<std::string_view>
 {
     auto position = find_next_word_position(text, starting_pos, delimiters);
     if (!position)
@@ -205,14 +258,14 @@ auto next_word(
     }
     else
     {
-        return std::string{text.substr(position->first, position->second - position->first)};
+        return substring(text, *position);
     }
 }
 
 auto next_block(
     std::string_view text,
     size_t           ending_key_pos
-) -> std::optional<std::string>
+) -> std::optional<std::string_view>
 {
     const auto start_position_of_block = text.find("(");
     if (start_position_of_block != std::string_view::npos)
@@ -231,7 +284,7 @@ auto next_block(
 auto find_word_following(
     std::string_view text,
     std::string_view key
-) -> std::optional<std::string>
+) -> std::optional<std::string_view>
 {
     const auto start_position_of_key = text.find(key);
     if (start_position_of_key == std::string_view::npos)
@@ -320,10 +373,7 @@ static auto value_from_string_impl_vec(std::string_view str)
     for (int i = 0; i < NbElements; ++i)
     {
         const auto value = value_from_string_impl_scalar<ScalarType>(
-            str.substr(
-                words_positions[i].first,
-                words_positions[i].second - words_positions[i].first
-            )
+            substring(str, words_positions[i])
         );
         if (value)
         {

@@ -1,5 +1,6 @@
 #include "File.h"
 #include <Cool/Log/ToUser.h>
+#include <Cool/String/String.h>
 #include <sys/stat.h>
 #include <fstream>
 #include <streambuf>
@@ -20,7 +21,7 @@ std::string File::absolute_path(std::string_view file_path)
 std::string File::file_name(std::string_view file_path)
 {
     auto pos = file_path.find_last_of("/\\") + 1;
-    return std::string{file_path.substr(pos, file_path.size() - pos)};
+    return std::string{Cool::String::substring(file_path, pos, file_path.size())};
 }
 
 std::string File::file_name_without_extension(std::string_view file_path)
@@ -33,7 +34,7 @@ std::string File::extension(std::string_view file_path)
     auto pos = file_path.find_last_of('.');
     if (pos < file_path.size())
     {
-        return std::string{file_path.substr(pos, file_path.size())};
+        return std::string{Cool::String::substring(file_path, pos, file_path.size())};
     }
     else
     {
@@ -46,7 +47,7 @@ std::string File::whithout_extension(std::string_view file_path)
     auto pos = file_path.find_last_of('.');
     if (pos < file_path.size())
     {
-        return std::string{file_path.substr(0, pos)};
+        return std::string{Cool::String::substring(file_path, 0, pos)};
     }
     else
     {
@@ -59,7 +60,7 @@ std::string File::whithout_file_name(std::string_view file_path)
     if (file_path.find_last_of('.') < file_path.size()) // There is a "." of an extension, so the thing after the last "/" must be a file name
     {
         auto pos = file_path.find_last_of("/\\");
-        return std::string{file_path.substr(0, pos)};
+        return std::string{Cool::String::substring(file_path, 0, pos)};
     }
     else
     {
@@ -122,8 +123,8 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
             try
             {
                 return std::make_pair(
-                    std::stoi(std::string{file_name.substr(pos + 1, end_pos - pos)}),
-                    std::string{file_name.substr(0, pos)}
+                    std::stoi(std::string{Cool::String::substring(file_name, pos + 1, end_pos)}),
+                    std::string{Cool::String::substring(file_name, 0, pos)}
                 );
             }
             catch (std::exception&)

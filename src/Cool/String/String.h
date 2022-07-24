@@ -107,24 +107,57 @@ auto split_into_words(
 
 auto remove_whitespaces(std::string_view text) -> std::string;
 
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+/// Return true if `text` begin by `//`, false otherwise.
+auto is_commented_out(std::string_view text) -> bool;
+
+/// Same as std::substr but second parameters is a pair of position of desired word
+auto substring(
+    const std::string&        text,
+    std::pair<size_t, size_t> word_position
+) -> std::string;
+
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+auto substring(
+    std::string_view          text,
+    std::pair<size_t, size_t> word_position
+) -> std::string_view;
+
+/// Same as std::substr but third parameters is the final position of desired word
+auto substring(
+    const std::string& text,
+    size_t             word_start_position,
+    size_t             word_final_position
+) -> std::string;
+
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+auto substring(
+    std::string_view text,
+    size_t           word_start_position,
+    size_t           word_final_position
+) -> std::string_view;
+
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters = internal::default_word_delimiters
-) -> std::optional<std::string>;
+) -> std::optional<std::string_view>;
 
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Obtain the next block text between parentheses, next word if no parentheses.
 auto next_block(
     std::string_view text,
     size_t           ending_key_pos
-) -> std::optional<std::string>;
+) -> std::optional<std::string_view>;
 
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
 auto find_word_following(
     std::string_view text,
     std::string_view key
-) -> std::optional<std::string>;
+) -> std::optional<std::string_view>;
 
 /// Finds default value string in `text` following the `key` and returns the correspondant value
 template<typename T>
