@@ -178,15 +178,16 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     }
     ImGui::EndGroup();
 
-    if (
-        (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
-         ImGui::IsItemHovered()) ||
-        ImGui::Button("-", ImVec2(variables::button_size(), variables::button_size()))
-    )
+    if (((ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) &&
+          ImGui::IsItemHovered()) ||
+         ImGui::Button("-", ImVec2(variables::button_size(), variables::button_size()))) &&
+        selected_mark)
     {
         gradient.remove_mark(*selected_mark);
         selected_mark = nullptr;
-        modified      = true;
+        dragging_mark = nullptr;
+
+        modified = true;
     }
     Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it\nor by dragging it down");
 
