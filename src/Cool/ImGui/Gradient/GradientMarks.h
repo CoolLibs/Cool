@@ -45,6 +45,14 @@ struct Marks {
         m_list.remove(mark);
         sorted();
     };
+    Mark next_mark(Mark* mark) const // Be carefull do not use if there is no next mark
+    {
+        return *std::next(mark);
+    }
+    Mark previous_mark(Mark* mark) const // Be carefull do not use if there is no previous mark
+    {
+        return *std::prev(mark);
+    }
     friend auto operator==(const Marks& a, const Marks& b) -> bool { return a.m_list == b.m_list; }
 };
 

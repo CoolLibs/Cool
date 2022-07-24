@@ -188,6 +188,48 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
     }
     Cool::ImGuiExtras::tooltip("Select a mark to remove it\nor middle click on it\nor drag it down");
 
+    if (!gradient.get_list().empty())
+    {
+        ImGui::SameLine();
+    }
+    if (ImGui::Button("+", ImVec2(variables::button_size(), variables::button_size())))
+    {
+        if (selected_mark)
+        {
+            const float select_pos = ImClamp(selected_mark->position.get(), 0.f, 1.f);
+
+            float closer_pos = 0.f;
+            if (gradient.get_list().size() == 1)
+            {
+                closer_pos = (select_pos < 1.f - select_pos) ? 0.f : 1.f;
+            }
+            else if (*selected_mark == gradient.get_list().front())
+            {
+                closer_pos = 0.f;
+            }
+            else if (*selected_mark == gradient.get_list().back())
+            {
+                closer_pos = 1.f;
+            }
+            else
+            {
+                closer_pos =
+                    (abs(select_pos - ImClamp(
+                                          gradient.get_marks().previous_mark(selected_mark).position.get(), 0.f, 1.f
+                                      )) >
+                     abs(ImClamp(gradient.get_marks().next_mark(selected_mark).position.get(), 0.f, 1.f) - select_pos))
+                        ? ImClamp(gradient.get_marks().previous_mark(selected_mark).position.get(), 0.f, 1.f)
+                        : ImClamp(gradient.get_marks().next_mark(selected_mark).position.get(), 0.f, 1.f);
+            }
+            add_mark((select_pos + closer_pos) / 2.f);
+        }
+        else
+        {
+            add_mark(static_cast<float>(variables::rand(0, 255)) / 255.f);
+        }
+        modified = true;
+    }
+    Cool::ImGuiExtras::tooltip("Add a mark");
     ImGui::SameLine();
     if (selected_mark && ImGui::ColorEdit4("##picker1", reinterpret_cast<float*>(&selected_mark->color), ImGuiColorEditFlags_NoInputs | flags))
     {
