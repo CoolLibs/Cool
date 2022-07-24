@@ -188,7 +188,7 @@ bool GradientWidget::gradient_editor(std::string_view name, float horizontal_mar
         dragging_mark = nullptr;
         modified      = true;
     }
-    Cool::ImGuiExtras::tooltip("Remove a mark by middle click on it\nor by dragging it down");
+    Cool::ImGuiExtras::tooltip("Select a mark to remove it\nor middle click on it\nor drag it down");
 
     ImGui::SameLine();
     if (selected_mark && ImGui::ColorEdit4("##picker1", reinterpret_cast<float*>(&selected_mark->color), ImGuiColorEditFlags_NoInputs | flags))
