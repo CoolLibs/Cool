@@ -106,6 +106,10 @@ endif()
 # ---Add libraries---
 # -------------------
 
+# imgui_gradient
+add_subdirectory(lib/imgui_gradient)
+target_include_directories(imgui_gradient PRIVATE lib)
+target_link_libraries(Cool PUBLIC imgui_gradient::imgui_gradient)
 # algorithms
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool PUBLIC algorithms::algorithms)

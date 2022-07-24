@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Cool/ImGui/Gradient/GradientWidget.h>
 #include <Cool/Math/constants.h>
+#include <imgui_gradient/imgui_gradient.hpp>
 #include <op/op.hpp>
 #include "RgbColor.h"
 
