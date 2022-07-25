@@ -46,28 +46,6 @@ auto replace_between_delimiters(const ReplacementInput& in) -> std::string
     return next.first;
 }
 
-auto find_replacement(
-    const std::string&                                      string_to_replace,
-    const std::vector<std::pair<std::string, std::string>>& replacements
-) -> std::optional<std::string>
-{
-    const auto res = std::find_if(
-        replacements.begin(),
-        replacements.end(),
-        [&](const std::pair<std::string, std::string>& pair) {
-            return pair.first == string_to_replace;
-        }
-    );
-    if (res == replacements.end())
-    {
-        return std::nullopt;
-    }
-    else
-    {
-        return res->second;
-    }
-}
-
 auto replace_next(
     const ReplacementInput& in,
     size_t                  start_pos
@@ -109,6 +87,28 @@ auto replace_next(
     }
 }
 
+auto find_replacement(
+    const std::string&                                      string_to_replace,
+    const std::vector<std::pair<std::string, std::string>>& replacements
+) -> std::optional<std::string>
+{
+    const auto res = std::find_if(
+        replacements.begin(),
+        replacements.end(),
+        [&](const std::pair<std::string, std::string>& pair) {
+            return pair.first == string_to_replace;
+        }
+    );
+    if (res == replacements.end())
+    {
+        return std::nullopt;
+    }
+    else
+    {
+        return res->second;
+    }
+}
+
 auto replace_at(
     size_t           begin,
     size_t           end,
@@ -119,24 +119,22 @@ auto replace_at(
 }
 
 auto find_matching_pair(
-    std::string_view text,
-    char             opening,
-    char             closing
+    find_matching_pair_params p
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const size_t first_open = text.find(opening);
+    const size_t first_open = p.text.find(p.opening, p.offset);
     if (first_open == std::string::npos)
     {
         return std::nullopt;
     }
     size_t counter = 1;
-    for (size_t pos = first_open + 1; pos != text.length(); ++pos)
+    for (size_t pos = first_open + 1; pos != p.text.length(); ++pos)
     {
-        if (text[pos] == closing)
+        if (p.text[pos] == p.closing)
         {
             counter--;
         }
-        else if (text[pos] == opening)
+        else if (p.text[pos] == p.opening)
         {
             counter++;
         }
@@ -146,25 +144,6 @@ auto find_matching_pair(
         }
     }
     return std::nullopt;
-}
-
-auto find_next_word_position(
-    std::string_view text,
-    size_t           offset,
-    std::string_view delimiters
-) -> std::optional<std::pair<size_t, size_t>>
-{
-    const size_t idx1 = text.find_first_not_of(delimiters, offset);
-    if (idx1 == std::string_view::npos)
-    {
-        return std::nullopt;
-    }
-    size_t idx2 = text.find_first_of(delimiters, idx1);
-    if (idx2 == std::string_view::npos)
-    {
-        idx2 = text.size();
-    }
-    return std::make_pair(idx1, idx2);
 }
 
 auto split_into_words(
@@ -247,6 +226,25 @@ auto substring(
     return substring_impl(text, begin, end);
 }
 
+auto find_next_word_position(
+    std::string_view text,
+    size_t           offset,
+    std::string_view delimiters
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    const size_t idx1 = text.find_first_not_of(delimiters, offset);
+    if (idx1 == std::string_view::npos)
+    {
+        return std::nullopt;
+    }
+    size_t idx2 = text.find_first_of(delimiters, idx1);
+    if (idx2 == std::string_view::npos)
+    {
+        idx2 = text.size();
+    }
+    return std::make_pair(idx1, idx2);
+}
+
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
@@ -266,30 +264,40 @@ auto next_word(
 
 auto find_block_position(
     std::string_view text,
-    size_t           ending_key_pos
+    size_t           offset
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    auto text_at_key_pos      = substring(text, ending_key_pos, text.length());
-    auto first_word_position  = find_next_word_position(text, ending_key_pos);
-    auto parentheses_position = find_matching_pair(text_at_key_pos);
-    if (first_word_position == std::nullopt)
+    const auto first_word_position  = find_next_word_position(text, offset);
+    auto       parentheses_position = find_matching_pair({.text = text, .offset = offset});
+    /// if `text` after `offset` doesn't contain neither words and parentheses.
+    if (first_word_position == std::nullopt && parentheses_position == std::nullopt)
     {
         return std::nullopt;
     }
-    if (!parentheses_position)
+    /// if `text` after `offset` contains only parentheses with no words into.
+    if (first_word_position != std::nullopt && parentheses_position == std::nullopt)
     {
         return first_word_position;
     }
-    parentheses_position->first += ending_key_pos;
-    parentheses_position->second += ending_key_pos;
+    /// if `text` after `offset` contains only words but no parentheses.
+    if (first_word_position == std::nullopt && parentheses_position != std::nullopt)
+    {
+        parentheses_position->second++;
+        return parentheses_position;
+    }
+    /// if ending position of the first word is following by a `(`.
+    /// like: `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
     if (first_word_position->second == parentheses_position->first)
     {
         return std::make_pair(first_word_position->first, parentheses_position->second + 1);
     }
+    /// if the first word is separate from `(` by almost a space or character, return only word.
+    /// like: vec2 (1., 0.5) or abc (def) --> return respectively `vec2` and `abc`.
     if (first_word_position->first != parentheses_position->first + 1)
     {
         return first_word_position;
     }
+    /// if `(` is the first character of `text` after `offset`.
     else
     {
         parentheses_position->second++;
@@ -299,10 +307,10 @@ auto find_block_position(
 
 auto find_block(
     std::string_view text,
-    size_t           ending_key_pos
+    size_t           offset
 ) -> std::optional<std::string_view>
 {
-    auto block_position = find_block_position(text, ending_key_pos);
+    auto block_position = find_block_position(text, offset);
     if (block_position == std::nullopt)
     {
         return std::nullopt;

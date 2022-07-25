@@ -19,7 +19,7 @@ std::vector<Parameter::AnyDesc> parse_all_parameter_desc(std::string_view source
 
 std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(std::string_view source)
 {
-    const auto body_pos = String::find_matching_pair(source, '{', '}');
+    const auto body_pos = String::find_matching_pair({source, 0, '{', '}'});
     if (!body_pos.has_value())
     {
         return std::nullopt;

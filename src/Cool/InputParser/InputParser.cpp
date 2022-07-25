@@ -199,6 +199,7 @@ auto parse_all_inputs(
 
 #include "doctest/doctest.h"
 
+// TODO(LD) Move this in a Cool/Testing/testing.h (and same for the print of vector)
 namespace doctest {
 template<typename T>
 doctest::String toString(const std::optional<T>& value)
@@ -214,7 +215,7 @@ doctest::String toString(const std::optional<T>& value)
 }
 } // namespace doctest
 
-TEST_CASE("")
+TEST_CASE("find_key_values()")
 {
     CHECK(Cool::find_key_values("//") == "");
     CHECK(Cool::find_key_values("// ") == " ");

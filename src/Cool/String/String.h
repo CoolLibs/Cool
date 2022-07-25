@@ -77,23 +77,19 @@ auto replace_at(
     std::string_view new_substring
 ) -> std::string;
 
-/**
- * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
- * or std::nullopt if no such pair was found
- */
-auto find_matching_pair(
-    std::string_view text,
-    char opening = '(', char closing = ')'
-) -> std::optional<std::pair<size_t, size_t>>;
+struct find_matching_pair_params {
+    std::string_view text;
+    size_t           offset;
+    char             opening = '(';
+    char             closing = ')';
+};
 
 /**
- * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
- * Words are considered to be separated by one or more characters of "delimiters".
+ * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
+ * or std::nullopt if no such pair was found.
  */
-auto find_next_word_position(
-    std::string_view text,
-    size_t           offset,
-    std::string_view delimiters = internal::default_word_delimiters
+auto find_matching_pair(
+    find_matching_pair_params p
 ) -> std::optional<std::pair<size_t, size_t>>;
 
 /**
@@ -142,6 +138,16 @@ auto substring(
     std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
+/**
+ * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
+ * Words are considered to be separated by one or more characters of "delimiters".
+ */
+auto find_next_word_position(
+    std::string_view text,
+    size_t           offset,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::optional<std::pair<size_t, size_t>>;
+
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
@@ -150,20 +156,23 @@ auto next_word(
     std::string_view delimiters = internal::default_word_delimiters
 ) -> std::optional<std::string_view>;
 
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
-/// Obtain the next block text between parentheses, next word if no parentheses.
+/// Returns the position of the first block of text in `text` after `offset`.
+/// A block is either a single word or a block delimited by parentheses.
 auto find_block_position(
     std::string_view text,
-    size_t           ending_key_pos
+    size_t           offset
 ) -> std::optional<std::pair<size_t, size_t>>;
 
+/// Returns the first block of text in `text` after `offset`.
+/// A block is either a single word or a block delimited by parentheses.
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
 auto find_block(
     std::string_view text,
-    size_t           ending_key_pos
+    size_t           offset = 0
 ) -> std::optional<std::string_view>;
 
+/// Returns the block following a given `key` (e.g. "default", "min", "max") inside of `text`.
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
-/// Finds in `text` the block following a given `key` (e.g. "default", "min", "max").
 auto find_block_following(
     std::string_view text,
     std::string_view key

@@ -129,7 +129,7 @@ std::string File::find_available_name(std::string_view folder_path, std::string_
             try
             {
                 return std::make_pair(
-                    std::stoi(std::string{Cool::String::substring(file_name, pos + 1, end_pos)}),
+                    std::stoi(std::string{Cool::String::substring(file_name, pos + 1, end_pos + 1)}),
                     std::string{Cool::String::substring(file_name, 0, pos)}
                 );
             }
