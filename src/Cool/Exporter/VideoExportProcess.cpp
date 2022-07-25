@@ -11,13 +11,19 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
     , _size{size}
     , _clock{params.fps, params.beginning}
 {
+    _thread_pool.start();
+}
+
+VideoExportProcess::~VideoExportProcess()
+{
+    _thread_pool.stop();
 }
 
 bool VideoExportProcess::update(Polaroid polaroid)
 {
     if (!_should_stop_asap && _nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence)
     {
-        if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker())
+        if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker() && _thread_pool.has_available_worker())
         {
             export_frame(polaroid, _folder_path + "/" + String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count) + ".png");
             _nb_frames_sent_to_thread_pool++;
