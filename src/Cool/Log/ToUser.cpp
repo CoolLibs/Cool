@@ -86,7 +86,7 @@ void ToUser::imgui_console_window()
             {
                 ImGui::TextColored(
                     color,
-                    "[%d:%d'%d\"%lld] [#%lld] [%s]",
+                    "[%d:%d'%d\"%lld] [#%u] [%s]",
                     local_time->tm_hour,
                     local_time->tm_min,
                     local_time->tm_sec,
