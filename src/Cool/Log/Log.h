@@ -5,30 +5,9 @@
 
 namespace Cool::Log {
 
-#if DEBUG
-inline auto console() -> MessageConsole&
-{
-    static auto the_console = MessageConsole{"Debug Console"};
-    return the_console;
-}
-#endif
-
-/**
- * @brief Displays a green message to the console in debug mode (in release mode this function does nothing).
- *
- * @tparam Args
- * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
- */
-inline void info(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways
-{
-#if DEBUG
-    console().send(MessageV2{
-        .category         = category,
-        .detailed_message = message,
-        .severity         = MessageSeverity::Info,
-    });
-#endif
-}
+/// Displays a green message in the debug console.
+/// Does nothing in release mode.
+void info(const std::string& category, const std::string& message);
 
 /**
  * @brief Displays a yellow message to the console in debug mode (in release mode this function does nothing).
@@ -72,5 +51,9 @@ inline void error_without_breakpoint(Args&&... args)
     spdlog::error(std::forward<Args>(args)...);
 #endif
 }
+
+#if DEBUG
+auto console() -> MessageConsole&;
+#endif
 
 } // namespace Cool::Log
