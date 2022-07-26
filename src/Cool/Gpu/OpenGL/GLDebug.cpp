@@ -15,7 +15,10 @@ bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename,
     bool   bFoundErrors = false;
     while ((error = glGetError()) != GL_NO_ERROR)
     {
-        Cool::Log::error_without_breakpoint("[OpenGL Error] {} : {} {} {}", glErrorString(error), functionName, filename, line);
+        Cool::Log::error_without_breakpoint(
+            "OpenGL",
+            std::string{glErrorString(error)} + " : " + std::string{functionName} + " " + std::string{filename} + " " + std::to_string(line)
+        );
         bFoundErrors = true;
     }
     return bFoundErrors;

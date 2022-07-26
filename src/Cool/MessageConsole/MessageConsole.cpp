@@ -88,7 +88,7 @@ static auto color(MessageSeverity severity) -> ImVec4
     case MessageSeverity::Error:
         return Constants::imvec4_red;
     default:
-        Log::error("[MessageConsole::color] Unknown enum value");
+        Log::error("MessageConsole::color", "Unknown enum value");
         return ImVec4{0, 0, 0, 0};
     }
 }
@@ -104,7 +104,7 @@ static auto to_string(MessageSeverity severity) -> std::string
     case MessageSeverity::Error:
         return "error";
     default:
-        Log::error("[MessageConsole::to_string] Unknown enum value");
+        Log::error("MessageConsole::to_string", "Unknown enum value");
         return "";
     }
 }

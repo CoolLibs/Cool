@@ -16,7 +16,7 @@ static GLenum opengl_shader_kind(ShaderKind kind)
     case ShaderKind::Compute:
         return GL_COMPUTE_SHADER;
     default:
-        Log::error("[opengl_shader_kind] Unknown enum value");
+        Log::error("opengl_shader_kind", "Unknown enum value");
         return 0;
     }
 }

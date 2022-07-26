@@ -58,7 +58,7 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
     // Load Glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // NOLINT
     {
-        Log::error("Failed to initialize Glad");
+        Log::error("WindowFactory_OpenGL::make_window", "Failed to initialize Glad");
     }
     //
     return window;
