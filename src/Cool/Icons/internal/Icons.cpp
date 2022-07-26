@@ -36,7 +36,10 @@ void Icons::cleanup_texture(std::string_view image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        Log::warn("[Icons::cleanup_texture] The texture you want to clean up doesn't exist ! \"{}\"", path);
+        Log::warning(
+            "Icons::cleanup_texture",
+            "The texture you want to clean up doesn't exist! \"" + path + "\""
+        );
     }
     else
     {

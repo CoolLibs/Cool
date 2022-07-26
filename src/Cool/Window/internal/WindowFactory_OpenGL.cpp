@@ -80,7 +80,10 @@ void WindowFactory_OpenGL::setupGLDebugging()
         }
         else
         {
-            Log::warn("Couldn't setup OpenGL Debugging");
+            Log::warning(
+                "WindowFactory_OpenGL::setupGLDebugging",
+                "Couldn't setup OpenGL Debugging"
+            );
         }
     }
 #endif
