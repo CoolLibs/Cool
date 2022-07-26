@@ -18,11 +18,13 @@ class DebugOptions {
 public:
     // clang-format off
 [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
+[[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     // clang-format on
 
 private:
     struct Instance {
         bool log_when_creating_icon{false};
+        bool log_number_of_threads_in_the_thread_pool{false};
 
     private:
         // Serialization
@@ -31,14 +33,16 @@ private:
         void serialize(Archive& archive)
         {
             archive(
-                cereal::make_nvp("Log when creating icon", log_when_creating_icon)
+                cereal::make_nvp("Log when creating icon", log_when_creating_icon),
+                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
             );
         }
     };
 
     static void reset_all()
     {
-        instance().log_when_creating_icon = false;
+        instance().log_when_creating_icon                   = false;
+        instance().log_number_of_threads_in_the_thread_pool = false;
     }
 
     static void save_to_file()
@@ -69,6 +73,8 @@ private:
     {
         if (filter.PassFilter("Log when creating icon"))
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
+        if (filter.PassFilter("Log the number of threads in the thread pool"))
+            ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
     }
 };
 

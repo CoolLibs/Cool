@@ -34,7 +34,6 @@ void run(
 )
 {
     // Init
-    Cool::Log::initialize(init_config.log_pattern);
     init_config.set_paths();
     // Create window.s
     assert(windows_configs.size() >= 1);

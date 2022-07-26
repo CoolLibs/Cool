@@ -1,17 +1,17 @@
 #pragma once
 
+#include <Cool/MessageConsole/MessageConsole.h>
 #include <spdlog/spdlog.h>
 
 namespace Cool::Log {
-/**
- * @brief Sets the log messages pattern.
- *
- * @param spdlog_pattern The pattern to use. See https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
- */
-inline void initialize(std::string_view spdlog_pattern)
+
+#if DEBUG
+inline auto console() -> MessageConsole&
 {
-    spdlog::set_pattern(std::string(spdlog_pattern));
+    static auto the_console = MessageConsole{"Debug Console"};
+    return the_console;
 }
+#endif
 
 /**
  * @brief Displays a green message to the console in debug mode (in release mode this function does nothing).
@@ -19,11 +19,14 @@ inline void initialize(std::string_view spdlog_pattern)
  * @tparam Args
  * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
  */
-template<typename... Args>
-inline void info(Args&&... args)
+inline void info(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways
 {
 #if DEBUG
-    spdlog::info(std::forward<Args>(args)...);
+    console().send(MessageV2{
+        .category         = category,
+        .detailed_message = message,
+        .severity         = MessageSeverity::Info,
+    });
 #endif
 }
 

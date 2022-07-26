@@ -11,6 +11,10 @@ def all_debug_options():
             name_in_code="log_when_creating_icon",
             name_in_ui="Log when creating icon",
         ),
+        DebugOption(
+            name_in_code="log_number_of_threads_in_the_thread_pool",
+            name_in_ui="Log the number of threads in the thread pool",
+        ),
     ]
 
 
