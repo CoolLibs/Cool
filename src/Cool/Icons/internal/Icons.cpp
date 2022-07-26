@@ -18,7 +18,7 @@ const Texture& Icons::get(std::string_view image_path)
 #if DEBUG
         if (DebugOptions::log_when_creating_icon())
         {
-            Log::ToUser::info("Icons::" + path, "Generating texture for \"{}\"", path);
+            Log::Debug::info("Icons::" + path, "Generating texture for \"" + path + "\"");
         }
 #endif
         _map[path] = Texture{path};
@@ -36,7 +36,7 @@ void Icons::cleanup_texture(std::string_view image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        Log::warning(
+        Log::Debug::warning(
             "Icons::cleanup_texture",
             "The texture you want to clean up doesn't exist! \"" + path + "\""
         );

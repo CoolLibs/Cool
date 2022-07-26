@@ -63,11 +63,11 @@ void APIENTRY GLDebugCallback(
     // Log
     if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH)
     {
-        Log::ToUser::error("OpenGL Error", message);
+        Log::Debug::error("OpenGL", message);
     }
     else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY)
     {
-        Log::ToUser::warn("OpenGL Warning", message);
+        Log::Debug::warning("OpenGL", message);
     }
     else
     {

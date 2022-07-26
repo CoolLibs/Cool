@@ -3,7 +3,7 @@
 #include <Cool/MessageConsole/MessageConsole.h>
 #include <spdlog/spdlog.h>
 
-namespace Cool::Log {
+namespace Cool::Log::Debug {
 
 /// Displays a green message in the debug console.
 /// Does nothing in release mode.
@@ -25,4 +25,4 @@ void error_without_breakpoint(const std::string& category, const std::string& me
 auto console() -> MessageConsole&;
 #endif
 
-} // namespace Cool::Log
+} // namespace Cool::Log::Debug

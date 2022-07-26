@@ -39,7 +39,7 @@ void History::end_undo_group()
 #if DEBUG
     else
     {
-        Log::warning("History::end_undo_group", "Empty undo group");
+        Log::Debug::warning("History::end_undo_group", "Empty undo group");
     }
     _an_undo_group_is_open = false;
 #endif

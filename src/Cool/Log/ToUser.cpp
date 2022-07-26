@@ -59,7 +59,7 @@ void ToUser::imgui_console_window()
                 case Message::Severity::Error:
                     return Constants::imvec4_red;
                 default:
-                    Log::error("ToUser::imgui_console_window", "Unknown enum value");
+                    Log::Debug::error("ToUser::imgui_console_window", "Unknown enum value");
                     return ImVec4{0, 0, 0, 0};
                 }
             }();

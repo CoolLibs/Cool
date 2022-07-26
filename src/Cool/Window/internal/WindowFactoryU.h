@@ -15,7 +15,7 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
     {
         const char* error_description; // NOLINT
         glfwGetError(&error_description);
-        Log::error("[glfw] Window creation failed :\n{}", error_description);
+        Log::Debug::error("[glfw] Window creation failed:\n{}", error_description);
     }
     return window;
 }

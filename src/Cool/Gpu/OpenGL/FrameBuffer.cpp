@@ -49,7 +49,7 @@ void FrameBuffer::setSize(img::Size size)
                 return "UNKNOWN_ERROR";
             }
         }();
-        Log::error("Framebuffer is not complete : {}", statusStr);
+        Log::Debug::error("Framebuffer is not complete : {}", statusStr);
     }
     unbind();
 #endif

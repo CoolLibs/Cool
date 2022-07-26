@@ -1,6 +1,8 @@
 #pragma once
 
-namespace Cool::Log {
+#include "Debug.h"
+
+namespace Cool::Log::Debug {
 
 void info(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways.
 {
@@ -51,4 +53,4 @@ auto console() -> MessageConsole&
 }
 #endif
 
-} // namespace Cool::Log
+} // namespace Cool::Log::Debug

@@ -9,7 +9,7 @@ inline void check_result(VkResult err)
 {
     if (err == 0)
         return;
-    Log::error("[vulkan] Error: VkResult = {}", err);
+    Log::Debug::error("[vulkan] Error: VkResult = {}", err);
     if (err < 0)
         abort();
 }
