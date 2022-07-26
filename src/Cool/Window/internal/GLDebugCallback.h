@@ -2,6 +2,7 @@
 
 #if defined(COOL_OPENGL) && defined(DEBUG)
 
+#include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Log/ToUser.h>
 
 namespace Cool {
@@ -71,7 +72,10 @@ void APIENTRY GLDebugCallback(
     }
     else
     {
-        // Log::info(message);
+        if (DebugOptions::log_opengl_info())
+        {
+            Log::Debug::info("OpenGL", message);
+        }
     }
 }
 

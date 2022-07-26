@@ -19,12 +19,14 @@ public:
     // clang-format off
 [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
 [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
+[[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
     // clang-format on
 
 private:
     struct Instance {
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
+        bool log_opengl_info{false};
 
     private:
         // Serialization
@@ -34,7 +36,8 @@ private:
         {
             archive(
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
-                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
+                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                cereal::make_nvp("Log OpenGL info", log_opengl_info)
             );
         }
     };
@@ -43,6 +46,7 @@ private:
     {
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
+        instance().log_opengl_info                          = false;
     }
 
     static void save_to_file()
@@ -75,6 +79,8 @@ private:
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
         if (filter.PassFilter("Log the number of threads in the thread pool"))
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
+        if (filter.PassFilter("Log OpenGL info"))
+            ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
     }
 };
 
