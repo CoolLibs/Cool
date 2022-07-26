@@ -6,16 +6,26 @@
 
 namespace Cool {
 
+static auto create_message(
+    reg::OrderedRegistry<internal::MessageWithMetadata>& messages,
+    const MessageV2&                                     message,
+    bool                                                 forced_to_be_closable = false
+) -> MessageId
+{
+    return messages.create({
+        .message               = message,
+        .timestamp             = std::chrono::system_clock::now(),
+        .count                 = 0,
+        .forced_to_be_closable = forced_to_be_closable,
+    });
+}
+
 void MessageConsole::send(MessageId& id, const MessageV2& message)
 {
     if (id.underlying_uuid().is_nil() ||
         !_messages.contains(id))
     {
-        id = _messages.create({
-            .message   = message,
-            .timestamp = std::chrono::system_clock::now(),
-            .count     = 0,
-        });
+        id = create_message(_messages, message);
     }
     else
     {
@@ -26,6 +36,18 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
         });
     }
 
+    on_message_sent(id);
+}
+
+void MessageConsole::send(const MessageV2& message)
+{
+    const auto id = create_message(_messages, message, true);
+
+    on_message_sent(id);
+}
+
+void MessageConsole::on_message_sent(const MessageId& id)
+{
     _is_open           = true;
     _message_just_sent = id;
 }
@@ -89,7 +111,8 @@ static auto to_string(MessageSeverity severity) -> std::string
 
 static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
 {
-    return msg.message.severity != MessageSeverity::Error;
+    return msg.forced_to_be_closable ||
+           msg.message.severity != MessageSeverity::Error;
 }
 
 void MessageConsole::imgui_window()
@@ -100,7 +123,7 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin("Console", &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name, &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
 
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
