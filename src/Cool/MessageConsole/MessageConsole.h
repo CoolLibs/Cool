@@ -30,8 +30,6 @@ public:
     /// Draws the imgui window with all the messages.
     void imgui_window();
 
-    auto is_open() -> bool& { return _is_open; }
-
 private:
     void close_window();
     void on_message_sent(const MessageId&);

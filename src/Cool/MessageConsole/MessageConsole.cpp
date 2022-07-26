@@ -123,7 +123,7 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin(_name, &_is_open, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
 
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
