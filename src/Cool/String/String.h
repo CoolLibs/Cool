@@ -201,7 +201,7 @@ template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>
 {
     static_assert(
-#include "Cool/Variables/generated/T_is_a_variable_type.inl"
+#include <Cool/Variables/generated/T_is_a_variable_type.inl>
         , "Type not supported yet!"
     );
     /// NB: Use the following code if you need to know the type which is failing:

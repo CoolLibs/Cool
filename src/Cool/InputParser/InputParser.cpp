@@ -36,7 +36,7 @@ template<typename T>
 static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>
 {
     static_assert(
-#include "Cool/Variables/generated/T_is_a_variable_type.inl"
+#include <Cool/Variables/generated/T_is_a_variable_type.inl>
         , "No implementation found for this type! You can add it in generate_variables.py"
     );
     /// NB: Use the following code if you need to know the type which is failing:
@@ -56,7 +56,7 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     return metadata;
 }
 
-#include "Cool/Variables/generated/find_metadatas_in_string.inl"
+#include <Cool/Variables/generated/find_metadatas_in_string.inl>
 
 template<typename T>
 static auto make_input(
