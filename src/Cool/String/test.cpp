@@ -1,3 +1,4 @@
+#include <stringify/stringify.hpp>
 #include "String.h"
 #include "doctest/doctest.h"
 
@@ -21,6 +22,17 @@ doctest::String toString(const std::pair<size_t, size_t>& values)
     output << values.first << ", " << values.second;
     return doctest::String{output.str().c_str()};
 }
+
+// template<typename Container>
+// doctest::String toString(const Container& values)
+// {
+//     std::stringstream output{};
+//     for (const auto& value : values)
+//     {
+//         output << value << ", ";
+//     }
+//     return doctest::String{output.str().c_str()};
+// }
 } // namespace doctest
 
 TEST_CASE("contains")
@@ -39,6 +51,8 @@ TEST_CASE("to_lower")
     CHECK(Cool::String::to_lower("ABC") == "abc");
     CHECK(Cool::String::to_lower("aBcd") == "abcd");
     CHECK(Cool::String::to_lower("abcd") == "abcd");
+    CHECK(Cool::String::to_lower("") == "");
+    CHECK(Cool::String::to_lower("42") == "42");
 }
 
 TEST_CASE("to_string")
@@ -113,6 +127,8 @@ TEST_CASE("[Cool::String] find_matching_pair()")
     SUBCASE("Test offset parameter")
     {
         CHECK(Cool::String::find_matching_pair({"fes(svrsnv)", 2, '(', ')'}).value() == std::make_pair<size_t, size_t>(3, 10));
+        CHECK(Cool::String::find_matching_pair({"fes(svrsnv)  (gregre)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(13, 20));
+        CHECK(Cool::String::find_matching_pair({"fes(svrs(nv)  (greg)re)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(8, 10));
         CHECK(Cool::String::find_matching_pair({"// max (3., 6., 2.)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(7, 18));
     }
 }

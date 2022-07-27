@@ -7,9 +7,6 @@
 # You can use `all_variable_types()` to get all the variable types we use in CoolLab.
 # ------------
 
-# TODO(LD) Move LAB_REGISTER_COMMAND to CoolLab
-# TODO(LD) Make the generate_variable script from Lab call the one from Cool (?? or not)
-
 from dataclasses import dataclass
 from typing import List
 

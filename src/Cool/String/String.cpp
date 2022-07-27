@@ -268,7 +268,7 @@ auto find_block_position(
 ) -> std::optional<std::pair<size_t, size_t>>
 {
     const auto first_word_position  = find_next_word_position(text, offset);
-    auto       parentheses_position = find_matching_pair({.text = text, .offset = offset});
+    const auto parentheses_position = find_matching_pair({.text = text, .offset = offset});
     // if `text` after `offset` doesn't contain neither words and parentheses.
     if (first_word_position == std::nullopt && parentheses_position == std::nullopt)
     {
@@ -282,8 +282,7 @@ auto find_block_position(
     // if `text` after `offset` contains only parentheses with no words into.
     if (first_word_position == std::nullopt && parentheses_position != std::nullopt)
     {
-        parentheses_position->second++;
-        return parentheses_position;
+        return std::make_pair(parentheses_position->first, parentheses_position->second + 1);
     }
     // if ending position of the first word is following by a `(`.
     // like: `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
@@ -300,8 +299,7 @@ auto find_block_position(
     // if `(` is the first character of `text` after `offset`.
     else
     {
-        parentheses_position->second++;
-        return parentheses_position;
+        return std::make_pair(parentheses_position->first, parentheses_position->second + 1);
     }
 }
 
