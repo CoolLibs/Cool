@@ -19,7 +19,7 @@ auto to_lower(std::string_view str) -> std::string
     return res;
 }
 
-auto replace_all(std::string& str, std::string_view from, std::string_view to) -> void
+void replace_all(std::string& str, std::string_view from, std::string_view to)
 {
     if (from.empty())
     {
@@ -232,12 +232,12 @@ auto find_next_word_position(
     std::string_view delimiters
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const size_t idx1 = text.find_first_not_of(delimiters, offset);
+    const auto idx1 = text.find_first_not_of(delimiters, offset);
     if (idx1 == std::string_view::npos)
     {
         return std::nullopt;
     }
-    size_t idx2 = text.find_first_of(delimiters, idx1);
+    auto idx2 = text.find_first_of(delimiters, idx1);
     if (idx2 == std::string_view::npos)
     {
         idx2 = text.size();
@@ -269,35 +269,35 @@ auto find_block_position(
 {
     const auto first_word_position  = find_next_word_position(text, offset);
     auto       parentheses_position = find_matching_pair({.text = text, .offset = offset});
-    /// if `text` after `offset` doesn't contain neither words and parentheses.
+    // if `text` after `offset` doesn't contain neither words and parentheses.
     if (first_word_position == std::nullopt && parentheses_position == std::nullopt)
     {
         return std::nullopt;
     }
-    /// if `text` after `offset` contains only parentheses with no words into.
+    // if `text` after `offset` contains only words but no parentheses.
     if (first_word_position != std::nullopt && parentheses_position == std::nullopt)
     {
         return first_word_position;
     }
-    /// if `text` after `offset` contains only words but no parentheses.
+    // if `text` after `offset` contains only parentheses with no words into.
     if (first_word_position == std::nullopt && parentheses_position != std::nullopt)
     {
         parentheses_position->second++;
         return parentheses_position;
     }
-    /// if ending position of the first word is following by a `(`.
-    /// like: `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
+    // if ending position of the first word is following by a `(`.
+    // like: `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
     if (first_word_position->second == parentheses_position->first)
     {
         return std::make_pair(first_word_position->first, parentheses_position->second + 1);
     }
-    /// if the first word is separate from `(` by almost a space or character, return only word.
-    /// like: vec2 (1., 0.5) or abc (def) --> return respectively `vec2` and `abc`.
+    // if the first word is separate from `(` by almost a space or character, return only word.
+    // like: vec2 (1., 0.5) or abc (def) --> return respectively `vec2` and `abc`.
     if (first_word_position->first != parentheses_position->first + 1)
     {
         return first_word_position;
     }
-    /// if `(` is the first character of `text` after `offset`.
+    // if `(` is the first character of `text` after `offset`.
     else
     {
         parentheses_position->second++;
@@ -310,7 +310,7 @@ auto find_block(
     size_t           offset
 ) -> std::optional<std::string_view>
 {
-    auto block_position = find_block_position(text, offset);
+    const auto block_position = find_block_position(text, offset);
     if (block_position == std::nullopt)
     {
         return std::nullopt;
@@ -393,7 +393,7 @@ static auto value_from_string_impl_vec(std::string_view str)
     auto opening_parenthesis_position = str.find_first_of("(");
     if (opening_parenthesis_position != std::string_view::npos)
     {
-        str = substring(str, opening_parenthesis_position, str.length());
+        ptr_in_string = opening_parenthesis_position;
     }
 
     while (ptr_in_string)

@@ -154,23 +154,23 @@ def all_variable_includes():
             """
 
 
-def register_set_variable_commands():
-    commands = ""
-    reversible_commands = ""
-    for variable_type in all_variable_types():
-        commands += f"LAB_REGISTER_COMMAND(Lab::Command_SetVariable<{variable_type}>)\n"
-        reversible_commands += f"LAB_REGISTER_REVERSIBLE_COMMAND(Lab::ReversibleCommand_SetVariable<{variable_type}>)\n"
-    return f"""
-{commands}
-{reversible_commands}
-"""
+# def register_set_variable_commands():
+#     commands = ""
+#     reversible_commands = ""
+#     for variable_type in all_variable_types():
+#         commands += f"LAB_REGISTER_COMMAND(Lab::Command_SetVariable<{variable_type}>)\n"
+#         reversible_commands += f"LAB_REGISTER_REVERSIBLE_COMMAND(Lab::ReversibleCommand_SetVariable<{variable_type}>)\n"
+#     return f"""
+# {commands}
+# {reversible_commands}
+# """
 
 
-def register_set_variable_metadata_commands():
-    out = "\n"
-    for variable_type in all_variable_types():
-        out += f"LAB_REGISTER_COMMAND(Lab::Command_SetVariableMetadata<{variable_type}>)\n"
-    return out
+# def register_set_variable_metadata_commands():
+#     out = "\n"
+#     for variable_type in all_variable_types():
+#         out += f"LAB_REGISTER_COMMAND(Lab::Command_SetVariableMetadata<{variable_type}>)\n"
+#     return out
 
 
 def VariableRegistries():
@@ -272,8 +272,8 @@ def T_is_a_variable_type():
 
 def files():
     res = [
-        register_set_variable_commands,
-        register_set_variable_metadata_commands,
+        # register_set_variable_commands,
+        # register_set_variable_metadata_commands,
         VariableRegistries,
         AnyInput,
         AnyInputRef,
