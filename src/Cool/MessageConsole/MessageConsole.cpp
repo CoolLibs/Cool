@@ -8,7 +8,7 @@ namespace Cool {
 
 static auto create_message(
     reg::OrderedRegistry<internal::MessageWithMetadata>& messages,
-    const MessageV2&                                     message,
+    const Message&                                       message,
     bool                                                 forced_to_be_closable = false
 ) -> MessageId
 {
@@ -20,7 +20,7 @@ static auto create_message(
     });
 }
 
-void MessageConsole::send(MessageId& id, const MessageV2& message)
+void MessageConsole::send(MessageId& id, const Message& message)
 {
     if (id.underlying_uuid().is_nil() ||
         !_messages.contains(id))
@@ -39,7 +39,7 @@ void MessageConsole::send(MessageId& id, const MessageV2& message)
     on_message_sent(id);
 }
 
-void MessageConsole::send(const MessageV2& message)
+void MessageConsole::send(const Message& message)
 {
     const auto id = create_message(_messages, message, true);
 

@@ -14,11 +14,11 @@ public:
 
     /// If `id` is null, creates a new messages and sets `id` to reference it,
     /// otherwise refreshes the message referenced by `id`.
-    void send(MessageId&, const MessageV2&);
+    void send(MessageId&, const Message&);
 
     /// Sends a message to the console. No `id` is returned. The message can only be cleared by the user.
     /// Such a message will always be clearable by the user.
-    void send(const MessageV2&);
+    void send(const Message&);
 
     /// Removes the message from the list.
     void clear(const MessageId& id);
