@@ -33,7 +33,7 @@ template<typename T>
 void from_json(T& data, std::string_view file_path, bool is_allowed_to_throw = false)
 {
     const auto on_error = [&](std::string_view message) {
-        Log::ToUser::warn("Serialization::from_json", message);
+        Log::ToUser::warning("Serialization::from_json", std::string{message});
         if (is_allowed_to_throw)
         {
             throw Exception{message};

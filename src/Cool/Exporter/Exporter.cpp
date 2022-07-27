@@ -77,7 +77,7 @@ void Exporter::begin_video_export()
     }
     else
     {
-        Log::ToUser::warn("Exporter::begin_video_export", "Couldn't start exporting because folder creation failed !");
+        Log::ToUser::warning("Exporter::begin_video_export", "Couldn't start exporting because folder creation failed!");
     }
 }
 
