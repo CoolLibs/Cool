@@ -23,6 +23,9 @@ public:
     /// Removes the message from the list.
     void clear(const MessageId& id);
 
+    /// Removes all the closable messages from the list.
+    void clear_all();
+
     /// Returns true iff the message is currently selected / hovered by the user.
     /// Allows us to focus the corresponding window / highlight the corresponding part of the UI that requires attention.
     auto should_highlight(const MessageId&) -> bool;

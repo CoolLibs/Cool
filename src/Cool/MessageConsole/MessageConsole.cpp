@@ -115,6 +115,18 @@ static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
            msg.message.severity != MessageSeverity::Error;
 }
 
+void MessageConsole::clear_all()
+{
+    std::erase_if(_messages.underlying_container().underlying_container(), [](auto&& pair) {
+        return is_closable(pair.second);
+    });
+
+    if (_messages.is_empty())
+    {
+        close_window();
+    }
+}
+
 void MessageConsole::imgui_window()
 {
     if (_is_open)
@@ -123,12 +135,18 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
+        ImGui::BeginMenuBar();
+        if (ImGui::Button("Clear"))
+        {
+            clear_all();
+        }
+        ImGui::EndMenuBar();
 
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
 
-        for (const auto& message : _messages)
+        for (const auto& message : _messages) // TODO(JF) Be thread-safe
         {
             const auto& id     = message.first;
             const auto& msg    = message.second;
