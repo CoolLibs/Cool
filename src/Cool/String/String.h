@@ -79,7 +79,7 @@ auto replace_at(
 
 struct find_matching_pair_params {
     std::string_view text;
-    size_t           offset;
+    size_t           offset  = 0;
     char             opening = '(';
     char             closing = ')';
 };
