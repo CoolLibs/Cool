@@ -118,9 +118,6 @@ add_subdirectory(lib/glm)
 target_link_libraries(Cool PUBLIC glm::glm)
 # cereal
 target_include_directories(Cool PUBLIC lib/cereal/include)
-# fmt
-add_subdirectory(lib/fmt)
-target_link_libraries(Cool PUBLIC fmt::fmt)
 # smart
 add_subdirectory(lib/smart)
 target_link_libraries(Cool PUBLIC smart::smart)
