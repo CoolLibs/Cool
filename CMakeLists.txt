@@ -74,7 +74,7 @@ if (COOL_USE_VULKAN)
     )
 elseif (COOL_USE_OPENGL)
     target_precompile_headers(Cool PUBLIC
-        <glad/glad.h>
+        <glad/gl.h>
         <Cool/Gpu/OpenGL/GLDebug.h>
     )
 endif()
