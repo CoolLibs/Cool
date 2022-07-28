@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cool/MessageConsole/MessageConsole.h>
-#include <spdlog/spdlog.h>
 
 namespace Cool::Log::Debug {
 

@@ -63,6 +63,7 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <nfd.hpp>
     <scope_guard/scope_guard.hpp>
     <Cool/Log/Debug.h>
+    <fmt/core.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h>                             # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h>                          # must be included after <vector> because it depends on it
@@ -117,9 +118,9 @@ add_subdirectory(lib/glm)
 target_link_libraries(Cool PUBLIC glm::glm)
 # cereal
 target_include_directories(Cool PUBLIC lib/cereal/include)
-# spdlog
-add_subdirectory(lib/spdlog)
-target_link_libraries(Cool PUBLIC spdlog::spdlog_header_only)
+# fmt
+add_subdirectory(lib/fmt)
+target_link_libraries(Cool PUBLIC fmt::fmt)
 # smart
 add_subdirectory(lib/smart)
 target_link_libraries(Cool PUBLIC smart::smart)
