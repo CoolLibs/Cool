@@ -117,9 +117,12 @@ static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
 
 void MessageConsole::clear_all()
 {
-    std::erase_if(_messages.underlying_container().underlying_container(), [](auto&& pair) {
-        return is_closable(pair.second);
-    });
+    {
+        std::unique_lock lock{_messages.mutex()};
+        std::erase_if(_messages.underlying_container().underlying_container(), [](auto&& pair) {
+            return is_closable(pair.second);
+        });
+    }
 
     if (_messages.is_empty())
     {
@@ -146,66 +149,69 @@ void MessageConsole::imgui_window()
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
 
-        for (const auto& message : _messages) // TODO(JF) Be thread-safe
         {
-            const auto& id     = message.first;
-            const auto& msg    = message.second;
-            const auto  widget = [&]() {
-                ImGui::PushID(&id);
-                ImGui::BeginGroup();
+            std::shared_lock lock{_messages.mutex()};
+            for (const auto& id_and_message : _messages)
+            {
+                const auto& id     = id_and_message.first;
+                const auto& msg    = id_and_message.second;
+                const auto  widget = [&]() {
+                    ImGui::PushID(&id);
+                    ImGui::BeginGroup();
 
-                ImGui::TextColored(
-                     color(msg.message.severity),
-                     "[%s] [#%lld] [%s]",
-                     Cool::stringify(msg.timestamp).c_str(),
-                     msg.count,
-                     msg.message.category.c_str()
-                 );
-                ImGui::SameLine();
-                ImGui::Text("%s", msg.message.detailed_message.c_str());
-
-                if (is_closable(msg))
-                {
+                    ImGui::TextColored(
+                         color(msg.message.severity),
+                         "[%s] [#%lld] [%s]",
+                         Cool::stringify(msg.timestamp).c_str(),
+                         msg.count,
+                         msg.message.category.c_str()
+                     );
                     ImGui::SameLine();
-                    if (ImGuiExtras::button_with_icon(
-                             Icons::close_button().imgui_texture_id(),
-                             ImVec4(0.9f, 0.9f, 0.9f, 1.f),
-                             ImVec4(0.5f, 0.2f, 0.2f, 1.f),
-                             11.f, 11.f
-                         ))
+                    ImGui::Text("%s", msg.message.detailed_message.c_str());
+
+                    if (is_closable(msg))
                     {
-                        msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
+                        ImGui::SameLine();
+                        if (ImGuiExtras::button_with_icon(
+                                 Icons::close_button().imgui_texture_id(),
+                                 ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+                                 ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+                                 11.f, 11.f
+                             ))
+                        {
+                            msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
+                        }
+                        ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
                     }
-                    ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
-                }
 
-                ImGui::EndGroup();
-                ImGui::PopID();
+                    ImGui::EndGroup();
+                    ImGui::PopID();
 
-                if (ImGui::IsItemHovered())
+                    if (ImGui::IsItemHovered())
+                    {
+                        _selected_message = id;
+                    }
+                    if (_message_just_sent &&
+                        *_message_just_sent == id)
+                    {
+                        ImGui::SetScrollHereY(0.5f);
+                    }
+                };
+
+                // Draw highlight of recent messages
+                const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
+                static constexpr float highlight_duration = 0.5f;
+                if (dt.count() < highlight_duration)
                 {
-                    _selected_message = id;
+                    ImGuiExtras::highlight(
+                        widget,
+                        1.f - dt.count() / highlight_duration
+                    );
                 }
-                if (_message_just_sent &&
-                    *_message_just_sent == id)
+                else
                 {
-                    ImGui::SetScrollHereY(0.5f);
+                    widget();
                 }
-            };
-
-            // Draw highlight of recent messages
-            const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
-            static constexpr float highlight_duration = 0.5f;
-            if (dt.count() < highlight_duration)
-            {
-                ImGuiExtras::highlight(
-                    widget,
-                    1.f - dt.count() / highlight_duration
-                );
-            }
-            else
-            {
-                widget();
             }
         }
 
