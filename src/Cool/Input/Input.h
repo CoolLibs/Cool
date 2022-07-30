@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Cool::Input {
+namespace Cool::UserInput {
 
 /**
  * @brief Checks if a glfw key-code corresponds to a given character in the current keyboard layout
@@ -10,4 +10,4 @@ namespace Cool::Input {
  */
 bool matches_char(const char* character, int key);
 
-} // namespace Cool::Input
+} // namespace Cool::UserInput

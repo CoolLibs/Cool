@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Hue.h>
@@ -76,23 +77,19 @@ auto replace_at(
     std::string_view new_substring
 ) -> std::string;
 
-/**
- * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
- * or std::nullopt if no such pair was found
- */
-auto find_matching_pair(
-    std::string_view text,
-    char opening = '(', char closing = ')'
-) -> std::optional<std::pair<size_t, size_t>>;
+struct find_matching_pair_params {
+    std::string_view text;
+    size_t           offset  = 0;
+    char             opening = '(';
+    char             closing = ')';
+};
 
 /**
- * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
- * Words are considered to be separated by one or more characters of "delimiters".
+ * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
+ * or std::nullopt if no such pair was found.
  */
-auto find_next_word_position(
-    std::string_view text,
-    size_t           offset,
-    std::string_view delimiters = internal::default_word_delimiters
+auto find_matching_pair(
+    find_matching_pair_params p
 ) -> std::optional<std::pair<size_t, size_t>>;
 
 /**
@@ -106,24 +103,80 @@ auto split_into_words(
 
 auto remove_whitespaces(std::string_view text) -> std::string;
 
+/// Returns true iff all the words in `text` are after a `//`.
+auto is_commented_out(std::string_view text) -> bool;
+
+/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    const std::string& text,
+    size_t             begin,
+    size_t             end
+) -> std::string;
+
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
+/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    std::string_view text,
+    size_t           begin,
+    size_t           end
+) -> std::string_view;
+
+/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    const std::string&        text,
+    std::pair<size_t, size_t> begin_end
+) -> std::string;
+
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
+/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// `begin` is included, `end` is excluded.
+auto substring(
+    std::string_view          text,
+    std::pair<size_t, size_t> begin_end
+) -> std::string_view;
+
+/**
+ * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
+ * Words are considered to be separated by one or more characters of "delimiters".
+ */
+auto find_next_word_position(
+    std::string_view text,
+    size_t           offset,
+    std::string_view delimiters = internal::default_word_delimiters
+) -> std::optional<std::pair<size_t, size_t>>;
+
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters = internal::default_word_delimiters
-) -> std::optional<std::string>;
+) -> std::optional<std::string_view>;
 
-/// Obtain the next block text between parentheses, next word if no parentheses.
-auto next_block(
+/// Returns the position of the first block of text in `text` after `offset`.
+/// A block is either a single word or a block delimited by parentheses.
+auto find_block_position(
     std::string_view text,
-    size_t           ending_key_pos
-) -> std::optional<std::string>;
+    size_t           offset
+) -> std::optional<std::pair<size_t, size_t>>;
 
-/// Finds in `text` the word following a given `key` (e.g. "default", "min", "max").
-auto find_word_following(
+/// Returns the first block of text in `text` after `offset`.
+/// A block is either a single word or a block delimited by parentheses.
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+auto find_block(
+    std::string_view text,
+    size_t           offset = 0
+) -> std::optional<std::string_view>;
+
+/// Returns the block following a given `key` (e.g. "default", "min", "max") inside of `text`.
+/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+auto find_block_following(
     std::string_view text,
     std::string_view key
-) -> std::optional<std::string>;
+) -> std::optional<std::string_view>;
 
 /// Finds default value string in `text` following the `key` and returns the correspondant value
 template<typename T>
@@ -132,10 +185,10 @@ auto find_value_for_given_key(
     std::string_view key
 ) -> std::optional<T>
 {
-    const auto default_value = find_word_following(text, key);
-    if (default_value)
+    const auto value_as_string = find_block_following(text, key);
+    if (value_as_string)
     {
-        return value_from_string<T>(*default_value);
+        return value_from_string<T>(*value_as_string);
     }
     else
     {
@@ -148,20 +201,8 @@ template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>
 {
     static_assert(
-        std::is_same_v<T, bool> == false ||
-            std::is_same_v<T, int> == false ||
-            std::is_same_v<T, float> == false ||
-            std::is_same_v<T, glm::vec2> == false ||
-            std::is_same_v<T, glm::vec3> == false ||
-            std::is_same_v<T, glm::vec4> == false ||
-            std::is_same_v<T, glm::ivec2> == false ||
-            std::is_same_v<T, glm::ivec3> == false ||
-            std::is_same_v<T, glm::ivec4> == false ||
-            std::is_same_v<T, Cool::RgbColor> == false ||
-            std::is_same_v<T, Cool::Angle> == false ||
-            std::is_same_v<T, Cool::Direction2D> == false ||
-            std::is_same_v<T, Cool::Hue> == false,
-        "Type not supported yet!"
+#include <Cool/Variables/generated/T_is_a_variable_type.inl>
+        , "Type not supported yet!"
     );
     /// NB: Use the following code if you need to know the type which is failing:
     // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();

@@ -3,4 +3,4 @@
 #define Direction2D vec2  // 90 (angle in degrees)
 #define Hue         float // 0.3
 
-#define input uniform
+#define INPUT uniform
