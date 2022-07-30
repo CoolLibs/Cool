@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Debug.h"
 
 namespace Cool::Log::Debug {
@@ -12,6 +10,9 @@ void info(const std::string& category, const std::string& message) // We take st
         .detailed_message = message,
         .severity         = MessageSeverity::Info,
     });
+#else
+    (void)category;
+    (void)message;
 #endif
 }
 
@@ -23,6 +24,9 @@ void warning(const std::string& category, const std::string& message) // We take
         .detailed_message = message,
         .severity         = MessageSeverity::Warning,
     });
+#else
+    (void)category;
+    (void)message;
 #endif
 }
 
@@ -31,6 +35,9 @@ void error(const std::string& category, const std::string& message) // We take s
 #if DEBUG
     error_without_breakpoint(category, message);
     assert(false);
+#else
+    (void)category;
+    (void)message;
 #endif
 }
 
@@ -42,6 +49,9 @@ void error_without_breakpoint(const std::string& category, const std::string& me
         .detailed_message = message,
         .severity         = MessageSeverity::Error,
     });
+#else
+    (void)category;
+    (void)message;
 #endif
 }
 
