@@ -174,7 +174,7 @@ auto remove_whitespaces(std::string_view text) -> std::string
 auto is_commented_out(std::string_view text) -> bool
 {
     const auto comment_pos    = text.find("//");
-    const auto first_word_pos = text.find_first_not_of("/ ");
+    const auto first_word_pos = text.find_first_not_of("/\t ");
     return comment_pos != std::string_view::npos &&
            comment_pos < first_word_pos;
 }
@@ -269,37 +269,45 @@ auto find_block_position(
 {
     const auto first_word_position  = find_next_word_position(text, offset);
     const auto parentheses_position = find_matching_pair({.text = text, .offset = offset});
-    // if `text` after `offset` doesn't contain neither words and parentheses.
-    if (first_word_position == std::nullopt && parentheses_position == std::nullopt)
+    // If there are neither words nor parentheses.
+    if (!first_word_position && !parentheses_position)
     {
         return std::nullopt;
     }
-    // if `text` after `offset` contains only words but no parentheses.
-    if (first_word_position != std::nullopt && parentheses_position == std::nullopt)
+    // If there are only words and no parentheses.
+    if (first_word_position && !parentheses_position)
     {
         return first_word_position;
     }
-    // if `text` after `offset` contains only parentheses with no words into.
-    if (first_word_position == std::nullopt && parentheses_position != std::nullopt)
+    // If there are only parentheses and no words.
+    if (!first_word_position && parentheses_position)
     {
-        return std::make_pair(parentheses_position->first, parentheses_position->second + 1);
+        return std::make_pair(
+            parentheses_position->first,
+            parentheses_position->second + 1
+        );
     }
-    // if ending position of the first word is following by a `(`.
-    // like: `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
+    // If the word is immediately followed by a parenthesis.
+    // e.g. `vec2(1., 0.5)` or `abc(def)` --> return respectively `vec2(1., 0.5)` and `abc(def)`.
     if (first_word_position->second == parentheses_position->first)
     {
-        return std::make_pair(first_word_position->first, parentheses_position->second + 1);
+        return std::make_pair(
+            first_word_position->first,
+            parentheses_position->second + 1
+        );
     }
-    // if the first word is separate from `(` by almost a space or character, return only word.
-    // like: vec2 (1., 0.5) or abc (def) --> return respectively `vec2` and `abc`.
-    if (first_word_position->first != parentheses_position->first + 1)
+    // If the first word is before the parenthesis.
+    if (first_word_position->first < parentheses_position->first)
     {
         return first_word_position;
     }
-    // if `(` is the first character of `text` after `offset`.
+    // If the parenthesis is before the word.
     else
     {
-        return std::make_pair(parentheses_position->first, parentheses_position->second + 1);
+        return std::make_pair(
+            parentheses_position->first,
+            parentheses_position->second + 1
+        );
     }
 }
 
@@ -384,16 +392,15 @@ template<typename ScalarType, int NbElements>
 static auto value_from_string_impl_vec(std::string_view str)
     -> std::optional<glm::vec<NbElements, ScalarType, glm::defaultp>>
 {
-    std::vector<std::pair<size_t, size_t>> words_positions;
+    auto ptr_in_string = std::optional<size_t>{0};
 
-    std::optional<size_t> ptr_in_string = 0;
-
-    auto opening_parenthesis_position = str.find_first_of("(");
+    const auto opening_parenthesis_position = str.find_first_of("(");
     if (opening_parenthesis_position != std::string_view::npos)
     {
         ptr_in_string = opening_parenthesis_position;
     }
 
+    auto words_positions = std::vector<std::pair<size_t, size_t>>{};
     while (ptr_in_string)
     {
         const auto pos = find_next_word_position(str, *ptr_in_string);
@@ -410,7 +417,7 @@ static auto value_from_string_impl_vec(std::string_view str)
 
     if (words_positions.size() != NbElements)
     {
-        return std::nullopt; // TODO Return an error message instead of std::nullopt (cf std::expected)
+        return std::nullopt; // TODO(JF) Return an error message instead of std::nullopt (cf std::expected)
     }
 
     auto ret = glm::vec<NbElements, ScalarType, glm::defaultp>{};

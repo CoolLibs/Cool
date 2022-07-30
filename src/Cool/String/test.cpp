@@ -130,7 +130,7 @@ TEST_CASE("[Cool::String] find_matching_pair()")
     {
         CHECK(Cool::String::find_matching_pair({"fes(svrsnv)", 2, '(', ')'}).value() == std::make_pair<size_t, size_t>(3, 10));
         CHECK(Cool::String::find_matching_pair({"fes(svrsnv)  (gregre)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(13, 20));
-        CHECK(Cool::String::find_matching_pair({"fes(svrs(nv)  (greg)re)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(8, 10));
+        CHECK(Cool::String::find_matching_pair({"fes(svrs(nv)  (greg)re)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(8, 11));
         CHECK(Cool::String::find_matching_pair({"// max (3., 6., 2.)", 6, '(', ')'}).value() == std::make_pair<size_t, size_t>(7, 18));
     }
 }
@@ -251,6 +251,18 @@ TEST_CASE("find_block")
     );
     CHECK(
         Cool::String::find_block("( )") == "( )"
+    );
+    CHECK(
+        Cool::String::find_block("( , hello)") == "( , hello)"
+    );
+    CHECK(
+        Cool::String::find_block("vec2  (1., 0.5)") == "vec2"
+    );
+    CHECK(
+        Cool::String::find_block("   vec2(1., 0.5)") == "vec2(1., 0.5)"
+    );
+    CHECK(
+        Cool::String::find_block("   vec2(  1., 0.5)") == "vec2(  1., 0.5)"
     );
 }
 
