@@ -11,6 +11,12 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::str
     , _size{size}
     , _clock{params.fps, params.beginning}
 {
+    _thread_pool.start();
+}
+
+VideoExportProcess::~VideoExportProcess()
+{
+    _thread_pool.stop();
 }
 
 bool VideoExportProcess::update(Polaroid polaroid)

@@ -127,9 +127,6 @@ target_link_libraries(Cool PUBLIC Boxer)
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool PUBLIC nfd)
-# DearWidgets
-add_subdirectory(lib/DearWidgets)
-target_link_libraries(Cool PUBLIC DearWidgets::DearWidgets)
 # img
 add_subdirectory(lib/img)
 target_link_libraries(Cool PUBLIC img::img)

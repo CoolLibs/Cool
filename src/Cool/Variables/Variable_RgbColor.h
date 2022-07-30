@@ -6,21 +6,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<RgbColor> {
-    bool is_hdr = true;
-
-    friend auto operator<=>(const VariableMetadata<RgbColor>&, const VariableMetadata<RgbColor>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(cereal::make_nvp("Is HDR", is_hdr));
-    }
-};
+#include "generated/Variable_RgbColor.inl"
 
 inline auto imgui_widget(Variable<RgbColor>& var) -> bool
 {

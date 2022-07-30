@@ -82,6 +82,7 @@ private:
 } // namespace Cool
 
 #include <doctest/doctest.h>
+#if DEBUG
 TEST_CASE("Registry")
 {
     Cool::Registry registry;
@@ -100,3 +101,4 @@ TEST_CASE("Registry")
     CHECK(p2 != nullptr);
     CHECK(*p2 == 2);
 }
+#endif
