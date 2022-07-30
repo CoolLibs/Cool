@@ -36,6 +36,19 @@ public:
 private:
     void close_window();
     void on_message_sent(const MessageId&);
+    void show_number_of_messages_of_given_severity(MessageSeverity);
+    void refresh_counts_per_severity();
+
+    class MessagesCountPerSeverity {
+    public:
+        MessagesCountPerSeverity();
+        void increment(MessageSeverity);
+        void reset_to_zero();
+        auto get(MessageSeverity) const -> size_t;
+
+    private:
+        std::array<size_t, 3> _counts_per_severity{};
+    };
 
 private:
     reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
@@ -43,6 +56,7 @@ private:
     bool                                                _is_open{false};
     std::optional<MessageId>                            _message_just_sent{};
     const char*                                         _name;
+    MessagesCountPerSeverity                            _counts_per_severity{};
 };
 
 } // namespace Cool

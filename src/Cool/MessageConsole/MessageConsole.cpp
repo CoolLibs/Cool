@@ -50,6 +50,7 @@ void MessageConsole::on_message_sent(const MessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
+    refresh_counts_per_severity();
 }
 
 void MessageConsole::clear(const MessageId& id)
@@ -63,6 +64,7 @@ void MessageConsole::clear(const MessageId& id)
             close_window();
         }
     }
+    refresh_counts_per_severity();
 }
 
 void MessageConsole::close_window()
@@ -128,6 +130,22 @@ void MessageConsole::clear_all()
     {
         close_window();
     }
+    refresh_counts_per_severity();
+}
+
+void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity severity)
+{
+    const auto count = _counts_per_severity.get(severity);
+    if (count > 0)
+    {
+        ImGui::TextColored(
+            color(severity),
+            "%zu %s%s",
+            count,
+            to_string(severity).c_str(),
+            count > 1 ? "s" : ""
+        );
+    }
 }
 
 void MessageConsole::imgui_window()
@@ -144,6 +162,9 @@ void MessageConsole::imgui_window()
         {
             clear_all();
         }
+        show_number_of_messages_of_given_severity(MessageSeverity::Error);
+        show_number_of_messages_of_given_severity(MessageSeverity::Warning);
+        show_number_of_messages_of_given_severity(MessageSeverity::Info);
         ImGui::EndMenuBar();
 
         _selected_message = MessageId{};
@@ -219,6 +240,36 @@ void MessageConsole::imgui_window()
         ImGui::End();
     }
     _message_just_sent.reset();
+}
+
+void MessageConsole::refresh_counts_per_severity()
+{
+    _counts_per_severity.reset_to_zero();
+    std::shared_lock lock{_messages.mutex()};
+    for (const auto& id_and_message : _messages)
+    {
+        _counts_per_severity.increment(id_and_message.second.message.severity);
+    }
+}
+
+MessageConsole::MessagesCountPerSeverity::MessagesCountPerSeverity()
+{
+    reset_to_zero();
+}
+
+void MessageConsole::MessagesCountPerSeverity::increment(MessageSeverity severity)
+{
+    _counts_per_severity[static_cast<size_t>(severity)]++;
+}
+
+void MessageConsole::MessagesCountPerSeverity::reset_to_zero()
+{
+    _counts_per_severity.fill(0);
+}
+
+auto MessageConsole::MessagesCountPerSeverity::get(MessageSeverity severity) const -> size_t
+{
+    return _counts_per_severity[static_cast<size_t>(severity)];
 }
 
 } // namespace Cool
