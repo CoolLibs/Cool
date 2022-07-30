@@ -69,6 +69,7 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
 
 } // namespace Cool
 
+#if DEBUG
 TEST_CASE("[Cool::Parameter::Parsing] parse_one_parameter_desc()")
 {
     const std::string source = R"(
@@ -117,3 +118,4 @@ color {
     CHECK(param2.name == "test_color");
     CHECK(param2.default_value == glm::vec3{0.7f, 0.2f, 0.9f});
 }
+#endif

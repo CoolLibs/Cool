@@ -2,6 +2,8 @@
 #include "String.h"
 #include "doctest/doctest.h"
 
+#if DEBUG
+
 namespace doctest {
 template<typename T>
 doctest::String toString(const std::optional<T>& value)
@@ -481,3 +483,5 @@ TEST_CASE("Parsing a Direction2D")
         Cool::Direction2D{Cool::get_angle_from_vector(glm::vec2(-1.f, 0.f))}
     );
 }
+
+#endif
