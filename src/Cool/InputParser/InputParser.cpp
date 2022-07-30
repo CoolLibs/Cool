@@ -199,7 +199,7 @@ auto parse_all_inputs(
 
 #include "doctest/doctest.h"
 
-// TODO(LD) Move this in a Cool/Testing/testing.h (and same for the print of vector)
+// TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
 namespace doctest {
 template<typename T>
 doctest::String toString(const std::optional<T>& value)
