@@ -159,6 +159,10 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
 
+/// Renders `widget` with a colored background.
+/// `widget` must be a function that draws some ImGui widgets.
+void background(std::function<void()> widget, ImVec4 color);
+
 /// Renders `widget` with a highlighted background.
 /// `widget` must be a function that draws some ImGui widgets.
 void highlight(std::function<void()> widget, float opacity = 1.f);
