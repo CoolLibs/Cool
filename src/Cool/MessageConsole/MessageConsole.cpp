@@ -157,109 +157,109 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 10.f));
-        // ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
-        // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
-        // ImGui::PopStyleVar();
-        // ImGui::PopStyleColor();
-        // ImGui::PopStyleVar();
-        // ImGui::BeginMenuBar();
-        ImGuiExtras::background([&]() {
-            if (ImGui::Button("Clear All"))
-            {
-                clear_all();
-            }
-            show_number_of_messages_of_given_severity(MessageSeverity::Error);
-            show_number_of_messages_of_given_severity(MessageSeverity::Warning);
-            show_number_of_messages_of_given_severity(MessageSeverity::Info);
-        },
-                                ImVec4{0.3f, 0.3f, 0.3f, 0.5f});
-        // ImGui::EndMenuBar();
+
+        // Menu bar
+        ImGuiExtras::background(
+            [&]() { imgui_menu_bar(); },
+            ImVec4{0.3f, 0.3f, 0.3f, 0.5f}
+        );
         ImGui::Separator();
-        // ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.f, 0.f, 0.f, 1.f));
-        // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(50, 50));
+
+        // All the messages
         ImGui::BeginChild(
-            "##Test", ImVec2(0.f, 0.f), false,
+            "##Messages", ImVec2(0.f, 0.f), false,
             ImGuiWindowFlags_AlwaysUseWindowPadding
         );
-        // ImGui::PopStyleVar();
-        // ImGui::PopStyleColor();
-
-        _selected_message = MessageId{};
-        MessageId msg_to_clear{};
-
-        {
-            std::shared_lock lock{_messages.mutex()};
-            for (const auto& id_and_message : _messages)
-            {
-                const auto& id     = id_and_message.first;
-                const auto& msg    = id_and_message.second;
-                const auto  widget = [&]() {
-                    ImGui::PushID(&id);
-                    ImGui::BeginGroup();
-
-                    ImGui::TextColored(
-                         color(msg.message.severity),
-                         "[%s] [#%u] [%s]",
-                         Cool::stringify(msg.timestamp).c_str(),
-                         msg.count,
-                         msg.message.category.c_str()
-                     );
-                    ImGui::SameLine();
-                    ImGui::Text("%s", msg.message.detailed_message.c_str());
-
-                    if (is_closable(msg))
-                    {
-                        ImGui::SameLine();
-                        if (ImGuiExtras::button_with_icon(
-                                 Icons::close_button().imgui_texture_id(),
-                                 ImVec4(0.9f, 0.9f, 0.9f, 1.f),
-                                 ImVec4(0.5f, 0.2f, 0.2f, 1.f),
-                                 11.f, 11.f
-                             ))
-                        {
-                            msg_to_clear = id; // We don't clear the message immediately because it would mess up our for-loop
-                        }
-                        ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
-                    }
-
-                    ImGui::EndGroup();
-                    ImGui::PopID();
-
-                    if (ImGui::IsItemHovered())
-                    {
-                        _selected_message = id;
-                    }
-                    if (_message_just_sent &&
-                        *_message_just_sent == id)
-                    {
-                        ImGui::SetScrollHereY(0.5f);
-                    }
-                };
-
-                // Draw highlight of recent messages
-                const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
-                static constexpr float highlight_duration = 0.5f;
-                if (dt.count() < highlight_duration)
-                {
-                    ImGuiExtras::highlight(
-                        widget,
-                        1.f - dt.count() / highlight_duration
-                    );
-                }
-                else
-                {
-                    widget();
-                }
-            }
-        }
+        imgui_show_all_messages();
         ImGui::EndChild();
 
-        clear(msg_to_clear);
         ImGui::End();
     }
     _message_just_sent.reset();
+}
+
+void MessageConsole::imgui_menu_bar()
+{
+    if (ImGui::Button("Clear All"))
+    {
+        clear_all();
+    }
+    show_number_of_messages_of_given_severity(MessageSeverity::Error);
+    show_number_of_messages_of_given_severity(MessageSeverity::Warning);
+    show_number_of_messages_of_given_severity(MessageSeverity::Info);
+}
+
+void MessageConsole::imgui_show_all_messages()
+{
+    _selected_message = MessageId{}; // Clear the selected message. And let the following loop set it again if necessary.
+    MessageId msg_to_clear{};        // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
+    {
+        std::shared_lock lock{_messages.mutex()};
+        for (const auto& id_and_message : _messages)
+        {
+            const auto& id     = id_and_message.first;
+            const auto& msg    = id_and_message.second;
+            const auto  widget = [&]() {
+                ImGui::PushID(&id);
+                ImGui::BeginGroup();
+
+                ImGui::TextColored(
+                     color(msg.message.severity),
+                     "[%s] [#%u] [%s]",
+                     Cool::stringify(msg.timestamp).c_str(),
+                     msg.count,
+                     msg.message.category.c_str()
+                 );
+                ImGui::SameLine();
+                ImGui::Text("%s", msg.message.detailed_message.c_str());
+
+                if (is_closable(msg))
+                {
+                    ImGui::SameLine();
+                    if (ImGuiExtras::button_with_icon(
+                             Icons::close_button().imgui_texture_id(),
+                             ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+                             ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+                             11.f, 11.f
+                         ))
+                    {
+                        msg_to_clear = id;
+                    }
+                    ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
+                }
+
+                ImGui::EndGroup();
+                ImGui::PopID();
+
+                if (ImGui::IsItemHovered())
+                {
+                    _selected_message = id;
+                }
+                if (_message_just_sent &&
+                    *_message_just_sent == id)
+                {
+                    ImGui::SetScrollHereY(0.5f);
+                }
+            };
+
+            // Draw highlight of recent messages
+            const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
+            static constexpr float highlight_duration = 0.5f;
+            if (dt.count() < highlight_duration)
+            {
+                ImGuiExtras::highlight(
+                    widget,
+                    1.f - dt.count() / highlight_duration
+                );
+            }
+            else
+            {
+                widget();
+            }
+        }
+    }
+    clear(msg_to_clear); // Must clear after the `lock` is gone, otherwise we will deadlock.
 }
 
 void MessageConsole::refresh_counts_per_severity()

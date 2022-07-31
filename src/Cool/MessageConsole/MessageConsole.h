@@ -38,6 +38,8 @@ private:
     void on_message_sent(const MessageId&);
     void show_number_of_messages_of_given_severity(MessageSeverity);
     void refresh_counts_per_severity();
+    void imgui_menu_bar();
+    void imgui_show_all_messages();
 
     class MessagesCountPerSeverity {
     public:
