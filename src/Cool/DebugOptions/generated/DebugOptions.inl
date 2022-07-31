@@ -65,7 +65,7 @@ private:
     static auto load_debug_options() -> Instance
     {
         auto the_instance = Instance{};
-        // Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options-cool.json");
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options-cool.json");
         return the_instance;
     }
 

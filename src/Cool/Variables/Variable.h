@@ -18,6 +18,8 @@ struct Variable {
     Value                   default_value{value};
     VariableMetadata<Value> default_metadata{metadata};
 
+    friend bool operator==(const Variable<Value>&, const Variable<Value>&) = default;
+
 private:
     // Serialization
     friend class cereal::access;
