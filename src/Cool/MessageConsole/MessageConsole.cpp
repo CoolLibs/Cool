@@ -138,6 +138,7 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
     const auto count = _counts_per_severity.get(severity);
     if (count > 0)
     {
+        ImGui::SameLine();
         ImGui::TextColored(
             color(severity),
             "%zu %s%s",
@@ -156,19 +157,34 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
-        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
-        ImGui::PopStyleColor();
-        ImGui::BeginMenuBar();
-        if (ImGui::Button("Clear"))
-        {
-            clear_all();
-        }
-        show_number_of_messages_of_given_severity(MessageSeverity::Error);
-        show_number_of_messages_of_given_severity(MessageSeverity::Warning);
-        show_number_of_messages_of_given_severity(MessageSeverity::Info);
-        ImGui::EndMenuBar();
+        // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 10.f));
+        // ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
+        // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+        // ImGui::PopStyleVar();
+        // ImGui::PopStyleColor();
+        // ImGui::PopStyleVar();
+        // ImGui::BeginMenuBar();
+        ImGuiExtras::background([&]() {
+            if (ImGui::Button("Clear All"))
+            {
+                clear_all();
+            }
+            show_number_of_messages_of_given_severity(MessageSeverity::Error);
+            show_number_of_messages_of_given_severity(MessageSeverity::Warning);
+            show_number_of_messages_of_given_severity(MessageSeverity::Info);
+        },
+                                ImVec4{0.3f, 0.3f, 0.3f, 0.5f});
+        // ImGui::EndMenuBar();
         ImGui::Separator();
+        // ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+        // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(50, 50));
+        ImGui::BeginChild(
+            "##Test", ImVec2(0.f, 0.f), false,
+            ImGuiWindowFlags_AlwaysUseWindowPadding
+        );
+        // ImGui::PopStyleVar();
+        // ImGui::PopStyleColor();
 
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
@@ -238,6 +254,7 @@ void MessageConsole::imgui_window()
                 }
             }
         }
+        ImGui::EndChild();
 
         clear(msg_to_clear);
         ImGui::End();
