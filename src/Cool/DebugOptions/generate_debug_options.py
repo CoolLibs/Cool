@@ -19,6 +19,10 @@ def all_debug_options():
             name_in_code="log_opengl_info",
             name_in_ui="Log OpenGL info",
         ),
+        DebugOption(
+            name_in_code="test_presets",
+            name_in_ui="Test Presets",
+        ),
     ]
 
 

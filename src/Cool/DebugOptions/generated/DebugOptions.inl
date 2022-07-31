@@ -20,6 +20,7 @@ public:
 [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
 [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
+[[nodiscard]] static auto test_presets() -> bool& { return instance().test_presets; }
     // clang-format on
 
 private:
@@ -27,6 +28,7 @@ private:
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
+        bool test_presets{false};
 
     private:
         // Serialization
@@ -37,7 +39,8 @@ private:
             archive(
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
-                cereal::make_nvp("Log OpenGL info", log_opengl_info)
+                cereal::make_nvp("Log OpenGL info", log_opengl_info),
+                cereal::make_nvp("Test Presets", test_presets)
             );
         }
     };
@@ -47,6 +50,7 @@ private:
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
+        instance().test_presets                             = false;
     }
 
     static void save_to_file()
@@ -61,7 +65,7 @@ private:
     static auto load_debug_options() -> Instance
     {
         auto the_instance = Instance{};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options-cool.json");
+        // Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache--debug-options-cool.json");
         return the_instance;
     }
 
@@ -81,6 +85,8 @@ private:
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
         if (filter.PassFilter("Log OpenGL info"))
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
+        if (filter.PassFilter("Test Presets"))
+            ImGui::Checkbox("Test Presets", &instance().test_presets);
     }
 };
 
