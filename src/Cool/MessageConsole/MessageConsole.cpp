@@ -156,7 +156,9 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
+        ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
         ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_MenuBar);
+        ImGui::PopStyleColor();
         ImGui::BeginMenuBar();
         if (ImGui::Button("Clear"))
         {
@@ -166,6 +168,7 @@ void MessageConsole::imgui_window()
         show_number_of_messages_of_given_severity(MessageSeverity::Warning);
         show_number_of_messages_of_given_severity(MessageSeverity::Info);
         ImGui::EndMenuBar();
+        ImGui::Separator();
 
         _selected_message = MessageId{};
         MessageId msg_to_clear{};
