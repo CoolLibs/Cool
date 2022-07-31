@@ -163,4 +163,11 @@ auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
 /// `widget` must be a function that draws some ImGui widgets.
 void highlight(std::function<void()> widget, float opacity = 1.f);
 
+/// Creates a clickable link that opens the given url in the user's default web browser.
+auto link(std::string_view url) -> bool;
+
+/// Creates a clickable link that opens the given url in the user's default web browser.
+/// It will be rendered as `label`.
+auto link(std::string_view url, std::string_view label) -> bool;
+
 } // namespace Cool::ImGuiExtras

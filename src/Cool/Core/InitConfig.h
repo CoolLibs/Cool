@@ -8,10 +8,6 @@
 namespace Cool {
 
 struct InitConfig {
-    /// Pattern used by all the Log and Log::ToUser functions
-    /// To learn how to configure it: https://github.com/gabime/spdlog/wiki/3.-Custom-formatting#pattern-flags
-    std::string_view log_pattern = "%^[%e] %n: %v%$";
-
     /// Sets the paths to the root directory and to Cool/res
     std::function<void()> set_paths = []() {
 #if DEBUG

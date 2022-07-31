@@ -31,7 +31,7 @@ enum class BuildMode {
         return false;
     default:
     {
-        Log::error("[is_building_as] Unknown enum value");
+        Log::Debug::error("is_building_as", "Unknown enum value");
         return false;
     }
     }

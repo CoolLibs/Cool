@@ -15,7 +15,7 @@ static shaderc_shader_kind shader_kind_cool2shaderc(Cool::ShaderKind shader_kind
     case Cool::ShaderKind::Compute:
         return shaderc_shader_kind::shaderc_compute_shader;
     default:
-        Cool::Log::error("[ShaderSource::shader_kind_cool2shaderc] Unkown enum value \"{}\"", static_cast<int>(shader_kind));
+        Cool::Log::Debug::error("[ShaderSource::shader_kind_cool2shaderc] Unkown enum value \"{}\"", static_cast<int>(shader_kind));
         return shaderc_shader_kind::shaderc_vertex_shader;
     }
 }
@@ -32,7 +32,7 @@ shaderc::SpvCompilationResult to_spirv(const ShaderDescription& shader_descripti
 
     if (!res.GetErrorMessage().empty())
     {
-        Log::warn(res.GetErrorMessage());
+        Log::Debug::warn(res.GetErrorMessage());
     }
 
     return res;

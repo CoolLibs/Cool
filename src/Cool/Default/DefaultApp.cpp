@@ -57,11 +57,14 @@ void DefaultApp::imgui_windows()
     }
     // Exporter
     _exporter.imgui_windows(polaroid(), _clock.time());
+    // Consoles
+    Cool::Log::ToUser::console().imgui_window();
+#if DEBUG
+    Cool::Log::Debug::console().imgui_window();
+#endif
     //
     if (inputs_are_allowed())
     {
-        // Console
-        Cool::Log::ToUser::imgui_console_window();
         // Time
         ImGui::Begin("Time");
         Cool::ClockU::imgui_timeline(_clock);
@@ -102,7 +105,6 @@ void DefaultApp::menu_windows()
 {
     if (ImGui::BeginMenu("Windows"))
     {
-        Cool::Log::ToUser::imgui_toggle_console();
         for (auto& view : _views)
         {
             view.view.imgui_open_close_checkbox();

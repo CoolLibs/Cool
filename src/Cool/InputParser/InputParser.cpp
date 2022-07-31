@@ -189,7 +189,10 @@ auto parse_all_inputs(
         }
         catch (const std::exception& e)
         {
-            Cool::Log::ToUser::error("InputParser::parse_all_inputs", "Error while parsing:\n{}", e.what());
+            Cool::Log::ToUser::error(
+                "InputParser::parse_all_inputs",
+                fmt::format("Error while parsing:\n{}", e.what())
+            );
         }
     }
     return new_inputs;

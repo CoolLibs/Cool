@@ -80,7 +80,10 @@ std::string File::to_string(std::string_view file_path)
     std::ifstream stream(file_path.data());
     if (!stream.is_open())
     {
-        Log::ToUser::warn("File::to_string", "Failed to open file : \"{}\"", file_path);
+        Log::ToUser::warning(
+            "File::to_string",
+            fmt::format("Failed to open file: \"{}\"", file_path)
+        );
         return "";
     }
     stream.seekg(0, std::ios::end);
@@ -106,7 +109,7 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
         }
         catch (const std::exception& e)
         {
-            Log::ToUser::warn("File::create_folders_if_they_dont_exist", "Failed :\n{}", e.what());
+            Log::ToUser::warning("File::create_folders_if_they_dont_exist", fmt::format("Failed:\n{}", e.what()));
             return false;
         }
     }

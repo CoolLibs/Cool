@@ -1,81 +1,18 @@
 #pragma once
 
-#include "internal/Message.h"
+#include <Cool/MessageConsole/MessageConsole.h>
 
-namespace Cool::Log {
+namespace Cool::Log::ToUser {
 
-/**
- * @brief If you want your end user to see a message, use these functions. The messages pop-up in a "console" ImGui window.
- *
- */
-class ToUser {
-public:
-    /**
-     * @brief Displays a message in the ImGui console.
-     *
-     * @tparam Args
-     * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
-     */
-    template<typename... Args>
-    static inline void info(std::string_view category, Args&&... args)
-    {
-        add_message(
-            {Message::Severity::Info,
-             std::string{category},
-             fmt::format(std::forward<Args>(args)...)}
-        );
-    }
+/// Displays a green message in the user-facing console.
+void info(const std::string& category, const std::string& message);
 
-    /**
-     * @brief Displays a message in the ImGui console.
-     *
-     * @tparam Args
-     * @param args
-     */
-    template<typename... Args>
-    static inline void warn(std::string_view category, Args&&... args)
-    {
-        add_message(
-            {Message::Severity::Warn,
-             std::string{category},
-             fmt::format(std::forward<Args>(args)...)}
-        );
-    }
+/// Displays a yellow message in the user-facing console.
+void warning(const std::string& category, const std::string& message);
 
-    /**
-     * @brief Displays a message in the ImGui console.
-     *
-     * @tparam Args
-     * @param args Either one value of any type, or a string followed by as many values as there is {} in the string. Each {} is replaced by one of the arguments passed after the string.
-     */
-    template<typename... Args>
-    static inline void error(std::string_view category, Args&&... args)
-    {
-        add_message(
-            {Message::Severity::Error,
-             std::string{category},
-             fmt::format(std::forward<Args>(args)...)}
-        );
-    }
+/// Displays a red message in the user-facing console.
+void error(const std::string& category, const std::string& message);
 
-    /**
-     * @brief If the console is open, shows the console with all the messages.
-     *
-     */
-    static void imgui_console_window();
+auto console() -> MessageConsole&;
 
-    /**
-     * @brief Shows a checkbox to open or close the console.
-     *
-     */
-    static void imgui_toggle_console();
-
-private:
-    static void add_message(Message message);
-
-private:
-    static std::vector<Message> _messages;
-    static bool                 _is_open;
-    static bool                 _message_just_sent;
-};
-} // namespace Cool::Log
+} // namespace Cool::Log::ToUser
