@@ -42,18 +42,6 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
         (void)sel;
     }
 
-    // PresetId deleted_id{};
-    // for (auto& [id, preset] : _presets)
-    // {
-    //     ImGui::PushID(&id);
-    //     for (auto& variable : preset.values)
-    //     {
-    //         std::visit([](auto&& real_variable) { imgui_widget(real_variable); }, variable);
-    //     }
-    //     ImGui::PopID();
-    // }
-    // remove_preset(deleted_id); // That works even if we don't pass in the `if` above because remove_preset already verifies if deleted_id is not null
-
     ImGui::Separator();
 
     static char name[64] = ""; // TODO(LD) Use a std::string

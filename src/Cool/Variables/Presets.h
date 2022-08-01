@@ -30,14 +30,14 @@ public:
 
     auto initial_name(const std::optional<PresetId> id) -> std::string
     {
-        if (id == std::nullopt)
+        if (id != std::nullopt)
         {
-            return "Unsaved";
+            if (_presets.get(*id) != std::nullopt)
+            {
+                return _presets.get(*id)->name;
+            }
         }
-        else
-        {
-            return _presets.get(*id)->name;
-        }
+        return "Unsaved";
     }
 
     auto imgui(PresetData& preset_data) -> bool;
