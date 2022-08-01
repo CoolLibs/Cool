@@ -8,7 +8,7 @@ enum class MessageSeverity {
     Error,
 };
 
-struct MessageV2 { // TODO(JF) rename as Message once the old ToUser system is gone
+struct Message {
     std::string     category;
     std::string     detailed_message;
     MessageSeverity severity{MessageSeverity::Error};

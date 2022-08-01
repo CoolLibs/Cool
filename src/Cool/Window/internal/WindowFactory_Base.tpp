@@ -22,7 +22,10 @@ WindowFactory_Base<T>::~WindowFactory_Base()
 template<typename T>
 void WindowFactory_Base<T>::glfw_error_callback(int error, const char* description)
 {
-    Log::error_without_breakpoint("[Glfw] Error {} :\n{}", error, description);
+    Log::Debug::error_without_breakpoint(
+        "[Glfw]",
+        "Error " + std::to_string(error) + ":\n" + std::string{description}
+    );
 }
 
 template<typename T>
@@ -50,7 +53,7 @@ void WindowFactory_Base<T>::initialize_glfw()
     {
         const char* error_description;
         glfwGetError(&error_description);
-        Log::error("[WindowFactory_Base::initialize_glfw] Initialization failed :\n{}", error_description);
+        Log::Debug::error("[WindowFactory_Base::initialize_glfw] Initialization failed :\n{}", error_description);
     }
 }
 

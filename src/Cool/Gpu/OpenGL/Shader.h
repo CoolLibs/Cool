@@ -1,11 +1,11 @@
 #pragma once
 #if COOL_OPENGL
 
-#include "Cool/StrongTypes/Angle.h"
-#include "Cool/StrongTypes/ColorPalette.h"
-#include "Cool/StrongTypes/Direction2D.h"
-#include "Cool/StrongTypes/Hue.h"
-#include "Cool/StrongTypes/RgbColor.h"
+#include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/ColorPalette.h>
+#include <Cool/StrongTypes/Direction2D.h>
+#include <Cool/StrongTypes/Hue.h>
+#include <Cool/StrongTypes/RgbColor.h>
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 

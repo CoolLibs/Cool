@@ -2,6 +2,7 @@
 
 #if defined(COOL_OPENGL) && defined(DEBUG)
 
+#include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Log/ToUser.h>
 
 namespace Cool {
@@ -63,15 +64,18 @@ void APIENTRY GLDebugCallback(
     // Log
     if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR || severity == GL_DEBUG_SEVERITY_HIGH)
     {
-        Log::ToUser::error("OpenGL Error", message);
+        Log::Debug::error("OpenGL", message);
     }
     else if (type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR || type == GL_DEBUG_TYPE_PORTABILITY)
     {
-        Log::ToUser::warn("OpenGL Warning", message);
+        Log::Debug::warning("OpenGL", message);
     }
     else
     {
-        // Log::info(message);
+        if (DebugOptions::log_opengl_info())
+        {
+            Log::Debug::info("OpenGL", message);
+        }
     }
 }
 

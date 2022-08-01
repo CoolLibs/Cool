@@ -23,7 +23,7 @@ bool ViewController_Orbital::ImGui(Camera& camera)
         case Mode::AxisFree:
             return 2;
         default:
-            Log::error("[ViewController_Orbital::ImGui] Unknown enum value");
+            Log::Debug::error("ViewController_Orbital::ImGui", "Unknown enum value");
             return 0;
         }
     }();

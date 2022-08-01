@@ -57,11 +57,14 @@ void DefaultApp::imgui_windows()
     }
     // Exporter
     _exporter.imgui_windows(polaroid(), _clock.time());
+    // Consoles
+    Cool::Log::ToUser::console().imgui_window();
+#if DEBUG
+    Cool::Log::Debug::console().imgui_window();
+#endif
     //
     if (inputs_are_allowed())
     {
-        // Console
-        Cool::Log::ToUser::imgui_console_window();
         // Time
         ImGui::Begin("Time");
         Cool::ClockU::imgui_timeline(_clock);
@@ -102,7 +105,6 @@ void DefaultApp::menu_windows()
 {
     if (ImGui::BeginMenu("Windows"))
     {
-        Cool::Log::ToUser::imgui_toggle_console();
         for (auto& view : _views)
         {
             view.view.imgui_open_close_checkbox();
@@ -135,22 +137,22 @@ void DefaultApp::on_keyboard_event(const Cool::KeyboardEvent& event)
 {
     if (event.action == GLFW_RELEASE)
     {
-        if (Cool::Input::matches_char("s", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("s", event.key) && event.mods.ctrl())
         {
             _exporter.image_export_window().open();
         }
-        if (Cool::Input::matches_char("e", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("e", event.key) && event.mods.ctrl())
         {
             _exporter.video_export_window().open();
         }
     }
     if (event.action == GLFW_PRESS || event.action == GLFW_REPEAT)
     {
-        if (Cool::Input::matches_char("z", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("z", event.key) && event.mods.ctrl())
         {
             Cool::ParametersHistory::get().move_backward();
         }
-        if (Cool::Input::matches_char("y", event.key) && event.mods.ctrl())
+        if (Cool::UserInput::matches_char("y", event.key) && event.mods.ctrl())
         {
             Cool::ParametersHistory::get().move_forward();
         }

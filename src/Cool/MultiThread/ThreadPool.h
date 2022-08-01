@@ -3,7 +3,7 @@
 namespace Cool {
 
 /**
- * @brief Manages a given number of threads and give them jobs
+ * @brief Manages a given number of threads and gives them jobs
  *
  */
 template<typename Job>
@@ -29,7 +29,7 @@ public:
      *
      * @return The number of threads in the pool
      */
-    inline size_t size() { return _nb_threads; }
+    auto size() { return _threads.size(); }
 
     bool has_available_worker() { return _jobs_queue.size() < size(); }
 
@@ -59,8 +59,7 @@ private:
 private:
     size_t                   _nb_threads;
     std::vector<std::thread> _threads;
-    std::condition_variable  _condition_to_pop_from_queue;
-    std::condition_variable  _condition_to_check_queue_size_is_small_enough;
+    std::condition_variable  _wake_up_thread;
     std::deque<Job>          _jobs_queue;
     std::mutex               _jobs_queue_mutex;
     bool                     _running = false;

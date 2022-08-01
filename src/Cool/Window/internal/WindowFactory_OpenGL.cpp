@@ -12,7 +12,6 @@ namespace Cool {
 WindowFactory_OpenGL::WindowFactory_OpenGL()
 {
     static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
-    Log::info("[Gpu] Using OpenGL {}.{}", major_version(COOL_OPENGL_VERSION), minor_version(COOL_OPENGL_VERSION));
 }
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
@@ -57,9 +56,9 @@ Window_OpenGL& WindowFactory_OpenGL::make_window(const WindowConfig& config, Win
     window.make_current();
     WindowFactoryU::apply_config(config, window);
     // Load Glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) // NOLINT
+    if (!gladLoadGL(glfwGetProcAddress)) // NOLINT
     {
-        Log::error("Failed to initialize Glad");
+        Log::Debug::error("WindowFactory_OpenGL::make_window", "Failed to initialize Glad");
     }
     //
     return window;
@@ -81,7 +80,10 @@ void WindowFactory_OpenGL::setupGLDebugging()
         }
         else
         {
-            Log::warn("Couldn't setup OpenGL Debugging");
+            Log::Debug::warning(
+                "WindowFactory_OpenGL::setupGLDebugging",
+                "Couldn't setup OpenGL Debugging"
+            );
         }
     }
 #endif

@@ -9,7 +9,7 @@ namespace Cool {
 
 class WindowFactory_Vulkan {
 public:
-    WindowFactory_Vulkan();
+    WindowFactory_Vulkan() = default;
     static void shut_down(WindowManager& window_manager);
 
     void           setup_main_window(Window_Vulkan& window);

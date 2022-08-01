@@ -157,7 +157,7 @@ void Window_Vulkan::cap_framerate_if(bool should_cap)
     }
     else
     {
-        Log::warn("[Window_Vulkan::cap_framerate] Cannot un-cap framerate because VK_PRESENT_MODE_MAILBOX_KHR is not available.");
+        Log::Debug::warn("Window_Vulkan::cap_framerate", "Cannot un-cap framerate because VK_PRESENT_MODE_MAILBOX_KHR is not available.");
     }
 }
 

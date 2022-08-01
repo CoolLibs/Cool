@@ -5,18 +5,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<Angle> {
-    friend auto operator<=>(const VariableMetadata<Angle>&, const VariableMetadata<Angle>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&)
-    {
-    }
-};
+#include "generated/Variable_Angle.inl"
 
 inline auto imgui_widget(Variable<Angle>& var) -> bool
 {

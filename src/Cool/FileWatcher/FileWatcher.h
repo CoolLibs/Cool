@@ -14,8 +14,8 @@ struct FileWatcher_Callbacks {
     /// Callback called whenever the file changes. Receives the currently watched path as a parameter.
     std::function<void(std::string_view)> on_file_changed;
     /// Callback called whenever the path becomes invalid. Receives the currently watched path as a parameter.
-    std::function<void(std::string_view)> on_path_invalid = [](auto path) {
-        Log::ToUser::error("File Watcher", "Invalid file path : \"{}\"", path);
+    std::function<void(std::string_view)> on_path_invalid = [](std::string_view path) {
+        Log::ToUser::error("File Watcher", fmt::format("Invalid file path: \"{}\"", path));
     };
 };
 

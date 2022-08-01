@@ -28,7 +28,7 @@ void save_png(
     }
     else
     {
-        Log::ToUser::warn("ImageU::save_png", "Couldn't export because folder creation failed!");
+        Log::ToUser::warning("ImageU::save_png", "Couldn't export because folder creation failed!");
     }
 }
 

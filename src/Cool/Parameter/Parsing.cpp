@@ -19,12 +19,12 @@ std::vector<Parameter::AnyDesc> parse_all_parameter_desc(std::string_view source
 
 std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(std::string_view source)
 {
-    const auto body_pos = String::find_matching_pair(source, '{', '}');
+    const auto body_pos = String::find_matching_pair({source, 0, '{', '}'});
     if (!body_pos.has_value())
     {
         return std::nullopt;
     }
-    const auto type = String::remove_whitespaces(source.substr(0, body_pos->first));
+    const auto type = String::remove_whitespaces(Cool::String::substring(source, 0, body_pos->first));
     const auto body = "{\"\":" + std::string{source.substr(body_pos->first, body_pos->second - body_pos->first + 1)} + "}";
     const auto desc = [&]() -> Parameter::AnyDesc {
         if (type == "float")
@@ -69,6 +69,7 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
 
 } // namespace Cool
 
+#if DEBUG
 TEST_CASE("[Cool::Parameter::Parsing] parse_one_parameter_desc()")
 {
     const std::string source = R"(
@@ -117,3 +118,4 @@ color {
     CHECK(param2.name == "test_color");
     CHECK(param2.default_value == glm::vec3{0.7f, 0.2f, 0.9f});
 }
+#endif

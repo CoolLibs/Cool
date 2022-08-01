@@ -1,5 +1,9 @@
 #include "../Icons.h"
 #include <Cool/File/File.h>
+#if DEBUG
+#include <Cool/DebugOptions/DebugOptions.h>
+#include <Cool/Log/ToUser.h>
+#endif
 
 namespace Cool {
 
@@ -11,7 +15,12 @@ const Texture& Icons::get(std::string_view image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        Log::info("[Icons::get] Generating texture for \"{}\"", path);
+#if DEBUG
+        if (DebugOptions::log_when_creating_icon())
+        {
+            Log::Debug::info("Icons::" + path, "Generating texture for \"" + path + "\"");
+        }
+#endif
         _map[path] = Texture{path};
         return _map[path];
     }
@@ -27,7 +36,10 @@ void Icons::cleanup_texture(std::string_view image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        Log::warn("[Icons::cleanup_texture] The texture you want to clean up doesn't exist ! \"{}\"", path);
+        Log::Debug::warning(
+            "Icons::cleanup_texture",
+            "The texture you want to clean up doesn't exist! \"" + path + "\""
+        );
     }
     else
     {
