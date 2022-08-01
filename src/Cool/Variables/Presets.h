@@ -35,6 +35,14 @@ public:
 
     auto imgui(PresetData& preset_data) -> bool;
 
+    void dropdown(std::string current_name, PresetData& preset_data);
+
+    auto display_all_variables_widgets(PresetData& preset_data);
+
+    auto delete_button(PresetData& preset_data);
+
+    auto add_button(PresetData& preset_data);
+
 private:
     reg::OrderedRegistry<Preset2> _presets;
     std::optional<PresetId>       _current_preset_id;

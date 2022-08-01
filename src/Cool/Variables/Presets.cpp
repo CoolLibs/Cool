@@ -27,9 +27,8 @@ auto PresetManager::initial_name(
     return "Unsaved";
 }
 
-auto PresetManager::imgui(PresetData& preset_data) -> bool
+void PresetManager::dropdown(std::string current_name, PresetData& preset_data)
 {
-    std::string current_name = initial_name(_current_preset_id, preset_data);
     if (ImGui::BeginCombo(
             "Presets",
             current_name.c_str(),
@@ -62,15 +61,18 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
         }
         ImGui::EndCombo();
     }
+}
 
-    ImGui::Separator();
-
-    ImGui::InputText("Name", &_new_preset_name);
-
+auto PresetManager::display_all_variables_widgets(PresetData& preset_data)
+{
     for (auto& variable : preset_data)
     {
         std::visit([](auto&& real_variable) { imgui_widget(real_variable); }, variable);
     }
+}
+
+auto PresetManager::delete_button(PresetData& preset_data)
+{
     if (_current_preset_id != std::nullopt)
     {
         if (_presets.get(*_current_preset_id) != std::nullopt)
@@ -80,12 +82,15 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
                 if (ImGui::Button("-"))
                 {
                     auto id_to_delete = *_current_preset_id;
-                    remove_preset(id_to_delete); // Crash (bug with current_name ?)
+                    remove_preset(id_to_delete);
                 }
             }
         }
     }
+}
 
+auto PresetManager::add_button(PresetData& preset_data)
+{
     if (ImGui::Button("+"))
     {
         if (_new_preset_name == "")
@@ -101,6 +106,19 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
             _new_preset_name   = "";
         }
     }
+}
+
+auto PresetManager::imgui(PresetData& preset_data) -> bool
+{
+    dropdown(
+        initial_name(_current_preset_id, preset_data),
+        preset_data
+    );
+    ImGui::Separator();
+    ImGui::InputText("Name", &_new_preset_name);
+    display_all_variables_widgets(preset_data);
+    delete_button(preset_data);
+    add_button(preset_data);
 
     return true;
 }
