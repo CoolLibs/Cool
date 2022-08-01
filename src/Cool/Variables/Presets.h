@@ -28,23 +28,17 @@ public:
         _presets.destroy(id);
     }
 
-    auto initial_name(const std::optional<PresetId> id) -> std::string
-    {
-        if (id != std::nullopt)
-        {
-            if (_presets.get(*id) != std::nullopt)
-            {
-                return _presets.get(*id)->name;
-            }
-        }
-        return "Unsaved";
-    }
+    auto initial_name(
+        const std::optional<PresetId> id,
+        PresetData&                   preset_data
+    ) -> std::string;
 
     auto imgui(PresetData& preset_data) -> bool;
 
 private:
     reg::OrderedRegistry<Preset2> _presets;
     std::optional<PresetId>       _current_preset_id;
+    std::string                   _new_preset_name;
 };
 
 } // namespace Cool

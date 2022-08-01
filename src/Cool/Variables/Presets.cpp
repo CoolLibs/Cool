@@ -5,9 +5,31 @@
 
 namespace Cool {
 
+auto PresetManager::initial_name(
+    const std::optional<PresetId> id,
+    PresetData&                   preset_data
+) -> std::string
+{
+    if (id != std::nullopt)
+    {
+        if (_presets.get(*id) != std::nullopt)
+        {
+            if (_presets.get(*id)->values != preset_data)
+            {
+                return "Unsaved";
+            }
+            else
+            {
+                return _presets.get(*id)->name;
+            }
+        }
+    }
+    return "Unsaved";
+}
+
 auto PresetManager::imgui(PresetData& preset_data) -> bool
 {
-    std::string current_name = initial_name(_current_preset_id);
+    std::string current_name = initial_name(_current_preset_id, preset_data);
     if (ImGui::BeginCombo(
             "Presets",
             current_name.c_str(),
@@ -20,6 +42,10 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
             if (_current_preset_id != std::nullopt)
             {
                 is_selected = (*_current_preset_id == id);
+                if (_presets.get(*_current_preset_id) != std::nullopt)
+                {
+                    is_selected &= _presets.get(*_current_preset_id)->name == current_name;
+                }
             }
             if (ImGui::Selectable(preset.name.c_str(), is_selected))
             {
@@ -36,16 +62,10 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
         }
         ImGui::EndCombo();
     }
-    if (ImGui::Button("Danger"))
-    {
-        const auto sel = boxer::show("Make a choice:", "Decision", boxer::Style::Warning, boxer::Buttons::OK);
-        (void)sel;
-    }
 
     ImGui::Separator();
 
-    static char name[64] = ""; // TODO(LD) Use a std::string
-    ImGui::InputText("Name", name, 64);
+    ImGui::InputText("Name", &_new_preset_name);
 
     for (auto& variable : preset_data)
     {
@@ -53,19 +73,33 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
     }
     if (_current_preset_id != std::nullopt)
     {
-        if (ImGui::Button("-"))
+        if (_presets.get(*_current_preset_id) != std::nullopt)
         {
-            auto id_to_delete = *_current_preset_id;
-            remove_preset(id_to_delete); // Crash (bug with current_name ?)
+            if (_presets.get(*_current_preset_id)->values == preset_data)
+            {
+                if (ImGui::Button("-"))
+                {
+                    auto id_to_delete = *_current_preset_id;
+                    remove_preset(id_to_delete); // Crash (bug with current_name ?)
+                }
+            }
         }
     }
 
     if (ImGui::Button("+"))
     {
-        Preset2 new_preset = {
-            .name   = name,
-            .values = preset_data};
-        add_preset(new_preset);
+        if (_new_preset_name == "")
+        {
+            boxer::show("You have to name your preset before save.", "No name preset !", boxer::Style::Error, boxer::Buttons::OK);
+        }
+        else
+        {
+            Preset2 new_preset = {
+                .name   = _new_preset_name,
+                .values = preset_data};
+            _current_preset_id = add_preset(new_preset);
+            _new_preset_name   = "";
+        }
     }
 
     return true;
