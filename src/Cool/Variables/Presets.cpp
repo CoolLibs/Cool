@@ -1,4 +1,5 @@
 #include "Presets.h"
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <optional>
 
 // TODO(LD) Add a way to update all presets
@@ -121,49 +122,49 @@ auto PresetManager::delete_button(PresetData& preset_data)
 
 auto PresetManager::add_button(PresetData& preset_data)
 {
+    if (_new_preset_name == "")
+    {
+        Cool::ImGuiExtras::button_disabled("+", "Write a name before adding.");
+        return;
+    }
+
     if (ImGui::Button("+"))
     {
-        if (_new_preset_name == "")
+        for (auto& [id, preset] : _presets)
         {
-            boxer::show("You have to name your preset before save.", "No name preset !", boxer::Style::Error, boxer::Buttons::OK);
-        }
-        else
-        {
-            for (auto& [id, preset] : _presets)
+            if (_new_preset_name == preset.name)
             {
-                if (_new_preset_name == preset.name)
+                if (preset_data == preset.values)
                 {
-                    if (preset_data == preset.values)
-                    {
-                        return;
-                    }
-                    const std::string warning_message = "Would you overwrite " + _new_preset_name + ", you will lose his previous values ?";
+                    return;
+                }
+                const std::string warning_message = "Would you overwrite " + _new_preset_name + ", you will lose his previous values ?";
 
-                    auto sel = boxer::show(
-                        warning_message.c_str(),
-                        "Preset already exist.",
-                        boxer::Style::Warning,
-                        boxer::Buttons::YesNo
-                    );
-                    if (sel == boxer::Selection::Yes)
-                    {
-                        preset.values    = preset_data;
-                        _name_selector   = "none",
-                        _new_preset_name = "";
-                        return;
-                    }
-                    else
-                    {
-                        return;
-                    }
+                auto sel = boxer::show(
+                    warning_message.c_str(),
+                    "Preset already exist.",
+                    boxer::Style::Warning,
+                    boxer::Buttons::YesNo
+                );
+                if (sel == boxer::Selection::Yes)
+                {
+                    preset.values      = preset_data;
+                    _name_selector     = "none",
+                    _new_preset_name   = "";
+                    _current_preset_id = id;
+                    return;
+                }
+                else
+                {
+                    return;
                 }
             }
-            const Preset2 new_preset = {
-                .name   = _new_preset_name,
-                .values = preset_data};
-            _current_preset_id = add_preset(new_preset);
-            _new_preset_name   = "";
         }
+        const Preset2 new_preset = {
+            .name   = _new_preset_name,
+            .values = preset_data};
+        _current_preset_id = add_preset(new_preset);
+        _new_preset_name   = "";
     }
 }
 
@@ -175,10 +176,10 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
         current_name(_current_preset_id, preset_data),
         optional_preset_data
     );
-    if (optional_preset_data != std::nullopt)
-    {
-        preset_data = *optional_preset_data;
-    }
+    // if (optional_preset_data != std::nullopt)
+    // {
+    preset_data = *optional_preset_data; // dont't need to test if it's not nullopt because preset_data always exist.
+    // }
     ImGui::Separator();
 
     name_selector();
