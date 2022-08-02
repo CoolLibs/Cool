@@ -28,14 +28,22 @@ public:
         _presets.destroy(id);
     }
 
-    auto initial_name(
+    auto current_name(
         const std::optional<PresetId> id,
         PresetData&                   preset_data
     ) -> std::string;
 
     auto imgui(PresetData& preset_data) -> bool;
 
-    void dropdown(std::string current_name, PresetData& preset_data);
+    void set_preset_data(PresetId id, PresetData& preset_data);
+
+    void dropdown(
+        std::string_view           dropdown_name,
+        std::string_view           current_name,
+        std::optional<PresetData>& preset_data
+    );
+
+    void name_selector();
 
     auto display_all_variables_widgets(PresetData& preset_data);
 
@@ -46,6 +54,7 @@ public:
 private:
     reg::OrderedRegistry<Preset2> _presets;
     std::optional<PresetId>       _current_preset_id;
+    std::string                   _name_selector = "none";
     std::string                   _new_preset_name;
 };
 
