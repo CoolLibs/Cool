@@ -21,7 +21,7 @@ public:
     void send(const Message&);
 
     /// Removes the message from the list.
-    void clear(const MessageId& id);
+    void clear(const UnscopedMessageId& id);
 
     /// Removes all the closable messages from the list.
     void clear_all();
@@ -35,7 +35,7 @@ public:
 
 private:
     void close_window();
-    void on_message_sent(const MessageId&);
+    void on_message_sent(const UnscopedMessageId&);
     void show_number_of_messages_of_given_severity(MessageSeverity);
     void refresh_counts_per_severity();
     void imgui_menu_bar();
@@ -54,9 +54,9 @@ private:
 
 private:
     reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
-    MessageId                                           _selected_message;
+    UnscopedMessageId                                   _selected_message;
     bool                                                _is_open{false};
-    std::optional<MessageId>                            _message_just_sent{};
+    std::optional<UnscopedMessageId>                    _message_just_sent{};
     const char*                                         _name;
     MessagesCountPerSeverity                            _counts_per_severity{};
 };

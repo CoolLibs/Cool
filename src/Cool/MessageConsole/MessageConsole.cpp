@@ -6,26 +6,17 @@
 
 namespace Cool {
 
-static auto create_message(
-    reg::OrderedRegistry<internal::MessageWithMetadata>& messages,
-    const Message&                                       message,
-    bool                                                 forced_to_be_closable = false
-) -> MessageId
-{
-    return messages.create({
-        .message               = message,
-        .timestamp             = std::chrono::system_clock::now(),
-        .count                 = 0,
-        .forced_to_be_closable = forced_to_be_closable,
-    });
-}
-
 void MessageConsole::send(MessageId& id, const Message& message)
 {
-    if (id.underlying_uuid().is_nil() ||
+    if (id.get().underlying_uuid().is_nil() ||
         !_messages.contains(id))
     {
-        id = create_message(_messages, message);
+        id = MessageId{
+            _messages,
+            internal::MessageWithMetadata{
+                .message = message,
+            },
+        };
     }
     else
     {
@@ -41,19 +32,24 @@ void MessageConsole::send(MessageId& id, const Message& message)
 
 void MessageConsole::send(const Message& message)
 {
-    const auto id = create_message(_messages, message, true);
+    const UnscopedMessageId id = _messages.create(
+        internal::MessageWithMetadata{
+            .message               = message,
+            .forced_to_be_closable = true,
+        }
+    );
 
     on_message_sent(id);
 }
 
-void MessageConsole::on_message_sent(const MessageId& id)
+void MessageConsole::on_message_sent(const UnscopedMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
     refresh_counts_per_severity();
 }
 
-void MessageConsole::clear(const MessageId& id)
+void MessageConsole::clear(const UnscopedMessageId& id)
 {
     if (_messages.contains(id))
     {
@@ -75,7 +71,7 @@ void MessageConsole::close_window()
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
 {
-    return !id.underlying_uuid().is_nil() &&
+    return !id.get().underlying_uuid().is_nil() &&
            id == _selected_message;
 }
 
@@ -192,8 +188,8 @@ void MessageConsole::imgui_menu_bar()
 
 void MessageConsole::imgui_show_all_messages()
 {
-    _selected_message = MessageId{}; // Clear the selected message. And let the following loop set it again if necessary.
-    MessageId msg_to_clear{};        // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
+    _selected_message = MessageId{};  // Clear the selected message. And let the following loop set it again if necessary.
+    UnscopedMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
         std::shared_lock lock{_messages.mutex()};
         for (const auto& id_and_message : _messages)
