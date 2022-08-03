@@ -2,7 +2,6 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <optional>
 
-// TODO(LD) Add a way to update all presets
 // TODO(LD) In case of a rename show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropsown that allows to link it to one of the new names that don't correspond to any old names)
 
 namespace Cool {
@@ -31,7 +30,6 @@ auto PresetManager::current_name(
 
 void PresetManager::set_preset_data(PresetId id, PresetData& preset_data)
 {
-    _current_preset_id = id;
     if (_presets.get(*_current_preset_id) != std::nullopt)
     {
         preset_data = _presets.get(*_current_preset_id)->values;
@@ -176,10 +174,7 @@ auto PresetManager::imgui(PresetData& preset_data) -> bool
         current_name(_current_preset_id, preset_data),
         optional_preset_data
     );
-    // if (optional_preset_data != std::nullopt)
-    // {
     preset_data = *optional_preset_data; // dont't need to test if it's not nullopt because preset_data always exist.
-    // }
     ImGui::Separator();
 
     name_selector();

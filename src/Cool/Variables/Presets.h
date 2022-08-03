@@ -1,7 +1,12 @@
 #pragma once
 
+#include <Cool/Serialization/AutoSerializer.h>
+#include <Cool/Serialization/as_json.h>
 #include <Cool/Variables/AnyVariable.h>
 #include <boxer/boxer.h>
+#include <cereal/types/optional.hpp>
+#include <cereal/types/variant.hpp>
+#include <reg/cereal.hpp>
 
 namespace Cool {
 
@@ -12,12 +17,27 @@ struct Preset2 {
     PresetData  values;
 
     friend bool operator==(const Preset2&, const Preset2&) = default;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("Values", values)
+        );
+    }
 };
 
 using PresetId = reg::Id<Preset2>;
 
 class PresetManager {
 public:
+    PresetManager(std::string path)
+        : _auto_serializer{path, "Test Preset", *this}
+    {}
     auto add_preset(const Preset2& preset) -> PresetId
     {
         return _presets.create(preset);
@@ -56,6 +76,20 @@ private:
     std::optional<PresetId>       _current_preset_id;
     std::string                   _name_selector = "none";
     std::string                   _new_preset_name;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Presets", _presets)
+        );
+    }
+
+private:
+    Cool::AutoSerializer<PresetManager> _auto_serializer; // Must be last
 };
 
 } // namespace Cool
