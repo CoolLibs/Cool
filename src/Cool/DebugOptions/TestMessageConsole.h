@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/Log/internal/MessageConsole.h>
+#include <Cool/Log/MessageConsole.h>
 
 namespace Cool {
 

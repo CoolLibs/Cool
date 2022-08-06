@@ -1,7 +1,7 @@
 #pragma once
 
 #include <reg/reg.hpp>
-#include "MessageWithMetadata.h"
+#include "internal/MessageWithMetadata.h"
 
 namespace Cool {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/MessageConsole.h"
+#include "MessageConsole.h"
 
 namespace Cool::Log::Debug {
 
