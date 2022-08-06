@@ -5,7 +5,8 @@
 
 namespace Cool {
 
-using MessageId         = reg::ScopedId_Ordered<internal::MessageWithMetadata>;
-using UnscopedMessageId = reg::Id<internal::MessageWithMetadata>;
+/// Allows you to send a message to the console, update it, and remove it.
+/// When the MessageId is destroyed, the corresponding message is removed from the console.
+using MessageId = reg::ScopedId_Ordered<internal::MessageWithMetadata>;
 
 } // namespace Cool

@@ -8,8 +8,7 @@ namespace Cool {
 
 void MessageConsole::send(MessageId& id, const Message& message)
 {
-    if (id.get().underlying_uuid().is_nil() ||
-        !_messages.contains(id))
+    if (!_messages.contains(id))
     {
         id = MessageId{
             _messages,
@@ -32,24 +31,28 @@ void MessageConsole::send(MessageId& id, const Message& message)
 
 void MessageConsole::send(const Message& message)
 {
-    const UnscopedMessageId id = _messages.create(
-        internal::MessageWithMetadata{
-            .message               = message,
-            .forced_to_be_closable = true,
-        }
+    const auto id = _messages.create(internal::MessageWithMetadata{
+        .message               = message,
+        .forced_to_be_closable = true,
+    }
     );
 
     on_message_sent(id);
 }
 
-void MessageConsole::on_message_sent(const UnscopedMessageId& id)
+void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
     refresh_counts_per_severity();
 }
 
-void MessageConsole::clear(const UnscopedMessageId& id)
+void MessageConsole::clear(const MessageId& id)
+{
+    clear(id.get());
+}
+
+void MessageConsole::clear(const internal::RawMessageId& id)
 {
     if (_messages.contains(id))
     {
@@ -188,8 +191,8 @@ void MessageConsole::imgui_menu_bar()
 
 void MessageConsole::imgui_show_all_messages()
 {
-    _selected_message = MessageId{};  // Clear the selected message. And let the following loop set it again if necessary.
-    UnscopedMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
+    _selected_message = MessageId{};       // Clear the selected message. And let the following loop set it again if necessary.
+    internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
         std::shared_lock lock{_messages.mutex()};
         for (const auto& id_and_message : _messages)
