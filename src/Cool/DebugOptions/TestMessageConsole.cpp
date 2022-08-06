@@ -35,7 +35,10 @@ void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console)
     }
     if (ImGui::Button("Remove last message ID"))
     {
-        _messages.pop_back();
+        if (!_messages.empty())
+        {
+            _messages.pop_back();
+        }
     }
     ImGui::Separator();
     ImGui::NewLine();
