@@ -22,7 +22,8 @@ void MessageConsole::send(MessageId& id, const Message& message)
         _messages.with_mutable_ref(id, [&](internal::MessageWithMetadata& data) {
             data.message = message;
             data.count++;
-            data.timestamp = std::chrono::system_clock::now();
+            data.timestamp           = std::chrono::system_clock::now();
+            data.monotonic_timestamp = std::chrono::steady_clock::now();
         });
     }
 
@@ -242,7 +243,8 @@ void MessageConsole::imgui_show_all_messages()
             };
 
             // Draw highlight of recent messages
-            const auto             dt                 = std::chrono::duration<float>{std::chrono::system_clock::now() - msg.timestamp};
+            const auto dt = std::chrono::duration<float>{
+                std::chrono::steady_clock::now() - msg.monotonic_timestamp};
             static constexpr float highlight_duration = 0.5f;
             if (dt.count() < highlight_duration)
             {
