@@ -17,6 +17,7 @@ namespace Cool {
 class DebugOptions {
 public:
     // clang-format off
+[[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
 [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
 [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
@@ -24,6 +25,7 @@ public:
 
 private:
     struct Instance {
+        bool test_message_console{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
@@ -35,6 +37,7 @@ private:
         void serialize(Archive& archive)
         {
             archive(
+                cereal::make_nvp("Test Message Console", test_message_console),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info)
@@ -44,6 +47,7 @@ private:
 
     static void reset_all()
     {
+        instance().test_message_console                     = false;
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
@@ -75,6 +79,8 @@ private:
     friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
     static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
     {
+        if (filter.PassFilter("Test Message Console"))
+            ImGui::Checkbox("Test Message Console", &instance().test_message_console);
         if (filter.PassFilter("Log when creating icon"))
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
         if (filter.PassFilter("Log the number of threads in the thread pool"))
