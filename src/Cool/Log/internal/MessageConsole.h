@@ -4,7 +4,6 @@
 #include "../MessageId.h"
 #include "Message.h"
 
-
 namespace Cool {
 
 namespace internal {
@@ -63,7 +62,7 @@ private:
     reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
     internal::RawMessageId                              _selected_message;
     bool                                                _is_open{false};
-    std::optional<internal::RawMessageId>               _message_just_sent{};
+    internal::RawMessageId                              _message_just_sent{};
     const char*                                         _name;
     MessagesCountPerSeverity                            _counts_per_severity{};
 };

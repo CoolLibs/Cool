@@ -152,7 +152,7 @@ void MessageConsole::imgui_window()
 {
     if (_is_open)
     {
-        if (_message_just_sent)
+        if (_message_just_sent.underlying_uuid().is_nil())
         {
             ImGui::SetNextWindowToFront();
         }
@@ -175,7 +175,7 @@ void MessageConsole::imgui_window()
 
         ImGui::End();
     }
-    _message_just_sent.reset();
+    _message_just_sent = {};
 }
 
 void MessageConsole::imgui_menu_bar()
@@ -235,8 +235,7 @@ void MessageConsole::imgui_show_all_messages()
                 {
                     _selected_message = id;
                 }
-                if (_message_just_sent &&
-                    *_message_just_sent == id)
+                if (_message_just_sent == id)
                 {
                     ImGui::SetScrollHereY(0.5f);
                 }
