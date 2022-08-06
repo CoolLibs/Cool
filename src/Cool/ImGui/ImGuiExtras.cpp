@@ -123,11 +123,9 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    ImGui::BeginDisabled();
-    ImGui::Button(label);
-    ImGui::EndDisabled();
-    invisible_wrapper_around_previous_line(reason_for_disabling);
-    tooltip(reason_for_disabling);
+    maybe_disabled(true, reason_for_disabling, [&]() {
+        ImGui::Button(label);
+    });
 }
 
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
