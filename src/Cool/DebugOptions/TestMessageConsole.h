@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cool/Log/ToUser.h>
-#include <Cool/MessageConsole/MessageConsole.h>
+#include <Cool/Log/internal/MessageConsole.h>
 
 namespace Cool {
 

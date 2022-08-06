@@ -1,8 +1,9 @@
 #pragma once
 
 #include <reg/reg.hpp>
+#include "../MessageId.h"
 #include "Message.h"
-#include "MessageId.h"
+
 
 namespace Cool {
 
