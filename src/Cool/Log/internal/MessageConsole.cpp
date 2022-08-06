@@ -69,7 +69,7 @@ void MessageConsole::clear(const internal::RawMessageId& id)
 void MessageConsole::close_window()
 {
     _is_open          = false;
-    _selected_message = MessageId{};
+    _selected_message = {};
 }
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
@@ -191,7 +191,7 @@ void MessageConsole::imgui_menu_bar()
 
 void MessageConsole::imgui_show_all_messages()
 {
-    _selected_message = MessageId{};       // Clear the selected message. And let the following loop set it again if necessary.
+    _selected_message = {};                // Clear the selected message. And let the following loop set it again if necessary.
     internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
         std::shared_lock lock{_messages.mutex()};
