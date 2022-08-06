@@ -153,7 +153,7 @@ void MessageConsole::imgui_window()
 {
     if (_is_open)
     {
-        if (_message_just_sent.underlying_uuid().is_nil())
+        if (!_message_just_sent.underlying_uuid().is_nil())
         {
             ImGui::SetNextWindowToFront();
         }
