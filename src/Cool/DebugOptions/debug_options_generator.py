@@ -32,7 +32,10 @@ def getters_for_release_build(debug_options: list[DebugOption]):
 
 def imgui_checkboxes_for_all_options(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f'if (filter.PassFilter("{debug_option.name_in_ui}")) ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});',
+                         f'''
+                        if (wafl::similarity_match({{filter, "{debug_option.name_in_ui}"}}) >= wafl::Matches::Strongly )
+                            ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});
+                        ''',
                          debug_options))
 
 
@@ -50,12 +53,12 @@ def reset_all(debug_options: list[DebugOption]):
 
 def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
     return f"""
-#pragma once
 #if DEBUG
 
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <Cool/DebugOptions/DebugOptionsManager.h>
+#include <wafl/wafl.hpp>
 
 namespace {namespace} {{
 
@@ -110,7 +113,8 @@ private:
 
     template<typename... Ts>
     friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
-    static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
+    
+    static void imgui_checkboxes_for_all_options(std::string_view filter)
     {{
         {imgui_checkboxes_for_all_options(debug_options)}
     }}

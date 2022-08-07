@@ -13,7 +13,7 @@ class DebugOptionsManager {
 public:
     static void imgui_checkboxes_for_all_options()
     {
-        instance().filter.Draw("Filter");
+        ImGui::InputText("Filter", &instance().filter);
         if (ImGui::Button("Reset all debug options"))
         {
             reset_all();
@@ -31,13 +31,13 @@ public:
 
     static void reset_all()
     {
-        instance().filter.Clear();
+        instance().filter = "";
         COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(reset_all_impl);
     }
 
 private:
     struct Instance {
-        ImGuiTextFilter filter;
+        std::string filter;
     };
 
     static auto instance() -> Instance&

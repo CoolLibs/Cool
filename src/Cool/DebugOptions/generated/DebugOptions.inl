@@ -5,12 +5,12 @@
  * -----------------------------------------------------------------------------
  */
 
-#pragma once
 #if DEBUG
 
 #include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
+#include <wafl/wafl.hpp>
 
 namespace Cool {
 
@@ -77,15 +77,19 @@ private:
 
     template<typename... Ts>
     friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
-    static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
+
+    static void imgui_checkboxes_for_all_options(std::string_view filter)
     {
-        if (filter.PassFilter("Test Message Console"))
+        if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
             ImGui::Checkbox("Test Message Console", &instance().test_message_console);
-        if (filter.PassFilter("Log when creating icon"))
+
+        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
-        if (filter.PassFilter("Log the number of threads in the thread pool"))
+
+        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
-        if (filter.PassFilter("Log OpenGL info"))
+
+        if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
     }
 };
