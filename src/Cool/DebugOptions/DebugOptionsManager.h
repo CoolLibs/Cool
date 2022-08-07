@@ -1,6 +1,7 @@
 #pragma once
 #if DEBUG
 
+#include <Cool/ImGui/ImGuiExtras.h>
 #include "DebugOptions.h"
 
 namespace Cool {
@@ -11,8 +12,12 @@ namespace Cool {
 template<typename... Ts>
 class DebugOptionsManager {
 public:
-    static void imgui_checkboxes_for_all_options()
+    static void imgui_checkboxes_for_all_options(bool should_focus_the_filter = false)
     {
+        if (should_focus_the_filter)
+        {
+            ImGui::SetKeyboardFocusHere();
+        }
         if (ImGui::InputText(
                 "Filter", &instance().filter,
                 ImGuiInputTextFlags_EnterReturnsTrue
@@ -20,6 +25,13 @@ public:
         {
             toggle_first_checkbox();
         }
+        ImGui::SameLine();
+        if (ImGuiExtras::close_button())
+        {
+            reset_filter();
+        }
+        ImGuiExtras::tooltip("Clear the filter");
+        ImGui::SameLine();
         if (ImGui::Button("Reset all debug options"))
         {
             reset_all();
@@ -35,9 +47,14 @@ public:
         }
     };
 
-    static void reset_all()
+    static void reset_filter()
     {
         instance().filter = "";
+    }
+
+    static void reset_all()
+    {
+        reset_filter();
         COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(reset_all_impl);
     }
 
