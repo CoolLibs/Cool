@@ -217,12 +217,7 @@ void MessageConsole::imgui_show_all_messages()
                 if (is_closable(msg))
                 {
                     ImGui::SameLine();
-                    if (ImGuiExtras::button_with_icon(
-                             Icons::close_button().imgui_texture_id(),
-                             ImVec4(0.9f, 0.9f, 0.9f, 1.f),
-                             ImVec4(0.5f, 0.2f, 0.2f, 1.f),
-                             11.f, 11.f
-                         ))
+                    if (ImGuiExtras::close_button())
                     {
                         msg_to_clear = id;
                     }
