@@ -30,11 +30,27 @@ def getters_for_release_build(debug_options: list[DebugOption]):
                          debug_options))
 
 
+def passes_the_filter(debug_option: DebugOption):
+    return f'wafl::similarity_match({{filter, "{debug_option.name_in_ui}"}}) >= wafl::Matches::Strongly'
+
+
 def imgui_checkboxes_for_all_options(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
                          f'''
-                        if (wafl::similarity_match({{filter, "{debug_option.name_in_ui}"}}) >= wafl::Matches::Strongly )
+                        if ({passes_the_filter(debug_option)})
                             ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});
+                        ''',
+                         debug_options))
+
+
+def toggle_first_checkbox(debug_options: list[DebugOption]):
+    return "\n".join(map(lambda debug_option:
+                         f'''
+                        if ({passes_the_filter(debug_option)})
+                        {{
+                            instance().{debug_option.name_in_code} = !instance().{debug_option.name_in_code};
+                            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+                        }}
                         ''',
                          debug_options))
 
@@ -117,6 +133,11 @@ private:
     static void imgui_checkboxes_for_all_options(std::string_view filter)
     {{
         {imgui_checkboxes_for_all_options(debug_options)}
+    }}
+
+    static void toggle_first_checkbox(std::string_view filter)
+    {{
+        {toggle_first_checkbox(debug_options)}
     }}
 }};
 

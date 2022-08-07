@@ -92,6 +92,33 @@ private:
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
     }
+
+    static void toggle_first_checkbox(std::string_view filter)
+    {
+        if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_message_console = !instance().test_message_console;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_when_creating_icon = !instance().log_when_creating_icon;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_number_of_threads_in_the_thread_pool = !instance().log_number_of_threads_in_the_thread_pool;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_opengl_info = !instance().log_opengl_info;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+    }
 };
 
 } // namespace Cool

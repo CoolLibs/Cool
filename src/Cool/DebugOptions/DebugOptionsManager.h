@@ -13,7 +13,13 @@ class DebugOptionsManager {
 public:
     static void imgui_checkboxes_for_all_options()
     {
-        ImGui::InputText("Filter", &instance().filter);
+        if (ImGui::InputText(
+                "Filter", &instance().filter,
+                ImGuiInputTextFlags_EnterReturnsTrue
+            ))
+        {
+            toggle_first_checkbox();
+        }
         if (ImGui::Button("Reset all debug options"))
         {
             reset_all();
@@ -46,6 +52,22 @@ private:
             static auto the_instance = Instance{};
             return the_instance;
         }
+    }
+
+    static void toggle_first_checkbox()
+    {
+        try
+        {
+            COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(toggle_first_checkbox_impl); // This will throw on the first checkbox that passes the filter, to prevent to rest of the loop from happening.
+        }
+        catch (float)
+        {}
+    }
+
+    template<typename T>
+    static void toggle_first_checkbox_impl(T&&)
+    {
+        T::toggle_first_checkbox(instance().filter);
     }
 
     template<typename T>
