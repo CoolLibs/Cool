@@ -3,12 +3,20 @@
 # ------------
 
 from dataclasses import dataclass
+from enum import Enum, auto
+
+
+class Kind(Enum):
+    BOOLEAN = auto()
+    WINDOW = auto()
 
 
 @dataclass
 class DebugOption:
     name_in_code: str
     name_in_ui: str
+    window_name: str = ""
+    kind: Kind = Kind.BOOLEAN
     default_value: bool = False
 
 
@@ -18,16 +26,28 @@ def debug_options_variables(debug_options: list[DebugOption]):
                          debug_options))
 
 
-def getters_for_debug_build(debug_options: list[DebugOption]):
-    return "\n".join(map(lambda debug_option:
-                         f"[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return instance().{debug_option.name_in_code}; }}",
-                         debug_options))
+def window_name(debug_option: DebugOption):
+    return debug_option.window_name if debug_option.window_name else debug_option.name_in_ui
 
 
-def getters_for_release_build(debug_options: list[DebugOption]):
-    return "\n".join(map(lambda debug_option:
-                         f"[[nodiscard]] static auto constexpr {debug_option.name_in_code}() -> bool {{ return false; }}",
-                         debug_options))
+def option_implementation(debug_option: DebugOption):
+    match debug_option.kind:
+        case Kind.BOOLEAN:
+            return f"[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return instance().{debug_option.name_in_code}; }}"
+        case _:
+            return f"""static void {debug_option.name_in_code}(std::function<void()> callback)
+            {{
+                if (instance().{debug_option.name_in_code}) 
+                {{
+                    ImGui::Begin("{window_name(debug_option)}", &instance().{debug_option.name_in_code});
+                    callback();
+                    ImGui::End();
+                }}
+            }}"""
+
+
+def options_implementations(debug_options: list[DebugOption]):
+    return "\n".join(map(option_implementation, debug_options))
 
 
 def passes_the_filter(debug_option: DebugOption):
@@ -80,9 +100,7 @@ namespace {namespace} {{
 
 class DebugOptions {{
 public:
-    // clang-format off
-{getters_for_debug_build(debug_options)}
-    // clang-format on
+    {options_implementations(debug_options)}
 
 private:
     struct Instance {{

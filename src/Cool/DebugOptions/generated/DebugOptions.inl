@@ -16,12 +16,10 @@ namespace Cool {
 
 class DebugOptions {
 public:
-    // clang-format off
-[[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
-[[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
-[[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
-[[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
-    // clang-format on
+    [[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
+    [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
+    [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
+    [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
 
 private:
     struct Instance {
