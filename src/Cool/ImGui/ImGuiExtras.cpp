@@ -128,6 +128,16 @@ void button_disabled(const char* label, const char* reason_for_disabling)
     });
 }
 
+auto colored_button(const char* label, float hue, const ImVec2& size) -> bool
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
+    const auto is_clicked = ImGui::Button(label, size);
+    ImGui::PopStyleColor(3);
+    return is_clicked;
+}
+
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
 {
     return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
