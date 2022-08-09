@@ -41,67 +41,75 @@ public:
         : _auto_serializer{path, "PresetManager", *this}
     {}
 
-    auto get_id_by_given_values(Settings& values) -> PresetId
-    {
-        for (auto& [id, preset] : _presets)
-        {
-            if (preset.values == values)
-            {
-                return id;
-            }
-        }
-        return PresetId{};
-    }
+    /// Searches if PresetManager contains a preset which have same values as given `values`.
+    auto find_preset_with_given_values(const Settings& values) const -> PresetId;
 
-    auto contains(const PresetId& id) -> bool
-    {
-        return _presets.contains(id);
-    }
+    /// Return if PresetManager contains preset identified by the given `id`.
+    auto contains(const PresetId& id) const -> bool { return _presets.contains(id); }
 
-    // TODO(LD) Documentation
-    auto add_preset(const Preset2& preset) -> PresetId
-    {
-        return _presets.create(preset);
-    }
+    /// Add given preset in the PresetManager.
+    auto add_preset(const Preset2& preset) -> PresetId { return _presets.create(preset); }
 
-    // TODO(LD) Documentation
-    void remove_preset(const PresetId& id)
-    {
-        _presets.destroy(id);
-    }
+    /// Remove preset identified by the given id from the PresetManager.
+    void remove_preset(const PresetId& id) { _presets.destroy(id); }
 
-    // TODO(LD) Documentation
+    /// Change settings values by given `settings` from preset identified by the given `id`.
     void edit_preset_values(const PresetId& id, const Settings& settings);
 
-    // TODO(LD) Documentation
+    /// Change name by given `name` from preset identified by the given `id`.
     void rename_preset(const PresetId& id, std::string_view name);
 
-    // TODO(LD) Documentation
-    auto imgui(Settings& preset_data) -> bool;
+    /// Main loop that creates presets interface with current settings, list of presets, add and delete button.
+    auto imgui(Settings& settings) -> bool;
 
 private:
-    auto current_name(
-        const PresetId& id,
-        const Settings& current_settings
-    ) -> std::string;
+    /// Name of the preset identified by given id.
+    auto preset_name(const PresetId&) const -> std::string;
 
+    /// Creates a dropdown containing all the presets of PresetManager.
     auto dropdown(
         std::string_view dropdown_name,
         std::string_view current_name,
-        Settings*        preset_data,
-        ImGuiComboFlags_ flag
-    ) -> bool;
+        ImGuiComboFlags = ImGuiComboFlags_None
+    ) -> PresetId;
 
-    auto name_selector() -> bool;
+    /// Arrow which calls a dropdown to fill _new_preset_name by one of the preset's name already existing.
+    void name_selector();
 
-    auto add_button(Settings& preset_data) -> bool;
+    /// Displays interface to add a preset in PresetManager with add_button, an input text and name_selector.
+    void adding_preset_interface(const Settings&);
 
-    void apply_preset(PresetId id, Settings& preset_data);
+    /// Apply preset identified by the given id on current settings.
+    auto apply_preset(const PresetId&, Settings&) const -> bool;
+
+    /// Searches if a preset contained by PresetManager have a same name as `name`.
+    auto find_preset_with_same_name(std::string_view name) -> Preset2*;
+
+    /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
+    void input_name();
+
+    /// Print an alert window to ask you if you really want to replace settings of the given `preset` by the given `settings` and do it if you click yes.
+    void overwrite_preset(Preset2* preset, const Settings& settings);
+
+    /// Add `preset` to PresetManager if `preset` is nullptr, calls overwrite_preset otherwise.
+    void save_preset(Preset2* preset, const Settings& settings);
+
+private:
+    class RenameWidget {
+    public:
+        /// Button which permits to edit the current preset's name.
+        void rename_button(PresetId& id, std::string_view current_name, PresetManager& preset_manager);
+
+    private:
+        std::string _new_name;
+        bool        _is_popup_open = false;
+    };
 
 private:
     reg::OrderedRegistry<Preset2> _presets;
     PresetId                      _current_preset_id;
     std::string                   _new_preset_name;
+    RenameWidget                  _rename_widget;
 
 private:
     // Serialization
@@ -115,7 +123,7 @@ private:
     }
 
 private:
-    Cool::AutoSerializer<PresetManager> _auto_serializer; // Must be last
+    Cool::AutoSerializer<PresetManager> _auto_serializer; // Must be last to properly serialize the class
 };
 
 } // namespace Cool

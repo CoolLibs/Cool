@@ -6,184 +6,291 @@
 
 namespace Cool {
 
-auto PresetManager::current_name(
-    const PresetId& id,
-    const Settings& current_settings
-) -> std::string
+auto PresetManager::find_preset_with_given_values(const Settings& values) const -> PresetId
 {
-    std::string result = "Unsaved. . .";
-
-    _presets.with_ref(id, [&](const Preset2& preset) {
-        if (preset.values == current_settings)
+    for (const auto& [id, preset] : _presets)
+    {
+        if (preset.values == values)
         {
-            result = preset.name;
+            return id;
         }
-    });
-
-    return result;
+    }
+    return PresetId{};
 }
 
-void PresetManager::apply_preset(PresetId id, Settings& preset_data)
+// TODO(LD) Need to be test ?
+// TODO(LD) Add warning message.
+void PresetManager::edit_preset_values(const PresetId& current_id, const Settings& settings)
 {
-    if (_presets.get(id) != std::nullopt)
+    for (auto& [id, preset] : _presets)
     {
-        preset_data = _presets.get(id)->values;
+        if (current_id == id && find_preset_with_given_values(settings) == PresetId{})
+        {
+            preset.values = settings;
+        }
+    }
+}
+
+// TODO(LD) Add warning message.
+void PresetManager::rename_preset(const PresetId& current_id, std::string_view name)
+{
+    for (auto& [id, preset] : _presets)
+    {
+        if (current_id == id)
+        {
+            if (find_preset_with_same_name(name) == nullptr)
+            {
+                preset.name = name;
+            }
+            else
+            {
+                boxer::show(
+                    "You can't rename as an already existing preset's name !",
+                    "Name already exists.",
+                    boxer::Style::Warning,
+                    boxer::Buttons::OK
+                );
+            }
+        }
+    }
+}
+
+auto PresetManager::preset_name(const PresetId& preset_id) const -> std::string
+{
+    // Default name
+    std::string name = "Unsaved Settings...";
+
+    // Replace default name with preset name if it is found in the registry
+    // TODO(LD) _presets.with_ref(preset_id, [&](const Preset2& preset) {
+    //     name = preset.name;
+    // });
+    auto preset = _presets.get(preset_id);
+    if (preset)
+    {
+        name = preset->name;
+    }
+
+    return name;
+}
+
+auto PresetManager::apply_preset(const PresetId& id, Settings& settings) const -> bool
+{
+    const auto preset = _presets.get(id);
+    if (preset)
+    {
+        settings = preset->values;
+        return true; // NOLINT
+    }
+    else
+    {
+        return false;
     }
 }
 
 auto PresetManager::dropdown(
     std::string_view dropdown_name,
     std::string_view current_name,
-    Settings*        preset_data,
-    ImGuiComboFlags_ flag = ImGuiComboFlags_None
-) -> bool
+    ImGuiComboFlags  combo_flags
+) -> PresetId
 {
+    auto current_id = PresetId{};
+
     if (ImGui::BeginCombo(
             dropdown_name.data(),
             current_name.data(),
-            flag
+            combo_flags
         ))
     {
-        for (auto& [id, preset] : _presets)
+        for (const auto& [id, preset] : _presets)
         {
-            bool is_selected = false;
-            is_selected      = (_current_preset_id == id);
-            if (_presets.get(_current_preset_id) != std::nullopt)
-            {
-                is_selected &= _presets.get(_current_preset_id)->name == current_name;
-            }
+            ImGui::PushID(&preset);
+            const bool is_selected = _current_preset_id == id;
             if (ImGui::Selectable(preset.name.c_str(), is_selected))
             {
-                if (preset_data == nullptr && _presets.get(id) != std::nullopt)
-                {
-                    // current_name     = _presets.get(id)->name;
-                    _new_preset_name = _presets.get(id)->name;
-                }
-                else
-                {
-                    _current_preset_id = id;
-                    apply_preset(_current_preset_id, *preset_data);
-                }
-                ImGui::EndCombo();
-                return true;
+                current_id = id;
             }
+            ImGui::PopID();
         }
         ImGui::EndCombo();
     }
-    return false;
+    return current_id;
 }
 
-auto PresetManager::name_selector() -> bool
+void PresetManager::name_selector()
 {
-    return dropdown(
-        "Name",
-        "",
-        nullptr,
-        ImGuiComboFlags_NoPreview
-    );
+    // Draw just the arrow of the dropdown
+    const auto id = dropdown("Name", "", ImGuiComboFlags_NoPreview);
+
+    // Update _new_preset_name if a preset was selected in the dropdown
+    _presets.with_ref(id, [&](const Preset2& preset) {
+        _new_preset_name = preset.name;
+    });
 }
 
-static auto display_all_variables_widgets(Settings& preset_data) -> bool
+static auto display_all_variables_widgets(Settings& settings) -> bool
 {
-    bool b = false;
-    for (auto& variable : preset_data)
+    bool was_used = false;
+    for (auto& variable : settings)
     {
-        if (std::visit([](auto&& real_variable) { return imgui_widget(real_variable); }, variable))
-        {
-            b = true;
-        }
+        was_used |= std::visit([](auto&& real_variable) { return imgui_widget(real_variable); }, variable);
     }
-    return b;
+    return was_used;
 }
 
-static auto delete_button(PresetManager& preset_manager, const PresetId& id) -> bool
+static void delete_button(const PresetId& id, std::string_view name, PresetManager& preset_manager)
 {
-    if (preset_manager.contains(id))
+    if (ImGui::Button("Delete Preset"))
     {
-        if (ImGui::Button("Delete Preset"))
+        const auto sel = boxer::show(
+            fmt::format("Would you delete {}, you will lose it definitively ?", name).c_str(),
+            "Preset already exists.",
+            boxer::Style::Warning,
+            boxer::Buttons::YesNo
+        );
+        if (sel == boxer::Selection::Yes)
         {
             preset_manager.remove_preset(id);
-            return true;
         }
     }
-    return false;
 }
 
-auto PresetManager::add_button(Settings& preset_data) -> bool
+void PresetManager::RenameWidget::rename_button(PresetId& id, std::string_view current_name, PresetManager& preset_manager)
 {
-    if (_new_preset_name == "")
+    const bool is_open_last_frame = _is_popup_open;
+    _is_popup_open                = ImGuiExtras::begin_popup_context_menu_from_button("Rename");
+    if (_is_popup_open)
     {
-        Cool::ImGuiExtras::button_disabled("Create Preset", "Write a name before adding.");
-        return false;
-    }
-
-    if (ImGui::Button("Create Preset"))
-    {
-        for (auto& [id, preset] : _presets)
+        if (!is_open_last_frame)
         {
-            if (_new_preset_name == preset.name)
-            {
-                if (preset_data == preset.values)
-                {
-                    return false;
-                }
-                const std::string warning_message = "Would you overwrite " + _new_preset_name + ", you will lose his previous values ?";
-
-                auto sel = boxer::show(
-                    warning_message.c_str(),
-                    "Preset already exist.",
-                    boxer::Style::Warning,
-                    boxer::Buttons::YesNo
-                );
-                if (sel == boxer::Selection::Yes)
-                {
-                    preset.values      = preset_data;
-                    _new_preset_name   = "";
-                    _current_preset_id = id;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            _new_name = current_name;
+            ImGui::SetKeyboardFocusHere();
         }
-        const Preset2 new_preset = {
-            .name   = _new_preset_name,
-            .values = preset_data};
-        _current_preset_id = add_preset(new_preset);
-        _new_preset_name   = "";
-        return true;
+        if (ImGui::InputText("##645", &_new_name, ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
-    return false;
+    if (is_open_last_frame && !_is_popup_open) // Was just closed
+    {
+        preset_manager.rename_preset(id, _new_name);
+    }
 }
 
-auto PresetManager::imgui(Settings& preset_data) -> bool
+auto PresetManager::find_preset_with_same_name(std::string_view name) -> Preset2*
 {
-    display_all_variables_widgets(preset_data);
+    for (auto& [_, current_preset] : _presets)
+    {
+        if (name == current_preset.name)
+        {
+            return &current_preset;
+        }
+    }
+    return nullptr;
+}
 
-    _current_preset_id = get_id_by_given_values(preset_data);
+auto add_button(Preset2* preset, std::string_view name) -> bool
+{
+    auto is_clicked = false;
+    Cool::ImGuiExtras::maybe_disabled(name == "", "Write a name before adding.", [&]() {
+        if (preset == nullptr)
+        {
+            is_clicked = ImGui::Button("Save Preset");
+        }
+        else
+        {
+            is_clicked = Cool::ImGuiExtras::colored_button("Overwrite", 0.5);
+        }
+    });
+    return is_clicked;
+}
+
+void PresetManager::input_name()
+{
+    ImGui::SameLine(0.f, 0.f);
+    ImGui::InputText("##465", &_new_preset_name);
+    ImGui::SameLine(0.f, 0.f);
+    name_selector();
+}
+
+void PresetManager::overwrite_preset(Preset2* preset, const Settings& settings)
+{
+    const auto sel = boxer::show(
+        fmt::format("Would you overwrite {}, you will lose his previous values ?", _new_preset_name).c_str(),
+        "Preset already exists.",
+        boxer::Style::Warning,
+        boxer::Buttons::YesNo
+    );
+    if (sel == boxer::Selection::Yes)
+    {
+        preset->values   = settings;
+        _new_preset_name = "";
+    }
+}
+
+void PresetManager::save_preset(Preset2* preset, const Settings& settings)
+{
+    if (preset != nullptr)
+    {
+        overwrite_preset(preset, settings);
+    }
+    else
+    {
+        _current_preset_id = add_preset({
+            .name   = _new_preset_name,
+            .values = settings,
+        });
+        _new_preset_name   = "";
+    }
+}
+
+void PresetManager::adding_preset_interface(const Settings& settings)
+{
+    Preset2* preset = find_preset_with_same_name(_new_preset_name);
+
+    const auto button_clicked = add_button(preset, _new_preset_name);
+
+    ImGui::SameLine();
+    ImGui::Text("as");
+
+    input_name();
+
+    if (button_clicked)
+    {
+        save_preset(preset, settings);
+    }
+}
+
+auto PresetManager::imgui(Settings& settings) -> bool
+{
+    bool settings_have_changed = false;
+
+    settings_have_changed |= display_all_variables_widgets(settings);
+
+    _current_preset_id = find_preset_with_given_values(settings);
 
     ImGui::Separator();
 
-    delete_button(*this, _current_preset_id);
+    const auto id = dropdown("Presets", preset_name(_current_preset_id));
+
+    settings_have_changed |= apply_preset(id, settings);
+
     if (!contains(_current_preset_id))
     {
-        add_button(preset_data);
-        ImGui::SameLine();
-        ImGui::InputText("##465", &_new_preset_name);
-        ImGui::SameLine();
-        name_selector();
+        adding_preset_interface(settings);
+    }
+    else
+    {
+        if (_presets.get(_current_preset_id))
+        {
+            const auto current_name = _presets.get(_current_preset_id)->name;
+            delete_button(_current_preset_id, current_name, *this);
+            ImGui::SameLine();
+            _rename_widget.rename_button(_current_preset_id, current_name, *this);
+        }
     }
 
-    auto is_modified = false;
-    is_modified |= dropdown(
-        "Presets",
-        current_name(_current_preset_id, preset_data),
-        &preset_data
-    );
-
-    return is_modified;
+    return settings_have_changed;
 }
 
 } // namespace Cool
