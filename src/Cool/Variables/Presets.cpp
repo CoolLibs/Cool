@@ -63,20 +63,31 @@ void PresetManager::edit(const PresetId& id, const Settings& new_values)
 
 void PresetManager::rename(const PresetId& id, std::string_view new_name)
 {
-    if (find_preset_with_given_name(new_name) == PresetId{}) // Make sure there isn't already a preset with the same name.
-    {
+    const auto do_rename = [&]() {
         _presets.with_mutable_ref(id, [&](Preset2& preset) {
             preset.name = new_name;
         });
+    };
+
+    const auto preset_with_same_name = find_preset_with_given_name(new_name);
+
+    if (preset_with_same_name == PresetId{}) // Make sure there isn't already a preset with the same name.
+    {
+        do_rename();
     }
     else if (preset_name(id) != new_name) // Don't warn if we are trying to rename a preset with its current name
     {
-        boxer::show(
-            fmt::format("There is already a preset called \"{}\".", new_name).c_str(),
-            "Renaming failed",
+        const auto choice = boxer::show(
+            fmt::format("There is already a preset called \"{}\", do you want to overwrite it?", new_name).c_str(),
+            "Are you sure?",
             boxer::Style::Warning,
-            boxer::Buttons::OK
+            boxer::Buttons::YesNo
         );
+        if (choice == boxer::Selection::Yes)
+        {
+            remove(preset_with_same_name);
+            do_rename();
+        }
     }
 }
 
