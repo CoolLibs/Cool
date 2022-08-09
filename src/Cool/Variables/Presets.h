@@ -43,7 +43,7 @@ public:
 
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
-    auto add(const Preset2& preset) -> PresetId { return _presets.create(preset); }
+    auto add(const Preset2& preset) -> PresetId { return _presets.create(preset); } // TODO(LD) make sure name or values isn't already used
 
     /// Removes the preset referenced by `id`.
     void remove(const PresetId& id) { _presets.destroy(id); }

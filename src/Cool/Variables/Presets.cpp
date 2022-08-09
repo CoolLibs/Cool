@@ -41,7 +41,6 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     );
 }
 
-// TODO(LD) Add this to our test window!
 void PresetManager::edit(const PresetId& id, const Settings& new_values)
 {
     if (find_preset_with_given_values(new_values) == PresetId{}) // Make sure there isn't already a preset with the same values.
