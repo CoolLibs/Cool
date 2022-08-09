@@ -8,7 +8,7 @@ namespace Cool {
 
 // TODO(JF) TODO(LD) Remove the old presets system
 
-// TODO(LD) Documentation
+/// List of values contained by a preset.
 using Settings = std::vector<Cool::AnyVariable>;
 
 struct Preset2 {
@@ -32,7 +32,6 @@ private:
 
 using PresetId = reg::Id<Preset2>;
 
-// TODO(LD) Documentation
 class PresetManager {
 public:
     PresetManager(std::filesystem::path path)
@@ -68,10 +67,10 @@ public:
     /// Returns the ID of the preset with the given `name`, or a null ID if no preset has the given `name`.
     auto find_preset_with_given_name(std::string_view name) const -> PresetId;
 
-private:
-    /// Text that should be displayed in the UI to describe the preset referenced by `id`. Handles invalid IDs.
-    auto preset_name(const PresetId& id) const -> std::string;
+    /// Returns the name of the preset referenced by `id`, or nullopt if it doesn't exist.
+    auto preset_name(const PresetId& id) const -> std::optional<std::string>;
 
+private:
     /// Creates a dropdown containing all the presets.
     /// Returns the ID of the selected preset if any, or a null ID otherwise.
     auto dropdown(

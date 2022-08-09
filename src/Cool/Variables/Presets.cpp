@@ -4,7 +4,6 @@
 
 // TODO(LD) In case of a change of Settings definition show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropsown that allows to link it to one of the new names that don't correspond to any old names)
 
-// TODO(LD) When renaming to the same name, but show the warning
 namespace Cool {
 
 /// Returns the ID of the first Preset that matches the `predicate`, or a null ID if there was none.
@@ -81,12 +80,12 @@ void PresetManager::rename(const PresetId& id, std::string_view new_name)
     }
 }
 
-auto PresetManager::preset_name(const PresetId& id) const -> std::string
+auto PresetManager::preset_name(const PresetId& id) const -> std::optional<std::string>
 {
-    // Default name
-    std::string name{"Unsaved Settings..."};
+    // Default return value
+    std::optional<std::string> name{};
 
-    // Replace default name with preset name if it is found in the registry
+    // Replace nullopt with preset name if it is found in the registry
     _presets.with_ref(id, [&](const Preset2& preset) {
         name = preset.name;
     });
@@ -275,22 +274,21 @@ auto PresetManager::imgui(Settings& settings) -> bool
 
     ImGui::Separator();
 
-    const auto selected_id = dropdown("Presets", preset_name(_current_preset_id));
+    const auto current_preset_name = preset_name(_current_preset_id);
+
+    const auto selected_id = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
 
     settings_have_changed |= apply(selected_id, settings);
 
-    if (!contains(_current_preset_id))
+    if (!current_preset_name)
     {
         imgui_adding_preset(settings);
     }
     else
     {
-        _presets.with_ref(_current_preset_id, [&](const Preset2& preset) {
-            const auto current_name = preset.name;
-            delete_button(_current_preset_id, current_name, *this);
-            ImGui::SameLine();
-            _rename_widget.imgui(_current_preset_id, current_name, *this);
-        });
+        delete_button(_current_preset_id, *current_preset_name, *this);
+        ImGui::SameLine();
+        _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
     }
 
     return settings_have_changed;
