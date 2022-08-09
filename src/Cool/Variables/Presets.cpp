@@ -69,7 +69,7 @@ void PresetManager::rename(const PresetId& id, std::string_view new_name)
             preset.name = new_name;
         });
     }
-    else
+    else if (preset_name(id) != new_name) // Don't warn if we are trying to rename a preset with its current name
     {
         boxer::show(
             fmt::format("There is already a preset called \"{}\".", new_name).c_str(),
