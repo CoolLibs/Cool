@@ -423,18 +423,24 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     return value_changed;
 }
 
-static auto highlight_color(float opacity) -> ImU32
+static auto ImU32_from_ImVec4(ImVec4 color) -> ImU32
 {
-    const auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
     return ImGui::GetColorU32(IM_COL32(
-        col.x * 255.f,
-        col.y * 255.f,
-        col.z * 255.f,
-        opacity * 255.f
+        color.x * 255.f,
+        color.y * 255.f,
+        color.z * 255.f,
+        color.w * 255.f
     ));
 }
 
-void highlight(std::function<void()> widget, float opacity)
+static auto highlight_color(float opacity) -> ImVec4
+{
+    auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    col.w    = opacity;
+    return col;
+}
+
+void background(std::function<void()> widget, ImVec4 color)
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
     draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the widget,
@@ -451,9 +457,17 @@ void highlight(std::function<void()> widget, float opacity)
     draw_list.AddRectFilled(
         rectangle_start_pos,
         rectangle_end_pos,
-        highlight_color(opacity)
+        ImU32_from_ImVec4(color)
     );
     draw_list.ChannelsMerge();
+}
+
+void highlight(std::function<void()> widget, float opacity)
+{
+    background(
+        widget,
+        highlight_color(opacity)
+    );
 }
 
 auto link(std::string_view url) -> bool
