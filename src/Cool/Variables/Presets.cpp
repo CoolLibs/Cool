@@ -2,7 +2,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <boxer/boxer.h>
 
-// TODO(LD) In case of a change of Settings definition show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropsown that allows to link it to one of the new names that don't correspond to any old names)
+// TODO(LD) TODO(JF) In case of a change of Settings definition show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropsown that allows to link it to one of the new names that don't correspond to any old names)
 
 namespace Cool {
 
