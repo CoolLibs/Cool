@@ -41,6 +41,40 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     );
 }
 
+auto PresetManager::add(const Preset2& preset, bool show_warning_messages) -> PresetId
+{
+    if (find_preset_with_given_values(preset.values) != PresetId{})
+    {
+        if (show_warning_messages)
+        {
+            boxer::show(
+                "There is already a preset with the same values.",
+                "Adding failed",
+                boxer::Style::Warning,
+                boxer::Buttons::OK
+            );
+        }
+        return PresetId{};
+    }
+    else if (find_preset_with_given_name(preset.name) != PresetId{})
+    {
+        if (show_warning_messages)
+        {
+            boxer::show(
+                "There is already a preset with the same name.",
+                "Adding failed",
+                boxer::Style::Warning,
+                boxer::Buttons::OK
+            );
+        }
+        return PresetId{};
+    }
+    else
+    {
+        return _presets.create(preset);
+    }
+}
+
 void PresetManager::edit(const PresetId& id, const Settings& new_values)
 {
     if (find_preset_with_given_values(new_values) == PresetId{}) // Make sure there isn't already a preset with the same values.
