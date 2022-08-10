@@ -41,6 +41,9 @@ public:
     /// Renders the UI for the whole `PresetManager`.
     auto imgui(Settings& settings) -> bool;
 
+    /// Renders only the UI for the presets.
+    auto imgui_presets(Settings& settings) -> bool;
+
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
     auto add(const Preset2& preset, bool show_warning_messages = true) -> PresetId;

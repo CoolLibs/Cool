@@ -1,4 +1,4 @@
-#include "Presets.h"
+#include "PresetManager.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <boxer/boxer.h>
 
@@ -308,21 +308,15 @@ void PresetManager::imgui_adding_preset(const Settings& settings)
     imgui_name_input();
 }
 
-auto PresetManager::imgui(Settings& settings) -> bool
+auto PresetManager::imgui_presets(Settings& settings) -> bool
 {
     _current_preset_id = find_preset_with_given_values(settings);
-
-    bool settings_have_changed{false};
-
-    settings_have_changed |= display_all_variables_widgets(settings);
-
-    ImGui::Separator();
 
     const auto current_preset_name = preset_name(_current_preset_id);
 
     const auto selected_id = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
 
-    settings_have_changed |= apply(selected_id, settings);
+    const auto settings_have_changed = apply(selected_id, settings);
 
     if (!current_preset_name)
     {
@@ -334,6 +328,19 @@ auto PresetManager::imgui(Settings& settings) -> bool
         ImGui::SameLine();
         _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
     }
+
+    return settings_have_changed;
+}
+
+auto PresetManager::imgui(Settings& settings) -> bool
+{
+    bool settings_have_changed{false};
+
+    settings_have_changed |= display_all_variables_widgets(settings);
+
+    ImGui::Separator();
+
+    settings_have_changed |= imgui_presets(settings);
 
     return settings_have_changed;
 }
