@@ -3,35 +3,17 @@
 # ------------
 
 
-def all_associations():
-    return {
-        "bool":               ["bool"],
-        "int":                ["int"],
-        "float":              ["float",  "vec1"],
-        "glm::vec2":          ["float2", "vec2"],
-        "glm::vec3":          ["float3", "vec3"],
-        "glm::vec4":          ["float4", "vec4"],
-        "Cool::RgbColor":     ["RgbColor"],
-        "Cool::Angle":        ["Angle"],
-        "Cool::Direction2D":  ["Direction2D"],
-        "Cool::Hue":          ["Hue"],
-        # "Cool::ColorPalette": ["ColorPalette"],
-    }
+tfs_global_type_to_string_associations = {}
+tfs_global_includes = ""
 
 
 def includes():
-    return f"""
-#include <glm/glm.hpp>
-#include <Cool/StrongTypes/RgbColor.h>
-#include <Cool/StrongTypes/Angle.h>
-#include <Cool/StrongTypes/Direction2D.h>
-#include <Cool/StrongTypes/Hue.h>
-"""
+    return tfs_global_includes
 
 
 def string_to_type_associations():
     out = "\n"
-    for key, values in all_associations().items():
+    for key, values in tfs_global_type_to_string_associations.items():
         for value in values:
             out += f"""
 template<>
@@ -46,7 +28,7 @@ def evaluate_function_template():
     out = "#define COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(function_template, type_as_string, out_type, arguments) \\\n"
     out += "([&]() -> out_type { \\\n"
     is_first = True
-    for key, values in all_associations().items():
+    for key, values in tfs_global_type_to_string_associations.items():
         for value in values:
             out += f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return function_template<{key}>arguments;' + "\\\n"
             is_first = False
@@ -55,7 +37,10 @@ def evaluate_function_template():
     return out
 
 
-if __name__ == '__main__':
+def main(all_type_to_string_associations, all_includes):
+    print(__file__)
+    import os
+    print(os.getcwd())
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
     import os
@@ -68,11 +53,35 @@ if __name__ == '__main__':
     # End of HACK
     import generate_files
 
+    global tfs_global_type_to_string_associations, tfs_global_includes
+    tfs_global_type_to_string_associations = all_type_to_string_associations
+    tfs_global_includes = all_includes
+
     generate_files.generate(
-        folder="generated",
+        folder=os.path.join(
+            Path(os.path.abspath(__file__)).parent, "generated"),
         files=[
             string_to_type_associations,
             includes,
             evaluate_function_template,
         ],
+        calling_file=__file__,
+    )
+
+
+if __name__ == '__main__':
+    # HACK: Python doesn't allow us to import from a parent folder
+    # So we need to add the path manually to sys.path
+    import os
+    import sys
+    from pathlib import Path
+    sys.path.append(os.path.join(
+        Path(os.path.abspath(__file__)).parent.parent,
+        "Variables")
+    )
+    # End of HACK
+    import generator_variables
+    main(
+        generator_variables.all_types_representations_as_strings(),
+        generator_variables.all_types_includes(),
     )
