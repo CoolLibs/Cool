@@ -113,7 +113,7 @@ def all_variable_descriptions():
         VariableDescription(
             type="Cool::Camera",
             string_representations=["Camera"],
-            include="<Cool/StrongTypes/Camera.h>",
+            include="<Cool/Camera/Camera.h>",
             metadatas=[],
             do_generate_get_default_metadata=False,
         ),
