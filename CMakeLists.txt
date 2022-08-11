@@ -150,10 +150,6 @@ target_link_libraries(Cool PUBLIC serv::serv)
 add_subdirectory(lib/stringify)
 target_link_libraries(Cool PUBLIC stringify::stringify)
 
-# type_from_string
-add_subdirectory(lib/type_from_string)
-target_link_libraries(Cool PUBLIC type_from_string::type_from_string)
-
 # op
 add_subdirectory(lib/op)
 target_link_libraries(Cool PUBLIC op::op)

@@ -3,8 +3,8 @@
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/Variables/Variable.h>
+#include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
-#include <type_from_string/type_from_string.hpp>
 
 namespace Cool {
 
@@ -82,7 +82,7 @@ static auto make_any_input(
     std::string_view key_values
 ) -> AnyInput
 {
-    return TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
 }
 
 struct TypeAndName_Ref {
