@@ -51,7 +51,7 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 {
     Cool::VariableMetadata<Cool::RgbColor> metadata{};
 
-    metadata.is_hdr = key_values.find("hdr") != std::string::npos;
+    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
 
     return metadata;
 }
