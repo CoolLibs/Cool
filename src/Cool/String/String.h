@@ -7,9 +7,7 @@
 
 namespace Cool::String {
 
-namespace internal {
 static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
-};
 
 auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 
@@ -98,7 +96,7 @@ auto find_matching_pair(
  */
 auto split_into_words(
     std::string_view text,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::vector<std::string>;
 
 auto remove_whitespaces(std::string_view text) -> std::string;
@@ -145,7 +143,7 @@ auto substring(
 auto find_next_word_position(
     std::string_view text,
     size_t           offset,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
 
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
@@ -153,7 +151,7 @@ auto find_next_word_position(
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::string_view>;
 
 /// Returns the position of the first block of text in `text` after `offset`.
@@ -237,5 +235,10 @@ template<>
 auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional<Cool::Direction2D>;
 template<>
 auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::Hue>;
+
+/// Returns true iff `word` is present in `text`.
+/// A word is delimited by `delimiters`.
+/// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
+auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters = default_word_delimiters) -> bool;
 
 } // namespace Cool::String

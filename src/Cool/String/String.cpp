@@ -560,4 +560,30 @@ auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::H
     }
 }
 
+auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters) -> bool
+{
+    if (word.empty())
+    {
+        return false;
+    }
+
+    const auto index = text.find(word);
+    if (index == std::string_view::npos)
+    {
+        return false;
+    }
+
+    const auto there_is_a_delimiter_at = [&](size_t index) -> bool {
+        return delimiters.find(text[index]) != delimiters.npos;
+    };
+
+    const bool is_beginning_of_a_word = index == 0 ||
+                                        there_is_a_delimiter_at(index - 1);
+
+    const bool is_end_of_a_word = index + word.size() == text.size() ||
+                                  there_is_a_delimiter_at(index + word.size());
+
+    return is_beginning_of_a_word && is_end_of_a_word;
+}
+
 } // namespace Cool::String
