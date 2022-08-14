@@ -74,47 +74,55 @@ private:
     }
 
     template<typename... Ts>
-    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
+    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_ui_for_all_options()`
 
-    static void imgui_checkboxes_for_all_options(std::string_view filter)
+    static void imgui_ui_for_all_options(std::string_view filter)
     {
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Test Message Console", &instance().test_message_console);
+        }
 
         if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
+        }
 
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
+        }
 
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
+        }
     }
 
-    static void toggle_first_checkbox(std::string_view filter)
+    static void toggle_first_option(std::string_view filter)
     {
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console = !instance().test_message_console;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
         if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
         {
             instance().log_when_creating_icon = !instance().log_when_creating_icon;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
         {
             instance().log_number_of_threads_in_the_thread_pool = !instance().log_number_of_threads_in_the_thread_pool;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
             instance().log_opengl_info = !instance().log_opengl_info;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_checkbox()` in <Cool/DebugOptions/DebugOptionsManager.h>
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
     }
 };
