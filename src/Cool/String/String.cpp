@@ -560,6 +560,13 @@ auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::H
     }
 }
 
+template<>
+auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>
+{
+    assert(false && "value_from_string<Cool::Camera> is not implemented yet!");
+    return std::nullopt;
+}
+
 auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters) -> bool
 {
     if (word.empty())

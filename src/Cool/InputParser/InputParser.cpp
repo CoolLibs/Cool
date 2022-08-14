@@ -33,18 +33,7 @@ static auto get_default_value(std::string_view key_values) -> T
 }
 
 template<typename T>
-static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>
-{
-    static_assert(
-#include <Cool/Variables/generated/T_is_a_variable_type.inl>
-        , "No implementation found for this type! You can add it in generate_variables.py"
-    );
-    /// NB: Use the following code if you need to know the type which is failing:
-    // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
-    // std::ignore           = debug_name;
-    // assert(false);
-    return Cool::VariableMetadata<T>{};
-}
+static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>;
 
 template<>
 auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::RgbColor>
