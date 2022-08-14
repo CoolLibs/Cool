@@ -38,9 +38,6 @@ def evaluate_function_template():
 
 
 def main(all_type_to_string_associations, all_includes):
-    print(__file__)
-    import os
-    print(os.getcwd())
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
     import os
