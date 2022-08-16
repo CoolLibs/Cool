@@ -11,3 +11,8 @@ Changing the API only requires one single Rename operation on the whole project.
 Users can choose which ones they want to download and which ones they don't need.
 
 Encourages more decoupling between the modules.
+
+## Running the tests
+
+Simply use "tests/CMakeLists.txt" to generate a project, then run it.<br/>
+If you are using VSCode and the CMake extension, this project already contains a *.vscode/settings.json* that will use the right CMakeLists.txt automatically.
