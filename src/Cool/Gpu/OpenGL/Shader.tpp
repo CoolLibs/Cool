@@ -1,6 +1,6 @@
 namespace Cool::OpenGL {
 
-namespace details {
+namespace internal {
 
 template<typename... ShaderModules>
 void attach_modules(GLuint id, ShaderModules&&... shader_modules)
@@ -8,26 +8,29 @@ void attach_modules(GLuint id, ShaderModules&&... shader_modules)
     (glAttachShader(id, shader_modules.id()), ...);
 }
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function" // Dunno why clang can't see that it is used
-#endif
-inline void validate_shader(GLuint id)
+inline void check_for_linking_errors(GLuint id)
 {
-    GLDebug(glValidateProgram(id));
+    int result; // NOLINT
+    GLDebug(glGetProgramiv(id, GL_LINK_STATUS, &result));
+    if (result == GL_FALSE)
+    {
+        GLsizei length; // NOLINT
+        GLDebug(glGetProgramiv(id, GL_INFO_LOG_LENGTH, &length));
+        std::vector<GLchar> error_message;
+        error_message.reserve(static_cast<size_t>(length));
+        GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
+        throw std::invalid_argument(std::string{"Linking failed:\n"} + error_message.data());
+    }
 }
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
-} // namespace details
+} // namespace internal
 
 template<typename... ShaderModules>
 Shader::Shader(ShaderModules&&... shader_modules)
 {
-    details::attach_modules(_shader.id(), std::forward<ShaderModules>(shader_modules)...);
+    internal::attach_modules(_shader.id(), std::forward<ShaderModules>(shader_modules)...);
     GLDebug(glLinkProgram(_shader.id()));
-    details::validate_shader(_shader.id());
+    internal::check_for_linking_errors(_shader.id());
 }
 
 } // namespace Cool::OpenGL
