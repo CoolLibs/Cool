@@ -4,12 +4,10 @@
 
 - Copy-paste one of the existing Variable files (`Variable_float.h` for example) and replace the implemention of all the required functions for your type.
 
-- Add your new type in the type-from-string associations in "Cool/lib/type_from_string/generator.py" and run the script.
-
 - Add your new type in "generate_variables.py" and run the script.
 
-- Add a define in "input_definitions.glsl"
+- Add a define in "input_definitions.glsl".
 
-- Update the documentation in "res/shaders/_README.md"
+- Update the documentation in "res/shaders/_README.md".
 
-- Add a specialization of `value_from_string` in `String`
+- Add a specialization of `value_from_string` in `String`.

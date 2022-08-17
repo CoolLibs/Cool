@@ -45,6 +45,9 @@ void tooltip(const char* text);
  */
 void button_disabled(const char* label, const char* reason_for_disabling = "Currently disabled");
 
+/// A button colored with the given `hue` (a number between 0 and 1).
+auto colored_button(const char* label, float hue, const ImVec2& size = ImVec2(0, 0)) -> bool;
+
 /**
  * @brief A button that uses an image instead of text
  *
@@ -68,6 +71,9 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1
  * @param frame_padding
  */
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, std::optional<float> frame_padding = 1.f);
+
+/// Draws a clickable red cross.
+auto close_button() -> bool;
 
 /**
  * @brief Displays an image with a frame around it
@@ -158,6 +164,10 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
+
+/// Renders `widget` with a colored background.
+/// `widget` must be a function that draws some ImGui widgets.
+void background(std::function<void()> widget, ImVec4 color);
 
 /// Renders `widget` with a highlighted background.
 /// `widget` must be a function that draws some ImGui widgets.

@@ -123,11 +123,19 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    ImGui::BeginDisabled();
-    ImGui::Button(label);
-    ImGui::EndDisabled();
-    invisible_wrapper_around_previous_line(reason_for_disabling);
-    tooltip(reason_for_disabling);
+    maybe_disabled(true, reason_for_disabling, [&]() {
+        ImGui::Button(label);
+    });
+}
+
+auto colored_button(const char* label, float hue, const ImVec2& size) -> bool
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
+    const auto is_clicked = ImGui::Button(label, size);
+    ImGui::PopStyleColor(3);
+    return is_clicked;
 }
 
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
@@ -140,6 +148,16 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
     tooltip(reason_for_disabling);
+}
+
+auto close_button() -> bool
+{
+    return button_with_icon(
+        Icons::close_button().imgui_texture_id(),
+        ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+        ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+        11.f, 11.f
+    );
 }
 
 void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
@@ -415,18 +433,24 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     return value_changed;
 }
 
-static auto highlight_color(float opacity) -> ImU32
+static auto ImU32_from_ImVec4(ImVec4 color) -> ImU32
 {
-    const auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
     return ImGui::GetColorU32(IM_COL32(
-        col.x * 255.f,
-        col.y * 255.f,
-        col.z * 255.f,
-        opacity * 255.f
+        color.x * 255.f,
+        color.y * 255.f,
+        color.z * 255.f,
+        color.w * 255.f
     ));
 }
 
-void highlight(std::function<void()> widget, float opacity)
+static auto highlight_color(float opacity) -> ImVec4
+{
+    auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    col.w    = opacity;
+    return col;
+}
+
+void background(std::function<void()> widget, ImVec4 color)
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
     draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the widget,
@@ -443,9 +467,17 @@ void highlight(std::function<void()> widget, float opacity)
     draw_list.AddRectFilled(
         rectangle_start_pos,
         rectangle_end_pos,
-        highlight_color(opacity)
+        ImU32_from_ImVec4(color)
     );
     draw_list.ChannelsMerge();
+}
+
+void highlight(std::function<void()> widget, float opacity)
+{
+    background(
+        widget,
+        highlight_color(opacity)
+    );
 }
 
 auto link(std::string_view url) -> bool

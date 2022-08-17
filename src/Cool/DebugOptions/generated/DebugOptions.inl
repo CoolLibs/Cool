@@ -5,28 +5,30 @@
  * -----------------------------------------------------------------------------
  */
 
-#pragma once
 #if DEBUG
 
 #include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
+#include <wafl/wafl.hpp>
 
 namespace Cool {
 
 class DebugOptions {
 public:
-    // clang-format off
-[[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
-[[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
-[[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
-    // clang-format on
+    [[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
+    [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
+    [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
+    [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
+    [[nodiscard]] static auto test_presets() -> bool& { return instance().test_presets; }
 
 private:
     struct Instance {
+        bool test_message_console{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
+        bool test_presets{false};
 
     private:
         // Serialization
@@ -35,18 +37,22 @@ private:
         void serialize(Archive& archive)
         {
             archive(
+                cereal::make_nvp("Test Message Console", test_message_console),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
-                cereal::make_nvp("Log OpenGL info", log_opengl_info)
+                cereal::make_nvp("Log OpenGL info", log_opengl_info),
+                cereal::make_nvp("Test Presets", test_presets)
             );
         }
     };
 
     static void reset_all()
     {
+        instance().test_message_console                     = false;
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
+        instance().test_presets                             = false;
     }
 
     static void save_to_file()
@@ -72,15 +78,67 @@ private:
     }
 
     template<typename... Ts>
-    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_checkboxes_for_all_options()`
-    static void imgui_checkboxes_for_all_options(const ImGuiTextFilter& filter)
+    friend class Cool::DebugOptionsManager; // We go through this indirection so that only the files which include "DebugOptionsManager" can call `imgui_ui_for_all_options()`
+
+    static void imgui_ui_for_all_options(std::string_view filter)
     {
-        if (filter.PassFilter("Log when creating icon"))
+        if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Test Message Console", &instance().test_message_console);
+        }
+
+        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
-        if (filter.PassFilter("Log the number of threads in the thread pool"))
+        }
+
+        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
-        if (filter.PassFilter("Log OpenGL info"))
+        }
+
+        if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
+        {
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
+        }
+
+        if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Test Presets", &instance().test_presets);
+        }
+    }
+
+    static void toggle_first_option(std::string_view filter)
+    {
+        if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_message_console = !instance().test_message_console;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_when_creating_icon = !instance().log_when_creating_icon;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_number_of_threads_in_the_thread_pool = !instance().log_number_of_threads_in_the_thread_pool;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_opengl_info = !instance().log_opengl_info;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_presets = !instance().test_presets;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
     }
 };
 

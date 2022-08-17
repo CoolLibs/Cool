@@ -496,4 +496,17 @@ TEST_CASE("Parsing a Direction2D")
     );
 }
 
+TEST_CASE("contains_word()")
+{
+    CHECK(Cool::String::contains_word("Hello", "Hello World") == true);
+    CHECK(Cool::String::contains_word("World", "Hello World") == true);
+    CHECK(Cool::String::contains_word("Hell", "Hello World") == false);
+    CHECK(Cool::String::contains_word("orld", "Hello World") == false);
+    CHECK(Cool::String::contains_word("worldo", "Hello World") == false);
+    CHECK(Cool::String::contains_word("world", "Hello World") == false);
+    CHECK(Cool::String::contains_word("", "Hello World") == false);
+    CHECK(Cool::String::contains_word("", "") == false);
+    CHECK(Cool::String::contains_word("Hello World", "Hello World") == true);
+}
+
 #endif

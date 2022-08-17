@@ -6,6 +6,11 @@
 
 namespace Cool {
 
+namespace internal {
+/// Like MessageId, but does not own any message: the message is not destroyed when RawMessageId is destroyed.
+using RawMessageId = reg::Id<internal::MessageWithMetadata>;
+} // namespace internal
+
 class MessageConsole {
 public:
     explicit MessageConsole(const char* name = "Console")
@@ -34,15 +39,32 @@ public:
     void imgui_window();
 
 private:
+    void clear(const internal::RawMessageId& id);
     void close_window();
-    void on_message_sent(const MessageId&);
+    void on_message_sent(const internal::RawMessageId&);
+    void show_number_of_messages_of_given_severity(MessageSeverity);
+    void refresh_counts_per_severity();
+    void imgui_menu_bar();
+    void imgui_show_all_messages();
+
+    class MessagesCountPerSeverity {
+    public:
+        MessagesCountPerSeverity();
+        void increment(MessageSeverity);
+        void reset_to_zero();
+        auto get(MessageSeverity) const -> size_t;
+
+    private:
+        std::array<size_t, 3> _counts_per_severity{};
+    };
 
 private:
     reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
-    MessageId                                           _selected_message;
+    internal::RawMessageId                              _selected_message;
     bool                                                _is_open{false};
-    std::optional<MessageId>                            _message_just_sent{};
+    internal::RawMessageId                              _message_just_sent{};
     const char*                                         _name;
+    MessagesCountPerSeverity                            _counts_per_severity{};
 };
 
 } // namespace Cool
