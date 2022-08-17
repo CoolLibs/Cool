@@ -167,7 +167,7 @@ add_subdirectory(lib/open_link)
 target_link_libraries(Cool PUBLIC open_link::open_link)
 
 # tl::expected
-target_include_directories(Cool PUBLIC lib/expected)
+target_include_directories(Cool PUBLIC lib/expected/include)
 
 # doctest
 add_subdirectory(lib/doctest)
