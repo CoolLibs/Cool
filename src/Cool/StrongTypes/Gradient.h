@@ -16,7 +16,7 @@ struct Gradient
     {
     }
 
-    friend auto operator==(const Gradient& a, const Gradient& b) -> bool { return a.value.get_gradient() == b.value.get_gradient(); }
+    friend auto operator==(const Gradient& a, const Gradient& b) -> bool { return a.value.gradient() == b.value.gradient(); }
 
     // auto inigo_formula(const glm::vec3 a, const glm::vec3 b, const glm::vec3 c, const glm::vec3 d) -> Cool::RgbColor
     // {
@@ -47,10 +47,12 @@ inline auto to_string(Cool::Gradient) -> std::string
     return "Gradient [...]";
 }
 
-inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags, float horizontal_margin = 10.f) -> bool
+inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
 {
-    // TODO(ASG) hitbox bigger
-    return gradient.value.gradient_editor(name, horizontal_margin, flags);
+    ImGuiGradient::Settings settings{};
+    settings.color_flags = flags;
+    settings.flags       = ImGuiGradient::Flag::NoResetButton;
+    return gradient.value.widget(name.data(), settings);
 }
 
 } // namespace Cool
