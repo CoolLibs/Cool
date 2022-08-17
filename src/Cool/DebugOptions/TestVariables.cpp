@@ -3,7 +3,7 @@
 #include <imgui/imgui.h>
 #include <vector>
 
-namespace Lab {
+namespace Cool {
 
 void test_variables()
 {
@@ -42,4 +42,4 @@ void test_variables()
     // Cool::imgui(color_palette);
 }
 
-} // namespace Lab
+} // namespace Cool

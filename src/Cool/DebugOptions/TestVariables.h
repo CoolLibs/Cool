@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Lab {
+namespace Cool {
 
 void test_variables();
 
