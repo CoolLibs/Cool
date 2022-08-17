@@ -150,6 +150,16 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
     tooltip(reason_for_disabling);
 }
 
+auto close_button() -> bool
+{
+    return button_with_icon(
+        Icons::close_button().imgui_texture_id(),
+        ImVec4(0.9f, 0.9f, 0.9f, 1.f),
+        ImVec4(0.5f, 0.2f, 0.2f, 1.f),
+        11.f, 11.f
+    );
+}
+
 void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();

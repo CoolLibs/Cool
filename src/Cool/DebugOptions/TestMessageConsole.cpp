@@ -12,14 +12,14 @@ TestMessageConsole::TestMessageConsole()
     });
 }
 
-void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console)
+void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console, bool* is_open)
 {
     if (_should_bring_window_to_front)
     {
         _should_bring_window_to_front = false;
         ImGui::SetNextWindowToFront();
     }
-    ImGui::Begin("Test Message Console");
+    ImGui::Begin("Test Message Console", is_open);
     ImGui::NewLine();
     for (auto& message : _messages)
     {

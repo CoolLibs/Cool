@@ -72,6 +72,9 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1
  */
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, std::optional<float> frame_padding = 1.f);
 
+/// Draws a clickable red cross.
+auto close_button() -> bool;
+
 /**
  * @brief Displays an image with a frame around it
  *

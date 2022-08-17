@@ -1,6 +1,7 @@
 #pragma once
 #if DEBUG
 
+#include <Cool/ImGui/ImGuiExtras.h>
 #include "DebugOptions.h"
 
 namespace Cool {
@@ -11,15 +12,32 @@ namespace Cool {
 template<typename... Ts>
 class DebugOptionsManager {
 public:
-    static void imgui_checkboxes_for_all_options()
+    static void imgui_ui_for_all_options(bool should_focus_the_filter = false)
     {
-        instance().filter.Draw("Filter");
+        if (should_focus_the_filter)
+        {
+            ImGui::SetKeyboardFocusHere();
+        }
+        if (ImGui::InputText(
+                "Filter", &instance().filter,
+                ImGuiInputTextFlags_EnterReturnsTrue
+            ))
+        {
+            toggle_first_option();
+        }
+        ImGui::SameLine();
+        if (ImGuiExtras::close_button())
+        {
+            reset_filter();
+        }
+        ImGuiExtras::tooltip("Clear the filter");
+        ImGui::SameLine();
         if (ImGui::Button("Reset all debug options"))
         {
             reset_all();
         }
         ImGui::Separator();
-        COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(imgui_checkboxes_for_all_options_impl);
+        COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(imgui_ui_for_all_options_impl);
     }
 
     struct AutoSerializer {
@@ -29,15 +47,20 @@ public:
         }
     };
 
+    static void reset_filter()
+    {
+        instance().filter = "";
+    }
+
     static void reset_all()
     {
-        instance().filter.Clear();
+        reset_filter();
         COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(reset_all_impl);
     }
 
 private:
     struct Instance {
-        ImGuiTextFilter filter;
+        std::string filter;
     };
 
     static auto instance() -> Instance&
@@ -48,10 +71,26 @@ private:
         }
     }
 
-    template<typename T>
-    static void imgui_checkboxes_for_all_options_impl(T&&)
+    static void toggle_first_option()
     {
-        T::imgui_checkboxes_for_all_options(instance().filter);
+        try
+        {
+            COOL_DEBUG_OPTIONS_MANAGER_FOR_ALL_T(toggle_first_option_impl); // This will throw on the first option that passes the filter, to prevent to rest of the loop from happening.
+        }
+        catch (float)
+        {}
+    }
+
+    template<typename T>
+    static void toggle_first_option_impl(T&&)
+    {
+        T::toggle_first_option(instance().filter);
+    }
+
+    template<typename T>
+    static void imgui_ui_for_all_options_impl(T&&)
+    {
+        T::imgui_ui_for_all_options(instance().filter);
     }
 
     template<typename T>
