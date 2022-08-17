@@ -123,11 +123,19 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    ImGui::BeginDisabled();
-    ImGui::Button(label);
-    ImGui::EndDisabled();
-    invisible_wrapper_around_previous_line(reason_for_disabling);
-    tooltip(reason_for_disabling);
+    maybe_disabled(true, reason_for_disabling, [&]() {
+        ImGui::Button(label);
+    });
+}
+
+auto colored_button(const char* label, float hue, const ImVec2& size) -> bool
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
+    const auto is_clicked = ImGui::Button(label, size);
+    ImGui::PopStyleColor(3);
+    return is_clicked;
 }
 
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)

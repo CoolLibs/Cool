@@ -3,8 +3,8 @@
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/Variables/Variable.h>
+#include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
-#include <type_from_string/type_from_string.hpp>
 
 namespace Cool {
 
@@ -33,25 +33,14 @@ static auto get_default_value(std::string_view key_values) -> T
 }
 
 template<typename T>
-static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>
-{
-    static_assert(
-#include <Cool/Variables/generated/T_is_a_variable_type.inl>
-        , "No implementation found for this type! You can add it in generate_variables.py"
-    );
-    /// NB: Use the following code if you need to know the type which is failing:
-    // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
-    // std::ignore           = debug_name;
-    // assert(false);
-    return Cool::VariableMetadata<T>{};
-}
+static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>;
 
 template<>
 auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::RgbColor>
 {
     Cool::VariableMetadata<Cool::RgbColor> metadata{};
 
-    metadata.is_hdr = key_values.find("hdr") != std::string::npos;
+    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
 
     return metadata;
 }
@@ -82,7 +71,7 @@ static auto make_any_input(
     std::string_view key_values
 ) -> AnyInput
 {
-    return TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
 }
 
 struct TypeAndName_Ref {

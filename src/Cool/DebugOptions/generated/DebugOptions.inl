@@ -20,6 +20,7 @@ public:
     [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
+    [[nodiscard]] static auto test_presets() -> bool& { return instance().test_presets; }
 
 private:
     struct Instance {
@@ -27,6 +28,7 @@ private:
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
+        bool test_presets{false};
 
     private:
         // Serialization
@@ -38,7 +40,8 @@ private:
                 cereal::make_nvp("Test Message Console", test_message_console),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
-                cereal::make_nvp("Log OpenGL info", log_opengl_info)
+                cereal::make_nvp("Log OpenGL info", log_opengl_info),
+                cereal::make_nvp("Test Presets", test_presets)
             );
         }
     };
@@ -49,6 +52,7 @@ private:
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
+        instance().test_presets                             = false;
     }
 
     static void save_to_file()
@@ -97,6 +101,11 @@ private:
         {
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
         }
+
+        if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Test Presets", &instance().test_presets);
+        }
     }
 
     static void toggle_first_option(std::string_view filter)
@@ -122,6 +131,12 @@ private:
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
             instance().log_opengl_info = !instance().log_opengl_info;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_presets = !instance().test_presets;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
     }

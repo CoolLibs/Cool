@@ -7,7 +7,7 @@
 # You can use `all_variable_types()` to get all the variable types we use in CoolLab.
 # ------------
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 
@@ -21,20 +21,25 @@ class VariableMetadata:
 
 
 @dataclass
-class VariableType:
+class VariableDescription:
     type: str
-    metadatas: list[VariableMetadata]
+    string_representations: list[str]  # Names the type can have in the shader
+    include: str = ""  # File containing the required type to define the variable
+    metadatas: list[VariableMetadata] = field(
+        default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
 
 
-def all_variable_types_and_metadatas():
+def all_variable_descriptions():
     return [
-        VariableType(
+        VariableDescription(
             type="bool",
-            metadatas=[]
+            string_representations=["bool"],
+            metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="int",
+            string_representations=["int"],
             metadatas=[
                 VariableMetadata(
                     name_in_shader="min",
@@ -50,10 +55,11 @@ def all_variable_types_and_metadatas():
                     type="int",
                     default_value="10",
                 ),
-            ]
+            ],
         ),
-        VariableType(
+        VariableDescription(
             type="float",
+            string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
                     name_in_shader="min",
@@ -71,20 +77,28 @@ def all_variable_types_and_metadatas():
                 ),
             ],
         ),
-        VariableType(
+        VariableDescription(
             type="glm::vec2",
+            string_representations=["float2", "vec2"],
+            include="<glm/glm.hpp>",
             metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="glm::vec3",
+            string_representations=["float3", "vec3"],
+            include="<glm/glm.hpp>",
             metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="glm::vec4",
+            string_representations=["float4", "vec4"],
+            include="<glm/glm.hpp>",
             metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="Cool::RgbColor",
+            string_representations=["RgbColor"],
+            include="<Cool/StrongTypes/RgbColor.h>",
             metadatas=[
                 VariableMetadata(
                     name_in_shader="hdr",
@@ -96,33 +110,46 @@ def all_variable_types_and_metadatas():
             ],
             do_generate_get_default_metadata=False,
         ),
-        VariableType(
+        VariableDescription(
             type="Cool::Camera",
+            string_representations=["Camera"],
+            include="<Cool/Camera/Camera.h>",
             metadatas=[],
-            do_generate_get_default_metadata=False,
         ),
-        VariableType(
+        VariableDescription(
             type="Cool::Angle",
+            string_representations=["Angle"],
+            include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="Cool::Direction2D",
+            string_representations=["Direction2D"],
+            include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
         ),
-        VariableType(
+        VariableDescription(
             type="Cool::Hue",
+            string_representations=["Hue"],
+            include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
         ),
         # VariableType(
         #     type="Cool::ColorPalette",
+        #     string_representations=["ColorPalette"],
+        # include="<Cool/StrongTypes/ColorPalette.h>",
         #     metadatas=[],
         # ),
     ]
 
 
 def all_variable_types():
-    return map(lambda type_and_meta: type_and_meta.type,
-               all_variable_types_and_metadatas())
+    return map(lambda desc: desc.type,
+               all_variable_descriptions())
+
+
+def all_types_representations_as_strings():
+    return {desc.type: desc.string_representations for desc in all_variable_descriptions()}
 
 
 def strip_namespace(variable_type):
@@ -134,14 +161,12 @@ def all_variable_types_without_namespaces():
                all_variable_types())
 
 
-def all_variable_types_and_metadatas_without_namespaces():
-    def strip_namespace_on_variable_type(type_and_meta):
-        return VariableType(
-            type=strip_namespace(type_and_meta.type),
-            metadatas=type_and_meta.metadatas
-        )
+def all_variable_descriptions_without_namespaces():
+    def strip_namespace_on_variable_type(desc):
+        desc.type = strip_namespace(desc.type)
+        return desc
     return map(lambda variable_type_and_metadatas: strip_namespace_on_variable_type(variable_type_and_metadatas),
-               all_variable_types_and_metadatas())
+               all_variable_descriptions())
 
 
 def all_variable_includes():
@@ -149,6 +174,23 @@ def all_variable_includes():
             #include <Cool/Camera/Camera.h>
             #include <Cool/Variables/Variables.h>
             """
+
+
+def all_includes():
+    return map(lambda var_desc: var_desc.include,
+               all_variable_descriptions())
+
+
+def all_non_empty_includes():
+    return filter(lambda include: include != "",
+                  all_includes())
+
+
+def all_types_includes():
+    return "\n".join(map(
+        lambda path: f"#include {path}",
+        all_non_empty_includes()
+    ))
 
 
 # def register_set_variable_commands():
@@ -180,6 +222,11 @@ def AnyInput():
         map(lambda var_type: f"Input<{var_type}>", all_variable_types())) + "\n>;"
 
 
+def AnyVariable():
+    return "\n" + "using AnyVariable = std::variant<\n" + ",\n".join(
+        map(lambda var_type: f"Variable<{var_type}>", all_variable_types())) + "\n>;"
+
+
 def AnyInputRef():
     return "\n" + "using AnyInputRef = std::variant<\n" + ",\n".join(
         map(lambda var_type: f"std::reference_wrapper<Input<{var_type}>>", all_variable_types())) + "\n>;"
@@ -192,7 +239,7 @@ def AnyInputRefToConst():
 
 def find_metadatas_in_string():
     out = ""
-    for variable_types_and_metadatas in all_variable_types_and_metadatas():
+    for variable_types_and_metadatas in all_variable_descriptions():
         if variable_types_and_metadatas.do_generate_get_default_metadata == True:
             out += f'''
                 template<>
@@ -260,27 +307,20 @@ def variable_definition_factory(variable_type_and_metadatas):
     return variable_definition
 
 
-def T_is_a_variable_type():
-    return " || \n".join(map(
-        lambda variable_type:
-            f"std::is_same_v<T, {variable_type}>",
-            all_variable_types()))
-
-
 def files():
     res = [
         # register_set_variable_commands,
         # register_set_variable_metadata_commands,
         VariableRegistries,
         AnyInput,
+        AnyVariable,
         AnyInputRef,
         AnyInputRefToConst,
         all_variable_includes,
         find_metadatas_in_string,
         variables_includes,
-        T_is_a_variable_type,
     ]
-    for variable_types_and_metadatas in all_variable_types_and_metadatas():
+    for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(
             variable_types_and_metadatas)
         variable_definition.__name__ = f"Variable_{strip_namespace(variable_types_and_metadatas.type)}"
@@ -304,4 +344,18 @@ if __name__ == '__main__':
     generate_files.generate(
         folder="generated",
         files=files(),
+    )
+
+    # HACK: Python doesn't allow us to import from a parent folder
+    # So we need to load it manually
+    from os import path
+    from pathlib import Path
+    from importlib.machinery import SourceFileLoader
+    tfs = SourceFileLoader(
+        "tfs",
+        path.join(Path(path.abspath(__file__)).parent.parent, "type_from_string/generator_tfs.py")).load_module()
+    # End of HACK
+    tfs.main(
+        all_types_representations_as_strings(),
+        all_types_includes(),
     )

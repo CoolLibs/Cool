@@ -7,9 +7,7 @@
 
 namespace Cool::String {
 
-namespace internal {
 static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
-};
 
 auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 
@@ -98,7 +96,7 @@ auto find_matching_pair(
  */
 auto split_into_words(
     std::string_view text,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::vector<std::string>;
 
 auto remove_whitespaces(std::string_view text) -> std::string;
@@ -145,7 +143,7 @@ auto substring(
 auto find_next_word_position(
     std::string_view text,
     size_t           offset,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
 
 /// /!\ The returned string_views are only valid as long as the input string_view is valid!
@@ -153,7 +151,7 @@ auto find_next_word_position(
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
-    std::string_view delimiters = internal::default_word_delimiters
+    std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::string_view>;
 
 /// Returns the position of the first block of text in `text` after `offset`.
@@ -196,46 +194,42 @@ auto find_value_for_given_key(
     }
 }
 
-/// Converts the given string into the correspondant value by type
+/// Converts the given string into the corresponding value.
 template<typename T>
-auto value_from_string(std::string_view) -> std::optional<T>
-{
-    static_assert(
-#include <Cool/Variables/generated/T_is_a_variable_type.inl>
-        , "Type not supported yet!"
-    );
-    /// NB: Use the following code if you need to know the type which is failing:
-    // const auto debug_name = std::string{"Type not supported yet: "} + typeid(T).name();
-    // std::ignore           = debug_name;
-    // assert(false);
-    return std::nullopt;
-}
+auto value_from_string(std::string_view) -> std::optional<T>; // Undefined template. No generic implementation, only specializations are allowed.
 
 template<>
-auto value_from_string<int>(std::string_view str) -> std::optional<int>;
+auto value_from_string<int>(std::string_view) -> std::optional<int>;
 template<>
-auto value_from_string<float>(std::string_view str) -> std::optional<float>;
+auto value_from_string<float>(std::string_view) -> std::optional<float>;
 template<>
-auto value_from_string<bool>(std::string_view str) -> std::optional<bool>;
+auto value_from_string<bool>(std::string_view) -> std::optional<bool>;
 template<>
-auto value_from_string<glm::vec2>(std::string_view str) -> std::optional<glm::vec2>;
+auto value_from_string<glm::vec2>(std::string_view) -> std::optional<glm::vec2>;
 template<>
-auto value_from_string<glm::ivec2>(std::string_view str) -> std::optional<glm::ivec2>;
+auto value_from_string<glm::ivec2>(std::string_view) -> std::optional<glm::ivec2>;
 template<>
-auto value_from_string<glm::vec3>(std::string_view str) -> std::optional<glm::vec3>;
+auto value_from_string<glm::vec3>(std::string_view) -> std::optional<glm::vec3>;
 template<>
-auto value_from_string<glm::ivec3>(std::string_view str) -> std::optional<glm::ivec3>;
+auto value_from_string<glm::ivec3>(std::string_view) -> std::optional<glm::ivec3>;
 template<>
-auto value_from_string<glm::vec4>(std::string_view str) -> std::optional<glm::vec4>;
+auto value_from_string<glm::vec4>(std::string_view) -> std::optional<glm::vec4>;
 template<>
-auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::ivec4>;
+auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
 template<>
-auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>;
+auto value_from_string<Cool::RgbColor>(std::string_view) -> std::optional<Cool::RgbColor>;
 template<>
-auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool::Angle>;
+auto value_from_string<Cool::Angle>(std::string_view) -> std::optional<Cool::Angle>;
 template<>
-auto value_from_string<Cool::Direction2D>(std::string_view str) -> std::optional<Cool::Direction2D>;
+auto value_from_string<Cool::Direction2D>(std::string_view) -> std::optional<Cool::Direction2D>;
 template<>
-auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::Hue>;
+auto value_from_string<Cool::Hue>(std::string_view) -> std::optional<Cool::Hue>;
+template<>
+auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>;
+
+/// Returns true iff `word` is present in `text`.
+/// A word is delimited by `delimiters`.
+/// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
+auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters = default_word_delimiters) -> bool;
 
 } // namespace Cool::String
