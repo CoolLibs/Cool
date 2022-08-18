@@ -5,13 +5,17 @@
 namespace Cool {
 
 void OptionalErrorMessage::send_error_if_any(
-    std::function<Cool::Message(const std::string&)> transform,
-    MessageConsole&                                  console
+    MessageSender&                                   sender,
+    std::function<Cool::Message(const std::string&)> transform
 ) const
 {
     if (_message)
     {
-        console.send(transform(*_message));
+        sender.send(transform(*_message));
+    }
+    else
+    {
+        sender.clear();
     }
 }
 
@@ -28,6 +32,17 @@ void OptionalErrorMessage::send_error_if_any(
     else
     {
         console.clear(id);
+    }
+}
+
+void OptionalErrorMessage::send_error_if_any(
+    std::function<Cool::Message(const std::string&)> transform,
+    MessageConsole&                                  console
+) const
+{
+    if (_message)
+    {
+        console.send(transform(*_message));
     }
 }
 
