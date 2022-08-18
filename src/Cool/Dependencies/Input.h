@@ -66,13 +66,24 @@ public:
     void update(SetDirty_Ref set_dirty)
     {
         file_watcher.update(
-            {.on_file_changed = [&](std::string_view) { set_dirty(_dirty_flag); },
-             .on_path_invalid = [](std::string_view path) {
-                 Cool::Log::ToUser::error(
-                     "Input File",
-                     fmt::format("Invalid path: \"{}\"", path)
-                 );
-             }}
+            {
+                .on_file_changed =
+                    [&](std::string_view) {
+                        set_dirty(_dirty_flag);
+                        Cool::Log::ToUser::console().clear(_error_message_id);
+                    },
+                .on_path_invalid =
+                    [&](std::string_view path) {
+                        Cool::Log::ToUser::console().send(
+                            _error_message_id,
+                            {
+                                .category         = "Input File",
+                                .detailed_message = fmt::format("Invalid path: \"{}\"", path),
+                                .severity         = Cool::MessageSeverity::Error,
+                            }
+                        );
+                    },
+            }
         );
     }
 
@@ -82,6 +93,9 @@ public: // private: // TODO(JF) Make this private!
     friend class InputDestructor_Ref;
     Cool::FileWatcher file_watcher{};
     DirtyFlag         _dirty_flag;
+
+private:
+    Cool::MessageId _error_message_id{};
 
 private:
     friend class cereal::access;
