@@ -1,4 +1,5 @@
 #include "TestMessageConsole.h"
+#include <Cool/ImGui/ImGuiExtras.h>
 
 namespace Cool {
 
@@ -14,11 +15,6 @@ TestMessageConsole::TestMessageConsole()
 
 void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console, bool* is_open)
 {
-    if (_should_bring_window_to_front)
-    {
-        _should_bring_window_to_front = false;
-        ImGui::SetNextWindowToFront();
-    }
     ImGui::Begin("Test Message Console", is_open);
     ImGui::NewLine();
     for (auto& message : _messages)
@@ -66,17 +62,15 @@ void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console, boo
 void TestMessageConsole::imgui(TestMessageConsole::Message& message, Cool::MessageConsole& message_console)
 {
     ImGui::PushID(&message);
-    if (ImGui::Button("Clear"))
-    {
-        message_console.clear(message.id);
-    }
-    if (message_console.should_highlight(message.id))
-    {
-        ImGui::SameLine();
-        ImGui::Text("<-- CLICK HERE");
-        ImGui::SetScrollHereY(0.5f);
-        _should_bring_window_to_front = true;
-    }
+    Cool::ImGuiExtras::bring_attention_if(
+        message_console.should_highlight(message.id),
+        [&] {
+            if (ImGui::Button("Clear"))
+            {
+                message_console.clear(message.id);
+            }
+        }
+    );
     if (ImGui::Button("Send"))
     {
         message.send_to(message_console);
