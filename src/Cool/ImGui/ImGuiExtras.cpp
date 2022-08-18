@@ -499,4 +499,19 @@ auto link(std::string_view url, std::string_view label) -> bool
     return opened;
 }
 
+void bring_attention_if(bool should_bring_attention, std::function<void()> widget)
+{
+    if (should_bring_attention)
+    {
+        ImGui::SetWindowToFront();
+        ImGuiExtras::highlight(widget, 1.f);
+        ImGui::SetScrollHereX(0.f);
+        ImGui::SetScrollHereY(0.f);
+    }
+    else
+    {
+        widget();
+    }
+}
+
 } // namespace Cool::ImGuiExtras
