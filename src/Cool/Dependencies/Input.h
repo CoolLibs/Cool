@@ -100,7 +100,7 @@ public: // private: // TODO(JF) Make this private!
     DirtyFlag         _dirty_flag;
 
 private:
-    Cool::MessageSender _path_error{Cool::Log::ToUser::console()};
+    Cool::MessageSender _path_error{};
 
 private:
     friend class cereal::access;

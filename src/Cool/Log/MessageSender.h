@@ -3,6 +3,7 @@
 #include "Message.h"
 #include "MessageConsole.h"
 #include "MessageId.h"
+#include "ToUser.h"
 
 namespace Cool {
 
@@ -11,7 +12,7 @@ namespace Cool {
 /// (NB: this requires the `MessageConsole` to have a stable address in memory. For more information, read the documentation of `reg::ScopedId_Ordered`.)
 class MessageSender {
 public:
-    explicit MessageSender(MessageConsole& console)
+    explicit MessageSender(MessageConsole& console = Log::ToUser::console())
         : _console{console}
     {}
 
