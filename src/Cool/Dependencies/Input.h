@@ -1,5 +1,6 @@
 #pragma once
 #include <Cool/FileWatcher/FileWatcher.h>
+#include <Cool/Log/MessageSender.h>
 #include <reg/reg.hpp>
 #include "Dirty.h"
 #include "VariableId.h"
@@ -70,12 +71,11 @@ public:
                 .on_file_changed =
                     [&](std::string_view) {
                         set_dirty(_dirty_flag);
-                        Cool::Log::ToUser::console().clear(_error_message_id);
+                        _path_error.clear();
                     },
                 .on_path_invalid =
                     [&](std::string_view path) {
-                        Cool::Log::ToUser::console().send(
-                            _error_message_id,
+                        _path_error.send(
                             {
                                 .category         = "Input File",
                                 .detailed_message = fmt::format("Invalid path: \"{}\"", path),
@@ -89,7 +89,7 @@ public:
 
     auto should_highlight() const -> bool
     {
-        return Cool::Log::ToUser::console().should_highlight(_error_message_id);
+        return _path_error.should_highlight();
     }
 
 public: // private: // TODO(JF) Make this private!
@@ -100,7 +100,7 @@ public: // private: // TODO(JF) Make this private!
     DirtyFlag         _dirty_flag;
 
 private:
-    Cool::MessageId _error_message_id{};
+    Cool::MessageSender _path_error{Cool::Log::ToUser::console()};
 
 private:
     friend class cereal::access;
