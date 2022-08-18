@@ -87,6 +87,11 @@ public:
         );
     }
 
+    auto should_highlight() const -> bool
+    {
+        return Cool::Log::ToUser::console().should_highlight(_error_message_id);
+    }
+
 public: // private: // TODO(JF) Make this private!
     friend class Ui_Ref;
     friend class InputProvider_Ref;
