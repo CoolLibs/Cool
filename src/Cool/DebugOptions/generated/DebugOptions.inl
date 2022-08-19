@@ -114,6 +114,8 @@ private:
             instance().imgui_item_picker = ImGui::Button("##ImGui Item Picker", {ImGui::GetFrameHeight(), ImGui::GetFrameHeight()});
             ImGui::SameLine();
             ImGui::Text("ImGui Item Picker");
+            if (ImGui::IsItemClicked())
+                instance().imgui_item_picker = true;
         }
     }
 
