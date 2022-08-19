@@ -113,7 +113,7 @@ private:
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
         {
             instance().imgui_item_picker = ImGui::Button("##ImGui Item Picker", {ImGui::GetFrameHeight(), ImGui::GetFrameHeight()});
-            ImGui::SameLine();
+            ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
             ImGui::Text("ImGui Item Picker");
             if (ImGui::IsItemClicked())
                 instance().imgui_item_picker = true;

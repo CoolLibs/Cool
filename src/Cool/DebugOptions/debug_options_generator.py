@@ -57,7 +57,7 @@ def imgui_widget(debug_option: DebugOption):
         case Kind.BUTTON:
             return f'''
             instance().{debug_option.name_in_code} = ImGui::Button("##{debug_option.name_in_ui}", {{ImGui::GetFrameHeight(), ImGui::GetFrameHeight()}});
-            ImGui::SameLine();
+            ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
             ImGui::Text("{debug_option.name_in_ui}");
             if (ImGui::IsItemClicked())
                 instance().{debug_option.name_in_code} = true;
