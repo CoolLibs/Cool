@@ -192,6 +192,7 @@ void MessageConsole::imgui_menu_bar()
 
 void MessageConsole::imgui_show_all_messages()
 {
+    const auto previously_selected_message{_selected_message};
     _selected_message = {};                // Clear the selected message. And let the following loop set it again if necessary.
     internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
@@ -261,6 +262,13 @@ void MessageConsole::imgui_show_all_messages()
                 ImGuiExtras::highlight(
                     widget,
                     1.f - dt.count() / highlight_duration
+                );
+            }
+            else if (id == previously_selected_message)
+            {
+                ImGuiExtras::highlight(
+                    widget,
+                    0.5f
                 );
             }
             else
