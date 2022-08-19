@@ -225,11 +225,26 @@ void MessageConsole::imgui_show_all_messages()
                 }
 
                 ImGui::EndGroup();
+
+                const auto context_menu = [&] {
+                    if (ImGui::Button("Copy full message to clipboard"))
+                    {
+                        ImGui::SetClipboardText(msg.message.detailed_message.c_str());
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup();
+                };
+                if (ImGui::BeginPopupContextItem("##21", ImGuiPopupFlags_MouseButtonLeft)) // We need two context menus that do the same thing because ImGui doesn't allow the same context menu to be opened from two different mouse buttons.
+                    context_menu();
+                if (ImGui::BeginPopupContextItem("##22", ImGuiPopupFlags_MouseButtonRight))
+                    context_menu();
+
                 ImGui::PopID();
 
                 if (ImGui::IsItemHovered())
                 {
                     _selected_message = id;
+                    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
                 }
                 if (_message_just_sent == id)
                 {
