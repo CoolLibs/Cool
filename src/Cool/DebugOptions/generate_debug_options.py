@@ -31,6 +31,7 @@ def all_debug_options():
             name_in_code="imgui_item_picker",
             name_in_ui="ImGui Item Picker",
             kind=Kind.BUTTON,
+            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
         ),
     ]
 

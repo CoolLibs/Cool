@@ -8,6 +8,7 @@
 #if DEBUG
 
 #include <Cool/DebugOptions/DebugOptionsManager.h>
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <wafl/wafl.hpp>
@@ -116,6 +117,9 @@ private:
             ImGui::Text("ImGui Item Picker");
             if (ImGui::IsItemClicked())
                 instance().imgui_item_picker = true;
+
+            ImGui::SameLine();
+            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.");
         }
     }
 

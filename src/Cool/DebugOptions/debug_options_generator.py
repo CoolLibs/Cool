@@ -19,6 +19,7 @@ class DebugOption:
     window_name: str = ""
     kind: Kind = Kind.CHECKBOX
     default_value: bool = False
+    detailed_description: str = ""
 
 
 def debug_options_variables(debug_options: list[DebugOption]):
@@ -77,6 +78,7 @@ def imgui_ui_for_all_options(debug_options: list[DebugOption]):
                         if ({passes_the_filter(debug_option)})
                         {{
                             {imgui_widget(debug_option)}
+                            {f'ImGui::SameLine(); Cool::ImGuiExtras::help_marker("{debug_option.detailed_description}");' if debug_option.detailed_description else ""}
                         }}
                         ''',
                          debug_options))
@@ -117,6 +119,7 @@ def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_na
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <Cool/DebugOptions/DebugOptionsManager.h>
+#include <Cool/ImGui/ImGuiExtras.h>
 #include <wafl/wafl.hpp>
 
 namespace {namespace} {{
