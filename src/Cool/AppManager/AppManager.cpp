@@ -1,7 +1,10 @@
 #include "AppManager.h"
+#include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Gpu/Vulkan/Context.h>
 #include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/imgui_internal.h>
 #include "should_we_use_a_separate_thread_for_update.h"
+
 #if defined(COOL_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(COOL_OPENGL)
@@ -69,6 +72,16 @@ void AppManager::run()
 #endif
 }
 
+static void check_for_imgui_item_picker_request()
+{
+#if DEBUG
+    if (DebugOptions::imgui_item_picker())
+    {
+        ImGui::DebugStartItemPicker();
+    }
+#endif
+}
+
 void AppManager::update()
 {
     prepare_windows(_window_manager);
@@ -77,6 +90,7 @@ void AppManager::update()
 #endif
     _app.update();
     imgui_new_frame();
+    check_for_imgui_item_picker_request();
     imgui_render(_app);
     end_frame(_window_manager);
 }

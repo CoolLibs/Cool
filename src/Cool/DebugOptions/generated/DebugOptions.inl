@@ -21,6 +21,7 @@ public:
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
     [[nodiscard]] static auto test_presets() -> bool& { return instance().test_presets; }
+    [[nodiscard]] static auto imgui_item_picker() -> bool& { return instance().imgui_item_picker; }
 
 private:
     struct Instance {
@@ -29,6 +30,7 @@ private:
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
         bool test_presets{false};
+        bool imgui_item_picker{false};
 
     private:
         // Serialization
@@ -106,6 +108,13 @@ private:
         {
             ImGui::Checkbox("Test Presets", &instance().test_presets);
         }
+
+        if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
+        {
+            instance().imgui_item_picker = ImGui::Button("##ImGui Item Picker", {ImGui::GetFrameHeight(), ImGui::GetFrameHeight()});
+            ImGui::SameLine();
+            ImGui::Text("ImGui Item Picker");
+        }
     }
 
     static void toggle_first_option(std::string_view filter)
@@ -137,6 +146,12 @@ private:
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
             instance().test_presets = !instance().test_presets;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
+        {
+            instance().imgui_item_picker = !instance().imgui_item_picker;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
     }

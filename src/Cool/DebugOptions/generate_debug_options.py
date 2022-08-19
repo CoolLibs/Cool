@@ -2,7 +2,7 @@
 
 # ------------
 
-from debug_options_generator import DebugOption, generate_debug_options
+from debug_options_generator import DebugOption, generate_debug_options, Kind
 
 
 def all_debug_options():
@@ -26,6 +26,11 @@ def all_debug_options():
         DebugOption(
             name_in_code="test_presets",
             name_in_ui="Test Presets",
+        ),
+        DebugOption(
+            name_in_code="imgui_item_picker",
+            name_in_ui="ImGui Item Picker",
+            kind=Kind.BUTTON,
         ),
     ]
 
