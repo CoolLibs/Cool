@@ -215,32 +215,43 @@ void MessageConsole::imgui_show_all_messages()
                 ImGui::SameLine();
                 ImGui::Text("%s", msg.message.detailed_message.c_str());
 
-                if (is_closable(msg))
-                {
-                    ImGui::SameLine();
-                    if (ImGuiExtras::close_button())
+                const bool close_button_is_hovered = [&] {
+                    if (is_closable(msg))
                     {
-                        msg_to_clear = id;
+                        ImGui::SameLine();
+                        if (ImGuiExtras::close_button())
+                        {
+                            msg_to_clear = id;
+                        }
+                        ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
+                        return ImGui::IsItemHovered();
                     }
-                    ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
-                }
+                    else
+                    {
+                        return false;
+                    }
+                }();
 
                 ImGui::SameLine();                                     // Add a dummy to make sure the hitbox of the message
                 ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f}); // goes till the end of the line (allows hovering to be more intuitive)
                 ImGui::EndGroup();
 
-                const auto context_menu = [&] {
+                if (ImGui::IsItemHovered() && !close_button_is_hovered &&
+                    (ImGui::IsMouseClicked(ImGuiMouseButton_Right) ||
+                     ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
+                {
+                    ImGui::OpenPopup("##ContextMenu");
+                }
+                if (ImGui::IsPopupOpen("##ContextMenu"))
+                {
+                    ImGui::BeginPopup("##ContextMenu");
                     if (ImGui::Button("Copy full message to clipboard"))
                     {
                         ImGui::SetClipboardText(msg.message.detailed_message.c_str());
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();
-                };
-                if (ImGui::BeginPopupContextItem("##21", ImGuiPopupFlags_MouseButtonLeft)) // We need two context menus that do the same thing because ImGui doesn't allow the same context menu to be opened from two different mouse buttons.
-                    context_menu();
-                if (ImGui::BeginPopupContextItem("##22", ImGuiPopupFlags_MouseButtonRight))
-                    context_menu();
+                }
 
                 ImGui::PopID();
 
