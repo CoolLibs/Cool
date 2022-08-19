@@ -225,6 +225,8 @@ void MessageConsole::imgui_show_all_messages()
                     ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
                 }
 
+                ImGui::SameLine();                                     // Add a dummy to make sure the hitbox of the message
+                ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f}); // goes till the end of the line (allows hovering to be more intuitive)
                 ImGui::EndGroup();
 
                 const auto context_menu = [&] {
