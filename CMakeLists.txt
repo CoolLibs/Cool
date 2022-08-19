@@ -37,6 +37,8 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 # -----------------------------
 target_include_directories(Cool PUBLIC src lib)
 target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
+    <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
+
     <vector>
     <string>
     <memory>
@@ -62,8 +64,8 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <boxer/boxer.h>
     <nfd.hpp>
     <scope_guard/scope_guard.hpp>
-    <Cool/Log/Debug.h>
     <fmt/core.h>
+    <Cool/Log/Debug.h>
     <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
