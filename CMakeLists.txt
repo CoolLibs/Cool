@@ -19,6 +19,7 @@ endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
+set(COOL_PATH_INTERNAL ${COOL_PATH} CACHE INTERNAL "") # Make a global variable so that `cool_setup()` will be able to use it when it is called outside of this CMake file
 
 target_compile_definitions(Cool PUBLIC
     $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
@@ -200,8 +201,8 @@ include("CMakeUtils/files_and_folders.cmake")
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
-    Cool__target_copy_file(${TARGET_NAME} Cool imgui.ini)
-    Cool__target_copy_folder(${TARGET_NAME} Cool ${COOL_PATH}/res)
+    Cool__target_copy_file(${TARGET_NAME} imgui.ini)
+    Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 
 # ---------------------
