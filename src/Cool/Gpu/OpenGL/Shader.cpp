@@ -110,6 +110,11 @@ void Shader::set_uniform(std::string_view /*uniform_name*/, ColorPalette /*palet
     // set_uniform(uniform_name, palette.value); // TODO(ASG) finit ton bazard
 }
 
+void Shader::set_uniform(std::string_view /*uniform_name*/, Gradient /*gradient*/) const
+{
+    // set_uniform(uniform_name, gradient.value); // TODO(ASG) finit ton bazard
+}
+
 } // namespace Cool::OpenGL
 
 #endif

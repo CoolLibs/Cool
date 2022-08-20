@@ -32,6 +32,10 @@ void test_variables()
     //             Cool::RgbColor{glm::vec3{0.f, 1.f, 0.75f}},
     //             Cool::RgbColor{glm::vec3{1.f, 1.f, 0.5f}},
     //             Cool::RgbColor{glm::vec3{1.f, 0.f, 0.5f}}}}};
+    static Cool::Variable<Cool::Gradient> gradient{
+        "Gradient",
+        Cool::Gradient{
+            ImGuiGradient::GradientWidget{}}};
 
     Cool::imgui(angle);
     Cool::imgui(color);
@@ -40,6 +44,7 @@ void test_variables()
     Cool::imgui(vector3);
     Cool::imgui(vector4);
     // Cool::imgui(color_palette);
+    Cool::imgui(gradient);
 }
 
 } // namespace Cool

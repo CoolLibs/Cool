@@ -7,21 +7,7 @@
 
 namespace Cool {
 
-template<>
-struct VariableMetadata<Gradient> {
-    bool is_hdr = true;
-
-    friend auto operator<=>(const VariableMetadata<Gradient>&, const VariableMetadata<Gradient>&) = default;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(cereal::make_nvp("Is HDR", is_hdr));
-    }
-};
+#include "generated/Variable_Gradient.inl"
 
 inline auto imgui_widget(Variable<Gradient>& var) -> bool
 {

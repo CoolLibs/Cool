@@ -140,6 +140,19 @@ def all_variable_descriptions():
         # include="<Cool/StrongTypes/ColorPalette.h>",
         #     metadatas=[],
         # ),
+        VariableDescription(
+            type="Cool::Gradient",
+            string_representations=["Gradient"],
+            include="<Cool/StrongTypes/Gradient.h>",
+            metadatas=[                
+                VariableMetadata(
+                    name_in_shader="hdr",
+                    field_name="is_hdr",
+                    pretty_name="Is HDR",
+                    type="bool",
+                    default_value="true",
+                ),],
+        ),
     ]
 
 

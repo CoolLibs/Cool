@@ -64,7 +64,7 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <scope_guard/scope_guard.hpp>
     <Cool/Log/Debug.h>
     <fmt/core.h>
-    <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
+    <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
 )

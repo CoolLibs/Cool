@@ -2,6 +2,7 @@
 #include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Direction2D.h>
+#include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/RgbColor.h>
 
@@ -226,6 +227,8 @@ template<>
 auto value_from_string<Cool::Hue>(std::string_view) -> std::optional<Cool::Hue>;
 template<>
 auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>;
+template<>
+auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>;
 
 /// Returns true iff `word` is present in `text`.
 /// A word is delimited by `delimiters`.

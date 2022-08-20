@@ -561,6 +561,12 @@ auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::H
 }
 
 template<>
+auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>
+{
+    return {}; // We don't expect anyone to write a gradient manually, so we don't bother parsing it O:)
+}
+
+template<>
 auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>
 {
     assert(false && "value_from_string<Cool::Camera> is not implemented yet!");

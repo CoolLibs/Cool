@@ -98,3 +98,16 @@ auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Hue>
     Cool::VariableMetadata<Cool::Hue> metadata{};
     return metadata;
 }
+
+template<>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Gradient>
+{
+    Cool::VariableMetadata<Cool::Gradient> metadata{};
+
+    const auto is_hdr = Cool::String::find_value_for_given_key<bool>(key_values, "hdr");
+    if (is_hdr)
+    {
+        metadata.is_hdr = *is_hdr;
+    }
+    return metadata;
+}
