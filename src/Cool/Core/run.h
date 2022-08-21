@@ -46,7 +46,7 @@ void run(
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto                      app = App{window_factory.window_manager()};
-        Cool::AutoSerializer<App> _auto_serializer{Cool::Path::root() + "/cache--last-session.json", "App", app, true, load_from_file};
+        Cool::AutoSerializer<App> _auto_serializer{Cool::Path::root() + "/cache/last-session.json", "App", app, true, load_from_file};
         auto                      app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
         app_manager.run();
 #if defined(COOL_VULKAN)
