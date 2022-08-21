@@ -150,8 +150,8 @@ auto find_next_word_position(
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
-    size_t           starting_pos,
-    std::string_view delimiters = default_word_delimiters
+    size_t           starting_pos = 0,
+    std::string_view delimiters   = default_word_delimiters
 ) -> std::optional<std::string_view>;
 
 /// Returns the position of the first block of text in `text` after `offset`.
