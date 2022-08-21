@@ -20,4 +20,6 @@ auto try_parse_input(
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>;
 
+auto preprocess_inputs(std::string_view source_code) -> std::string;
+
 } // namespace Cool

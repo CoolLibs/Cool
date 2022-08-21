@@ -83,7 +83,12 @@ struct TypeAndName_Ref {
 static auto find_type_and_name(std::string_view line)
     -> std::optional<TypeAndName_Ref>
 {
-    static constexpr auto input_keyword = std::string_view{"INPUT"};
+    if (Cool::String::is_commented_out(line))
+    {
+        return std::nullopt;
+    }
+
+    static constexpr auto input_keyword = "INPUT"sv;
     const auto            input_pos     = line.find(input_keyword);
     if (input_pos == std::string_view::npos)
     {
@@ -131,11 +136,6 @@ auto try_parse_input(
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>
 {
-    if (Cool::String::is_commented_out(line))
-    {
-        return std::nullopt;
-    }
-
     const auto type_and_name = find_type_and_name(line);
     if (!type_and_name)
     {
@@ -185,6 +185,48 @@ auto parse_all_inputs(
         }
     }
     return new_inputs;
+}
+
+template<typename T>
+auto instantiate_shader_code(const Variable<T>& var) -> std::string
+{
+    return fmt::format("uniform {} {};\n", glsl_type<T>(), var.name);
+}
+
+auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>& inputs) -> std::string
+{
+    std::stringstream in{std::string{source_code}};
+    std::stringstream out{};
+    std::string       line;
+    while (getline(in, line))
+    {
+        if (const auto info = find_type_and_name(line))
+        {
+            const auto input = find(line->name, inputs);
+            out << instantiate_shader_code(input) << '\n';
+            //             if (info->type == "Gradient")
+            //             {
+            //                 out << fmt::format(
+            //                     R"STRING(
+            // vec4 {}(float x)
+            // {{
+            //     return vec4(x);
+            // }}
+            //                 )STRING",
+            //                     info->name
+            //                 );
+            //             }
+            //             else
+            //             {
+            //                 out << fmt::format("uniform {} {};\n", info->type, info->name);
+            //             }
+        }
+        else
+        {
+            out << line << '\n';
+        }
+    }
+    return out.str();
 }
 
 } // namespace Cool
