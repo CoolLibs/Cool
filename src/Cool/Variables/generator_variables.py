@@ -23,6 +23,7 @@ class VariableMetadata:
 @dataclass
 class VariableDescription:
     type: str
+    glsl_type: str
     string_representations: list[str]  # Names the type can have in the shader
     include: str = ""  # File containing the required type to define the variable
     metadatas: list[VariableMetadata] = field(
@@ -34,11 +35,13 @@ def all_variable_descriptions():
     return [
         VariableDescription(
             type="bool",
+            glsl_type="bool",
             string_representations=["bool"],
             metadatas=[],
         ),
         VariableDescription(
             type="int",
+            glsl_type="int",
             string_representations=["int"],
             metadatas=[
                 VariableMetadata(
@@ -59,6 +62,7 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             type="float",
+            glsl_type="float",
             string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
@@ -79,24 +83,28 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             type="glm::vec2",
+            glsl_type="vec2",
             string_representations=["float2", "vec2"],
             include="<glm/glm.hpp>",
             metadatas=[],
         ),
         VariableDescription(
             type="glm::vec3",
+            glsl_type="vec3",
             string_representations=["float3", "vec3"],
             include="<glm/glm.hpp>",
             metadatas=[],
         ),
         VariableDescription(
             type="glm::vec4",
+            glsl_type="vec4",
             string_representations=["float4", "vec4"],
             include="<glm/glm.hpp>",
             metadatas=[],
         ),
         VariableDescription(
             type="Cool::RgbColor",
+            glsl_type="RgbColor",
             string_representations=["RgbColor"],
             include="<Cool/StrongTypes/RgbColor.h>",
             metadatas=[
@@ -112,30 +120,42 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             type="Cool::Camera",
+            glsl_type="Camera",
             string_representations=["Camera"],
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
         ),
         VariableDescription(
             type="Cool::Angle",
+            glsl_type="Angle",
             string_representations=["Angle"],
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
         ),
         VariableDescription(
             type="Cool::Direction2D",
+            glsl_type="Direction2D",
             string_representations=["Direction2D"],
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
         ),
         VariableDescription(
             type="Cool::Hue",
+            glsl_type="Hue",
             string_representations=["Hue"],
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
         ),
-        # VariableType(
+        VariableDescription(
+            type="Cool::Gradient",
+            glsl_type="Gradient",
+            string_representations=["Gradient"],
+            include="<Cool/StrongTypes/Gradient.h>",
+            metadatas=[],
+        ),
+        # VariableDescription(
         #     type="Cool::ColorPalette",
+        #     glsl_type="ColorPalette",
         #     string_representations=["ColorPalette"],
         # include="<Cool/StrongTypes/ColorPalette.h>",
         #     metadatas=[],
@@ -266,6 +286,16 @@ def variables_includes():
     return out
 
 
+def glsl_type():
+    return "\n\n".join(
+        map(lambda desc: f'''
+            template<>
+            auto glsl_type<{desc.type}>() -> std::string {{ 
+                return "{desc.glsl_type}";
+            }}
+            ''', all_variable_descriptions()))
+
+
 def cereal_make_nvp(metadatas: List[VariableMetadata]):
     return ",\n".join(map(lambda meta:
                           f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})', metadatas)
@@ -319,6 +349,7 @@ def files():
         all_variable_includes,
         find_metadatas_in_string,
         variables_includes,
+        glsl_type,
     ]
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(

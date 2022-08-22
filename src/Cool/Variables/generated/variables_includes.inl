@@ -8,6 +8,7 @@
 #include <Cool/Variables/Variable_Angle.h>
 #include <Cool/Variables/Variable_Camera.h>
 #include <Cool/Variables/Variable_Direction2D.h>
+#include <Cool/Variables/Variable_Gradient.h>
 #include <Cool/Variables/Variable_Hue.h>
 #include <Cool/Variables/Variable_RgbColor.h>
 #include <Cool/Variables/Variable_bool.h>

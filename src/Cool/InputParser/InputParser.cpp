@@ -1,8 +1,10 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
+#include <Cool/Dependencies/InputProvider_Ref.h>
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/Variables/Variable.h>
+#include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
 
@@ -188,12 +190,36 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code(const Variable<T>& var) -> std::string
+auto instantiate_shader_code__value(const T& value, std::string_view name) -> std::string
 {
-    return fmt::format("uniform {} {};\n", glsl_type<T>(), var.name);
+    return fmt::format("uniform {} {};\n", glsl_type<T>(), name);
 }
 
-auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>& inputs) -> std::string
+template<typename T>
+auto instantiate_shader_code__input(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+{
+    return instantiate_shader_code__value(input_provider(input), input.name());
+}
+
+static auto instantiate_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
+{
+    std::string res;
+    for (const auto& input : inputs)
+    {
+        std::visit(
+            [&](auto&& input) {
+                if (input.name() == name)
+                {
+                    res = instantiate_shader_code__input(input, input_provider);
+                }
+            },
+            input
+        );
+    }
+    return res;
+}
+
+auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
 {
     std::stringstream in{std::string{source_code}};
     std::stringstream out{};
@@ -202,8 +228,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
     {
         if (const auto info = find_type_and_name(line))
         {
-            const auto input = find(line->name, inputs);
-            out << instantiate_shader_code(input) << '\n';
+            out << instantiate_shader_code(info->name, inputs, input_provider) << '\n';
             //             if (info->type == "Gradient")
             //             {
             //                 out << fmt::format(

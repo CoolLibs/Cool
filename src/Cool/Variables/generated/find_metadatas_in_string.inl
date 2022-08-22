@@ -98,3 +98,10 @@ auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Hue>
     Cool::VariableMetadata<Cool::Hue> metadata{};
     return metadata;
 }
+
+template<>
+auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Gradient>
+{
+    Cool::VariableMetadata<Cool::Gradient> metadata{};
+    return metadata;
+}
