@@ -180,4 +180,9 @@ auto link(std::string_view url) -> bool;
 /// It will be rendered as `label`.
 auto link(std::string_view url, std::string_view label) -> bool;
 
+/// Brings attention to the given widget (highlight, bring window to front, scroll to right position, etc.).
+/// `widget` must be a function that draws some ImGui widgets.
+/// If `should_bring_attention` is false, just renders the widget as usual. This is a convenience that makes calling code nicer.
+void bring_attention_if(bool should_bring_attention, std::function<void()> widget);
+
 } // namespace Cool::ImGuiExtras

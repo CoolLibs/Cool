@@ -2,7 +2,7 @@
 
 # ------------
 
-from debug_options_generator import DebugOption, generate_debug_options
+from debug_options_generator import DebugOption, generate_debug_options, Kind
 
 
 def all_debug_options():
@@ -27,6 +27,12 @@ def all_debug_options():
             name_in_code="test_presets",
             name_in_ui="Test Presets",
         ),
+        DebugOption(
+            name_in_code="imgui_item_picker",
+            name_in_ui="ImGui Item Picker",
+            kind=Kind.BUTTON,
+            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
+        ),
     ]
 
 
@@ -34,6 +40,6 @@ if __name__ == '__main__':
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",
-        cache_file_name="cache--debug-options-cool",
+        cache_file_name="cache/debug-options-cool",
         debug_options=all_debug_options(),
     )

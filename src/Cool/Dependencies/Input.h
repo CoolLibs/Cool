@@ -1,5 +1,6 @@
 #pragma once
 #include <Cool/FileWatcher/FileWatcher.h>
+#include <Cool/Log/MessageSender.h>
 #include <reg/reg.hpp>
 #include "Dirty.h"
 #include "VariableId.h"
@@ -66,14 +67,29 @@ public:
     void update(SetDirty_Ref set_dirty)
     {
         file_watcher.update(
-            {.on_file_changed = [&](std::string_view) { set_dirty(_dirty_flag); },
-             .on_path_invalid = [](std::string_view path) {
-                 Cool::Log::ToUser::error(
-                     "Input File",
-                     fmt::format("Invalid path: \"{}\"", path)
-                 );
-             }}
+            {
+                .on_file_changed =
+                    [&](std::string_view) {
+                        set_dirty(_dirty_flag);
+                        _path_error.clear();
+                    },
+                .on_path_invalid =
+                    [&](std::string_view path) {
+                        _path_error.send(
+                            {
+                                .category         = "Input File",
+                                .detailed_message = fmt::format("Invalid path: \"{}\"", path),
+                                .severity         = Cool::MessageSeverity::Error,
+                            }
+                        );
+                    },
+            }
         );
+    }
+
+    auto should_highlight() const -> bool
+    {
+        return _path_error.should_highlight();
     }
 
 public: // private: // TODO(JF) Make this private!
@@ -82,6 +98,9 @@ public: // private: // TODO(JF) Make this private!
     friend class InputDestructor_Ref;
     Cool::FileWatcher file_watcher{};
     DirtyFlag         _dirty_flag;
+
+private:
+    Cool::MessageSender _path_error{};
 
 private:
     friend class cereal::access;

@@ -192,6 +192,7 @@ void MessageConsole::imgui_menu_bar()
 
 void MessageConsole::imgui_show_all_messages()
 {
+    const auto previously_selected_message{_selected_message};
     _selected_message = {};                // Clear the selected message. And let the following loop set it again if necessary.
     internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
@@ -214,22 +215,50 @@ void MessageConsole::imgui_show_all_messages()
                 ImGui::SameLine();
                 ImGui::Text("%s", msg.message.detailed_message.c_str());
 
-                if (is_closable(msg))
-                {
-                    ImGui::SameLine();
-                    if (ImGuiExtras::close_button())
+                const bool close_button_is_hovered = [&] {
+                    if (is_closable(msg))
                     {
-                        msg_to_clear = id;
+                        ImGui::SameLine();
+                        if (ImGuiExtras::close_button())
+                        {
+                            msg_to_clear = id;
+                        }
+                        ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
+                        return ImGui::IsItemHovered();
                     }
-                    ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
+                    else
+                    {
+                        return false;
+                    }
+                }();
+
+                ImGui::SameLine();                                     // Add a dummy to make sure the hitbox of the message
+                ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f}); // goes till the end of the line (allows hovering to be more intuitive)
+                ImGui::EndGroup();
+
+                if (ImGui::IsItemHovered() && !close_button_is_hovered &&
+                    (ImGui::IsMouseClicked(ImGuiMouseButton_Right) ||
+                     ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
+                {
+                    ImGui::OpenPopup("##ContextMenu");
+                }
+                if (ImGui::IsPopupOpen("##ContextMenu"))
+                {
+                    ImGui::BeginPopup("##ContextMenu");
+                    if (ImGui::Button("Copy full message to clipboard"))
+                    {
+                        ImGui::SetClipboardText(msg.message.detailed_message.c_str());
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::EndPopup();
                 }
 
-                ImGui::EndGroup();
                 ImGui::PopID();
 
                 if (ImGui::IsItemHovered())
                 {
                     _selected_message = id;
+                    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
                 }
                 if (_message_just_sent == id)
                 {
@@ -246,6 +275,13 @@ void MessageConsole::imgui_show_all_messages()
                 ImGuiExtras::highlight(
                     widget,
                     1.f - dt.count() / highlight_duration
+                );
+            }
+            else if (id == previously_selected_message)
+            {
+                ImGuiExtras::highlight(
+                    widget,
+                    0.5f
                 );
             }
             else

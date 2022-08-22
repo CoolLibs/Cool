@@ -19,6 +19,7 @@ endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
+set(COOL_PATH_INTERNAL ${COOL_PATH} CACHE INTERNAL "") # Make a global variable so that `cool_setup()` will be able to use it when it is called outside of this CMake file
 
 target_compile_definitions(Cool PUBLIC
     $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
@@ -37,6 +38,8 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 # -----------------------------
 target_include_directories(Cool PUBLIC src lib)
 target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
+    <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
+
     <vector>
     <string>
     <memory>
@@ -62,8 +65,8 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
     <boxer/boxer.h>
     <nfd.hpp>
     <scope_guard/scope_guard.hpp>
-    <Cool/Log/Debug.h>
     <fmt/core.h>
+    <Cool/Log/Debug.h>
     <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
@@ -170,6 +173,9 @@ target_link_libraries(Cool PUBLIC wafl::wafl)
 add_subdirectory(lib/open_link)
 target_link_libraries(Cool PUBLIC open_link::open_link)
 
+# tl::expected
+target_include_directories(Cool PUBLIC lib/expected/include)
+
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool PUBLIC doctest::doctest)
@@ -197,14 +203,10 @@ target_link_libraries(Cool PUBLIC ImGui::ImGui)
 # ----------------
 include("CMakeUtils/files_and_folders.cmake")
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
-Cool__target_copy_file(${PROJECT_NAME} Cool
-    imgui.ini)
-Cool__target_copy_folder(${PROJECT_NAME} Cool
-    ${COOL_PATH}/res)
 
 function(cool_setup TARGET_NAME)
-    Cool__target_copy_file(${TARGET_NAME} Cool imgui.ini)
-    Cool__target_copy_folder(${TARGET_NAME} Cool ${COOL_PATH}/res)
+    Cool__target_copy_file(${TARGET_NAME} imgui.ini)
+    Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 
 # ---------------------

@@ -17,17 +17,12 @@ std::optional<ShaderModule>& vertex_module()
     return shader_module;
 }
 
-FullscreenPipeline::FullscreenPipeline(std::string_view fragment_shader_source_code, std::string_view name)
-{
-    compile(fragment_shader_source_code, name);
-}
-
 void FullscreenPipeline::shut_down()
 {
     vertex_module().reset();
 }
 
-auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, std::string_view name) -> std::optional<std::string>
+auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -> OptionalErrorMessage
 {
     const auto on_error = [&]() {
         _shader.reset();
@@ -36,7 +31,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
     if (fragment_shader_source_code.empty())
     {
         on_error();
-        return "Shader '" + std::string{name} + "' is empty";
+        return {"Shader is empty."};
     }
 
     try
@@ -46,16 +41,16 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code, s
             ShaderModule{{
                 std::string{fragment_shader_source_code},
                 ShaderKind::Fragment,
-                std::string{name},
             }}};
-        return std::nullopt;
+        return {};
     }
     catch (const std::exception& e)
     {
         on_error();
-        return e.what() +
-               std::string{"\nThe source code we tried to compile was:\n"} +
-               std::string{fragment_shader_source_code};
+        return OptionalErrorMessage{
+            e.what() +
+            std::string{"\nThe source code we tried to compile was:\n"} +
+            std::string{fragment_shader_source_code}};
     }
 }
 

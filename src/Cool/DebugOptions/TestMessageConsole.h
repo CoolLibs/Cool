@@ -31,7 +31,6 @@ private:
 
 private:
     std::vector<Message> _messages{};
-    bool                 _should_bring_window_to_front{false};
     size_t               _next_message_number{0};
 };
 
