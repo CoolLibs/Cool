@@ -192,7 +192,21 @@ auto parse_all_inputs(
 template<typename T>
 auto instantiate_shader_code__value(const T& value, std::string_view name) -> std::string
 {
-    return fmt::format("uniform {} {};\n", glsl_type<T>(), name);
+    return fmt::format("uniform {} {};", glsl_type<T>(), name);
+}
+
+template<>
+auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
+{
+    return fmt::format(
+        R"STR(
+vec4 {}(float x)
+{{
+    return vec4(x);
+}}
+    )STR",
+        name
+    );
 }
 
 template<typename T>
