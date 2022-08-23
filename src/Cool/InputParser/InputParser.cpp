@@ -241,8 +241,12 @@ Mark({}, vec4({}, {}, {}, {}))
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
-    return fmt::format(
-        R"STR(
+    switch (value.value.gradient().interpolation_mode())
+    {
+    case ImGG::Interpolation::Linear:
+    {
+        return fmt::format(
+            R"STR(
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
 const int number_of_marks = {};
 Mark gradient_marks[number_of_marks] = Mark[](
@@ -269,10 +273,50 @@ vec4 {}(float x)
     }}
 }}
     )STR",
-        value.value.gradient().get_marks().size(),
-        declare_all_marks(value),
-        name
-    );
+            value.value.gradient().get_marks().size(),
+            declare_all_marks(value),
+            name
+        );
+    }
+    case ImGG::Interpolation::Constant:
+    {
+        return fmt::format(
+            R"STR(
+// #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
+const int number_of_marks = {};
+Mark gradient_marks[number_of_marks] = Mark[](
+{}
+);
+vec4 {}(float x)
+{{
+    if (x <= gradient_marks[0].pos)
+    {{
+        return gradient_marks[0].col;
+    }}
+    for (int i = 1; i < number_of_marks; i++)
+    {{
+        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
+        {{
+            return gradient_marks[i - 1].col;
+        }}
+    }}
+    if (x >= gradient_marks[number_of_marks - 1].pos)
+    {{
+        return gradient_marks[number_of_marks - 1].col;
+    }}
+}}
+    )STR",
+            value.value.gradient().get_marks().size(),
+            declare_all_marks(value),
+            name
+        );
+    }
+    default:
+    {
+        assert(false && "[InputParser::instantiate_shader_code__value] Invalid enum value");
+        return "";
+    }
+    }
 }
 
 template<typename T>
