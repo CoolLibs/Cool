@@ -200,11 +200,38 @@ auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_vie
 {
     return fmt::format(
         R"STR(
+// #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
+const int number_of_marks = 3;
+Mark gradient_marks[number_of_marks] = Mark[](
+
+    Mark(0.0f, vec4(0.4933167749070636f, 0.16508965227506256f, 0.704906923613742f, 1.f)),
+
+    Mark(0.5f, vec4(0.09816811100558287f, 0.31570548361171435f, 0.9383085172073401f, 1.f)),
+
+    Mark(1.f, vec4(0.3674398336005895f, 0.6947963741375294f, 0.28958490820456584f, 1.f))
+);
 vec4 {}(float x)
 {{
-    return vec4(x);
+    if (x <= gradient_marks[0].pos)
+    {{
+        return gradient_marks[0].col;
+    }}
+    for (int i = 1; i < number_of_marks; i++)
+    {{
+        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
+        {{
+            float mix_factor = (x - gradient_marks[i - 1].pos) /
+                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
+            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
+        }}
+    }}
+    if (x >= gradient_marks[number_of_marks - 1].pos)
+    {{
+        return gradient_marks[number_of_marks - 1].col;
+    }}
 }}
     )STR",
+        // declare_all_marks(value),
         name
     );
 }
