@@ -47,10 +47,13 @@ inline auto to_string(Cool::Gradient) -> std::string
 
 inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
 {
-    ImGG::Settings settings{}; // TODO(ASG) Use designated initializers
-    settings.color_edit_flags = flags;
-    settings.flags            = ImGG::Flag::NoResetButton;
-    return gradient.value.widget(name.data(), settings);
+    return gradient.value.widget(
+        name.data(),
+        {
+            .flags            = ImGG::Flag::NoResetButton,
+            .color_edit_flags = flags,
+        }
+    );
 }
 
 } // namespace Cool
