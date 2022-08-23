@@ -29,7 +29,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
     - name: Looking for error
-      run: ls ${{github.workspace}}\build\x64\Debug
+      run: ls ${{github.workspace}}
 
     - name: Run
       run: ${{github.workspace}}\build\x64\Debug\${{env.TARGET}} 
