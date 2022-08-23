@@ -50,7 +50,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Release\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}} 
 #-----------------------------------------------------------------------------------------------
   Windows_Clang_Debug:
     name: Windows Clang Debug
@@ -67,7 +67,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Debug\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}}  
 
 #-----------------------------------------------------------------------------------------------
   Windows_Clang_Release:
@@ -85,7 +85,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Release\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}} 
 #-----------------------------------------------------------------------------------------------
   Linux_GCC_Debug: 
     name: Linux GCC Debug
