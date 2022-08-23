@@ -7,6 +7,8 @@
 #include <op/op.hpp>
 #include "RgbColor.h"
 
+// TODO(ASG) When adding and draggin instantly a mark next to another one, buggy
+
 namespace Cool {
 struct Gradient
     : public op::Addable<Gradient>
@@ -50,8 +52,9 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
     return gradient.value.widget(
         name.data(),
         {
-            .flags            = ImGG::Flag::NoResetButton,
-            .color_edit_flags = flags,
+            .flags                                       = ImGG::Flag::NoResetButton,
+            .color_edit_flags                            = flags,
+            .should_use_a_random_color_for_the_new_marks = true,
         }
     );
 }

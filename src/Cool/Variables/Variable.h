@@ -96,7 +96,7 @@ auto imgui(
     }
     ImGui::EndGroup();
     ImGui::PopID();
-    if (ImGui::IsItemDeactivatedAfterEdit())
+    if (ImGui::IsItemDeactivatedAfterEdit()) // TODO(ASG) Make sure this boolean is true when Gradient adds a mark, removes one etc.
     {
         callbacks.on_value_editing_finished();
     }

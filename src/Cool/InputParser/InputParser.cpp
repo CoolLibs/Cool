@@ -241,6 +241,7 @@ Mark({}, vec4({}, {}, {}, {}))
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
+    // TODO(ASG) Handle the different wrap modes
     switch (value.value.gradient().interpolation_mode())
     {
     case ImGG::Interpolation::Linear:
