@@ -28,8 +28,11 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
+    - name: Looking for error
+      run: ls ${{github.workspace}}\build\x64
+
     - name: Run
-      run: ${{github.workspace}}\bin\Debug\${{env.TARGET}} 
+      run: ${{github.workspace}}\build\Debug\${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Windows_MSVC_Release:
