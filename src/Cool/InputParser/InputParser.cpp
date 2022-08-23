@@ -195,20 +195,58 @@ auto instantiate_shader_code__value(const T& value, std::string_view name) -> st
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
 
+static auto declare_all_marks(const Cool::Gradient& value) -> std::string
+{
+    std::string res = fmt::format(
+        R"STR(
+
+            )STR"
+    );
+    const auto marks = value.value.gradient().get_marks();
+    for (const ImGG::Mark& mark : marks)
+    {
+        if (&mark != &marks.back())
+        {
+            res += fmt::format(
+                R"STR(
+Mark({}, vec4({}, {}, {}, {})),
+
+        )STR",
+                mark.position.get(),
+                mark.color.x,
+                mark.color.y,
+                mark.color.z,
+                mark.color.w
+            );
+        }
+        else
+        {
+            res += fmt::format(
+                R"STR(
+Mark({}, vec4({}, {}, {}, {}))
+
+            )STR",
+                marks.back().position.get(),
+                marks.back().color.x,
+                marks.back().color.y,
+                marks.back().color.z,
+                marks.back().color.w
+            );
+        }
+    }
+
+    return res;
+}
+
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
     return fmt::format(
         R"STR(
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
-const int number_of_marks = 3;
+const int number_of_marks = {};
 Mark gradient_marks[number_of_marks] = Mark[](
-
-    Mark(0.0f, vec4(0.4933167749070636f, 0.16508965227506256f, 0.704906923613742f, 1.f)),
-
-    Mark(0.5f, vec4(0.09816811100558287f, 0.31570548361171435f, 0.9383085172073401f, 1.f)),
-
-    Mark(1.f, vec4(0.3674398336005895f, 0.6947963741375294f, 0.28958490820456584f, 1.f))
+{}
 );
 vec4 {}(float x)
 {{
@@ -231,7 +269,8 @@ vec4 {}(float x)
     }}
 }}
     )STR",
-        // declare_all_marks(value),
+        value.value.gradient().get_marks().size(),
+        declare_all_marks(value),
         name
     );
 }
