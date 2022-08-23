@@ -11,3 +11,5 @@
 - Update the documentation in "res/shaders/_README.md".
 
 - Add a specialization of `value_from_string` in `String`.
+
+- If you are working on CoolLab, re-run the "src/Commands/generate_commands.py" and "src/Commands/generate_set_variable_commands.py" scripts.
