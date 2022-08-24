@@ -47,7 +47,7 @@ inline auto to_string(Cool::Gradient) -> std::string
 
 inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImGuiColorEditFlags flags) -> bool
 {
-    return gradient.value.widget(
+    auto modified = gradient.value.widget(
         name.data(),
         {
             .flags                                       = ImGG::Flag::NoResetButton,
@@ -55,6 +55,8 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
             .should_use_a_random_color_for_the_new_marks = true,
         }
     );
+    modified |= ImGG::interpolation_mode_widget("Interpolation Mode", &gradient.value.gradient().interpolation_mode());
+    return modified;
 }
 
 } // namespace Cool
