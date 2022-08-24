@@ -207,6 +207,7 @@ doctest::String toString(const std::optional<T>& value)
 }
 } // namespace doctest
 
+#if DEBUG
 TEST_CASE("find_key_values()")
 {
     CHECK(Cool::find_key_values("//") == "");
@@ -240,3 +241,4 @@ TEST_CASE("Parsing a RgbColor")
         );
     }
 }
+#endif

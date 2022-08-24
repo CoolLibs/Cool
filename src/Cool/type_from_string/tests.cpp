@@ -29,6 +29,7 @@ auto say_type<float>() -> std::string
     return "I say FLOAT";
 }
 
+#if DEBUG
 TEST_CASE("At runtime")
 {
     std::string type_as_string = "int";
@@ -37,3 +38,4 @@ TEST_CASE("At runtime")
         "I say INT"
     );
 }
+#endif
