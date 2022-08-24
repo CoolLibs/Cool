@@ -28,9 +28,6 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
-    - name: Looking for error
-      run: ls ${{github.workspace}}\tests\build\Cool\Debug
-
     - name: Run
       run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}} 
 
@@ -108,7 +105,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
       
 #-----------------------------------------------------------------------------------------------
   Linux_GCC_Release: 
@@ -132,7 +129,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
@@ -156,7 +153,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Linux_Clang_Release: 
@@ -180,7 +177,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
                         
 #-----------------------------------------------------------------------------------------------
   MacOS_GCC_Debug: 
@@ -198,7 +195,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
       
 #-----------------------------------------------------------------------------------------------
   MacOS_GCC_Release: 
@@ -216,7 +213,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Debug:
@@ -234,7 +231,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Release: 
@@ -252,4 +249,4 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
