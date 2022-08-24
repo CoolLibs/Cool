@@ -15,9 +15,8 @@ TestMessageConsole::TestMessageConsole()
     });
 }
 
-void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console, bool* is_open)
+void TestMessageConsole::imgui(Cool::MessageConsole& message_console)
 {
-    ImGui::Begin("Test Message Console", is_open);
     ImGui::NewLine();
     for (auto& message : _messages)
     {
@@ -58,7 +57,6 @@ void TestMessageConsole::imgui_window(Cool::MessageConsole& message_console, boo
     }
     ImGui::SameLine();
     ImGui::TextDisabled("(NB: This will trigger a breakpoint)");
-    ImGui::End();
 }
 
 void TestMessageConsole::imgui(TestMessageConsole::Message& message, Cool::MessageConsole& message_console)

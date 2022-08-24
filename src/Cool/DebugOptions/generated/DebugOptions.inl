@@ -17,7 +17,15 @@ namespace Cool {
 
 class DebugOptions {
 public:
-    [[nodiscard]] static auto test_message_console() -> bool& { return instance().test_message_console; }
+    static void test_message_console__window(std::function<void()> callback)
+    {
+        if (instance().test_message_console__window)
+        {
+            ImGui::Begin("Test Message Console", &instance().test_message_console__window);
+            callback();
+            ImGui::End();
+        }
+    }
     [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
@@ -34,7 +42,7 @@ public:
 
 private:
     struct Instance {
-        bool test_message_console{false};
+        bool test_message_console__window{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
@@ -48,7 +56,7 @@ private:
         void serialize(Archive& archive)
         {
             archive(
-                cereal::make_nvp("Test Message Console", test_message_console),
+                cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
@@ -59,7 +67,7 @@ private:
 
     static void reset_all()
     {
-        instance().test_message_console                     = false;
+        instance().test_message_console__window             = false;
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
@@ -95,7 +103,7 @@ private:
     {
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Test Message Console", &instance().test_message_console);
+            ImGui::Checkbox("Test Message Console", &instance().test_message_console__window);
         }
 
         if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
@@ -135,7 +143,7 @@ private:
     {
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
-            instance().test_message_console = !instance().test_message_console;
+            instance().test_message_console__window = !instance().test_message_console__window;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

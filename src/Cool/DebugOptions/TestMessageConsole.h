@@ -9,7 +9,7 @@ class TestMessageConsole {
 public:
     TestMessageConsole();
 
-    void imgui_window(Cool::MessageConsole& message_console, bool* is_open);
+    void imgui(Cool::MessageConsole& message_console);
 
 private:
     struct Message {
