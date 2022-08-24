@@ -245,7 +245,7 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     {
         return fmt::format(
             R"STR(
-    return clamp(x, 0., 1.);
+    clamp(x, 0., 1.);
         )STR"
         );
     }
@@ -253,7 +253,7 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     {
         return fmt::format(
             R"STR(
-    return fract(x);
+    fract(x);
         )STR"
         );
     }
@@ -261,7 +261,7 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     {
         return fmt::format(
             R"STR(
-    return 1. - abs(mod(x, 2.) -1.);
+    1. - abs(mod(x, 2.) -1.);
         )STR"
         );
     }
@@ -324,14 +324,9 @@ Mark gradient_marks[number_of_marks] = Mark[](
 {}
 );
 
-float wrap(float x)
-{{
-    {}
-}}
-
 vec4 {}(float x)   
 {{
-    float x_wrapped = wrap(x);
+    float x_wrapped = {};
     if (x_wrapped <= gradient_marks[0].pos)
     {{
         return gradient_marks[0].col;
@@ -351,10 +346,9 @@ vec4 {}(float x)
     )STR",
                      value.value.gradient().get_marks().size(),
                      declare_all_marks(value),
-                     gradient_wrap_mode(value.wrap_mode),
                      name,
+                     gradient_wrap_mode(value.wrap_mode),
                      gradient_interpolation(value.value.gradient().interpolation_mode())
-
                  );
 }
 
