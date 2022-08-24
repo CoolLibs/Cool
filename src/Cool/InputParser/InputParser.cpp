@@ -273,65 +273,27 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
 }
 
-static auto linear_gradient_interpolation() -> std::string
-{
-    return fmt::format(
-        R"STR(
-    if (x_wrapped <= gradient_marks[0].pos)
-    {{
-        return gradient_marks[0].col;
-    }}
-    for (int i = 1; i < number_of_marks; i++)
-    {{
-        if ((x_wrapped <= gradient_marks[i].pos) && (x_wrapped >= gradient_marks[i - 1].pos))
-        {{
-            float mix_factor = (x_wrapped - gradient_marks[i - 1].pos) /
-                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
-            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
-        }}
-    }}
-    if (x_wrapped >= gradient_marks[number_of_marks - 1].pos)
-    {{
-        return gradient_marks[number_of_marks - 1].col;
-    }}
-    )STR"
-    );
-}
-
-static auto constant_gradient_interpolation() -> std::string
-{
-    return fmt::format(
-        R"STR(
-    if (x_wrapped <= gradient_marks[0].pos)
-    {{
-        return gradient_marks[0].col;
-    }}
-    for (int i = 1; i < number_of_marks; i++)
-    {{
-        if ((x_wrapped <= gradient_marks[i].pos) && (x_wrapped >= gradient_marks[i - 1].pos))
-        {{
-            return gradient_marks[i].col;
-        }}
-    }}
-    if (x_wrapped >= gradient_marks[number_of_marks - 1].pos)
-    {{
-        return gradient_marks[number_of_marks - 1].col;
-    }}
-    )STR"
-    );
-}
-
 static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> std::string
 {
     switch (interpolation_mode)
     {
     case ImGG::Interpolation::Linear:
     {
-        return linear_gradient_interpolation();
+        return fmt::format(
+            R"STR(
+            float mix_factor = (x_wrapped - gradient_marks[i - 1].pos) /
+                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
+            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
+    )STR"
+        );
     }
     case ImGG::Interpolation::Constant:
     {
-        return constant_gradient_interpolation();
+        return fmt::format(
+            R"STR(
+            return gradient_marks[i].col;
+    )STR"
+        );
     }
     default:
     {
@@ -360,7 +322,21 @@ float wrap(float x)
 vec4 {}(float x)   
 {{
     float x_wrapped = wrap(x);
-    {}
+    if (x_wrapped <= gradient_marks[0].pos)
+    {{
+        return gradient_marks[0].col;
+    }}
+    for (int i = 1; i < number_of_marks; i++)
+    {{
+        if ((x_wrapped <= gradient_marks[i].pos) && (x_wrapped >= gradient_marks[i - 1].pos))
+        {{
+            {}
+        }}
+    }}
+    if (x_wrapped >= gradient_marks[number_of_marks - 1].pos)
+    {{
+        return gradient_marks[number_of_marks - 1].col;
+    }}
 }}
     )STR",
         value.value.gradient().get_marks().size(),
