@@ -238,6 +238,56 @@ Mark({}, vec4({}, {}, {}, {}))
     return res;
 }
 
+static auto linear_gradient_interpolation() -> std::string
+{
+    return fmt::format(
+        R"STR(
+    if (x <= gradient_marks[0].pos)
+    {{
+        return gradient_marks[0].col;
+    }}
+    for (int i = 1; i < number_of_marks; i++)
+    {{
+        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
+        {{
+            float mix_factor = (x - gradient_marks[i - 1].pos) /
+                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
+            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
+        }}
+    }}
+    if (x >= gradient_marks[number_of_marks - 1].pos)
+    {{
+        return gradient_marks[number_of_marks - 1].col;
+    }}
+}}
+    )STR"
+    );
+}
+
+static auto constant_gradient_interpolation() -> std::string
+{
+    return fmt::format(
+        R"STR(
+    if (x <= gradient_marks[0].pos)
+    {{
+        return gradient_marks[0].col;
+    }}
+    for (int i = 1; i < number_of_marks; i++)
+    {{
+        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
+        {{
+            return gradient_marks[i].col;
+        }}
+    }}
+    if (x >= gradient_marks[number_of_marks - 1].pos)
+    {{
+        return gradient_marks[number_of_marks - 1].col;
+    }}
+}}
+    )STR"
+    );
+}
+
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
@@ -262,51 +312,11 @@ vec4 {}(float x)
     {
     case ImGG::Interpolation::Linear:
     {
-        return res + fmt::format(
-                         R"STR(
-    if (x <= gradient_marks[0].pos)
-    {{
-        return gradient_marks[0].col;
-    }}
-    for (int i = 1; i < number_of_marks; i++)
-    {{
-        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
-        {{
-            float mix_factor = (x - gradient_marks[i - 1].pos) /
-                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
-            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
-        }}
-    }}
-    if (x >= gradient_marks[number_of_marks - 1].pos)
-    {{
-        return gradient_marks[number_of_marks - 1].col;
-    }}
-}}
-    )STR"
-                     );
+        return res + linear_gradient_interpolation();
     }
     case ImGG::Interpolation::Constant:
     {
-        return res + fmt::format(
-                         R"STR(
-    if (x <= gradient_marks[0].pos)
-    {{
-        return gradient_marks[0].col;
-    }}
-    for (int i = 1; i < number_of_marks; i++)
-    {{
-        if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
-        {{
-            return gradient_marks[i].col;
-        }}
-    }}
-    if (x >= gradient_marks[number_of_marks - 1].pos)
-    {{
-        return gradient_marks[number_of_marks - 1].col;
-    }}
-}}
-    )STR"
-                     );
+        return res + constant_gradient_interpolation();
     }
     default:
     {
