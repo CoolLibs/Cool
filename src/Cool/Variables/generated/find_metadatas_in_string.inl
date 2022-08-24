@@ -109,5 +109,11 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     {
         metadata.is_hdr = *is_hdr;
     }
+
+    const auto should_use_a_random_color_for_the_new_marks = Cool::String::find_value_for_given_key<bool>(key_values, "random_color_mode");
+    if (should_use_a_random_color_for_the_new_marks)
+    {
+        metadata.should_use_a_random_color_for_the_new_marks = *should_use_a_random_color_for_the_new_marks;
+    }
     return metadata;
 }

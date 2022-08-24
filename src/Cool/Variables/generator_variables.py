@@ -159,11 +159,17 @@ def all_variable_descriptions():
             string_representations=["Gradient"],
             include="<Cool/StrongTypes/Gradient.h>",
             metadatas=[
-                    # TODO(ASG) Add Wrap, INterpolaltino, RandomColor, etc. as metadatas
                 VariableMetadata(
                     name_in_shader="hdr",
                     field_name="is_hdr",
                     pretty_name="Is HDR",
+                    type="bool",
+                    default_value="true",
+                ),
+                VariableMetadata(
+                    name_in_shader="random_color_mode",
+                    field_name="should_use_a_random_color_for_the_new_marks",
+                    pretty_name="Should use a random color for the new marks",
                     type="bool",
                     default_value="true",
                 ), ],
