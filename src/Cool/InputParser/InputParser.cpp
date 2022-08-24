@@ -306,8 +306,18 @@ static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> st
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
-    return fmt::format(
-        R"STR( 
+    return value.value.gradient().is_empty()
+               ? fmt::format(
+                     R"STR(
+vec4 {}(float x)   
+{{
+    return vec4(0);
+}}
+         )STR",
+                     name
+                 )
+               : fmt::format(
+                     R"STR( 
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
 const int number_of_marks = {};
 Mark gradient_marks[number_of_marks] = Mark[](
@@ -339,13 +349,13 @@ vec4 {}(float x)
     }}
 }}
     )STR",
-        value.value.gradient().get_marks().size(),
-        declare_all_marks(value),
-        gradient_wrap_mode(value.wrap_mode),
-        name,
-        gradient_interpolation(value.value.gradient().interpolation_mode())
+                     value.value.gradient().get_marks().size(),
+                     declare_all_marks(value),
+                     gradient_wrap_mode(value.wrap_mode),
+                     name,
+                     gradient_interpolation(value.value.gradient().interpolation_mode())
 
-    );
+                 );
 }
 
 template<typename T>
