@@ -34,6 +34,7 @@ def evaluate_function_template():
             is_first = False
 
     out += f'else {{ throw std::runtime_error{{"Unknown type \\"" + std::string{{type_as_string}} + "\\""}};  }} \\\n}})()'
+    out += f'\n'
     return out
 
 
