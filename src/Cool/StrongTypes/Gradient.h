@@ -7,8 +7,6 @@
 #include <op/op.hpp>
 #include "RgbColor.h"
 
-// TODO(ASG) When adding and draggin instantly a mark next to another one, buggy
-
 namespace Cool {
 struct Gradient
     : public op::Addable<Gradient>
