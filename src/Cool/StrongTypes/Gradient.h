@@ -12,6 +12,7 @@ struct Gradient
     : public op::Addable<Gradient>
     , public op::Subtractable<Gradient> {
     ImGG::GradientWidget value{};
+    ImGG::WrapMode       wrap_mode{ImGG::WrapMode::Clamp};
     constexpr Gradient() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
     explicit Gradient(const ImGG::GradientWidget& value)
         : value{value}
@@ -56,6 +57,8 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, ImG
         }
     );
     modified |= ImGG::interpolation_mode_widget("Interpolation Mode", &gradient.value.gradient().interpolation_mode());
+    ImGui::SameLine();
+    modified |= ImGG::wrap_mode_widget("Wrap Mode", &gradient.wrap_mode);
     return modified;
 }
 
