@@ -198,9 +198,7 @@ auto instantiate_shader_code__value(const T& value, std::string_view name) -> st
 static auto declare_all_marks(const Cool::Gradient& value) -> std::string
 {
     std::string res = fmt::format(
-        R"STR(
-
-            )STR"
+        R"STR()STR"
     );
     const auto marks = value.value.gradient().get_marks();
     for (const ImGG::Mark& mark : marks)
@@ -236,6 +234,43 @@ Mark({}, vec4({}, {}, {}, {}))
     }
 
     return res;
+}
+
+static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
+
+{
+    switch (wrap_mode)
+    {
+    case ImGG::WrapMode::Clamp:
+    {
+        return fmt::format(
+            R"STR(
+    return clamp(x, 0., 1.);
+        )STR"
+        );
+    }
+    case ImGG::WrapMode::Repeat:
+    {
+        return fmt::format(
+            R"STR(
+    return fract(x);
+        )STR"
+        );
+    }
+    case ImGG::WrapMode::MirrorRepeat:
+    {
+        return fmt::format(
+            R"STR(
+    return 1. - abs(mod(x, 2.) -1.);
+        )STR"
+        );
+    }
+    default:
+    {
+        assert(false && "[InputParser::instantiate_shader_code__value] Invalid WrapMode enum value");
+        return "";
+    }
+    }
 }
 
 static auto linear_gradient_interpolation() -> std::string
@@ -291,7 +326,6 @@ static auto constant_gradient_interpolation() -> std::string
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
-    // TODO(ASG) Handle the different wrap modes
     std::string res = fmt::format(
         R"STR( 
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
@@ -300,11 +334,18 @@ Mark gradient_marks[number_of_marks] = Mark[](
 {}
 );
 
+float wrap(float x)
+{{
+    {}
+}}
+
 vec4 {}(float x)   
 {{
+    float x_wrapped = wrap(x);
     )STR",
         value.value.gradient().get_marks().size(),
         declare_all_marks(value),
+        gradient_wrap_mode(value.wrap_mode),
         name
     );
 
@@ -320,7 +361,7 @@ vec4 {}(float x)
     }
     default:
     {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid enum value");
+        assert(false && "[InputParser::instantiate_shader_code__value] Invalid Interpolation enum value");
         return "";
     }
     }
