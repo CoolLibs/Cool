@@ -24,8 +24,9 @@ def all_debug_options():
             name_in_ui="Log OpenGL info",
         ),
         DebugOption(
-            name_in_code="test_presets",
+            name_in_code="test_presets__window",
             name_in_ui="Test Presets",
+            kind=Kind.WINDOW,
         ),
         DebugOption(
             name_in_code="imgui_item_picker",

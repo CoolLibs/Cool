@@ -4,9 +4,8 @@
 
 namespace Lab {
 
-void TestPresets::imgui_window()
+void TestPresets::imgui()
 {
-    ImGui::Begin("Test Presets");
     _manager.imgui(_current_settings);
     ImGui::NewLine();
     ImGui::Separator();
@@ -34,7 +33,6 @@ void TestPresets::imgui_window()
                                    });
         }
     }
-    ImGui::End();
 }
 
 } // namespace Lab

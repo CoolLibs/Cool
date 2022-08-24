@@ -4,13 +4,11 @@
 #include <Cool/Path/Path.h>
 #include <Cool/Variables/PresetManager.h>
 
-// TODO(JF) Move to Cool (after merging main, after Jules merges their branch)
-// TODO(JF) Use a Window DebugOption
 namespace Lab {
 
 class TestPresets {
 public:
-    void imgui_window();
+    void imgui();
 
 private:
     Cool::PresetManager _manager{Cool::Path::root() + "/test-presets-manager.json"};
