@@ -298,7 +298,7 @@ vec4 {}(float x)
     {{
         if ((x <= gradient_marks[i].pos) && (x >= gradient_marks[i - 1].pos))
         {{
-            return gradient_marks[i - 1].col;
+            return gradient_marks[i].col;
         }}
     }}
     if (x >= gradient_marks[number_of_marks - 1].pos)
