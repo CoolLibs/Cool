@@ -294,7 +294,6 @@ static auto linear_gradient_interpolation() -> std::string
     {{
         return gradient_marks[number_of_marks - 1].col;
     }}
-}}
     )STR"
     );
 }
@@ -318,15 +317,34 @@ static auto constant_gradient_interpolation() -> std::string
     {{
         return gradient_marks[number_of_marks - 1].col;
     }}
-}}
     )STR"
     );
+}
+
+static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> std::string
+{
+    switch (interpolation_mode)
+    {
+    case ImGG::Interpolation::Linear:
+    {
+        return linear_gradient_interpolation();
+    }
+    case ImGG::Interpolation::Constant:
+    {
+        return constant_gradient_interpolation();
+    }
+    default:
+    {
+        assert(false && "[InputParser::instantiate_shader_code__value] Invalid Interpolation enum value");
+        return "";
+    }
+    }
 }
 
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
-    std::string res = fmt::format(
+    return fmt::format(
         R"STR( 
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
 const int number_of_marks = {};
@@ -342,29 +360,16 @@ float wrap(float x)
 vec4 {}(float x)   
 {{
     float x_wrapped = wrap(x);
+    {}
+}}
     )STR",
         value.value.gradient().get_marks().size(),
         declare_all_marks(value),
         gradient_wrap_mode(value.wrap_mode),
-        name
-    );
+        name,
+        gradient_interpolation(value.value.gradient().interpolation_mode())
 
-    switch (value.value.gradient().interpolation_mode())
-    {
-    case ImGG::Interpolation::Linear:
-    {
-        return res + linear_gradient_interpolation();
-    }
-    case ImGG::Interpolation::Constant:
-    {
-        return res + constant_gradient_interpolation();
-    }
-    default:
-    {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid Interpolation enum value");
-        return "";
-    }
-    }
+    );
 }
 
 template<typename T>
