@@ -208,7 +208,7 @@ endfunction()
 # ---------------------
 # ---Setup the tests---
 # ---------------------
-add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
+add_executable(Tests-Cool tests/tests.cpp)
 target_compile_features(Tests-Cool PRIVATE cxx_std_20)
 
 if(MSVC)
