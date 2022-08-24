@@ -40,4 +40,4 @@
         {                                                                                           \
             throw std::runtime_error{"Unknown type \"" + std::string{type_as_string} + "\""};       \
         }                                                                                           \
-    })()
+    })()                                                                                            \
