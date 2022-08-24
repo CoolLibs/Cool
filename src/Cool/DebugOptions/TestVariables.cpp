@@ -1,3 +1,5 @@
+#if DEBUG
+
 #include "TestVariables.h"
 #include <Cool/Variables/Variables.h>
 #include <imgui/imgui.h>
@@ -48,3 +50,5 @@ void test_variables()
 }
 
 } // namespace Cool
+
+#endif

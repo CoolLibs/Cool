@@ -1,4 +1,5 @@
 #pragma once
+#if DEBUG
 
 #include <Cool/Log/MessageConsole.h>
 
@@ -35,3 +36,5 @@ private:
 };
 
 } // namespace Cool
+
+#endif
