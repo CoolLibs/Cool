@@ -22,6 +22,7 @@ inline auto file_path_to_include(const std::string& text) -> std::optional<std::
 
 } // namespace Cool::RegExp
 
+#if DEBUG
 TEST_CASE("[Cool::RegExp] #include")
 {
     // Given
@@ -35,3 +36,4 @@ TEST_CASE("[Cool::RegExp] #include")
     CHECK(result.has_value());
     CHECK(*result == "filename.ext");
 }
+#endif
