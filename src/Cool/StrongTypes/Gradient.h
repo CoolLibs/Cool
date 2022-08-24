@@ -27,8 +27,10 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
+        auto wrap_mode_size_t = static_cast<size_t>(wrap_mode);
         archive(
-            cereal::make_nvp("Gradient", value.gradient().get_marks())
+            cereal::make_nvp("Gradient", value.gradient().get_marks()),
+            cereal::make_nvp("Wrap Mode", wrap_mode_size_t)
         );
     }
     friend class cereal::access;
@@ -36,8 +38,10 @@ private:
     void load(Archive& archive)
     {
         std::list<ImGG::Mark> gradient_loaded{};
-        archive(gradient_loaded);
+        size_t                wrap_mode_size_t{};
+        archive(gradient_loaded, wrap_mode_size_t);
         value.gradient() = ImGG::Gradient{gradient_loaded};
+        wrap_mode        = static_cast<ImGG::WrapMode>(wrap_mode_size_t);
     }
 };
 
