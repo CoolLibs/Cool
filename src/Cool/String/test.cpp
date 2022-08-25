@@ -486,14 +486,9 @@ TEST_CASE("Parsing an Angle")
 
 TEST_CASE("Parsing a Direction2D")
 {
-    CHECK(
-        Cool::String::value_from_string<Cool::Direction2D>("180") ==
-        Cool::Direction2D{Cool::Angle{Cool::Radians{Cool::degrees_to_radians(180)}}}
-    );
-    CHECK(
-        Cool::String::value_from_string<Cool::Direction2D>("180") ==
-        Cool::Direction2D{Cool::get_angle_from_vector(glm::vec2(-1.f, 0.f))}
-    );
+    const auto dir = Cool::String::value_from_string<Cool::Direction2D>("180");
+    CHECK(dir->as_unit_vec2().x == doctest::Approx(-1.f));
+    CHECK(dir->as_unit_vec2().y == doctest::Approx(0.f));
 }
 
 TEST_CASE("contains_word()")
