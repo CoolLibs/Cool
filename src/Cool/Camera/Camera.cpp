@@ -55,7 +55,7 @@ auto Camera::inverse_view_projection_matrix(float aspect_ratio) const -> glm::ma
 
 } // namespace Cool
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("Translating the camera only affects its position")
 {
     // Given

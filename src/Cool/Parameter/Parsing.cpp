@@ -69,7 +69,7 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
 
 } // namespace Cool
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("[Cool::Parameter::Parsing] parse_one_parameter_desc()")
 {
     const std::string source = R"(

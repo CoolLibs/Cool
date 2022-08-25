@@ -2,7 +2,7 @@
 #include "String.h"
 #include "doctest/doctest.h"
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace doctest {
 template<typename T>

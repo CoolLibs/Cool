@@ -22,7 +22,7 @@ inline auto file_path_to_include(const std::string& text) -> std::optional<std::
 
 } // namespace Cool::RegExp
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("[Cool::RegExp] #include")
 {
     // Given

@@ -207,7 +207,7 @@ doctest::String toString(const std::optional<T>& value)
 }
 } // namespace doctest
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("find_key_values()")
 {
     CHECK(Cool::find_key_values("//") == "");

@@ -60,7 +60,7 @@ std::optional<size_t> index_of(const Parameter::AnyDesc& description, const Para
 
 } // namespace Cool::ParameterU
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("[Cool::ParameterU] is_matching_desc_type()")
 {
     CHECK(Cool::ParameterU::is_matching_desc_type(Cool::Parameter::Float{}, Cool::Parameter::FloatDesc{}));

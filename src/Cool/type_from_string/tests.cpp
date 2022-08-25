@@ -29,7 +29,7 @@ auto say_type<float>() -> std::string
     return "I say FLOAT";
 }
 
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("At runtime")
 {
     std::string type_as_string = "int";
