@@ -180,7 +180,7 @@ target_include_directories(Cool-PublicProperties INTERFACE lib/expected/include)
 # doctest
 add_subdirectory(lib/doctest)
 target_link_libraries(Cool-PublicProperties INTERFACE doctest::doctest)
-target_compile_definitions(Cool PUBLIC DOCTEST_CONFIG_DISABLE) # Strip tests from actual builds
+target_compile_definitions(Cool PRIVATE DOCTEST_CONFIG_DISABLE) # Strip tests from actual builds
 
 # Dear ImGui
 add_subdirectory(lib/imgui)
