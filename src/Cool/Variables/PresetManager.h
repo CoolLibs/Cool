@@ -35,7 +35,9 @@ using PresetId = reg::Id<Preset2>;
 class PresetManager {
 public:
     PresetManager(std::filesystem::path path)
-        : _auto_serializer{path, "PresetManager", *this}
+        : _auto_serializer{path, "PresetManager", *this, [](const std::string&) {
+                               /*Ignore deserialization warnings*/
+                           }}
     {}
 
     /// Renders the UI for the whole `PresetManager`.

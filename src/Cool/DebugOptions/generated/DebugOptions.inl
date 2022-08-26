@@ -70,7 +70,15 @@ private:
     static auto load_debug_options() -> Instance
     {
         auto the_instance = Instance{};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache/debug-options-cool.json");
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/cache/debug-options-cool.json")
+            .send_error_if_any([](const std::string& message) {
+                return Cool::Message{
+                    .category         = "Loading Debug Options",
+                    .detailed_message = message,
+                    .severity         = Cool::MessageSeverity::Warning,
+                };
+            },
+                               Cool::Log::Debug::console());
         return the_instance;
     }
 

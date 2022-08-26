@@ -13,6 +13,10 @@
 
 namespace Cool {
 
+namespace internal {
+class PreviousSessionLoadingFailed_Exception : public std::exception {};
+} // namespace internal
+
 /**
  * @brief Shuts down all the Cool systems
  *
@@ -46,8 +50,18 @@ void run(
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto                      app = App{window_factory.window_manager()};
-        Cool::AutoSerializer<App> _auto_serializer{Cool::Path::root() + "/cache/last-session.json", "App", app, true, load_from_file};
-        auto                      app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
+        Cool::AutoSerializer<App> _auto_serializer{
+            Cool::Path::root() + "/cache/last-session.json", "App", app,
+            [](const std::string& message) {
+                Cool::Log::ToUser::console().send(Cool::Message{
+                    .category         = "Loading Project",
+                    .detailed_message = message,
+                    .severity         = Cool::MessageSeverity::Warning,
+                });
+                throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
+            },
+            load_from_file};
+        auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
         app_manager.run();
 #if defined(COOL_VULKAN)
         vkDeviceWaitIdle(Vulkan::context().g_Device);
@@ -57,7 +71,7 @@ void run(
     {
         run_loop(true);
     }
-    catch (const Cool::Serialization::Exception&) // Make sure to start with a clean default App if deserialization fails
+    catch (const internal::PreviousSessionLoadingFailed_Exception&) // Make sure to start with a clean default App if deserialization fails
     {
         run_loop(false);
     }

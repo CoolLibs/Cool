@@ -1,4 +1,5 @@
 #pragma once
+#include <concepts>
 #include "as_json.h"
 
 namespace Cool {
@@ -6,14 +7,19 @@ namespace Cool {
 template<typename T>
 class AutoSerializer {
 public:
-    AutoSerializer(std::filesystem::path path, std::string_view key_name_in_json, T& object_to_serialize, bool is_allowed_to_throw = false, bool load_from_file = true)
+    template<std::invocable<const std::string&> OnError>
+    AutoSerializer(std::filesystem::path path, std::string_view key_name_in_json, T& object_to_serialize, const OnError& on_error, bool load_from_file = true)
         : _path{path}
         , _key_name_in_json{key_name_in_json}
         , _object_to_serialize{object_to_serialize}
     {
         if (load_from_file)
         {
-            Serialization::from_json(_object_to_serialize, _path, is_allowed_to_throw);
+            const auto error = Serialization::from_json(_object_to_serialize, _path);
+            if (error)
+            {
+                on_error(*error);
+            }
         }
     }
 

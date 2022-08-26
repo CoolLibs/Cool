@@ -113,6 +113,7 @@ def reset_all(debug_options: list[DebugOption]):
 
 
 def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
+    backslash = "\\"
     return f"""
 #if DEBUG
 
@@ -161,7 +162,15 @@ private:
     static auto load_debug_options() -> Instance
     {{
         auto the_instance = Instance{{}};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/{cache_file_name}.json");
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/{cache_file_name}.json")
+            .send_error_if_any([](const std::string& message) {{
+                return Cool::Message{{
+                    .category         = "Loading Debug Options",
+                    .detailed_message = message,
+                    .severity         = Cool::MessageSeverity::Warning,
+                }};
+            }},
+                               Cool::Log::Debug::console());
         return the_instance;
     }}
 
