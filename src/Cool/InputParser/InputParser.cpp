@@ -189,6 +189,7 @@ auto parse_all_inputs(
 
 } // namespace Cool
 
+#if COOL_ENABLE_TESTS
 #include "doctest/doctest.h"
 
 // TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
@@ -207,7 +208,6 @@ doctest::String toString(const std::optional<T>& value)
 }
 } // namespace doctest
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("find_key_values()")
 {
     CHECK(Cool::find_key_values("//") == "");

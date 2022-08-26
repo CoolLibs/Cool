@@ -1,3 +1,5 @@
+#if COOL_ENABLE_TESTS
+
 #include <doctest/doctest.h>
 #include "type_from_string.h"
 
@@ -29,7 +31,6 @@ auto say_type<float>() -> std::string
     return "I say FLOAT";
 }
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("At runtime")
 {
     std::string type_as_string = "int";

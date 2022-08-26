@@ -1,8 +1,8 @@
+#if COOL_ENABLE_TESTS
+
 #include <stringify/stringify.hpp>
 #include "String.h"
 #include "doctest/doctest.h"
-
-#if !defined(DOCTEST_CONFIG_DISABLE)
 
 namespace doctest {
 template<typename T>

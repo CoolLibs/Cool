@@ -1,6 +1,5 @@
 #pragma once
 
-#include <doctest/doctest.h>
 #include <regex>
 
 namespace Cool::RegExp {
@@ -22,7 +21,8 @@ inline auto file_path_to_include(const std::string& text) -> std::optional<std::
 
 } // namespace Cool::RegExp
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if COOL_ENABLE_TESTS
+#include <doctest/doctest.h>
 TEST_CASE("[Cool::RegExp] #include")
 {
     // Given

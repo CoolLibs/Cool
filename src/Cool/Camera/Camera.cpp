@@ -1,6 +1,5 @@
 #include "Camera.h"
 #include <Cool/Constants/Constants.h>
-#include <doctest/doctest.h>
 #include <glm/gtc/matrix_access.hpp>
 
 namespace Cool {
@@ -55,7 +54,8 @@ auto Camera::inverse_view_projection_matrix(float aspect_ratio) const -> glm::ma
 
 } // namespace Cool
 
-#if !defined(DOCTEST_CONFIG_DISABLE)
+#if COOL_ENABLE_TESTS
+#include <doctest/doctest.h>
 TEST_CASE("Translating the camera only affects its position")
 {
     // Given
