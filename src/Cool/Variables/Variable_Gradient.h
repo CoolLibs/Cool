@@ -11,7 +11,7 @@ namespace Cool {
 
 inline auto imgui_widget(Variable<Gradient>& var) -> bool
 {
-    return gradient_widget(
+    return imgui_widget(
         var.name,
         var.value,
         var.metadata.should_use_a_random_color_for_the_new_marks,

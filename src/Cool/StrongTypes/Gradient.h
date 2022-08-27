@@ -45,7 +45,7 @@ inline auto to_string(Cool::Gradient) -> std::string
     return "Gradient [...]";
 }
 
-inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, bool should_use_a_random_color_for_the_new_marks, ImGuiColorEditFlags flags) -> bool
+inline auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool should_use_a_random_color_for_the_new_marks, ImGuiColorEditFlags flags) -> bool
 {
     auto modified = gradient.value.widget(
         name.data(),
