@@ -22,6 +22,8 @@ public:
         Serialization::to_json(_object_to_serialize, _path, _key_name_in_json);
     }
 
+    auto path() const { return _path; }
+
 private:
     std::filesystem::path _path;
     std::string           _key_name_in_json;
