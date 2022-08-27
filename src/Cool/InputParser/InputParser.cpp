@@ -253,6 +253,11 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
     }
 }
 
+static auto gen_code__number_of_marks_variable_name(std::string_view name)
+{
+    return fmt::format("number_of_marks_of_{}", internal::gradient_marks_array_name(name));
+}
+
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
@@ -270,8 +275,8 @@ vec4 {}(float x)
                : fmt::format(
                      FMT_COMPILE(R"STR( 
 // #include "_COOL_RES_/shaders/GradientMark.glsl"
-const int number_of_marks = {gradient_size};
-uniform GradientMark {gradient_marks}[number_of_marks];
+const int {number_of_marks} = {gradient_size};
+uniform GradientMark {gradient_marks}[{number_of_marks}];
 
 vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster that dichotomy
 {{
@@ -280,20 +285,21 @@ vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster th
     {{
         return {gradient_marks}[0].col;
     }}
-    for (int i = 1; i < number_of_marks; i++)
+    for (int i = 1; i < {number_of_marks}; i++)
     {{
         if ((x_wrapped <= {gradient_marks}[i].pos) && (x_wrapped >= {gradient_marks}[i - 1].pos))
         {{
             {interpolation}
         }}
     }}
-    if (x_wrapped >= {gradient_marks}[number_of_marks - 1].pos)
+    if (x_wrapped >= {gradient_marks}[{number_of_marks} - 1].pos)
     {{
-        return {gradient_marks}[number_of_marks - 1].col;
+        return {gradient_marks}[{number_of_marks} - 1].col;
     }}
 }}
     )STR"),
                      "gradient_size"_a     = value.value.gradient().get_marks().size(),
+                     "number_of_marks"_a   = gen_code__number_of_marks_variable_name(name),
                      "gradient_function"_a = name,
                      "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
                      "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
