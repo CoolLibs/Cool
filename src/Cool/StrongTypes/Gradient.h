@@ -12,7 +12,7 @@ struct Gradient
     : public op::Addable<Gradient>
     , public op::Subtractable<Gradient> {
     ImGG::GradientWidget value{};
-    ImGG::WrapMode       wrap_mode{ImGG::WrapMode::Clamp};
+    ImGG::WrapMode       wrap_mode{ImGG::WrapMode::MirrorRepeat};
     constexpr Gradient() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
     explicit Gradient(const ImGG::GradientWidget& value)
         : value{value}
