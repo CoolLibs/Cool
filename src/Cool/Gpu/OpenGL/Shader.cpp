@@ -117,7 +117,7 @@ void Shader::set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
 
-void Shader::set_uniform(std::string_view uniform_name, Gradient gradient) const
+void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient) const
 {
     int idx = 0;
     for (const ImGG::Mark& mark : gradient.value.gradient().get_marks())
