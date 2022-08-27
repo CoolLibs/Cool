@@ -214,7 +214,7 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
     default:
     {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid WrapMode enum value");
+        Cool::Log::Debug::error("InputParser::instantiate_shader_code__value", "Invalid WrapMode enum value");
         return "";
     }
     }
@@ -247,7 +247,7 @@ static auto gradient_interpolation(std::string_view name, ImGG::Interpolation in
     }
     default:
     {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid Interpolation enum value");
+        Cool::Log::Debug::error("InputParser::instantiate_shader_code__value", "Invalid Interpolation enum value");
         return "";
     }
     }
