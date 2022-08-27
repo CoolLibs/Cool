@@ -196,47 +196,6 @@ auto instantiate_shader_code__value(const T& value, std::string_view name) -> st
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
 
-static auto declare_all_marks(const Cool::Gradient& value) -> std::string
-{
-    std::string res = fmt::format(
-        R"STR()STR"
-    );
-    const auto marks = value.value.gradient().get_marks();
-    for (const ImGG::Mark& mark : marks)
-    {
-        if (&mark != &marks.back())
-        {
-            res += fmt::format(
-                R"STR(
-Mark({}, vec4({}, {}, {}, {})),
-
-        )STR",
-                mark.position.get(),
-                mark.color.x,
-                mark.color.y,
-                mark.color.z,
-                mark.color.w
-            );
-        }
-        else
-        {
-            res += fmt::format(
-                R"STR(
-Mark({}, vec4({}, {}, {}, {}))
-
-            )STR",
-                marks.back().position.get(),
-                marks.back().color.x,
-                marks.back().color.y,
-                marks.back().color.z,
-                marks.back().color.w
-            );
-        }
-    }
-
-    return res;
-}
-
 static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 
 {
@@ -389,22 +348,6 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
         if (const auto info = find_type_and_name(line))
         {
             out << instantiate_shader_code(info->name, inputs, input_provider) << '\n';
-            //             if (info->type == "Gradient")
-            //             {
-            //                 out << fmt::format(
-            //                     R"STRING(
-            // vec4 {}(float x)
-            // {{
-            //     return vec4(x);
-            // }}
-            //                 )STRING",
-            //                     info->name
-            //                 );
-            //             }
-            //             else
-            //             {
-            //                 out << fmt::format("uniform {} {};\n", info->type, info->name);
-            //             }
         }
         else
         {
