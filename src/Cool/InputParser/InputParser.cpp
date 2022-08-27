@@ -416,6 +416,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
 
 } // namespace Cool
 
+#if COOL_ENABLE_TESTS
 #include "doctest/doctest.h"
 
 // TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
@@ -467,3 +468,4 @@ TEST_CASE("Parsing a RgbColor")
         );
     }
 }
+#endif

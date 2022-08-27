@@ -9,19 +9,24 @@ cmake_minimum_required(VERSION 3.20)
 
 add_library(Cool)
 add_library(Cool::Core ALIAS Cool)
-target_compile_features(Cool PUBLIC cxx_std_20)
+add_library(Cool-PublicProperties INTERFACE) # This is needed by both Cool and its tests
+add_library(Cool-PrivateProperties INTERFACE) # This is needed by both Cool and its tests
+target_link_libraries(Cool PUBLIC Cool-PublicProperties)
+target_link_libraries(Cool PRIVATE Cool-PrivateProperties)
+
+target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 
 if(MSVC)
-    target_compile_options(Cool PRIVATE /WX /W3)
+    target_compile_options(Cool-PrivateProperties INTERFACE /WX /W3)
 else()
-    target_compile_options(Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors)
+    target_compile_options(Cool-PrivateProperties INTERFACE -Werror -Wall -Wextra -Wpedantic -pedantic-errors)
 endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
 set(COOL_PATH_INTERNAL ${COOL_PATH} CACHE INTERNAL "") # Make a global variable so that `cool_setup()` will be able to use it when it is called outside of this CMake file
 
-target_compile_definitions(Cool PUBLIC
+target_compile_definitions(Cool-PublicProperties INTERFACE
     $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
     COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
@@ -36,8 +41,8 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 # -----------------------------
 # ---Set include directories---
 # -----------------------------
-target_include_directories(Cool PUBLIC src lib)
-target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
+target_include_directories(Cool-PublicProperties INTERFACE src lib)
+target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
 
     <vector>
@@ -73,12 +78,12 @@ target_precompile_headers(Cool PUBLIC # More info on precompiled headers: https:
 )
 
 if(COOL_USE_VULKAN)
-    target_precompile_headers(Cool PUBLIC
+    target_precompile_headers(Cool-PublicProperties INTERFACE
         <vulkan/vulkan.hpp>
         <vku/vku.hpp>
     )
 elseif(COOL_USE_OPENGL)
-    target_precompile_headers(Cool PUBLIC
+    target_precompile_headers(Cool-PublicProperties INTERFACE
         <glad/gl.h>
         <Cool/Gpu/OpenGL/GLDebug.h>
     )
@@ -88,22 +93,22 @@ endif()
 # ---Add Vulkan / OpenGL---
 # -------------------------
 if(COOL_USE_VULKAN)
-    target_compile_definitions(Cool PUBLIC
+    target_compile_definitions(Cool-PublicProperties INTERFACE
         COOL_VULKAN
         COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
     find_package(Vulkan REQUIRED)
-    target_link_libraries(Cool PUBLIC Vulkan::Vulkan)
+    target_link_libraries(Cool-PublicProperties INTERFACE Vulkan::Vulkan)
     add_subdirectory(lib/Vookoo/include)
-    target_link_libraries(Cool PUBLIC Vookoo::Vookoo)
+    target_link_libraries(Cool-PublicProperties INTERFACE Vookoo::Vookoo)
     add_subdirectory(lib/easy-shaderc)
-    target_link_libraries(Cool PUBLIC easy_shaderc::shaderc)
+    target_link_libraries(Cool-PublicProperties INTERFACE easy_shaderc::shaderc)
 elseif(COOL_USE_OPENGL)
-    target_compile_definitions(Cool PUBLIC
+    target_compile_definitions(Cool-PublicProperties INTERFACE
         COOL_OPENGL
         COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
     add_subdirectory(lib/glpp)
     target_compile_definitions(glpp PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
-    target_link_libraries(Cool PUBLIC glpp::glpp)
+    target_link_libraries(Cool-PublicProperties INTERFACE glpp::glpp)
 endif()
 
 # -------------------
@@ -116,70 +121,65 @@ target_include_directories(imgui_gradient PRIVATE lib)
 target_link_libraries(Cool PUBLIC imgui_gradient::imgui_gradient)
 # algorithms
 add_subdirectory(lib/algorithms)
-target_link_libraries(Cool PUBLIC algorithms::algorithms)
+target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 
 # GLFW
 add_subdirectory(lib/glfw)
-target_link_libraries(Cool PUBLIC glfw)
+target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 
 # glm
 add_subdirectory(lib/glm)
-target_link_libraries(Cool PUBLIC glm::glm)
+target_link_libraries(Cool-PublicProperties INTERFACE glm::glm)
 
 # cereal
-target_include_directories(Cool PUBLIC lib/cereal/include)
+target_include_directories(Cool-PublicProperties INTERFACE lib/cereal/include)
 
 # smart
 add_subdirectory(lib/smart)
-target_link_libraries(Cool PUBLIC smart::smart)
+target_link_libraries(Cool-PublicProperties INTERFACE smart::smart)
 
 # Boxer
 add_subdirectory(lib/Boxer)
-target_link_libraries(Cool PUBLIC Boxer)
+target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
 
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
-target_link_libraries(Cool PUBLIC nfd)
+target_link_libraries(Cool-PublicProperties INTERFACE nfd)
 
 # img
 add_subdirectory(lib/img)
-target_link_libraries(Cool PUBLIC img::img)
+target_link_libraries(Cool-PublicProperties INTERFACE img::img)
 
 # exe_path
 add_subdirectory(lib/exe_path)
-target_link_libraries(Cool PUBLIC exe_path::exe_path)
+target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
 # serv
 add_subdirectory(lib/serv)
-target_link_libraries(Cool PUBLIC serv::serv)
+target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 
 # stringify
 add_subdirectory(lib/stringify)
-target_link_libraries(Cool PUBLIC stringify::stringify)
+target_link_libraries(Cool-PublicProperties INTERFACE stringify::stringify)
 
 # op
 add_subdirectory(lib/op)
-target_link_libraries(Cool PUBLIC op::op)
+target_link_libraries(Cool-PublicProperties INTERFACE op::op)
 
 # reg
 add_subdirectory(lib/reg)
-target_link_libraries(Cool PUBLIC reg::reg)
+target_link_libraries(Cool-PublicProperties INTERFACE reg::reg)
 
 # wafl
 add_subdirectory(lib/wafl)
-target_link_libraries(Cool PUBLIC wafl::wafl)
+target_link_libraries(Cool-PublicProperties INTERFACE wafl::wafl)
 
 # open_link
 add_subdirectory(lib/open_link)
-target_link_libraries(Cool PUBLIC open_link::open_link)
+target_link_libraries(Cool-PublicProperties INTERFACE open_link::open_link)
 
 # tl::expected
-target_include_directories(Cool PUBLIC lib/expected/include)
-
-# doctest
-add_subdirectory(lib/doctest)
-target_link_libraries(Cool PUBLIC doctest::doctest)
-target_compile_definitions(Cool PUBLIC $<$<NOT:$<CONFIG:Debug>>:DOCTEST_CONFIG_DISABLE>) # Strip tests from release builds
+target_include_directories(Cool-PublicProperties INTERFACE lib/expected/include)
 
 # Dear ImGui
 add_subdirectory(lib/imgui)
@@ -196,7 +196,7 @@ elseif(COOL_USE_OPENGL)
     target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_opengl3.cpp)
 endif()
 
-target_link_libraries(Cool PUBLIC ImGui::ImGui)
+target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 
 # ----------------
 # ---Copy files---
@@ -213,12 +213,9 @@ endfunction()
 # ---Setup the tests---
 # ---------------------
 add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
-target_compile_features(Tests-Cool PRIVATE cxx_std_20)
-
-if(MSVC)
-    target_compile_options(Tests-Cool PRIVATE /WX /W3)
-else()
-    target_compile_options(Tests-Cool PRIVATE -Werror -Wall -Wextra -Wpedantic -pedantic-errors)
-endif()
-
-target_link_libraries(Tests-Cool PRIVATE Cool::Core)
+target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
+target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
+target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+add_subdirectory(lib/doctest)
+target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
+target_link_libraries(Tests-Cool PRIVATE doctest::doctest)

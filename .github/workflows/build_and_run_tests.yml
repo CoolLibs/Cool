@@ -29,7 +29,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Debug\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Windows_MSVC_Release:
@@ -47,7 +47,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Release\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Release\${{env.TARGET}} 
 #-----------------------------------------------------------------------------------------------
   Windows_Clang_Debug:
     name: Windows Clang Debug
@@ -64,7 +64,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Debug\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}}  
 
 #-----------------------------------------------------------------------------------------------
   Windows_Clang_Release:
@@ -82,7 +82,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}\build\Release\${{env.TARGET}} 
+      run: ${{github.workspace}}\tests\build\Cool\Release\${{env.TARGET}} 
 #-----------------------------------------------------------------------------------------------
   Linux_GCC_Debug: 
     name: Linux GCC Debug
@@ -105,7 +105,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
       
 #-----------------------------------------------------------------------------------------------
   Linux_GCC_Release: 
@@ -129,7 +129,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
@@ -153,7 +153,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   Linux_Clang_Release: 
@@ -177,48 +177,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
-                        
-#-----------------------------------------------------------------------------------------------
-  MacOS_GCC_Debug: 
-    name: MacOS GCC Debug
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - name: Configure CMake
-      run: cmake ./tests -B ${{github.workspace}}/build -D CMAKE_BUILD_TYPE=Debug -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
-
-    - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
-      
-#-----------------------------------------------------------------------------------------------
-  MacOS_GCC_Release: 
-    name: MacOS GCC Release
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - name: Configure CMake
-      run: cmake ./tests -B ${{github.workspace}}/build -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER=gcc-11 -D CMAKE_CXX_COMPILER=g++-11
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
-
-    - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Debug:
     name: MacOS Clang Debug 
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v3
       with:
@@ -231,12 +195,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 
 
 #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Release: 
     name: MacOS Clang Release
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v3
       with:
@@ -249,4 +213,4 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
     - name: Run
-      run: ${{github.workspace}}/build/${{env.TARGET}} 
+      run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}} 

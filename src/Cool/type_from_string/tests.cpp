@@ -1,3 +1,5 @@
+#if COOL_ENABLE_TESTS
+
 #include <doctest/doctest.h>
 #include "type_from_string.h"
 
@@ -37,3 +39,4 @@ TEST_CASE("At runtime")
         "I say INT"
     );
 }
+#endif
