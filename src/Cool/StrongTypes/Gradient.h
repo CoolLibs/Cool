@@ -19,7 +19,7 @@ struct Gradient
     {
     }
 
-    friend auto operator==(const Gradient& a, const Gradient& b) -> bool { return a.value.gradient() == b.value.gradient(); }
+    friend auto operator==(const Gradient& a, const Gradient& b) -> bool = default;
 
 private:
     // Serialization
