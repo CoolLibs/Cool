@@ -197,33 +197,20 @@ auto instantiate_shader_code__value(const T& value, std::string_view name) -> st
 }
 
 static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
-
 {
     switch (wrap_mode)
     {
     case ImGG::WrapMode::Clamp:
     {
-        return fmt::format(
-            R"STR(
-    clamp(x, 0., 1.);
-        )STR"
-        );
+        return "clamp(x, 0., 1.);";
     }
     case ImGG::WrapMode::Repeat:
     {
-        return fmt::format(
-            R"STR(
-    fract(x);
-        )STR"
-        );
+        return "fract(x);";
     }
     case ImGG::WrapMode::MirrorRepeat:
     {
-        return fmt::format(
-            R"STR(
-    1. - abs(mod(x, 2.) -1.);
-        )STR"
-        );
+        return "1. - abs(mod(x, 2.) -1.);";
     }
     default:
     {
