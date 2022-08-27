@@ -122,8 +122,8 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
     int idx = 0;
     for (const ImGG::Mark& mark : gradient.value.gradient().get_marks())
     {
-        set_uniform(fmt::format("{}_[{}].pos", uniform_name, idx), mark.position.get());
-        set_uniform(fmt::format("{}_[{}].col", uniform_name, idx), mark.color);
+        set_uniform(fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.position.get());
+        set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color);
         idx++;
     }
 }

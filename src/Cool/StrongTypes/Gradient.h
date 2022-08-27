@@ -70,6 +70,13 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, boo
     return modified;
 }
 
+namespace internal {
+inline auto gradient_marks_array_name(std::string_view name) -> std::string
+{
+    return fmt::format("{}_", name);
+}
+} // namespace internal
+
 } // namespace Cool
 
 namespace cereal {

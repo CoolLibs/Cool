@@ -351,7 +351,7 @@ vec4 {gradient_function}(float x)
                      "gradient_function"_a = name,
                      "wrap"_a              = gradient_wrap_mode(value.wrap_mode),
                      "interpolation"_a     = gradient_interpolation(name, value.value.gradient().interpolation_mode()),
-                     "gradient_marks"_a    = fmt::format("{}_", name)
+                     "gradient_marks"_a    = internal::gradient_marks_array_name(name)
                  );
 }
 
