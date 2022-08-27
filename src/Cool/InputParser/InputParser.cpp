@@ -196,7 +196,7 @@ auto instantiate_shader_code__value(const T& value, std::string_view name) -> st
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
 
-static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
+static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 {
     switch (wrap_mode)
     {
@@ -220,7 +220,7 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
 }
 
-static auto gradient_interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
+static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
     using namespace fmt::literals;
     switch (interpolation_mode)
@@ -295,8 +295,8 @@ vec4 {gradient_function}(float x)
     )STR"),
                      "gradient_size"_a     = value.value.gradient().get_marks().size(),
                      "gradient_function"_a = name,
-                     "wrap"_a              = gradient_wrap_mode(value.wrap_mode),
-                     "interpolation"_a     = gradient_interpolation(name, value.value.gradient().interpolation_mode()),
+                     "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
+                     "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
                      "gradient_marks"_a    = internal::gradient_marks_array_name(name)
                  );
 }
