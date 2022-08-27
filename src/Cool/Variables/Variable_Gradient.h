@@ -14,7 +14,7 @@ inline auto imgui_widget(Variable<Gradient>& var) -> bool
     return imgui_widget(
         var.name,
         var.value,
-        var.metadata.should_use_a_random_color_for_the_new_marks,
+        var.metadata.randomize_new_marks_colors,
         internal::rgb_color_imgui_flags(var.metadata.is_hdr)
     );
 }
@@ -22,7 +22,7 @@ inline auto imgui_widget(Variable<Gradient>& var) -> bool
 inline auto imgui_widget(VariableMetadata<Gradient>& meta) -> bool
 {
     bool b = internal::rgb_color_metadata_widget(meta.is_hdr);
-    b |= ImGG::random_mode_widget("Use random colors when adding new marks", &meta.should_use_a_random_color_for_the_new_marks);
+    b |= ImGG::random_mode_widget("Use random colors when adding new marks", &meta.randomize_new_marks_colors);
     return b;
 }
 

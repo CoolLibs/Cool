@@ -13,11 +13,11 @@ from typing import List
 
 @dataclass
 class VariableMetadata:
-    name_in_shader: str
     field_name: str
     pretty_name: str
     type: str
     default_value: str
+    name_in_shader: str=""
 
 
 @dataclass
@@ -167,9 +167,8 @@ def all_variable_descriptions():
                     default_value="true",
                 ),
                 VariableMetadata(
-                    name_in_shader="random_color_mode",
-                    field_name="should_use_a_random_color_for_the_new_marks",
-                    pretty_name="Should use a random color for the new marks",
+                    field_name="randomize_new_marks_colors",
+                    pretty_name="Randomize new marks' colors",
                     type="bool",
                     default_value="true",
                 ), ],
