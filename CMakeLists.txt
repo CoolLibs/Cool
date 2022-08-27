@@ -117,8 +117,8 @@ endif()
 
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
-target_include_directories(imgui_gradient PRIVATE lib)
-target_link_libraries(Cool PUBLIC imgui_gradient::imgui_gradient)
+target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
+target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 # algorithms
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
@@ -217,5 +217,4 @@ target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 add_subdirectory(lib/doctest)
-target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
