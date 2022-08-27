@@ -191,7 +191,7 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code__impl(const T& value, std::string_view name) -> std::string
+auto instantiate_shader_code__impl(const T&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
