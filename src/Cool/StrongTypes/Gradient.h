@@ -1,23 +1,14 @@
 #pragma once
 
-#include <Cool/Math/constants.h>
 #include <Cool/Serialization/ImGuiSerialization.h>
 #include <cereal/types/list.hpp>
 #include <imgui_gradient/imgui_gradient.hpp>
-#include <op/op.hpp>
 #include "RgbColor.h"
 
 namespace Cool {
-struct Gradient
-    : public op::Addable<Gradient>
-    , public op::Subtractable<Gradient> {
+struct Gradient {
     ImGG::GradientWidget value{};
     ImGG::WrapMode       wrap_mode{ImGG::WrapMode::MirrorRepeat};
-    constexpr Gradient() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
-    explicit Gradient(const ImGG::GradientWidget& value)
-        : value{value}
-    {
-    }
 
     friend auto operator==(const Gradient& a, const Gradient& b) -> bool = default;
 
