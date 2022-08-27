@@ -6,6 +6,7 @@
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
+#include <fmt/compile.h>
 #include <sstream>
 
 namespace Cool {
@@ -273,26 +274,29 @@ static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
 }
 
-static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> std::string
+static auto gradient_interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
+    using namespace fmt::literals;
     switch (interpolation_mode)
     {
     case ImGG::Interpolation::Linear:
     {
         return fmt::format(
             R"STR(
-            float mix_factor = (x_wrapped - gradient_marks[i - 1].pos) /
-                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
-            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
-    )STR"
+            float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
+                            ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
+            return mix({gradient_marks}[i - 1].col, {gradient_marks}[i].col, mix_factor);
+    )STR"_cf,
+            "gradient_marks"_a = fmt::format("{}_", name)
         );
     }
     case ImGG::Interpolation::Constant:
     {
         return fmt::format(
             R"STR(
-            return gradient_marks[i].col;
-    )STR"
+            return {gradient_marks}[i].col;
+    )STR"_cf,
+            "gradient_marks"_a = fmt::format("{}_", name)
         );
     }
     default:
@@ -306,6 +310,7 @@ static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> st
 template<>
 auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
 {
+    using namespace fmt::literals;
     return value.value.gradient().is_empty()
                ? fmt::format(
                      R"STR(
@@ -319,36 +324,34 @@ vec4 {}(float x)
                : fmt::format(
                      R"STR( 
 // #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
-const int number_of_marks = {};
-Mark gradient_marks[number_of_marks] = Mark[](
-{}
-);
+const int number_of_marks = {gradient_size};
+uniform Mark {gradient_marks}[number_of_marks];
 
-vec4 {}(float x)   
+vec4 {gradient_function}(float x)   
 {{
-    float x_wrapped = {};
-    if (x_wrapped <= gradient_marks[0].pos)
+    float x_wrapped = {wrap};
+    if (x_wrapped <= {gradient_marks}[0].pos)
     {{
-        return gradient_marks[0].col;
+        return {gradient_marks}[0].col;
     }}
     for (int i = 1; i < number_of_marks; i++)
     {{
-        if ((x_wrapped <= gradient_marks[i].pos) && (x_wrapped >= gradient_marks[i - 1].pos))
+        if ((x_wrapped <= {gradient_marks}[i].pos) && (x_wrapped >= {gradient_marks}[i - 1].pos))
         {{
-            {}
+            {interpolation}
         }}
     }}
-    if (x_wrapped >= gradient_marks[number_of_marks - 1].pos)
+    if (x_wrapped >= {gradient_marks}[number_of_marks - 1].pos)
     {{
-        return gradient_marks[number_of_marks - 1].col;
+        return {gradient_marks}[number_of_marks - 1].col;
     }}
 }}
-    )STR",
-                     value.value.gradient().get_marks().size(),
-                     declare_all_marks(value),
-                     name,
-                     gradient_wrap_mode(value.wrap_mode),
-                     gradient_interpolation(value.value.gradient().interpolation_mode())
+    )STR"_cf,
+                     "gradient_size"_a     = value.value.gradient().get_marks().size(),
+                     "gradient_function"_a = name,
+                     "wrap"_a              = gradient_wrap_mode(value.wrap_mode),
+                     "interpolation"_a     = gradient_interpolation(name, value.value.gradient().interpolation_mode()),
+                     "gradient_marks"_a    = fmt::format("{}_", name)
                  );
 }
 
