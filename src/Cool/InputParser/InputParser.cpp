@@ -262,7 +262,7 @@ auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_vie
                      R"STR(
 vec4 {}(float x)   
 {{
-    return vec4(0);
+    return vec4(0.);
 }}
          )STR",
                      name
