@@ -191,7 +191,7 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code__value(const T& value, std::string_view name) -> std::string
+auto instantiate_shader_code__impl(const T& value, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
@@ -214,7 +214,7 @@ static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
     default:
     {
-        Cool::Log::Debug::error("InputParser::instantiate_shader_code__value", "Invalid WrapMode enum value");
+        Cool::Log::Debug::error("InputParser::gen_code__wrap_mode", "Invalid WrapMode enum value");
         return "";
     }
     }
@@ -247,7 +247,7 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
     }
     default:
     {
-        Cool::Log::Debug::error("InputParser::instantiate_shader_code__value", "Invalid Interpolation enum value");
+        Cool::Log::Debug::error("InputParser::gen_code__interpolation", "Invalid Interpolation enum value");
         return "";
     }
     }
@@ -259,7 +259,7 @@ static auto gen_code__number_of_marks_variable_name(std::string_view name)
 }
 
 template<>
-auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
+auto instantiate_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
 {
     using namespace fmt::literals;
     return value.value.gradient().is_empty()
@@ -308,9 +308,9 @@ vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster th
 }
 
 template<typename T>
-auto instantiate_shader_code__input(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+auto instantiate_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
 {
-    return instantiate_shader_code__value(input_provider(input), input.name());
+    return instantiate_shader_code__impl(input_provider(input), input.name());
 }
 
 static auto instantiate_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
@@ -322,7 +322,7 @@ static auto instantiate_shader_code(std::string_view name, const std::vector<Any
             [&](auto&& input) {
                 if (input.name() == name)
                 {
-                    res = instantiate_shader_code__input(input, input_provider);
+                    res = instantiate_shader_code(input, input_provider);
                 }
             },
             input
