@@ -273,7 +273,7 @@ vec4 {}(float x)
 const int number_of_marks = {gradient_size};
 uniform GradientMark {gradient_marks}[number_of_marks];
 
-vec4 {gradient_function}(float x)   
+vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster that dichotomy
 {{
     float x_wrapped = {wrap};
     if (x_wrapped <= {gradient_marks}[0].pos)
