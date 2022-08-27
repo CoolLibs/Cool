@@ -18,8 +18,8 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        auto wrap_mode_size_t          = static_cast<size_t>(wrap_mode);
-        auto interpolation_mode_size_t = static_cast<size_t>(value.gradient().interpolation_mode());
+        const auto wrap_mode_size_t          = static_cast<size_t>(wrap_mode);
+        const auto interpolation_mode_size_t = static_cast<size_t>(value.gradient().interpolation_mode());
         archive(
             cereal::make_nvp("Gradient", value.gradient().get_marks()),
             cereal::make_nvp("Wrap Mode", wrap_mode_size_t),
