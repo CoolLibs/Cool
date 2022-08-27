@@ -21,8 +21,9 @@ inline auto imgui_widget(Variable<Gradient>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<Gradient>& meta) -> bool
 {
-    return internal::rgb_color_metadata_widget(meta.is_hdr) |
-           ImGG::random_mode_widget("Use random colors when adding new marks", &meta.should_use_a_random_color_for_the_new_marks);
+    bool b = internal::rgb_color_metadata_widget(meta.is_hdr);
+    b |= ImGG::random_mode_widget("Use random colors when adding new marks", &meta.should_use_a_random_color_for_the_new_marks);
+    return b;
 }
 
 } // namespace Cool
