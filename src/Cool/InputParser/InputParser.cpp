@@ -1,6 +1,5 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
-#include <Cool/Dependencies/InputProvider_Ref.h>
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/Variables/Variable.h>
