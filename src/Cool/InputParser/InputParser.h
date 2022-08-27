@@ -1,5 +1,6 @@
 #include <Cool/Dependencies/Dirty.h>
 #include <Cool/Dependencies/InputFactory_Ref.h>
+#include <Cool/Dependencies/InputProvider_Ref.h>
 
 namespace Cool {
 
@@ -19,5 +20,7 @@ auto try_parse_input(
     DirtyFlag        dirty_flag,
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>;
+
+auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>&, Cool::InputProvider_Ref) -> std::string;
 
 } // namespace Cool
