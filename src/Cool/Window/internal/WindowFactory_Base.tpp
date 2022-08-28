@@ -89,6 +89,7 @@ void WindowFactory_Base<T>::initialize_imgui()
         style.WindowRounding              = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+    style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4{0.902f, 0.902f, 0.902f, 0.384f};
 }
 
 } // namespace Cool

@@ -2,7 +2,7 @@
 #if DEBUG
 
 #include <Cool/Path/Path.h>
-#include <Cool/Variables/PresetManager.h>
+#include <Cool/Presets/PresetManager.h>
 
 namespace Lab {
 

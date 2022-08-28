@@ -3,13 +3,11 @@
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/Variables/AnyVariable.h>
 #include <reg/cereal.hpp>
+#include "PresetsConflictResolver.h"
 
 namespace Cool {
 
 // TODO(JF) TODO(LD) Remove the old presets system
-
-/// List of values contained by a preset.
-using Settings = std::vector<Cool::AnyVariable>;
 
 struct Preset2 {
     std::string name;
@@ -111,6 +109,7 @@ private:
     PresetId                      _current_preset_id;
     std::string                   _new_preset_name;
     RenamerWidget                 _rename_widget;
+    PresetsConflictResolver       _conflicts_resolver{};
 
 private:
     // Serialization

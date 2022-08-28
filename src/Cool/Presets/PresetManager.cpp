@@ -310,26 +310,33 @@ void PresetManager::imgui_adding_preset(const Settings& settings)
 
 auto PresetManager::imgui_presets(Settings& settings) -> bool
 {
-    _current_preset_id = find_preset_with_given_values(settings);
-
-    const auto current_preset_name = preset_name(_current_preset_id);
-
-    const auto selected_id = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
-
-    const auto settings_have_changed = apply(selected_id, settings);
-
-    if (!current_preset_name)
+    if (_conflicts_resolver.imgui())
     {
-        imgui_adding_preset(settings);
+        _current_preset_id = find_preset_with_given_values(settings);
+
+        const auto current_preset_name = preset_name(_current_preset_id);
+
+        const auto selected_id = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
+
+        const auto settings_have_changed = apply(selected_id, settings);
+
+        if (!current_preset_name)
+        {
+            imgui_adding_preset(settings);
+        }
+        else
+        {
+            delete_button(_current_preset_id, *current_preset_name, *this);
+            ImGui::SameLine();
+            _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
+        }
+
+        return settings_have_changed;
     }
     else
     {
-        delete_button(_current_preset_id, *current_preset_name, *this);
-        ImGui::SameLine();
-        _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
+        return false;
     }
-
-    return settings_have_changed;
 }
 
 auto PresetManager::imgui(Settings& settings) -> bool
