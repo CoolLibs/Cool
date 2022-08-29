@@ -10,7 +10,6 @@
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
-
 namespace Cool::OpenGL {
 
 class Shader {
@@ -37,7 +36,8 @@ public:
     void set_uniform(std::string_view uniform_name, Direction2D) const;
     void set_uniform(std::string_view uniform_name, Hue) const;
     void set_uniform(std::string_view uniform_name, ColorPalette) const;
-    void set_uniform(std::string_view uniform_name, Gradient) const;
+    void set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v) const;
+    void set_uniform(std::string_view uniform_name, const Gradient&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

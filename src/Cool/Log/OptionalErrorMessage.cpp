@@ -1,5 +1,3 @@
-#pragma once
-
 #include "OptionalErrorMessage.h"
 
 namespace Cool {

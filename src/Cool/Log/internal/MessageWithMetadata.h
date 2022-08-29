@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Message.h"
+#include "../Message.h"
 
 namespace Cool::internal {
 

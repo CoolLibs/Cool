@@ -1,5 +1,6 @@
 #include <Cool/Dependencies/Dirty.h>
 #include <Cool/Dependencies/InputFactory_Ref.h>
+#include <Cool/Dependencies/InputProvider_Ref.h>
 
 namespace Cool {
 

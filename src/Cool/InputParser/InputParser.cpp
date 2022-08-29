@@ -1,11 +1,11 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
-#include <Cool/Dependencies/InputProvider_Ref.h>
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
+#include <fmt/compile.h>
 #include <sstream>
 
 namespace Cool {
@@ -190,168 +190,126 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code__value(const T& value, std::string_view name) -> std::string
+auto instantiate_shader_code__impl(const T&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
 
-static auto declare_all_marks(const Cool::Gradient& value) -> std::string
-{
-    std::string res = fmt::format(
-        R"STR()STR"
-    );
-    const auto marks = value.value.gradient().get_marks();
-    for (const ImGG::Mark& mark : marks)
-    {
-        if (&mark != &marks.back())
-        {
-            res += fmt::format(
-                R"STR(
-Mark({}, vec4({}, {}, {}, {})),
-
-        )STR",
-                mark.position.get(),
-                mark.color.x,
-                mark.color.y,
-                mark.color.z,
-                mark.color.w
-            );
-        }
-        else
-        {
-            res += fmt::format(
-                R"STR(
-Mark({}, vec4({}, {}, {}, {}))
-
-            )STR",
-                marks.back().position.get(),
-                marks.back().color.x,
-                marks.back().color.y,
-                marks.back().color.z,
-                marks.back().color.w
-            );
-        }
-    }
-
-    return res;
-}
-
-static auto gradient_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
-
+static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 {
     switch (wrap_mode)
     {
     case ImGG::WrapMode::Clamp:
     {
-        return fmt::format(
-            R"STR(
-    return clamp(x, 0., 1.);
-        )STR"
-        );
+        return "clamp(x, 0., 1.);";
     }
     case ImGG::WrapMode::Repeat:
     {
-        return fmt::format(
-            R"STR(
-    return fract(x);
-        )STR"
-        );
+        return "fract(x);";
     }
     case ImGG::WrapMode::MirrorRepeat:
     {
-        return fmt::format(
-            R"STR(
-    return 1. - abs(mod(x, 2.) -1.);
-        )STR"
-        );
+        return "1. - abs(mod(x, 2.) -1.);";
     }
     default:
     {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid WrapMode enum value");
+        Cool::Log::Debug::error("InputParser::gen_code__wrap_mode", "Invalid WrapMode enum value");
         return "";
     }
     }
 }
 
-static auto gradient_interpolation(ImGG::Interpolation interpolation_mode) -> std::string
+static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
+    using namespace fmt::literals;
     switch (interpolation_mode)
     {
     case ImGG::Interpolation::Linear:
     {
         return fmt::format(
-            R"STR(
-            float mix_factor = (x_wrapped - gradient_marks[i - 1].pos) /
-                            (gradient_marks[i].pos - gradient_marks[i - 1].pos);
-            return mix(gradient_marks[i - 1].col, gradient_marks[i].col, mix_factor);
-    )STR"
+            FMT_COMPILE(R"STR(
+            float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
+                            ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
+            return mix({gradient_marks}[i - 1].col, {gradient_marks}[i].col, mix_factor);
+    )STR"),
+            "gradient_marks"_a = fmt::format("{}_", name)
         );
     }
     case ImGG::Interpolation::Constant:
     {
         return fmt::format(
-            R"STR(
-            return gradient_marks[i].col;
-    )STR"
+            FMT_COMPILE(R"STR(
+            return {gradient_marks}[i].col;
+    )STR"),
+            "gradient_marks"_a = fmt::format("{}_", name)
         );
     }
     default:
     {
-        assert(false && "[InputParser::instantiate_shader_code__value] Invalid Interpolation enum value");
+        Cool::Log::Debug::error("InputParser::gen_code__interpolation", "Invalid Interpolation enum value");
         return "";
     }
     }
 }
 
-template<>
-auto instantiate_shader_code__value(const Cool::Gradient& value, std::string_view name) -> std::string
+static auto gen_code__number_of_marks_variable_name(std::string_view name)
 {
-    return fmt::format(
-        R"STR( 
-// #include "_ROOT_FOLDER_/res/shader-examples/gradient/Mark.glsl"
-const int number_of_marks = {};
-Mark gradient_marks[number_of_marks] = Mark[](
-{}
-);
+    return fmt::format("number_of_marks_of_{}", internal::gradient_marks_array_name(name));
+}
 
-float wrap(float x)
-{{
-    {}
-}}
-
+template<>
+auto instantiate_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
+{
+    using namespace fmt::literals;
+    return value.value.gradient().is_empty()
+               ? fmt::format(
+                     R"STR(
 vec4 {}(float x)   
 {{
-    float x_wrapped = wrap(x);
-    if (x_wrapped <= gradient_marks[0].pos)
+    return vec4(0.);
+}}
+         )STR",
+                     name
+                 )
+               : fmt::format(
+                     FMT_COMPILE(R"STR( 
+// #include "_COOL_RES_/shaders/GradientMark.glsl"
+const int {number_of_marks} = {gradient_size};
+uniform GradientMark {gradient_marks}[{number_of_marks}];
+
+vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster that dichotomy
+{{
+    float x_wrapped = {wrap};
+    if (x_wrapped <= {gradient_marks}[0].pos)
     {{
-        return gradient_marks[0].col;
+        return {gradient_marks}[0].col;
     }}
-    for (int i = 1; i < number_of_marks; i++)
+    for (int i = 1; i < {number_of_marks}; i++)
     {{
-        if ((x_wrapped <= gradient_marks[i].pos) && (x_wrapped >= gradient_marks[i - 1].pos))
+        if ((x_wrapped <= {gradient_marks}[i].pos) && (x_wrapped >= {gradient_marks}[i - 1].pos))
         {{
-            {}
+            {interpolation}
         }}
     }}
-    if (x_wrapped >= gradient_marks[number_of_marks - 1].pos)
+    if (x_wrapped >= {gradient_marks}[{number_of_marks} - 1].pos)
     {{
-        return gradient_marks[number_of_marks - 1].col;
+        return {gradient_marks}[{number_of_marks} - 1].col;
     }}
 }}
-    )STR",
-        value.value.gradient().get_marks().size(),
-        declare_all_marks(value),
-        gradient_wrap_mode(value.wrap_mode),
-        name,
-        gradient_interpolation(value.value.gradient().interpolation_mode())
-
-    );
+    )STR"),
+                     "gradient_size"_a     = value.value.gradient().get_marks().size(),
+                     "number_of_marks"_a   = gen_code__number_of_marks_variable_name(name),
+                     "gradient_function"_a = name,
+                     "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
+                     "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
+                     "gradient_marks"_a    = internal::gradient_marks_array_name(name)
+                 );
 }
 
 template<typename T>
-auto instantiate_shader_code__input(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+auto instantiate_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
 {
-    return instantiate_shader_code__value(input_provider(input), input.name());
+    return instantiate_shader_code__impl(input_provider(input), input.name());
 }
 
 static auto instantiate_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
@@ -363,7 +321,7 @@ static auto instantiate_shader_code(std::string_view name, const std::vector<Any
             [&](auto&& input) {
                 if (input.name() == name)
                 {
-                    res = instantiate_shader_code__input(input, input_provider);
+                    res = instantiate_shader_code(input, input_provider);
                 }
             },
             input
@@ -382,22 +340,6 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
         if (const auto info = find_type_and_name(line))
         {
             out << instantiate_shader_code(info->name, inputs, input_provider) << '\n';
-            //             if (info->type == "Gradient")
-            //             {
-            //                 out << fmt::format(
-            //                     R"STRING(
-            // vec4 {}(float x)
-            // {{
-            //     return vec4(x);
-            // }}
-            //                 )STRING",
-            //                     info->name
-            //                 );
-            //             }
-            //             else
-            //             {
-            //                 out << fmt::format("uniform {} {};\n", info->type, info->name);
-            //             }
         }
         else
         {
@@ -409,6 +351,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
 
 } // namespace Cool
 
+#if COOL_ENABLE_TESTS
 #include "doctest/doctest.h"
 
 // TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
@@ -460,3 +403,4 @@ TEST_CASE("Parsing a RgbColor")
         );
     }
 }
+#endif

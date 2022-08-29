@@ -12,6 +12,7 @@ You can create lots of parameters in your shader to modify them in real time. Fu
 - Angle: *same as float*
 - Direction2D: *same as float* (It is constructed from an angle expressed in turns: `// default 0.25` correspond to a unit vector2D pointing up.)
 - Hue: *same as float*. Goes from 0 to 1; 0 and 1 correspond to red.
+- Gradient: *no default values*.
 
 
 ## Additional rules: 
