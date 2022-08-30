@@ -36,6 +36,8 @@
             return function_template<Cool::Direction2D> arguments;                                  \
         else if ((type_as_string) == "Hue")                                                         \
             return function_template<Cool::Hue> arguments;                                          \
+        else if ((type_as_string) == "Gradient")                                                    \
+            return function_template<Cool::Gradient> arguments;                                     \
         else                                                                                        \
         {                                                                                           \
             throw std::runtime_error{"Unknown type \"" + std::string{type_as_string} + "\""};       \

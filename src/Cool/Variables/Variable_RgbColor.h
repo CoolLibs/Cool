@@ -13,13 +13,13 @@ inline auto imgui_widget(Variable<RgbColor>& var) -> bool
     return imgui_color_widget(
         var.name,
         var.value,
-        rgb_color_imgui_flags(var.metadata.is_hdr)
+        internal::rgb_color_imgui_flags(var.metadata.is_hdr)
     );
 }
 
 inline auto imgui_widget(VariableMetadata<RgbColor>& meta) -> bool
 {
-    return rgb_color_metadata_widget(meta.is_hdr);
+    return internal::rgb_color_metadata_widget(meta.is_hdr);
 }
 
 } // namespace Cool

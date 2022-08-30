@@ -72,7 +72,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <scope_guard/scope_guard.hpp>
     <fmt/core.h>
     <Cool/Log/Debug.h>
-    <Cool/Serialization/internal/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
+    <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
 )
@@ -115,6 +115,10 @@ endif()
 # ---Add libraries---
 # -------------------
 
+# imgui_gradient
+add_subdirectory(lib/imgui_gradient)
+target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
+target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 # algorithms
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)

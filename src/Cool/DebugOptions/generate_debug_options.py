@@ -8,8 +8,9 @@ from debug_options_generator import DebugOption, generate_debug_options, Kind
 def all_debug_options():
     return [
         DebugOption(
-            name_in_code="test_message_console",
+            name_in_code="test_message_console__window",
             name_in_ui="Test Message Console",
+            kind=Kind.WINDOW,
         ),
         DebugOption(
             name_in_code="log_when_creating_icon",
@@ -24,8 +25,9 @@ def all_debug_options():
             name_in_ui="Log OpenGL info",
         ),
         DebugOption(
-            name_in_code="test_presets",
+            name_in_code="test_presets__window",
             name_in_ui="Test Presets",
+            kind=Kind.WINDOW,
         ),
         DebugOption(
             name_in_code="imgui_item_picker",

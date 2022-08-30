@@ -40,6 +40,8 @@ public:
                            }}
     {}
 
+    auto path() const { return _auto_serializer.path(); }
+
     /// Renders the UI for the whole `PresetManager`.
     auto imgui(Settings& settings) -> bool;
 
