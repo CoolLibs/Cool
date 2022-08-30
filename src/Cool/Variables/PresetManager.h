@@ -81,6 +81,8 @@ public:
     /// Returns the name of the preset referenced by `id`, or nullopt if it doesn't exist.
     auto preset_name(const PresetId& id) const -> std::optional<std::string>;
 
+    auto is_empty() const -> bool { return _presets.is_empty(); }
+
 private:
     /// Creates a dropdown containing all the presets.
     /// Returns the ID of the selected preset if any, or a null ID otherwise.
