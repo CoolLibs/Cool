@@ -72,7 +72,7 @@ inline auto to_string(Cool::Direction2D direction) -> std::string
     return to_string(direction.as_angle());
 }
 
-inline auto imgui_widget(std::string_view name, Cool::Direction2D& direction)
+inline auto imgui_widget(std::string_view name, Cool::Direction2D& direction) -> bool
 {
     return direction.imgui_widget(name);
 }

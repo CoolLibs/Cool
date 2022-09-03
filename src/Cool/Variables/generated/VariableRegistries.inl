@@ -9,6 +9,7 @@ using VariableRegistries = reg::Registries<
     Cool::Variable<bool>,
     Cool::Variable<int>,
     Cool::Variable<float>,
+    Cool::Variable<Cool::Point2D>,
     Cool::Variable<glm::vec2>,
     Cool::Variable<glm::vec3>,
     Cool::Variable<glm::vec4>,

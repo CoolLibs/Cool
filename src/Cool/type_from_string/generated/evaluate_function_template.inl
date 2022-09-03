@@ -14,6 +14,8 @@
             return function_template<float> arguments;                                              \
         else if ((type_as_string) == "vec1")                                                        \
             return function_template<float> arguments;                                              \
+        else if ((type_as_string) == "Point2D")                                                     \
+            return function_template<Cool::Point2D> arguments;                                      \
         else if ((type_as_string) == "float2")                                                      \
             return function_template<glm::vec2> arguments;                                          \
         else if ((type_as_string) == "vec2")                                                        \

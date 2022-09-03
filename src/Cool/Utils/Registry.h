@@ -82,7 +82,7 @@ private:
 } // namespace Cool
 
 #include <doctest/doctest.h>
-#if DEBUG
+#if !defined(DOCTEST_CONFIG_DISABLE)
 TEST_CASE("Registry")
 {
     Cool::Registry registry;

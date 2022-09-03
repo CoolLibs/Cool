@@ -13,6 +13,9 @@ public:
         : _message{message}
     {}
 
+         operator bool() const { return static_cast<bool>(_message); }
+    auto operator*() const -> std::string { return *_message; }
+
     /// Creates an error message by applying `transform` to a string, then sends it.
     /// Does nothing if there was no error message in the first place.
     void send_error_if_any(

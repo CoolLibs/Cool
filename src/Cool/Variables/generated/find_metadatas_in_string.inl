@@ -47,27 +47,64 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     {
         metadata.max_value = *max_value;
     }
+
+    const auto bounded = Cool::String::find_value_for_given_key<bool>(key_values, "bounded");
+    if (bounded)
+    {
+        metadata.bounded = *bounded;
+    }
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec2>
+auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Point2D>
+{
+    Cool::VariableMetadata<Cool::Point2D> metadata{};
+    return metadata;
+}
+
+template<>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec2>
 {
     Cool::VariableMetadata<glm::vec2> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec3>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec3>
 {
     Cool::VariableMetadata<glm::vec3> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec4>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec4>
 {
     Cool::VariableMetadata<glm::vec4> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
@@ -110,10 +147,10 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
         metadata.is_hdr = *is_hdr;
     }
 
-    const auto should_use_a_random_color_for_the_new_marks = Cool::String::find_value_for_given_key<bool>(key_values, "random_color_mode");
-    if (should_use_a_random_color_for_the_new_marks)
+    const auto randomize_new_marks_colors = Cool::String::find_value_for_given_key<bool>(key_values, "");
+    if (randomize_new_marks_colors)
     {
-        metadata.should_use_a_random_color_for_the_new_marks = *should_use_a_random_color_for_the_new_marks;
+        metadata.randomize_new_marks_colors = *randomize_new_marks_colors;
     }
     return metadata;
 }

@@ -70,6 +70,7 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) cons
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
+
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) const
 {
     assert_shader_is_bound(_shader.id());
@@ -105,14 +106,31 @@ void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
     set_uniform(uniform_name, hue.from_0_to_1());
 }
 
-void Shader::set_uniform(std::string_view /*uniform_name*/, ColorPalette /*palette*/) const
+void Shader::set_uniform(std::string_view /*uniform_name*/, const ColorPalette& /*palette*/) const
 {
     // set_uniform(uniform_name, palette.value); // TODO(ASG) finit ton bazard
 }
 
-void Shader::set_uniform(std::string_view /*uniform_name*/, Gradient /*gradient*/) const
+void Shader::set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v) const
 {
-    // set_uniform(uniform_name, gradient.value); // TODO(ASG) finit ton bazard
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
+}
+
+void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient) const
+{
+    int idx = 0;
+    for (const ImGG::Mark& mark : gradient.value.gradient().get_marks())
+    {
+        set_uniform(fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.position.get());
+        set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color);
+        idx++;
+    }
+}
+
+void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
+{
+    set_uniform(uniform_name, point2D.value);
 }
 
 } // namespace Cool::OpenGL

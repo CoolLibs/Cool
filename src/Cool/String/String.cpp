@@ -563,13 +563,24 @@ auto value_from_string<Cool::Hue>(std::string_view str) -> std::optional<Cool::H
 template<>
 auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>
 {
+    Cool::Log::Debug::error("String::value_from_string<Cool::Gradient>", "Not implemented yet!");
     return {}; // We don't expect anyone to write a gradient manually, so we don't bother parsing it O:)
+}
+
+template<>
+auto value_from_string<Cool::Point2D>(std::string_view str) -> std::optional<Cool::Point2D>
+{
+    const auto val = value_from_string<glm::vec2>(str);
+    if (val)
+        return Point2D{*val};
+    else
+        return {};
 }
 
 template<>
 auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>
 {
-    assert(false && "value_from_string<Cool::Camera> is not implemented yet!");
+    Cool::Log::Debug::error("String::value_from_string<Cool::Camera>", "Not implemented yet!");
     return std::nullopt;
 }
 

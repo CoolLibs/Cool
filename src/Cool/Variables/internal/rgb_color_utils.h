@@ -1,7 +1,7 @@
 #pragma once
 #include <Cool/ImGui/ImGuiExtras.h>
 
-namespace Cool {
+namespace Cool::internal {
 
 inline auto rgb_color_imgui_flags(bool is_hdr) -> ImGuiColorEditFlags
 {
@@ -17,4 +17,4 @@ inline auto rgb_color_metadata_widget(bool& is_hdr) -> bool
     return b;
 }
 
-} // namespace Cool
+} // namespace Cool::internal

@@ -4,6 +4,7 @@
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
+#include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
 
 namespace Cool::String {
@@ -177,24 +178,6 @@ auto find_block_following(
     std::string_view key
 ) -> std::optional<std::string_view>;
 
-/// Finds default value string in `text` following the `key` and returns the correspondant value
-template<typename T>
-auto find_value_for_given_key(
-    std::string_view text,
-    std::string_view key
-) -> std::optional<T>
-{
-    const auto value_as_string = find_block_following(text, key);
-    if (value_as_string)
-    {
-        return value_from_string<T>(*value_as_string);
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
-
 /// Converts the given string into the corresponding value.
 template<typename T>
 auto value_from_string(std::string_view) -> std::optional<T>; // Undefined template. No generic implementation, only specializations are allowed.
@@ -229,6 +212,26 @@ template<>
 auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>;
 template<>
 auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>;
+template<>
+auto value_from_string<Cool::Point2D>(std::string_view) -> std::optional<Cool::Point2D>;
+
+/// Finds default value string in `text` following the `key` and returns the correspondant value
+template<typename T>
+auto find_value_for_given_key(
+    std::string_view text,
+    std::string_view key
+) -> std::optional<T>
+{
+    const auto value_as_string = find_block_following(text, key);
+    if (value_as_string)
+    {
+        return value_from_string<T>(*value_as_string);
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
 
 /// Returns true iff `word` is present in `text`.
 /// A word is delimited by `delimiters`.

@@ -20,16 +20,18 @@ public:
 
     template<typename T>
     auto make(
-        const DirtyFlag&                 dirty_flag,
-        std::string_view                 name,
-        const T&                         default_value = {},
-        const Cool::VariableMetadata<T>& metadata      = {}
+        const DirtyFlag&                  dirty_flag,
+        std::string_view                  name,
+        const std::optional<std::string>& description   = {},
+        const T&                          default_value = {},
+        const Cool::VariableMetadata<T>&  metadata      = {}
     )
         -> Input<T>
     {
         return Input{
             dirty_flag,
             name,
+            description,
             _variable_registries.get().create(
                 Cool::Variable<T>{std::string{name}, default_value, metadata}
             )};
@@ -42,8 +44,9 @@ private:
 
 template<>
 inline auto InputFactory_Ref::make(
-    const DirtyFlag& dirty_flag,
-    std::string_view name,
+    const DirtyFlag&                  dirty_flag,
+    std::string_view                  name,
+    const std::optional<std::string>& description,
     const Cool::Camera&,
     const Cool::VariableMetadata<Cool::Camera>&
 )
@@ -52,6 +55,7 @@ inline auto InputFactory_Ref::make(
     return Input{
         dirty_flag,
         name,
+        description,
         _default_camera_id};
 }
 

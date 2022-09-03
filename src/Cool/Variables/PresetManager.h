@@ -33,7 +33,9 @@ using PresetId = reg::Id<Preset2>;
 class PresetManager {
 public:
     PresetManager(std::filesystem::path path)
-        : _auto_serializer{path, "PresetManager", *this}
+        : _auto_serializer{path, "PresetManager", *this, [](const std::string&) {
+                               /*Ignore deserialization warnings*/
+                           }}
     {}
 
     auto path() const { return _auto_serializer.path(); }
@@ -46,7 +48,7 @@ public:
 
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
-    auto add(const Preset2& preset, bool show_warning_messages = true) -> PresetId;
+    auto add(Preset2 preset, bool show_warning_messages = true) -> PresetId;
 
     /// Removes the preset referenced by `id`.
     void remove(const PresetId& id) { _presets.destroy(id); }
@@ -61,6 +63,10 @@ public:
     /// Returns true iff the `id` was valid and the preset has actually been applied.
     auto apply(const PresetId& id, Settings& settings) const -> bool;
 
+    /// Applies the first preset if it exists.
+    /// Does nothing if the preset manager is empty.
+    void apply_first_preset_if_there_is_one(Settings& settings) const;
+
     /// Returns true iff `id` references an existing preset.
     auto contains(const PresetId& id) const -> bool { return _presets.contains(id); }
 
@@ -72,6 +78,8 @@ public:
 
     /// Returns the name of the preset referenced by `id`, or nullopt if it doesn't exist.
     auto preset_name(const PresetId& id) const -> std::optional<std::string>;
+
+    auto is_empty() const -> bool { return _presets.is_empty(); }
 
 private:
     /// Creates a dropdown containing all the presets.
@@ -89,7 +97,8 @@ private:
     void imgui_adding_preset(const Settings&);
 
     /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
-    void imgui_name_input();
+    /// Returns true if we should create a preset.
+    auto imgui_name_input() -> bool;
 
     /// Creates a new preset, or tries to overwrite the preset referenced by `id` if the later is valid.
     void save_preset(const Settings& new_preset_values, const PresetId& id);

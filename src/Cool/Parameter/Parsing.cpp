@@ -1,6 +1,5 @@
 #include "Parsing.h"
 #include <Cool/String/String.h>
-#include <doctest/doctest.h>
 
 namespace Cool {
 
@@ -69,7 +68,8 @@ std::optional<std::pair<Parameter::AnyDesc, size_t>> parse_one_parameter_desc(st
 
 } // namespace Cool
 
-#if DEBUG
+#if COOL_ENABLE_TESTS
+#include <doctest/doctest.h>
 TEST_CASE("[Cool::Parameter::Parsing] parse_one_parameter_desc()")
 {
     const std::string source = R"(

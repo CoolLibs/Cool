@@ -1,25 +1,16 @@
 #pragma once
 
-#include <Cool/Math/constants.h>
 #include <Cool/Serialization/ImGuiSerialization.h>
 #include <cereal/types/list.hpp>
 #include <imgui_gradient/imgui_gradient.hpp>
-#include <op/op.hpp>
 #include "RgbColor.h"
 
 namespace Cool {
-struct Gradient
-    : public op::Addable<Gradient>
-    , public op::Subtractable<Gradient> {
+struct Gradient {
     ImGG::GradientWidget value{};
-    ImGG::WrapMode       wrap_mode{ImGG::WrapMode::Clamp};
-    constexpr Gradient() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
-    explicit Gradient(const ImGG::GradientWidget& value)
-        : value{value}
-    {
-    }
+    ImGG::WrapMode       wrap_mode{ImGG::WrapMode::MirrorRepeat};
 
-    friend auto operator==(const Gradient& a, const Gradient& b) -> bool { return a.value.gradient() == b.value.gradient(); }
+    friend auto operator==(const Gradient& a, const Gradient& b) -> bool = default;
 
 private:
     // Serialization
@@ -27,8 +18,8 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        auto wrap_mode_size_t          = static_cast<size_t>(wrap_mode);
-        auto interpolation_mode_size_t = static_cast<size_t>(value.gradient().interpolation_mode());
+        const auto wrap_mode_size_t          = static_cast<size_t>(wrap_mode);
+        const auto interpolation_mode_size_t = static_cast<size_t>(value.gradient().interpolation_mode());
         archive(
             cereal::make_nvp("Gradient", value.gradient().get_marks()),
             cereal::make_nvp("Wrap Mode", wrap_mode_size_t),
@@ -54,7 +45,7 @@ inline auto to_string(Cool::Gradient) -> std::string
     return "Gradient [...]";
 }
 
-inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, bool should_use_a_random_color_for_the_new_marks, ImGuiColorEditFlags flags) -> bool
+inline auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool should_use_a_random_color_for_the_new_marks, ImGuiColorEditFlags flags) -> bool
 {
     auto modified = gradient.value.widget(
         name.data(),
@@ -69,6 +60,13 @@ inline auto gradient_widget(std::string_view name, Cool::Gradient& gradient, boo
     modified |= ImGG::wrap_mode_widget("Wrap Mode", &gradient.wrap_mode);
     return modified;
 }
+
+namespace internal {
+inline auto gradient_marks_array_name(std::string_view name) -> std::string
+{
+    return fmt::format("{}_", name);
+}
+} // namespace internal
 
 } // namespace Cool
 

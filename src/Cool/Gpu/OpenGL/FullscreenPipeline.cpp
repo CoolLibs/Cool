@@ -41,6 +41,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
             ShaderModule{{
                 std::string{fragment_shader_source_code},
                 ShaderKind::Fragment,
+                "John Doe" // TODO(JF) Do we really want a name?
             }}};
         return {};
     }

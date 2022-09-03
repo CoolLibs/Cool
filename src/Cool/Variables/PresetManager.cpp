@@ -41,7 +41,18 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     );
 }
 
-auto PresetManager::add(const Preset2& preset, bool show_warning_messages) -> PresetId
+static void set_default_value_to_current_value(Preset2& preset)
+{
+    for (auto& variable : preset.values)
+    {
+        std::visit([](auto&& variable) {
+            variable.default_value = variable.value;
+        },
+                   variable);
+    }
+}
+
+auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
 {
     if (find_preset_with_given_values(preset.values) != PresetId{})
     {
@@ -71,6 +82,7 @@ auto PresetManager::add(const Preset2& preset, bool show_warning_messages) -> Pr
     }
     else
     {
+        set_default_value_to_current_value(preset);
         return _presets.create(preset);
     }
 }
@@ -142,6 +154,15 @@ auto PresetManager::apply(const PresetId& id, Settings& settings) const -> bool
     return _presets.with_ref(id, [&](const Preset2& preset) {
         settings = preset.values;
     });
+}
+
+void PresetManager::apply_first_preset_if_there_is_one(Settings& settings) const
+{
+    std::shared_lock lock{_presets.mutex()};
+    if (!is_empty())
+    {
+        settings = _presets.begin()->second.values;
+    }
 }
 
 auto PresetManager::dropdown(
@@ -253,11 +274,11 @@ static auto add_button(bool the_name_is_not_already_used, std::string_view name)
     return is_clicked;
 }
 
-void PresetManager::imgui_name_input()
+auto PresetManager::imgui_name_input() -> bool
 {
     name_selector();
     ImGui::SameLine(0.f, 0.f);
-    ImGui::InputText("Name", &_new_preset_name);
+    return ImGui::InputText("Name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
 static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view new_preset_name) -> bool
@@ -305,7 +326,10 @@ void PresetManager::imgui_adding_preset(const Settings& settings)
     ImGui::Text("as");
     ImGui::SameLine();
 
-    imgui_name_input();
+    if (imgui_name_input())
+    {
+        save_preset(settings, preset_id);
+    }
 }
 
 auto PresetManager::imgui_presets(Settings& settings) -> bool
