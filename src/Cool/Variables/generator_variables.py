@@ -66,7 +66,7 @@ def all_variable_descriptions():
             string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
-                    name_in_shader="min",
+                    name_in_shader="min", # TODO(JF) Remove this
                     field_name="min_value",
                     pretty_name="Min Value",
                     type="float",
@@ -78,6 +78,20 @@ def all_variable_descriptions():
                     pretty_name="Max Value",
                     type="float",
                     default_value="1.f",
+                ),
+                VariableMetadata(
+                    name_in_shader="bounded",
+                    field_name="bounded",
+                    pretty_name="Bounded",
+                    type="bool",
+                    default_value="true",
+                ),
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
                 ),
             ],
         ),
