@@ -18,12 +18,14 @@ inline auto imgui_widget(Variable<int>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<int>& meta) -> bool
 {
+    static constexpr auto drag_speed = 0.01f;
+
     bool b = false;
-    b |= ImGui::DragInt("##1", &meta.min_value);
+    b |= ImGui::DragInt("##1", &meta.min_value, drag_speed);
     ImGui::SameLine();
     ImGui::Text("to");
     ImGui::SameLine();
-    b |= ImGui::DragInt("##2", &meta.max_value);
+    b |= ImGui::DragInt("##2", &meta.max_value, drag_speed);
     return b;
 }
 
