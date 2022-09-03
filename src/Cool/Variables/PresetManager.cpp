@@ -156,6 +156,15 @@ auto PresetManager::apply(const PresetId& id, Settings& settings) const -> bool
     });
 }
 
+void PresetManager::apply_first_preset_if_there_is_one(Settings& settings) const
+{
+    std::shared_lock lock{_presets.mutex()};
+    if (!is_empty())
+    {
+        settings = _presets.begin()->second.values;
+    }
+}
+
 auto PresetManager::dropdown(
     std::string_view dropdown_name,
     std::string_view current_preset_name,

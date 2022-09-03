@@ -65,6 +65,10 @@ public:
     /// Returns true iff the `id` was valid and the preset has actually been applied.
     auto apply(const PresetId& id, Settings& settings) const -> bool;
 
+    /// Applies the first preset if it exists.
+    /// Does nothing if the preset manager is empty.
+    void apply_first_preset_if_there_is_one(Settings& settings) const;
+
     /// Returns true iff `id` references an existing preset.
     auto contains(const PresetId& id) const -> bool { return _presets.contains(id); }
 
@@ -76,6 +80,8 @@ public:
 
     /// Returns the name of the preset referenced by `id`, or nullopt if it doesn't exist.
     auto preset_name(const PresetId& id) const -> std::optional<std::string>;
+
+    auto is_empty() const -> bool { return _presets.is_empty(); }
 
 private:
     /// Creates a dropdown containing all the presets.
