@@ -17,7 +17,7 @@ inline auto imgui_widget(Variable<glm::vec2>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<glm::vec2>& meta) -> bool
 {
-    return ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.01f, 0.001f, FLT_MAX / INT_MAX);
+    return ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.01f, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
 }
 
 } // namespace Cool

@@ -43,7 +43,7 @@ inline auto imgui_widget(VariableMetadata<float>& meta) -> bool
     }
     else
     {
-        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, drag_speed, 0.001f, FLT_MAX / INT_MAX);
+        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, drag_speed, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
     }
 
     b |= ImGui::Checkbox("Bounded", &meta.bounded);
