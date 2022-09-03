@@ -12,6 +12,8 @@
 
 - Add a specialization of `value_from_string` in `String`.
 
+- Add an overload of `set_uniform()` in "Gpu/OpenGL/Shader".
+
 - If your variable needs special code to be generated in the shader (other than replacing `INPUT` with `uniform`), implement a specialization of `instantiate_shader_code__impl()`.
 
 - If you are working on CoolLab, re-run the "src/Commands/generate_commands.py" and "src/Commands/generate_set_variable_commands.py" scripts.

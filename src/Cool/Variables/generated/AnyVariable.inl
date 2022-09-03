@@ -9,6 +9,7 @@ using AnyVariable = std::variant<
     Variable<bool>,
     Variable<int>,
     Variable<float>,
+    Variable<Cool::Point2D>,
     Variable<glm::vec2>,
     Variable<glm::vec3>,
     Variable<glm::vec4>,

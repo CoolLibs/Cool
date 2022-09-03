@@ -63,6 +63,13 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 }
 
 template<>
+auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Point2D>
+{
+    Cool::VariableMetadata<Cool::Point2D> metadata{};
+    return metadata;
+}
+
+template<>
 auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec2>
 {
     Cool::VariableMetadata<glm::vec2> metadata{};

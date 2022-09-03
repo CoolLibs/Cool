@@ -26,6 +26,11 @@ struct from_impl<"vec1"> {
 };
 
 template<>
+struct from_impl<"Point2D"> {
+    using type = Cool::Point2D;
+};
+
+template<>
 struct from_impl<"float2"> {
     using type = glm::vec2;
 };

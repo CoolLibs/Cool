@@ -96,6 +96,13 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
+            type="Cool::Point2D",
+            glsl_type="Point2D",
+            string_representations=["Point2D"],
+            include="<Cool/StrongTypes/Point2D.h>",
+            metadatas=[],
+        ),
+        VariableDescription(
             type="glm::vec2",
             glsl_type="vec2",
             string_representations=["float2", "vec2"],

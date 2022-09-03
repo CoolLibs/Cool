@@ -568,6 +568,16 @@ auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::
 }
 
 template<>
+auto value_from_string<Cool::Point2D>(std::string_view str) -> std::optional<Cool::Point2D>
+{
+    const auto val = value_from_string<glm::vec2>(str);
+    if (val)
+        return Point2D{*val};
+    else
+        return {};
+}
+
+template<>
 auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>
 {
     Cool::Log::Debug::error("String::value_from_string<Cool::Camera>", "Not implemented yet!");

@@ -24,6 +24,12 @@ auto glsl_type<float>() -> std::string
 }
 
 template<>
+auto glsl_type<Cool::Point2D>() -> std::string
+{
+    return "Point2D";
+}
+
+template<>
 auto glsl_type<glm::vec2>() -> std::string
 {
     return "vec2";
