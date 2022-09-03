@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Point2D.h"
 #include <stringify/stringify.hpp>
 
