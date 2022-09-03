@@ -51,29 +51,32 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 
 template<typename T>
 static auto make_input(
-    const std::string_view name,
-    DirtyFlag              dirty_flag,
-    InputFactory_Ref       input_factory,
-    std::string_view       key_values
+    const std::string_view            name,
+    const std::optional<std::string>& description,
+    DirtyFlag                         dirty_flag,
+    InputFactory_Ref                  input_factory,
+    std::string_view                  key_values
 ) -> Input<T>
 {
     return input_factory.make<T>(
         dirty_flag,
         name,
+        description,
         get_default_value<T>(key_values),
         get_default_metadata<T>(key_values)
     );
 }
 
 static auto make_any_input(
-    std::string_view type,
-    std::string_view name,
-    DirtyFlag        dirty_flag,
-    InputFactory_Ref input_factory,
-    std::string_view key_values
+    std::string_view                  type,
+    std::string_view                  name,
+    const std::optional<std::string>& description,
+    DirtyFlag                         dirty_flag,
+    InputFactory_Ref                  input_factory,
+    std::string_view                  key_values
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, dirty_flag, input_factory, key_values));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values));
 }
 
 struct TypeAndName_Ref {
@@ -132,6 +135,18 @@ static auto find_key_values(
     return Cool::String::substring(line, key_values_start, line.length());
 }
 
+static auto parse_description(std::string_view line) -> std::optional<std::string>
+{
+    auto pos = line.find("///");
+    if (pos == std::string_view::npos)
+        return {};
+    pos += 3; // Skip the ///
+
+    if (pos < line.size() && std::isspace(line[pos])) // Skip first space
+        pos += 1;
+    return std::string{Cool::String::substring(line, pos, line.size())};
+}
+
 auto try_parse_input(
     std::string_view line,
     DirtyFlag        dirty_flag,
@@ -153,6 +168,7 @@ auto try_parse_input(
     return make_any_input(
         type_and_name->type,
         type_and_name->name,
+        parse_description(line),
         dirty_flag,
         input_factory,
         find_key_values(line)
@@ -403,4 +419,14 @@ TEST_CASE("Parsing a RgbColor")
         );
     }
 }
+
+TEST_CASE("parse_description()")
+{
+    CHECK(Cool::parse_description("// Hello") == std::nullopt);
+    CHECK(Cool::parse_description("/// Hello") == "Hello");
+    CHECK(Cool::parse_description("///Hello") == "Hello");
+    CHECK(Cool::parse_description("///") == "");
+    CHECK(Cool::parse_description("/// ") == "");
+}
+
 #endif
