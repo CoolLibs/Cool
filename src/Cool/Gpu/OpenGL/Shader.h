@@ -6,6 +6,7 @@
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
+#include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include "ShaderModule.h"
 #include "UniqueShader.h"
@@ -35,9 +36,10 @@ public:
     void set_uniform(std::string_view uniform_name, RgbColor) const;
     void set_uniform(std::string_view uniform_name, Direction2D) const;
     void set_uniform(std::string_view uniform_name, Hue) const;
-    void set_uniform(std::string_view uniform_name, ColorPalette) const;
-    void set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v) const;
+    void set_uniform(std::string_view uniform_name, const ColorPalette&) const;
+    void set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA&) const;
     void set_uniform(std::string_view uniform_name, const Gradient&) const;
+    void set_uniform(std::string_view uniform_name, Point2D) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

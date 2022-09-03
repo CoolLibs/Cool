@@ -9,6 +9,7 @@ using AnyInput = std::variant<
     Input<bool>,
     Input<int>,
     Input<float>,
+    Input<Cool::Point2D>,
     Input<glm::vec2>,
     Input<glm::vec3>,
     Input<glm::vec4>,

@@ -41,7 +41,18 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     );
 }
 
-auto PresetManager::add(const Preset2& preset, bool show_warning_messages) -> PresetId
+static void set_default_value_to_current_value(Preset2& preset)
+{
+    for (auto& variable : preset.values)
+    {
+        std::visit([](auto&& variable) {
+            variable.default_value = variable.value;
+        },
+                   variable);
+    }
+}
+
+auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
 {
     if (find_preset_with_given_values(preset.values) != PresetId{})
     {
@@ -71,6 +82,7 @@ auto PresetManager::add(const Preset2& preset, bool show_warning_messages) -> Pr
     }
     else
     {
+        set_default_value_to_current_value(preset);
         return _presets.create(preset);
     }
 }

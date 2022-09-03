@@ -106,7 +106,7 @@ void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
     set_uniform(uniform_name, hue.from_0_to_1());
 }
 
-void Shader::set_uniform(std::string_view /*uniform_name*/, ColorPalette /*palette*/) const
+void Shader::set_uniform(std::string_view /*uniform_name*/, const ColorPalette& /*palette*/) const
 {
     // set_uniform(uniform_name, palette.value); // TODO(ASG) finit ton bazard
 }
@@ -126,6 +126,11 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
         set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color);
         idx++;
     }
+}
+
+void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
+{
+    set_uniform(uniform_name, point2D.value);
 }
 
 } // namespace Cool::OpenGL

@@ -66,7 +66,7 @@ def all_variable_descriptions():
             string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
-                    name_in_shader="min",
+                    name_in_shader="min", # TODO(JF) Remove this
                     field_name="min_value",
                     pretty_name="Min Value",
                     type="float",
@@ -79,28 +79,73 @@ def all_variable_descriptions():
                     type="float",
                     default_value="1.f",
                 ),
+                VariableMetadata(
+                    name_in_shader="bounded",
+                    field_name="bounded",
+                    pretty_name="Bounded",
+                    type="bool",
+                    default_value="true",
+                ),
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
             ],
+        ),
+        VariableDescription(
+            type="Cool::Point2D",
+            glsl_type="Point2D",
+            string_representations=["Point2D"],
+            include="<Cool/StrongTypes/Point2D.h>",
+            metadatas=[],
         ),
         VariableDescription(
             type="glm::vec2",
             glsl_type="vec2",
             string_representations=["float2", "vec2"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="glm::vec3",
             glsl_type="vec3",
             string_representations=["float3", "vec3"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="glm::vec4",
             glsl_type="vec4",
             string_representations=["float4", "vec4"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="Cool::RgbColor",
