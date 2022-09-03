@@ -107,21 +107,45 @@ def all_variable_descriptions():
             glsl_type="vec2",
             string_representations=["float2", "vec2"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="glm::vec3",
             glsl_type="vec3",
             string_representations=["float3", "vec3"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="glm::vec4",
             glsl_type="vec4",
             string_representations=["float4", "vec4"],
             include="<glm/glm.hpp>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+            ],
         ),
         VariableDescription(
             type="Cool::RgbColor",

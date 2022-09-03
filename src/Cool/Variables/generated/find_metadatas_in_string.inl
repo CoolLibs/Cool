@@ -70,23 +70,41 @@ auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Poin
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec2>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec2>
 {
     Cool::VariableMetadata<glm::vec2> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec3>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec3>
 {
     Cool::VariableMetadata<glm::vec3> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<glm::vec4>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec4>
 {
     Cool::VariableMetadata<glm::vec4> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
