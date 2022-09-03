@@ -99,7 +99,8 @@ private:
     void imgui_adding_preset(const Settings&);
 
     /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
-    void imgui_name_input();
+    /// Returns true if we should create a preset.
+    auto imgui_name_input() -> bool;
 
     /// Creates a new preset, or tries to overwrite the preset referenced by `id` if the later is valid.
     void save_preset(const Settings& new_preset_values, const PresetId& id);
