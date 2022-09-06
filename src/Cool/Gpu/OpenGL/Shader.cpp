@@ -106,9 +106,14 @@ void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
     set_uniform(uniform_name, hue.from_0_to_1());
 }
 
-void Shader::set_uniform(std::string_view /*uniform_name*/, const ColorPalette& /*palette*/) const
+void Shader::set_uniform(std::string_view uniform_name, const ColorPalette& palette) const
 {
-    // set_uniform(uniform_name, palette.value); // TODO(ASG) finit ton bazard
+    int idx = 0;
+    for (const RgbColor& color : palette.value)
+    {
+        set_uniform(fmt::format("{}[{}]", Cool::internal::color_palette_array_name(uniform_name), idx), color.value);
+        idx++;
+    }
 }
 
 void Shader::set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v) const

@@ -14,6 +14,7 @@ You can create lots of parameters in your shader to modify them in real time. Fu
 - Hue: *same as float*. Goes from 0 to 1; 0 and 1 correspond to red.
 - Gradient: *no default values*.
 - Point2D: *same as vec2*. Goes from -1 to 1.
+- ColorPalette: *no default values*.
 
 
 ## Additional rules: 

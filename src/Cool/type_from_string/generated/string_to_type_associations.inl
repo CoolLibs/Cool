@@ -86,6 +86,11 @@ struct from_impl<"Hue"> {
 };
 
 template<>
+struct from_impl<"ColorPalette"> {
+    using type = Cool::ColorPalette;
+};
+
+template<>
 struct from_impl<"Gradient"> {
     using type = Cool::Gradient;
 };

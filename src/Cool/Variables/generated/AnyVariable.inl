@@ -18,4 +18,5 @@ using AnyVariable = std::variant<
     Variable<Cool::Angle>,
     Variable<Cool::Direction2D>,
     Variable<Cool::Hue>,
+    Variable<Cool::ColorPalette>,
     Variable<Cool::Gradient> >;

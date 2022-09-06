@@ -6,6 +6,7 @@
  */
 #include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>

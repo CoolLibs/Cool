@@ -322,6 +322,42 @@ vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster th
                  );
 }
 
+static auto gen_code__number_of_colors_variable_name(std::string_view name)
+{
+    return fmt::format("number_of_colors_of_{}", internal::color_palette_array_name(name));
+}
+
+template<>
+auto instantiate_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
+{
+    using namespace fmt::literals;
+    return value.value.empty()
+               ? fmt::format(
+                     R"STR(
+vec3 {}(int index)   
+{{
+    return vec3(0.);
+}}
+         )STR",
+                     name
+                 )
+               : fmt::format(
+                     FMT_COMPILE(R"STR( 
+const int {number_of_colors} = {color_palette_size};
+uniform vec3 {color_palette_name}[{number_of_colors}];
+
+vec3 {color_palette_function}(int index) 
+{{
+    return {color_palette_name}[index];
+}}
+    )STR"),
+                     "color_palette_size"_a     = value.value.size(),
+                     "number_of_colors"_a       = gen_code__number_of_colors_variable_name(name),
+                     "color_palette_function"_a = name,
+                     "color_palette_name"_a     = internal::color_palette_array_name(name)
+                 );
+}
+
 template<typename T>
 auto instantiate_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
 {

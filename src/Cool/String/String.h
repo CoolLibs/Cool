@@ -1,11 +1,13 @@
 #pragma once
 #include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
+
 
 namespace Cool::String {
 
@@ -214,6 +216,8 @@ template<>
 auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>;
 template<>
 auto value_from_string<Cool::Point2D>(std::string_view) -> std::optional<Cool::Point2D>;
+template<>
+auto value_from_string<Cool::ColorPalette>(std::string_view) -> std::optional<Cool::ColorPalette>;
 
 /// Finds default value string in `text` following the `key` and returns the correspondant value
 template<typename T>

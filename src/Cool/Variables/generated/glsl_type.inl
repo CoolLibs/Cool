@@ -78,6 +78,12 @@ auto glsl_type<Cool::Hue>() -> std::string
 }
 
 template<>
+auto glsl_type<Cool::ColorPalette>() -> std::string
+{
+    return "ColorPalette";
+}
+
+template<>
 auto glsl_type<Cool::Gradient>() -> std::string
 {
     return "Gradient";

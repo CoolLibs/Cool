@@ -191,13 +191,21 @@ def all_variable_descriptions():
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
         ),
-        # VariableDescription(
-        #     type="Cool::ColorPalette",
-        #     glsl_type="ColorPalette",
-        #     string_representations=["ColorPalette"],
-        # include="<Cool/StrongTypes/ColorPalette.h>",
-        #     metadatas=[],
-        # ),
+        VariableDescription(
+            type="Cool::ColorPalette",
+            glsl_type="ColorPalette",
+            string_representations=["ColorPalette"],
+        include="<Cool/StrongTypes/ColorPalette.h>",
+            metadatas=[               
+                VariableMetadata(
+                    name_in_shader="hdr",
+                    field_name="is_hdr",
+                    pretty_name="Is HDR",
+                    type="bool",
+                    default_value="true",
+                ),
+            ],
+        ),
         VariableDescription(
             type="Cool::Gradient",
             glsl_type="Gradient",

@@ -43,6 +43,13 @@ private:
     }
 };
 
+namespace internal {
+inline auto color_palette_array_name(std::string_view name) -> std::string
+{
+    return fmt::format("{}_", name);
+}
+} // namespace internal
+
 auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool;
 
 } // namespace Cool
