@@ -6,7 +6,6 @@
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 
-
 namespace Cool::OpenGL {
 
 std::optional<ShaderModule>& vertex_module()
@@ -53,7 +52,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
         return OptionalErrorMessage{
             e.what() +
             std::string{"\nThe source code we tried to compile was:\n"} +
-            std::string{preprocess_shader_source(std::string(fragment_shader_source_code))}};
+            preprocess_shader_source(fragment_shader_source_code)};
     }
 }
 

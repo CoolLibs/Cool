@@ -3,7 +3,7 @@
 
 namespace Cool::OpenGL {
 
-std::string preprocess_shader_source(const std::string& source);
+std::string preprocess_shader_source(std::string_view source);
 
 } // namespace Cool::OpenGL
 
