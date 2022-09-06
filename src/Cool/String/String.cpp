@@ -577,6 +577,7 @@ auto value_from_string<Cool::Point2D>(std::string_view str) -> std::optional<Coo
         return {};
 }
 
+template<>
 auto value_from_string<Cool::ColorPalette>(std::string_view) -> std::optional<Cool::ColorPalette>
 {
     Cool::Log::Debug::error("String::value_from_string<Cool::ColorPalette>", "Not implemented yet!");
