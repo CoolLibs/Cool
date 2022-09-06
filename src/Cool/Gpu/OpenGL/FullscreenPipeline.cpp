@@ -2,6 +2,7 @@
 
 #include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
+#include <Cool/Gpu/OpenGL/preprocess_shader_source.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 
@@ -51,7 +52,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
         return OptionalErrorMessage{
             e.what() +
             std::string{"\nThe source code we tried to compile was:\n"} +
-            std::string{fragment_shader_source_code}};
+            preprocess_shader_source(fragment_shader_source_code)};
     }
 }
 

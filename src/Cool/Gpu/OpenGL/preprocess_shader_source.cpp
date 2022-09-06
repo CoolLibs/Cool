@@ -22,9 +22,9 @@ static std::string line_or_include(const std::string& line)
     }
 }
 
-std::string preprocess_shader_source(const std::string& source)
+std::string preprocess_shader_source(std::string_view source)
 {
-    std::istringstream stream{source};
+    std::istringstream stream{std::string(source)};
     std::ostringstream output;
 
     std::string line;
