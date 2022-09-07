@@ -17,12 +17,13 @@ class VariableMetadata:
     pretty_name: str
     type: str
     default_value: str
-    name_in_shader: str=""
+    name_in_shader: str = ""
 
 
 @dataclass
 class VariableDescription:
-    type: str
+    input_type: str
+    cpp_type: str
     glsl_type: str
     string_representations: list[str]  # Names the type can have in the shader
     include: str = ""  # File containing the required type to define the variable
@@ -34,13 +35,15 @@ class VariableDescription:
 def all_variable_descriptions():
     return [
         VariableDescription(
-            type="bool",
+            input_type="bool",
+            cpp_type="bool",
             glsl_type="bool",
             string_representations=["bool"],
             metadatas=[],
         ),
         VariableDescription(
-            type="int",
+            input_type="int",
+            cpp_type="int",
             glsl_type="int",
             string_representations=["int"],
             metadatas=[
@@ -61,12 +64,13 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="float",
+            input_type="float",
+            cpp_type="float",
             glsl_type="float",
             string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
-                    name_in_shader="min", # TODO(JF) Remove this
+                    name_in_shader="min",  # TODO(JF) Remove this
                     field_name="min_value",
                     pretty_name="Min Value",
                     type="float",
@@ -96,14 +100,16 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="Cool::Point2D",
-            glsl_type="Point2D",
+            input_type="Point2D",
+            cpp_type="Cool::Point2D",
+            glsl_type="vec2",
             string_representations=["Point2D"],
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[],
         ),
         VariableDescription(
-            type="glm::vec2",
+            input_type="vec2",
+            cpp_type="glm::vec2",
             glsl_type="vec2",
             string_representations=["float2", "vec2"],
             include="<glm/glm.hpp>",
@@ -118,7 +124,8 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="glm::vec3",
+            input_type="vec3",
+            cpp_type="glm::vec3",
             glsl_type="vec3",
             string_representations=["float3", "vec3"],
             include="<glm/glm.hpp>",
@@ -133,7 +140,8 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="glm::vec4",
+            input_type="vec4",
+            cpp_type="glm::vec4",
             glsl_type="vec4",
             string_representations=["float4", "vec4"],
             include="<glm/glm.hpp>",
@@ -148,8 +156,9 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="Cool::RgbColor",
-            glsl_type="RgbColor",
+            input_type="RgbColor",
+            cpp_type="Cool::RgbColor",
+            glsl_type="vec3",
             string_representations=["RgbColor"],
             include="<Cool/StrongTypes/RgbColor.h>",
             metadatas=[
@@ -164,39 +173,45 @@ def all_variable_descriptions():
             do_generate_get_default_metadata=False,
         ),
         VariableDescription(
-            type="Cool::Camera",
-            glsl_type="Camera",
+            input_type="Camera",
+            cpp_type="Cool::Camera",
+            # NB: we would probably need to create a Camera struct in glsl if we really intended to use this variable in shaders. (Which we will definitely do at some point instead of having one single global camera)
+            glsl_type="mat4",
             string_representations=["Camera"],
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
         ),
         VariableDescription(
-            type="Cool::Angle",
-            glsl_type="Angle",
+            input_type="Angle",
+            cpp_type="Cool::Angle",
+            glsl_type="float",
             string_representations=["Angle"],
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
         ),
         VariableDescription(
-            type="Cool::Direction2D",
-            glsl_type="Direction2D",
+            input_type="Direction2D",
+            cpp_type="Cool::Direction2D",
+            glsl_type="vec2",
             string_representations=["Direction2D"],
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
         ),
         VariableDescription(
-            type="Cool::Hue",
-            glsl_type="Hue",
+            input_type="Hue",
+            cpp_type="Cool::Hue",
+            glsl_type="float",
             string_representations=["Hue"],
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
         ),
         VariableDescription(
-            type="Cool::ColorPalette",
-            glsl_type="ColorPalette",
+            input_type="ColorPalette",
+            cpp_type="Cool::ColorPalette",
+            glsl_type="NO TYPE THIS IS A FUNCTION",
             string_representations=["ColorPalette"],
-        include="<Cool/StrongTypes/ColorPalette.h>",
-            metadatas=[               
+            include="<Cool/StrongTypes/ColorPalette.h>",
+            metadatas=[
                 VariableMetadata(
                     name_in_shader="hdr",
                     field_name="is_hdr",
@@ -207,8 +222,9 @@ def all_variable_descriptions():
             ],
         ),
         VariableDescription(
-            type="Cool::Gradient",
-            glsl_type="Gradient",
+            input_type="Gradient",
+            cpp_type="Cool::Gradient",
+            glsl_type="NO TYPE THIS IS A FUNCTION",
             string_representations=["Gradient"],
             include="<Cool/StrongTypes/Gradient.h>",
             metadatas=[
@@ -230,12 +246,12 @@ def all_variable_descriptions():
 
 
 def all_variable_types():
-    return map(lambda desc: desc.type,
+    return map(lambda desc: desc.cpp_type,
                all_variable_descriptions())
 
 
 def all_types_representations_as_strings():
-    return {desc.type: desc.string_representations for desc in all_variable_descriptions()}
+    return {desc.cpp_type: desc.string_representations for desc in all_variable_descriptions()}
 
 
 def strip_namespace(variable_type):
@@ -329,9 +345,9 @@ def find_metadatas_in_string():
         if variable_types_and_metadatas.do_generate_get_default_metadata == True:
             out += f'''
                 template<>
-                auto get_default_metadata(std::string_view{" key_values" if variable_types_and_metadatas.metadatas else ""}) -> Cool::VariableMetadata<{variable_types_and_metadatas.type}>
+                auto get_default_metadata(std::string_view{" key_values" if variable_types_and_metadatas.metadatas else ""}) -> Cool::VariableMetadata<{variable_types_and_metadatas.cpp_type}>
                 {{
-                    Cool::VariableMetadata<{variable_types_and_metadatas.type}> metadata{{}};
+                    Cool::VariableMetadata<{variable_types_and_metadatas.cpp_type}> metadata{{}};
                 '''
             for variable_metadatas in variable_types_and_metadatas.metadatas:
                 out += f'''
@@ -356,7 +372,7 @@ def glsl_type():
     return "\n\n".join(
         map(lambda desc: f'''
             template<>
-            auto glsl_type<{desc.type}>() -> std::string {{ 
+            auto glsl_type<{desc.cpp_type}>() -> std::string {{ 
                 return "{desc.glsl_type}";
             }}
             ''', all_variable_descriptions()))
@@ -387,10 +403,10 @@ def variable_definition_factory(variable_type_and_metadatas):
         has_metadatas = len(variable_type_and_metadatas.metadatas) > 0
         return f'''
             template<>
-            struct VariableMetadata<{variable_type_and_metadatas.type}> {{
+            struct VariableMetadata<{variable_type_and_metadatas.cpp_type}> {{
                 {metadatas_definitions(variable_type_and_metadatas.metadatas)}
 
-                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.type}>&, const VariableMetadata<{variable_type_and_metadatas.type}>&) = default;
+                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&, const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) = default;
 
             private:
                 // Serialisation
@@ -420,7 +436,7 @@ def files():
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(
             variable_types_and_metadatas)
-        variable_definition.__name__ = f"Variable_{strip_namespace(variable_types_and_metadatas.type)}"
+        variable_definition.__name__ = f"Variable_{strip_namespace(variable_types_and_metadatas.cpp_type)}"
         res.append(variable_definition)
     return res
 

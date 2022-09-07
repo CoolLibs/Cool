@@ -26,7 +26,7 @@ auto glsl_type<float>() -> std::string
 template<>
 auto glsl_type<Cool::Point2D>() -> std::string
 {
-    return "Point2D";
+    return "vec2";
 }
 
 template<>
@@ -50,41 +50,41 @@ auto glsl_type<glm::vec4>() -> std::string
 template<>
 auto glsl_type<Cool::RgbColor>() -> std::string
 {
-    return "RgbColor";
+    return "vec3";
 }
 
 template<>
 auto glsl_type<Cool::Camera>() -> std::string
 {
-    return "Camera";
+    return "mat4";
 }
 
 template<>
 auto glsl_type<Cool::Angle>() -> std::string
 {
-    return "Angle";
+    return "float";
 }
 
 template<>
 auto glsl_type<Cool::Direction2D>() -> std::string
 {
-    return "Direction2D";
+    return "vec2";
 }
 
 template<>
 auto glsl_type<Cool::Hue>() -> std::string
 {
-    return "Hue";
+    return "float";
 }
 
 template<>
 auto glsl_type<Cool::ColorPalette>() -> std::string
 {
-    return "ColorPalette";
+    return "NO TYPE THIS IS A FUNCTION";
 }
 
 template<>
 auto glsl_type<Cool::Gradient>() -> std::string
 {
-    return "Gradient";
+    return "NO TYPE THIS IS A FUNCTION";
 }
