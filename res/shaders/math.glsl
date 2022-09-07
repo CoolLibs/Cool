@@ -72,3 +72,5 @@ vec3 rotation_around_axis(vec3 p, vec3 ax, float ro)
 }
 
 #define saturate(v) clamp(v, 0., 1.)
+
+#define FLT_MAX 3.402823466e+38
