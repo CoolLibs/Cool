@@ -21,18 +21,8 @@ struct from_impl<"float"> {
 };
 
 template<>
-struct from_impl<"vec1"> {
-    using type = float;
-};
-
-template<>
 struct from_impl<"Point2D"> {
     using type = Cool::Point2D;
-};
-
-template<>
-struct from_impl<"float2"> {
-    using type = glm::vec2;
 };
 
 template<>
@@ -41,18 +31,8 @@ struct from_impl<"vec2"> {
 };
 
 template<>
-struct from_impl<"float3"> {
-    using type = glm::vec3;
-};
-
-template<>
 struct from_impl<"vec3"> {
     using type = glm::vec3;
-};
-
-template<>
-struct from_impl<"float4"> {
-    using type = glm::vec4;
 };
 
 template<>

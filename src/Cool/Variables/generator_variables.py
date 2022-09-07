@@ -22,11 +22,10 @@ class VariableMetadata:
 
 @dataclass
 class VariableDescription:
-    input_type: str
-    cpp_type: str
-    glsl_type: str
-    string_representations: list[str]  # Names the type can have in the shader
-    include: str = ""  # File containing the required type to define the variable
+    input_type: str  # Type that comes in an INPUT declaration
+    cpp_type: str  # Type used in C++ to store the type
+    glsl_type: str  # Raw glsl used to store the type
+    include: str = ""  # File containing the C++ type
     metadatas: list[VariableMetadata] = field(
         default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
@@ -38,14 +37,12 @@ def all_variable_descriptions():
             input_type="bool",
             cpp_type="bool",
             glsl_type="bool",
-            string_representations=["bool"],
             metadatas=[],
         ),
         VariableDescription(
             input_type="int",
             cpp_type="int",
             glsl_type="int",
-            string_representations=["int"],
             metadatas=[
                 VariableMetadata(
                     name_in_shader="min",
@@ -67,7 +64,6 @@ def all_variable_descriptions():
             input_type="float",
             cpp_type="float",
             glsl_type="float",
-            string_representations=["float",  "vec1"],
             metadatas=[
                 VariableMetadata(
                     name_in_shader="min",  # TODO(JF) Remove this
@@ -103,7 +99,6 @@ def all_variable_descriptions():
             input_type="Point2D",
             cpp_type="Cool::Point2D",
             glsl_type="vec2",
-            string_representations=["Point2D"],
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[],
         ),
@@ -111,7 +106,6 @@ def all_variable_descriptions():
             input_type="vec2",
             cpp_type="glm::vec2",
             glsl_type="vec2",
-            string_representations=["float2", "vec2"],
             include="<glm/glm.hpp>",
             metadatas=[
                 VariableMetadata(
@@ -127,7 +121,6 @@ def all_variable_descriptions():
             input_type="vec3",
             cpp_type="glm::vec3",
             glsl_type="vec3",
-            string_representations=["float3", "vec3"],
             include="<glm/glm.hpp>",
             metadatas=[
                 VariableMetadata(
@@ -143,7 +136,6 @@ def all_variable_descriptions():
             input_type="vec4",
             cpp_type="glm::vec4",
             glsl_type="vec4",
-            string_representations=["float4", "vec4"],
             include="<glm/glm.hpp>",
             metadatas=[
                 VariableMetadata(
@@ -159,7 +151,6 @@ def all_variable_descriptions():
             input_type="RgbColor",
             cpp_type="Cool::RgbColor",
             glsl_type="vec3",
-            string_representations=["RgbColor"],
             include="<Cool/StrongTypes/RgbColor.h>",
             metadatas=[
                 VariableMetadata(
@@ -177,7 +168,6 @@ def all_variable_descriptions():
             cpp_type="Cool::Camera",
             # NB: we would probably need to create a Camera struct in glsl if we really intended to use this variable in shaders. (Which we will definitely do at some point instead of having one single global camera)
             glsl_type="mat4",
-            string_representations=["Camera"],
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
         ),
@@ -185,7 +175,6 @@ def all_variable_descriptions():
             input_type="Angle",
             cpp_type="Cool::Angle",
             glsl_type="float",
-            string_representations=["Angle"],
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
         ),
@@ -193,7 +182,6 @@ def all_variable_descriptions():
             input_type="Direction2D",
             cpp_type="Cool::Direction2D",
             glsl_type="vec2",
-            string_representations=["Direction2D"],
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
         ),
@@ -201,7 +189,6 @@ def all_variable_descriptions():
             input_type="Hue",
             cpp_type="Cool::Hue",
             glsl_type="float",
-            string_representations=["Hue"],
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
         ),
@@ -209,7 +196,6 @@ def all_variable_descriptions():
             input_type="ColorPalette",
             cpp_type="Cool::ColorPalette",
             glsl_type="NO TYPE THIS IS A FUNCTION",
-            string_representations=["ColorPalette"],
             include="<Cool/StrongTypes/ColorPalette.h>",
             metadatas=[
                 VariableMetadata(
@@ -225,7 +211,6 @@ def all_variable_descriptions():
             input_type="Gradient",
             cpp_type="Cool::Gradient",
             glsl_type="NO TYPE THIS IS A FUNCTION",
-            string_representations=["Gradient"],
             include="<Cool/StrongTypes/Gradient.h>",
             metadatas=[
                 VariableMetadata(
@@ -251,7 +236,8 @@ def all_variable_types():
 
 
 def all_types_representations_as_strings():
-    return {desc.cpp_type: desc.string_representations for desc in all_variable_descriptions()}
+    return {desc.cpp_type: [desc.input_type]
+            for desc in all_variable_descriptions()}
 
 
 def strip_namespace(variable_type):
