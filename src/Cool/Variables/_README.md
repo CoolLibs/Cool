@@ -6,8 +6,6 @@
 
 - Add your new type in "generate_variables.py" and run the script.
 
-- Add a define in "input_definitions.glsl".
-
 - Update the documentation in "res/shaders/_README.md".
 
 - Add a specialization of `value_from_string` in `String`.
