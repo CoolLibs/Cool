@@ -1,6 +1,7 @@
 #if defined(COOL_OPENGL)
 
 #include "ShaderModule.h"
+#include <Cool/Log/OptionalErrorMessage.h>
 #include <exception>
 #include "preprocess_shader_source.h"
 
@@ -17,23 +18,29 @@ static void validate_shader_module(GLuint id)
         std::vector<GLchar> error_message;
         error_message.reserve(static_cast<size_t>(length));
         GLDebug(glGetShaderInfoLog(id, length, nullptr, error_message.data()));
-        throw std::invalid_argument(std::string{"\nCompilation failed:\n"} + error_message.data());
+        throw std::invalid_argument(std::string{"Compilation failed:\n"} + error_message.data());
     }
 }
 
-static void compile_shader_module(GLuint id, const ShaderDescription& desc)
+static OptionalErrorMessage compile_shader_module(GLuint id, const ShaderDescription& desc)
 {
     auto preprocessed_source = preprocess_shader_source(desc.source_code);
-    auto src                 = preprocessed_source.c_str();
+    if (!preprocessed_source)
+        return OptionalErrorMessage{preprocessed_source.error()};
+
+    auto src = preprocessed_source->c_str();
     GLDebug(glShaderSource(id, 1, &src, nullptr));
     GLDebug(glCompileShader(id));
     validate_shader_module(id);
+    return {};
 }
 
 ShaderModule::ShaderModule(const ShaderDescription& desc)
     : _shader_module{desc.kind}
 {
-    compile_shader_module(_shader_module.id(), desc);
+    const auto err = compile_shader_module(_shader_module.id(), desc);
+    if (err)
+        throw std::runtime_error{*err};
 }
 
 } // namespace Cool::OpenGL

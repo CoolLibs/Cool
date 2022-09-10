@@ -9,12 +9,23 @@
 
 namespace Cool::OpenGL {
 
-static std::string line_or_include(const std::string& line)
+/// If line is a `#include` line, returns the content of the included file
+/// (or an error if the file couldn't be read).
+/// Otherwise just returns the line that was passed in.
+static tl::expected<std::string, std::string> line_or_include(const std::string& line)
 {
     const auto path = RegExp::file_path_to_include(line);
     if (path.has_value())
     {
-        return preprocess_shader_source(File::to_string(*path));
+        const auto file_content = File::to_string(*path);
+        if (!file_content)
+        {
+            return tl::make_unexpected(fmt::format(
+                "Failed to include file \"{}\".\n{}",
+                *path, file_content.error()
+            ));
+        }
+        return preprocess_shader_source(*file_content);
     }
     else
     {
@@ -22,7 +33,7 @@ static std::string line_or_include(const std::string& line)
     }
 }
 
-std::string preprocess_shader_source(std::string_view source)
+tl::expected<std::string, std::string> preprocess_shader_source(std::string_view source)
 {
     std::istringstream stream{std::string(source)};
     std::ostringstream output;
@@ -32,7 +43,10 @@ std::string preprocess_shader_source(std::string_view source)
     {
         String::replace_all(line, "_COOL_RES_", Path::cool_res());
         String::replace_all(line, "_ROOT_FOLDER_", Path::root());
-        output << line_or_include(line) << '\n';
+        const auto content = line_or_include(line);
+        if (!content)
+            return content;
+        output << *content << '\n';
     }
 
     return output.str();

@@ -74,17 +74,15 @@ std::string File::whithout_file_name(std::string_view file_path)
     }
 }
 
-std::string File::to_string(std::string_view file_path)
+tl::expected<std::string, std::string> File::to_string(std::string_view file_path)
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(file_path.data());
     if (!stream.is_open())
     {
-        Log::ToUser::warning(
-            "File::to_string",
-            fmt::format("Failed to open file: \"{}\"", file_path)
+        return tl::make_unexpected(
+            fmt::format("Failed to open file \"{}\"", file_path)
         );
-        return "";
     }
     stream.seekg(0, std::ios::end);
     std::string str;

@@ -11,7 +11,14 @@ namespace Cool::OpenGL {
 std::optional<ShaderModule>& vertex_module()
 {
     static std::optional<ShaderModule> shader_module = ShaderModule{{
-        File::to_string(Path::cool_res() + "/shaders/fullscreen.vert"),
+        *File::to_string(Path::cool_res() + "/shaders/fullscreen.vert")
+             .map_error([](const std::string& error_message) {
+                 Cool::Log::ToUser::error(
+                     "FullscreenPipeline::vertex_module()",
+                     "Couldn't load fullscreen shader. Please fix this and then restart the app.\n" + error_message
+                 );
+                 return tl::expected<std::string, std::string>{"VERTEX SHADER FILE NOT FOUND"};
+             }),
         ShaderKind::Vertex,
     }};
     return shader_module;
@@ -31,7 +38,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
     if (fragment_shader_source_code.empty())
     {
         on_error();
-        return {"Shader is empty."};
+        return OptionalErrorMessage{"Shader is empty."};
     }
 
     try
@@ -47,10 +54,13 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
     catch (const std::exception& e)
     {
         on_error();
+        const auto preprocessed_source = preprocess_shader_source(fragment_shader_source_code);
         return OptionalErrorMessage{
             e.what() +
-            std::string{"\nThe source code we tried to compile was:\n"} +
-            preprocess_shader_source(fragment_shader_source_code)};
+            (preprocessed_source
+                 ? std::string{"\nThe source code we tried to compile was:\n"} + *preprocessed_source
+                 : "" // Log nothing because we know the exception already contains the error message from the preprocessing failure.
+            )};
     }
 }
 

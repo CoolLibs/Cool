@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <tl/expected.hpp>
 
 namespace Cool {
 
@@ -53,11 +54,8 @@ public:
      */
     static std::string whithout_file_name(std::string_view file_path);
 
-    /**
-     * @brief Reads the content of a file into a std::string.
-     *
-     */
-    static std::string to_string(std::string_view file_path);
+    /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.
+    static tl::expected<std::string, std::string> to_string(std::string_view file_path);
 
     /**
      * @brief Recursively creates all the folders so that at the end folder_path is a valid folder path. /!\ There shouldn't be any file name at the end of folder_path ; it there is, then use create_folders_for_file_if_they_dont_exist() instead
