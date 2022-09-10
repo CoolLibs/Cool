@@ -21,7 +21,7 @@ static tl::expected<std::string, std::string> line_or_include(const std::string&
         if (!file_content)
         {
             return tl::make_unexpected(fmt::format(
-                "Failed to include file \"{}\".\n{}",
+                "Failed to #include file \"{}\".\n{}",
                 *path, file_content.error()
             ));
         }
