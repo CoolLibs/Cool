@@ -25,11 +25,17 @@ public:
     /// Such a message will always be clearable by the user.
     void send(const Message&);
 
-    /// Removes the message from the list.
-    void clear(const MessageId& id);
+    /// Removes the message, even if it is not supposed to be closable.
+    void remove(const MessageId&);
 
-    /// Removes all the closable messages from the list.
-    void clear_all();
+    /// Removes all the closable messages.
+    void clear();
+
+    /// Removes all the closable messages of the given severity.
+    void clear(MessageSeverity);
+
+    /// Removes all the closable messages that verify the `predicate`.
+    void clear(std::function<bool(const Message&)> predicate);
 
     /// Returns true iff the message is currently selected / hovered by the user.
     /// Allows us to focus the corresponding window / highlight the corresponding part of the UI that requires attention.
@@ -39,7 +45,8 @@ public:
     void imgui_window();
 
 private:
-    void clear(const internal::RawMessageId& id);
+    void remove(const internal::RawMessageId&);
+    void after_clearing();
     void close_window();
     void on_message_sent(const internal::RawMessageId&);
     void show_number_of_messages_of_given_severity(MessageSeverity);

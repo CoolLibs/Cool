@@ -29,7 +29,7 @@ void OptionalErrorMessage::send_error_if_any(
     }
     else
     {
-        console.clear(id);
+        console.remove(id);
     }
 }
 

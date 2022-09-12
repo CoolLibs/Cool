@@ -33,8 +33,8 @@ void MessageConsole::send(MessageId& id, const Message& message)
 void MessageConsole::send(const Message& message)
 {
     const auto id = _messages.create(internal::MessageWithMetadata{
-        .message               = message,
-        .forced_to_be_closable = true,
+        .message                = message,
+        .forced_to_be_clearable = true,
     }
     );
 
@@ -48,23 +48,54 @@ void MessageConsole::on_message_sent(const internal::RawMessageId& id)
     refresh_counts_per_severity();
 }
 
-void MessageConsole::clear(const MessageId& id)
+void MessageConsole::remove(const MessageId& id)
 {
-    clear(id.get());
+    remove(id.get());
 }
 
-void MessageConsole::clear(const internal::RawMessageId& id)
+void MessageConsole::remove(const internal::RawMessageId& id)
 {
-    if (_messages.contains(id))
-    {
-        _messages.destroy(id);
+    if (!_messages.contains(id))
+        return;
 
-        if (_messages.is_empty())
-        {
-            close_window();
-        }
-    }
+    _messages.destroy(id);
+    after_clearing();
+}
+
+void MessageConsole::after_clearing()
+{
+    if (_messages.is_empty())
+        close_window();
     refresh_counts_per_severity();
+}
+
+void MessageConsole::clear()
+{
+    clear([](auto&&) { return true; });
+}
+
+void MessageConsole::clear(MessageSeverity severity)
+{
+    clear([&](auto&& message) { return message.severity == severity; });
+}
+
+static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
+{
+    return msg.forced_to_be_clearable ||
+           msg.message.severity != MessageSeverity::Error;
+}
+
+void MessageConsole::clear(std::function<bool(const Message&)> predicate)
+{
+    {
+        std::unique_lock lock{_messages.mutex()};
+        std::erase_if(_messages.underlying_container().underlying_container(), [&](auto&& pair) {
+            const auto& message = pair.second;
+            return is_clearable(message) && predicate(message.message);
+        });
+    }
+
+    after_clearing();
 }
 
 void MessageConsole::close_window()
@@ -111,28 +142,6 @@ static auto to_string(MessageSeverity severity) -> std::string
     }
 }
 
-static auto is_closable(const internal::MessageWithMetadata& msg) -> bool
-{
-    return msg.forced_to_be_closable ||
-           msg.message.severity != MessageSeverity::Error;
-}
-
-void MessageConsole::clear_all()
-{
-    {
-        std::unique_lock lock{_messages.mutex()};
-        std::erase_if(_messages.underlying_container().underlying_container(), [](auto&& pair) {
-            return is_closable(pair.second);
-        });
-    }
-
-    if (_messages.is_empty())
-    {
-        close_window();
-    }
-    refresh_counts_per_severity();
-}
-
 void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity severity)
 {
     const auto count = _counts_per_severity.get(severity);
@@ -146,6 +155,12 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
             to_string(severity).c_str(),
             count > 1 ? "s" : ""
         );
+        if (ImGui::BeginPopupContextItem("Clear"))
+        {
+            if (ImGui::Button("Clear"))
+                clear(severity);
+            ImGui::EndPopup();
+        }
     }
 }
 
@@ -183,15 +198,15 @@ auto MessageConsole::there_are_clearable_messages() const -> bool
     std::shared_lock lock{_messages.mutex()};
     return std::any_of(_messages.begin(), _messages.end(), [](auto&& pair) {
         const auto& message = pair.second;
-        return is_closable(message);
+        return is_clearable(message);
     });
 }
 
 void MessageConsole::imgui_menu_bar()
 {
     ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
-        if (ImGui::Button("Clear All"))
-            clear_all();
+        if (ImGui::Button("Clear"))
+            clear();
     });
 
     show_number_of_messages_of_given_severity(MessageSeverity::Error);
@@ -202,8 +217,8 @@ void MessageConsole::imgui_menu_bar()
 void MessageConsole::imgui_show_all_messages()
 {
     const auto previously_selected_message{_selected_message};
-    _selected_message = {};                // Clear the selected message. And let the following loop set it again if necessary.
-    internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't clear the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
+    _selected_message = {};                // close the selected message. And let the following loop set it again if necessary.
+    internal::RawMessageId msg_to_clear{}; // Let the loop store a `msg_to_clear`. We don't close the message immediately because it would mess up our for-loop and cause a deadlock with the `lock`.
     {
         std::shared_lock lock{_messages.mutex()};
         for (const auto& id_and_message : _messages)
@@ -225,14 +240,14 @@ void MessageConsole::imgui_show_all_messages()
                 ImGui::Text("%s", msg.message.detailed_message.c_str());
 
                 const bool close_button_is_hovered = [&] {
-                    if (is_closable(msg))
+                    if (is_clearable(msg))
                     {
                         ImGui::SameLine();
                         if (ImGuiExtras::close_button())
                         {
                             msg_to_clear = id;
                         }
-                        ImGuiExtras::tooltip(("Clear this " + to_string(msg.message.severity)).c_str());
+                        ImGuiExtras::tooltip(("close this " + to_string(msg.message.severity)).c_str());
                         return ImGui::IsItemHovered();
                     }
                     else
@@ -299,7 +314,7 @@ void MessageConsole::imgui_show_all_messages()
             }
         }
     }
-    clear(msg_to_clear); // Must clear after the `lock` is gone, otherwise we will deadlock.
+    remove(msg_to_clear); // Must clear after the `lock` is gone, otherwise we will deadlock.
 }
 
 void MessageConsole::refresh_counts_per_severity()

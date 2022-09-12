@@ -65,9 +65,9 @@ void TestMessageConsole::imgui(TestMessageConsole::Message& message, Cool::Messa
     Cool::ImGuiExtras::bring_attention_if(
         message_console.should_highlight(message.id),
         [&] {
-            if (ImGui::Button("Clear"))
+            if (ImGui::Button("Remove"))
             {
-                message_console.clear(message.id);
+                message_console.remove(message.id);
             }
         }
     );
