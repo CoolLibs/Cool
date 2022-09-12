@@ -46,6 +46,7 @@ private:
     void refresh_counts_per_severity();
     void imgui_menu_bar();
     void imgui_show_all_messages();
+    auto there_are_clearable_messages() const -> bool;
 
     class MessagesCountPerSeverity {
     public:

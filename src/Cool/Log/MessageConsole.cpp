@@ -178,13 +178,22 @@ void MessageConsole::imgui_window()
     }
     _message_just_sent = {};
 }
+auto MessageConsole::there_are_clearable_messages() const -> bool
+{
+    std::shared_lock lock{_messages.mutex()};
+    return std::any_of(_messages.begin(), _messages.end(), [](auto&& pair) {
+        const auto& message = pair.second;
+        return is_closable(message);
+    });
+}
 
 void MessageConsole::imgui_menu_bar()
 {
-    if (ImGui::Button("Clear All"))
-    {
-        clear_all();
-    }
+    ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
+        if (ImGui::Button("Clear All"))
+            clear_all();
+    });
+
     show_number_of_messages_of_given_severity(MessageSeverity::Error);
     show_number_of_messages_of_given_severity(MessageSeverity::Warning);
     show_number_of_messages_of_given_severity(MessageSeverity::Info);
