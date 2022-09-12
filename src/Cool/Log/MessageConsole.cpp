@@ -156,6 +156,8 @@ static auto to_string(MessageSeverity severity) -> std::string
     }
 }
 
+static constexpr auto reason_for_disabling_clear_button = "You can't clear these messages. You have to fix the corresponding errors."; // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
+
 void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity severity)
 {
     const auto count = _counts_per_severity.get(severity);
@@ -178,7 +180,7 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         if (ImGui::BeginPopupContextItem(to_string(severity).c_str()))
         {
-            ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
+            ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), reason_for_disabling_clear_button, [&] {
                 if (ImGui::Button("Clear"))
                     clear(severity);
             });
@@ -239,7 +241,7 @@ auto MessageConsole::there_are_clearable_messages(MessageSeverity severity) cons
 
 void MessageConsole::imgui_menu_bar()
 {
-    ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
+    ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), reason_for_disabling_clear_button, [&] {
         if (ImGui::Button("Clear"))
             clear();
     });
