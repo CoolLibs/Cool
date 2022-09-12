@@ -172,15 +172,16 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
             to_string(severity).c_str(),
             count > 1 ? "s" : ""
         );
+        if (ImGui::IsItemClicked())
+            _is_severity_hidden.toggle(severity);
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         if (ImGui::BeginPopupContextItem(to_string(severity).c_str()))
         {
             ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
                 if (ImGui::Button("Clear"))
                     clear(severity);
             });
-
-            if (ImGui::Button("Show/Hide"))
-                _is_severity_hidden.toggle(severity);
 
             ImGui::EndPopup();
         }
