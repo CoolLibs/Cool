@@ -54,6 +54,7 @@ private:
     void imgui_menu_bar();
     void imgui_show_all_messages();
     auto there_are_clearable_messages() const -> bool;
+    auto there_are_clearable_messages(MessageSeverity) const -> bool;
 
     class MessagesCountPerSeverity {
     public:
