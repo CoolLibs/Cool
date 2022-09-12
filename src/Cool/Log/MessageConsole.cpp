@@ -85,6 +85,11 @@ static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
            msg.message.severity != MessageSeverity::Error;
 }
 
+auto MessageConsole::should_show(const internal::MessageWithMetadata& msg) const -> bool
+{
+    return !_is_severity_hidden.get(msg.message.severity);
+}
+
 void MessageConsole::clear(std::function<bool(const Message&)> predicate)
 {
     {
@@ -126,6 +131,15 @@ static auto color(MessageSeverity severity) -> ImVec4
     }
 }
 
+static auto fade_out_if(bool condition, ImVec4 color) -> ImVec4
+{
+    if (condition)
+    {
+        color.w = 0.75f;
+    }
+    return color;
+}
+
 static auto to_string(MessageSeverity severity) -> std::string
 {
     switch (severity)
@@ -149,18 +163,25 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
     {
         ImGui::SameLine();
         ImGui::TextColored(
-            color(severity),
+            fade_out_if(
+                _is_severity_hidden.get(severity),
+                color(severity)
+            ),
             "%zu %s%s",
             count,
             to_string(severity).c_str(),
             count > 1 ? "s" : ""
         );
-        if (ImGui::BeginPopupContextItem("Clear"))
+        if (ImGui::BeginPopupContextItem(to_string(severity).c_str()))
         {
             ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), "You can't clear these messages. You have to fix the corresponding errors.", [&] { // This is not a good reason_to_disable message when there are no messages, but the console will be hidden anyway.
                 if (ImGui::Button("Clear"))
                     clear(severity);
             });
+
+            if (ImGui::Button("Show/Hide"))
+                _is_severity_hidden.toggle(severity);
+
             ImGui::EndPopup();
         }
     }
@@ -236,19 +257,23 @@ void MessageConsole::imgui_show_all_messages()
         std::shared_lock lock{_messages.mutex()};
         for (const auto& id_and_message : _messages)
         {
-            const auto& id     = id_and_message.first;
-            const auto& msg    = id_and_message.second;
-            const auto  widget = [&]() {
+            const auto& id  = id_and_message.first;
+            const auto& msg = id_and_message.second;
+
+            if (!should_show(msg))
+                continue;
+
+            const auto widget = [&]() {
                 ImGui::PushID(&id);
                 ImGui::BeginGroup();
 
                 ImGui::TextColored(
-                     color(msg.message.severity),
-                     "[%s] [#%u] [%s]",
-                     Cool::stringify(msg.timestamp).c_str(),
-                     msg.count,
-                     msg.message.category.c_str()
-                 );
+                    color(msg.message.severity),
+                    "[%s] [#%u] [%s]",
+                    Cool::stringify(msg.timestamp).c_str(),
+                    msg.count,
+                    msg.message.category.c_str()
+                );
                 ImGui::SameLine();
                 ImGui::Text("%s", msg.message.detailed_message.c_str());
 
@@ -358,6 +383,21 @@ void MessageConsole::MessagesCountPerSeverity::reset_to_zero()
 auto MessageConsole::MessagesCountPerSeverity::get(MessageSeverity severity) const -> size_t
 {
     return _counts_per_severity[static_cast<size_t>(severity)];
+}
+
+auto MessageConsole::IsSeverityHidden::get(MessageSeverity severity) const -> bool
+{
+    return _is_hidden[static_cast<size_t>(severity)];
+}
+
+void MessageConsole::IsSeverityHidden::set(MessageSeverity severity, bool new_value)
+{
+    _is_hidden[static_cast<size_t>(severity)] = new_value;
+}
+
+void MessageConsole::IsSeverityHidden::toggle(MessageSeverity severity)
+{
+    set(severity, !get(severity));
 }
 
 } // namespace Cool

@@ -55,6 +55,7 @@ private:
     void imgui_show_all_messages();
     auto there_are_clearable_messages() const -> bool;
     auto there_are_clearable_messages(MessageSeverity) const -> bool;
+    auto should_show(const internal::MessageWithMetadata&) const -> bool;
 
     class MessagesCountPerSeverity {
     public:
@@ -67,6 +68,16 @@ private:
         std::array<size_t, 3> _counts_per_severity{};
     };
 
+    class IsSeverityHidden {
+    public:
+        auto get(MessageSeverity) const -> bool;
+        void set(MessageSeverity, bool);
+        void toggle(MessageSeverity);
+
+    private:
+        std::array<bool, 3> _is_hidden{false};
+    };
+
 private:
     reg::OrderedRegistry<internal::MessageWithMetadata> _messages;
     internal::RawMessageId                              _selected_message;
@@ -74,6 +85,7 @@ private:
     internal::RawMessageId                              _message_just_sent{};
     const char*                                         _name;
     MessagesCountPerSeverity                            _counts_per_severity{};
+    IsSeverityHidden                                    _is_severity_hidden{};
 };
 
 } // namespace Cool
