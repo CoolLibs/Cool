@@ -271,14 +271,17 @@ auto file_dialog_button(
 }
 
 template<typename Callable>
-static auto folder_file_impl(const char* label, std::filesystem::path* path, Callable&& dialog_button) -> bool
+static auto folder_file_impl(const char* label, std::filesystem::path* path, bool show_dialog_button, Callable&& dialog_button) -> bool
 {
     ImGui::PushID(path);
     bool b              = false;
     auto path_as_string = path->string();
     ImGui::Text(label);
-    ImGui::SameLine();
-    b |= dialog_button();
+    if (show_dialog_button)
+    {
+        ImGui::SameLine();
+        b |= dialog_button();
+    }
     ImGui::SameLine();
     if (ImGui::InputText("", &path_as_string))
     {
@@ -289,16 +292,16 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, Cal
     return b;
 }
 
-auto folder(const char* label, std::filesystem::path* folder_path) -> bool
+auto folder(const char* label, std::filesystem::path* folder_path, bool show_dialog_button) -> bool
 {
-    return folder_file_impl(label, folder_path, [&]() {
+    return folder_file_impl(label, folder_path, show_dialog_button, [&]() {
         return ImGuiExtras::folder_dialog_button(folder_path, *folder_path);
     });
 }
 
-auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters) -> bool
+auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, bool show_dialog_button) -> bool
 {
-    return folder_file_impl(label, file_path, [&]() {
+    return folder_file_impl(label, file_path, show_dialog_button, [&]() {
         return ImGuiExtras::file_dialog_button(file_path, file_filters, *file_path);
     });
 }
@@ -313,8 +316,8 @@ auto file_and_folder(
     auto folder_path = File::without_file_name(*path);
     auto file_path   = File::file_name(*path);
 
-    b |= folder(label, &folder_path);
-    b |= file(label, &file_path, file_filters);
+    b |= folder((label + " (folder)"s).c_str(), &folder_path, false);
+    b |= file((label + " (file)"s).c_str(), &file_path, file_filters);
 
     if (b)
         *path = folder_path / file_path;

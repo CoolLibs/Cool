@@ -148,7 +148,8 @@ auto file_dialog_button(
 /// UI for a folder path. Creates a text input and a button to open a folder explorer.
 auto folder(
     const char*            label,
-    std::filesystem::path* folder_path
+    std::filesystem::path* folder_path,
+    bool                   show_dialog_button = true
 ) -> bool;
 
 /// UI for a file path. Creates a text input and a button to open a file explorer.
@@ -156,7 +157,8 @@ auto folder(
 auto file(
     const char*                         label,
     std::filesystem::path*              file_path,
-    std::vector<nfdfilteritem_t> const& file_filters = {}
+    std::vector<nfdfilteritem_t> const& file_filters       = {},
+    bool                                show_dialog_button = true
 ) -> bool;
 
 /// UI for a file path that shows the file and its folder on two separate lines.
