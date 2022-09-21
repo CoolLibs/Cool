@@ -316,6 +316,9 @@ auto file_and_folder(
     b |= folder(label, &folder_path);
     b |= file(label, &file_path, file_filters);
 
+    if (b)
+        *path = folder_path / file_path;
+
     return b;
 }
 
