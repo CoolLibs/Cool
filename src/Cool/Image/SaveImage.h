@@ -8,9 +8,9 @@ namespace Cool::ImageU {
 /// @param file_path The destination path for the image: something like "out/myImage.png". The folders will be created if they don't already exist.
 /// @param flip_vertically By default we use the OpenGL convention: the first row should be the bottom of the image. You can set flip_vertically to false if your first row is at the top of the image.
 void save_png(
-    std::string_view  file_path,
-    const img::Image& image,
-    bool              flip_vertically = true
+    std::filesystem::path file_path,
+    const img::Image&     image,
+    bool                  flip_vertically = true
 );
 
 /// Saves an image as PNG.
@@ -22,12 +22,12 @@ void save_png(
 /// @param channels_count The number of channels per pixel, e.g. 4 if the format is RGBA.
 /// @param flip_vertically By default we use the OpenGL convention: the first row should be the bottom of the image. You can set flip_vertically to false if your first row is at the top of the image.
 void save_png(
-    std::string_view    file_path,
-    img::Size::DataType width,
-    img::Size::DataType height,
-    const void*         data,
-    int                 channels_count,
-    bool                flip_vertically = true
+    std::filesystem::path file_path,
+    img::Size::DataType   width,
+    img::Size::DataType   height,
+    const void*           data,
+    int                   channels_count,
+    bool                  flip_vertically = true
 );
 
 } // namespace Cool::ImageU

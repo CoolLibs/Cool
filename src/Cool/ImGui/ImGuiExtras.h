@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 namespace Cool::ImGuiExtras {
 
 /**
@@ -125,28 +127,47 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
  */
 void invisible_wrapper_around_previous_line(const char* str_id);
 
-/**
- * @brief Adds a button that opens a folder dialog.
- *
- * @param out_path A pointer to the variable where the resulting path should be stored
- * @param base_folder The folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour
- * @return true iff the button was clicked AND out_path was modified (i.e. the dialog was not canceled)
- */
-bool open_folder_dialog(std::string* out_path, std::string_view base_folder = "");
+/// Adds a button that opens a folder dialog.
+/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
+/// Returns true iff out_path was modified.
+auto folder_dialog_button(
+    std::filesystem::path* out_path,
+    std::filesystem::path  initial_folder = ""
+) -> bool;
 
-/**
- * @brief Adds a button that opens a file dialog.
- *
- * @param out_path A pointer to the variable where the resulting path should be stored.
- * @param file_type_filters A set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in the Cool/App/NfdFileFilter.h header
- * @param base_folder The folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour
- * @return true iff the button was clicked AND out_path was modified (i.e. the dialog was not canceled)
- */
-bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters = {}, std::string_view base_folder = "");
+/// Adds a button that opens a file dialog.
+/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
+/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
+/// Returns true iff out_path was modified.
+auto file_dialog_button(
+    std::filesystem::path*              out_path,
+    std::vector<nfdfilteritem_t> const& file_filters   = {},
+    std::filesystem::path               initial_folder = ""
+) -> bool;
 
-/**
- * @brief Equivalent to ImGui::Image except the image will be centered in the window
- */
+/// UI for a folder path. Creates a text input and a button to open a folder explorer.
+auto folder(
+    const char*            label,
+    std::filesystem::path* folder_path
+) -> bool;
+
+/// UI for a file path. Creates a text input and a button to open a file explorer.
+/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
+auto file(
+    const char*                         label,
+    std::filesystem::path*              file_path,
+    std::vector<nfdfilteritem_t> const& file_filters = {}
+) -> bool;
+
+/// UI for a file path that shows the file and its folder on two separate lines.
+/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
+auto file_and_folder(
+    const char*                         label,
+    std::filesystem::path*              path,
+    std::vector<nfdfilteritem_t> const& file_filters = {}
+) -> bool;
+
+/// Equivalent to ImGui::Image except the image will be centered in the window
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
 
 /**

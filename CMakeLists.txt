@@ -71,6 +71,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <nfd.hpp>
     <scope_guard/scope_guard.hpp>
     <fmt/core.h>
+    <fmt/std.h>
     <Cool/Log/Debug.h>
     <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
     <Cool/ostream/glm.h> # must be included after <glm/glm.hpp> because it depends on it

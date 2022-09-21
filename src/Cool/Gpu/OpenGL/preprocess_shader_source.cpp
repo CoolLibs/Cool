@@ -41,8 +41,8 @@ tl::expected<std::string, std::string> preprocess_shader_source(std::string_view
     std::string line;
     while (std::getline(stream, line))
     {
-        String::replace_all(line, "_COOL_RES_", Path::cool_res());
-        String::replace_all(line, "_ROOT_FOLDER_", Path::root());
+        String::replace_all(line, "_COOL_RES_", Path::cool_res().string());
+        String::replace_all(line, "_ROOT_FOLDER_", Path::root().string());
         const auto content = line_or_include(line);
         if (!content)
             return content;

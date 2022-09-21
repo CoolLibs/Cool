@@ -44,7 +44,7 @@ void Texture::DestroyTexture(GLuint texID)
     GLDebug(glDeleteTextures(1, &texID));
 }
 
-Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
+Texture::Texture(std::filesystem::path filepath, GLint interpolationMode, GLint wrapMode)
     : m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
 {
 #if DEBUG
@@ -52,10 +52,10 @@ Texture::Texture(std::string_view filepath, GLint interpolationMode, GLint wrapM
 #endif
 }
 
-GLuint Texture::LoadTexture(std::string_view filepath, GLint interpolationMode, GLint wrapMode)
+GLuint Texture::LoadTexture(std::filesystem::path filepath, GLint interpolationMode, GLint wrapMode)
 {
     // Load image
-    const auto image = img::load(filepath.data(), 4);
+    const auto image = img::load(filepath, 4);
     // Create texture
     GLuint texID = Texture::CreateTextureID(interpolationMode, wrapMode);
     // Upload data

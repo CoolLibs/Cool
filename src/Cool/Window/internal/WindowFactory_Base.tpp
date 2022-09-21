@@ -59,7 +59,7 @@ void WindowFactory_Base<T>::initialize_glfw()
 
 static void set_imgui_ini_filepath()
 {
-    static const std::string path = Cool::Path::root() + "/imgui.ini"; // Needs to be static to keep the char* passed to io.IniFilename alive
+    static const std::string path = (Cool::Path::root() / "imgui.ini").string(); // Needs to be static to keep the char* passed to io.IniFilename alive
 
     ImGui::GetIO().IniFilename = path.c_str();
 }

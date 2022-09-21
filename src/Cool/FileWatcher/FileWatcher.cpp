@@ -64,7 +64,7 @@ void FileWatcher::on_path_invalid(FileWatcher_Callbacks callbacks) const
     callbacks.on_path_invalid(_path.string());
 }
 
-void FileWatcher::set_path(std::string_view path)
+void FileWatcher::set_path(std::filesystem::path path)
 {
     _path          = path;
     _path_validity = Unknown{};

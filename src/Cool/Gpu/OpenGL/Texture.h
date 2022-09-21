@@ -1,6 +1,8 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
+#include <filesystem>
+
 namespace Cool::OpenGL {
 
 /// <summary>
@@ -30,7 +32,7 @@ public:
     /// The default value is GL_CLAMP_TO_EDGE.
     /// Can be either GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE (one repetition and then we clamp) or GL_CLAMP_TO_BORDER (like clamp, but uses a fixed color instead of the color at the edge of the texture)
     /// </param>
-    Texture(std::string_view filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
+    Texture(std::filesystem::path filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
 
     /// <summary>
     /// Loads an image into a texture and returns the OpenGL ID. You are then responsible for destroying the texture with Texture::DestroyTexture()
@@ -45,7 +47,7 @@ public:
     /// Can be either GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE (one repetition and then we clamp) or GL_CLAMP_TO_BORDER (like clamp, but uses a fixed color instead of the color at the edge of the texture)
     /// </param>
     /// <returns></returns>
-    static GLuint LoadTexture(std::string_view filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
+    static GLuint LoadTexture(std::filesystem::path filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
 
     /// <summary>
     /// Creates an OpenGL texture. You are then responsible for destroying it with Texture::DestroyTexture()

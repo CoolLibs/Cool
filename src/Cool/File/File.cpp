@@ -7,77 +7,43 @@
 
 namespace Cool {
 
-bool File::exists(std::string_view file_path)
+auto File::exists(std::filesystem::path file_path) -> bool
 {
-    struct stat buffer; // NOLINT
-    return (stat(file_path.data(), &buffer) == 0);
+    return std::filesystem::exists(file_path);
 }
 
-std::string File::absolute_path(std::string_view file_path)
+auto File::file_name(std::filesystem::path file_path) -> std::filesystem::path
 {
-    return std::filesystem::absolute(file_path).string();
+    return file_path.filename();
 }
 
-std::string File::file_name(std::string_view file_path)
+auto File::file_name_without_extension(std::filesystem::path file_path) -> std::filesystem::path
 {
-    return std::string{Cool::String::substring(
-        file_path,
-        file_path.find_last_of("/\\") + 1,
-        file_path.size()
-    )};
+    return file_path.stem();
 }
 
-std::string File::file_name_without_extension(std::string_view file_path)
+auto File::extension(std::filesystem::path file_path) -> std::filesystem::path
 {
-    return whithout_extension(file_name(file_path));
+    return file_path.extension();
 }
 
-std::string File::extension(std::string_view file_path)
+auto File::without_extension(std::filesystem::path file_path) -> std::filesystem::path
 {
-    auto pos = file_path.find_last_of('.');
-    if (pos < file_path.size())
-    {
-        return std::string{Cool::String::substring(file_path, pos, file_path.size())};
-    }
+    return file_path.replace_extension();
+}
+
+auto File::without_file_name(std::filesystem::path file_path) -> std::filesystem::path
+{
+    if (!file_path.has_filename())
+        return file_path;
     else
-    {
-        return "";
-    }
+        return file_path.parent_path();
 }
 
-std::string File::whithout_extension(std::string_view file_path)
-{
-    auto pos = file_path.find_last_of('.');
-    if (pos < file_path.size())
-    {
-        return std::string{Cool::String::substring(file_path, 0, pos)};
-    }
-    else
-    {
-        return std::string{file_path};
-    }
-}
-
-std::string File::whithout_file_name(std::string_view file_path)
-{
-    if (file_path.find_last_of('.') < file_path.size()) // There is a "." of an extension, so the thing after the last "/" must be a file name
-    {
-        return std::string{Cool::String::substring(
-            file_path,
-            0,
-            file_path.find_last_of("/\\")
-        )};
-    }
-    else
-    {
-        return std::string{file_path};
-    }
-}
-
-tl::expected<std::string, std::string> File::to_string(std::string_view file_path)
+auto File::to_string(std::filesystem::path file_path) -> tl::expected<std::string, std::string>
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
-    std::ifstream stream(file_path.data());
+    std::ifstream stream(file_path.string());
     if (!stream.is_open())
     {
         return tl::make_unexpected(
@@ -96,7 +62,7 @@ tl::expected<std::string, std::string> File::to_string(std::string_view file_pat
     return str;
 }
 
-bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
+bool File::create_folders_if_they_dont_exist(std::filesystem::path folder_path)
 {
     if (!exists(folder_path))
     {
@@ -114,36 +80,37 @@ bool File::create_folders_if_they_dont_exist(std::string_view folder_path)
     return true;
 }
 
-bool File::create_folders_for_file_if_they_dont_exist(std::string_view file_path)
+bool File::create_folders_for_file_if_they_dont_exist(std::filesystem::path file_path)
 {
-    return create_folders_if_they_dont_exist(whithout_file_name(std::string(file_path)));
+    return create_folders_if_they_dont_exist(without_file_name(file_path));
 }
 
-std::string File::find_available_name(std::string_view folder_path, std::string_view file_name, std::string_view extension)
+auto File::find_available_name(std::filesystem::path folder_path, std::filesystem::path file_name, std::filesystem::path extension) -> std::filesystem::path
 {
+    const std::string name = file_name.string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
     auto [k, base_name] = [&]() {
-        if (auto pos = file_name.find_last_of('(');
+        if (auto pos = name.find_last_of('(');
             pos != std::string::npos)
         {
-            auto end_pos = file_name.find_last_of(')');
+            auto end_pos = name.find_last_of(')');
             try
             {
                 return std::make_pair(
-                    std::stoi(std::string{Cool::String::substring(file_name, pos + 1, end_pos + 1)}),
-                    std::string{Cool::String::substring(file_name, 0, pos)}
+                    std::stoi(Cool::String::substring(name, pos + 1, end_pos + 1)),
+                    Cool::String::substring(name, 0, pos)
                 );
             }
             catch (std::exception&)
             {
             }
         }
-        return std::make_pair(0, std::string{file_name});
+        return std::make_pair(0, name);
     }();
 
     // Find an available name
-    auto out_name = std::string{file_name};
-    while (File::exists(std::string{folder_path} + "/" + out_name + std::string{extension}))
+    auto out_name = file_name;
+    while (File::exists(folder_path / out_name.replace_extension(extension)))
     {
         out_name = base_name + "(" + std::to_string(k) + ")";
         k++;

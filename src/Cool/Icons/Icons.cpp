@@ -1,4 +1,4 @@
-#include "../Icons.h"
+#include "Icons.h"
 #include <Cool/File/File.h>
 #if DEBUG
 #include <Cool/DebugOptions/DebugOptions.h>
@@ -7,18 +7,18 @@
 
 namespace Cool {
 
-std::unordered_map<std::string, Texture> Icons::_map;
+std::map<std::filesystem::path, Texture> Icons::_map;
 
-const Texture& Icons::get(std::string_view image_path)
+const Texture& Icons::get(std::filesystem::path image_path)
 {
-    const auto path = File::absolute_path(image_path);
+    const auto path = std::filesystem::absolute(image_path);
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
 #if DEBUG
         if (DebugOptions::log_when_creating_icon())
         {
-            Log::Debug::info("Icons::" + path, "Generating texture for \"" + path + "\"");
+            Log::Debug::info("Icons", fmt::format("Generating texture for \"{}\"", path));
         }
 #endif
         _map[path] = Texture{path};
@@ -30,15 +30,15 @@ const Texture& Icons::get(std::string_view image_path)
     }
 }
 
-void Icons::cleanup_texture(std::string_view image_path)
+void Icons::cleanup_texture(std::filesystem::path image_path)
 {
-    const auto path = File::absolute_path(image_path);
+    const auto path = std::filesystem::absolute(image_path);
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
         Log::Debug::warning(
             "Icons::cleanup_texture",
-            "The texture you want to clean up doesn't exist! \"" + path + "\""
+            fmt::format("The texture you want to clean up doesn't exist! \"{}\"", path)
         );
     }
     else

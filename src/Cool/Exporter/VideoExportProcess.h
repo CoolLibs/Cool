@@ -11,13 +11,12 @@ namespace Cool {
 
 class VideoExportProcess {
 public:
-    VideoExportProcess(const VideoExportParams& params, std::string_view folder_path, img::Size size);
-    ~VideoExportProcess();
-    bool update(Polaroid polaroid);
+    VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size);
+    auto update(Polaroid polaroid) -> bool;
     void imgui();
 
 private:
-    void export_frame(Polaroid polaroid, std::string_view file_path);
+    void export_frame(Polaroid polaroid, std::filesystem::path file_path);
 
 private:
     ThreadPool<ImageExportJob> _thread_pool;
@@ -26,7 +25,7 @@ private:
     int                        _total_nb_of_frames_in_sequence;
     int                        _max_nb_digits_of_frame_count;
     Averager<float>            _frame_time_average;
-    std::string                _folder_path;
+    std::filesystem::path      _folder_path;
     bool                       _should_stop_asap = false;
     img::Size                  _size;
     Clock_FixedTimestep        _clock;
