@@ -51,7 +51,7 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
         ImageSizeU::imgui(_export_size);
         // File and Folders
         ImGuiExtras::file("File Name", &_file_name);
-        ImGuiExtras::folder("Path", &_folder_path_for_image);
+        ImGuiExtras::folder("Folder", &_folder_path_for_image);
         // Warning file exists
         ImGui::NewLine();
         if (File::exists(output_path()))
@@ -107,7 +107,7 @@ void Exporter::imgui_window_export_video()
     {
         _video_export_window.show([&]() {
             ImageSizeU::imgui(_export_size);
-            ImGuiExtras::folder("Path", &_folder_path_for_video);
+            ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation
             if (ImGui::Button("Start exporting"))
