@@ -276,7 +276,7 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
     ImGui::PushID(path);
     bool b              = false;
     auto path_as_string = path->string();
-    ImGui::Text(label);
+    ImGui::TextUnformatted(label);
     if (show_dialog_button)
     {
         ImGui::SameLine();
