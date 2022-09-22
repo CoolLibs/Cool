@@ -154,10 +154,12 @@ auto folder(
 
 /// UI for a file path. Creates a text input and a button to open a file explorer.
 /// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
+/// `initial_folder` is the folder that the dialog window should open at. Leave empty to use `file_path` as the initial folder.
 auto file(
     const char*                         label,
     std::filesystem::path*              file_path,
     std::vector<nfdfilteritem_t> const& file_filters       = {},
+    std::filesystem::path               initial_folder     = {},
     bool                                show_dialog_button = true
 ) -> bool;
 

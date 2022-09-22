@@ -299,10 +299,10 @@ auto folder(const char* label, std::filesystem::path* folder_path, bool show_dia
     });
 }
 
-auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, bool show_dialog_button) -> bool
+auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, file_path, show_dialog_button, [&]() {
-        return ImGuiExtras::file_dialog_button(file_path, file_filters, *file_path);
+        return ImGuiExtras::file_dialog_button(file_path, file_filters, !initial_folder.empty() ? initial_folder : *file_path);
     });
 }
 
@@ -316,8 +316,8 @@ auto file_and_folder(
     auto folder_path = File::without_file_name(*path);
     auto file_path   = File::file_name(*path);
 
+    b |= file((label + " (file)"s).c_str(), &file_path, file_filters, folder_path);
     b |= folder((label + " (folder)"s).c_str(), &folder_path, false);
-    b |= file((label + " (file)"s).c_str(), &file_path, file_filters);
 
     if (b)
         *path = folder_path / file_path;
