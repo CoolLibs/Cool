@@ -31,11 +31,11 @@ public:
     /// Recursively creates all the folders so that at the end `folder_path` is a valid folder path.
     /// /!\ There shouldn't be any file name at the end of folder_path; it there is, then use `create_folders_for_file_if_they_dont_exist()` instead.
     /// Returns true iff the folders now exist (be it because they already existed or because they have been successfully created).
-    static auto [[nodiscard("You can only use the folders if this function returns true")]] create_folders_if_they_dont_exist(std::filesystem::path folder_path) -> bool;
+    [[nodiscard("You can only use the folders if this function returns true")]] static auto create_folders_if_they_dont_exist(std::filesystem::path folder_path) -> bool;
 
     /// Recursively creates all the folders so that at the end `file_path` is a valid file path.
     /// Returns true iff the folders now exist (be it because they already existed or because they have been successfully created).
-    static auto [[nodiscard("You can only use the file if this function returns true")]] create_folders_for_file_if_they_dont_exist(std::filesystem::path file_path) -> bool;
+    [[nodiscard("You can only use the file if this function returns true")]] static auto create_folders_for_file_if_they_dont_exist(std::filesystem::path file_path) -> bool;
 
     /**
      * @param folder_path The folder where you want the file to be created
