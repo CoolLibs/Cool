@@ -119,6 +119,7 @@ endif()
 add_subdirectory(lib/imgui_gradient)
 target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
 target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
+
 # algorithms
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
@@ -197,6 +198,12 @@ elseif(COOL_USE_OPENGL)
 endif()
 
 target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
+
+# ImNodes
+add_library(ImNodes lib/imnodes/imnodes.cpp)
+target_include_directories(ImNodes PRIVATE lib/imgui)
+target_link_libraries(Cool-PublicProperties INTERFACE ImNodes)
+target_compile_features(ImNodes PUBLIC cxx_std_11)
 
 # ----------------
 # ---Copy files---

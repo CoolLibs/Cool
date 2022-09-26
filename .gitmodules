@@ -73,3 +73,6 @@
 [submodule "lib/expected"]
 	path = lib/expected
 	url = https://github.com/TartanLlama/expected
+[submodule "lib/imnodes"]
+	path = lib/imnodes
+	url = https://github.com/CoolLibs/imnodes
