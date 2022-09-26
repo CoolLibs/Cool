@@ -51,7 +51,7 @@ void run(
     const auto run_loop = [&](bool load_from_file) {
         auto                      app = App{window_factory.window_manager()};
         Cool::AutoSerializer<App> _auto_serializer{
-            Cool::Path::root() + "/cache/last-session.json", "App", app,
+            Cool::Path::root() / "cache/last-session.json", "App", app,
             [](const std::string& message) {
                 Cool::Log::ToUser::console().send(Cool::Message{
                     .category         = "Loading Project",

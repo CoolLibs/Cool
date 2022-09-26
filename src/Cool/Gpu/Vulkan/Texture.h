@@ -21,7 +21,7 @@ public:
         vk::ImageLayout        layout_when_read_by_imgui_shader = vk::ImageLayout::eShaderReadOnlyOptimal,
         vk::ImageUsageFlagBits additional_usage_flags           = (vk::ImageUsageFlagBits)0
     );
-    Texture(std::string_view path);
+    Texture(std::filesystem::path path);
 
     /**
      * @brief Recreates the underlying image with a new size. Warning : the data is lost and the image is reset to black !

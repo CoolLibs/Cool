@@ -2,20 +2,20 @@
 
 namespace Cool {
 
-std::string Path::_root;
-std::string Path::_cool_res;
+std::filesystem::path Path::_root;
+std::filesystem::path Path::_cool_res;
 #if DEBUG
 bool Path::_root_is_initialized     = false;
 bool Path::_cool_res_is_initialized = false;
 #endif
 
-const std::string& Path::root()
+const std::filesystem::path& Path::root()
 {
     assert(_root_is_initialized);
     return _root;
 }
 
-void Path::initialize_root(std::string_view path)
+void Path::initialize_root(std::filesystem::path path)
 {
 #if DEBUG
     assert(!_root_is_initialized);
@@ -24,13 +24,13 @@ void Path::initialize_root(std::string_view path)
     _root = path;
 }
 
-const std::string& Path::cool_res()
+const std::filesystem::path& Path::cool_res()
 {
     assert(_cool_res_is_initialized);
     return _cool_res;
 }
 
-void Path::initialize_cool_res(std::string_view path)
+void Path::initialize_cool_res(std::filesystem::path path)
 {
 #if DEBUG
     assert(!_cool_res_is_initialized);

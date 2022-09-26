@@ -45,7 +45,7 @@ public:
      * @brief Sets the path to watch.
      * The appropriate callback will then be called in the next update(), depending on the path validity (either on_file_changed() or on_path_invalid())
      */
-    void set_path(std::string_view path);
+    void set_path(std::filesystem::path path);
 
 private:
     void on_file_changed(FileWatcher_Callbacks) const;

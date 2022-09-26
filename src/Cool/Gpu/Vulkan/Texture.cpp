@@ -40,8 +40,8 @@ Texture::Texture(const img::Image& image_data, vk::Format format, vk::ImageLayou
     );
 }
 
-Texture::Texture(std::string_view path)
-    : Texture{img::load(path.data())}
+Texture::Texture(std::filesystem::path path)
+    : Texture{img::load(path)}
 {
 }
 

@@ -154,7 +154,7 @@ private:
     {{
         Cool::Serialization::to_json(
             instance(),
-            Cool::Path::root() + "/{cache_file_name}.json",
+            Cool::Path::root() / "{cache_file_name}.json",
             "Debug Options"
         );
     }}
@@ -162,7 +162,7 @@ private:
     static auto load_debug_options() -> Instance
     {{
         auto the_instance = Instance{{}};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() + "/{cache_file_name}.json")
+        Cool::Serialization::from_json(the_instance, Cool::Path::root() / "{cache_file_name}.json")
             .send_error_if_any([](const std::string& message) {{
                 return Cool::Message{{
                     .category         = "Loading Debug Options",

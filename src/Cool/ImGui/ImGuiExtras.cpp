@@ -230,56 +230,99 @@ void invisible_wrapper_around_previous_line(const char* str_id)
     ImGui::InvisibleButton(str_id, ImVec2(ImGui::GetWindowWidth(), 2 * ImGui::GetTextLineHeight()));
 }
 
-bool open_folder_dialog(std::string* out_path, std::string_view base_folder)
+auto folder_dialog_button(
+    std::filesystem::path* out_path,
+    std::filesystem::path  initial_folder
+) -> bool
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
-    {
-        NFD::UniquePath outPath;
-
-        nfdresult_t result = NFD::PickFolder(outPath, std::filesystem::absolute(base_folder).string().c_str());
-        if (result == NFD_OKAY)
-        {
-            *out_path = outPath.get();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
+    if (!button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
         return false;
-    }
+
+    NFD::UniquePath outPath;
+    nfdresult_t     result = NFD::PickFolder(outPath, std::filesystem::absolute(initial_folder).string().c_str());
+    if (result != NFD_OKAY)
+        return false;
+
+    *out_path = std::filesystem::path{outPath.get()};
+    return true;
 }
 
-bool open_file_dialog(std::string* out_path, std::vector<nfdfilteritem_t> file_type_filters, std::string_view base_folder)
+auto file_dialog_button(
+    std::filesystem::path*              out_path,
+    std::vector<nfdfilteritem_t> const& file_filters,
+    std::filesystem::path               initial_folder
+) -> bool
 {
-    if (button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
-    {
-        NFD::UniquePath outPath;
-        // clang-format off
-        nfdresult_t result = NFD::OpenDialog(
-            outPath,
-            file_type_filters.data(),
-            static_cast<nfdfiltersize_t>(file_type_filters.size()),
-            std::filesystem::absolute(base_folder).string().c_str()
-		);
-        // clang-format on
-        if (result == NFD_OKAY)
-        {
-            *out_path = outPath.get();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
+    if (!button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
         return false;
+
+    NFD::UniquePath outPath;
+    nfdresult_t     result = NFD::OpenDialog(
+            outPath,
+            file_filters.data(),
+            static_cast<nfdfiltersize_t>(file_filters.size()),
+            std::filesystem::absolute(initial_folder).string().c_str()
+        );
+    if (result != NFD_OKAY)
+        return false;
+
+    *out_path = std::filesystem::path{outPath.get()};
+    return true;
+}
+
+template<typename Callable>
+static auto folder_file_impl(const char* label, std::filesystem::path* path, bool show_dialog_button, Callable&& dialog_button) -> bool
+{
+    ImGui::PushID(path);
+    bool b              = false;
+    auto path_as_string = path->string();
+    ImGui::TextUnformatted(label);
+    if (show_dialog_button)
+    {
+        ImGui::SameLine();
+        b |= dialog_button();
     }
+    ImGui::SameLine();
+    if (ImGui::InputText("", &path_as_string))
+    {
+        b     = true;
+        *path = std::filesystem::path{path_as_string};
+    }
+    ImGui::PopID();
+    return b;
+}
+
+auto folder(const char* label, std::filesystem::path* folder_path, bool show_dialog_button) -> bool
+{
+    return folder_file_impl(label, folder_path, show_dialog_button, [&]() {
+        return ImGuiExtras::folder_dialog_button(folder_path, *folder_path);
+    });
+}
+
+auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
+{
+    return folder_file_impl(label, file_path, show_dialog_button, [&]() {
+        return ImGuiExtras::file_dialog_button(file_path, file_filters, !initial_folder.empty() ? initial_folder : *file_path);
+    });
+}
+
+auto file_and_folder(
+    const char*                         label,
+    std::filesystem::path*              path,
+    std::vector<nfdfilteritem_t> const& file_filters
+) -> bool
+{
+    bool b           = false;
+    auto folder_path = File::without_file_name(*path);
+    auto file_path   = File::file_name(*path);
+
+    b |= file((label + " (file)"s).c_str(), &file_path, file_filters, folder_path);
+    b |= folder((label + " (folder)"s).c_str(), &folder_path, false);
+
+    if (b)
+        *path = folder_path / file_path;
+
+    return b;
 }
 
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)

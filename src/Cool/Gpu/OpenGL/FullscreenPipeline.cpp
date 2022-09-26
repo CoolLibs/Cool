@@ -11,7 +11,7 @@ namespace Cool::OpenGL {
 std::optional<ShaderModule>& vertex_module()
 {
     static std::optional<ShaderModule> shader_module = ShaderModule{{
-        *File::to_string(Path::cool_res() + "/shaders/fullscreen.vert")
+        *File::to_string(Path::cool_res() / "shaders/fullscreen.vert")
              .map_error([](const std::string& error_message) {
                  Cool::Log::ToUser::error(
                      "FullscreenPipeline::vertex_module()",

@@ -9,8 +9,8 @@
 namespace Cool {
 
 Exporter::Exporter()
-    : _folder_path_for_image{Path::root() + "/out"}
-    , _folder_path_for_video{Path::root() + "/exports"}
+    : _folder_path_for_image{Path::root() / "out"}
+    , _folder_path_for_video{Path::root() / "exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
         _file_name = File::find_available_name(_folder_path_for_image, _file_name, ".png");
@@ -23,9 +23,9 @@ void Exporter::imgui_windows(Polaroid polaroid, float time)
     imgui_window_export_video();
 }
 
-std::string Exporter::output_path()
+auto Exporter::output_path() -> std::filesystem::path
 {
-    return _folder_path_for_image + "/" + _file_name + ".png";
+    return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
 void Exporter::imgui_menu_items()
@@ -50,15 +50,13 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
         // Resolution
         ImageSizeU::imgui(_export_size);
         // File and Folders
-        ImGui::InputText("File Name", &_file_name);
-        ImGui::InputText("Path", &_folder_path_for_image);
-        ImGui::SameLine();
-        ImGuiExtras::open_folder_dialog(&_folder_path_for_image, _folder_path_for_image);
+        ImGuiExtras::file("File Name", &_file_name);
+        ImGuiExtras::folder("Folder", &_folder_path_for_image);
         // Warning file exists
         ImGui::NewLine();
         if (File::exists(output_path()))
         {
-            ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it ?");
+            ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it?");
         }
         // Validation
         if (ImGui::Button("Export as PNG"))
@@ -109,9 +107,7 @@ void Exporter::imgui_window_export_video()
     {
         _video_export_window.show([&]() {
             ImageSizeU::imgui(_export_size);
-            ImGui::InputText("Path", &_folder_path_for_video);
-            ImGui::SameLine();
-            ImGuiExtras::open_folder_dialog(&_folder_path_for_video, _folder_path_for_video);
+            ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation
             if (ImGui::Button("Start exporting"))
