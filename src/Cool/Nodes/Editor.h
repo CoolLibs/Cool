@@ -65,7 +65,7 @@ private:
         );
         ImNodes::SetCurrentContext(&*_context);
         ImNodes::LoadCurrentEditorStateFromIniString(editor_state.c_str(), editor_state.size());
-        update_templates_and_nodes();
+        // update_templates_and_nodes();
     }
 };
 
