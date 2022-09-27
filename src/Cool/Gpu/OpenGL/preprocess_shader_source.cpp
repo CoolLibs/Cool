@@ -25,7 +25,16 @@ static tl::expected<std::string, std::string> line_or_include(const std::string&
                 *path, file_content.error()
             ));
         }
-        return preprocess_shader_source(*file_content);
+
+        const auto preprocessed_content = preprocess_shader_source(*file_content);
+        if (!preprocessed_content)
+            return preprocessed_content;
+
+        return fmt::format(
+            "// BEGIN INCLUDE {0}\n{1}\n// END INCLUDE {0}",
+            *path,
+            *preprocessed_content
+        );
     }
     else
     {
