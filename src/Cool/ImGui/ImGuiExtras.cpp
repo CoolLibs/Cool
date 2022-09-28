@@ -331,17 +331,17 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
 }
 
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu)
+auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
 {
     ImGui::PushID(label);
-    bool checkbox_was_used = ImGui::Checkbox("", bool_p);
+    bool was_used = ImGui::Checkbox("", bool_p);
     ImGui::PopID();
     ImGui::SameLine();
     if (*bool_p)
     {
         if (ImGui::BeginMenu(label))
         {
-            submenu();
+            was_used |= submenu();
             ImGui::EndMenu();
         }
     }
@@ -349,7 +349,7 @@ bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()
     {
         ImGui::Text("%s", label);
     }
-    return checkbox_was_used;
+    return was_used;
 }
 
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)

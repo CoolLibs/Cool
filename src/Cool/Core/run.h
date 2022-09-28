@@ -9,6 +9,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
+#include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
 #include "InitConfig.h"
 
@@ -35,9 +36,13 @@ template<typename App>
 static auto create_autosaver(Cool::AutoSerializer<App> const& auto_serializer) -> std::function<void()>
 {
     return [&auto_serializer]() {
+        if (!user_settings().autosave_enabled)
+            return;
+
         static auto last_time = std::chrono::steady_clock::now();
         const auto  now       = std::chrono::steady_clock::now();
-        if (now - last_time > 60s) // TODO(JF) Make autosave and its duration an option
+        if (now - last_time >
+            std::chrono::duration<float>{user_settings().autosave_delay_in_seconds})
         {
             auto_serializer.save();
             last_time = now;
@@ -70,10 +75,11 @@ void run(
     }
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
-        auto                      app = App{window_factory.window_manager()};
+        auto app = App{window_factory.window_manager()};
+        // Auto serialize the App
         Cool::AutoSerializer<App> auto_serializer{
             Cool::Path::root() / "cache/last-session.json", "App", app,
-            [](const std::string& message) {
+            [](std::string const& message) {
                 Cool::Log::ToUser::console().send(Cool::Message{
                     .category         = "Loading Project",
                     .detailed_message = message,
@@ -82,6 +88,18 @@ void run(
                 throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
             },
             load_from_file};
+        // Auto serialize the UserSettings
+        Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
+            Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
+            [](std::string const& message) {
+                Cool::Log::ToUser::console().send(Cool::Message{
+                    .category         = "Loading Project",
+                    .detailed_message = message,
+                    .severity         = Cool::MessageSeverity::Warning,
+                });
+            },
+            load_from_file};
+        // Run the app
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
         app_manager.run(create_autosaver(auto_serializer));
 #if defined(COOL_VULKAN)
