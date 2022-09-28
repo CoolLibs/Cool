@@ -47,7 +47,7 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     // clang-format on
 }
 
-void AppManager::run()
+void AppManager::run(std::function<void()> on_update)
 {
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
@@ -56,6 +56,7 @@ void AppManager::run()
         while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
         {
             update();
+            on_update();
         }
         should_stop = true;
     }};
@@ -68,6 +69,7 @@ void AppManager::run()
     {
         glfwPollEvents();
         update();
+        on_update();
     }
 #endif
 }

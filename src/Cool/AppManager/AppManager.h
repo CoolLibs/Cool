@@ -20,11 +20,9 @@ public:
      */
     AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config);
 
-    /**
-     * @brief Runs the app's update loop continuously, until the user closes the main window
-     *
-     */
-    void run();
+    /// Runs the app's update loop continuously, until the user closes the main window.
+    /// Also calls `on_update()` after every update.
+    void run(std::function<void()> on_update);
 
 private:
     void update();

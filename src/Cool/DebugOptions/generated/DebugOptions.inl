@@ -26,6 +26,7 @@ public:
             ImGui::End();
         }
     }
+    [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
     [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
@@ -43,6 +44,7 @@ public:
 private:
     struct Instance {
         bool test_message_console__window{false};
+        bool log_when_autosaving{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
@@ -57,6 +59,7 @@ private:
         {
             archive(
                 cereal::make_nvp("Test Message Console", test_message_console__window),
+                cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
@@ -68,6 +71,7 @@ private:
     static void reset_all()
     {
         instance().test_message_console__window             = false;
+        instance().log_when_autosaving                      = false;
         instance().log_when_creating_icon                   = false;
         instance().log_number_of_threads_in_the_thread_pool = false;
         instance().log_opengl_info                          = false;
@@ -114,6 +118,11 @@ private:
             ImGui::Checkbox("Test Message Console", &instance().test_message_console__window);
         }
 
+        if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Log when autosaving", &instance().log_when_autosaving);
+        }
+
         if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
@@ -152,6 +161,12 @@ private:
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console__window = !instance().test_message_console__window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_when_autosaving = !instance().log_when_autosaving;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

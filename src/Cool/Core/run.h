@@ -5,6 +5,7 @@
 #endif
 
 #include <Cool/AppManager/AppManager.h>
+#include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
@@ -31,6 +32,26 @@ inline void shut_down()
 }
 
 template<typename App>
+static auto create_autosaver(Cool::AutoSerializer<App> const& auto_serializer) -> std::function<void()>
+{
+    return [&auto_serializer]() {
+        static auto last_time = std::chrono::steady_clock::now();
+        const auto  now       = std::chrono::steady_clock::now();
+        if (now - last_time > 60s) // TODO(JF) Make autosave and its duration an option
+        {
+            auto_serializer.save();
+            last_time = now;
+#if DEBUG
+            if (DebugOptions::log_when_autosaving())
+            {
+                Log::Debug::info("Autosave", "The application was just saved.");
+            }
+#endif
+        }
+    };
+}
+
+template<typename App>
 void run(
     const std::vector<WindowConfig>& windows_configs,
     InitConfig                       init_config        = {},
@@ -50,7 +71,7 @@ void run(
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto                      app = App{window_factory.window_manager()};
-        Cool::AutoSerializer<App> _auto_serializer{
+        Cool::AutoSerializer<App> auto_serializer{
             Cool::Path::root() / "cache/last-session.json", "App", app,
             [](const std::string& message) {
                 Cool::Log::ToUser::console().send(Cool::Message{
@@ -62,7 +83,7 @@ void run(
             },
             load_from_file};
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
-        app_manager.run();
+        app_manager.run(create_autosaver(auto_serializer));
 #if defined(COOL_VULKAN)
         vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif

@@ -13,6 +13,10 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="log_when_autosaving",
+            name_in_ui="Log when autosaving",
+        ),
+        DebugOption(
             name_in_code="log_when_creating_icon",
             name_in_ui="Log when creating icon",
         ),
