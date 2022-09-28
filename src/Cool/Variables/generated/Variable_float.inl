@@ -9,7 +9,7 @@ template<>
 struct VariableMetadata<float> {
     float min_value{0.f};
     float max_value{1.f};
-    bool  bounded{true};
+    bool  bounded{false};
     float drag_speed{0.01f};
 
     friend auto operator<=>(const VariableMetadata<float>&, const VariableMetadata<float>&) = default;
