@@ -295,13 +295,13 @@ void PresetManager::save_preset(const Settings& new_preset_values, const PresetI
 {
     if (contains(id))
     {
-        if (make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
-        {
-            _presets.with_mutable_ref(id, [&](Preset2& preset) {
-                preset.values    = new_preset_values;
-                _new_preset_name = "";
-            });
-        }
+        if (!make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
+            return;
+
+        _presets.with_mutable_ref(id, [&](Preset2& preset) {
+            preset.values    = new_preset_values;
+            _new_preset_name = "";
+        });
     }
     else
     {
@@ -311,6 +311,8 @@ void PresetManager::save_preset(const Settings& new_preset_values, const PresetI
         });
         _new_preset_name   = "";
     }
+
+    _auto_serializer.save(); // Save to file to make sure the presets are saved as soon as possible. Prevents us from losing our presets if the application crashes later on.
 }
 
 void PresetManager::imgui_adding_preset(const Settings& settings)
