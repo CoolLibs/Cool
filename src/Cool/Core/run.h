@@ -85,8 +85,7 @@ void run(
                     .detailed_message = message,
                     .severity         = Cool::MessageSeverity::Warning,
                 });
-            },
-            load_from_file};
+            }};
         // Auto serialize the App
         Cool::AutoSerializer<App> auto_serializer{
             Cool::Path::root() / "cache/last-session.json", "App", app,
