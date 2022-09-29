@@ -85,9 +85,9 @@ public:
                     [&](std::string_view path) {
                         _path_error.send(
                             {
-                                .category         = "Input File",
-                                .detailed_message = fmt::format("Invalid path: \"{}\"", path),
-                                .severity         = Cool::MessageSeverity::Error,
+                                .category = "Input File",
+                                .message  = fmt::format("Invalid path: \"{}\"", path),
+                                .severity = Cool::MessageSeverity::Error,
                             }
                         );
                     },

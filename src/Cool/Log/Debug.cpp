@@ -6,9 +6,9 @@ void info(const std::string& category, const std::string& message) // We take st
 {
 #if DEBUG
     console().send(Message{
-        .category         = category,
-        .detailed_message = message,
-        .severity         = MessageSeverity::Info,
+        .category = category,
+        .message  = message,
+        .severity = MessageSeverity::Info,
     });
 #else
     (void)category;
@@ -20,9 +20,9 @@ void warning(const std::string& category, const std::string& message) // We take
 {
 #if DEBUG
     console().send(Message{
-        .category         = category,
-        .detailed_message = message,
-        .severity         = MessageSeverity::Warning,
+        .category = category,
+        .message  = message,
+        .severity = MessageSeverity::Warning,
     });
 #else
     (void)category;
@@ -45,9 +45,9 @@ void error_without_breakpoint(const std::string& category, const std::string& me
 {
 #if DEBUG
     console().send(Message{
-        .category         = category,
-        .detailed_message = message,
-        .severity         = MessageSeverity::Error,
+        .category = category,
+        .message  = message,
+        .severity = MessageSeverity::Error,
     });
 #else
     (void)category;

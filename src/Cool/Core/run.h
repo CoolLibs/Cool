@@ -81,9 +81,9 @@ void run(
             Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
             [](std::string const& message) {
                 Cool::Log::ToUser::console().send(Cool::Message{
-                    .category         = "Loading Project",
-                    .detailed_message = message,
-                    .severity         = Cool::MessageSeverity::Warning,
+                    .category = "Loading Project",
+                    .message  = message,
+                    .severity = Cool::MessageSeverity::Warning,
                 });
             }};
         // Auto serialize the App
@@ -91,9 +91,9 @@ void run(
             Cool::Path::root() / "cache/last-session.json", "App", app,
             [](std::string const& message) {
                 Cool::Log::ToUser::console().send(Cool::Message{
-                    .category         = "Loading Project",
-                    .detailed_message = message,
-                    .severity         = Cool::MessageSeverity::Warning,
+                    .category = "Loading Project",
+                    .message  = message,
+                    .severity = Cool::MessageSeverity::Warning,
                 });
                 throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
             },

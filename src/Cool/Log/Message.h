@@ -10,7 +10,7 @@ enum class MessageSeverity {
 
 struct Message {
     std::string     category;
-    std::string     detailed_message;
+    std::string     message;
     MessageSeverity severity{MessageSeverity::Error};
 };
 
