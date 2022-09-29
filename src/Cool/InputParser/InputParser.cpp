@@ -197,7 +197,7 @@ auto parse_all_inputs(
         catch (const std::exception& e)
         {
             return tl::make_unexpected(
-                fmt::format("Failed to parse INPUTs:\n{}", e.what())
+                fmt::format("Invalid INPUT:\n{}", e.what())
             );
         }
     }

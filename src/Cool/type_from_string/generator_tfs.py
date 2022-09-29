@@ -24,6 +24,15 @@ struct from_impl<"{value}"> {{
     return out
 
 
+def list_all_types():
+    ret = ""
+    for _, values in tfs_global_type_to_string_associations.items():
+        for value in values:
+            ret += "- " + value + "\\n"
+    ret = ret[:-2]
+    return ret
+
+
 def evaluate_function_template():
     out = "#define COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(function_template, type_as_string, out_type, arguments) \\\n"
     out += "([&]() -> out_type { \\\n"
@@ -33,7 +42,7 @@ def evaluate_function_template():
             out += f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return function_template<{key}>arguments;' + "\\\n"
             is_first = False
 
-    out += f'else {{ throw std::runtime_error{{"Unknown type \\"" + std::string{{type_as_string}} + "\\""}};  }} \\\n}})()'
+    out += f'else {{ throw std::runtime_error{{"Unknown type \\"" + std::string{{type_as_string}} + "\\". The possible types are:\\n{list_all_types()}"}};  }} \\\n}})()'
     out += f'\n'
     return out
 
