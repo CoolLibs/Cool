@@ -184,8 +184,10 @@ auto parse_all_inputs(
     std::vector<AnyInput> new_inputs;
     std::stringstream     stream{std::string{source_code}};
     std::string           line;
+    size_t                line_count = 0;
     while (getline(stream, line))
     {
+        line_count++;
         try
         {
             const auto input = try_parse_input(line, dirty_flag, input_factory);
@@ -197,7 +199,7 @@ auto parse_all_inputs(
         catch (const std::exception& e)
         {
             return tl::make_unexpected(
-                fmt::format("Invalid INPUT:\n{}", e.what())
+                fmt::format("Invalid INPUT on line {}:\n{}", line_count, e.what())
             );
         }
     }
