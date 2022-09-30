@@ -193,7 +193,7 @@ auto parse_all_inputs(
             const auto input = try_parse_input(line, dirty_flag, input_factory);
             if (input)
             {
-                new_inputs.push_back(*input);
+                new_inputs.emplace_back(std::move(*input));
             }
         }
         catch (const std::exception& e)
