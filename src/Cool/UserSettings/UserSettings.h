@@ -4,7 +4,7 @@ namespace Cool {
 
 struct UserSettings {
     bool  autosave_enabled{true};
-    float autosave_delay_in_seconds{60.f};
+    float autosave_delay_in_seconds{5.f};
 
     auto imgui_autosave() -> bool;
 
