@@ -2,7 +2,7 @@
 
 #include <imnodes/imnodes.h>
 
-namespace Cool::internal {
+namespace Cool::Nodes::internal {
 
 class UniqueImNodeContext {
 public:
@@ -48,4 +48,4 @@ private:
     ImNodesContext* _context;
 };
 
-} // namespace Cool::internal
+} // namespace Cool::Nodes::internal

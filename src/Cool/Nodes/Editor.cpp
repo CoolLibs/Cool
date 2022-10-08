@@ -21,14 +21,6 @@ Editor::Editor(std::string_view /* nodes_folder_path */)
 //     _graph_has_changed = true;
 // }
 
-// void Editor::ask_to_open_nodes_menu()
-// {
-//     if (_window_is_hovered)
-//     {
-//         _should_open_nodes_menu = true;
-//     }
-// }
-
 // bool Editor::wants_to_delete_selection() const
 // {
 //     return _window_is_hovered &&
@@ -140,45 +132,47 @@ static void draw_node(Node& node)
 //     return false;
 // }
 
-// auto Editor::should_open_nodes_menu() -> bool
-// {
-//     return _should_open_nodes_menu ||
-//            (_window_is_hovered && (ImGui::IsMouseReleased(ImGuiMouseButton_Right) ||
-//                                    ImGui::IsKeyReleased(ImGuiKey_A)));
-// }
+auto Editor::wants_to_open_nodes_menu() -> bool
+{
+    return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Right) || ImGui::IsKeyReleased(ImGuiKey_A)));
+}
 
-// void Editor::open_nodes_menu()
-// {
-//     _should_open_nodes_menu = false;
-//     ImGui::OpenPopup("_node_templates_list");
-//     _factory.clear_filter();
-//     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
-// }
+void Editor::open_nodes_menu()
+{
+    ImGui::OpenPopup("_nodes_library");
+    // _factory.clear_filter();
+    _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
+}
 
-void Editor::imgui_window()
+void Editor::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
+{
+    if (wants_to_open_nodes_menu())
+    {
+        open_nodes_menu();
+    }
+    if (ImGui::BeginPopup("_nodes_library"))
+    {
+        if (imgui_nodes_menu())
+        {
+            ImGui::CloseCurrentPopup();
+            set_dirty(_graph_dirty_flag);
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void Editor::imgui_window(SetDirty_Ref set_dirty)
 {
     ImNodes::SetCurrentContext(&*_context);
     // bool node_graph_has_changed = false;
     ImGui::Begin("Nodes");
-    // _window_is_hovered = ImGui::IsWindowHovered(
+    // _window_is_hovered = ImGui::IsWindowHovered( // TODO(JF) Do we need to compute it here? Can't we do it after ImNodes::BeginNodeEditor()?
     //     ImGuiHoveredFlags_ChildWindows |
     //     ImGuiHoveredFlags_NoPopupHierarchy
     // );
     ImNodes::BeginNodeEditor();
     {
-        // if (should_open_nodes_menu())
-        // {
-        //     open_nodes_menu();
-        // }
-        // if (ImGui::BeginPopup("_node_templates_list"))
-        // {
-        //     if (imgui_nodes_menu())
-        //     {
-        //         ImGui::CloseCurrentPopup();
-        //         node_graph_has_changed = true;
-        //     }
-        //     ImGui::EndPopup();
-        // }
+        show_nodes_library_menu_ifn(set_dirty);
         for (auto& [id, node] : _graph._nodes)
         {
             ImNodes::BeginNode(id);
@@ -202,20 +196,20 @@ void Editor::imgui_window()
     // }
 }
 
-// bool Editor::imgui_nodes_menu()
-// {
-//     const std::optional<Node> node = _factory.imgui();
-//     if (node.has_value())
-//     {
-//         _graph.add_node(*node);
-//         ImNodes::SetNodeScreenSpacePos(node->id, _next_node_position);
-//         return true;
-//     }
-//     else
-//     {
-//         return false;
-//     }
-// }
+auto Editor::imgui_nodes_menu() -> bool
+{
+    // const std::optional<Node> node = _factory.imgui();
+    // if (node.has_value())
+    // {
+    //     _graph.add_node(*node);
+    //     ImNodes::SetNodeScreenSpacePos(node->id, _next_node_position);
+    //     return true;
+    // }
+    // else
+    {
+        return false;
+    }
+}
 
 // void Editor::update_templates_and_nodes()
 // {
