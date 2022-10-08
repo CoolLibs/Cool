@@ -181,7 +181,7 @@ void Editor::imgui_window()
         // }
         for (auto& [id, node] : _graph._nodes)
         {
-            ImNodes::BeginNode(imnode_id(id));
+            ImNodes::BeginNode(id);
             draw_node(node);
             ImNodes::EndNode();
         }

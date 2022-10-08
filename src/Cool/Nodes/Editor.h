@@ -1,5 +1,6 @@
 #pragma once
 
+#include <imnodes/imnodes_internal.h>
 #include "internal/Graph.h"
 #include "internal/NodeC.h"
 #include "internal/UniqueImNodeContext.h"
@@ -16,7 +17,7 @@ public:
     // bool tree_has_changed();
     // bool tree_is_valid() const { return _all_nodes_have_a_valid_template; }
     // auto tree() const -> const NodeGraph& { return _graph; }
-    // void add_node(const Node& node) { _graph.add_node(node); }
+    void add_node(Node const& node) { _graph.add_node(node); }
     // void remove_all_nodes()
     // {
     //     _graph.remove_all_nodes();
@@ -49,10 +50,9 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        ImNodes::SetCurrentContext(&*_context);
         archive(
             cereal::make_nvp("Graph", _graph),
-            cereal::make_nvp("Editor State", std::string{ImNodes::SaveCurrentEditorStateToIniString()})
+            cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
     }
     template<class Archive>
@@ -63,8 +63,7 @@ private:
             _graph,
             editor_state
         );
-        ImNodes::SetCurrentContext(&*_context);
-        ImNodes::LoadCurrentEditorStateFromIniString(editor_state.c_str(), editor_state.size());
+        ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
         // update_templates_and_nodes();
     }
 };

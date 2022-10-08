@@ -202,9 +202,14 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 
 # ImNodes
 add_library(ImNodes lib/imnodes/imnodes.cpp)
-target_include_directories(ImNodes PRIVATE lib/imgui)
+target_include_directories(ImNodes PRIVATE
+    lib/imgui
+    lib # To access imnodes_config.h
+)
 target_link_libraries(Cool-PublicProperties INTERFACE ImNodes)
+target_link_libraries(ImNodes PUBLIC reg) # To define ImNode's ID as a reg::Id
 target_compile_features(ImNodes PUBLIC cxx_std_11)
+target_compile_definitions(ImNodes PUBLIC IMNODES_USER_CONFIG="imnodes_config.h")
 
 # ----------------
 # ---Copy files---

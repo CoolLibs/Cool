@@ -20,7 +20,7 @@ public:
     }
     void show() const
     {
-        ImNodes::BeginInputAttribute(imnode_id(id()));
+        ImNodes::BeginInputAttribute(id());
         ImGui::Dummy({0.f, 10.f}); // Makes sure that consecutive input pins are not too close to each other
         ImNodes::EndInputAttribute();
     }

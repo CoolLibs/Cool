@@ -22,6 +22,17 @@ public:
 private:
     std::vector<Pin> _input_pins;
     std::vector<Pin> _output_pins;
+
+private:
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        // archive(
+        //     cereal::make_nvp("Base Module", cereal::base_class<Module>(this)),
+        //     cereal::make_nvp("Node Editor", _nodes_editor)
+        // );
+    }
 };
 
 struct NodesConfig {
