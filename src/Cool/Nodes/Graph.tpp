@@ -1,8 +1,8 @@
-#include "Graph.h"
 
 namespace Cool::Nodes {
 
-auto Graph::add_node(const Node& node) -> NodeId
+template<Node_Concept Node>
+auto Graph<Node>::add_node(const Node& node) -> NodeId
 {
     return _nodes.create(node);
 }

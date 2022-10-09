@@ -3,22 +3,25 @@
 #include <Cool/Dependencies/Dirty.h>
 #include <imnodes/imnodes_internal.h>
 #include "Graph.h"
-#include "NodeC.h"
+#include "NodesCfg_Concept.h"
 #include "UniqueImNodeContext.h"
 
 namespace Cool::Nodes {
 
-// template<NodeC Node> // TODO(JF)
+template<NodesCfg_Concept NodesCfg>
 class Editor {
 public:
-    explicit Editor(std::string_view nodes_folder_path);
+    explicit Editor(std::string_view /* nodes_folder_path */)
+    // : _factory{nodes_folder_path}
+    {
+    }
     void imgui_window(SetDirty_Ref set_dirty);
     // void update_templates_and_nodes();
     // void ask_to_open_nodes_menu();
     // bool tree_has_changed();
     // bool tree_is_valid() const { return _all_nodes_have_a_valid_template; }
     // auto tree() const -> const NodeGraph& { return _graph; }
-    void add_node(Node const& node) { _graph.add_node(node); }
+    void add_node(typename NodesCfg::NodeT const& node) { _graph.add_node(node); }
     // void remove_all_nodes()
     // {
     //     _graph.remove_all_nodes();
@@ -42,8 +45,8 @@ private: /* Nodes Library */
 private:
     internal::UniqueImNodeContext _context;
     // NodeFactory                 _factory;
-    Graph     _graph;
-    DirtyFlag _graph_dirty_flag;
+    Graph<typename NodesCfg::NodeT> _graph;
+    DirtyFlag                       _graph_dirty_flag;
     // bool      _all_nodes_have_a_valid_template = true;
     // bool      _window_is_hovered               = false;
 
@@ -72,3 +75,5 @@ private:
 };
 
 } // namespace Cool::Nodes
+
+#include "Editor.tpp"

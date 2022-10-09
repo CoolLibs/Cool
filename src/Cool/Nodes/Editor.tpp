@@ -1,13 +1,9 @@
-#include "Editor.h"
+
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
 
 namespace Cool::Nodes {
-Editor::Editor(std::string_view /* nodes_folder_path */)
-// : _factory{nodes_folder_path}
-{
-}
 
 // bool Editor::tree_has_changed()
 // {
@@ -56,10 +52,11 @@ Editor::Editor(std::string_view /* nodes_folder_path */)
 //     ImGui::EndGroup();
 // }
 
-static void draw_node(Node& node)
+template<NodesCfg_Concept NodesCfg>
+void draw_node(typename NodesCfg::NodeT& node)
 {
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(NodesConfig::name(node));
+    ImGui::TextUnformatted(NodesCfg::name(node));
     ImNodes::EndNodeTitleBar();
     // show_node_pins(node);
     // show_node_params(node);
@@ -132,19 +129,22 @@ static void draw_node(Node& node)
 //     return false;
 // }
 
-auto Editor::wants_to_open_nodes_menu() -> bool
+template<NodesCfg_Concept NodesCfg>
+auto Editor<NodesCfg>::wants_to_open_nodes_menu() -> bool
 {
     return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Right) || ImGui::IsKeyReleased(ImGuiKey_A)));
 }
 
-void Editor::open_nodes_menu()
+template<NodesCfg_Concept NodesCfg>
+void Editor<NodesCfg>::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
     // _factory.clear_filter();
     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 }
 
-void Editor::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
+template<NodesCfg_Concept NodesCfg>
+void Editor<NodesCfg>::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
 {
     if (wants_to_open_nodes_menu())
     {
@@ -161,7 +161,8 @@ void Editor::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
     }
 }
 
-void Editor::imgui_window(SetDirty_Ref set_dirty)
+template<NodesCfg_Concept NodesCfg>
+void Editor<NodesCfg>::imgui_window(SetDirty_Ref set_dirty)
 {
     ImNodes::SetCurrentContext(&*_context);
     // bool node_graph_has_changed = false;
@@ -176,7 +177,7 @@ void Editor::imgui_window(SetDirty_Ref set_dirty)
         for (auto& [id, node] : _graph._nodes)
         {
             ImNodes::BeginNode(id);
-            draw_node(node);
+            draw_node<NodesCfg>(node);
             ImNodes::EndNode();
         }
         // for (const auto& link : _graph.links)
@@ -196,7 +197,8 @@ void Editor::imgui_window(SetDirty_Ref set_dirty)
     // }
 }
 
-auto Editor::imgui_nodes_menu() -> bool
+template<NodesCfg_Concept NodesCfg>
+auto Editor<NodesCfg>::imgui_nodes_menu() -> bool
 {
     // const std::optional<Node> node = _factory.imgui();
     // if (node.has_value())

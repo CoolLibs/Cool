@@ -2,15 +2,17 @@
 
 #include <reg/reg.hpp>
 #include "Link.h"
-#include "NodeC.h"
+#include "Node_Concept.h"
+#include "NodesCfg_Concept.h"
 
 namespace Cool::Nodes {
 
-using NodeId = reg::Id<Node>;
-using LinkId = reg::Id<Link>;
-
+template<Node_Concept Node>
 class Graph {
 public:
+    using NodeId = reg::Id<Node>;
+    using LinkId = reg::Id<Link>;
+
     auto add_node(Node const& node) -> NodeId;
     // auto add_link(Link const& link) -> LinkId;
 
@@ -28,8 +30,15 @@ public:
     // const Pin&  find_pin(PinId id);
     // bool        has_no_successor(const Node& node) const;
 
+    auto begin() { return _nodes.begin(); }
+    auto begin() const { return _nodes.begin(); }
+    auto end() { return _nodes.end(); }
+    auto end() const { return _nodes.end(); }
+
 private:
+    template<NodesCfg_Concept NodesConfig>
     friend class Editor;
+
     reg::Registry<Node> _nodes;
     reg::Registry<Link> _links;
 
@@ -56,3 +65,5 @@ private:
 };
 
 } // namespace Cool::Nodes
+
+#include "Graph.tpp"
