@@ -2,7 +2,7 @@
 #include <ranges>
 #include "Pin.h"
 
-namespace Cool {
+namespace Cool::Nodes {
 
 template<typename T>
 concept NodeC = true;
@@ -40,4 +40,4 @@ struct NodesConfig {
     static auto name(Node const&) -> const char* { return "Some Node"; }
 };
 
-} // namespace Cool
+} // namespace Cool::Nodes

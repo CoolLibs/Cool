@@ -3,7 +3,7 @@
 #include <imnodes/imnodes.h>
 #include "imnode_id.h"
 
-namespace Cool {
+namespace Cool::Nodes {
 
 enum class PinKind {
     Input,
@@ -40,4 +40,4 @@ private:
     }
 };
 
-} // namespace Cool
+} // namespace Cool::Nodes

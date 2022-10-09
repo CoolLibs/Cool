@@ -2,9 +2,9 @@
 
 #include <Cool/Dependencies/Dirty.h>
 #include <imnodes/imnodes_internal.h>
-#include "internal/Graph.h"
-#include "internal/NodeC.h"
-#include "internal/UniqueImNodeContext.h"
+#include "Graph.h"
+#include "NodeC.h"
+#include "UniqueImNodeContext.h"
 
 namespace Cool::Nodes {
 
