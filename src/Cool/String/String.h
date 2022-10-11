@@ -8,7 +8,6 @@
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
 
-
 namespace Cool::String {
 
 static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
@@ -39,10 +38,10 @@ auto replace_all(std::string& str, std::string_view from, std::string_view to) -
  * @param min_nb_of_characters The minimum number of characters that will be present in the output string.
  */
 template<typename T>
-auto to_string(T val, size_t min_nb_of_characters = 0) -> std::string
+auto to_string(T val, int min_nb_of_characters = 0) -> std::string
 {
     std::string str = std::to_string(val);
-    size_t      dn  = min_nb_of_characters - str.size();
+    int         dn  = min_nb_of_characters - static_cast<int>(str.size()); // We must use an int because the result can be negative
     if (dn > 0)
     {
         str = std::string(dn, '0') + str;
