@@ -20,10 +20,11 @@ private:
 
 private:
     ThreadPool<ImageExportJob> _thread_pool;
-    int                        _nb_frames_sent_to_thread_pool      = 0;
-    std::atomic<int>           _nb_frames_which_finished_exporting = 0;
+    int                        _nb_frames_sent_to_thread_pool{0};
+    std::atomic<int>           _nb_frames_which_finished_exporting{0};
     int                        _total_nb_of_frames_in_sequence;
     int                        _max_nb_digits_of_frame_count;
+    int                        _frame_numbering_offset;
     Averager<float>            _frame_time_average;
     std::filesystem::path      _folder_path;
     bool                       _should_stop_asap = false;

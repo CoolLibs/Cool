@@ -7,6 +7,7 @@ namespace Cool {
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size)
     : _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
     , _max_nb_digits_of_frame_count{static_cast<int>(std::ceil(std::log10(_total_nb_of_frames_in_sequence)))}
+    , _frame_numbering_offset{params.frame_numbering_offset}
     , _folder_path{folder_path}
     , _size{size}
     , _clock{params.fps, params.beginning}
@@ -20,7 +21,7 @@ bool VideoExportProcess::update(Polaroid polaroid)
     {
         if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker())
         {
-            export_frame(polaroid, (_folder_path / String::to_string(_nb_frames_sent_to_thread_pool, _max_nb_digits_of_frame_count)).replace_extension("png"));
+            export_frame(polaroid, (_folder_path / String::to_string(_nb_frames_sent_to_thread_pool + _frame_numbering_offset, _max_nb_digits_of_frame_count)).replace_extension("png"));
             _nb_frames_sent_to_thread_pool++;
             _clock.update();
         }
