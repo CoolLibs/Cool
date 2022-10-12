@@ -10,6 +10,9 @@ static constexpr int origin_of_frames = 50000000; // Helps with exporting negati
                                                   // This is why we don't want negative numbers in our image file names. We therefore have to offset all the frames, in case
                                                   // we might later want to export frames before the current ones.
                                                   // This number, 50000000, allows for 115 hours of content at 120 FPS. This should be way more than enough.
+                                                  //
+                                                  // It is also nice, even if we only have positive frames, that all the frames will have the same number of digits
+                                                  // (in the current batch AND the future ones). Because otherwise some tools can struggle ordering them properly.
 
 static auto nb_digits(int n) -> int
 {
