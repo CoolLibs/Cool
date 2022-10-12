@@ -116,14 +116,14 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("File Path", file_watcher.path().string()),
+            cereal::make_nvp("File Path", file_watcher.path()),
             _dirty_flag
         );
     }
     template<class Archive>
     void load(Archive& archive)
     {
-        std::string path;
+        std::filesystem::path path;
         archive(
             path,
             _dirty_flag

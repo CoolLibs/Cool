@@ -46,6 +46,20 @@ private:
     ImGuiWindow                       _video_export_window{"Export a Video", false};
     std::optional<VideoExportProcess> _video_export_process;
     VideoExportParams                 _video_export_params;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Video Export Settings", _video_export_params),
+            cereal::make_nvp("Image Size", _export_size),
+            cereal::make_nvp("Image Output Folder", _folder_path_for_image),
+            cereal::make_nvp("Video Output Folder", _folder_path_for_video)
+        );
+    }
 };
 
 } // namespace Cool

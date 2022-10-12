@@ -8,6 +8,19 @@ struct VideoExportParams {
     float end       = 10.f;
 
     void imgui();
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("FPS", fps),
+            cereal::make_nvp("Beginning", beginning),
+            cereal::make_nvp("End", end)
+        );
+    }
 };
 
 } // namespace Cool
