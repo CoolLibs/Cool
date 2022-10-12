@@ -17,6 +17,13 @@ Exporter::Exporter()
     });
 }
 
+void Exporter::set_aspect_ratio(float aspect_ratio)
+{
+    _export_size.set_width(static_cast<decltype(_export_size)::DataType>(
+        _export_size.height() / aspect_ratio
+    ));
+}
+
 void Exporter::imgui_windows(Polaroid polaroid, float time)
 {
     imgui_window_export_image(polaroid, time);
@@ -28,7 +35,7 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items()
+void Exporter::imgui_menu_items(std::optional<float> aspect_ratio)
 {
     // Calculate max button width
     const char* longuest_text = "Video";
@@ -36,10 +43,14 @@ void Exporter::imgui_menu_items()
     // Draw buttons
     if (ImGui::Button("Image", ImVec2(button_width, 0.0f)))
     {
+        if (aspect_ratio)
+            set_aspect_ratio(*aspect_ratio);
         _image_export_window.open();
     }
     if (ImGui::Button("Video", ImVec2(button_width, 0.0f)))
     {
+        if (aspect_ratio)
+            set_aspect_ratio(*aspect_ratio);
         _video_export_window.open();
     }
 }

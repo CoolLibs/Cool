@@ -121,7 +121,7 @@ void DefaultApp::menu_export()
 {
     if (ImGui::BeginMenu("Export"))
     {
-        _exporter.imgui_menu_items();
+        _exporter.imgui_menu_items(_preview_constraint.aspect_ratio());
         ImGui::EndMenu();
     }
 }

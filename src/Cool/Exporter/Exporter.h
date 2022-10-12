@@ -15,11 +15,13 @@ public:
     auto image_export_window() -> ImGuiWindow& { return _image_export_window; }
     auto video_export_window() -> ImGuiWindow& { return _video_export_window; }
 
+    void set_aspect_ratio(float aspect_ratio);
+
     /// Displays all the currently active windows
     void imgui_windows(Polaroid polaroid, float time);
 
     /// The buttons to open the different export windows
-    void imgui_menu_items();
+    void imgui_menu_items(std::optional<float> aspect_ratio);
 
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code
     void begin_video_export();
@@ -39,7 +41,7 @@ private:
     img::Size _export_size{1920, 1080};
 
     std::filesystem::path _folder_path_for_image;
-    std::filesystem::path _file_name = "img(0)";
+    std::filesystem::path _file_name{"img(0)"};
     ImGuiWindow           _image_export_window{"Export an Image", false};
 
     std::filesystem::path             _folder_path_for_video;
