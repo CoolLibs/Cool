@@ -1,11 +1,17 @@
 #include "AspectRatio.h"
+#include <smart/smart.hpp>
 
 namespace Cool {
 
-AspectRatio::AspectRatio(float aspectRatio)
-    : m_ratio(aspectRatio), m_ImGuiCurrentRatioItem(-1)
+static float make_valid_ratio(float ratio)
 {
+    return smart::keep_above(0.001f, ratio);
 }
+
+AspectRatio::AspectRatio(float aspect_ratio)
+    : m_ratio{make_valid_ratio(aspect_ratio)}
+    , m_ImGuiCurrentRatioItem{-1}
+{}
 
 bool AspectRatio::ImGuiPicker(int uniqueID)
 {
@@ -44,6 +50,7 @@ bool AspectRatio::ImGuiPicker(int uniqueID)
     ImGui::PushID("__AspectRatioSlider");
     if (ImGui::SliderFloat("", &m_ratio, 0.5f, 2.f))
     {
+        m_ratio                 = make_valid_ratio(m_ratio);
         m_ImGuiCurrentRatioItem = -1;
         bUsed                   = true;
     }

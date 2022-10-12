@@ -6,7 +6,6 @@ class AspectRatio {
 public:
     AspectRatio() = default;
     AspectRatio(float aspectRatio);
-    ~AspectRatio() = default;
 
     inline float asFloat() const { return m_ratio; }
 
