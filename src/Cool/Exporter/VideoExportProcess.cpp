@@ -31,26 +31,24 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::fil
 
 bool VideoExportProcess::update(Polaroid polaroid)
 {
-    if (!_should_stop_asap && _nb_frames_which_finished_exporting.load() < _total_nb_of_frames_in_sequence)
-    {
-        if (_nb_frames_sent_to_thread_pool < _total_nb_of_frames_in_sequence && _thread_pool.has_available_worker())
-        {
-            export_frame(
-                polaroid,
-                (_folder_path / String::to_string(
-                                    _nb_frames_sent_to_thread_pool + _frame_numbering_offset + origin_of_frames, nb_digits(origin_of_frames)
-                                ))
-                    .replace_extension("png")
-            );
-            _nb_frames_sent_to_thread_pool++;
-            _clock.update();
-        }
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+    if (_should_stop_asap || _nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
+        return true; // The export is finished
+
+    if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || !_thread_pool.has_available_worker())
+        return false; // The export is not finished but we can't send work to the thread pool right now, or we have already send the last bits of work to the threads and just have to wait for them to finish
+
+    // Actual export of one frame
+    export_frame(
+        polaroid,
+        (_folder_path / String::to_string(
+                            _nb_frames_sent_to_thread_pool + _frame_numbering_offset + origin_of_frames, nb_digits(origin_of_frames)
+                        ))
+            .replace_extension("png")
+    );
+    _nb_frames_sent_to_thread_pool++;
+    _clock.update();
+
+    return false;
 }
 
 void VideoExportProcess::imgui()
