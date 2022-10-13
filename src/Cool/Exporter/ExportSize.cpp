@@ -30,9 +30,12 @@ auto ExportSize::imgui() -> bool
 {
     bool b = false;
 
-    _last_changed_side = ImageSizeU::imgui(_size);
-    if (_last_changed_side != ImageSizeU::WH::None)
-        b = true;
+    const ImageSizeU::WH changed_side = ImageSizeU::imgui(_size);
+    if (changed_side != ImageSizeU::WH::None)
+    {
+        _last_changed_side = changed_side; // Only update if changed_side != ImageSizeU::WH::None because we want to remember the last side that actually changed.
+        b                  = true;
+    }
 
     ImGui::SameLine();
     ImGui::Dummy(ImVec2{10.f, 0.f});
