@@ -1,5 +1,6 @@
 #pragma once
 #include <Cool/Image/AspectRatio.h>
+#include <Cool/Image/ImageSizeU.h>
 #include <img/img.hpp>
 
 namespace Cool {
@@ -15,9 +16,10 @@ private:
     void apply_aspect_ratio();
 
 private:
-    img::Size   _size{1920, 1080};
-    bool        _aspect_ratio_is_locked{true};
-    AspectRatio _aspect_ratio{};
+    img::Size      _size{1920, 1080};
+    bool           _aspect_ratio_is_locked{true};
+    AspectRatio    _aspect_ratio{};
+    ImageSizeU::WH _last_changed_side{ImageSizeU::WH::None};
 
 private:
     // Serialization

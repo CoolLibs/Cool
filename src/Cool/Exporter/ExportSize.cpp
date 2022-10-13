@@ -1,6 +1,5 @@
 #include "ExportSize.h"
 #include <Cool/ImGui/ImGuiExtras.h>
-#include <Cool/Image/ImageSizeU.h>
 
 namespace Cool {
 
@@ -13,16 +12,27 @@ void ExportSize::set_aspect_ratio(AspectRatio aspect_ratio)
 
 void ExportSize::apply_aspect_ratio()
 {
-    _size.set_width(static_cast<decltype(_size)::DataType>(
-        _size.height() * _aspect_ratio.asFloat()
-    ));
+    if (_last_changed_side == ImageSizeU::WH::Width)
+    {
+        _size.set_height(static_cast<decltype(_size)::DataType>(
+            _size.width() / _aspect_ratio.asFloat()
+        ));
+    }
+    else
+    {
+        _size.set_width(static_cast<decltype(_size)::DataType>(
+            _size.height() * _aspect_ratio.asFloat()
+        ));
+    }
 }
 
 auto ExportSize::imgui() -> bool
 {
     bool b = false;
 
-    b |= ImageSizeU::imgui(_size);
+    _last_changed_side = ImageSizeU::imgui(_size);
+    if (_last_changed_side != ImageSizeU::WH::None)
+        b = true;
 
     ImGui::SameLine();
     ImGui::Dummy(ImVec2{10.f, 0.f});
