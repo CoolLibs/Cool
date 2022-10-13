@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiWindow.h>
-#include <img/img.hpp>
+#include "ExportSize.h"
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"
 
@@ -15,13 +15,14 @@ public:
     auto image_export_window() -> ImGuiWindow& { return _image_export_window; }
     auto video_export_window() -> ImGuiWindow& { return _video_export_window; }
 
-    void set_aspect_ratio(float aspect_ratio);
+    void set_aspect_ratio(AspectRatio aspect_ratio); // Don't just take a float as input because we want to keep the combo index in the ImGui dropdown (e.g. remember if we were exactly 16/9, 3/2, etc.)
+    void maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio);
 
     /// Displays all the currently active windows
     void imgui_windows(Polaroid polaroid, float time);
 
     /// The buttons to open the different export windows
-    void imgui_menu_items(std::optional<float> aspect_ratio);
+    void imgui_menu_items(std::optional<AspectRatio> aspect_ratio);
 
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code
     void begin_video_export();
@@ -38,8 +39,7 @@ private:
     void imgui_window_export_video();
 
 private:
-    img::Size _export_size{1920, 1080};
-
+    ExportSize            _export_size;
     std::filesystem::path _folder_path_for_image;
     std::filesystem::path _file_name{"img(0)"};
     ImGuiWindow           _image_export_window{"Export an Image", false};
@@ -56,7 +56,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Video Export Settings", _video_export_params),
+            cereal::make_nvp("Video Settings", _video_export_params),
             cereal::make_nvp("Image Size", _export_size),
             cereal::make_nvp("Image Output Folder", _folder_path_for_image),
             cereal::make_nvp("Video Output Folder", _folder_path_for_video)

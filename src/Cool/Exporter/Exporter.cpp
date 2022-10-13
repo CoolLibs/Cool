@@ -1,7 +1,6 @@
 #include "Exporter.h"
 #include <Cool/File/File.h>
 #include <Cool/ImGui/ImGuiExtras.h>
-#include <Cool/Image/ImageSizeU.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 #include "ExporterU.h"
@@ -17,11 +16,15 @@ Exporter::Exporter()
     });
 }
 
-void Exporter::set_aspect_ratio(float aspect_ratio)
+void Exporter::set_aspect_ratio(AspectRatio aspect_ratio)
 {
-    _export_size.set_width(static_cast<decltype(_export_size)::DataType>(
-        _export_size.height() / aspect_ratio
-    ));
+    _export_size.set_aspect_ratio(aspect_ratio);
+}
+
+void Exporter::maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio)
+{
+    if (aspect_ratio)
+        set_aspect_ratio(*aspect_ratio);
 }
 
 void Exporter::imgui_windows(Polaroid polaroid, float time)
@@ -35,7 +38,7 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(std::optional<float> aspect_ratio)
+void Exporter::imgui_menu_items(std::optional<AspectRatio> aspect_ratio)
 {
     // Calculate max button width
     const char* longuest_text = "Video";
@@ -58,8 +61,7 @@ void Exporter::imgui_menu_items(std::optional<float> aspect_ratio)
 void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
 {
     _image_export_window.show([&]() {
-        // Resolution
-        ImageSizeU::imgui(_export_size);
+        _export_size.imgui();
         // File and Folders
         ImGuiExtras::file("File Name", &_file_name);
         ImGuiExtras::folder("Folder", &_folder_path_for_image);
@@ -117,7 +119,7 @@ void Exporter::imgui_window_export_video()
     else
     {
         _video_export_window.show([&]() {
-            ImageSizeU::imgui(_export_size);
+            _export_size.imgui();
             ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation

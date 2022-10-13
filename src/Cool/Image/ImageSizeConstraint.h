@@ -24,9 +24,9 @@ public:
     bool      wants_to_constrain_size() const { return _is_controlling_aspect_ratio || _is_controlling_nb_pixels; }
     bool      wants_to_constrain_aspect_ratio() const { return _is_controlling_aspect_ratio; }
     img::Size applied_to(img::Size frame_size) const;
-    auto      aspect_ratio() const -> std::optional<float> { return _is_controlling_aspect_ratio
-                                                                        ? std::make_optional(_aspect_ratio.asFloat())
-                                                                        : std::nullopt; }
+    auto      aspect_ratio() const -> std::optional<AspectRatio> { return _is_controlling_aspect_ratio
+                                                                              ? std::make_optional(_aspect_ratio)
+                                                                              : std::nullopt; }
 
     bool imgui();
 
