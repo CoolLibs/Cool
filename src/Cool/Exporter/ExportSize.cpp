@@ -42,7 +42,7 @@ auto ExportSize::imgui() -> bool
     ImGui::SameLine();
 
     b |= ImGuiExtras::checkbox_with_submenu("Locked Aspect ratio", &_aspect_ratio_is_locked, [&]() {
-        return _aspect_ratio.ImGuiPicker(45);
+        return _aspect_ratio.imgui();
     });
 
     if (b && _aspect_ratio_is_locked)

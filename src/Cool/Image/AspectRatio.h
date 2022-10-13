@@ -5,15 +5,15 @@ namespace Cool {
 class AspectRatio {
 public:
     AspectRatio() = default;
-    AspectRatio(float aspectRatio);
+    AspectRatio(float aspect_ratio);
 
-    inline float asFloat() const { return m_ratio; }
+    auto asFloat() const -> float { return _ratio; }
 
-    bool ImGuiPicker(int uniqueID);
+    auto imgui() -> bool;
 
 private:
-    float m_ratio                 = 16.f / 9.f;
-    int   m_ImGuiCurrentRatioItem = 0;
+    float _ratio                    = 16.f / 9.f;
+    int   _imgui_current_ratio_item = 0;
 
 private:
     // Serialization
@@ -22,8 +22,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Ratio", m_ratio),
-            cereal::make_nvp("Imgui current ratio item", m_ImGuiCurrentRatioItem)
+            cereal::make_nvp("Ratio", _ratio),
+            cereal::make_nvp("Imgui current ratio item", _imgui_current_ratio_item)
         );
     }
 };

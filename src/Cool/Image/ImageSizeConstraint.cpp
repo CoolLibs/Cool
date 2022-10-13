@@ -38,7 +38,7 @@ bool ImageSizeConstraint::imgui()
     bool was_triggered = false;
     // Aspect Ratio
     was_triggered |= ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {
-        return _aspect_ratio.ImGuiPicker(15754);
+        return _aspect_ratio.imgui();
     });
     // Nb Pixels
     was_triggered |= ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
