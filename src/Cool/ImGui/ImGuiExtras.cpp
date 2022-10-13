@@ -334,7 +334,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
 {
     ImGui::PushID(label);
-    bool was_used = ImGui::Checkbox("", bool_p);
+    bool was_used = ImGui::Checkbox("##checkbox", bool_p);
     ImGui::PopID();
     ImGui::SameLine();
     if (*bool_p)
