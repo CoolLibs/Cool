@@ -7,7 +7,7 @@ public:
     AspectRatio() = default;
     AspectRatio(float aspect_ratio);
 
-    auto asFloat() const -> float { return _ratio; }
+    auto as_float() const -> float { return _ratio; }
 
     auto imgui() -> bool;
 
