@@ -1,5 +1,7 @@
 #include "ExportSize.h"
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <smart/smart.hpp>
+#include <stringify/stringify.hpp>
 
 namespace Cool {
 
@@ -15,13 +17,13 @@ void ExportSize::apply_aspect_ratio()
     if (_last_changed_side == ImageSizeU::WH::Width)
     {
         _size.set_height(static_cast<decltype(_size)::DataType>(
-            _size.width() / _aspect_ratio.as_float()
+            _size.width() / _aspect_ratio.get()
         ));
     }
     else
     {
         _size.set_width(static_cast<decltype(_size)::DataType>(
-            _size.height() * _aspect_ratio.as_float()
+            _size.height() * _aspect_ratio.get()
         ));
     }
 }
@@ -37,13 +39,19 @@ auto ExportSize::imgui() -> bool
         b                  = true;
     }
 
-    ImGui::SameLine();
-    ImGui::Dummy(ImVec2{10.f, 0.f});
-    ImGui::SameLine();
+    if (b && !_aspect_ratio_is_locked)
+    {
+        _aspect_ratio.set(img::SizeU::aspect_ratio(_size));
+    }
 
-    b |= ImGuiExtras::checkbox_with_submenu("Locked Aspect ratio", &_aspect_ratio_is_locked, [&]() {
-        return _aspect_ratio.imgui();
-    });
+    ImGui::SameLine();
+    ImGui::BeginDisabled(!_aspect_ratio_is_locked);
+    b |= _aspect_ratio.imgui(150.f);
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    b |= ImGui::Checkbox("##lock_ratio", &_aspect_ratio_is_locked);
+    ImGuiExtras::tooltip("Lock the aspect ratio");
 
     if (b && _aspect_ratio_is_locked)
     {

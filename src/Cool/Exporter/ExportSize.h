@@ -7,10 +7,10 @@ namespace Cool {
 
 class ExportSize {
 public:
-    operator img::Size() { return _size; }
+    operator img::Size() const { return _size; }
 
     auto imgui() -> bool;
-    void set_aspect_ratio(AspectRatio aspect_ratio); // Don't just take a float as input because we want to keep the combo index in the ImGui dropdown (e.g. remember if we were exactly 16/9, 3/2, etc.)
+    void set_aspect_ratio(AspectRatio aspect_ratio);
 
 private:
     void apply_aspect_ratio();

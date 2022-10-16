@@ -10,7 +10,8 @@ public:
     auto get() const -> float { return _ratio; }
     void set(float aspect_ratio);
 
-    auto imgui() -> bool;
+    /// `width` is the size of the widget. Leave it at 0.f to get an automatic size.
+    auto imgui(float width = 0.f) -> bool;
 
 private:
     float _ratio = 16.f / 9.f;

@@ -15,7 +15,7 @@ public:
     auto image_export_window() -> ImGuiWindow& { return _image_export_window; }
     auto video_export_window() -> ImGuiWindow& { return _video_export_window; }
 
-    void set_aspect_ratio(AspectRatio aspect_ratio); // Don't just take a float as input because we want to keep the combo index in the ImGui dropdown (e.g. remember if we were exactly 16/9, 3/2, etc.)
+    void set_aspect_ratio(AspectRatio aspect_ratio);
     void maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio);
 
     /// Displays all the currently active windows

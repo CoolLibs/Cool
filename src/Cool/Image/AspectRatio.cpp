@@ -18,7 +18,7 @@ void AspectRatio::set(float aspect_ratio)
     _ratio = make_valid_ratio(aspect_ratio);
 }
 
-auto AspectRatio::imgui() -> bool
+auto AspectRatio::imgui(float width) -> bool
 {
     bool b = false;
 
@@ -45,6 +45,8 @@ auto AspectRatio::imgui() -> bool
         ImGui::EndCombo();
     }
     ImGui::SameLine(0.f, 0.f);
+    if (width != 0.f)
+        ImGui::SetNextItemWidth(width);
     if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, stringify(smart::as_fraction(_ratio)).c_str()))
     {
         _ratio = make_valid_ratio(_ratio);
