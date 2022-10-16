@@ -12,8 +12,7 @@ public:
     auto imgui() -> bool;
 
 private:
-    float _ratio                    = 16.f / 9.f;
-    int   _imgui_current_ratio_item = 0;
+    float _ratio = 16.f / 9.f;
 
 private:
     // Serialization
@@ -22,8 +21,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Ratio", _ratio),
-            cereal::make_nvp("Imgui current ratio item", _imgui_current_ratio_item)
+            cereal::make_nvp("Ratio", _ratio)
         );
     }
 };

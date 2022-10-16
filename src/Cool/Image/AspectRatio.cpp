@@ -1,5 +1,6 @@
 #include "AspectRatio.h"
 #include <smart/smart.hpp>
+#include <stringify/stringify.hpp>
 
 namespace Cool {
 
@@ -10,45 +11,39 @@ static float make_valid_ratio(float ratio)
 
 AspectRatio::AspectRatio(float aspect_ratio)
     : _ratio{make_valid_ratio(aspect_ratio)}
-    , _imgui_current_ratio_item{-1}
 {}
 
 auto AspectRatio::imgui() -> bool
 {
     bool b = false;
-    if (ImGui::Combo("##aspect_ratio_dropdown", &_imgui_current_ratio_item, " 16/9\0 3/2\0 4/3\0 1/1\0 9/16\0 2/3\0 3/4\0\0"))
+
+    static constexpr std::array ratios = {
+        std::make_pair("     16 / 9     ", 16.f / 9.f),
+        std::make_pair("      3 / 2     ", 3.f / 2.f),
+        std::make_pair("      4 / 3     ", 4.f / 3.f),
+        std::make_pair("      1 / 1     ", 1.f),
+        std::make_pair("      9 / 16     ", 9.f / 16.f),
+        std::make_pair("      2 / 3     ", 2.f / 3.f),
+        std::make_pair("      3 / 4     ", 3.f / 4.f),
+    };
+
+    if (ImGui::BeginCombo("##aspect_ratio_dropdown", "", ImGuiComboFlags_NoPreview))
     {
-        switch (_imgui_current_ratio_item)
+        for (auto const& ratio : ratios)
         {
-        case 0:
-            _ratio = 16.f / 9.f;
-            break;
-        case 1:
-            _ratio = 3.f / 2.f;
-            break;
-        case 2:
-            _ratio = 4.f / 3.f;
-            break;
-        case 3:
-            _ratio = 1.f;
-            break;
-        case 4:
-            _ratio = 9.f / 16.f;
-            break;
-        case 5:
-            _ratio = 2.f / 3.f;
-            break;
-        case 6:
-            _ratio = 3.f / 4.f;
-            break;
+            if (ImGui::Selectable(ratio.first, false))
+            {
+                _ratio = ratio.second;
+                b      = true;
+            }
         }
-        b = true;
+        ImGui::EndCombo();
     }
-    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f))
+    ImGui::SameLine(0.f, 0.f);
+    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, stringify(smart::as_fraction(_ratio)).c_str()))
     {
-        _ratio                    = make_valid_ratio(_ratio);
-        _imgui_current_ratio_item = -1;
-        b                         = true;
+        _ratio = make_valid_ratio(_ratio);
+        b      = true;
     }
     return b;
 }
