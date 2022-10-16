@@ -13,6 +13,11 @@ AspectRatio::AspectRatio(float aspect_ratio)
     : _ratio{make_valid_ratio(aspect_ratio)}
 {}
 
+void AspectRatio::set(float aspect_ratio)
+{
+    _ratio = make_valid_ratio(aspect_ratio);
+}
+
 auto AspectRatio::imgui() -> bool
 {
     bool b = false;
