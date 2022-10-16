@@ -18,11 +18,15 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    float save_minimal(Archive const&) const
     {
-        archive(
-            cereal::make_nvp("Ratio", _ratio)
-        );
+        return _ratio;
+    }
+
+    template<class Archive>
+    void load_minimal(Archive const&, float const& value)
+    {
+        _ratio = value;
     }
 };
 
