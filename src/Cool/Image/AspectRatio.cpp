@@ -18,6 +18,19 @@ void AspectRatio::set(float aspect_ratio)
     _ratio = make_valid_ratio(aspect_ratio);
 }
 
+static auto imgui_string(float ratio) -> std::string
+{
+    const smart::Fraction fraction = smart::as_fraction(ratio);
+
+    const bool fraction_is_small_enough =
+        std::abs(fraction.numerator) <= 30 &&
+        std::abs(fraction.denominator) <= 30;
+
+    return fraction_is_small_enough
+               ? stringify(fraction)
+               : "%.3f";
+}
+
 auto AspectRatio::imgui(float width) -> bool
 {
     bool b = false;
@@ -47,7 +60,8 @@ auto AspectRatio::imgui(float width) -> bool
     ImGui::SameLine(0.f, 0.f);
     if (width != 0.f)
         ImGui::SetNextItemWidth(width);
-    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, stringify(smart::as_fraction(_ratio)).c_str()))
+
+    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, imgui_string(_ratio).c_str()))
     {
         _ratio = make_valid_ratio(_ratio);
         b      = true;
