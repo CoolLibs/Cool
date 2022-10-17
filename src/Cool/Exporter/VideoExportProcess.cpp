@@ -55,7 +55,9 @@ void VideoExportProcess::imgui()
         )
             .c_str()
     );
-    ImGuiExtras::time_formated_hms(static_cast<float>(_total_nb_of_frames_in_sequence - frame_count) * _frame_time_average + 1.f);
+    ImGuiExtras::time_formated_hms(
+        static_cast<float>(_total_nb_of_frames_in_sequence - frame_count) * (_export_average_time / _thread_pool.size() + _rendering_average_time) + 1.f
+    );
     ImGui::SameLine();
     ImGui::Text("remaining");
     if (ImGui::Button("Stop exporting"))
@@ -66,12 +68,19 @@ void VideoExportProcess::imgui()
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path file_path)
 {
+    const auto begin = std::chrono::steady_clock::now();
+
     polaroid.render(_clock.time(), _size);
     _thread_pool.push_job(ImageExportJob{
         file_path,
         polaroid.render_target.download_pixels(),
-        &_frame_time_average,
-        &_nb_frames_which_finished_exporting});
+        _export_average_time,
+        _export_average_time_mutex,
+        _nb_frames_which_finished_exporting});
+
+    const auto                   end        = std::chrono::steady_clock::now();
+    std::chrono::duration<float> delta_time = end - begin;
+    _rendering_average_time.push(delta_time.count());
 }
 
 } // namespace Cool

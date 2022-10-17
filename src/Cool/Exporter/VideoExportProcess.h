@@ -24,7 +24,9 @@ private:
     std::atomic<int>           _nb_frames_which_finished_exporting{0};
     int                        _total_nb_of_frames_in_sequence;
     int                        _frame_numbering_offset;
-    Averager<float>            _frame_time_average;
+    Averager<float>            _export_average_time;
+    std::mutex                 _export_average_time_mutex;
+    Averager<float>            _rendering_average_time;
     std::filesystem::path      _folder_path;
     bool                       _should_stop_asap = false;
     img::Size                  _size;
