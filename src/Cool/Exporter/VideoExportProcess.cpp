@@ -46,7 +46,7 @@ void VideoExportProcess::update_time_estimate()
     const auto delta_time = std::chrono::duration<float>{now - _last_render};
     _last_render          = now;
 
-    if (_nb_frames_sent_to_thread_pool < static_cast<int>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
+    if (_nb_frames_sent_to_thread_pool < 3 * static_cast<int>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
         return;
     _average_time_between_two_renders.push(delta_time.count());
 }
