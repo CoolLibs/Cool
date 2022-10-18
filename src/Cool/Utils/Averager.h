@@ -12,30 +12,26 @@ class Averager {
 public:
     Averager()
     {
-        clear();
     }
 
     void push(T value)
     {
-        _N++;
-        const auto N = static_cast<T>(_N);
-        _average     = (_average * (N - 1) + value) / N;
+        _last[idx] = value;
+        idx        = (idx + 1) % 5;
     }
 
     operator T()
     {
-        return _average;
+        return (_last[0] + _last[1] + _last[2] + _last[3] + _last[4]) / 5.f;
     }
 
     void clear()
     {
-        _average = T{0};
-        _N       = 0;
     }
 
 private:
-    T            _average;
-    unsigned int _N;
+    std::array<T, 5> _last{};
+    size_t           idx{0};
 };
 
 } // namespace Cool
