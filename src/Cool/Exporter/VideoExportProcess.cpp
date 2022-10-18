@@ -47,7 +47,7 @@ void VideoExportProcess::update_time_estimate()
     _last_render          = now;
 
     if (_nb_frames_sent_to_thread_pool < 3 * static_cast<int>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
-        return;
+        return;                                                                     // Technically this should be 2 * _thread_pool.size() (the time to give a job to each thread + fill the queue) but we use 3 to give us some margin, because pushing wrong numbers into our average messes it up for a while, whereas waiting a little longer before we start having an estimate is not a big deal.
     _average_time_between_two_renders.push(delta_time.count());
 }
 
