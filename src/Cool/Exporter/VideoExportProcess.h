@@ -31,8 +31,8 @@ private:
     int              _frame_numbering_offset;
 
     std::chrono::steady_clock::time_point _last_render{};
-    Averager<float>                       _average_time_between_two_renders{50};
-    Averager<float>                       _average_export_time{500};
+    Averager<float>                       _average_time_between_two_renders{};
+    Averager<float>                       _average_export_time{};
     std::mutex                            _average_export_time_mutex;
 
     bool                       _should_stop_asap = false;

@@ -2,54 +2,36 @@
 
 namespace Cool {
 
-/**
- * @brief An average that gets built over time as you push values into it. Useful to measure your average frame time for example
- *
- * @tparam Float The type of the the values and the average. Should be a floating point type like float or double.
- */
-template<typename Float>
+/// An average that gets built over time as you push values into it. Useful to measure your average frame time for example.
+/// Float is the type of the the values and the average. Should be a floating point type like float or double.
+template<std::floating_point Float>
 class Averager {
 public:
-    explicit Averager(size_t buffer_size = 10)
-        : _buffer(buffer_size)
-    {}
-
-    Averager(Averager const&)            = delete;
-    Averager& operator=(Averager const&) = delete;
-
-    void push(Float value)
+    Averager()
     {
-        _buffer[_idx] = value;
-        _idx          = (_idx + 1) % buffer_size();
-        _current_size = std::min(_current_size + 1, buffer_size());
-    }
-
-    operator Float() const
-    {
-        if (_current_size == 0)
-            return Float{1};
-
-        Float      average{0};
-        const auto _current_size_as_float = static_cast<Float>(_current_size);
-        for (size_t i = 0; i < _current_size; ++i)
-        {
-            average += _buffer[(_idx + buffer_size() - i) % buffer_size()] / _current_size_as_float;
-        }
-        return average;
+        clear();
     }
 
     void clear()
     {
-        _current_size = 0;
+        _average = Float{0};
+        _N       = 0;
     }
 
-private:
-    auto buffer_size() const -> size_t { return _buffer.size(); }
+    void push(Float value)
+    {
+        _N++;
+        const auto N = static_cast<Float>(_N);
+        _average     = (_average * (N - 1) + value) / N;
+    }
+
+    operator Float() const { return get(); }
+
+    auto get() const -> Float { return _average; }
 
 private:
-    std::vector<Float> _buffer;
-    size_t             _idx{0};
-    size_t             _current_size{0};
+    Float        _average;
+    unsigned int _N;
 };
 
 } // namespace Cool
