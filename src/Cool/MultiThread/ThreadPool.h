@@ -17,7 +17,7 @@ public:
     ~ThreadPool();
 
     /// Returns the number of threads in the pool.
-    auto size() const { return _threads.size(); }
+    auto size() const { return _nb_threads; }
 
     auto nb_jobs_in_queue() const
     {

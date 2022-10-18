@@ -11,12 +11,11 @@ static auto nb_digits(int n) -> int
 }
 
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size)
-    : _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
-    , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
-    , _last_export{std::chrono::steady_clock::now()}
-    , _folder_path{folder_path}
+    : _folder_path{folder_path}
     , _size{size}
     , _clock{params.fps, params.beginning}
+    , _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
+    , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
 {
     _thread_pool.start();
 }
@@ -32,27 +31,33 @@ bool VideoExportProcess::update(Polaroid polaroid)
     // Actual export of one frame
     export_frame(
         polaroid,
-        (_folder_path / String::to_string(
-                            _nb_frames_sent_to_thread_pool + _frame_numbering_offset + origin_of_frames, nb_digits(origin_of_frames)
-                        ))
-            .replace_extension("png")
+        (_folder_path / String::to_string(_nb_frames_sent_to_thread_pool + _frame_numbering_offset + origin_of_frames, nb_digits(origin_of_frames))).replace_extension("png")
     );
     _nb_frames_sent_to_thread_pool++;
     _clock.update();
+    update_time_estimate();
 
     return false;
+}
+
+void VideoExportProcess::update_time_estimate()
+{
+    const auto now        = std::chrono::steady_clock::now();
+    const auto delta_time = std::chrono::duration<float>{now - _last_render};
+    _last_render          = now;
+
+    if (_nb_frames_sent_to_thread_pool < static_cast<int>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
+        return;
+    _average_time_between_two_renders.push(delta_time.count());
 }
 
 auto VideoExportProcess::estimated_remaining_time() -> float
 {
     const auto nb_frames_to_render = static_cast<float>(_total_nb_of_frames_in_sequence - _nb_frames_sent_to_thread_pool);
-    const auto nb_frames_to_export = static_cast<float>(_total_nb_of_frames_in_sequence - _nb_frames_which_finished_exporting.load());
-    // return nb_frames_to_render * _rendering_average_time +
-    //        nb_frames_to_export * _export_average_time / _thread_pool.size() +
-    //        1.f;
-    return nb_frames_to_render * _time_between_two_exports +
-           _thread_pool.nb_jobs_in_queue() * _export_average_time /* / _thread_pool.size() */
-           + 1.f;
+
+    return nb_frames_to_render * _average_time_between_two_renders +
+           _thread_pool.nb_jobs_in_queue() * _average_export_time +
+           1.f;
 }
 
 void VideoExportProcess::imgui()
@@ -68,13 +73,16 @@ void VideoExportProcess::imgui()
         )
             .c_str()
     );
-    ImGuiExtras::time_formated_hms(estimated_remaining_time());
+    if (_nb_frames_sent_to_thread_pool < static_cast<int>(2 * _thread_pool.size())) // Don't display estimate for the first few frames because it is not accurate
+        ImGui::TextUnformatted("??? ");
+    else
+        ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
-    ImGui::Text("remaining");
-    ImGui::Text("Time to Render: %.3f", (float)_rendering_average_time);
-    ImGui::Text("Time to Export: %.3f", (float)_export_average_time);
-    ImGui::Text("Time between Exports: %.3f", (float)_time_between_two_exports);
-    ImGui::Text("Last Time between Exports: %.3f", _last_dt);
+    ImGui::TextUnformatted("remaining");
+    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+    ImGui::Text("Time to Export one frame: %.3fs", float{_average_export_time});
+    ImGui::Text("Time between Exports: %.3fs", float{_average_time_between_two_renders});
+    ImGui::PopStyleColor();
     if (ImGui::Button("Stop exporting"))
     {
         _should_stop_asap = true;
@@ -83,36 +91,14 @@ void VideoExportProcess::imgui()
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path file_path)
 {
-    {
-        const auto begin = std::chrono::steady_clock::now();
-
-        polaroid.render(_clock.time(), _size);
-        const auto                   end        = std::chrono::steady_clock::now();
-        std::chrono::duration<float> delta_time = end - begin;
-        _rendering_average_time.push(delta_time.count());
-    }
+    polaroid.render(_clock.time(), _size);
 
     _thread_pool.push_job(ImageExportJob{
         file_path,
         polaroid.render_target.download_pixels(),
-        _export_average_time,
-        _export_average_time_mutex,
+        _average_export_time,
+        _average_export_time_mutex,
         _nb_frames_which_finished_exporting});
-
-    {
-        const auto                   end        = std::chrono::steady_clock::now();
-        std::chrono::duration<float> delta_time = end - _last_export;
-        _last_export                            = end;
-
-        static bool first = true;
-        if (first)
-        {
-            first = false;
-            return;
-        }
-        _time_between_two_exports.push(delta_time.count());
-        _last_dt = delta_time.count();
-    }
 }
 
 } // namespace Cool
