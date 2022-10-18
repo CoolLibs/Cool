@@ -76,10 +76,6 @@ void VideoExportProcess::imgui()
     ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
-    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ImGui::Text("Time to Export one frame: %.3fs", float{_average_export_time});
-    ImGui::Text("Time between Exports: %.3fs", float{_average_time_between_two_renders});
-    ImGui::PopStyleColor();
     if (ImGui::Button("Stop exporting"))
     {
         _should_stop_asap = true;
