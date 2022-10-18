@@ -73,10 +73,7 @@ void VideoExportProcess::imgui()
         )
             .c_str()
     );
-    if (_nb_frames_sent_to_thread_pool < static_cast<int>(2 * _thread_pool.size())) // Don't display estimate for the first few frames because it is not accurate
-        ImGui::TextUnformatted("??? ");
-    else
-        ImGuiExtras::time_formated_hms(estimated_remaining_time());
+    ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
     ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
