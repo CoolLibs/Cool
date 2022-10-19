@@ -14,12 +14,25 @@ add_library(Cool-PrivateProperties INTERFACE) # This is needed by both Cool and 
 target_link_libraries(Cool PUBLIC Cool-PublicProperties)
 target_link_libraries(Cool PRIVATE Cool-PrivateProperties)
 
+# Choose C++ version
 target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 
+# Set warning level
 if(MSVC)
-    target_compile_options(Cool-PrivateProperties INTERFACE /WX /W3)
+    target_compile_options(Cool-PrivateProperties INTERFACE /W3)
 else()
-    target_compile_options(Cool-PrivateProperties INTERFACE -Werror -Wall -Wextra -Wpedantic -pedantic-errors)
+    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors)
+endif()
+
+# Maybe enable warnings as errors
+set(WARNINGS_AS_ERRORS_FOR_COOL OFF CACHE BOOL "ON iff you want to treat warnings as errors") # Might be overriden in the CMake cache
+
+if(WARNINGS_AS_ERRORS_FOR_COOL)
+    if(MSVC)
+        target_compile_options(Cool-PrivateProperties INTERFACE /WX)
+    else()
+        target_compile_options(Cool-PrivateProperties INTERFACE -Werror)
+    endif()
 endif()
 
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
