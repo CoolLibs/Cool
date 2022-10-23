@@ -7,6 +7,14 @@
 
 namespace Cool {
 
+struct OpenImageExporter_Callback {
+    std::function<void()> func;
+};
+
+struct OpenVideoExporter_Callback {
+    std::function<void()> func;
+};
+
 class Exporter {
 public:
     Exporter();
@@ -16,13 +24,16 @@ public:
     auto video_export_window() -> ImGuiWindow& { return _video_export_window; }
 
     void set_aspect_ratio(AspectRatio aspect_ratio);
-    void maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio);
+    void maybe_set_aspect_ratio(std::optional<AspectRatio>);
 
     /// Displays all the currently active windows
     void imgui_windows(Polaroid polaroid, float time);
 
-    /// The buttons to open the different export windows
-    void imgui_menu_items(std::optional<AspectRatio> aspect_ratio);
+    /// The buttons to open the different exporter windows.
+    void imgui_menu_items(
+        std::optional<OpenImageExporter_Callback> image_exporter_callback = {},
+        std::optional<OpenVideoExporter_Callback> video_exporter_callback = {}
+    );
 
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code
     void begin_video_export();

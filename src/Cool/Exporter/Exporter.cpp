@@ -38,7 +38,10 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(std::optional<AspectRatio> aspect_ratio)
+void Exporter::imgui_menu_items(
+    std::optional<OpenImageExporter_Callback> image_exporter_callback,
+    std::optional<OpenVideoExporter_Callback> video_exporter_callback
+)
 {
     // Calculate max button width
     const char* longuest_text = "Video";
@@ -46,15 +49,21 @@ void Exporter::imgui_menu_items(std::optional<AspectRatio> aspect_ratio)
     // Draw buttons
     if (ImGui::Button("Image", ImVec2(button_width, 0.0f)))
     {
-        if (aspect_ratio)
-            set_aspect_ratio(*aspect_ratio);
-        _image_export_window.open();
+        if (image_exporter_callback)
+            image_exporter_callback->func();
+        else
+        {
+            _image_export_window.open();
+        }
     }
     if (ImGui::Button("Video", ImVec2(button_width, 0.0f)))
     {
-        if (aspect_ratio)
-            set_aspect_ratio(*aspect_ratio);
-        _video_export_window.open();
+        if (video_exporter_callback)
+            video_exporter_callback->func();
+        else
+        {
+            _video_export_window.open();
+        }
     }
 }
 
