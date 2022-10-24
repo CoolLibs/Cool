@@ -7,12 +7,13 @@
 
 namespace Cool {
 
-struct OpenImageExporter_Callback {
-    std::function<void()> func;
-};
-
-struct OpenVideoExporter_Callback {
-    std::function<void()> func;
+/// Callbacks that will be called when the corresponding buttons are clicked.
+/// If nothing is specified, the default behaviour is just to open the window.
+/// If you specify your own callback, you have to ask for the window to open yourself, by calling
+/// `exporter.image_export_window().open()` or `exporter.video_export_window().open()`.
+struct imgui_menu_items_Params {
+    std::optional<std::function<void()>> open_image_exporter = {};
+    std::optional<std::function<void()>> open_video_exporter = {};
 };
 
 class Exporter {
@@ -30,10 +31,7 @@ public:
     void imgui_windows(Polaroid polaroid, float time);
 
     /// The buttons to open the different exporter windows.
-    void imgui_menu_items(
-        std::optional<OpenImageExporter_Callback> image_exporter_callback = {},
-        std::optional<OpenVideoExporter_Callback> video_exporter_callback = {}
-    );
+    void imgui_menu_items(imgui_menu_items_Params = {});
 
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code
     void begin_video_export();

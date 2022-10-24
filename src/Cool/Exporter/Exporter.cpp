@@ -38,10 +38,7 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(
-    std::optional<OpenImageExporter_Callback> image_exporter_callback,
-    std::optional<OpenVideoExporter_Callback> video_exporter_callback
-)
+void Exporter::imgui_menu_items(imgui_menu_items_Params p)
 {
     // Calculate max button width
     const char* longuest_text = "Video";
@@ -49,8 +46,8 @@ void Exporter::imgui_menu_items(
     // Draw buttons
     if (ImGui::Button("Image", ImVec2(button_width, 0.0f)))
     {
-        if (image_exporter_callback)
-            image_exporter_callback->func();
+        if (p.open_image_exporter)
+            (*p.open_image_exporter)();
         else
         {
             _image_export_window.open();
@@ -58,8 +55,8 @@ void Exporter::imgui_menu_items(
     }
     if (ImGui::Button("Video", ImVec2(button_width, 0.0f)))
     {
-        if (video_exporter_callback)
-            video_exporter_callback->func();
+        if (p.open_video_exporter)
+            (*p.open_video_exporter)();
         else
         {
             _video_export_window.open();
