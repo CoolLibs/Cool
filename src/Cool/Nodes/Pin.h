@@ -1,9 +1,8 @@
 #pragma once
 
 #include <imnodes/imnodes.h>
-#include "imnode_id.h"
 
-namespace Cool::Nodes {
+namespace Cool {
 
 enum class PinKind {
     Input,
@@ -40,4 +39,4 @@ private:
     }
 };
 
-} // namespace Cool::Nodes
+} // namespace Cool

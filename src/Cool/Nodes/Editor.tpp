@@ -3,7 +3,7 @@
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
 
-namespace Cool::Nodes {
+namespace Cool {
 
 // bool Editor::tree_has_changed()
 // {
@@ -130,13 +130,13 @@ void draw_node(typename NodesCfg::NodeT& node)
 // }
 
 template<NodesCfg_Concept NodesCfg>
-auto Editor<NodesCfg>::wants_to_open_nodes_menu() -> bool
+auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
 {
     return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Right) || ImGui::IsKeyReleased(ImGuiKey_A)));
 }
 
 template<NodesCfg_Concept NodesCfg>
-void Editor<NodesCfg>::open_nodes_menu()
+void NodesEditor<NodesCfg>::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
     // _factory.clear_filter();
@@ -144,7 +144,10 @@ void Editor<NodesCfg>::open_nodes_menu()
 }
 
 template<NodesCfg_Concept NodesCfg>
-void Editor<NodesCfg>::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
+void NodesEditor<NodesCfg>::show_nodes_library_menu_ifn(
+    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
+    SetDirty_Ref                                            set_dirty
+)
 {
     if (wants_to_open_nodes_menu())
     {
@@ -152,7 +155,7 @@ void Editor<NodesCfg>::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
     }
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        if (imgui_nodes_menu())
+        if (imgui_nodes_menu(library))
         {
             ImGui::CloseCurrentPopup();
             set_dirty(_graph_dirty_flag);
@@ -162,7 +165,10 @@ void Editor<NodesCfg>::show_nodes_library_menu_ifn(SetDirty_Ref set_dirty)
 }
 
 template<NodesCfg_Concept NodesCfg>
-void Editor<NodesCfg>::imgui_window(SetDirty_Ref set_dirty)
+void NodesEditor<NodesCfg>::imgui_window(
+    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
+    SetDirty_Ref                                            set_dirty
+)
 {
     ImNodes::SetCurrentContext(&*_context);
     // bool node_graph_has_changed = false;
@@ -173,8 +179,8 @@ void Editor<NodesCfg>::imgui_window(SetDirty_Ref set_dirty)
     // );
     ImNodes::BeginNodeEditor();
     {
-        show_nodes_library_menu_ifn(set_dirty);
-        for (auto& [id, node] : _graph._nodes)
+        show_nodes_library_menu_ifn(library, set_dirty);
+        for (auto& [id, node] : _graph.nodes())
         {
             ImNodes::BeginNode(id);
             draw_node<NodesCfg>(node);
@@ -198,19 +204,18 @@ void Editor<NodesCfg>::imgui_window(SetDirty_Ref set_dirty)
 }
 
 template<NodesCfg_Concept NodesCfg>
-auto Editor<NodesCfg>::imgui_nodes_menu() -> bool
+auto NodesEditor<NodesCfg>::imgui_nodes_menu(
+    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+) -> bool
 {
-    // const std::optional<Node> node = _factory.imgui();
-    // if (node.has_value())
-    // {
-    //     _graph.add_node(*node);
-    //     ImNodes::SetNodeScreenSpacePos(node->id, _next_node_position);
-    //     return true;
-    // }
-    // else
-    {
+    const auto maybe_node = library.imgui_nodes_menu();
+    if (!maybe_node)
         return false;
-    }
+
+    const auto id = _graph.add_node(NodesCfg::make_node(*maybe_node));
+    ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
+
+    return true;
 }
 
 // void Editor::update_templates_and_nodes()
@@ -258,4 +263,4 @@ auto Editor<NodesCfg>::imgui_nodes_menu() -> bool
 //     on_graph_change();
 // }
 
-} // namespace Cool::Nodes
+} // namespace Cool

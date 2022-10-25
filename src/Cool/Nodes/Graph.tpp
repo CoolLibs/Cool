@@ -1,5 +1,5 @@
 
-namespace Cool::Nodes {
+namespace Cool {
 
 template<Node_Concept Node>
 auto Graph<Node>::add_node(const Node& node) -> NodeId
@@ -123,4 +123,4 @@ auto Graph<Node>::add_node(const Node& node) -> NodeId
 //     //        }) == links.end();
 // }
 
-} // namespace Cool::Nodes
+} // namespace Cool

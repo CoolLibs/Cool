@@ -5,7 +5,7 @@
 #include "Node_Concept.h"
 #include "NodesCfg_Concept.h"
 
-namespace Cool::Nodes {
+namespace Cool {
 
 template<Node_Concept Node>
 class Graph {
@@ -30,15 +30,10 @@ public:
     // const Pin&  find_pin(PinId id);
     // bool        has_no_successor(const Node& node) const;
 
-    auto begin() { return _nodes.begin(); }
-    auto begin() const { return _nodes.begin(); }
-    auto end() { return _nodes.end(); }
-    auto end() const { return _nodes.end(); }
+    auto nodes() -> auto& { return _nodes; }
+    auto nodes() const -> auto const& { return _nodes; }
 
 private:
-    template<NodesCfg_Concept NodesConfig>
-    friend class Editor;
-
     reg::Registry<Node> _nodes;
     reg::Registry<Link> _links;
 
@@ -64,6 +59,6 @@ private:
     }
 };
 
-} // namespace Cool::Nodes
+} // namespace Cool
 
 #include "Graph.tpp"

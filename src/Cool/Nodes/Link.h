@@ -3,7 +3,7 @@
 #include <reg/reg.hpp>
 #include "Pin.h"
 
-namespace Cool::Nodes {
+namespace Cool {
 
 struct Link {
     PinId from_pin_id;
@@ -24,4 +24,4 @@ private:
 
 using LinkId = reg::Id<Link>;
 
-} // namespace Cool::Nodes
+} // namespace Cool
