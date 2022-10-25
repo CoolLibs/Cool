@@ -6,12 +6,12 @@ namespace Cool::RegExp {
 
 static const std::regex includes{R"(#include *\"(.*)\")"};
 
-inline auto file_path_to_include(const std::string& text) -> std::optional<std::string>
+inline auto file_path_to_include(const std::string& text) -> std::optional<std::filesystem::path>
 {
     std::smatch matches;
     if (std::regex_search(text, matches, includes))
     {
-        return matches[1];
+        return std::filesystem::path{std::string{matches[1]}};
     }
     else
     {

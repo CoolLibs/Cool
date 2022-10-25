@@ -3,9 +3,9 @@
 
 namespace Cool::ImageSizeU {
 
-bool imgui(img::Size& size)
+auto imgui(img::Size& size) -> WH
 {
-    bool was_used = false;
+    auto changed_side{WH::None};
     ImGui::Text("Resolution: ");
     ImGui::SameLine();
     {
@@ -15,24 +15,18 @@ bool imgui(img::Size& size)
         auto w = size.width();
         if (ImGuiExtras::input_uint("W", &w))
         {
-            was_used = true;
-            if (w >= 1)
-            {
-                size.set_width(w);
-            }
+            changed_side = WH::Width;
+            size.set_width(w);
         }
         ImGui::SameLine();
         auto h = size.height();
         if (ImGuiExtras::input_uint("H", &h))
         {
-            was_used = true;
-            if (h >= 1)
-            {
-                size.set_height(h);
-            }
+            changed_side = WH::Height;
+            size.set_height(h);
         }
     }
-    return was_used;
+    return changed_side;
 }
 
 } // namespace Cool::ImageSizeU

@@ -1,55 +1,72 @@
 #include "AspectRatio.h"
+#include <smart/smart.hpp>
+#include <stringify/stringify.hpp>
 
 namespace Cool {
 
-AspectRatio::AspectRatio(float aspectRatio)
-    : m_ratio(aspectRatio), m_ImGuiCurrentRatioItem(-1)
+static float make_valid_ratio(float ratio)
 {
+    return smart::keep_above(0.001f, ratio);
 }
 
-bool AspectRatio::ImGuiPicker(int uniqueID)
+AspectRatio::AspectRatio(float aspect_ratio)
+    : _ratio{make_valid_ratio(aspect_ratio)}
+{}
+
+void AspectRatio::set(float aspect_ratio)
 {
-    ImGui::PushID(uniqueID);
-    bool bUsed = false;
-    ImGui::PushID("__AspectRatioComboBox");
-    if (ImGui::Combo("", &m_ImGuiCurrentRatioItem, " 16/9\0 3/2\0 4/3\0 1/1\0 9/16\0 2/3\0 3/4\0\0"))
+    _ratio = make_valid_ratio(aspect_ratio);
+}
+
+static auto imgui_string(float ratio) -> std::string
+{
+    const smart::Fraction fraction = smart::as_fraction(ratio);
+
+    const bool fraction_is_small_enough =
+        std::abs(fraction.numerator) <= 30 &&
+        std::abs(fraction.denominator) <= 30;
+
+    return fraction_is_small_enough
+               ? stringify(fraction)
+               : "%.3f";
+}
+
+auto AspectRatio::imgui(float width) -> bool
+{
+    bool b = false;
+
+    static constexpr std::array ratios = {
+        std::make_pair("     16 / 9     ", 16.f / 9.f),
+        std::make_pair("      3 / 2     ", 3.f / 2.f),
+        std::make_pair("      4 / 3     ", 4.f / 3.f),
+        std::make_pair("      1 / 1     ", 1.f),
+        std::make_pair("      9 / 16     ", 9.f / 16.f),
+        std::make_pair("      2 / 3     ", 2.f / 3.f),
+        std::make_pair("      3 / 4     ", 3.f / 4.f),
+    };
+
+    if (ImGui::BeginCombo("##aspect_ratio_dropdown", "", ImGuiComboFlags_NoPreview))
     {
-        switch (m_ImGuiCurrentRatioItem)
+        for (auto const& ratio : ratios)
         {
-        case 0:
-            m_ratio = 16.f / 9.f;
-            break;
-        case 1:
-            m_ratio = 3.f / 2.f;
-            break;
-        case 2:
-            m_ratio = 4.f / 3.f;
-            break;
-        case 3:
-            m_ratio = 1.f;
-            break;
-        case 4:
-            m_ratio = 9.f / 16.f;
-            break;
-        case 5:
-            m_ratio = 2.f / 3.f;
-            break;
-        case 6:
-            m_ratio = 3.f / 4.f;
-            break;
+            if (ImGui::Selectable(ratio.first, false))
+            {
+                _ratio = ratio.second;
+                b      = true;
+            }
         }
-        bUsed = true;
+        ImGui::EndCombo();
     }
-    ImGui::PopID();
-    ImGui::PushID("__AspectRatioSlider");
-    if (ImGui::SliderFloat("", &m_ratio, 0.5f, 2.f))
+    ImGui::SameLine(0.f, 0.f);
+    if (width != 0.f)
+        ImGui::SetNextItemWidth(width);
+
+    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, imgui_string(_ratio).c_str()))
     {
-        m_ImGuiCurrentRatioItem = -1;
-        bUsed                   = true;
+        _ratio = make_valid_ratio(_ratio);
+        b      = true;
     }
-    ImGui::PopID();
-    ImGui::PopID();
-    return bUsed;
+    return b;
 }
 
 } // namespace Cool

@@ -278,7 +278,7 @@ void MessageConsole::imgui_show_all_messages()
                     msg.message.category.c_str()
                 );
                 ImGui::SameLine();
-                ImGui::Text("%s", msg.message.detailed_message.c_str());
+                ImGui::Text("%s", msg.message.message.c_str());
 
                 const bool close_button_is_hovered = [&] {
                     if (is_clearable(msg))
@@ -312,7 +312,7 @@ void MessageConsole::imgui_show_all_messages()
                     ImGui::BeginPopup("##ContextMenu");
                     if (ImGui::Button("Copy full message to clipboard"))
                     {
-                        ImGui::SetClipboardText(msg.message.detailed_message.c_str());
+                        ImGui::SetClipboardText(msg.message.message.c_str());
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::EndPopup();

@@ -126,9 +126,9 @@ void PresetManager::rename(const PresetId& id, std::string_view new_name)
             fmt::format("There is already a preset called \"{}\", do you want to overwrite it?", new_name).c_str(),
             "Are you sure?",
             boxer::Style::Warning,
-            boxer::Buttons::YesNo
+            boxer::Buttons::OKCancel
         );
-        if (choice == boxer::Selection::Yes)
+        if (choice == boxer::Selection::OK)
         {
             remove(preset_with_same_name);
             do_rename();
@@ -226,9 +226,9 @@ static void delete_button(const PresetId& id, std::string_view name, PresetManag
             fmt::format("You are about to delete \"{}\", are you sure?", name).c_str(),
             "Are you sure?",
             boxer::Style::Warning,
-            boxer::Buttons::YesNo
+            boxer::Buttons::OKCancel
         );
-        if (choice == boxer::Selection::Yes)
+        if (choice == boxer::Selection::OK)
         {
             preset_manager.remove(id);
         }
@@ -287,21 +287,22 @@ static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view ne
                fmt::format("You are about to overwrite \"{}\", are you sure?", new_preset_name).c_str(),
                "Are you sure?",
                boxer::Style::Warning,
-               boxer::Buttons::YesNo
-           ) == boxer::Selection::Yes;
+               boxer::Buttons::OKCancel
+           )
+           == boxer::Selection::OK;
 }
 
 void PresetManager::save_preset(const Settings& new_preset_values, const PresetId& id)
 {
     if (contains(id))
     {
-        if (make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
-        {
-            _presets.with_mutable_ref(id, [&](Preset2& preset) {
-                preset.values    = new_preset_values;
-                _new_preset_name = "";
-            });
-        }
+        if (!make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
+            return;
+
+        _presets.with_mutable_ref(id, [&](Preset2& preset) {
+            preset.values    = new_preset_values;
+            _new_preset_name = "";
+        });
     }
     else
     {
@@ -311,6 +312,8 @@ void PresetManager::save_preset(const Settings& new_preset_values, const PresetI
         });
         _new_preset_name   = "";
     }
+
+    _auto_serializer.save(); // Save to file to make sure the presets are saved as soon as possible. Prevents us from losing our presets if the application crashes later on.
 }
 
 void PresetManager::imgui_adding_preset(const Settings& settings)

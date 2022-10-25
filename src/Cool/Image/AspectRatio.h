@@ -5,27 +5,30 @@ namespace Cool {
 class AspectRatio {
 public:
     AspectRatio() = default;
-    AspectRatio(float aspectRatio);
-    ~AspectRatio() = default;
+    AspectRatio(float aspect_ratio);
 
-    inline float asFloat() const { return m_ratio; }
+    auto get() const -> float { return _ratio; }
+    void set(float aspect_ratio);
 
-    bool ImGuiPicker(int uniqueID);
+    /// `width` is the size of the widget. Leave it at 0.f to get an automatic size.
+    auto imgui(float width = 0.f) -> bool;
 
 private:
-    float m_ratio                 = 16.f / 9.f;
-    int   m_ImGuiCurrentRatioItem = 0;
+    float _ratio = 16.f / 9.f;
 
 private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    float save_minimal(Archive const&) const
     {
-        archive(
-            cereal::make_nvp("Ratio", m_ratio),
-            cereal::make_nvp("Imgui current ratio item", m_ImGuiCurrentRatioItem)
-        );
+        return _ratio;
+    }
+
+    template<class Archive>
+    void load_minimal(Archive const&, float const& value)
+    {
+        _ratio = value;
     }
 };
 

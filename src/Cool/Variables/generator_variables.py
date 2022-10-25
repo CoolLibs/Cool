@@ -84,7 +84,7 @@ def all_variable_descriptions():
                     field_name="bounded",
                     pretty_name="Bounded",
                     type="bool",
-                    default_value="true",
+                    default_value="false",
                 ),
                 VariableMetadata(
                     name_in_shader="drag_speed",

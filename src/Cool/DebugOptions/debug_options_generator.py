@@ -166,7 +166,7 @@ private:
             .send_error_if_any([](const std::string& message) {{
                 return Cool::Message{{
                     .category         = "Loading Debug Options",
-                    .detailed_message = message,
+                    .message = message,
                     .severity         = Cool::MessageSeverity::Warning,
                 }};
             }},

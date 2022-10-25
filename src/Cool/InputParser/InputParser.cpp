@@ -179,26 +179,27 @@ auto parse_all_inputs(
     std::string_view source_code,
     DirtyFlag        dirty_flag,
     InputFactory_Ref input_factory
-) -> std::vector<AnyInput>
+) -> tl::expected<std::vector<AnyInput>, std::string>
 {
     std::vector<AnyInput> new_inputs;
     std::stringstream     stream{std::string{source_code}};
     std::string           line;
+    size_t                line_count = 0;
     while (getline(stream, line))
     {
+        line_count++;
         try
         {
             const auto input = try_parse_input(line, dirty_flag, input_factory);
             if (input)
             {
-                new_inputs.push_back(*input);
+                new_inputs.emplace_back(std::move(*input));
             }
         }
         catch (const std::exception& e)
         {
-            Cool::Log::ToUser::error(
-                "InputParser::parse_all_inputs",
-                fmt::format("Error while parsing:\n{}", e.what())
+            return tl::make_unexpected(
+                fmt::format("Invalid INPUT on line {}:\n{}", line_count, e.what())
             );
         }
     }

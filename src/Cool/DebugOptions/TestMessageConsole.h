@@ -21,9 +21,9 @@ private:
         void send_to(Cool::MessageConsole& message_console)
         {
             message_console.send(id, {
-                                         .category         = category,
-                                         .detailed_message = message,
-                                         .severity         = severity,
+                                         .category = category,
+                                         .message  = message,
+                                         .severity = severity,
                                      });
         }
     };

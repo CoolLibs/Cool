@@ -174,15 +174,10 @@ auto file_and_folder(
 /// Equivalent to ImGui::Image except the image will be centered in the window
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
 
-/**
- * @brief A checkbox that, when ticked, displays a menu on the side
- *
- * @param label
- * @param bool_p
- * @param submenu A function that calls the imgui widgets that should appear in the submenu
- * @return true iff the checkbox was used this frame
- */
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<void()> submenu);
+/// A checkbox that, when ticked, displays a menu on the side.
+/// `submenu` is a function that calls the imgui widgets that should appear in the submenu, and returns true iff one of these widgets returned true.
+/// returns true iff the checkbox or a widget in the submenu was used this frame.
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);

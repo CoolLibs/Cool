@@ -1,6 +1,6 @@
 #pragma once
 
-namespace glm {
+namespace cereal {
 
 template<class Archive>
 void serialize(Archive& archive, glm::vec2& v)
@@ -62,4 +62,4 @@ void serialize(Archive& archive, glm::mat4& m)
     );
 }
 
-} // namespace glm
+} // namespace cereal

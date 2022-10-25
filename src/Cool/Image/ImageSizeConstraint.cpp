@@ -19,7 +19,7 @@ img::Size ImageSizeConstraint::applied_to(img::Size frame_size) const
 img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const
 {
     float aspect_ratio = _is_controlling_aspect_ratio
-                             ? _aspect_ratio.asFloat()
+                             ? _aspect_ratio.get()
                              : img::SizeU::aspect_ratio(frame_size);
 
     auto nb_pixels = static_cast<float>(
@@ -38,16 +38,17 @@ bool ImageSizeConstraint::imgui()
     bool was_triggered = false;
     // Aspect Ratio
     was_triggered |= ImGuiExtras::checkbox_with_submenu("Control aspect ratio", &_is_controlling_aspect_ratio, [&]() {
-        was_triggered |= _aspect_ratio.ImGuiPicker(15754);
+        return _aspect_ratio.imgui();
     });
     // Nb Pixels
     was_triggered |= ImGuiExtras::checkbox_with_submenu("Control number of pixels", &_is_controlling_nb_pixels, [&]() {
         auto previewNbPixels = _nb_pixels;
         if (ImGuiExtras::slider_uint32("Number of Pixels", &previewNbPixels, 10'000, 500'000))
         {
-            _nb_pixels    = previewNbPixels;
-            was_triggered = true;
+            _nb_pixels = previewNbPixels;
+            return true;
         }
+        return false;
     });
     // Interpolation mode
     ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
