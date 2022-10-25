@@ -167,7 +167,8 @@ public:
                 }
                 if (ImGui::Button("Delete"))
                 {
-                    if (boxer::show(("\"" + current_name() + "\" will be deleted. Are you sure ?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::YesNo) == boxer::Selection::Yes)
+                    if (boxer::show(("\"" + current_name() + "\" will be deleted. Are you sure?").c_str(), "Delete", boxer::Style::Warning, boxer::Buttons::OKCancel)
+                        == boxer::Selection::OK)
                     {
                         std::filesystem::remove(full_path(current_name()));
                         _presets.erase(_current_preset_idx + _presets.begin());
