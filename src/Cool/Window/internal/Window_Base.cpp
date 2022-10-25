@@ -128,8 +128,8 @@ GLFWmonitor* Window_Base::current_monitor() const
         mw = mode->width;
         mh = mode->height;
 
-        overlap = std::max(0, std::min(wx + ww, mx + mw) - std::max(wx, mx)) *
-                  std::max(0, std::min(wy + wh, my + mh) - std::max(wy, my));
+        overlap = std::max(0, std::min(wx + ww, mx + mw) - std::max(wx, mx))
+                  * std::max(0, std::min(wy + wh, my + mh) - std::max(wy, my));
 
         if (bestoverlap < overlap)
         {

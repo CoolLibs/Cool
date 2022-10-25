@@ -35,8 +35,8 @@ TEST_CASE("At runtime")
 {
     std::string type_as_string = "int";
     CHECK(
-        COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(say_type, type_as_string, std::string, ()) ==
-        "I say INT"
+        COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(say_type, type_as_string, std::string, ())
+        == "I say INT"
     );
 }
 #endif

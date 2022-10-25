@@ -16,7 +16,7 @@ public:
     void update() override;
 
 private:
-    const float  _dt;
+    const float   _dt;
     long long int _frames_count; // store time as an int to avoid floating point imprecisions when adding a small number (dt) to a big one (time) [don't know if this is really necessary though]
 };
 

@@ -163,8 +163,8 @@ void Window_Vulkan::cap_framerate_if(bool should_cap)
 
 bool Window_Vulkan::framerate_is_capped() const
 {
-    return _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_KHR ||
-           _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_RELAXED_KHR;
+    return _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_KHR
+           || _vulkan_window_state.g_MainWindowData.PresentMode == VK_PRESENT_MODE_FIFO_RELAXED_KHR;
 }
 
 } // namespace Cool

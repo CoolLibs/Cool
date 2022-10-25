@@ -8,8 +8,9 @@ namespace Cool {
 auto OrbitalState_Translation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta) -> bool
 {
     camera.translate(
-        controller._translation_speed * (-delta.x * camera.right_axis() +
-                                         -delta.y * camera.up_axis())
+        controller._translation_speed
+        * (-delta.x * camera.right_axis()
+           + -delta.y * camera.up_axis())
     );
     return true;
 }

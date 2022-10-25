@@ -6,10 +6,10 @@ namespace Cool {
 
 Camera::Camera(glm::vec3 const& position, glm::vec3 const& look_at)
     : _transform_matrix{glm::inverse(glm::lookAt(
-          position,
-          look_at,
-          Constants::world_up
-      ))}
+        position,
+        look_at,
+        Constants::world_up
+    ))}
 {
 }
 

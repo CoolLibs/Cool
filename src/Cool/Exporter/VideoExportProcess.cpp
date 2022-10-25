@@ -55,21 +55,19 @@ auto VideoExportProcess::estimated_remaining_time() -> float
 {
     const auto nb_frames_to_render = static_cast<float>(_total_nb_of_frames_in_sequence - _nb_frames_sent_to_thread_pool);
 
-    return nb_frames_to_render * _average_time_between_two_renders +
-           (_thread_pool.nb_jobs_in_queue() + _thread_pool.size() / 2.f) * _average_export_time / _thread_pool.size() +
-           1.f;
+    return nb_frames_to_render * _average_time_between_two_renders
+           + (_thread_pool.nb_jobs_in_queue() + _thread_pool.size() / 2.f) * _average_export_time / _thread_pool.size()
+           + 1.f;
 }
 
 void VideoExportProcess::imgui()
 {
     int frame_count = _nb_frames_which_finished_exporting.load();
-    ImGui::Text(
-        "%s",
-        ("Exported " +
-         String::to_string(frame_count, nb_digits(_total_nb_of_frames_in_sequence)) +
-         " / " +
-         std::to_string(_total_nb_of_frames_in_sequence) +
-         " frames"
+    ImGui::TextUnformatted(
+        fmt::format(
+            "Exported {} / {} frames",
+            String::to_string(frame_count, nb_digits(_total_nb_of_frames_in_sequence)),
+            _total_nb_of_frames_in_sequence
         )
             .c_str()
     );

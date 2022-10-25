@@ -280,16 +280,16 @@ auto instantiate_shader_code__impl(const Cool::Gradient& value, std::string_view
     using namespace fmt::literals;
     return value.value.gradient().is_empty()
                ? fmt::format(
-                     R"STR(
+                   R"STR(
 vec4 {}(float x)   
 {{
     return vec4(0.);
 }}
          )STR",
-                     name
-                 )
+                   name
+               )
                : fmt::format(
-                     FMT_COMPILE(R"STR( 
+                   FMT_COMPILE(R"STR( 
 // #include "_COOL_RES_/shaders/GradientMark.glsl"
 const int {number_of_marks} = {gradient_size};
 uniform GradientMark {gradient_marks}[{number_of_marks}];
@@ -314,13 +314,13 @@ vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster th
     }}
 }}
     )STR"),
-                     "gradient_size"_a     = value.value.gradient().get_marks().size(),
-                     "number_of_marks"_a   = gen_code__number_of_marks_variable_name(name),
-                     "gradient_function"_a = name,
-                     "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
-                     "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
-                     "gradient_marks"_a    = internal::gradient_marks_array_name(name)
-                 );
+                   "gradient_size"_a     = value.value.gradient().get_marks().size(),
+                   "number_of_marks"_a   = gen_code__number_of_marks_variable_name(name),
+                   "gradient_function"_a = name,
+                   "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
+                   "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
+                   "gradient_marks"_a    = internal::gradient_marks_array_name(name)
+               );
 }
 
 static auto gen_code__number_of_colors_variable_name(std::string_view name)
@@ -335,8 +335,8 @@ auto instantiate_shader_code__impl(const Cool::ColorPalette& value, std::string_
     using namespace fmt::literals;
     return value.value.empty()
                ? fmt::format(
-                     FMT_COMPILE(
-                         R"STR(
+                   FMT_COMPILE(
+                       R"STR(
 const int {color_palette_function}_length = 0;
 
 vec3 {color_palette_function}(int index)   
@@ -344,12 +344,12 @@ vec3 {color_palette_function}(int index)
     return vec3(0.);
 }}
          )STR"
-                     ),
-                     "color_palette_function"_a = name
-                 )
+                   ),
+                   "color_palette_function"_a = name
+               )
                : fmt::format(
-                     FMT_COMPILE(
-                         R"STR( 
+                   FMT_COMPILE(
+                       R"STR( 
 const int {color_palette_function}_length = {palette_size};
 uniform vec3 {color_palette_name}[{palette_size}];
 
@@ -358,12 +358,12 @@ vec3 {color_palette_function}(int index)
     return {color_palette_name}[index];
 }}
     )STR"
-                     ),
-                     "palette_size"_a           = value.value.size(),
-                     "number_of_colors"_a       = gen_code__number_of_colors_variable_name(name),
-                     "color_palette_function"_a = name,
-                     "color_palette_name"_a     = internal::color_palette_array_name(name)
-                 );
+                   ),
+                   "palette_size"_a           = value.value.size(),
+                   "number_of_colors"_a       = gen_code__number_of_colors_variable_name(name),
+                   "color_palette_function"_a = name,
+                   "color_palette_name"_a     = internal::color_palette_array_name(name)
+               );
 }
 
 template<typename T>

@@ -208,8 +208,8 @@ static AppManager& get_app_manager(GLFWwindow* window)
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     auto& app_manager = get_app_manager(window);
-    if (app_manager._config.dispatch_keyboard_events_to_imgui ||
-        ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
+    if (app_manager._config.dispatch_keyboard_events_to_imgui
+        || ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
     {
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }

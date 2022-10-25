@@ -81,8 +81,8 @@ void MessageConsole::clear(MessageSeverity severity)
 
 static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
 {
-    return msg.forced_to_be_clearable ||
-           msg.message.severity != MessageSeverity::Error;
+    return msg.forced_to_be_clearable
+           || msg.message.severity != MessageSeverity::Error;
 }
 
 auto MessageConsole::should_show(const internal::MessageWithMetadata& msg) const -> bool
@@ -111,8 +111,8 @@ void MessageConsole::close_window()
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
 {
-    return !id.get().underlying_uuid().is_nil() &&
-           id == _selected_message;
+    return !id.get().underlying_uuid().is_nil()
+           && id == _selected_message;
 }
 
 static auto color(MessageSeverity severity) -> ImVec4
@@ -234,8 +234,8 @@ auto MessageConsole::there_are_clearable_messages(MessageSeverity severity) cons
     std::shared_lock lock{_messages.mutex()};
     return std::any_of(_messages.begin(), _messages.end(), [&](auto&& pair) {
         const auto& message = pair.second;
-        return message.message.severity == severity &&
-               is_clearable(message);
+        return message.message.severity == severity
+               && is_clearable(message);
     });
 }
 
@@ -301,9 +301,10 @@ void MessageConsole::imgui_show_all_messages()
                 ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f}); // goes till the end of the line (allows hovering to be more intuitive)
                 ImGui::EndGroup();
 
-                if (ImGui::IsItemHovered() && !close_button_is_hovered &&
-                    (ImGui::IsMouseClicked(ImGuiMouseButton_Right) ||
-                     ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
+                if (ImGui::IsItemHovered()
+                    && !close_button_is_hovered
+                    && (ImGui::IsMouseClicked(ImGuiMouseButton_Right)
+                        || ImGui::IsMouseClicked(ImGuiMouseButton_Left)))
                 {
                     ImGui::OpenPopup("##ContextMenu");
                 }
