@@ -46,6 +46,7 @@ private:
     auto output_path() -> std::filesystem::path;
     void imgui_window_export_image(Polaroid polaroid, float time);
     void imgui_window_export_video();
+    auto clear_export_folder() const -> bool;
 
 private:
     ExportSize            _export_size;

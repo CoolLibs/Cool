@@ -86,16 +86,29 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
     });
 }
 
+auto Exporter::clear_export_folder() const -> bool
+{
+    if (!File::exists(_folder_path_for_video)
+        || std::filesystem::is_empty(_folder_path_for_video))
+        return true; // Nothing to do, there was no previous content
+
+    if (boxer::show(fmt::format("You are about the delete all the previous content of {}.\nAre you sure?", _folder_path_for_video).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
+        != boxer::Selection::OK)
+        return false; // User doesn't want to delete the previous content of the export folder
+
+    std::filesystem::remove_all(_folder_path_for_video);
+    return true;
+}
+
 void Exporter::begin_video_export()
 {
+    if (!clear_export_folder())
+        return;
+
     if (File::create_folders_if_they_dont_exist(_folder_path_for_video))
-    {
         _video_export_process.emplace(_video_export_params, _folder_path_for_video, _export_size);
-    }
     else
-    {
         Log::ToUser::warning("Exporter::begin_video_export", "Couldn't start exporting because folder creation failed!");
-    }
 }
 
 void Exporter::update(Polaroid polaroid)
