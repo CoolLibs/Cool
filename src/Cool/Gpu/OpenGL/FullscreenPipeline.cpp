@@ -56,10 +56,10 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
         on_error();
         const auto preprocessed_source = preprocess_shader_source(fragment_shader_source_code);
         return OptionalErrorMessage{
-            e.what() +
-            (preprocessed_source
-                 ? std::string{"\nThe source code we tried to compile was:\n"} + *preprocessed_source
-                 : "" // Log nothing because we know the exception already contains the error message from the preprocessing failure.
+            e.what()
+            + (preprocessed_source
+                   ? std::string{"\nThe source code we tried to compile was:\n"} + *preprocessed_source
+                   : "" // Log nothing because we know the exception already contains the error message from the preprocessing failure.
             )};
     }
 }

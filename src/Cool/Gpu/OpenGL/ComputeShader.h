@@ -108,15 +108,15 @@ uniform int NumberOfComputationsZ;
 
 void cool_main();
 
-)V0G0N") +
-                                                         "layout(local_size_x = " +
-                                                         std::to_string(WorkGroupSizeX) +
-                                                         ", local_size_y = " +
-                                                         std::to_string(WorkGroupSizeY) +
-                                                         ", local_size_z = " +
-                                                         std::to_string(WorkGroupSizeZ) +
-                                                         ") in;" +
-                                                         R"V0G0N(
+)V0G0N")
+                                                         + "layout(local_size_x = "
+                                                         + std::to_string(WorkGroupSizeX)
+                                                         + ", local_size_y = "
+                                                         + std::to_string(WorkGroupSizeY)
+                                                         + ", local_size_z = "
+                                                         + std::to_string(WorkGroupSizeZ)
+                                                         + ") in;"
+                                                         + R"V0G0N(
 void main() {
     if (gl_GlobalInvocationID.x < NumberOfComputationsX
      && gl_GlobalInvocationID.y < NumberOfComputationsY

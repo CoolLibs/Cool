@@ -175,8 +175,8 @@ auto is_commented_out(std::string_view text) -> bool
 {
     const auto comment_pos    = text.find("//");
     const auto first_word_pos = text.find_first_not_of("/\t ");
-    return comment_pos != std::string_view::npos &&
-           comment_pos < first_word_pos;
+    return comment_pos != std::string_view::npos
+           && comment_pos < first_word_pos;
 }
 
 template<typename String>
@@ -608,11 +608,11 @@ auto contains_word(std::string_view word, std::string_view text, std::string_vie
         return delimiters.find(text[index]) != delimiters.npos;
     };
 
-    const bool is_beginning_of_a_word = index == 0 ||
-                                        there_is_a_delimiter_at(index - 1);
+    const bool is_beginning_of_a_word = index == 0
+                                        || there_is_a_delimiter_at(index - 1);
 
-    const bool is_end_of_a_word = index + word.size() == text.size() ||
-                                  there_is_a_delimiter_at(index + word.size());
+    const bool is_end_of_a_word = index + word.size() == text.size()
+                                  || there_is_a_delimiter_at(index + word.size());
 
     return is_beginning_of_a_word && is_end_of_a_word;
 }

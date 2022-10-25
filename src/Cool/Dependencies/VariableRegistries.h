@@ -5,7 +5,6 @@
 #include <reg/cereal.hpp>
 #include <reg/reg.hpp>
 
-
 namespace Cool {
 
 /// All the registries are owned by the top-level app, in order to simplify the changes through commands, the history, etc.

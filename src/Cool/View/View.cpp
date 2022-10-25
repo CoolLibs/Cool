@@ -60,8 +60,8 @@ auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> View
 
 bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
 {
-    if (!_window_is_hovered ||
-        ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow) // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
+    if (!_window_is_hovered
+        || ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow) // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
     {
         return false;
     }
@@ -71,11 +71,11 @@ bool View::contains(ViewCoordinates pos, ImageSizeInsideView image_size)
         {
             const auto img_size   = image_size.fit_into(*_size);
             const auto pos_in_img = pos + glm::vec2{
-                                              (img_size.width() - _size->width()) * 0.5f,
-                                              (img_size.height() - _size->height()) * 0.5f,
-                                          };
-            return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width() &&
-                   pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
+                                        (img_size.width() - _size->width()) * 0.5f,
+                                        (img_size.height() - _size->height()) * 0.5f,
+                                    };
+            return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width()
+                   && pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
         }
         else
         {

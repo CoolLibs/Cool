@@ -8,14 +8,14 @@ namespace Cool::Vulkan {
 
 Texture::Texture(img::Size size, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
     : _vku{
-          Cool::Vulkan::context().g_Device,
-          Cool::Vulkan::context().memory_properties,
-          size.width(),
-          size.height(),
-          1,
-          format,
-          false,
-          additional_usage_flags}
+        Cool::Vulkan::context().g_Device,
+        Cool::Vulkan::context().memory_properties,
+        size.width(),
+        size.height(),
+        1,
+        format,
+        false,
+        additional_usage_flags}
     , _sampler{vku::SamplerMaker{}.createUnique(Vulkan::context().g_Device)}
     , _layout_when_read_by_imgui_shader{layout_when_read_by_imgui_shader}
 {
@@ -24,11 +24,11 @@ Texture::Texture(img::Size size, vk::Format format, vk::ImageLayout layout_when_
 
 Texture::Texture(const img::Image& image_data, vk::Format format, vk::ImageLayout layout_when_read_by_imgui_shader, vk::ImageUsageFlagBits additional_usage_flags)
     : Texture{
-          image_data.size(),
-          format,
-          layout_when_read_by_imgui_shader,
-          additional_usage_flags,
-      }
+        image_data.size(),
+        format,
+        layout_when_read_by_imgui_shader,
+        additional_usage_flags,
+    }
 {
     _vku.upload(
         Vulkan::context().g_Device,

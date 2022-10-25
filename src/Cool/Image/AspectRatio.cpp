@@ -23,8 +23,8 @@ static auto imgui_string(float ratio) -> std::string
     const smart::Fraction fraction = smart::as_fraction(ratio);
 
     const bool fraction_is_small_enough =
-        std::abs(fraction.numerator) <= 30 &&
-        std::abs(fraction.denominator) <= 30;
+        std::abs(fraction.numerator) <= 30
+        && std::abs(fraction.denominator) <= 30;
 
     return fraction_is_small_enough
                ? stringify(fraction)

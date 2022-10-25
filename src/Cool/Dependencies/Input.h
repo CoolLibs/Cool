@@ -17,8 +17,8 @@ public:
 
     void set_dirty_if_depends_on(const VariableId<T>& variable_id, SetDirty_Ref set_dirty) const
     {
-        if (_current_variable_id == variable_id ||
-            (_current_variable_id.underlying_uuid().is_nil() && _default_variable_id == variable_id))
+        if (_current_variable_id == variable_id
+            || (_current_variable_id.underlying_uuid().is_nil() && _default_variable_id == variable_id))
         {
             set_dirty(_dirty_flag);
         }
