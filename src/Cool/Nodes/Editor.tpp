@@ -56,7 +56,7 @@ template<NodesCfg_Concept NodesCfg>
 void draw_node(typename NodesCfg::NodeT& node)
 {
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(NodesCfg::name(node));
+    ImGui::TextUnformatted(NodesCfg::name(node).c_str());
     ImNodes::EndNodeTitleBar();
     // show_node_pins(node);
     // show_node_params(node);
@@ -132,7 +132,7 @@ void draw_node(typename NodesCfg::NodeT& node)
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
 {
-    return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Right) || ImGui::IsKeyReleased(ImGuiKey_A)));
+    return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Middle) || ImGui::IsKeyReleased(ImGuiKey_A)));
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -204,15 +204,16 @@ void NodesEditor<NodesCfg>::imgui_window(
 }
 
 template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::imgui_nodes_menu(
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
-) -> bool
+auto NodesEditor<NodesCfg>::
+    imgui_nodes_menu(
+        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+    ) -> bool
 {
-    const auto maybe_node = library.imgui_nodes_menu();
-    if (!maybe_node)
+    auto const* maybe_node_definition = library.imgui_nodes_menu();
+    if (!maybe_node_definition)
         return false;
 
-    const auto id = _graph.add_node(NodesCfg::make_node(*maybe_node));
+    const auto id = _graph.add_node(NodesCfg::make_node(*maybe_node_definition));
     ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
 
     return true;

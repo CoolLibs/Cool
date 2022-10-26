@@ -18,9 +18,14 @@ public:
         return &*it;
     }
 
-    auto imgui_nodes_menu() const -> const NodeDefinition*
+    auto imgui_nodes_menu() const -> NodeDefinition const*
     {
-        return nullptr; // TODO(JF)
+        for (NodeDefinition const& def : _definitions)
+        {
+            if (ImGui::Selectable(def.name().c_str()))
+                return &def;
+        }
+        return nullptr;
     }
 
     void clear()
@@ -32,6 +37,9 @@ public:
     {
         // TODO(JF)
     }
+
+    void add_definition(NodeDefinition const& definition) { _definitions.push_back(definition); }
+    void add_definition(NodeDefinition&& definition) { _definitions.emplace_back(std::move(definition)); }
 
 private:
     std::vector<NodeDefinition> _definitions;
