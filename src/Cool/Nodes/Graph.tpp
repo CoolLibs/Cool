@@ -2,46 +2,41 @@
 namespace Cool {
 
 template<Node_Concept Node>
-auto Graph<Node>::add_node(const Node& node) -> NodeId
+auto Graph<Node>::add_node(Node const& node) -> NodeId
 {
     return _nodes.create(node);
 }
 
-// void Graph::remove_all_nodes()
-// {
-//     nodes.clear();
-//     links.clear();
-// }
+template<Node_Concept Node>
+void Graph<Node>::remove_node(NodeId const& node_id)
+{
+    const auto node = _nodes.get(node_id);
+    if (!node)
+        return;
+
+    // { // TODO(JF) Links
+    //     std::unique_lock lock{_links.mutex()};
+    //     std::erase_if(_links, [&](const Link& link) {
+    //         return link.from_pin_id == node->output_pin.id()
+    //                || std::any_of(node->input_pins.begin(), node->input_pins.end(), [&](auto const& pin) {
+    //                       return link.to_pin_id == pin.id();
+    //                   });
+    //     });
+    // }
+
+    _nodes.destroy(node_id);
+}
+
+template<Node_Concept Node>
+void Graph<Node>::remove_all_nodes()
+{
+    _nodes.clear();
+    _links.clear();
+}
 
 // void Graph::add_link(Link link)
 // {
 //     links.push_back(link);
-// }
-
-// void Graph::delete_node(NodeId node_id)
-// {
-//     const auto node = std::find_if(nodes.begin(), nodes.end(), [&](const Node& node) {
-//         return node.id == node_id;
-//     });
-
-//     std::erase_if(links, [&](const Link& link) {
-//         return link.from_pin_id == node->output_pin.id() ||
-//                std::any_of(node->input_pins.begin(), node->input_pins.end(), [&](const auto& pin) {
-//                    return link.to_pin_id == pin.id();
-//                });
-//     });
-
-//     // waiting for xcode to support std::ranges::find_if && std::ranges::any_of
-//     //  const auto node = std::ranges::find_if(nodes, [&](const Node& node) {
-//     //      return node.id == node_id;
-//     //  });
-//     // std::erase_if(links, [&](const Link& link) {
-//     //     return link.from_pin_id == node->output_pin.id() ||
-//     //            std::ranges::any_of(node->input_pins, [&](const auto& pin) {
-//     //                return link.to_pin_id == pin.id();
-//     //            });
-//     // });
-//     nodes.erase(node);
 // }
 
 // void Graph::delete_link(LinkId link_id)

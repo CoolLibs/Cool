@@ -30,27 +30,27 @@ public:
     //     _graph_has_changed = true;
     // }
 
-    // bool wants_to_delete_selection() const;
+private:
     // void on_graph_change();
     // bool handle_link_creation();
     // bool handle_link_deletion();
-    // bool handle_node_deletion();
+    auto wants_to_delete_selection() const -> bool;
+    auto handle_node_deletion() -> bool;
 
-private: /* Nodes Library */
-    void show_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
-    bool imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&);
-    auto wants_to_open_nodes_menu() -> bool;
-    void open_nodes_menu();
-
+private:
+    /* Nodes Library */
+    void   show_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
+    bool   imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&);
+    auto   wants_to_open_nodes_menu() -> bool;
+    void   open_nodes_menu();
     ImVec2 _next_node_position = {0.f, 0.f};
 
 private:
-    internal::UniqueImNodeContext _context;
-    // NodeFactory                 _factory;
+    internal::UniqueImNodeContext   _context;
     Graph<typename NodesCfg::NodeT> _graph;
     DirtyFlag                       _graph_dirty_flag;
     // bool      _all_nodes_have_a_valid_template = true;
-    // bool      _window_is_hovered               = false;
+    bool _window_is_hovered = true;
 
 private:
     // Serialization

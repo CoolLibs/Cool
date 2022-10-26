@@ -2,6 +2,8 @@
 
 #include <reg/reg.hpp>
 #include "Link.h"
+#include "LinkId.h"
+#include "NodeId.h"
 #include "Node_Concept.h"
 #include "NodesCfg_Concept.h"
 
@@ -10,17 +12,13 @@ namespace Cool {
 template<Node_Concept Node>
 class Graph {
 public:
-    using NodeId = reg::Id<Node>;
-    using LinkId = reg::Id<Link>;
+    auto add_node(Node const&) -> NodeId;
+    void remove_node(NodeId const&);
+    void remove_all_nodes();
 
-    auto add_node(Node const& node) -> NodeId;
     // auto add_link(Link const& link) -> LinkId;
-
-    // void delete_node(NodeId node_id);
     // void delete_link(LinkId link_id);
     // void delete_link_going_to(PinId pin_id);
-
-    // void remove_all_nodes();
 
     /**
      * @brief Assumes that pin is an input pin and returns the node that is connected to it (or nullptr if there is none)
@@ -43,19 +41,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        // try
-        // {
         archive(
             cereal::make_nvp("Nodes", _nodes),
             cereal::make_nvp("Links", _links)
         );
-        // }
-        // catch (const std::exception&)
-        // {
-        //     _nodes.clear();
-        //     _links.clear();
-        //     throw;
-        // }
     }
 };
 

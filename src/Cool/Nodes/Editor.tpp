@@ -5,25 +5,20 @@
 
 namespace Cool {
 
-// bool Editor::tree_has_changed()
+//
+// template<NodesCfg_Concept NodesCfg>
+// bool NodesEditor<NodesCfg>::tree_has_changed()
 // {
 //     bool b             = _graph_has_changed;
 //     _graph_has_changed = false;
 //     return b;
 // }
 
-// void Editor::on_graph_change()
+//
+// template<NodesCfg_Concept NodesCfg>
+// void NodesEditor<NodesCfg>::on_graph_change()
 // {
 //     _graph_has_changed = true;
-// }
-
-// bool Editor::wants_to_delete_selection() const
-// {
-//     return _window_is_hovered &&
-//            !ImGui::GetIO().WantTextInput &&
-//            (ImGui::IsKeyReleased(ImGuiKey_Delete) ||
-//             ImGui::IsKeyReleased(ImGuiKey_Backspace) ||
-//             ImGui::IsKeyReleased(ImGuiKey_X) /*TODO(JF) This should be a logical key, not a physical one*/);
 // }
 
 // static void show_node_pins(const Node& node)
@@ -67,7 +62,9 @@ void draw_node(typename NodesCfg::NodeT& node)
 //     ImNodes::Link(link.id, link.from_pin_id, link.to_pin_id);
 // }
 
-// bool Editor::handle_link_creation()
+//
+// template<NodesCfg_Concept NodesCfg>
+// bool NodesEditor<NodesCfg>::handle_link_creation()
 // {
 //     int from_pin_id, to_pin_id;
 //     if (ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
@@ -81,8 +78,9 @@ void draw_node(typename NodesCfg::NodeT& node)
 //     }
 //     return false;
 // }
-
-// bool Editor::handle_link_deletion()
+//
+// template<NodesCfg_Concept NodesCfg>
+// bool NodesEditor<NodesCfg>::handle_link_deletion()
 // {
 //     bool has_deleted_some = false;
 //     {
@@ -111,28 +109,42 @@ void draw_node(typename NodesCfg::NodeT& node)
 //     return has_deleted_some;
 // }
 
-// bool Editor::handle_node_deletion()
-// {
-//     const int num_selected = ImNodes::NumSelectedNodes();
-//     if (num_selected > 0 && wants_to_delete_selection())
-//     {
-//         static std::vector<int> selected_nodes;
-//         selected_nodes.resize(static_cast<size_t>(num_selected));
-//         ImNodes::GetSelectedNodes(selected_nodes.data());
-//         for (const int node_id : selected_nodes)
-//         {
-//             _graph.delete_node(NodeId{node_id});
-//         }
-//         ImNodes::ClearNodeSelection();
-//         return true;
-//     }
-//     return false;
-// }
+template<NodesCfg_Concept NodesCfg>
+auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
+{
+    if (!wants_to_delete_selection())
+        return false;
+
+    const auto num_selected = ImNodes::NumSelectedNodes();
+    if (num_selected == 0)
+        return false;
+
+    static auto selected_nodes = std::vector<ImNodes::ID>{};
+    selected_nodes.resize(static_cast<size_t>(num_selected));
+    ImNodes::GetSelectedNodes(selected_nodes.data());
+
+    for (auto const& node_id : selected_nodes)
+        _graph.remove_node(node_id);
+
+    ImNodes::ClearNodeSelection();
+    return true;
+}
+
+template<NodesCfg_Concept NodesCfg>
+auto NodesEditor<NodesCfg>::wants_to_delete_selection() const -> bool
+{
+    return _window_is_hovered
+           && !ImGui::GetIO().WantTextInput
+           && (ImGui::IsKeyReleased(ImGuiKey_Delete)
+               || ImGui::IsKeyReleased(ImGuiKey_Backspace));
+}
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
 {
-    return (/* _window_is_hovered && */ (ImGui::IsMouseReleased(ImGuiMouseButton_Middle) || ImGui::IsKeyReleased(ImGuiKey_A)));
+    return _window_is_hovered
+           && (ImGui::IsMouseReleased(ImGuiMouseButton_Middle)
+               || ImGui::IsKeyReleased(ImGuiKey_A));
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -171,7 +183,7 @@ void NodesEditor<NodesCfg>::imgui_window(
 )
 {
     ImNodes::SetCurrentContext(&*_context);
-    // bool node_graph_has_changed = false;
+    bool node_graph_has_changed = false;
     ImGui::Begin("Nodes");
     // _window_is_hovered = ImGui::IsWindowHovered( // TODO(JF) Do we need to compute it here? Can't we do it after ImNodes::BeginNodeEditor()?
     //     ImGuiHoveredFlags_ChildWindows |
@@ -195,7 +207,7 @@ void NodesEditor<NodesCfg>::imgui_window(
     ImNodes::EndNodeEditor();
     // node_graph_has_changed |= handle_link_creation();
     // node_graph_has_changed |= handle_link_deletion();
-    // node_graph_has_changed |= handle_node_deletion();
+    node_graph_has_changed |= handle_node_deletion();
     ImGui::End();
     // if (node_graph_has_changed)
     // {
