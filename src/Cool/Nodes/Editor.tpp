@@ -77,29 +77,28 @@ template<NodesCfg_Concept NodesCfg>
 bool NodesEditor<NodesCfg>::handle_link_deletion()
 {
     bool has_deleted_some = false;
-    // {
-    //     int link_id;
-    //     if (ImNodes::IsLinkDestroyed(&link_id))
-    //     {
-    //         _graph.delete_link(LinkId{link_id});
-    //         has_deleted_some = true;
-    //     }
-    // }
+    {
+        ImNodes::ID link_id;
+        if (ImNodes::IsLinkDestroyed(&link_id))
+        {
+            has_deleted_some = true;
+            _graph.remove_link(link_id);
+        }
+    }
 
-    // {
-    //     const int num_selected = ImNodes::NumSelectedLinks();
-    //     if (num_selected > 0 && wants_to_delete_selection())
-    //     {
-    //         has_deleted_some = true;
-    //         static std::vector<int> selected_links;
-    //         selected_links.resize(static_cast<size_t>(num_selected));
-    //         ImNodes::GetSelectedLinks(selected_links.data());
-    //         for (const int link_id : selected_links)
-    //         {
-    //             _graph.delete_link(LinkId{link_id});
-    //         }
-    //     }
-    // }
+    {
+        const int num_selected = ImNodes::NumSelectedLinks();
+        if (num_selected > 0 && wants_to_delete_selection())
+        {
+            has_deleted_some           = true;
+            static auto selected_links = std::vector<ImNodes::ID>{};
+            selected_links.resize(static_cast<size_t>(num_selected));
+            ImNodes::GetSelectedLinks(selected_links.data());
+            for (auto const& link_id : selected_links)
+                _graph.remove_link(link_id);
+        }
+    }
+
     return has_deleted_some;
 }
 

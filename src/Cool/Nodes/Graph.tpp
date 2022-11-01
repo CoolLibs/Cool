@@ -40,12 +40,11 @@ auto Graph<Node>::add_link(Link link) -> LinkId
     return _links.create(link);
 }
 
-// void Graph::delete_link(LinkId link_id)
-// {
-//     std::erase_if(links, [&](const Link& link) {
-//         return link.id == link_id;
-//     });
-// }
+template<Node_Concept Node>
+void Graph<Node>::remove_link(LinkId const& id)
+{
+    _links.destroy(id);
+}
 
 // void Graph::delete_link_going_to(PinId pin_id)
 // {

@@ -16,8 +16,8 @@ public:
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
-    auto add_link(Link link) -> LinkId;
-    // void delete_link(LinkId link_id);
+    auto add_link(Link) -> LinkId;
+    void remove_link(LinkId const&);
     // void delete_link_going_to(PinId pin_id);
 
     /**
