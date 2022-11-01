@@ -14,16 +14,20 @@ void Graph<Node>::remove_node(NodeId const& node_id)
     if (!node)
         return;
 
-    // { // TODO(JF) Links
-    //     std::unique_lock lock{_links.mutex()};
-    //     std::erase_if(_links, [&](const Link& link) {
-    //         return link.from_pin_id == node->output_pin.id()
-    //                || std::any_of(node->input_pins.begin(), node->input_pins.end(), [&](auto const& pin) {
-    //                       return link.to_pin_id == pin.id();
-    //                   });
-    //     });
-    // }
+    { // Remove links connected to the node
+        std::unique_lock lock{_links.mutex()};
+        std::erase_if(_links.underlying_container(), [&](auto const& pair) {
+            auto const& link = pair.second;
+            return std::any_of(node->output_pins().begin(), node->output_pins().end(), [&](auto const& pin) {
+                       return link.from_pin_id == pin.id();
+                   })
+                   || std::any_of(node->input_pins().begin(), node->input_pins().end(), [&](auto const& pin) {
+                          return link.to_pin_id == pin.id();
+                      });
+        });
+    }
 
+    // Remove the node
     _nodes.destroy(node_id);
 }
 
