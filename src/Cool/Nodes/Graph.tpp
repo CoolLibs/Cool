@@ -34,10 +34,11 @@ void Graph<Node>::remove_all_nodes()
     _links.clear();
 }
 
-// void Graph::add_link(Link link)
-// {
-//     links.push_back(link);
-// }
+template<Node_Concept Node>
+auto Graph<Node>::add_link(Link link) -> LinkId
+{
+    return _links.create(link);
+}
 
 // void Graph::delete_link(LinkId link_id)
 // {

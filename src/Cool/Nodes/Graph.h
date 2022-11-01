@@ -16,7 +16,7 @@ public:
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
-    // auto add_link(Link const& link) -> LinkId;
+    auto add_link(Link link) -> LinkId;
     // void delete_link(LinkId link_id);
     // void delete_link_going_to(PinId pin_id);
 
@@ -30,6 +30,8 @@ public:
 
     auto nodes() -> auto& { return _nodes; }
     auto nodes() const -> auto const& { return _nodes; }
+    auto links() -> auto& { return _links; }
+    auto links() const -> auto const& { return _links; }
 
 private:
     reg::Registry<Node> _nodes;

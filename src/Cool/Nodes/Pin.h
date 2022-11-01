@@ -1,10 +1,12 @@
 #pragma once
 
 #include <imnodes/imnodes.h>
+#include <reg/cereal.hpp>
+#include <reg/reg.hpp>
 
 namespace Cool {
 
-using PinId = uuids::uuid;
+using PinId = reg::AnyId;
 
 class Pin {
 public:
@@ -30,8 +32,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Name", _name));
-        archive(cereal::make_nvp("ID", _id));
+        archive(
+            cereal::make_nvp("Name", _name),
+            cereal::make_nvp("ID", _id)
+        );
     }
 };
 

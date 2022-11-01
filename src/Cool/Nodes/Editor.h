@@ -32,17 +32,18 @@ public:
 
 private:
     // void on_graph_change();
-    // bool handle_link_creation();
-    // bool handle_link_deletion();
-    auto wants_to_delete_selection() const -> bool;
+    auto handle_link_creation() -> bool;
+    auto handle_link_deletion() -> bool;
     auto handle_node_deletion() -> bool;
+    auto wants_to_delete_selection() const -> bool;
 
 private:
     /* Nodes Library */
-    void   draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
-    bool   imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&);
-    auto   wants_to_open_nodes_menu() -> bool;
-    void   open_nodes_menu();
+    void draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
+    auto imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto wants_to_open_nodes_menu() -> bool;
+    void open_nodes_menu();
+
     ImVec2 _next_node_position = {0.f, 0.f};
 
 private:

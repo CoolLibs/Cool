@@ -1,5 +1,4 @@
 #include "Pin.h"
-#include <reg/reg.hpp>
 
 namespace Cool {
 

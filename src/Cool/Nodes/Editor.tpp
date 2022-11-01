@@ -57,57 +57,51 @@ void draw_node(typename NodesCfg::NodeT& node)
     // draw_node_params(node);
 }
 
-// void show_link(const Link& link)
-// {
-//     ImNodes::Link(link.id, link.from_pin_id, link.to_pin_id);
-// }
+template<NodesCfg_Concept NodesCfg>
+auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
+{
+    PinId from_pin_id;
+    PinId to_pin_id;
+    if (!ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
+        return false;
 
-//
-// template<NodesCfg_Concept NodesCfg>
-// bool NodesEditor<NodesCfg>::handle_link_creation()
-// {
-//     int from_pin_id, to_pin_id;
-//     if (ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
-//     {
-//         _graph.delete_link_going_to(PinId{to_pin_id});
-//         _graph.add_link(Link{
-//             .from_pin_id = PinId{from_pin_id},
-//             .to_pin_id   = PinId{to_pin_id},
-//         });
-//         return true;
-//     }
-//     return false;
-// }
-//
-// template<NodesCfg_Concept NodesCfg>
-// bool NodesEditor<NodesCfg>::handle_link_deletion()
-// {
-//     bool has_deleted_some = false;
-//     {
-//         int link_id;
-//         if (ImNodes::IsLinkDestroyed(&link_id))
-//         {
-//             _graph.delete_link(LinkId{link_id});
-//             has_deleted_some = true;
-//         }
-//     }
+    // _graph.delete_link_going_to(to_pin_id);
+    _graph.add_link(Link{
+        .from_pin_id = from_pin_id,
+        .to_pin_id   = to_pin_id,
+    });
+    return true;
+}
 
-//     {
-//         const int num_selected = ImNodes::NumSelectedLinks();
-//         if (num_selected > 0 && wants_to_delete_selection())
-//         {
-//             has_deleted_some = true;
-//             static std::vector<int> selected_links;
-//             selected_links.resize(static_cast<size_t>(num_selected));
-//             ImNodes::GetSelectedLinks(selected_links.data());
-//             for (const int link_id : selected_links)
-//             {
-//                 _graph.delete_link(LinkId{link_id});
-//             }
-//         }
-//     }
-//     return has_deleted_some;
-// }
+template<NodesCfg_Concept NodesCfg>
+bool NodesEditor<NodesCfg>::handle_link_deletion()
+{
+    bool has_deleted_some = false;
+    // {
+    //     int link_id;
+    //     if (ImNodes::IsLinkDestroyed(&link_id))
+    //     {
+    //         _graph.delete_link(LinkId{link_id});
+    //         has_deleted_some = true;
+    //     }
+    // }
+
+    // {
+    //     const int num_selected = ImNodes::NumSelectedLinks();
+    //     if (num_selected > 0 && wants_to_delete_selection())
+    //     {
+    //         has_deleted_some = true;
+    //         static std::vector<int> selected_links;
+    //         selected_links.resize(static_cast<size_t>(num_selected));
+    //         ImNodes::GetSelectedLinks(selected_links.data());
+    //         for (const int link_id : selected_links)
+    //         {
+    //             _graph.delete_link(LinkId{link_id});
+    //         }
+    //     }
+    // }
+    return has_deleted_some;
+}
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
@@ -192,21 +186,27 @@ void NodesEditor<NodesCfg>::imgui_window(
     ImNodes::BeginNodeEditor();
     {
         draw_nodes_library_menu_ifn(library, set_dirty);
-        for (auto& [id, node] : _graph.nodes())
         {
-            ImNodes::BeginNode(id);
-            draw_node<NodesCfg>(node);
-            ImNodes::EndNode();
+            std::unique_lock lock{_graph.nodes().mutex()};
+            for (auto& [id, node] : _graph.nodes())
+            {
+                ImNodes::BeginNode(id);
+                draw_node<NodesCfg>(node);
+                ImNodes::EndNode();
+            }
         }
-        // for (const auto& link : _graph.links)
-        // {
-        //     show_link(link);
-        // }
+        {
+            std::shared_lock lock{_graph.links().mutex()};
+            for (auto const& [id, link] : _graph.links())
+            {
+                ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
+            }
+        }
     }
     ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
     ImNodes::EndNodeEditor();
-    // node_graph_has_changed |= handle_link_creation();
-    // node_graph_has_changed |= handle_link_deletion();
+    node_graph_has_changed |= handle_link_creation();
+    node_graph_has_changed |= handle_link_deletion();
     node_graph_has_changed |= handle_node_deletion();
     ImGui::End();
     // if (node_graph_has_changed)
