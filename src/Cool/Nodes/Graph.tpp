@@ -50,12 +50,14 @@ void Graph<Node>::remove_link(LinkId const& id)
     _links.destroy(id);
 }
 
-// void Graph::delete_link_going_to(PinId pin_id)
-// {
-//     std::erase_if(links, [&](const Link& link) {
-//         return link.to_pin_id == pin_id;
-//     });
-// }
+template<Node_Concept Node>
+void Graph<Node>::remove_link_going_into(PinId const& pin_id)
+{
+    std::unique_lock lock{_links.mutex()};
+    std::erase_if(_links.underlying_container(), [&](auto const& pair) {
+        return pair.second.to_pin_id == pin_id;
+    });
+}
 
 // const Node* Graph::find_input_node(const Pin& pin) const
 // {

@@ -65,7 +65,7 @@ auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
     if (!ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
         return false;
 
-    // _graph.delete_link_going_to(to_pin_id);
+    _graph.remove_link_going_into(to_pin_id);
     _graph.add_link(Link{
         .from_pin_id = from_pin_id,
         .to_pin_id   = to_pin_id,
