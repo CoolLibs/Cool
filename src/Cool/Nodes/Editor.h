@@ -64,6 +64,7 @@ private:
             cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
     }
+
     template<class Archive>
     void load(Archive& archive)
     {

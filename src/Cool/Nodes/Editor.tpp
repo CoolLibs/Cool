@@ -176,12 +176,9 @@ void NodesEditor<NodesCfg>::imgui_window(
 )
 {
     ImNodes::SetCurrentContext(&*_context);
-    bool node_graph_has_changed = false;
+    bool graph_has_changed = false;
     ImGui::Begin("Nodes");
-    // _window_is_hovered = ImGui::IsWindowHovered( // TODO(JF) Do we need to compute it here? Can't we do it after ImNodes::BeginNodeEditor()?
-    //     ImGuiHoveredFlags_ChildWindows |
-    //     ImGuiHoveredFlags_NoPopupHierarchy
-    // );
+    _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     ImNodes::BeginNodeEditor();
     {
         draw_nodes_library_menu_ifn(library, set_dirty);
@@ -204,11 +201,11 @@ void NodesEditor<NodesCfg>::imgui_window(
     }
     ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
     ImNodes::EndNodeEditor();
-    node_graph_has_changed |= handle_link_creation();
-    node_graph_has_changed |= handle_link_deletion();
-    node_graph_has_changed |= handle_node_deletion();
+    graph_has_changed |= handle_link_creation();
+    graph_has_changed |= handle_link_deletion();
+    graph_has_changed |= handle_node_deletion();
     ImGui::End();
-    // if (node_graph_has_changed)
+    // if (graph_has_changed)
     // {
     //     on_graph_change();
     // }
