@@ -21,22 +21,22 @@ namespace Cool {
 //     _graph_has_changed = true;
 // }
 
-// static void show_node_pins(const Node& node)
-// {
-//     ImGui::BeginGroup();
-//     for (const auto& pin : node.input_pins())
-//     {
-//         pin.show();
-//     }
-//     ImGui::EndGroup();
-//     ImGui::SameLine(200.f); // TODO(JF) Don't use a hardcoded value
-//     for (const auto& pin : node.output_pins())
-//     {
-//         pin.show();
-//     }
-// }
+void draw_node_pins(Node_Concept auto const& node)
+{
+    ImGui::BeginGroup();
+    for (auto const& pin : node.input_pins())
+        pin.show();
+    ImGui::EndGroup();
 
-// static void show_node_params(Node& node, std::function<void()> /* on_change */)
+    ImGui::SameLine(200.f); // TODO(JF) Don't use a hardcoded value
+
+    ImGui::BeginGroup();
+    for (auto const& pin : node.output_pins())
+        pin.show();
+    ImGui::EndGroup();
+}
+
+// void draw_node_params(Node& node, std::function<void()> /* on_change */)
 // {
 //     ImGui::BeginGroup();
 //     ImGui::PushID(&node);
@@ -53,11 +53,11 @@ void draw_node(typename NodesCfg::NodeT& node)
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(NodesCfg::name(node).c_str());
     ImNodes::EndNodeTitleBar();
-    // show_node_pins(node);
-    // show_node_params(node);
+    draw_node_pins(node);
+    // draw_node_params(node);
 }
 
-// static void show_link(const Link& link)
+// void show_link(const Link& link)
 // {
 //     ImNodes::Link(link.id, link.from_pin_id, link.to_pin_id);
 // }
@@ -156,7 +156,7 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
 }
 
 template<NodesCfg_Concept NodesCfg>
-void NodesEditor<NodesCfg>::show_nodes_library_menu_ifn(
+void NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
     NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
     SetDirty_Ref                                            set_dirty
 )
@@ -191,7 +191,7 @@ void NodesEditor<NodesCfg>::imgui_window(
     // );
     ImNodes::BeginNodeEditor();
     {
-        show_nodes_library_menu_ifn(library, set_dirty);
+        draw_nodes_library_menu_ifn(library, set_dirty);
         for (auto& [id, node] : _graph.nodes())
         {
             ImNodes::BeginNode(id);

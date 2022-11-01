@@ -4,30 +4,24 @@
 
 namespace Cool {
 
-enum class PinKind {
-    Input,
-    Output
-};
-
 using PinId = uuids::uuid;
 
 class Pin {
 public:
-    PinKind kind() const
-    {
-        return PinKind::Input;
-    }
-    void show() const
-    {
-        ImNodes::BeginInputAttribute(id());
-        ImGui::Dummy({0.f, 10.f}); // Makes sure that consecutive input pins are not too close to each other
-        ImNodes::EndInputAttribute();
-    }
+    explicit Pin(std::string_view name);
+    virtual ~Pin() = default;
 
-    auto id() const -> const PinId& { return _id; }
+    auto name() const -> std::string const& { return _name; }
+    auto id() const -> PinId const& { return _id; }
+
+    virtual void show() const = 0;
+
+protected:
+    void show_impl() const;
 
 private:
-    PinId _id;
+    std::string _name;
+    PinId       _id;
 
 private:
     // Serialization
@@ -35,8 +29,21 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("id", _id));
+        archive(cereal::make_nvp("Name", _name));
+        archive(cereal::make_nvp("ID", _id));
     }
+};
+
+class InputPin : public Pin {
+public:
+    using Pin::Pin;
+    void show() const override;
+};
+
+class OutputPin : public Pin {
+public:
+    using Pin::Pin;
+    void show() const override;
 };
 
 } // namespace Cool

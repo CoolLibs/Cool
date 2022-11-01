@@ -39,7 +39,7 @@ private:
 
 private:
     /* Nodes Library */
-    void   show_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
+    void   draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
     bool   imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&);
     auto   wants_to_open_nodes_menu() -> bool;
     void   open_nodes_menu();
