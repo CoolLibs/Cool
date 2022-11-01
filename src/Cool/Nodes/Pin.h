@@ -8,6 +8,7 @@ using PinId = uuids::uuid;
 
 class Pin {
 public:
+    Pin() = default;
     explicit Pin(std::string_view name);
     virtual ~Pin() = default;
 
@@ -38,12 +39,34 @@ class InputPin : public Pin {
 public:
     using Pin::Pin;
     void show() const override;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
+        );
+    }
 };
 
 class OutputPin : public Pin {
 public:
     using Pin::Pin;
     void show() const override;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
+        );
+    }
 };
 
 } // namespace Cool
