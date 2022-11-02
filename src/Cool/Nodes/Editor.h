@@ -30,6 +30,9 @@ public:
     //     _graph_has_changed = true;
     // }
 
+    auto graph() const -> auto const& { return _graph; }
+    auto graph() -> auto& { return _graph; }
+
 private:
     // void on_graph_change();
     auto handle_link_creation() -> bool;
