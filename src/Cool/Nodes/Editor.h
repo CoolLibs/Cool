@@ -17,7 +17,7 @@ public:
     // : _factory{nodes_folder_path}
     {
     }
-    void imgui_window(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
+    auto imgui_window(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref) -> bool;
     // void update_templates_and_nodes();
     // void ask_to_open_nodes_menu();
     // bool tree_has_changed();

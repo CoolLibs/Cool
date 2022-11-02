@@ -170,10 +170,10 @@ void NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 }
 
 template<NodesCfg_Concept NodesCfg>
-void NodesEditor<NodesCfg>::imgui_window(
+auto NodesEditor<NodesCfg>::imgui_window(
     NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
     SetDirty_Ref                                            set_dirty
-)
+) -> bool
 {
     ImNodes::SetCurrentContext(&*_context);
     bool graph_has_changed = false;
@@ -205,6 +205,8 @@ void NodesEditor<NodesCfg>::imgui_window(
     graph_has_changed |= handle_link_deletion();
     graph_has_changed |= handle_node_deletion();
     ImGui::End();
+
+    return graph_has_changed;
     // if (graph_has_changed)
     // {
     //     on_graph_change();
