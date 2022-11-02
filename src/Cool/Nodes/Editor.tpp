@@ -149,30 +149,31 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
 }
 
 template<NodesCfg_Concept NodesCfg>
-void NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
-    SetDirty_Ref                                            set_dirty
-)
+auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
+    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+) -> bool
 {
+    bool b = false;
+
     if (wants_to_open_nodes_menu())
-    {
         open_nodes_menu();
-    }
+
     if (ImGui::BeginPopup("_nodes_library"))
     {
         if (imgui_nodes_menu(library))
         {
             ImGui::CloseCurrentPopup();
-            set_dirty(_graph_dirty_flag);
+            b = true;
         }
         ImGui::EndPopup();
     }
+
+    return b;
 }
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::imgui_window(
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
-    SetDirty_Ref                                            set_dirty
+    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
 ) -> bool
 {
     ImNodes::SetCurrentContext(&*_context);
@@ -181,7 +182,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     ImNodes::BeginNodeEditor();
     {
-        draw_nodes_library_menu_ifn(library, set_dirty);
+        graph_has_changed |= draw_nodes_library_menu_ifn(library);
         {
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cool/Dependencies/Dirty.h>
 #include <imnodes/imnodes_internal.h>
 #include "Graph.h"
 #include "NodeId.h"
@@ -17,7 +16,7 @@ public:
     // : _factory{nodes_folder_path}
     {
     }
-    auto imgui_window(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref) -> bool;
+    auto imgui_window(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
     // void update_templates_and_nodes();
     // void ask_to_open_nodes_menu();
     // bool tree_has_changed();
@@ -42,7 +41,7 @@ private:
 
 private:
     /* Nodes Library */
-    void draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, SetDirty_Ref);
+    auto draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
     auto imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
     auto wants_to_open_nodes_menu() -> bool;
     void open_nodes_menu();
@@ -52,7 +51,6 @@ private:
 private:
     internal::UniqueImNodeContext   _context;
     Graph<typename NodesCfg::NodeT> _graph;
-    DirtyFlag                       _graph_dirty_flag;
     // bool      _all_nodes_have_a_valid_template = true;
     bool _window_is_hovered = true;
 
