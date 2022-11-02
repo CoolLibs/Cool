@@ -7,11 +7,15 @@
 
 #if DEBUG
 
-#include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <wafl/wafl.hpp>
+
+namespace Cool {
+template<typename... Ts>
+class DebugOptionsManager; // Forward declare this class so that the friend declaration that comes later on doesn't fail.
+}
 
 namespace Cool {
 
