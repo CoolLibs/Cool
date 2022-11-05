@@ -24,9 +24,10 @@ public:
      * @brief Assumes that pin is an input pin and returns the node that is connected to it (or nullptr if there is none)
      */
     // const Node* find_input_node(const Pin& pin) const;
-    // const Node& find_node_with_output_pin(PinId pin_id) const;
+    // auto find_node_with_output_pin(PinId const&) const -> Node const*;
     // const Pin&  find_pin(PinId id);
     // bool        has_no_successor(const Node& node) const;
+    auto predecessor_node_id(NodeId const&) const -> NodeId;
 
     auto nodes() -> auto& { return _nodes; }
     auto nodes() const -> auto const& { return _nodes; }
