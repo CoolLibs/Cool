@@ -48,13 +48,13 @@ void draw_node_pins(Node_Concept auto const& node)
 // }
 
 template<NodesCfg_Concept NodesCfg>
-void draw_node(typename NodesCfg::NodeT& node)
+void draw_node(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
 {
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(NodesCfg::name(node).c_str());
+    ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImNodes::EndNodeTitleBar();
     draw_node_pins(node);
-    // draw_node_params(node);
+    // draw_node_params(node); // TODO(JF) Call a generic "draw_node_body" defined by the nodes config
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -150,6 +150,7 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
+    NodesCfg const&                                         nodes_cfg,
     NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
 ) -> bool
 {
@@ -160,7 +161,7 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        if (imgui_nodes_menu(library))
+        if (imgui_nodes_menu(nodes_cfg, library))
         {
             ImGui::CloseCurrentPopup();
             b = true;
@@ -173,6 +174,7 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::imgui_window(
+    NodesCfg const&                                         nodes_cfg,
     NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
 ) -> bool
 {
@@ -182,13 +184,13 @@ auto NodesEditor<NodesCfg>::imgui_window(
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     ImNodes::BeginNodeEditor();
     {
-        graph_has_changed |= draw_nodes_library_menu_ifn(library);
+        graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
         {
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
             {
                 ImNodes::BeginNode(id);
-                draw_node<NodesCfg>(node);
+                draw_node<NodesCfg>(node, nodes_cfg);
                 ImNodes::EndNode();
             }
         }
@@ -217,6 +219,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::
     imgui_nodes_menu(
+        NodesCfg const&                                         nodes_cfg,
         NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
     ) -> bool
 {
@@ -224,7 +227,7 @@ auto NodesEditor<NodesCfg>::
     if (!maybe_node_definition)
         return false;
 
-    const auto id = _graph.add_node(NodesCfg::make_node(*maybe_node_definition));
+    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition));
     ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
 
     return true;

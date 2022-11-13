@@ -16,7 +16,7 @@ public:
     // : _factory{nodes_folder_path}
     {
     }
-    auto imgui_window(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto imgui_window(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
     // void update_templates_and_nodes();
     // void ask_to_open_nodes_menu();
     // bool tree_has_changed();
@@ -41,8 +41,8 @@ private:
 
 private:
     /* Nodes Library */
-    auto draw_nodes_library_menu_ifn(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
-    auto imgui_nodes_menu(NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto draw_nodes_library_menu_ifn(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
     auto wants_to_open_nodes_menu() -> bool;
     void open_nodes_menu();
 

@@ -8,10 +8,10 @@ template<typename Cfg>
 concept NodesCfg_Concept =
     Node_Concept<typename Cfg::NodeT>
     && NodeDefinition_Concept<typename Cfg::NodeDefinitionT>
-    && requires(typename Cfg::NodeDefinitionT def, typename Cfg::NodeT node) {
+    && requires(Cfg cfg, typename Cfg::NodeDefinitionT def, typename Cfg::NodeT node) {
            // clang-format off
-            { Cfg::make_node(def) } -> std::convertible_to<typename Cfg::NodeT>;
-            { Cfg::name(node) } -> std::convertible_to<std::string>;
+            { cfg.make_node(def) } -> std::convertible_to<typename Cfg::NodeT>;
+            { cfg.name(node) } -> std::convertible_to<std::string>;
            // clang-format on
        };
 
