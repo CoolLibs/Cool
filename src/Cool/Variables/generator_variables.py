@@ -310,6 +310,11 @@ def AnyInput():
         map(lambda var_type: f"Input<{var_type}>", all_variable_types())) + "\n>;"
 
 
+def AnyInputDefinition():
+    return "\n" + "using AnyInputDefinition = std::variant<\n" + ",\n".join(
+        map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())) + "\n>;"
+
+
 def AnyVariable():
     return "\n" + "using AnyVariable = std::variant<\n" + ",\n".join(
         map(lambda var_type: f"Variable<{var_type}>", all_variable_types())) + "\n>;"
@@ -411,6 +416,7 @@ def files():
         # register_set_variable_metadata_commands,
         VariableRegistries,
         AnyInput,
+        AnyInputDefinition,
         AnyVariable,
         AnyInputRef,
         AnyInputRefToConst,
