@@ -59,11 +59,13 @@ static auto make_input(
 ) -> Input<T>
 {
     return input_factory.make<T>(
-        dirty_flag,
-        name,
-        description,
-        get_default_value<T>(key_values),
-        get_default_metadata<T>(key_values)
+        InputDefinition<T>{
+            std::string{name},
+            description,
+            get_default_value<T>(key_values),
+            get_default_metadata<T>(key_values),
+        },
+        dirty_flag
     );
 }
 

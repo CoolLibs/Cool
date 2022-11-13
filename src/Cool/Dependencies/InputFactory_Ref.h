@@ -2,6 +2,7 @@
 
 #include <Cool/Variables/Variables.h>
 #include "Input.h"
+#include "InputDefinition.h"
 #include "VariableId.h"
 #include "VariableRegistries.h"
 
@@ -19,23 +20,18 @@ public:
     }
 
     template<typename T>
-    auto make(
-        const DirtyFlag&                  dirty_flag,
-        std::string_view                  name,
-        const std::optional<std::string>& description   = {},
-        const T&                          default_value = {},
-        const Cool::VariableMetadata<T>&  metadata      = {}
-    )
-        -> Input<T>
+    auto make(InputDefinition<T> const& def, DirtyFlag const& dirty_flag) const -> Input<T>
     {
         return Input{
             dirty_flag,
-            name,
-            description,
+            def.name,
+            def.description,
             _variable_registries.get().create(
-                Cool::Variable<T>{std::string{name}, default_value, metadata}
+                Cool::Variable<T>{def.name, def.default_value, def.metadata}
             )};
     }
+
+    auto make(AnyInputDefinition const&, DirtyFlag const&) const -> AnyInput;
 
 private:
     std::reference_wrapper<VariableRegistries> _variable_registries;
@@ -43,19 +39,12 @@ private:
 };
 
 template<>
-inline auto InputFactory_Ref::make(
-    const DirtyFlag&                  dirty_flag,
-    std::string_view                  name,
-    const std::optional<std::string>& description,
-    const Cool::Camera&,
-    const Cool::VariableMetadata<Cool::Camera>&
-)
-    -> Input<Cool::Camera>
+inline auto InputFactory_Ref::make(InputDefinition<Camera> const& def, DirtyFlag const& dirty_flag) const -> Input<Camera>
 {
     return Input{
         dirty_flag,
-        name,
-        description,
+        def.name,
+        def.description,
         _default_camera_id};
 }
 

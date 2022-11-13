@@ -6,8 +6,10 @@ namespace Cool {
 
 template<typename T>
 struct InputDefinition {
-    std::string         name{};
-    VariableMetadata<T> metadata{};
+    std::string                name{};
+    std::optional<std::string> description{};
+    T                          default_value{};
+    VariableMetadata<T>        metadata{};
 };
 
 #include <Cool/Variables/generated/AnyInputDefinition.inl>
