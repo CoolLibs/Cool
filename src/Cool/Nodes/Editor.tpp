@@ -36,16 +36,19 @@ void draw_node_pins(Node_Concept auto const& node)
     ImGui::EndGroup();
 }
 
-// void draw_node_params(Node& node, std::function<void()> /* on_change */)
-// {
-//     ImGui::BeginGroup();
-//     ImGui::PushID(&node);
-//     ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
-//     // node.parameter_list.imgui(on_change); // TODO(JF)
-//     ImGui::PopItemWidth();
-//     ImGui::PopID();
-//     ImGui::EndGroup();
-// }
+template<NodesCfg_Concept NodesCfg>
+void draw_node_body(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
+{
+    ImGui::BeginGroup();
+    ImGui::PushID(&node);
+    ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
+
+    nodes_cfg.imgui_node_body(node);
+
+    ImGui::PopItemWidth();
+    ImGui::PopID();
+    ImGui::EndGroup();
+}
 
 template<NodesCfg_Concept NodesCfg>
 void draw_node(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
@@ -54,7 +57,7 @@ void draw_node(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImNodes::EndNodeTitleBar();
     draw_node_pins(node);
-    // draw_node_params(node); // TODO(JF) Call a generic "draw_node_body" defined by the nodes config
+    draw_node_body(node, nodes_cfg);
 }
 
 template<NodesCfg_Concept NodesCfg>
