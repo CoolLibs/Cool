@@ -273,7 +273,7 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
 
 static auto gen_code__number_of_marks_variable_name(std::string_view name)
 {
-    return fmt::format("number_of_marks_of_{}", internal::gradient_marks_array_name(name));
+    return fmt::format("numberOfMarksOf{}", internal::gradient_marks_array_name(name));
 }
 
 template<>
