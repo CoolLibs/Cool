@@ -209,7 +209,7 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code__impl(const T&, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const T&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
@@ -277,7 +277,7 @@ static auto gen_code__number_of_marks_variable_name(std::string_view name)
 }
 
 template<>
-auto instantiate_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
 {
     using namespace fmt::literals;
     return value.value.gradient().is_empty()
@@ -331,7 +331,7 @@ static auto gen_code__number_of_colors_variable_name(std::string_view name)
 }
 
 template<>
-auto instantiate_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
 {
     // NB: we create a fnuction rather than an array to hold our calette. That is because glsl doesn't allow arrays of size 0.
     using namespace fmt::literals;
@@ -369,12 +369,28 @@ vec3 {color_palette_function}(int index)
 }
 
 template<typename T>
-auto instantiate_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
 {
-    return instantiate_shader_code__impl(input_provider(input), input.name());
+    return gen_input_shader_code<T>(input, input_provider, input.name());
 }
 
-static auto instantiate_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
+template<typename T>
+auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string
+{
+    return gen_input_shader_code__impl(input_provider(input), name);
+}
+
+auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider) -> std::string
+{
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider); }, input);
+}
+
+auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider, std::string_view name) -> std::string
+{
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider, name); }, input);
+}
+
+static auto gen_input_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
 {
     std::string res;
     for (const auto& input : inputs)
@@ -383,7 +399,7 @@ static auto instantiate_shader_code(std::string_view name, const std::vector<Any
             [&](auto&& input) {
                 if (input.name() == name)
                 {
-                    res = instantiate_shader_code(input, input_provider);
+                    res = gen_input_shader_code(input, input_provider);
                 }
             },
             input
@@ -401,7 +417,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
     {
         if (const auto info = find_type_and_name(line))
         {
-            out << instantiate_shader_code(info->name, inputs, input_provider) << '\n';
+            out << gen_input_shader_code(info->name, inputs, input_provider) << '\n';
         }
         else
         {
