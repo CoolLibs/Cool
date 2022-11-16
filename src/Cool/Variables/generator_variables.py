@@ -29,6 +29,8 @@ class VariableDescription:
     metadatas: list[VariableMetadata] = field(
         default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
+    # For example a Gradient variable can't be sent as a simple uniform to a shader; that's why we generate some to inject it into the shader.
+    requires_shader_code_generation: bool = False
 
 
 def all_variable_descriptions():
@@ -38,6 +40,7 @@ def all_variable_descriptions():
             cpp_type="bool",
             glsl_type="bool",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="int",
@@ -59,6 +62,7 @@ def all_variable_descriptions():
                     default_value="10",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="float",
@@ -94,6 +98,7 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="Point2D",
@@ -101,6 +106,7 @@ def all_variable_descriptions():
             glsl_type="vec2",
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="vec2",
@@ -116,6 +122,7 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="vec3",
@@ -131,6 +138,7 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="vec4",
@@ -146,6 +154,7 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="RgbColor",
@@ -162,6 +171,7 @@ def all_variable_descriptions():
                 ),
             ],
             do_generate_get_default_metadata=False,
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="Camera",
@@ -170,6 +180,7 @@ def all_variable_descriptions():
             glsl_type="mat4",
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="Angle",
@@ -177,6 +188,7 @@ def all_variable_descriptions():
             glsl_type="float",
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="Direction2D",
@@ -184,6 +196,7 @@ def all_variable_descriptions():
             glsl_type="vec2",
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="Hue",
@@ -191,6 +204,7 @@ def all_variable_descriptions():
             glsl_type="float",
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type="ColorPalette",
@@ -206,6 +220,7 @@ def all_variable_descriptions():
                     default_value="true",
                 ),
             ],
+            requires_shader_code_generation=True,
         ),
         VariableDescription(
             input_type="Gradient",
@@ -226,6 +241,7 @@ def all_variable_descriptions():
                     type="bool",
                     default_value="true",
                 ), ],
+            requires_shader_code_generation=True,
         ),
     ]
 
@@ -410,6 +426,14 @@ def variable_definition_factory(variable_type_and_metadatas):
     return variable_definition
 
 
+def requires_shader_code_generation():
+    return "\n\n".join(
+        map(lambda desc: f'''
+            if constexpr (std::is_same_v<T, {desc.cpp_type}>)
+                return {"true" if desc.requires_shader_code_generation else "false"};
+            ''', all_variable_descriptions()))
+
+
 def files():
     res = [
         # register_set_variable_commands,
@@ -424,6 +448,7 @@ def files():
         find_metadatas_in_string,
         variables_includes,
         glsl_type,
+        requires_shader_code_generation,
     ]
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(
