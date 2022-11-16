@@ -37,13 +37,13 @@ void draw_node_pins(Node_Concept auto const& node)
 }
 
 template<NodesCfg_Concept NodesCfg>
-void draw_node_body(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
+void draw_node_body(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
 {
     ImGui::BeginGroup();
     ImGui::PushID(&node);
     ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
 
-    nodes_cfg.imgui_node_body(node);
+    nodes_cfg.imgui_node_body(node, id);
 
     ImGui::PopItemWidth();
     ImGui::PopID();
@@ -51,13 +51,13 @@ void draw_node_body(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
 }
 
 template<NodesCfg_Concept NodesCfg>
-void draw_node(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg)
+void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
 {
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImNodes::EndNodeTitleBar();
     draw_node_pins(node);
-    draw_node_body(node, nodes_cfg);
+    draw_node_body(node, id, nodes_cfg);
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -193,7 +193,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
             for (auto& [id, node] : _graph.nodes())
             {
                 ImNodes::BeginNode(id);
-                draw_node<NodesCfg>(node, nodes_cfg);
+                draw_node<NodesCfg>(node, id, nodes_cfg);
                 ImNodes::EndNode();
             }
         }
