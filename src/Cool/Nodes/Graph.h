@@ -27,7 +27,7 @@ public:
     // auto find_node_with_output_pin(PinId const&) const -> Node const*;
     // const Pin&  find_pin(PinId id);
     // bool        has_no_successor(const Node& node) const;
-    auto predecessor_node_id(NodeId const&) const -> NodeId;
+    auto input_node_id(PinId const&) const -> NodeId;
 
     auto nodes() -> auto& { return _nodes; }
     auto nodes() const -> auto const& { return _nodes; }
