@@ -258,11 +258,11 @@ auto file_dialog_button(
 
     NFD::UniquePath outPath;
     nfdresult_t     result = NFD::OpenDialog(
-            outPath,
-            file_filters.data(),
-            static_cast<nfdfiltersize_t>(file_filters.size()),
-            std::filesystem::absolute(initial_folder).string().c_str()
-        );
+        outPath,
+        file_filters.data(),
+        static_cast<nfdfiltersize_t>(file_filters.size()),
+        std::filesystem::absolute(initial_folder).string().c_str()
+    );
     if (result != NFD_OKAY)
         return false;
 
