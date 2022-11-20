@@ -60,7 +60,7 @@ void Graph<Node>::remove_link_going_into(PinId const& pin_id)
 }
 
 template<Node_Concept Node>
-auto Graph<Node>::input_node_id(PinId const& pin_id) const -> NodeId
+auto Graph<Node>::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};
     std::shared_lock links_lock{links().mutex()};
@@ -75,11 +75,14 @@ auto Graph<Node>::input_node_id(PinId const& pin_id) const -> NodeId
         // Find the other node connected to that link
         for (auto const& [other_node_id, other_node] : nodes())
         {
-            if (std::any_of(other_node.output_pins().begin(), other_node.output_pins().end(), [&](OutputPin const& output_pin) {
-                    return output_pin.id() == link.from_pin_id;
-                }))
+            for (OutputPin const& output_pin : other_node.output_pins())
             {
-                return other_node_id;
+                if (output_pin.id() == link.from_pin_id)
+                {
+                    if (out__output_pin)
+                        *out__output_pin = output_pin;
+                    return other_node_id;
+                }
             }
         }
     }

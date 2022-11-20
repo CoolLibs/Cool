@@ -44,6 +44,8 @@ public:
     using Pin::Pin;
     void show() const override;
 
+    friend auto operator==(InputPin const& lhs, InputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }
+
 private:
     // Serialization
     friend class cereal::access;
@@ -60,6 +62,8 @@ class OutputPin : public Pin {
 public:
     using Pin::Pin;
     void show() const override;
+
+    friend auto operator==(OutputPin const& lhs, OutputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }
 
 private:
     // Serialization
