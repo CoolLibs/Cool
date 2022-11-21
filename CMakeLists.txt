@@ -85,6 +85,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <scope_guard/scope_guard.hpp>
     <fmt/core.h>
     <fmt/std.h>
+    <fmt/compile.h>
     <Cool/Log/Debug.h>
     <Cool/Serialization/filesystem.h>
     <Cool/Serialization/img.h>

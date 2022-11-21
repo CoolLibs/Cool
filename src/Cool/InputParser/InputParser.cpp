@@ -5,7 +5,6 @@
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
-#include <fmt/compile.h>
 #include <sstream>
 
 namespace Cool {
