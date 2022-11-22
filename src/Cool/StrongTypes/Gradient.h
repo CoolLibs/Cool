@@ -58,6 +58,12 @@ inline auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool s
     modified |= ImGG::interpolation_mode_widget("Interpolation Mode", &gradient.value.gradient().interpolation_mode());
     ImGui::SameLine();
     modified |= ImGG::wrap_mode_widget("Wrap Mode", &gradient.wrap_mode);
+    ImGui::SameLine();
+    if (ImGui::Button("Spread marks evenly"))
+    {
+        gradient.value.gradient().spread_marks_evenly();
+        modified = true;
+    }
     return modified;
 }
 
