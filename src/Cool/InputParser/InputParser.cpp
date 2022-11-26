@@ -46,6 +46,16 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     return metadata;
 }
 
+template<>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::StraightRgbaColor>
+{
+    Cool::VariableMetadata<Cool::StraightRgbaColor> metadata{};
+
+    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
+
+    return metadata;
+}
+
 #include <Cool/Variables/generated/find_metadatas_in_string.inl>
 
 template<typename T>

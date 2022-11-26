@@ -12,4 +12,5 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/StrongTypes/StraightRgbaColor.h>
 #include <glm/glm.hpp>

@@ -70,7 +70,6 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) cons
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
-
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) const
 {
     assert_shader_is_bound(_shader.id());
@@ -90,22 +89,22 @@ void Shader::set_uniform(std::string_view uniform_name, Angle angle) const
 {
     set_uniform(uniform_name, angle.as_radians());
 }
-
 void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
 {
     set_uniform(uniform_name, color.value);
 }
-
+void Shader::set_uniform(std::string_view uniform_name, StraightRgbaColor color) const
+{
+    set_uniform(uniform_name, color.value);
+}
 void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) const
 {
     set_uniform(uniform_name, direction.as_unit_vec2());
 }
-
 void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
 {
     set_uniform(uniform_name, hue.from_0_to_1());
 }
-
 void Shader::set_uniform(std::string_view uniform_name, const ColorPalette& palette) const
 {
     int idx = 0;
@@ -115,13 +114,11 @@ void Shader::set_uniform(std::string_view uniform_name, const ColorPalette& pale
         idx++;
     }
 }
-
 void Shader::set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v) const
 {
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
-
 void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient) const
 {
     int idx = 0;
@@ -132,7 +129,6 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
         idx++;
     }
 }
-
 void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
 {
     set_uniform(uniform_name, point2D.value);

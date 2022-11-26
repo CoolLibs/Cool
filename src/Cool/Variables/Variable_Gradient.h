@@ -15,7 +15,7 @@ inline auto imgui_widget(Variable<Gradient>& var) -> bool
         var.name,
         var.value,
         var.metadata.randomize_new_marks_colors,
-        internal::rgb_color_imgui_flags(var.metadata.is_hdr)
+        internal::color_imgui_flags(var.metadata.is_hdr)
     );
 }
 

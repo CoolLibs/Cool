@@ -7,6 +7,7 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/StrongTypes/StraightRgbaColor.h>
 
 namespace Cool::String {
 
@@ -203,6 +204,8 @@ template<>
 auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view) -> std::optional<Cool::RgbColor>;
+template<>
+auto value_from_string<Cool::StraightRgbaColor>(std::string_view) -> std::optional<Cool::StraightRgbaColor>;
 template<>
 auto value_from_string<Cool::Angle>(std::string_view) -> std::optional<Cool::Angle>;
 template<>

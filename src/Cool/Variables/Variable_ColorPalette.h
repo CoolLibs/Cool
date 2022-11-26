@@ -13,7 +13,7 @@ inline auto imgui_widget(Variable<ColorPalette>& var) -> bool
     return imgui_widget(
         var.name,
         var.value,
-        internal::rgb_color_imgui_flags(var.metadata.is_hdr)
+        internal::color_imgui_flags(var.metadata.is_hdr)
     );
 }
 

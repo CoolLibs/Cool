@@ -519,6 +519,20 @@ auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Co
 }
 
 template<>
+auto value_from_string<Cool::StraightRgbaColor>(std::string_view str) -> std::optional<Cool::StraightRgbaColor>
+{
+    const auto val = value_from_string_impl_vec<float, 4>(str);
+    if (val)
+    {
+        return Cool::StraightRgbaColor{*val};
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
+
+template<>
 auto value_from_string<Cool::Angle>(std::string_view str) -> std::optional<Cool::Angle>
 {
     const auto val = value_from_string_impl_scalar<float>(str);

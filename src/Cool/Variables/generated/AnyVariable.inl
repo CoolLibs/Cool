@@ -14,6 +14,7 @@ using AnyVariable = std::variant<
     Variable<glm::vec3>,
     Variable<glm::vec4>,
     Variable<Cool::RgbColor>,
+    Variable<Cool::StraightRgbaColor>,
     Variable<Cool::Camera>,
     Variable<Cool::Angle>,
     Variable<Cool::Direction2D>,

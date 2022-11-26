@@ -174,6 +174,23 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
+            input_type="StraightRgbaColor",
+            cpp_type="Cool::StraightRgbaColor",
+            glsl_type="vec4",
+            include="<Cool/StrongTypes/StraightRgbaColor.h>",
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="hdr",
+                    field_name="is_hdr",
+                    pretty_name="Is HDR",
+                    type="bool",
+                    default_value="true",
+                ),
+            ],
+            do_generate_get_default_metadata=False,
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
             input_type="Camera",
             cpp_type="Cool::Camera",
             # NB: we would probably need to create a Camera struct in glsl if we really intended to use this variable in shaders. (Which we will definitely do at some point instead of having one single global camera)

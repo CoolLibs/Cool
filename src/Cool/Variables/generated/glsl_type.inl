@@ -54,6 +54,12 @@ auto glsl_type<Cool::RgbColor>() -> std::string
 }
 
 template<>
+auto glsl_type<Cool::StraightRgbaColor>() -> std::string
+{
+    return "vec4";
+}
+
+template<>
 auto glsl_type<Cool::Camera>() -> std::string
 {
     return "mat4";

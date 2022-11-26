@@ -46,6 +46,11 @@ struct from_impl<"RgbColor"> {
 };
 
 template<>
+struct from_impl<"StraightRgbaColor"> {
+    using type = Cool::StraightRgbaColor;
+};
+
+template<>
 struct from_impl<"Camera"> {
     using type = Cool::Camera;
 };
