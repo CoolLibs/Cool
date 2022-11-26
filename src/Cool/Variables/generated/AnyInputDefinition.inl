@@ -14,6 +14,7 @@ using AnyInputDefinition = std::variant<
     InputDefinition<glm::vec3>,
     InputDefinition<glm::vec4>,
     InputDefinition<Cool::RgbColor>,
+    InputDefinition<Cool::PremultipliedRgbaColor>,
     InputDefinition<Cool::StraightRgbaColor>,
     InputDefinition<Cool::Camera>,
     InputDefinition<Cool::Angle>,

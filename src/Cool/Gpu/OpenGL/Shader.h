@@ -7,6 +7,7 @@
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
+#include <Cool/StrongTypes/PremultipliedRgbaColor.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/StrongTypes/StraightRgbaColor.h>
 #include "ShaderModule.h"
@@ -35,6 +36,7 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::mat4&) const;
     void set_uniform(std::string_view uniform_name, Angle) const;
     void set_uniform(std::string_view uniform_name, RgbColor) const;
+    void set_uniform(std::string_view uniform_name, PremultipliedRgbaColor) const;
     void set_uniform(std::string_view uniform_name, StraightRgbaColor) const;
     void set_uniform(std::string_view uniform_name, Direction2D) const;
     void set_uniform(std::string_view uniform_name, Hue) const;

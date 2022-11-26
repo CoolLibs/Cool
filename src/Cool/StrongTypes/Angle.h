@@ -10,14 +10,15 @@ struct Radians
     : public op::Addable<Radians>
     , public op::Subtractable<Radians>
     , public op::Negatable<Radians>
-    , public op::Scalable<Radians>
-    , public op::EqualityComparable<Radians> {
+    , public op::Scalable<Radians> {
     float value{0.f};
 
     constexpr Radians() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
 
     constexpr explicit Radians(float radians)
         : value{radians} {}
+
+    friend auto operator==(Radians const& a, Radians const& b) -> bool { return a.value == b.value; }
 
 private:
     // Serialization
@@ -58,9 +59,6 @@ public:
     constexpr explicit Angle(Radians radians)
         : value{radians} {}
 
-    friend auto operator==(const Angle& a, const Angle& b) -> bool { return a.value == b.value; }
-    friend auto operator!=(const Angle& a, const Angle& b) -> bool { return !(a == b); }
-
     auto as_turns() const -> float { return radians_to_turns(value); }
     auto as_radians() const -> float { return value.value; }
     auto as_degrees() const -> float { return radians_to_degrees(value); }
@@ -69,6 +67,8 @@ public:
         name.data(),
         &value.value
     ); }
+
+    friend auto operator==(Angle const& a, Angle const& b) -> bool { return a.value == b.value; }
 
 private:
     friend class op::Addable<Angle>;

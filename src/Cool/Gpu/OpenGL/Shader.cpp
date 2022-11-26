@@ -93,6 +93,10 @@ void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
 {
     set_uniform(uniform_name, color.value);
 }
+void Shader::set_uniform(std::string_view uniform_name, PremultipliedRgbaColor color) const
+{
+    set_uniform(uniform_name, color.get());
+}
 void Shader::set_uniform(std::string_view uniform_name, StraightRgbaColor color) const
 {
     set_uniform(uniform_name, color.value);

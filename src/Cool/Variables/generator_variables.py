@@ -174,6 +174,23 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
+            input_type="PremultipliedRgbaColor",
+            cpp_type="Cool::PremultipliedRgbaColor",
+            glsl_type="vec4",
+            include="<Cool/StrongTypes/PremultipliedRgbaColor.h>",
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="hdr",
+                    field_name="is_hdr",
+                    pretty_name="Is HDR",
+                    type="bool",
+                    default_value="true",
+                ),
+            ],
+            do_generate_get_default_metadata=False,
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
             input_type="StraightRgbaColor",
             cpp_type="Cool::StraightRgbaColor",
             glsl_type="vec4",

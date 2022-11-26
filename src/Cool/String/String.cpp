@@ -519,6 +519,20 @@ auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Co
 }
 
 template<>
+auto value_from_string<Cool::PremultipliedRgbaColor>(std::string_view str) -> std::optional<Cool::PremultipliedRgbaColor>
+{
+    const auto val = value_from_string_impl_vec<float, 4>(str);
+    if (val)
+    {
+        return Cool::PremultipliedRgbaColor{*val};
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
+
+template<>
 auto value_from_string<Cool::StraightRgbaColor>(std::string_view str) -> std::optional<Cool::StraightRgbaColor>
 {
     const auto val = value_from_string_impl_vec<float, 4>(str);

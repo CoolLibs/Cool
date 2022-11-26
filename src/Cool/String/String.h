@@ -6,6 +6,7 @@
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
+#include <Cool/StrongTypes/PremultipliedRgbaColor.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/StrongTypes/StraightRgbaColor.h>
 
@@ -204,6 +205,8 @@ template<>
 auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
 template<>
 auto value_from_string<Cool::RgbColor>(std::string_view) -> std::optional<Cool::RgbColor>;
+template<>
+auto value_from_string<Cool::PremultipliedRgbaColor>(std::string_view) -> std::optional<Cool::PremultipliedRgbaColor>;
 template<>
 auto value_from_string<Cool::StraightRgbaColor>(std::string_view) -> std::optional<Cool::StraightRgbaColor>;
 template<>
