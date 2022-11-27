@@ -17,8 +17,8 @@ void TextureFB::createAttachments(img::Size size)
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT)); // TODO(JF) Use GL_CLAMP_TO_EDGE again once we don't need this bmend mode hardcoded for the shaders in Lab.
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT)); // TODO(JF) Use GL_CLAMP_TO_EDGE again once we don't need this bmend mode hardcoded for the shaders in Lab.
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
