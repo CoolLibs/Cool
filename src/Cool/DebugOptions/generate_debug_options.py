@@ -17,6 +17,10 @@ def all_debug_options():
             name_in_ui="Log when autosaving",
         ),
         DebugOption(
+            name_in_code="log_when_rendering_alpha_checkerboard_background",
+            name_in_ui="Log when rendering alpha checkerboard background",
+        ),
+        DebugOption(
             name_in_code="log_when_creating_icon",
             name_in_ui="Log when creating icon",
         ),
