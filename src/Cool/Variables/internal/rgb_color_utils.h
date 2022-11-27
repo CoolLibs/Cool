@@ -6,7 +6,9 @@ namespace Cool::internal {
 inline auto color_imgui_flags(bool is_hdr) -> ImGuiColorEditFlags
 {
     return ImGuiColorEditFlags_Float
-           | (is_hdr ? ImGuiColorEditFlags_HDR : 0);
+           | (is_hdr ? ImGuiColorEditFlags_HDR : 0)
+           | ImGuiColorEditFlags_PickerHueWheel
+           | ImGuiColorEditFlags_AlphaBar;
 }
 
 inline auto rgb_color_metadata_widget(bool& is_hdr) -> bool
