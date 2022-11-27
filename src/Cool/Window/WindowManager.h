@@ -25,9 +25,8 @@ private:
     }
 
 private:
-    std::list<Window>
-            _windows;
-    Window* _main_window = nullptr;
+    std::list<Window> _windows;
+    Window*           _main_window = nullptr;
 };
 
 } // namespace Cool
