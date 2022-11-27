@@ -65,7 +65,7 @@ void run(
     // Init
     init_config.set_paths();
     // Create window.s
-    assert(windows_configs.size() >= 1);
+    assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
     window_factory.make_main_window(windows_configs[0]);
     for (size_t i = 1; i < windows_configs.size(); ++i)

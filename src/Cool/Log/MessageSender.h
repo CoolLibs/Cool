@@ -16,9 +16,9 @@ public:
         : _console{console}
     {}
 
-    void send(const Message& message) { _console.get().send(_id, message); }
-    void clear() { _console.get().remove(_id); }
-    auto should_highlight() const -> bool { return _console.get().should_highlight(_id); }
+    void               send(const Message& message) { _console.get().send(_id, message); }
+    void               clear() { _console.get().remove(_id); }
+    [[nodiscard]] auto should_highlight() const -> bool { return _console.get().should_highlight(_id); }
 
 private:
     MessageId                              _id{};

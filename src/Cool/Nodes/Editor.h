@@ -34,10 +34,10 @@ public:
 
 private:
     // void on_graph_change();
-    auto handle_link_creation() -> bool;
-    auto handle_link_deletion() -> bool;
-    auto handle_node_deletion() -> bool;
-    auto wants_to_delete_selection() const -> bool;
+    auto               handle_link_creation() -> bool;
+    auto               handle_link_deletion() -> bool;
+    auto               handle_node_deletion() -> bool;
+    [[nodiscard]] auto wants_to_delete_selection() const -> bool;
 
 private:
     /* Nodes Library */

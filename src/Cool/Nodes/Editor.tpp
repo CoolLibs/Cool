@@ -250,7 +250,7 @@ auto NodesEditor<NodesCfg>::
 //             }
 //         );
 
-//         // wainting for xcode to support std::ranges::find_if
+//         // waiting for xcode to support std::ranges::find_if
 //         // const auto node_template = std::ranges::find_if(_factory.templates(), [&](const NodeTemplate& node_template) {
 //         // return node_template.name == node.node_template_name;
 //         // });
