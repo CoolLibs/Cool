@@ -352,7 +352,7 @@ def all_types_includes():
 
 def VariableRegistries():
     return "\n" + "using VariableRegistries = reg::Registries<\n" + ",\n".join(
-        map(lambda var_type: f"Cool::Variable<{var_type}>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>", all_variable_types())) + "\n>;"
 
 
 def AnyInput():
