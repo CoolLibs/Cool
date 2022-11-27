@@ -79,6 +79,12 @@ TEST_CASE("[Cool::String] replace()")
         Cool::String::replace_all(text, "_", " ");
         CHECK(text == "Effect intensity");
     }
+    SUBCASE("replace_all_words()")
+    {
+        auto const text = "Test helloworld hello world hello something"s;
+        auto const res  = Cool::String::replace_all_words(text, "hello", "plop");
+        CHECK(res == "Test helloworld plop world plop something");
+    }
     SUBCASE("replace_between_delimiters()")
     {
         CHECK(Cool::String::replace_between_delimiters({text, replacements}) == "ssdgd 12ssd{c}v");

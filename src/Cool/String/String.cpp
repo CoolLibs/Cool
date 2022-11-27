@@ -33,6 +33,22 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
+auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    auto word_position = find_next_word_position(str, 0, delimiters);
+    while (word_position)
+    {
+        auto const block_content = substring(str, word_position->first, word_position->second);
+
+        if (block_content == from)
+            str.replace(word_position->first, word_position->second - word_position->first, to);
+
+        word_position = find_next_word_position(str, word_position->second, delimiters);
+    }
+
+    return str;
+}
+
 auto replace_between_delimiters(const ReplacementInput& in) -> std::string
 {
     auto next = replace_next(in, 0);
@@ -251,15 +267,11 @@ auto next_word(
     std::string_view delimiters
 ) -> std::optional<std::string_view>
 {
-    auto position = find_next_word_position(text, starting_pos, delimiters);
+    auto const position = find_next_word_position(text, starting_pos, delimiters);
     if (!position)
-    {
         return std::nullopt;
-    }
-    else
-    {
-        return substring(text, *position);
-    }
+
+    return substring(text, *position);
 }
 
 auto find_block_position(

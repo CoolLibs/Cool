@@ -12,7 +12,7 @@
 
 namespace Cool::String {
 
-static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
+static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/+*-=&|^~%!.?<>`"};
 
 auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 
@@ -24,14 +24,12 @@ auto contains(std::string_view text, std::string_view characters) -> bool; // TO
  */
 auto to_lower(std::string_view str) -> std::string;
 
-/**
- * @brief Modifies *str* by replacing all occurences of *from* with *to*
- *
- * @param str
- * @param from
- * @param to
- */
-auto replace_all(std::string& str, std::string_view from, std::string_view to) -> void;
+/// Modifies `str` by replacing all occurrences of `from` with `to`.
+void replace_all(std::string& str, std::string_view from, std::string_view to);
+
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
+auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
 
 /**
  * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
