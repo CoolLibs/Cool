@@ -1,6 +1,6 @@
 #include "View.h"
 #include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/GPU/FullscreenPipeline.h>
+#include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 
