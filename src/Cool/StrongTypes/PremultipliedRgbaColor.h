@@ -15,7 +15,14 @@ public:
         : value{rgba}
     {}
 
-    auto get() const { return value * value.a; }
+    auto get() const
+    {
+        glm::vec4 premult = value;
+        premult.r *= premult.a;
+        premult.g *= premult.a;
+        premult.b *= premult.a;
+        return premult;
+    }
 
     friend auto operator==(PremultipliedRgbaColor const& a, PremultipliedRgbaColor const& b) -> bool { return a.value == b.value; }
 
