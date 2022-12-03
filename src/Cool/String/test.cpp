@@ -1,3 +1,4 @@
+#include "Cool/String/String.h"
 #if COOL_ENABLE_TESTS
 
 #include <stringify/stringify.hpp>
@@ -460,6 +461,43 @@ TEST_CASE("contains_word()")
     CHECK(Cool::String::contains_word("", "Hello World") == false);
     CHECK(Cool::String::contains_word("", "") == false);
     CHECK(Cool::String::contains_word("Hello World", "Hello World") == true);
+}
+
+TEST_CASE("remove_comments()")
+{
+    CHECK(Cool::String::remove_comments("hello") == "hello");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something
+)STR") == R"STR(
+hello
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something)STR")
+          == R"STR(
+hello)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something // else
+)STR") == R"STR(
+hello
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hel/*lo
+wor*/ld
+)STR") == R"STR(
+helld
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+he//l/*lo
+wor*/ld
+)STR") == R"STR(
+he
+wor*/ld
+)STR");
 }
 
 #endif

@@ -657,4 +657,100 @@ auto contains_word(std::string_view word, std::string_view text, std::string_vie
     return is_beginning_of_a_word && is_end_of_a_word;
 }
 
+enum class CommentParsingState {
+    Idle,
+    JustSawASlash,
+    InsideOneLineComment,
+    InsideMultilineComment,
+    JustSawAStarInsideMultilineComment,
+};
+
+static auto is_not_inside_comment(CommentParsingState state) -> bool
+{
+    return state == CommentParsingState::Idle
+           || state == CommentParsingState::JustSawASlash;
+}
+
+auto remove_comments(std::string const& str) -> std::string
+{
+    std::string res{};
+    res.reserve(str.length());
+
+    auto   state               = CommentParsingState::Idle;
+    size_t previous_char_index = 0;
+
+    auto const enter_comment = [&](size_t i) {
+        res += substring(str, previous_char_index, i - 1);
+    };
+    auto const exit_comment = [&](size_t i) {
+        previous_char_index = i + 1u;
+    };
+
+    for (size_t i = 0; i < str.length(); ++i) // NOLINT(modernize-loop-convert)
+    {
+        char const c = str[i];
+        switch (state)
+        {
+        case CommentParsingState::Idle:
+        {
+            if (c == '/')
+                state = CommentParsingState::JustSawASlash;
+            break;
+        }
+        case CommentParsingState::JustSawASlash:
+        {
+            if (c == '/')
+            {
+                state = CommentParsingState::InsideOneLineComment;
+                enter_comment(i);
+            }
+            else if (c == '*')
+            {
+                state = CommentParsingState::InsideMultilineComment;
+                enter_comment(i);
+            }
+            else
+            {
+                state = CommentParsingState::Idle;
+            }
+            break;
+        }
+        case CommentParsingState::InsideOneLineComment:
+        {
+            if (c == '\n')
+            {
+                state = CommentParsingState::Idle;
+                exit_comment(i);
+                res += '\n';
+            }
+            break;
+        }
+        case CommentParsingState::InsideMultilineComment:
+        {
+            if (c == '*')
+                state = CommentParsingState::JustSawAStarInsideMultilineComment;
+            break;
+        }
+        case CommentParsingState::JustSawAStarInsideMultilineComment:
+        {
+            if (c == '/')
+            {
+                state = CommentParsingState::Idle;
+                exit_comment(i);
+            }
+            else
+            {
+                state = CommentParsingState::InsideMultilineComment;
+            }
+            break;
+        }
+        }
+    }
+
+    if (is_not_inside_comment(state))
+        res += substring(str, previous_char_index, str.length());
+
+    return res;
+}
+
 } // namespace Cool::String
