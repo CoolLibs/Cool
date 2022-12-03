@@ -407,7 +407,7 @@ static auto value_from_string_impl_vec(std::string_view str)
 {
     auto ptr_in_string = std::optional<size_t>{0};
 
-    const auto opening_parenthesis_position = str.find_first_of("(");
+    const auto opening_parenthesis_position = str.find_first_of('(');
     if (opening_parenthesis_position != std::string_view::npos)
     {
         ptr_in_string = opening_parenthesis_position;
@@ -466,19 +466,13 @@ auto value_from_string<float>(std::string_view str) -> std::optional<float>
 template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>
 {
-    const auto string = to_lower(str);
+    auto const string = to_lower(str);
     if (string == "true")
-    {
         return true;
-    }
-    else if (string == "false")
-    {
+    if (string == "false")
         return false;
-    }
-    else
-    {
-        return std::nullopt;
-    }
+
+    return std::nullopt;
 }
 
 template<>
