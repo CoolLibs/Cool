@@ -164,6 +164,28 @@ auto find_matching_pair(
     return std::nullopt;
 }
 
+auto rfind_matching_pair(
+    find_matching_pair_params p
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    size_t const last_closed = p.text.rfind(p.closing, p.offset);
+    if (last_closed == std::string::npos)
+        return std::nullopt;
+
+    size_t counter = 1;
+    for (size_t pos = last_closed - 1; pos != -1; --pos)
+    {
+        if (p.text[pos] == p.opening)
+            counter--;
+        else if (p.text[pos] == p.closing)
+            counter++;
+
+        if (counter == 0)
+            return std::make_pair(pos, last_closed);
+    }
+    return std::nullopt;
+}
+
 auto split_into_words(
     std::string_view text,
     std::string_view delimiters
@@ -246,11 +268,11 @@ auto substring(
 
 auto find_next_word_position(
     std::string_view text,
-    size_t           offset,
+    size_t           starting_pos,
     std::string_view delimiters
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const auto idx1 = text.find_first_not_of(delimiters, offset);
+    const auto idx1 = text.find_first_not_of(delimiters, starting_pos);
     if (idx1 == std::string_view::npos)
     {
         return std::nullopt;
@@ -261,6 +283,23 @@ auto find_next_word_position(
         idx2 = text.size();
     }
     return std::make_pair(idx1, idx2);
+}
+
+auto find_previous_word_position(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    auto const idx2 = text.find_last_not_of(delimiters, ending_pos - 1);
+    if (idx2 == std::string_view::npos)
+        return std::nullopt;
+
+    auto idx1 = text.find_last_of(delimiters, idx2);
+    if (idx1 == std::string_view::npos)
+        idx1 = -1;
+
+    return std::make_pair(idx1 + 1, idx2 + 1);
 }
 
 auto next_word(

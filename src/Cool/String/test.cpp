@@ -200,6 +200,12 @@ TEST_CASE("find_next_word_position")
     CHECK(Cool::String::find_next_word_position("ab(cd)ef ghij klmno", 0) == std::make_optional(std::make_pair<size_t, size_t>(0, 2)));
 }
 
+TEST_CASE("find_previous_word_position")
+{
+    CHECK(Cool::String::find_previous_word_position("Hello    World", 6) == std::make_optional(std::make_pair<size_t, size_t>(0, 5)));
+    CHECK(Cool::String::find_previous_word_position("Hello World   HI", 12) == std::make_optional(std::make_pair<size_t, size_t>(6, 11)));
+}
+
 TEST_CASE("next_word")
 {
     CHECK(Cool::String::next_word("abcdef ghij klmno", 6) == "ghij");

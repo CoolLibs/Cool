@@ -86,18 +86,20 @@ struct find_matching_pair_params {
     char             closing = ')';
 };
 
-/**
- * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
- * or std::nullopt if no such pair was found.
- */
+/// Returns the position of the first `opening` character and the position of the matching `closing` character,
+/// or std::nullopt if no such pair was found.
 auto find_matching_pair(
     find_matching_pair_params p
 ) -> std::optional<std::pair<size_t, size_t>>;
 
-/**
- * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
- * The words appear in the same order in the list as they do in the text
- */
+/// Returns the position of the last `closing` character before `offset` and the position of the matching `opening` character,
+/// or std::nullopt if no such pair was found.
+auto rfind_matching_pair(
+    find_matching_pair_params p
+) -> std::optional<std::pair<size_t, size_t>>;
+
+/// Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
+/// The words appear in the same order in the list as they do in the text
 auto split_into_words(
     std::string_view text,
     std::string_view delimiters = default_word_delimiters
@@ -140,17 +142,23 @@ auto substring(
     std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
-/**
- * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
- * Words are considered to be separated by one or more characters of "delimiters".
- */
+/// Returns the indices of the beginning and end of the next word in "text" after position "starting_pos".
+/// Words are considered to be separated by one or more characters of "delimiters".
 auto find_next_word_position(
     std::string_view text,
-    size_t           offset,
+    size_t           starting_pos,
     std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
 
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+/// Returns the indices of the beginning and end of the previous word in "text" before position "ending_pos".
+/// Words are considered to be separated by one or more characters of "delimiters".
+auto find_previous_word_position(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters = default_word_delimiters
+) -> std::optional<std::pair<size_t, size_t>>;
+
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
