@@ -3,6 +3,7 @@
 #include <exception>
 #include <glm/detail/qualifier.hpp>
 #include <string_view>
+#include "Cool/String/String.h"
 
 namespace Cool::String {
 
@@ -416,7 +417,7 @@ static auto value_from_string_impl_vec(std::string_view str)
     auto words_positions = std::vector<std::pair<size_t, size_t>>{};
     while (ptr_in_string)
     {
-        const auto pos = find_next_word_position(str, *ptr_in_string);
+        const auto pos = find_next_word_position(str, *ptr_in_string, default_word_delimiters_except_dot);
         if (pos)
         {
             words_positions.push_back(*pos);
