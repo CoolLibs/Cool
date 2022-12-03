@@ -12,7 +12,8 @@
 
 namespace Cool::String {
 
-static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/+*-=&|^~%!.?<>`"};
+static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/+*-=&|^~%!?<>`."};
+static constexpr std::string_view default_word_delimiters_except_dot{" \n\t\r,;{}[]():/+*-=&|^~%!?<>`"};
 
 auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 

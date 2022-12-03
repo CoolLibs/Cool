@@ -2,6 +2,7 @@
 #include <charconv>
 #include <exception>
 #include <glm/detail/qualifier.hpp>
+#include <string_view>
 
 namespace Cool::String {
 
@@ -279,7 +280,7 @@ auto find_block_position(
     size_t           offset
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const auto first_word_position  = find_next_word_position(text, offset);
+    const auto first_word_position  = find_next_word_position(text, offset, default_word_delimiters_except_dot);
     const auto parentheses_position = find_matching_pair({.text = text, .offset = offset});
     // If there are neither words nor parentheses.
     if (!first_word_position && !parentheses_position)
