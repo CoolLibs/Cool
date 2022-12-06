@@ -57,6 +57,8 @@ public:
         _has_changed = true;
     }
 
+    void force_refresh() { _has_changed = true; } // TODO(JF) Remove
+
 private:
     // TODO(JF) Folder Watcher, or at least a file watcher for each current node to auto refresh it
     std::filesystem::path _folder_path;
