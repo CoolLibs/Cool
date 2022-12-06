@@ -28,22 +28,12 @@ public:
         return nullptr;
     }
 
-    void clear()
-    {
-        _definitions.clear();
-    }
-
-    void add_nodes_from(std::filesystem::path)
-    {
-        // TODO(JF)
-    }
-
     void add_definition(NodeDefinition const& definition) { _definitions.push_back(definition); }
     void add_definition(NodeDefinition&& definition) { _definitions.emplace_back(std::move(definition)); }
+    void clear() { _definitions.clear(); }
 
 private:
     std::vector<NodeDefinition> _definitions;
-    // TODO(JF) Folder Watcher, or at least a file watcher for each current node to auto refresh it
 };
 
 } // namespace Cool

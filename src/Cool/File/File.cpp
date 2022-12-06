@@ -58,7 +58,6 @@ auto File::to_string(std::filesystem::path file_path) -> tl::expected<std::strin
         (std::istreambuf_iterator<char>(stream)),
         std::istreambuf_iterator<char>()
     );
-    stream.close();
     return str;
 }
 
