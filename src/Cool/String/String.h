@@ -110,7 +110,7 @@ auto remove_whitespaces(std::string_view text) -> std::string;
 /// Returns true iff all the words in `text` are after a `//`.
 auto is_commented_out(std::string_view text) -> bool;
 
-/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     const std::string& text,
@@ -119,7 +119,7 @@ auto substring(
 ) -> std::string;
 
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
-/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     std::string_view text,
@@ -127,7 +127,7 @@ auto substring(
     size_t           end
 ) -> std::string_view;
 
-/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     const std::string&        text,
@@ -135,7 +135,7 @@ auto substring(
 ) -> std::string;
 
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
-/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     std::string_view          text,
