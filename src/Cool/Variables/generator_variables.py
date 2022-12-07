@@ -157,7 +157,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="RgbColor",
+            input_type="RGB",
             cpp_type="Cool::RgbColor",
             glsl_type="vec3",
             include="<Cool/StrongTypes/RgbColor.h>",
@@ -174,7 +174,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="PremultipliedRgbaColor",
+            input_type="RGBA",
             cpp_type="Cool::PremultipliedRgbaColor",
             glsl_type="vec4",
             include="<Cool/StrongTypes/PremultipliedRgbaColor.h>",
@@ -191,7 +191,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="StraightRgbaColor",
+            input_type="StraightRGBA",
             cpp_type="Cool::StraightRgbaColor",
             glsl_type="vec4",
             include="<Cool/StrongTypes/StraightRgbaColor.h>",
