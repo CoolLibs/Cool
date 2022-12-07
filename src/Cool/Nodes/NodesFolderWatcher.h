@@ -20,13 +20,15 @@ public:
         : _folder_path{std::move(folder_path)}
     {}
 
+    /// Returns true iff a node definition has been added, removed or updated in the library.
     template<NodeDefinition_Concept NodeDefinition, NodeDefinitionParser<NodeDefinition> Parser>
-    void update(NodesLibrary<NodeDefinition>& library, Parser&& parse_definition)
+    auto update(NodesLibrary<NodeDefinition>& library, Parser&& parse_definition) -> bool
     {
         if (!_has_changed)
-            return;
+            return false;
 
         _has_changed = false;
+        library.clear(); // TODO(JF) Don't do this, only update / remove the files when necessary
 
         for (auto const& entry : std::filesystem::recursive_directory_iterator{_folder_path})
         {
@@ -49,6 +51,8 @@ public:
 
             library.add_definition(*definition);
         }
+
+        return true; // TODO(JF) Only return true if a file has changed
     }
 
     void change_path(std::filesystem::path folder_path)
