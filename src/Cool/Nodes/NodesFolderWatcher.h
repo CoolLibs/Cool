@@ -1,8 +1,13 @@
 #pragma once
 
 #include <filesystem>
+#include <map>
 #include <utility>
 #include "Cool/File/File.h"
+#include "Cool/Log/Message.h"
+#include "Cool/Log/MessageConsole.h"
+#include "Cool/Log/MessageId.h"
+#include "Cool/Log/ToUser.h"
 #include "Cool/Nodes/NodesLibrary.h"
 
 namespace Cool {
@@ -29,6 +34,7 @@ public:
 
         _has_changed = false;
         library.clear(); // TODO(JF) Don't do this, only update / remove the files when necessary
+        _errors.clear(); // TODO(JF) Only clear when a definition is removed.
 
         for (auto const& entry : std::filesystem::recursive_directory_iterator{_folder_path})
         {
@@ -38,14 +44,14 @@ public:
             auto const content = File::to_string(entry.path());
             if (!content)
             {
-                // TODO(JF) log and store the error
+                handle_error(entry.path(), content.error());
                 continue;
             }
 
             auto const definition = parse_definition(entry.path(), *content);
             if (!definition)
             {
-                // TODO(JF) log and store the error
+                handle_error(entry.path(), definition.error());
                 continue;
             }
 
@@ -64,9 +70,23 @@ public:
     void force_refresh() { _has_changed = true; } // TODO(JF) Remove
 
 private:
+    void handle_error(std::filesystem::path const& definition_path, std::string const& message)
+    {
+        Cool::Log::ToUser::console().send(
+            _errors[definition_path], // This will create an error id if not already present in the map. This is what we want.
+            Message{
+                .category = "Nodes",
+                .message  = fmt::format("Failed to read node from file {}:\n{}", definition_path, message),
+                .severity = MessageSeverity::Error,
+            }
+        );
+    }
+
+private:
     // TODO(JF) Folder Watcher, or at least a file watcher for each current node to auto refresh it
-    std::filesystem::path _folder_path;
-    bool                  _has_changed{true}; // TODO(JF) Remove, use update of folder watcher instead
+    std::filesystem::path                            _folder_path;
+    bool                                             _has_changed{true}; // TODO(JF) Remove, use update of folder watcher instead
+    std::map<std::filesystem::path, Cool::MessageId> _errors{};
 };
 
 } // namespace Cool
