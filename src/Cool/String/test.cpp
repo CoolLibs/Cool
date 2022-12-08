@@ -1,3 +1,4 @@
+#include <vector>
 #include "Cool/String/String.h"
 #if COOL_ENABLE_TESTS
 
@@ -213,6 +214,14 @@ TEST_CASE("next_word")
     CHECK(Cool::String::next_word("abcdef ghij klmno", 3) == "def");
     CHECK(Cool::String::next_word("abcdef ghij klmno", 7, "i") == "gh");
     CHECK(Cool::String::next_word("ab(cd)ef ghij klmno", 0) == "ab");
+}
+
+TEST_CASE("all_words")
+{
+    CHECK(Cool::String::all_words("abcdef ghij klmno") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("  abcdef ghij klmno") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("abcdef ghij klmno  ") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("  abcdef ghij klmno  ") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
 }
 
 TEST_CASE("find_block")

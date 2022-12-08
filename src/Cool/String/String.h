@@ -9,6 +9,7 @@
 #include <Cool/StrongTypes/PremultipliedRgbaColor.h>
 #include <Cool/StrongTypes/RgbColor.h>
 #include <Cool/StrongTypes/StraightRgbaColor.h>
+#include <vector>
 
 namespace Cool::String {
 
@@ -165,6 +166,12 @@ auto next_word(
     size_t           starting_pos = 0,
     std::string_view delimiters   = default_word_delimiters
 ) -> std::optional<std::string_view>;
+
+/// Returns all the words after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
+auto all_words(
+    std::string_view text,
+    std::string_view delimiters = default_word_delimiters
+) -> std::vector<std::string>;
 
 /// Returns the position of the first block of text in `text` after `offset`.
 /// A block is either a single word or a block delimited by parentheses.

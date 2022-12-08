@@ -315,6 +315,23 @@ auto next_word(
     return substring(text, *position);
 }
 
+auto all_words(
+    std::string_view text,
+    std::string_view delimiters
+) -> std::vector<std::string>
+{
+    std::vector<std::string> res{};
+
+    auto pos = find_next_word_position(text, 0, delimiters);
+    while (pos)
+    {
+        res.emplace_back(substring(text, *pos));
+        pos = find_next_word_position(text, pos->second, delimiters);
+    }
+
+    return res;
+}
+
 auto find_block_position(
     std::string_view text,
     size_t           offset
