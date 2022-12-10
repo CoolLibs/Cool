@@ -8,7 +8,7 @@ namespace Cool {
 template<NodeDefinition_Concept NodeDefinition>
 class GetNodeDefinition_Ref {
 public:
-    GetNodeDefinition_Ref(NodesLibrary<NodeDefinition> const& library)
+    GetNodeDefinition_Ref(NodesLibrary<NodeDefinition>& library)
         : _library{library}
     {}
 
@@ -16,9 +16,13 @@ public:
     {
         return _library.get().get_definition(definition_name);
     }
+    auto operator()(std::string_view definition_name) -> NodeDefinition*
+    {
+        return _library.get().get_definition(definition_name);
+    }
 
 private:
-    std::reference_wrapper<const NodesLibrary<NodeDefinition>> _library;
+    std::reference_wrapper<NodesLibrary<NodeDefinition>> _library;
 };
 
 } // namespace Cool

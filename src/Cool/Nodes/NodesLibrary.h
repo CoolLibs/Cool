@@ -17,6 +17,16 @@ public:
 
         return &*it;
     }
+    auto get_definition(std::string_view definition_name) -> NodeDefinition*
+    {
+        const auto it = std::find_if(_definitions.begin(), _definitions.end(), [&](const NodeDefinition& def) {
+            return def.name() == definition_name;
+        });
+        if (it == _definitions.end())
+            return nullptr;
+
+        return &*it;
+    }
 
     auto imgui_nodes_menu() const -> NodeDefinition const*
     {
