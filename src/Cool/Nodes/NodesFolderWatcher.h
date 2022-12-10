@@ -21,8 +21,9 @@ concept NodeDefinitionParser = NodeDefinition_Concept<NodeDefinition> && require
 
 class NodesFolderWatcher {
 public:
-    explicit NodesFolderWatcher(std::filesystem::path folder_path)
+    explicit NodesFolderWatcher(std::filesystem::path folder_path, std::string extension)
         : _folder_path{std::move(folder_path)}
+        , _extension{std::move(extension)}
     {}
 
     /// Returns true iff a node definition has been added, removed or updated in the library.
@@ -38,7 +39,7 @@ public:
 
         for (auto const& entry : std::filesystem::recursive_directory_iterator{_folder_path})
         {
-            if (!entry.is_regular_file())
+            if (!entry.is_regular_file() || entry.path().extension() != _extension)
                 continue;
 
             auto const content = File::to_string(entry.path());
@@ -85,6 +86,7 @@ private:
 private:
     // TODO(JF) Folder Watcher, or at least a file watcher for each current node to auto refresh it
     std::filesystem::path                            _folder_path;
+    std::string                                      _extension;
     bool                                             _has_changed{true}; // TODO(JF) Remove, use update of folder watcher instead
     std::map<std::filesystem::path, Cool::MessageId> _errors{};
 };
