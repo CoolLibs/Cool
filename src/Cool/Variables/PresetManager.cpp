@@ -313,7 +313,7 @@ void PresetManager::save_preset(const Settings& new_preset_values, const PresetI
         _new_preset_name   = "";
     }
 
-    _auto_serializer.save(); // Save to file to make sure the presets are saved as soon as possible. Prevents us from losing our presets if the application crashes later on.
+    _serializer.save(*this); // Save to file.
 }
 
 void PresetManager::imgui_adding_preset(const Settings& settings)

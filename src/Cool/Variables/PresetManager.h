@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Cool/Serialization/AutoSerializer.h>
+#include <Cool/Serialization/SerializerOnDemand.h>
 #include <Cool/Variables/AnyVariable.h>
 #include <reg/cereal.hpp>
 
 namespace Cool {
 
-// TODO(JF) TODO(LD) Remove the old presets system
+// TODO(JF) Remove the old presets system
 
 /// List of values contained by a preset.
 using Settings = std::vector<Cool::AnyVariable>;
@@ -15,7 +15,7 @@ struct Preset2 {
     std::string name;
     Settings    values;
 
-    friend bool operator==(const Preset2&, const Preset2&) = default;
+    friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
 
 private:
     // Serialization
@@ -34,13 +34,14 @@ using PresetId = reg::Id<Preset2>;
 
 class PresetManager {
 public:
-    PresetManager(std::filesystem::path path)
-        : _auto_serializer{path, "PresetManager", *this, [](const std::string&) {
-                               /*Ignore deserialization warnings*/
-                           }}
-    {}
+    explicit PresetManager(std::filesystem::path const& path)
+        : _serializer{path, "PresetManager"}
+    {
+        auto const maybe_err = _serializer.load(*this);
+        std::ignore          = maybe_err; // Ignore errors when file not found
+    }
 
-    auto path() const { return _auto_serializer.path(); }
+    [[nodiscard]] auto path() const -> auto const& { return _serializer.path(); }
 
     /// Renders the UI for the whole `PresetManager`.
     auto imgui(Settings& settings) -> bool;
@@ -121,6 +122,8 @@ private:
     std::string                   _new_preset_name;
     RenamerWidget                 _rename_widget;
 
+    Cool::SerializerOnDemand _serializer;
+
 private:
     // Serialization
     friend class cereal::access;
@@ -131,9 +134,6 @@ private:
             cereal::make_nvp("Presets", _presets)
         );
     }
-
-private:
-    Cool::AutoSerializer<PresetManager> _auto_serializer; // Must be last to properly serialize the class
 };
 
 } // namespace Cool
