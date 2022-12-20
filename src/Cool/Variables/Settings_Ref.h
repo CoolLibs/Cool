@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "Settings.h"
 
 namespace Cool {
@@ -11,6 +12,11 @@ public:
 
     void assign_from(Settings const&);
     auto display_all_variables_widgets() -> bool;
+
+private:
+    std::reference_wrapper<Settings> _ref;
+
+    friend class Settings_ConstRef;
 };
 
 /// Interface that can wrap several "container of variables"-like objects (aka "settings"-like)
@@ -22,6 +28,9 @@ public:
 
     [[nodiscard]] auto are_equal_to(Settings const&) const -> bool;
     [[nodiscard]] auto as_settings() const -> Settings;
+
+private:
+    std::reference_wrapper<Settings const> _ref;
 };
 
 } // namespace Cool
