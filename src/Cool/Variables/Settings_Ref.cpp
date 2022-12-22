@@ -12,7 +12,7 @@ Settings_Ref::Settings_Ref(Settings& settings)
 {
 }
 
-Settings_Ref::Settings_Ref(SettingsInInputs& settings)
+Settings_Ref::Settings_Ref(SettingsInInputs settings)
     : _ref{settings}
 {
 }
@@ -26,9 +26,16 @@ static void assign_from_IMPL(std::reference_wrapper<Settings> ref, Settings cons
     ref.get() = settings;
 }
 
-static void assign_from_IMPL(std::reference_wrapper<SettingsInInputs> ref, Settings const& settings)
+static void assign_from_IMPL(SettingsInInputs ref, Settings const& settings)
 {
-    // ref.get() = settings;
+    // TODO(JF) Use a CommandGroup
+    for (auto& input : ref.inputs.get())
+    {
+        std::visit([&](auto&& input) {
+            input // TODO(JF) Set the variable through a command (ideally, but might just be set with the registry for now)
+        },
+                   input);
+    }
 }
 
 void Settings_Ref::assign_from(Settings const& settings)
@@ -50,7 +57,7 @@ static auto display_all_variables_widgets_IMPL(std::reference_wrapper<Settings> 
     return was_used;
 }
 
-static auto display_all_variables_widgets_IMPL(std::reference_wrapper<SettingsInInputs> ref) -> bool
+static auto display_all_variables_widgets_IMPL(SettingsInInputs ref) -> bool
 {
     return false;
 }
@@ -69,7 +76,7 @@ Settings_ConstRef::Settings_ConstRef(Settings const& settings)
 {
 }
 
-Settings_ConstRef::Settings_ConstRef(SettingsInInputs const& settings)
+Settings_ConstRef::Settings_ConstRef(SettingsInInputs settings)
     : _ref{settings}
 {
 }
@@ -88,7 +95,7 @@ static auto are_equal_to_IMPL(std::reference_wrapper<Settings const> ref, Settin
     return ref.get() == settings;
 }
 
-static auto are_equal_to_IMPL(std::reference_wrapper<SettingsInInputs const> ref, Settings const& settings) -> bool
+static auto are_equal_to_IMPL(SettingsInInputsConst ref, Settings const& settings) -> bool
 {
     return false;
     // return ref.get() == settings;
@@ -108,7 +115,7 @@ static auto as_settings_IMPL(std::reference_wrapper<Settings const> ref) -> Sett
     return ref.get();
 }
 
-static auto as_settings_IMPL(std::reference_wrapper<SettingsInInputs const> ref) -> Settings
+static auto as_settings_IMPL(SettingsInInputsConst ref) -> Settings
 {
     return {};
     // return ref.get() == settings;
