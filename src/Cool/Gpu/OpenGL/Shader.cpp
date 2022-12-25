@@ -37,6 +37,11 @@ GLint Shader::uniform_location(std::string_view uniform_name) const
     }
 }
 
+static auto operator*(const ImVec4& lhs, const float rhs) -> ImVec4
+{
+    return ImVec4{lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs};
+}
+
 void Shader::set_uniform(std::string_view uniform_name, int v) const
 {
     assert_shader_is_bound(_shader.id());
@@ -129,8 +134,8 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
     for (const ImGG::Mark& mark : gradient.value.gradient().get_marks())
     {
         set_uniform(fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.position.get());
-        set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color);
         idx++;
+        set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color * mark.color.w); // Send sRGB premultiplied
     }
 }
 void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const

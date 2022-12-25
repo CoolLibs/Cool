@@ -15,13 +15,15 @@ public:
         : value{rgba}
     {}
 
-    auto get() const
+    [[nodiscard]] auto get() const -> glm::vec4
     {
-        glm::vec4 premult = value;
-        premult.r *= premult.a;
-        premult.g *= premult.a;
-        premult.b *= premult.a;
-        return premult;
+        glm::vec3 const linear_rgb = glm::pow(glm::vec3{value.r, value.g, value.b}, glm::vec3{2.2f});
+        return glm::vec4{
+            linear_rgb.r * value.a,
+            linear_rgb.g * value.a,
+            linear_rgb.b * value.a,
+            value.a,
+        };
     }
 
     friend auto operator==(PremultipliedRgbaColor const& a, PremultipliedRgbaColor const& b) -> bool { return a.value == b.value; }

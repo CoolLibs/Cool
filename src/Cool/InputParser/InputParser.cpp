@@ -6,6 +6,7 @@
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
+#include "fmt/format.h"
 
 namespace Cool {
 
@@ -259,16 +260,28 @@ static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 
 static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     switch (interpolation_mode)
     {
     case ImGG::Interpolation::Linear:
     {
         return fmt::format(
             FMT_COMPILE(R"STR(
+            // The interpolation is done in Lab space because it looks better (it matches human perception).
+            // Also, we use premultiplied alpha because this is the only correct way.
+            // gradient_marks colors are in sRGB space with premultiplied alpha.
             float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
                             ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
-            return mix({gradient_marks}[i - 1].col, {gradient_marks}[i].col, mix_factor);
+            float alpha1 = {gradient_marks}[i - 1].col.a;
+            float alpha2 = {gradient_marks}[i    ].col.a;
+            vec3 col1 = {gradient_marks}[i - 1].col.rgb;
+            vec3 col2 = {gradient_marks}[i    ].col.rgb;
+            col1 = rgb2lab(col1);
+            col2 = rgb2lab(col2);
+            return vec4(
+                Cool_sRGB_to_linear(lab2rgb(mix(col1, col2, mix_factor))),
+                mix(alpha1, alpha2, mix_factor)
+            );
     )STR"),
             "gradient_marks"_a = fmt::format("{}_", name)
         );
