@@ -36,9 +36,7 @@ vec3 Cool_LinearRGB_to_sRGB(vec3 rgb)
 // End of [Block1]
 
 // Start of [Block2]
-// From https://www.shadertoy.com/view/4syfRc
-
-// LAB/RGB convertions - https://code.google.com/archive/p/flowabs/
+// From http://www.easyrgb.com/en/math.php
 
 vec3 Cool_LinearRGB_to_XYZ(vec3 c)
 {
@@ -57,8 +55,7 @@ vec3 Cool_XYZ_to_CIELAB(vec3 c)
     v.x = (n.x > 0.008856) ? pow(n.x, 1.0 / 3.0) : (7.787 * n.x) + (16.0 / 116.0);
     v.y = (n.y > 0.008856) ? pow(n.y, 1.0 / 3.0) : (7.787 * n.y) + (16.0 / 116.0);
     v.z = (n.z > 0.008856) ? pow(n.z, 1.0 / 3.0) : (7.787 * n.z) + (16.0 / 116.0);
-    vec3 lab = vec3((1.160 * v.y) - 0.16, 500.0 * (v.x - v.y), 200.0 * (v.y - v.z));
-    return vec3(lab.x, 0.5 + 0.5 * (lab.y / 127.0), 0.5 + 0.5 * (lab.z / 127.0));
+    return vec3((116. * v.y) - 16., 500.0 * (v.x - v.y), 200.0 * (v.y - v.z));
 }
 
 vec3 Cool_sRGB_to_CIELAB(vec3 c)
@@ -76,10 +73,13 @@ vec3 Cool_CIELAB_to_XYZ(vec3 c)
     float fy = (c.x + 16.0) / 116.0;
     float fx = c.y / 500.0 + fy;
     float fz = fy - c.z / 200.0;
+    float fx3 = fx * fx * fx;
+    float fy3 = fy * fy * fy;
+    float fz3 = fz * fz * fz;
     return vec3(
-        0.95047 * ((fx > 0.206897) ? fx * fx * fx : (fx - 16.0 / 116.0) / 7.787),
-        1.00000 * ((fy > 0.206897) ? fy * fy * fy : (fy - 16.0 / 116.0) / 7.787),
-        1.08883 * ((fz > 0.206897) ? fz * fz * fz : (fz - 16.0 / 116.0) / 7.787)
+        0.95047 * ((fx3 > 0.008856) ? fx3 : (fx - 16.0 / 116.0) / 7.787),
+        1.00000 * ((fy3 > 0.008856) ? fy3 : (fy - 16.0 / 116.0) / 7.787),
+        1.08883 * ((fz3 > 0.008856) ? fz3 : (fz - 16.0 / 116.0) / 7.787)
     );
 }
 
@@ -95,7 +95,7 @@ vec3 Cool_XYZ_to_sRGB(vec3 c)
 
 vec3 Cool_CIELAB_to_sRGB(vec3 c)
 {
-    return Cool_XYZ_to_sRGB(Cool_CIELAB_to_XYZ(vec3(c.x, 2.0 * 1.27 * (c.y - 0.5), 2.0 * 1.27 * (c.z - 0.5))));
+    return Cool_XYZ_to_sRGB(Cool_CIELAB_to_XYZ(c));
 }
 
 vec3 Cool_CIELAB_to_LinearRGB(vec3 c)
