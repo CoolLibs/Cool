@@ -7,7 +7,7 @@
 
 template<>
 struct VariableMetadata<Cool::ColorAndAlpha> {
-    bool is_hdr{true};
+    bool is_hdr{false};
 
     friend auto operator<=>(const VariableMetadata<Cool::ColorAndAlpha>&, const VariableMetadata<Cool::ColorAndAlpha>&) = default;
 
