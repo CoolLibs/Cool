@@ -157,10 +157,10 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="RGB",
-            cpp_type="Cool::RgbColor",
+            input_type="sRGB",  # TODO(JF) Parse from all color spaces
+            cpp_type="Cool::Color",
             glsl_type="vec3",
-            include="<Cool/StrongTypes/RgbColor.h>",
+            include="<Cool/StrongTypes/Color.h>",
             metadatas=[
                 VariableMetadata(
                     name_in_shader="hdr",
@@ -174,27 +174,11 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="RGBA",
-            cpp_type="Cool::PremultipliedRgbaColor",
+            # TODO(JF) Parse from all color and alpha spaces
+            input_type="sRGB_StraightA",
+            cpp_type="Cool::ColorAndAlpha",
             glsl_type="vec4",
-            include="<Cool/StrongTypes/PremultipliedRgbaColor.h>",
-            metadatas=[
-                VariableMetadata(
-                    name_in_shader="hdr",
-                    field_name="is_hdr",
-                    pretty_name="Is HDR",
-                    type="bool",
-                    default_value="true",
-                ),
-            ],
-            do_generate_get_default_metadata=False,
-            requires_shader_code_generation=False,
-        ),
-        VariableDescription(
-            input_type="StraightRGBA",
-            cpp_type="Cool::StraightRgbaColor",
-            glsl_type="vec4",
-            include="<Cool/StrongTypes/StraightRgbaColor.h>",
+            include="<Cool/StrongTypes/ColorAndAlpha.h>",
             metadatas=[
                 VariableMetadata(
                     name_in_shader="hdr",

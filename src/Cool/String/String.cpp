@@ -4,6 +4,7 @@
 #include <glm/detail/qualifier.hpp>
 #include <string_view>
 #include "Cool/String/String.h"
+#include "Cool/StrongTypes/ColorAndAlpha.h"
 
 namespace Cool::String {
 
@@ -569,12 +570,12 @@ auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::i
 }
 
 template<>
-auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>
+auto value_from_string<Cool::Color>(std::string_view str) -> std::optional<Cool::Color>
 {
     const auto val = value_from_string_impl_vec<float, 3>(str);
     if (val)
     {
-        return Cool::RgbColor{*val};
+        return Cool::Color::from_srgb(*val);
     }
     else
     {
@@ -583,26 +584,12 @@ auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Co
 }
 
 template<>
-auto value_from_string<Cool::PremultipliedRgbaColor>(std::string_view str) -> std::optional<Cool::PremultipliedRgbaColor>
+auto value_from_string<Cool::ColorAndAlpha>(std::string_view str) -> std::optional<Cool::ColorAndAlpha>
 {
     const auto val = value_from_string_impl_vec<float, 4>(str);
     if (val)
     {
-        return Cool::PremultipliedRgbaColor{*val};
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
-
-template<>
-auto value_from_string<Cool::StraightRgbaColor>(std::string_view str) -> std::optional<Cool::StraightRgbaColor>
-{
-    const auto val = value_from_string_impl_vec<float, 4>(str);
-    if (val)
-    {
-        return Cool::StraightRgbaColor{*val};
+        return Cool::ColorAndAlpha::from_srgb_straight_alpha(*val);
     }
     else
     {

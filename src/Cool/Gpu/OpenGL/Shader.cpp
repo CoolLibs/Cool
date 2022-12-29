@@ -1,3 +1,5 @@
+#include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "imgui.h"
 #if defined(COOL_OPENGL)
 
 #include "Shader.h"
@@ -14,6 +16,11 @@ static void assert_shader_is_bound(GLuint id)
 #else
     (void)id;
 #endif
+}
+
+static auto as_glm(ImVec4 const& v) -> glm::vec4
+{
+    return {v.x, v.y, v.z, v.w};
 }
 
 void Shader::bind() const
@@ -94,17 +101,13 @@ void Shader::set_uniform(std::string_view uniform_name, Angle angle) const
 {
     set_uniform(uniform_name, angle.as_radians());
 }
-void Shader::set_uniform(std::string_view uniform_name, RgbColor color) const
+void Shader::set_uniform(std::string_view uniform_name, Color const& color) const
 {
-    set_uniform(uniform_name, color.value);
+    set_uniform(uniform_name, color.as_srgb());
 }
-void Shader::set_uniform(std::string_view uniform_name, PremultipliedRgbaColor color) const
+void Shader::set_uniform(std::string_view uniform_name, ColorAndAlpha const& color) const
 {
-    set_uniform(uniform_name, color.get());
-}
-void Shader::set_uniform(std::string_view uniform_name, StraightRgbaColor color) const
-{
-    set_uniform(uniform_name, color.value);
+    set_uniform(uniform_name, color.as_srgb_straight());
 }
 void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) const
 {
@@ -117,9 +120,9 @@ void Shader::set_uniform(std::string_view uniform_name, Hue hue) const
 void Shader::set_uniform(std::string_view uniform_name, const ColorPalette& palette) const
 {
     int idx = 0;
-    for (const RgbColor& color : palette.value)
+    for (auto const& color : palette.value)
     {
-        set_uniform(fmt::format("{}[{}]", Cool::internal::color_palette_array_name(uniform_name), idx), color.value);
+        set_uniform(fmt::format("{}[{}]", Cool::internal::color_palette_array_name(uniform_name), idx), color);
         idx++;
     }
 }
@@ -131,11 +134,17 @@ void Shader::set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA& v
 void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient) const
 {
     int idx = 0;
-    for (const ImGG::Mark& mark : gradient.value.gradient().get_marks())
+    for (ImGG::Mark const& mark : gradient.value.gradient().get_marks())
     {
-        set_uniform(fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.position.get());
-        idx++;
-        set_uniform(fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx), mark.color * mark.color.w); // Send sRGB premultiplied
+        set_uniform(
+            fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx),
+            mark.position.get()
+        );
+        idx++; // TODO(JF) Is it right to increment the idx in-between the two set_uniform?
+        set_uniform(
+            fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx),
+            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_cielab_premultiplied()
+        );
     }
 }
 void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const

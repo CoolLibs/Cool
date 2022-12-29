@@ -3,7 +3,6 @@
 #include <Cool/Serialization/ImGuiSerialization.h>
 #include <cereal/types/list.hpp>
 #include <imgui_gradient/imgui_gradient.hpp>
-#include "RgbColor.h"
 
 namespace Cool {
 struct Gradient {

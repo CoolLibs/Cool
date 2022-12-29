@@ -1,11 +1,12 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
 #include <Cool/String/String.h>
-#include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/StrongTypes/Color.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
+#include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "fmt/format.h"
 
 namespace Cool {
@@ -38,9 +39,9 @@ template<typename T>
 static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>;
 
 template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::RgbColor>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Color>
 {
-    Cool::VariableMetadata<Cool::RgbColor> metadata{};
+    Cool::VariableMetadata<Cool::Color> metadata{};
 
     metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
 
@@ -48,19 +49,9 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 }
 
 template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::PremultipliedRgbaColor>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::ColorAndAlpha>
 {
-    Cool::VariableMetadata<Cool::PremultipliedRgbaColor> metadata{};
-
-    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
-
-    return metadata;
-}
-
-template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::StraightRgbaColor>
-{
-    Cool::VariableMetadata<Cool::StraightRgbaColor> metadata{};
+    Cool::VariableMetadata<Cool::ColorAndAlpha> metadata{};
 
     metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
 

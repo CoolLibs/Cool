@@ -11,7 +11,7 @@ inline auto color_imgui_flags(bool is_hdr) -> ImGuiColorEditFlags
            | ImGuiColorEditFlags_AlphaBar;
 }
 
-inline auto rgb_color_metadata_widget(bool& is_hdr) -> bool
+inline auto color_metadata_widget(bool& is_hdr) -> bool
 {
     const bool b = ImGui::Checkbox("HDR", &is_hdr);
     ImGui::SameLine();
@@ -19,7 +19,7 @@ inline auto rgb_color_metadata_widget(bool& is_hdr) -> bool
     return b;
 }
 
-inline auto rgba_color_metadata_widget(bool& is_hdr) -> bool
+inline auto color_and_alpha_metadata_widget(bool& is_hdr) -> bool
 {
     const bool b = ImGui::Checkbox("HDR", &is_hdr);
     ImGui::SameLine();

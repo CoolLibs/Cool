@@ -1,14 +1,13 @@
 #pragma once
 #include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/Color.h>
+#include <Cool/StrongTypes/ColorAndAlpha.h>
 #include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/StrongTypes/PremultipliedRgbaColor.h>
-#include <Cool/StrongTypes/RgbColor.h>
-#include <Cool/StrongTypes/StraightRgbaColor.h>
 #include <vector>
 
 namespace Cool::String {
@@ -218,11 +217,9 @@ auto value_from_string<glm::vec4>(std::string_view) -> std::optional<glm::vec4>;
 template<>
 auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
 template<>
-auto value_from_string<Cool::RgbColor>(std::string_view) -> std::optional<Cool::RgbColor>;
+auto value_from_string<Cool::Color>(std::string_view) -> std::optional<Cool::Color>;
 template<>
-auto value_from_string<Cool::PremultipliedRgbaColor>(std::string_view) -> std::optional<Cool::PremultipliedRgbaColor>;
-template<>
-auto value_from_string<Cool::StraightRgbaColor>(std::string_view) -> std::optional<Cool::StraightRgbaColor>;
+auto value_from_string<Cool::ColorAndAlpha>(std::string_view) -> std::optional<Cool::ColorAndAlpha>;
 template<>
 auto value_from_string<Cool::Angle>(std::string_view) -> std::optional<Cool::Angle>;
 template<>

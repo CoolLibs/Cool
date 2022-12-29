@@ -31,7 +31,7 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
         {
             ImGui::SameLine();
         }
-        value_has_changed |= ImGui::ColorEdit3("", glm::value_ptr(palette.value[i].value), ImGuiColorEditFlags_NoInputs | flags);
+        value_has_changed |= imgui_widget("", palette.value[i], ImGuiColorEditFlags_NoInputs | flags);
         if (ImGui::IsMouseReleased(ImGuiPopupFlags_MouseButtonMiddle) && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup))
         {
             palette.remove_color(i);
@@ -67,7 +67,9 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
     if (ImGui::BeginPopup("picker"))
     {
         ImGui::SetNextItemWidth(button_size() * 12.0f);
-        value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(palette.value[palette.value.size() - 1].value), flags);
+        auto srgb = palette.value[palette.value.size() - 1].as_srgb();
+        value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(srgb), flags);
+        palette.value[palette.value.size() - 1] = Color::from_srgb(srgb);
         ImGui::EndPopup();
     }
     Cool::ImGuiExtras::tooltip("Add a color");

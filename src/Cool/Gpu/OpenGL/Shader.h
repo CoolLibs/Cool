@@ -2,14 +2,13 @@
 #if COOL_OPENGL
 
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/Color.h>
+#include <Cool/StrongTypes/ColorAndAlpha.h>
 #include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/StrongTypes/PremultipliedRgbaColor.h>
-#include <Cool/StrongTypes/RgbColor.h>
-#include <Cool/StrongTypes/StraightRgbaColor.h>
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
@@ -35,9 +34,8 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::mat3&) const;
     void set_uniform(std::string_view uniform_name, const glm::mat4&) const;
     void set_uniform(std::string_view uniform_name, Angle) const;
-    void set_uniform(std::string_view uniform_name, RgbColor) const;
-    void set_uniform(std::string_view uniform_name, PremultipliedRgbaColor) const;
-    void set_uniform(std::string_view uniform_name, StraightRgbaColor) const;
+    void set_uniform(std::string_view uniform_name, Color const&) const;
+    void set_uniform(std::string_view uniform_name, ColorAndAlpha const&) const;
     void set_uniform(std::string_view uniform_name, Direction2D) const;
     void set_uniform(std::string_view uniform_name, Hue) const;
     void set_uniform(std::string_view uniform_name, const ColorPalette&) const;

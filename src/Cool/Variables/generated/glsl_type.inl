@@ -48,19 +48,13 @@ auto glsl_type<glm::vec4>() -> std::string
 }
 
 template<>
-auto glsl_type<Cool::RgbColor>() -> std::string
+auto glsl_type<Cool::Color>() -> std::string
 {
     return "vec3";
 }
 
 template<>
-auto glsl_type<Cool::PremultipliedRgbaColor>() -> std::string
-{
-    return "vec4";
-}
-
-template<>
-auto glsl_type<Cool::StraightRgbaColor>() -> std::string
+auto glsl_type<Cool::ColorAndAlpha>() -> std::string
 {
     return "vec4";
 }

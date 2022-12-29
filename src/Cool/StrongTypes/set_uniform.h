@@ -12,12 +12,6 @@ static void set_uniform(Cool::OpenGL::Shader const& shader, std::string_view nam
 }
 
 template<>
-void set_uniform(Cool::OpenGL::Shader const& shader, std::string_view name, Cool::RgbColor const& value)
-{
-    shader.set_uniform(name, value.value);
-}
-
-template<>
 void set_uniform(Cool::OpenGL::Shader const&, std::string_view, Cool::Camera const&)
 {
     assert(false); // This isn't used at the moment because we set the camera3d manually for all shaders, but this should be changed

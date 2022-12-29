@@ -26,13 +26,10 @@ if constexpr (std::is_same_v<T, glm::vec3>)
 if constexpr (std::is_same_v<T, glm::vec4>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::RgbColor>)
+if constexpr (std::is_same_v<T, Cool::Color>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::PremultipliedRgbaColor>)
-    return false;
-
-if constexpr (std::is_same_v<T, Cool::StraightRgbaColor>)
+if constexpr (std::is_same_v<T, Cool::ColorAndAlpha>)
     return false;
 
 if constexpr (std::is_same_v<T, Cool::Camera>)

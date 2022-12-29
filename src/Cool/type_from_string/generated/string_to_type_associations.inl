@@ -41,18 +41,13 @@ struct from_impl<"vec4"> {
 };
 
 template<>
-struct from_impl<"RGB"> {
-    using type = Cool::RgbColor;
+struct from_impl<"sRGB"> {
+    using type = Cool::Color;
 };
 
 template<>
-struct from_impl<"RGBA"> {
-    using type = Cool::PremultipliedRgbaColor;
-};
-
-template<>
-struct from_impl<"StraightRGBA"> {
-    using type = Cool::StraightRgbaColor;
+struct from_impl<"sRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
 };
 
 template<>
