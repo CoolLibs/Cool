@@ -267,21 +267,12 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
     {
         return fmt::format(
             FMT_COMPILE(R"STR(
-            // The interpolation is done in Lab space because it looks better (it matches human perception).
-            // Also, we use premultiplied alpha because this is the only correct way.
-            // gradient_marks colors are in sRGB space with premultiplied alpha.
+            // The color is in Lab space with premultiplied alpha because interpolating in that space looks better (it matches human perception).
             float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
                             ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
-            float alpha1 = {gradient_marks}[i - 1].col.a;
-            float alpha2 = {gradient_marks}[i    ].col.a;
-            vec3 col1 = {gradient_marks}[i - 1].col.rgb;
-            vec3 col2 = {gradient_marks}[i    ].col.rgb;
-            col1 = rgb2lab(col1);
-            col2 = rgb2lab(col2);
-            return vec4(
-                Cool_sRGB_to_linear(lab2rgb(mix(col1, col2, mix_factor))),
-                mix(alpha1, alpha2, mix_factor)
-            );
+            vec4 col1 = {gradient_marks}[i - 1].col;
+            vec4 col2 = {gradient_marks}[i    ].col;
+            return mix(col1, col2, mix_factor);
     )STR"),
             "gradient_marks"_a = fmt::format("{}_", name)
         );
