@@ -24,7 +24,7 @@ vec3 Cool_LinearRGB_from_sRGB(vec3 srgb)
     );
 }
 
-vec3 Cool_LinearRGB_to_sRGB(vec3 rgb)
+vec3 Cool_sRGB_from_LinearRGB(vec3 rgb)
 {
     rgb = saturate(rgb);
     return vec3(
