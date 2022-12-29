@@ -16,7 +16,7 @@ float Cool_sRGB_from_LinearRGB_impl(float x)
 
 vec3 Cool_LinearRGB_from_sRGB(vec3 srgb)
 {
-    srgb = saturate(srgb); // TODO(JF) Do we do this every time? Or shouldn't the clamp actually happen out the nodes' boundary? // EDIT: probably no, because the conversion requires values between 0 and 1 anyways
+    srgb = saturate(srgb);
     return vec3(
         Cool_LinearRGB_from_sRGB_impl(srgb.x),
         Cool_LinearRGB_from_sRGB_impl(srgb.y),
@@ -52,10 +52,10 @@ vec3 Cool_CIELAB_from_XYZ(vec3 c)
 {
     vec3 n = c / vec3(0.95047, 1., 1.08883);
     vec3 v;
-    v.x = (n.x > 0.008856) ? pow(n.x, 1.0 / 3.0) : (7.787 * n.x) + (16.0 / 116.0);
-    v.y = (n.y > 0.008856) ? pow(n.y, 1.0 / 3.0) : (7.787 * n.y) + (16.0 / 116.0);
-    v.z = (n.z > 0.008856) ? pow(n.z, 1.0 / 3.0) : (7.787 * n.z) + (16.0 / 116.0);
-    return vec3((116. * v.y) - 16., 500.0 * (v.x - v.y), 200.0 * (v.y - v.z));
+    v.x = (n.x > 0.008856) ? pow(n.x, 1. / 3.) : (7.787 * n.x) + (16. / 116.);
+    v.y = (n.y > 0.008856) ? pow(n.y, 1. / 3.) : (7.787 * n.y) + (16. / 116.);
+    v.z = (n.z > 0.008856) ? pow(n.z, 1. / 3.) : (7.787 * n.z) + (16. / 116.);
+    return vec3((116. * v.y) - 16., 500. * (v.x - v.y), 200. * (v.y - v.z));
 }
 
 vec3 Cool_CIELAB_from_sRGB(vec3 c)
@@ -70,16 +70,17 @@ vec3 Cool_CIELAB_from_LinearRGB(vec3 c)
 
 vec3 Cool_XYZ_from_CIELAB(vec3 c)
 {
-    float fy = (c.x + 16.0) / 116.0;
-    float fx = c.y / 500.0 + fy;
-    float fz = fy - c.z / 200.0;
+    float fy = (c.x + 16.) / 116.;
+    float fx = c.y / 500. + fy;
+    float fz = fy - c.z / 200.;
+
     float fx3 = fx * fx * fx;
     float fy3 = fy * fy * fy;
     float fz3 = fz * fz * fz;
     return vec3(
-        0.95047 * ((fx3 > 0.008856) ? fx3 : (fx - 16.0 / 116.0) / 7.787),
-        1.00000 * ((fy3 > 0.008856) ? fy3 : (fy - 16.0 / 116.0) / 7.787),
-        1.08883 * ((fz3 > 0.008856) ? fz3 : (fz - 16.0 / 116.0) / 7.787)
+        0.95047 * ((fx3 > 0.008856) ? fx3 : (fx - 16. / 116.) / 7.787),
+        1.00000 * ((fy3 > 0.008856) ? fy3 : (fy - 16. / 116.) / 7.787),
+        1.08883 * ((fz3 > 0.008856) ? fz3 : (fz - 16. / 116.) / 7.787)
     );
 }
 
@@ -90,7 +91,7 @@ vec3 Cool_LinearRGB_from_XYZ(vec3 c)
 
 vec3 Cool_sRGB_from_XYZ(vec3 c)
 {
-    return Cool_LinearRGB_to_sRGB(Cool_LinearRGB_from_XYZ(c));
+    return Cool_sRGB_from_LinearRGB(Cool_LinearRGB_from_XYZ(c));
 }
 
 vec3 Cool_sRGB_from_CIELAB(vec3 c)
