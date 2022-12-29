@@ -140,11 +140,11 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
             fmt::format("{}[{}].pos", Cool::internal::gradient_marks_array_name(uniform_name), idx),
             mark.position.get()
         );
-        idx++; // TODO(JF) Is it right to increment the idx in-between the two set_uniform?
         set_uniform(
             fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx),
             ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_cielab_premultiplied()
         );
+        idx++;
     }
 }
 void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
