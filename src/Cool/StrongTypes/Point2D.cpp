@@ -10,7 +10,7 @@ auto to_string(Point2D point2D) -> std::string
 
 auto imgui_widget(std::string_view name, Point2D& point2D) -> bool
 {
-    return ImGui::DragFloat2(name.data(), glm::value_ptr(point2D.value), 0.001f, -1.f, 1.f);
+    return ImGui::DragFloat2(name.data(), glm::value_ptr(point2D.value), 0.003f);
 }
 
 } // namespace Cool
