@@ -55,7 +55,11 @@ vec3 Cool_CIELAB_from_XYZ(vec3 c)
     v.x = (n.x > 0.008856) ? pow(n.x, 1. / 3.) : (7.787 * n.x) + (16. / 116.);
     v.y = (n.y > 0.008856) ? pow(n.y, 1. / 3.) : (7.787 * n.y) + (16. / 116.);
     v.z = (n.z > 0.008856) ? pow(n.z, 1. / 3.) : (7.787 * n.z) + (16. / 116.);
-    return vec3((116. * v.y) - 16., 500. * (v.x - v.y), 200. * (v.y - v.z));
+    return vec3(
+        (116. * v.y) - 16.,
+        500. * (v.x - v.y),
+        200. * (v.y - v.z)
+    );
 }
 
 vec3 Cool_CIELAB_from_sRGB(vec3 c)

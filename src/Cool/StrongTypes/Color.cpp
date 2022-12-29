@@ -1,4 +1,5 @@
 #include "Color.h"
+#include "Cool/color_conversions/color_conversions.h"
 
 namespace Cool {
 
@@ -15,13 +16,11 @@ auto Color::as_srgb() const -> glm::vec3
 }
 auto Color::as_linear_rgb() const -> glm::vec3
 {
-    // TODO(JF)
-    return _srgb;
+    return LinearRGB_from_sRGB(_srgb);
 }
 auto Color::as_cielab() const -> glm::vec3
 {
-    // TODO(JF)
-    return _srgb;
+    return CIELAB_from_sRGB(_srgb);
 }
 
 auto to_string(Color const& color) -> std::string

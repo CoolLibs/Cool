@@ -1,5 +1,6 @@
 #include "ColorAndAlpha.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/color_conversions/color_conversions.h"
 
 namespace Cool {
 
@@ -17,8 +18,14 @@ auto ColorAndAlpha::as_srgb_straight() const -> glm::vec4
 
 auto ColorAndAlpha::as_cielab_premultiplied() const -> glm::vec4
 {
-    // TODO(JF)
-    return _srgb_straight;
+    return {
+        CIELAB_from_sRGB({
+            _srgb_straight.r,
+            _srgb_straight.g,
+            _srgb_straight.b,
+        }) * _srgb_straight.a,
+        _srgb_straight.a,
+    };
 }
 
 auto to_string(ColorAndAlpha const& color) -> std::string
