@@ -22,7 +22,7 @@ class VariableMetadata:
 
 @dataclass
 class VariableDescription:
-    input_type: str  # Type that comes in an INPUT declaration
+    input_type: List[str]  # Type that comes in an INPUT declaration
     cpp_type: str  # Type used in C++ to store the type
     glsl_type: str  # Raw glsl used to store the type
     include: str = ""  # File containing the C++ type
@@ -36,14 +36,14 @@ class VariableDescription:
 def all_variable_descriptions():
     return [
         VariableDescription(
-            input_type="bool",
+            input_type=["bool"],
             cpp_type="bool",
             glsl_type="bool",
             metadatas=[],
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="int",
+            input_type=["int"],
             cpp_type="int",
             glsl_type="int",
             metadatas=[
@@ -65,7 +65,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="float",
+            input_type=["float"],
             cpp_type="float",
             glsl_type="float",
             metadatas=[
@@ -101,7 +101,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Point2D",
+            input_type=["UV", "Point2D"],
             cpp_type="Cool::Point2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Point2D.h>",
@@ -109,7 +109,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec2",
+            input_type=["vec2"],
             cpp_type="glm::vec2",
             glsl_type="vec2",
             include="<glm/glm.hpp>",
@@ -125,7 +125,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec3",
+            input_type=["vec3"],
             cpp_type="glm::vec3",
             glsl_type="vec3",
             include="<glm/glm.hpp>",
@@ -141,7 +141,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec4",
+            input_type=["vec4"],
             cpp_type="glm::vec4",
             glsl_type="vec4",
             include="<glm/glm.hpp>",
@@ -157,7 +157,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="sRGB",  # TODO(JF) Parse from all color spaces
+            input_type=["sRGB"],  # TODO(JF) Parse from all color spaces
             cpp_type="Cool::Color",
             glsl_type="vec3",
             include="<Cool/StrongTypes/Color.h>",
@@ -175,7 +175,7 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             # TODO(JF) Parse from all color and alpha spaces
-            input_type="sRGB_StraightA",
+            input_type=["sRGB_StraightA"],
             cpp_type="Cool::ColorAndAlpha",
             glsl_type="vec4",
             include="<Cool/StrongTypes/ColorAndAlpha.h>",
@@ -192,7 +192,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Camera",
+            input_type=["Camera"],
             cpp_type="Cool::Camera",
             # NB: we would probably need to create a Camera struct in glsl if we really intended to use this variable in shaders. (Which we will definitely do at some point instead of having one single global camera)
             glsl_type="mat4",
@@ -201,7 +201,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Angle",
+            input_type=["Angle"],
             cpp_type="Cool::Angle",
             glsl_type="float",
             include="<Cool/StrongTypes/Angle.h>",
@@ -209,7 +209,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Direction2D",
+            input_type=["Direction2D"],
             cpp_type="Cool::Direction2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Direction2D.h>",
@@ -217,7 +217,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Hue",
+            input_type=["Hue"],
             cpp_type="Cool::Hue",
             glsl_type="float",
             include="<Cool/StrongTypes/Hue.h>",
@@ -225,7 +225,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="ColorPalette",
+            input_type=["ColorPalette"],
             cpp_type="Cool::ColorPalette",
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/ColorPalette.h>",
@@ -241,7 +241,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=True,
         ),
         VariableDescription(
-            input_type="Gradient",
+            input_type=["Gradient"],
             cpp_type="Cool::Gradient",
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/Gradient.h>",
@@ -270,7 +270,7 @@ def all_variable_types():
 
 
 def all_types_representations_as_strings():
-    return {desc.cpp_type: [desc.input_type]
+    return {desc.cpp_type: desc.input_type
             for desc in all_variable_descriptions()}
 
 
