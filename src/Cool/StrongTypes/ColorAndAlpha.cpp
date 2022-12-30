@@ -1,6 +1,6 @@
 #include "ColorAndAlpha.h"
+#include "Cool/ColorSpaces/conversions.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "Cool/color_conversions/color_conversions.h"
 
 namespace Cool {
 

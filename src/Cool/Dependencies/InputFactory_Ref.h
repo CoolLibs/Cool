@@ -28,7 +28,9 @@ public:
             def.description,
             _variable_registries.get().create(
                 Cool::Variable<T>{def.name, def.default_value, def.metadata}
-            )};
+            ),
+            def.desired_color_space,
+        };
     }
 
     auto make(AnyInputDefinition const&, DirtyFlag const&) const -> AnyInput;
@@ -45,7 +47,9 @@ inline auto InputFactory_Ref::make(InputDefinition<Camera> const& def, DirtyFlag
         dirty_flag,
         def.name,
         def.description,
-        _default_camera_id};
+        _default_camera_id,
+        def.desired_color_space,
+    };
 }
 
 } // namespace Cool

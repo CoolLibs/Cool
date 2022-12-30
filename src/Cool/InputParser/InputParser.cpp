@@ -6,6 +6,9 @@
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
 #include <sstream>
+#include <string_view>
+#include "Cool/ColorSpaces/ColorAndAlphaSpace.h"
+#include "Cool/ColorSpaces/ColorSpace.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "fmt/format.h"
 
@@ -66,10 +69,11 @@ static auto make_input(
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
     InputFactory_Ref                  input_factory,
-    std::string_view                  key_values
+    std::string_view                  key_values,
+    std::string_view                  type
 ) -> Input<T>
 {
-    return input_factory.make<T>(
+    auto input = input_factory.make<T>(
         InputDefinition<T>{
             std::string{name},
             description,
@@ -78,6 +82,27 @@ static auto make_input(
         },
         dirty_flag
     );
+
+    if constexpr (std::is_same_v<T, Cool::Color>)
+    {
+        if (type == "sRGB")
+            input._desired_color_space = static_cast<int>(ColorSpace::sRGB);
+        else if (type == "LinearRGB")
+            input._desired_color_space = static_cast<int>(ColorSpace::LinearRGB);
+    }
+    else if constexpr (std::is_same_v<T, Cool::ColorAndAlpha>)
+    {
+        if (type == "sRGB_StraightA")
+            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::sRGB_StraightA);
+        else if (type == "sRGB_PremultipliedA")
+            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::sRGB_PremultipliedA);
+        else if (type == "LinearRGB_StraightA")
+            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::LinearRGB_StraightA);
+        else if (type == "LinearRGB_PremultipliedA")
+            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::LinearRGB_PremultipliedA);
+    }
+
+    return input;
 }
 
 static auto make_any_input(
@@ -89,7 +114,7 @@ static auto make_any_input(
     std::string_view                  key_values
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values, type));
 }
 
 struct TypeAndName_Ref {

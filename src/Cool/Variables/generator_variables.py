@@ -157,7 +157,8 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type=["sRGB"],  # TODO(JF) Parse from all color spaces
+            # TODO(JF) Parse from all color spaces
+            input_type=["sRGB", "LinearRGB"],
             cpp_type="Cool::Color",
             glsl_type="vec3",
             include="<Cool/StrongTypes/Color.h>",

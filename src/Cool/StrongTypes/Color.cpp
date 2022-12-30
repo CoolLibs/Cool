@@ -1,5 +1,5 @@
 #include "Color.h"
-#include "Cool/color_conversions/color_conversions.h"
+#include "Cool/ColorSpaces/conversions.h"
 
 namespace Cool {
 

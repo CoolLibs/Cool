@@ -51,6 +51,11 @@ struct from_impl<"sRGB"> {
 };
 
 template<>
+struct from_impl<"LinearRGB"> {
+    using type = Cool::Color;
+};
+
+template<>
 struct from_impl<"sRGB_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
