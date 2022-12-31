@@ -56,9 +56,9 @@ vec3 Cool_CIELAB_from_XYZ(vec3 c)
     v.y = (n.y > 0.008856) ? pow(n.y, 1. / 3.) : (7.787 * n.y) + (16. / 116.);
     v.z = (n.z > 0.008856) ? pow(n.z, 1. / 3.) : (7.787 * n.z) + (16. / 116.);
     return vec3(
-        (116. * v.y) - 16.,
-        500. * (v.x - v.y),
-        200. * (v.y - v.z)
+        (1.16 * v.y) - 0.16,
+        5. * (v.x - v.y),
+        2. * (v.y - v.z)
     );
 }
 
@@ -74,9 +74,9 @@ vec3 Cool_CIELAB_from_LinearRGB(vec3 c)
 
 vec3 Cool_XYZ_from_CIELAB(vec3 c)
 {
-    float fy = (c.x + 16.) / 116.;
-    float fx = c.y / 500. + fy;
-    float fz = fy - c.z / 200.;
+    float fy = (c.x + 0.16) / 1.16;
+    float fx = c.y / 5. + fy;
+    float fz = fy - c.z / 2.;
 
     float fx3 = fx * fx * fx;
     float fy3 = fy * fy * fy;

@@ -72,9 +72,9 @@ auto CIELAB_from_XYZ(glm::vec3 const& c) -> glm::vec3
         (n.z > 0.008856) ? std::pow(n.z, 1.f / 3.f) : (7.787f * n.z) + (16.f / 116.f),
     };
     return {
-        (116.f * v.y) - 16.f,
-        500.f * (v.x - v.y),
-        200.f * (v.y - v.z),
+        (1.16f * v.y) - 0.16f,
+        5.f * (v.x - v.y),
+        2.f * (v.y - v.z),
     };
 }
 
@@ -90,9 +90,9 @@ auto CIELAB_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
 
 auto XYZ_from_CIELAB(glm::vec3 const& c) -> glm::vec3
 {
-    float const fy = (c.x + 16.f) / 116.f;
-    float const fx = c.y / 500.f + fy;
-    float const fz = fy - c.z / 200.f;
+    float const fy = (c.x + 0.16f) / 1.16f;
+    float const fx = c.y / 5.f + fy;
+    float const fz = fy - c.z / 2.f;
 
     float const fx3 = fx * fx * fx;
     float const fy3 = fy * fy * fy;
