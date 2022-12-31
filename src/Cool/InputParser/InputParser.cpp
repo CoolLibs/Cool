@@ -85,21 +85,11 @@ static auto make_input(
 
     if constexpr (std::is_same_v<T, Cool::Color>)
     {
-        if (type == "sRGB")
-            input._desired_color_space = static_cast<int>(ColorSpace::sRGB);
-        else if (type == "LinearRGB")
-            input._desired_color_space = static_cast<int>(ColorSpace::LinearRGB);
+        input._desired_color_space = static_cast<int>(parse_color_space(type));
     }
     else if constexpr (std::is_same_v<T, Cool::ColorAndAlpha>)
     {
-        if (type == "sRGB_StraightA")
-            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::sRGB_StraightA);
-        else if (type == "sRGB_PremultipliedA")
-            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::sRGB_PremultipliedA);
-        else if (type == "LinearRGB_StraightA")
-            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::LinearRGB_StraightA);
-        else if (type == "LinearRGB_PremultipliedA")
-            input._desired_color_space = static_cast<int>(ColorAndAlphaSpace::LinearRGB_PremultipliedA);
+        input._desired_color_space = static_cast<int>(parse_color_and_alpha_space(type));
     }
 
     return input;

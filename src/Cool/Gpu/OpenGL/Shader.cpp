@@ -103,11 +103,11 @@ void Shader::set_uniform(std::string_view uniform_name, Angle angle) const
 }
 void Shader::set_uniform(std::string_view uniform_name, Color const& color) const
 {
-    set_uniform(uniform_name, color.as_srgb());
+    set_uniform(uniform_name, color.as_sRGB());
 }
 void Shader::set_uniform(std::string_view uniform_name, ColorAndAlpha const& color) const
 {
-    set_uniform(uniform_name, color.as_srgb_straight());
+    set_uniform(uniform_name, color.as_sRGB_StraightA());
 }
 void Shader::set_uniform(std::string_view uniform_name, Direction2D direction) const
 {
@@ -142,7 +142,7 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
         );
         set_uniform(
             fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx),
-            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_cielab_premultiplied()
+            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_CIELAB_PremultipliedA()
         );
         idx++;
     }

@@ -3,8 +3,9 @@
 namespace Cool {
 
 enum class ColorSpace {
-    sRGB,
-    LinearRGB,
+#include "generated/color_space_enum.inl"
 };
 
-}
+auto parse_color_space(std::string_view) -> ColorSpace;
+
+} // namespace Cool

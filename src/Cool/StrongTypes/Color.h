@@ -7,9 +7,7 @@ public:
     Color() = default;
     static auto from_srgb(glm::vec3 const& srgb) -> Color;
 
-    [[nodiscard]] auto as_srgb() const -> glm::vec3;
-    [[nodiscard]] auto as_linear_rgb() const -> glm::vec3;
-    [[nodiscard]] auto as_cielab() const -> glm::vec3;
+#include "Cool/ColorSpaces/generated/declare_color_getters.inl"
 
     friend auto operator==(Color const&, Color const&) -> bool = default;
 

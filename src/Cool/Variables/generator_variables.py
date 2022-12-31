@@ -10,6 +10,19 @@
 from dataclasses import dataclass, field
 from typing import List
 
+if True:
+    # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
+    # So we need to add the path manually to sys.path
+    import os
+    import sys
+    from pathlib import Path
+    sys.path.append(os.path.join(
+        Path(os.path.abspath(__file__)).parent.parent,
+        "ColorSpaces")
+    )
+    # End of HACK
+    import generator_colors
+
 
 @dataclass
 class VariableMetadata:
@@ -34,6 +47,7 @@ class VariableDescription:
 
 
 def all_variable_descriptions():
+
     return [
         VariableDescription(
             input_type=["bool"],
@@ -157,8 +171,8 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            # TODO(JF) Parse from all color spaces
-            input_type=["sRGB", "LinearRGB"],
+            input_type=list(map(lambda x: x.name_in_code,
+                                generator_colors.color_spaces())),
             cpp_type="Cool::Color",
             glsl_type="vec3",
             include="<Cool/StrongTypes/Color.h>",
@@ -175,8 +189,7 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            # TODO(JF) Parse from all color and alpha spaces
-            input_type=["sRGB_StraightA"],
+            input_type=list(generator_colors.color_and_alpha_spaces_names()),
             cpp_type="Cool::ColorAndAlpha",
             glsl_type="vec4",
             include="<Cool/StrongTypes/ColorAndAlpha.h>",
@@ -477,7 +490,7 @@ def files():
     return res
 
 
-if __name__ == '__main__':
+def main():
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
     import os
@@ -508,3 +521,7 @@ if __name__ == '__main__':
         all_types_representations_as_strings(),
         all_types_includes(),
     )
+
+
+if __name__ == '__main__':
+    main()

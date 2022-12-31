@@ -56,7 +56,37 @@ struct from_impl<"LinearRGB"> {
 };
 
 template<>
+struct from_impl<"CIELAB"> {
+    using type = Cool::Color;
+};
+
+template<>
 struct from_impl<"sRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"sRGB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"LinearRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"LinearRGB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"CIELAB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"CIELAB_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
 

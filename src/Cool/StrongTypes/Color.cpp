@@ -10,27 +10,16 @@ auto Color::from_srgb(glm::vec3 const& srgb) -> Color
     return res;
 }
 
-auto Color::as_srgb() const -> glm::vec3
-{
-    return _srgb;
-}
-auto Color::as_linear_rgb() const -> glm::vec3
-{
-    return LinearRGB_from_sRGB(_srgb);
-}
-auto Color::as_cielab() const -> glm::vec3
-{
-    return CIELAB_from_sRGB(_srgb);
-}
+#include "Cool/ColorSpaces/generated/define_color_getters.inl"
 
 auto to_string(Color const& color) -> std::string
 {
-    return fmt::format("{} (sRGB)", glm::to_string(color.as_srgb()));
+    return fmt::format("{} (sRGB)", glm::to_string(color.as_sRGB()));
 }
 
 auto imgui_widget(std::string_view name, Color& color, ImGuiColorEditFlags flags) -> bool
 {
-    glm::vec3 srgb = color.as_srgb();
+    glm::vec3 srgb = color.as_sRGB();
     if (ImGui::ColorEdit3(
             name.data(),
             glm::value_ptr(srgb),

@@ -7,8 +7,7 @@ public:
     ColorAndAlpha() = default;
     static auto from_srgb_straight_alpha(glm::vec4 const& srgb_straight) -> ColorAndAlpha;
 
-    [[nodiscard]] auto as_srgb_straight() const -> glm::vec4;
-    [[nodiscard]] auto as_cielab_premultiplied() const -> glm::vec4;
+#include "Cool/ColorSpaces/generated/declare_color_and_alpha_getters.inl"
 
     friend auto operator==(ColorAndAlpha const&, ColorAndAlpha const&) -> bool = default;
 

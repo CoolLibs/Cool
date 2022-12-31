@@ -67,7 +67,7 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
     if (ImGui::BeginPopup("picker"))
     {
         ImGui::SetNextItemWidth(button_size() * 12.0f);
-        auto srgb = palette.value[palette.value.size() - 1].as_srgb();
+        auto srgb = palette.value[palette.value.size() - 1].as_sRGB();
         value_has_changed |= ImGui::ColorPicker3("##picker", glm::value_ptr(srgb), flags);
         palette.value[palette.value.size() - 1] = Color::from_srgb(srgb);
         ImGui::EndPopup();
