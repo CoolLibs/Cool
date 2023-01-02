@@ -108,6 +108,3 @@ vec3 Cool_LinearRGB_from_CIELAB(vec3 c)
     return Cool_LinearRGB_from_sRGB(Cool_sRGB_from_CIELAB(c));
 }
 // End of [Block2]
-
-vec3 Cool_black_in_cielab = Cool_CIELAB_from_sRGB(vec3(0.));
-vec3 Cool_white_in_cielab = Cool_CIELAB_from_sRGB(vec3(1.));
