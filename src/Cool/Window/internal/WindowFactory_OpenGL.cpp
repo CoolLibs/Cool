@@ -21,7 +21,9 @@ void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
     ImGui::DestroyContext();
     window_manager.windows().clear();
     glfwTerminate();
+#if DEBUG
     CoolGlDebug::shut_down();
+#endif
 }
 
 void WindowFactory_OpenGL::setup_main_window(Window_OpenGL& window)
