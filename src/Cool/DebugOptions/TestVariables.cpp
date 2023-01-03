@@ -15,9 +15,9 @@ void test_variables()
     static Cool::Variable<Cool::Hue> hue{
         "Hue",
         Cool::Hue{0.5f}};
-    static Cool::Variable<Cool::RgbColor> color{
+    static Cool::Variable<Cool::Color> color{
         "Color",
-        Cool::RgbColor{glm::vec3{0.f, 1.f, 0.5f}}};
+        Cool::Color::from_srgb(glm::vec3{0.f, 1.f, 0.5f})};
     static Cool::Variable<Cool::Direction2D> direction{
         "Direction",
         Cool::Direction2D{glm::vec2{0.f, 10.f}}};
@@ -31,9 +31,10 @@ void test_variables()
         "Color Palette",
         Cool::ColorPalette{
             std::vector{
-                Cool::RgbColor{glm::vec3{0.f, 1.f, 0.75f}},
-                Cool::RgbColor{glm::vec3{1.f, 1.f, 0.5f}},
-                Cool::RgbColor{glm::vec3{1.f, 0.f, 0.5f}}}}};
+                Cool::Color::from_srgb(glm::vec3{0.f, 1.f, 0.75f}),
+                Cool::Color::from_srgb(glm::vec3{1.f, 1.f, 0.5f}),
+                Cool::Color::from_srgb(glm::vec3{1.f, 0.f, 0.5f}),
+            }}};
     static Cool::Variable<Cool::Gradient> gradient{
         "Gradient",
         Cool::Gradient{

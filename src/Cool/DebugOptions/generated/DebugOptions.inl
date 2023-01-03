@@ -7,11 +7,15 @@
 
 #if DEBUG
 
-#include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <wafl/wafl.hpp>
+
+namespace Cool {
+template<typename... Ts>
+class DebugOptionsManager; // Forward declare this class so that the friend declaration that comes later on doesn't fail.
+}
 
 namespace Cool {
 
@@ -27,6 +31,7 @@ public:
         }
     }
     [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
+    [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
@@ -45,6 +50,7 @@ private:
     struct Instance {
         bool test_message_console__window{false};
         bool log_when_autosaving{false};
+        bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
         bool log_opengl_info{false};
@@ -60,6 +66,7 @@ private:
             archive(
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
+                cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating icon", log_when_creating_icon),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
@@ -70,12 +77,13 @@ private:
 
     static void reset_all()
     {
-        instance().test_message_console__window             = false;
-        instance().log_when_autosaving                      = false;
-        instance().log_when_creating_icon                   = false;
-        instance().log_number_of_threads_in_the_thread_pool = false;
-        instance().log_opengl_info                          = false;
-        instance().test_presets__window                     = false;
+        instance().test_message_console__window                     = false;
+        instance().log_when_autosaving                              = false;
+        instance().log_when_rendering_alpha_checkerboard_background = false;
+        instance().log_when_creating_icon                           = false;
+        instance().log_number_of_threads_in_the_thread_pool         = false;
+        instance().log_opengl_info                                  = false;
+        instance().test_presets__window                             = false;
     }
 
     static void save_to_file()
@@ -123,6 +131,11 @@ private:
             ImGui::Checkbox("Log when autosaving", &instance().log_when_autosaving);
         }
 
+        if (wafl::similarity_match({filter, "Log when rendering alpha checkerboard background"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
+        }
+
         if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
@@ -167,6 +180,12 @@ private:
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
             instance().log_when_autosaving = !instance().log_when_autosaving;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log when rendering alpha checkerboard background"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_when_rendering_alpha_checkerboard_background = !instance().log_when_rendering_alpha_checkerboard_background;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

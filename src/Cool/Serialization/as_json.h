@@ -15,7 +15,7 @@ namespace Cool::Serialization {
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
 template<typename T>
-auto from_json(T& data, std::filesystem::path file_path) -> OptionalErrorMessage
+auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessage
 {
     if (File::exists(file_path.string()))
     {
@@ -48,7 +48,7 @@ auto from_json(T& data, std::filesystem::path file_path) -> OptionalErrorMessage
  * @param field_name An optional name that will be given to data inside the JSON file (for readability purposes).
  */
 template<typename T>
-void to_json(const T& data, std::filesystem::path file_path, std::string_view field_name = "value0")
+void to_json(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0")
 {
     if (File::create_folders_for_file_if_they_dont_exist(file_path.string()))
     {

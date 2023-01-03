@@ -119,9 +119,13 @@ def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_na
 
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
-#include <Cool/DebugOptions/DebugOptionsManager.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <wafl/wafl.hpp>
+
+namespace Cool {{
+    template<typename... Ts>
+    class DebugOptionsManager; // Forward declare this class so that the friend declaration that comes later on doesn't fail.
+}}
 
 namespace {namespace} {{
 

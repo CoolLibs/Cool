@@ -9,42 +9,61 @@ class AutoSerializer {
 public:
     template<std::invocable<std::string const&> OnError>
     AutoSerializer(
-        std::filesystem::path path,
-        std::string_view      key_name_in_json,
-        T&                    object_to_serialize,
-        OnError const&        on_error,
-        bool                  load_from_file = true
+        std::filesystem::path const& path,
+        std::string_view             key_name_in_json,
+        T&                           object_to_serialize,
+        OnError&&                    on_error,
+        bool                         load_from_file = true
     )
-        : _path{path}
-        , _key_name_in_json{key_name_in_json}
-        , _object_to_serialize{object_to_serialize}
-    {
-        if (load_from_file)
-        {
-            const auto error = Serialization::from_json(_object_to_serialize, _path);
-            if (error)
-            {
-                on_error(*error);
-            }
+        : _d{
+            .path                = path,
+            .key_name_in_json    = std::string{key_name_in_json},
+            .object_to_serialize = object_to_serialize,
         }
+    {
+        if (!load_from_file)
+            return;
+
+        const auto error = Serialization::from_json(_d.object_to_serialize.get(), _d.path);
+        if (error)
+            on_error(*error);
     }
 
     ~AutoSerializer()
     {
-        save();
+        if (!_has_been_moved_from)
+            save();
+    }
+
+    AutoSerializer(AutoSerializer<T> const&)                    = delete;
+    auto operator=(AutoSerializer<T> const&) -> AutoSerializer& = delete;
+    AutoSerializer(AutoSerializer<T>&& o) noexcept
+        : _d{std::move(o._d)}
+    {
+        o._has_been_moved_from = true;
+    }
+    auto operator=(AutoSerializer<T>&& o) noexcept -> AutoSerializer&
+    {
+        _d                     = std::move(o._d);
+        o._has_been_moved_from = true;
+        return *this;
     }
 
     void save() const
     {
-        Serialization::to_json(_object_to_serialize, _path, _key_name_in_json);
+        Serialization::to_json(_d.object_to_serialize.get(), _d.path, _d.key_name_in_json);
     }
 
-    auto path() const { return _path; }
+    auto path() const { return _d.path; }
 
 private:
-    std::filesystem::path _path;
-    std::string           _key_name_in_json;
-    T&                    _object_to_serialize;
+    struct Data { // Needed to simplify writing our move operators
+        std::filesystem::path     path;
+        std::string               key_name_in_json;
+        std::reference_wrapper<T> object_to_serialize;
+    };
+    Data _d;
+    bool _has_been_moved_from{false};
 };
 
 } // namespace Cool

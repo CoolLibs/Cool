@@ -1,21 +1,19 @@
 #pragma once
 
-#include <Cool/Serialization/AutoSerializer.h>
-#include <Cool/Variables/AnyVariable.h>
+#include <Cool/Serialization/SerializerOnDemand.h>
 #include <reg/cereal.hpp>
+#include "Settings.h"
+#include "Settings_Ref.h"
 
 namespace Cool {
 
-// TODO(JF) TODO(LD) Remove the old presets system
-
-/// List of values contained by a preset.
-using Settings = std::vector<Cool::AnyVariable>;
+// TODO(JF) Remove the old presets system
 
 struct Preset2 {
     std::string name;
     Settings    values;
 
-    friend bool operator==(const Preset2&, const Preset2&) = default;
+    friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
 
 private:
     // Serialization
@@ -34,19 +32,20 @@ using PresetId = reg::Id<Preset2>;
 
 class PresetManager {
 public:
-    PresetManager(std::filesystem::path path)
-        : _auto_serializer{path, "PresetManager", *this, [](const std::string&) {
-                               /*Ignore deserialization warnings*/
-                           }}
-    {}
+    explicit PresetManager(std::filesystem::path const& path)
+        : _serializer{path, "PresetManager"}
+    {
+        auto const maybe_err = _serializer.load(*this);
+        std::ignore          = maybe_err; // Ignore errors when file not found
+    }
 
-    auto path() const { return _auto_serializer.path(); }
+    [[nodiscard]] auto path() const -> auto const& { return _serializer.path(); }
 
     /// Renders the UI for the whole `PresetManager`.
-    auto imgui(Settings& settings) -> bool;
+    auto imgui(Settings_Ref settings) -> bool;
 
     /// Renders only the UI for the presets.
-    auto imgui_presets(Settings& settings) -> bool;
+    auto imgui_presets(Settings_Ref settings) -> bool;
 
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
@@ -63,23 +62,23 @@ public:
 
     /// Applies a preset to some `settings`.
     /// Returns true iff the `id` was valid and the preset has actually been applied.
-    auto apply(const PresetId& id, Settings& settings) const -> bool;
+    auto apply(const PresetId& id, Settings_Ref settings) const -> bool;
 
     /// Applies the first preset if it exists.
     /// Does nothing if the preset manager is empty.
-    void apply_first_preset_if_there_is_one(Settings& settings) const;
+    void apply_first_preset_if_there_is_one(Settings_Ref settings) const;
 
     /// Returns true iff `id` references an existing preset.
     auto contains(const PresetId& id) const -> bool { return _presets.contains(id); }
 
     /// Returns the ID of the preset with the given `values`, or a null ID if no preset has the given `values`.
-    auto find_preset_with_given_values(const Settings& values) const -> PresetId;
+    auto find_preset_with_given_values(Settings_ConstRef values) const -> PresetId;
 
     /// Returns the ID of the preset with the given `name`, or a null ID if no preset has the given `name`.
     auto find_preset_with_given_name(std::string_view name) const -> PresetId;
 
     /// Returns the name of the preset referenced by `id`, or nullopt if it doesn't exist.
-    auto preset_name(const PresetId& id) const -> std::optional<std::string>;
+    auto preset_name(PresetId const& id) const -> std::optional<std::string>;
 
     auto is_empty() const -> bool { return _presets.is_empty(); }
 
@@ -96,14 +95,14 @@ private:
     void name_selector();
 
     /// Displays UI to add a preset in PresetManager with add_button, an input text and name_selector.
-    void imgui_adding_preset(const Settings&);
+    void imgui_adding_preset(Settings_ConstRef);
 
     /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
     /// Returns true if we should create a preset.
     auto imgui_name_input() -> bool;
 
     /// Creates a new preset, or tries to overwrite the preset referenced by `id` if the later is valid.
-    void save_preset(const Settings& new_preset_values, const PresetId& id);
+    void save_preset(Settings_ConstRef new_preset_values, const PresetId& id);
 
 private:
     class RenamerWidget {
@@ -121,6 +120,8 @@ private:
     std::string                   _new_preset_name;
     RenamerWidget                 _rename_widget;
 
+    Cool::SerializerOnDemand _serializer;
+
 private:
     // Serialization
     friend class cereal::access;
@@ -131,9 +132,6 @@ private:
             cereal::make_nvp("Presets", _presets)
         );
     }
-
-private:
-    Cool::AutoSerializer<PresetManager> _auto_serializer; // Must be last to properly serialize the class
 };
 
 } // namespace Cool

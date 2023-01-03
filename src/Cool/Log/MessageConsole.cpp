@@ -134,9 +134,8 @@ static auto color(MessageSeverity severity) -> ImVec4
 static auto fade_out_if(bool condition, ImVec4 color) -> ImVec4
 {
     if (condition)
-    {
         color.w = 0.75f;
-    }
+
     return color;
 }
 
@@ -281,20 +280,16 @@ void MessageConsole::imgui_show_all_messages()
                 ImGui::Text("%s", msg.message.message.c_str());
 
                 const bool close_button_is_hovered = [&] {
-                    if (is_clearable(msg))
-                    {
-                        ImGui::SameLine();
-                        if (ImGuiExtras::close_button())
-                        {
-                            msg_to_clear = id;
-                        }
-                        ImGuiExtras::tooltip(("close this " + to_string(msg.message.severity)).c_str());
-                        return ImGui::IsItemHovered();
-                    }
-                    else
-                    {
+                    if (!is_clearable(msg))
                         return false;
+
+                    ImGui::SameLine();
+                    if (ImGuiExtras::close_button())
+                    {
+                        msg_to_clear = id;
                     }
+                    ImGuiExtras::tooltip(("Close this " + to_string(msg.message.severity)).c_str());
+                    return ImGui::IsItemHovered();
                 }();
 
                 ImGui::SameLine();                                     // Add a dummy to make sure the hitbox of the message
@@ -376,7 +371,7 @@ MessageConsole::MessagesCountPerSeverity::MessagesCountPerSeverity()
 
 void MessageConsole::MessagesCountPerSeverity::increment(MessageSeverity severity)
 {
-    _counts_per_severity[static_cast<size_t>(severity)]++;
+    _counts_per_severity.at(static_cast<size_t>(severity))++;
 }
 
 void MessageConsole::MessagesCountPerSeverity::reset_to_zero()
@@ -386,17 +381,17 @@ void MessageConsole::MessagesCountPerSeverity::reset_to_zero()
 
 auto MessageConsole::MessagesCountPerSeverity::get(MessageSeverity severity) const -> size_t
 {
-    return _counts_per_severity[static_cast<size_t>(severity)];
+    return _counts_per_severity.at(static_cast<size_t>(severity));
 }
 
 auto MessageConsole::IsSeverityHidden::get(MessageSeverity severity) const -> bool
 {
-    return _is_hidden[static_cast<size_t>(severity)];
+    return _is_hidden.at(static_cast<size_t>(severity));
 }
 
 void MessageConsole::IsSeverityHidden::set(MessageSeverity severity, bool new_value)
 {
-    _is_hidden[static_cast<size_t>(severity)] = new_value;
+    _is_hidden.at(static_cast<size_t>(severity)) = new_value;
 }
 
 void MessageConsole::IsSeverityHidden::toggle(MessageSeverity severity)

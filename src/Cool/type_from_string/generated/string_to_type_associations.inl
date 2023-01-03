@@ -21,6 +21,11 @@ struct from_impl<"float"> {
 };
 
 template<>
+struct from_impl<"UV"> {
+    using type = Cool::Point2D;
+};
+
+template<>
 struct from_impl<"Point2D"> {
     using type = Cool::Point2D;
 };
@@ -41,8 +46,48 @@ struct from_impl<"vec4"> {
 };
 
 template<>
-struct from_impl<"RgbColor"> {
-    using type = Cool::RgbColor;
+struct from_impl<"sRGB"> {
+    using type = Cool::Color;
+};
+
+template<>
+struct from_impl<"LinearRGB"> {
+    using type = Cool::Color;
+};
+
+template<>
+struct from_impl<"CIELAB"> {
+    using type = Cool::Color;
+};
+
+template<>
+struct from_impl<"sRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"sRGB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"LinearRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"LinearRGB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"CIELAB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"CIELAB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
 };
 
 template<>

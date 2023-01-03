@@ -2,6 +2,9 @@
 #include <charconv>
 #include <exception>
 #include <glm/detail/qualifier.hpp>
+#include <string_view>
+#include "Cool/String/String.h"
+#include "Cool/StrongTypes/ColorAndAlpha.h"
 
 namespace Cool::String {
 
@@ -31,6 +34,22 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
         str.replace(start_pos, from.length(), to);
         start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
     }
+}
+
+auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    auto word_position = find_next_word_position(str, 0, delimiters);
+    while (word_position)
+    {
+        auto const block_content = substring(str, word_position->first, word_position->second);
+
+        if (block_content == from)
+            str.replace(word_position->first, word_position->second - word_position->first, to);
+
+        word_position = find_next_word_position(str, word_position->second, delimiters);
+    }
+
+    return str;
 }
 
 auto replace_between_delimiters(const ReplacementInput& in) -> std::string
@@ -146,6 +165,28 @@ auto find_matching_pair(
     return std::nullopt;
 }
 
+auto rfind_matching_pair(
+    find_matching_pair_params p
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    size_t const last_closed = p.text.rfind(p.closing, p.offset);
+    if (last_closed == std::string::npos)
+        return std::nullopt;
+
+    size_t counter = 1;
+    for (size_t pos = last_closed - 1; pos != -1; --pos)
+    {
+        if (p.text[pos] == p.opening)
+            counter--;
+        else if (p.text[pos] == p.closing)
+            counter++;
+
+        if (counter == 0)
+            return std::make_pair(pos, last_closed);
+    }
+    return std::nullopt;
+}
+
 auto split_into_words(
     std::string_view text,
     std::string_view delimiters
@@ -228,11 +269,11 @@ auto substring(
 
 auto find_next_word_position(
     std::string_view text,
-    size_t           offset,
+    size_t           starting_pos,
     std::string_view delimiters
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const auto idx1 = text.find_first_not_of(delimiters, offset);
+    const auto idx1 = text.find_first_not_of(delimiters, starting_pos);
     if (idx1 == std::string_view::npos)
     {
         return std::nullopt;
@@ -245,21 +286,51 @@ auto find_next_word_position(
     return std::make_pair(idx1, idx2);
 }
 
+auto find_previous_word_position(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters
+) -> std::optional<std::pair<size_t, size_t>>
+{
+    auto const idx2 = text.find_last_not_of(delimiters, ending_pos - 1);
+    if (idx2 == std::string_view::npos)
+        return std::nullopt;
+
+    auto idx1 = text.find_last_of(delimiters, idx2);
+    if (idx1 == std::string_view::npos)
+        idx1 = -1;
+
+    return std::make_pair(idx1 + 1, idx2 + 1);
+}
+
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
     std::string_view delimiters
 ) -> std::optional<std::string_view>
 {
-    auto position = find_next_word_position(text, starting_pos, delimiters);
+    auto const position = find_next_word_position(text, starting_pos, delimiters);
     if (!position)
-    {
         return std::nullopt;
-    }
-    else
+
+    return substring(text, *position);
+}
+
+auto all_words(
+    std::string_view text,
+    std::string_view delimiters
+) -> std::vector<std::string>
+{
+    std::vector<std::string> res{};
+
+    auto pos = find_next_word_position(text, 0, delimiters);
+    while (pos)
     {
-        return substring(text, *position);
+        res.emplace_back(substring(text, *pos));
+        pos = find_next_word_position(text, pos->second, delimiters);
     }
+
+    return res;
 }
 
 auto find_block_position(
@@ -267,7 +338,7 @@ auto find_block_position(
     size_t           offset
 ) -> std::optional<std::pair<size_t, size_t>>
 {
-    const auto first_word_position  = find_next_word_position(text, offset);
+    const auto first_word_position  = find_next_word_position(text, offset, default_word_delimiters_except_dot);
     const auto parentheses_position = find_matching_pair({.text = text, .offset = offset});
     // If there are neither words nor parentheses.
     if (!first_word_position && !parentheses_position)
@@ -394,7 +465,7 @@ static auto value_from_string_impl_vec(std::string_view str)
 {
     auto ptr_in_string = std::optional<size_t>{0};
 
-    const auto opening_parenthesis_position = str.find_first_of("(");
+    const auto opening_parenthesis_position = str.find_first_of('(');
     if (opening_parenthesis_position != std::string_view::npos)
     {
         ptr_in_string = opening_parenthesis_position;
@@ -403,7 +474,7 @@ static auto value_from_string_impl_vec(std::string_view str)
     auto words_positions = std::vector<std::pair<size_t, size_t>>{};
     while (ptr_in_string)
     {
-        const auto pos = find_next_word_position(str, *ptr_in_string);
+        const auto pos = find_next_word_position(str, *ptr_in_string, default_word_delimiters_except_dot);
         if (pos)
         {
             words_positions.push_back(*pos);
@@ -453,19 +524,13 @@ auto value_from_string<float>(std::string_view str) -> std::optional<float>
 template<>
 auto value_from_string<bool>(std::string_view str) -> std::optional<bool>
 {
-    const auto string = to_lower(str);
+    auto const string = to_lower(str);
     if (string == "true")
-    {
         return true;
-    }
-    else if (string == "false")
-    {
+    if (string == "false")
         return false;
-    }
-    else
-    {
-        return std::nullopt;
-    }
+
+    return std::nullopt;
 }
 
 template<>
@@ -505,12 +570,26 @@ auto value_from_string<glm::ivec4>(std::string_view str) -> std::optional<glm::i
 }
 
 template<>
-auto value_from_string<Cool::RgbColor>(std::string_view str) -> std::optional<Cool::RgbColor>
+auto value_from_string<Cool::Color>(std::string_view str) -> std::optional<Cool::Color>
 {
     const auto val = value_from_string_impl_vec<float, 3>(str);
     if (val)
     {
-        return Cool::RgbColor{*val};
+        return Cool::Color::from_srgb(*val);
+    }
+    else
+    {
+        return std::nullopt;
+    }
+}
+
+template<>
+auto value_from_string<Cool::ColorAndAlpha>(std::string_view str) -> std::optional<Cool::ColorAndAlpha>
+{
+    const auto val = value_from_string_impl_vec<float, 4>(str);
+    if (val)
+    {
+        return Cool::ColorAndAlpha::from_srgb_straight_alpha(*val);
     }
     else
     {
@@ -615,6 +694,102 @@ auto contains_word(std::string_view word, std::string_view text, std::string_vie
                                   || there_is_a_delimiter_at(index + word.size());
 
     return is_beginning_of_a_word && is_end_of_a_word;
+}
+
+enum class CommentParsingState {
+    Idle,
+    JustSawASlash,
+    InsideOneLineComment,
+    InsideMultilineComment,
+    JustSawAStarInsideMultilineComment,
+};
+
+static auto is_not_inside_comment(CommentParsingState state) -> bool
+{
+    return state == CommentParsingState::Idle
+           || state == CommentParsingState::JustSawASlash;
+}
+
+auto remove_comments(std::string const& str) -> std::string
+{
+    std::string res{};
+    res.reserve(str.length());
+
+    auto   state               = CommentParsingState::Idle;
+    size_t previous_char_index = 0;
+
+    auto const enter_comment = [&](size_t i) {
+        res += substring(str, previous_char_index, i - 1);
+    };
+    auto const exit_comment = [&](size_t i) {
+        previous_char_index = i + 1u;
+    };
+
+    for (size_t i = 0; i < str.length(); ++i) // NOLINT(modernize-loop-convert)
+    {
+        char const c = str[i];
+        switch (state)
+        {
+        case CommentParsingState::Idle:
+        {
+            if (c == '/')
+                state = CommentParsingState::JustSawASlash;
+            break;
+        }
+        case CommentParsingState::JustSawASlash:
+        {
+            if (c == '/')
+            {
+                state = CommentParsingState::InsideOneLineComment;
+                enter_comment(i);
+            }
+            else if (c == '*')
+            {
+                state = CommentParsingState::InsideMultilineComment;
+                enter_comment(i);
+            }
+            else
+            {
+                state = CommentParsingState::Idle;
+            }
+            break;
+        }
+        case CommentParsingState::InsideOneLineComment:
+        {
+            if (c == '\n')
+            {
+                state = CommentParsingState::Idle;
+                exit_comment(i);
+                res += '\n';
+            }
+            break;
+        }
+        case CommentParsingState::InsideMultilineComment:
+        {
+            if (c == '*')
+                state = CommentParsingState::JustSawAStarInsideMultilineComment;
+            break;
+        }
+        case CommentParsingState::JustSawAStarInsideMultilineComment:
+        {
+            if (c == '/')
+            {
+                state = CommentParsingState::Idle;
+                exit_comment(i);
+            }
+            else
+            {
+                state = CommentParsingState::InsideMultilineComment;
+            }
+            break;
+        }
+        }
+    }
+
+    if (is_not_inside_comment(state))
+        res += substring(str, previous_char_index, str.length());
+
+    return res;
 }
 
 } // namespace Cool::String

@@ -2,8 +2,17 @@
 
 #include "GLDebug.h"
 
+static bool context_is_active = true;
+void        CoolGlDebug::shut_down()
+{
+    context_is_active = false;
+}
+
 void CoolGlDebug::clearFromPreviousErrors()
 {
+    if (!context_is_active)
+        return;
+
     while (glGetError() != GL_NO_ERROR)
     {
     }
@@ -11,6 +20,9 @@ void CoolGlDebug::clearFromPreviousErrors()
 
 bool CoolGlDebug::checkForErrors(const char* functionName, const char* filename, int line)
 {
+    if (!context_is_active)
+        return false;
+
     GLenum error; // NOLINT
     bool   bFoundErrors = false;
     while ((error = glGetError()) != GL_NO_ERROR)

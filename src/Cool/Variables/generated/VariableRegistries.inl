@@ -6,17 +6,18 @@
  */
 
 using VariableRegistries = reg::Registries<
-    Cool::Variable<bool>,
-    Cool::Variable<int>,
-    Cool::Variable<float>,
-    Cool::Variable<Cool::Point2D>,
-    Cool::Variable<glm::vec2>,
-    Cool::Variable<glm::vec3>,
-    Cool::Variable<glm::vec4>,
-    Cool::Variable<Cool::RgbColor>,
-    Cool::Variable<Cool::Camera>,
-    Cool::Variable<Cool::Angle>,
-    Cool::Variable<Cool::Direction2D>,
-    Cool::Variable<Cool::Hue>,
-    Cool::Variable<Cool::ColorPalette>,
-    Cool::Variable<Cool::Gradient> >;
+    reg::Registry<Cool::Variable<bool>>,
+    reg::Registry<Cool::Variable<int>>,
+    reg::Registry<Cool::Variable<float>>,
+    reg::Registry<Cool::Variable<Cool::Point2D>>,
+    reg::Registry<Cool::Variable<glm::vec2>>,
+    reg::Registry<Cool::Variable<glm::vec3>>,
+    reg::Registry<Cool::Variable<glm::vec4>>,
+    reg::Registry<Cool::Variable<Cool::Color>>,
+    reg::Registry<Cool::Variable<Cool::ColorAndAlpha>>,
+    reg::Registry<Cool::Variable<Cool::Camera>>,
+    reg::Registry<Cool::Variable<Cool::Angle>>,
+    reg::Registry<Cool::Variable<Cool::Direction2D>>,
+    reg::Registry<Cool::Variable<Cool::Hue>>,
+    reg::Registry<Cool::Variable<Cool::ColorPalette>>,
+    reg::Registry<Cool::Variable<Cool::Gradient>>>;

@@ -16,6 +16,10 @@ namespace CoolGlDebug {
 void        clearFromPreviousErrors();
 bool        checkForErrors(const char* functionName, const char* filename, int line);
 char const* glErrorString(GLenum const err);
+
+/// Must be called just after you destroy your OpenGL context during the program's shutdown
+/// This prevents the error checking from freezing if you destroy OpenGL objects after the context has been destroyed
+void shut_down();
 } // namespace CoolGlDebug
 
 #else

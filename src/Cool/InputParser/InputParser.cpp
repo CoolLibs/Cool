@@ -1,12 +1,16 @@
 #include "InputParser.h"
 #include <Cool/Dependencies/Input.h>
 #include <Cool/String/String.h>
-#include <Cool/StrongTypes/RgbColor.h>
+#include <Cool/StrongTypes/Color.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
 #include <Cool/type_from_string/type_from_string.h>
-#include <fmt/compile.h>
 #include <sstream>
+#include <string_view>
+#include "Cool/ColorSpaces/ColorAndAlphaSpace.h"
+#include "Cool/ColorSpaces/ColorSpace.h"
+#include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "fmt/format.h"
 
 namespace Cool {
 
@@ -38,9 +42,19 @@ template<typename T>
 static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>;
 
 template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::RgbColor>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Color>
 {
-    Cool::VariableMetadata<Cool::RgbColor> metadata{};
+    Cool::VariableMetadata<Cool::Color> metadata{};
+
+    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
+
+    return metadata;
+}
+
+template<>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::ColorAndAlpha>
+{
+    Cool::VariableMetadata<Cool::ColorAndAlpha> metadata{};
 
     metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
 
@@ -55,16 +69,30 @@ static auto make_input(
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
     InputFactory_Ref                  input_factory,
-    std::string_view                  key_values
+    std::string_view                  key_values,
+    std::string_view                  type
 ) -> Input<T>
 {
-    return input_factory.make<T>(
-        dirty_flag,
-        name,
-        description,
-        get_default_value<T>(key_values),
-        get_default_metadata<T>(key_values)
+    auto input = input_factory.make<T>(
+        InputDefinition<T>{
+            std::string{name},
+            description,
+            get_default_value<T>(key_values),
+            get_default_metadata<T>(key_values),
+        },
+        dirty_flag
     );
+
+    if constexpr (std::is_same_v<T, Cool::Color>)
+    {
+        input._desired_color_space = static_cast<int>(parse_color_space(type));
+    }
+    else if constexpr (std::is_same_v<T, Cool::ColorAndAlpha>)
+    {
+        input._desired_color_space = static_cast<int>(parse_color_and_alpha_space(type));
+    }
+
+    return input;
 }
 
 static auto make_any_input(
@@ -76,7 +104,7 @@ static auto make_any_input(
     std::string_view                  key_values
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values, type));
 }
 
 struct TypeAndName_Ref {
@@ -207,7 +235,7 @@ auto parse_all_inputs(
 }
 
 template<typename T>
-auto instantiate_shader_code__impl(const T&, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const T&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
@@ -238,16 +266,19 @@ static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 
 static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     switch (interpolation_mode)
     {
     case ImGG::Interpolation::Linear:
     {
         return fmt::format(
             FMT_COMPILE(R"STR(
+            // The color is in Lab space with premultiplied alpha because interpolating in that space looks better (it matches human perception).
             float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
                             ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
-            return mix({gradient_marks}[i - 1].col, {gradient_marks}[i].col, mix_factor);
+            vec4 col1 = {gradient_marks}[i - 1].col;
+            vec4 col2 = {gradient_marks}[i    ].col;
+            return mix(col1, col2, mix_factor);
     )STR"),
             "gradient_marks"_a = fmt::format("{}_", name)
         );
@@ -271,11 +302,11 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
 
 static auto gen_code__number_of_marks_variable_name(std::string_view name)
 {
-    return fmt::format("number_of_marks_of_{}", internal::gradient_marks_array_name(name));
+    return fmt::format("numberOfMarksOf{}", internal::gradient_marks_array_name(name));
 }
 
 template<>
-auto instantiate_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
 {
     using namespace fmt::literals;
     return value.value.gradient().is_empty()
@@ -329,7 +360,7 @@ static auto gen_code__number_of_colors_variable_name(std::string_view name)
 }
 
 template<>
-auto instantiate_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
 {
     // NB: we create a fnuction rather than an array to hold our calette. That is because glsl doesn't allow arrays of size 0.
     using namespace fmt::literals;
@@ -367,12 +398,28 @@ vec3 {color_palette_function}(int index)
 }
 
 template<typename T>
-auto instantiate_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
 {
-    return instantiate_shader_code__impl(input_provider(input), input.name());
+    return gen_input_shader_code<T>(input, input_provider, input.name());
 }
 
-static auto instantiate_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
+template<typename T>
+auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string
+{
+    return gen_input_shader_code__impl(input_provider(input), name);
+}
+
+auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider) -> std::string
+{
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider); }, input);
+}
+
+auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider, std::string_view name) -> std::string
+{
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider, name); }, input);
+}
+
+static auto gen_input_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
 {
     std::string res;
     for (const auto& input : inputs)
@@ -381,7 +428,7 @@ static auto instantiate_shader_code(std::string_view name, const std::vector<Any
             [&](auto&& input) {
                 if (input.name() == name)
                 {
-                    res = instantiate_shader_code(input, input_provider);
+                    res = gen_input_shader_code(input, input_provider);
                 }
             },
             input
@@ -399,7 +446,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
     {
         if (const auto info = find_type_and_name(line))
         {
-            out << instantiate_shader_code(info->name, inputs, input_provider) << '\n';
+            out << gen_input_shader_code(info->name, inputs, input_provider) << '\n';
         }
         else
         {

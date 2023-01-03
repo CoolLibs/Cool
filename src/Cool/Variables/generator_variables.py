@@ -10,6 +10,19 @@
 from dataclasses import dataclass, field
 from typing import List
 
+if True:
+    # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
+    # So we need to add the path manually to sys.path
+    import os
+    import sys
+    from pathlib import Path
+    sys.path.append(os.path.join(
+        Path(os.path.abspath(__file__)).parent.parent,
+        "ColorSpaces")
+    )
+    # End of HACK
+    import generator_colors
+
 
 @dataclass
 class VariableMetadata:
@@ -22,25 +35,29 @@ class VariableMetadata:
 
 @dataclass
 class VariableDescription:
-    input_type: str  # Type that comes in an INPUT declaration
+    input_type: List[str]  # Type that comes in an INPUT declaration
     cpp_type: str  # Type used in C++ to store the type
     glsl_type: str  # Raw glsl used to store the type
     include: str = ""  # File containing the C++ type
     metadatas: list[VariableMetadata] = field(
         default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
+    # For example a Gradient variable can't be sent as a simple uniform to a shader; that's why we generate some to inject it into the shader.
+    requires_shader_code_generation: bool = False
 
 
 def all_variable_descriptions():
+
     return [
         VariableDescription(
-            input_type="bool",
+            input_type=["bool"],
             cpp_type="bool",
             glsl_type="bool",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="int",
+            input_type=["int"],
             cpp_type="int",
             glsl_type="int",
             metadatas=[
@@ -59,9 +76,10 @@ def all_variable_descriptions():
                     default_value="10",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="float",
+            input_type=["float"],
             cpp_type="float",
             glsl_type="float",
             metadatas=[
@@ -94,16 +112,18 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Point2D",
+            input_type=["UV", "Point2D"],
             cpp_type="Cool::Point2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec2",
+            input_type=["vec2"],
             cpp_type="glm::vec2",
             glsl_type="vec2",
             include="<glm/glm.hpp>",
@@ -116,9 +136,10 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec3",
+            input_type=["vec3"],
             cpp_type="glm::vec3",
             glsl_type="vec3",
             include="<glm/glm.hpp>",
@@ -131,9 +152,10 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="vec4",
+            input_type=["vec4"],
             cpp_type="glm::vec4",
             glsl_type="vec4",
             include="<glm/glm.hpp>",
@@ -146,54 +168,78 @@ def all_variable_descriptions():
                     default_value="0.01f",
                 ),
             ],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="RgbColor",
-            cpp_type="Cool::RgbColor",
+            input_type=list(map(lambda x: x.name_in_code,
+                                generator_colors.color_spaces())),
+            cpp_type="Cool::Color",
             glsl_type="vec3",
-            include="<Cool/StrongTypes/RgbColor.h>",
+            include="<Cool/StrongTypes/Color.h>",
             metadatas=[
                 VariableMetadata(
                     name_in_shader="hdr",
                     field_name="is_hdr",
                     pretty_name="Is HDR",
                     type="bool",
-                    default_value="true",
+                    default_value="false",
                 ),
             ],
             do_generate_get_default_metadata=False,
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Camera",
+            input_type=list(generator_colors.color_and_alpha_spaces_names()),
+            cpp_type="Cool::ColorAndAlpha",
+            glsl_type="vec4",
+            include="<Cool/StrongTypes/ColorAndAlpha.h>",
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="hdr",
+                    field_name="is_hdr",
+                    pretty_name="Is HDR",
+                    type="bool",
+                    default_value="false",
+                ),
+            ],
+            do_generate_get_default_metadata=False,
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
+            input_type=["Camera"],
             cpp_type="Cool::Camera",
             # NB: we would probably need to create a Camera struct in glsl if we really intended to use this variable in shaders. (Which we will definitely do at some point instead of having one single global camera)
             glsl_type="mat4",
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Angle",
+            input_type=["Angle"],
             cpp_type="Cool::Angle",
             glsl_type="float",
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Direction2D",
+            input_type=["Direction2D"],
             cpp_type="Cool::Direction2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="Hue",
+            input_type=["Hue"],
             cpp_type="Cool::Hue",
             glsl_type="float",
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
+            requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type="ColorPalette",
+            input_type=["ColorPalette"],
             cpp_type="Cool::ColorPalette",
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/ColorPalette.h>",
@@ -206,9 +252,10 @@ def all_variable_descriptions():
                     default_value="true",
                 ),
             ],
+            requires_shader_code_generation=True,
         ),
         VariableDescription(
-            input_type="Gradient",
+            input_type=["Gradient"],
             cpp_type="Cool::Gradient",
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/Gradient.h>",
@@ -226,6 +273,7 @@ def all_variable_descriptions():
                     type="bool",
                     default_value="true",
                 ), ],
+            requires_shader_code_generation=True,
         ),
     ]
 
@@ -236,7 +284,7 @@ def all_variable_types():
 
 
 def all_types_representations_as_strings():
-    return {desc.cpp_type: [desc.input_type]
+    return {desc.cpp_type: desc.input_type
             for desc in all_variable_descriptions()}
 
 
@@ -302,12 +350,17 @@ def all_types_includes():
 
 def VariableRegistries():
     return "\n" + "using VariableRegistries = reg::Registries<\n" + ",\n".join(
-        map(lambda var_type: f"Cool::Variable<{var_type}>", all_variable_types())) + "\n>;"
+        map(lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>", all_variable_types())) + "\n>;"
 
 
 def AnyInput():
     return "\n" + "using AnyInput = std::variant<\n" + ",\n".join(
         map(lambda var_type: f"Input<{var_type}>", all_variable_types())) + "\n>;"
+
+
+def AnyInputDefinition():
+    return "\n" + "using AnyInputDefinition = std::variant<\n" + ",\n".join(
+        map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())) + "\n>;"
 
 
 def AnyVariable():
@@ -405,12 +458,21 @@ def variable_definition_factory(variable_type_and_metadatas):
     return variable_definition
 
 
+def requires_shader_code_generation():
+    return "\n\n".join(
+        map(lambda desc: f'''
+            if constexpr (std::is_same_v<T, {desc.cpp_type}>)
+                return {"true" if desc.requires_shader_code_generation else "false"};
+            ''', all_variable_descriptions()))
+
+
 def files():
     res = [
         # register_set_variable_commands,
         # register_set_variable_metadata_commands,
         VariableRegistries,
         AnyInput,
+        AnyInputDefinition,
         AnyVariable,
         AnyInputRef,
         AnyInputRefToConst,
@@ -418,6 +480,7 @@ def files():
         find_metadatas_in_string,
         variables_includes,
         glsl_type,
+        requires_shader_code_generation,
     ]
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(
@@ -427,7 +490,7 @@ def files():
     return res
 
 
-if __name__ == '__main__':
+def main():
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
     import os
@@ -458,3 +521,7 @@ if __name__ == '__main__':
         all_types_representations_as_strings(),
         all_types_includes(),
     )
+
+
+if __name__ == '__main__':
+    main()

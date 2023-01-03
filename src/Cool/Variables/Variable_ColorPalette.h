@@ -2,7 +2,7 @@
 
 #include <Cool/StrongTypes/ColorPalette.h>
 #include "Variable.h"
-#include "internal/rgb_color_utils.h"
+#include "internal/color_utils.h"
 
 namespace Cool {
 
@@ -13,13 +13,13 @@ inline auto imgui_widget(Variable<ColorPalette>& var) -> bool
     return imgui_widget(
         var.name,
         var.value,
-        internal::rgb_color_imgui_flags(var.metadata.is_hdr)
+        internal::color_imgui_flags(var.metadata.is_hdr)
     );
 }
 
 inline auto imgui_widget(VariableMetadata<ColorPalette>& meta) -> bool
 {
-    return internal::rgb_color_metadata_widget(meta.is_hdr);
+    return internal::color_metadata_widget(meta.is_hdr);
 }
 
 } // namespace Cool

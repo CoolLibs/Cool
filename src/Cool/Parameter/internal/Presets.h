@@ -82,13 +82,13 @@ public:
                         const auto   new_uuid           = _presets[i].values_with_uuid.uuid;
                         const auto   last_uuid_copy     = last_uuid();
                         const Action action             = {
-                                        [&, setting_values, new_setting_values, new_uuid, on_value_change]() {
+                            [&, setting_values, new_setting_values, new_uuid, on_value_change]() {
                                 *setting_values = new_setting_values;
                                 on_value_change();
                                 compute_current_preset_idx(new_uuid);
                                 _last_uuid = new_uuid;
                             },
-                                        [&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
+                            [&, setting_values, cur_setting_values, cur_uuid, last_uuid_copy, on_value_change]() {
                                 *setting_values = cur_setting_values;
                                 on_value_change();
                                 compute_current_preset_idx(cur_uuid);

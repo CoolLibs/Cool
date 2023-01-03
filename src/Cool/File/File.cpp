@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <streambuf>
+#include "Cool/File/File.h"
 
 namespace Cool {
 
@@ -58,7 +59,6 @@ auto File::to_string(std::filesystem::path file_path) -> tl::expected<std::strin
         (std::istreambuf_iterator<char>(stream)),
         std::istreambuf_iterator<char>()
     );
-    stream.close();
     return str;
 }
 
@@ -87,13 +87,13 @@ bool File::create_folders_for_file_if_they_dont_exist(std::filesystem::path file
 
 auto File::find_available_name(std::filesystem::path folder_path, std::filesystem::path file_name, std::filesystem::path extension) -> std::filesystem::path
 {
-    const std::string name = file_name.string();
+    std::string const name = Cool::File::without_extension(file_name).string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
     auto [k, base_name] = [&]() {
-        if (auto pos = name.find_last_of('(');
+        if (auto const pos = name.find_last_of('(');
             pos != std::string::npos)
         {
-            auto end_pos = name.find_last_of(')');
+            auto const end_pos = name.find_last_of(')');
             try
             {
                 return std::make_pair(
@@ -101,7 +101,7 @@ auto File::find_available_name(std::filesystem::path folder_path, std::filesyste
                     Cool::String::substring(name, 0, pos)
                 );
             }
-            catch (std::exception&)
+            catch (std::exception const&)
             {
             }
         }
@@ -110,9 +110,11 @@ auto File::find_available_name(std::filesystem::path folder_path, std::filesyste
 
     // Find an available name
     auto out_name = file_name;
-    while (File::exists(folder_path / out_name.replace_extension(extension)))
+    out_name.replace_extension(extension);
+    while (File::exists(folder_path / out_name))
     {
         out_name = base_name + "(" + std::to_string(k) + ")";
+        out_name.replace_extension(extension);
         k++;
     }
     return out_name;

@@ -3,17 +3,17 @@
 #include <algorithms/algorithms.hpp>
 #include <op/op.hpp>
 #include <vector>
-#include "RgbColor.h"
+#include "Color.h"
 
 namespace Cool {
 
 struct ColorPalette
     : public op::EqualityComparable<ColorPalette> {
-    std::vector<Cool::RgbColor> value{};
+    std::vector<Color> value{};
 
     constexpr ColorPalette() = default;
     // This constructor isn't constexpr because std::vector is not constexpr on MacOS
-    explicit ColorPalette(const std::vector<Cool::RgbColor>& value)
+    explicit ColorPalette(const std::vector<Color>& value)
         : value{value}
     {}
 
@@ -23,7 +23,7 @@ struct ColorPalette
         value.erase(value.begin() + index);
     }
 
-    void add_color(Cool::RgbColor color = {}) { value.push_back(color); }
+    void add_color(Color color = {}) { value.push_back(color); }
 
     void move_color(size_t old_index, size_t new_index)
     {
@@ -50,6 +50,6 @@ inline auto color_palette_array_name(std::string_view name) -> std::string
 }
 } // namespace internal
 
-auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColorEditFlags flags) -> bool;
+auto imgui_widget(std::string_view name, ColorPalette& palette, ImGuiColorEditFlags flags) -> bool;
 
 } // namespace Cool

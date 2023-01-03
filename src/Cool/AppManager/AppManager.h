@@ -33,8 +33,6 @@ private:
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-    static void window_size_callback(GLFWwindow* window, int w, int h);
-    static void window_pos_callback(GLFWwindow* window, int x, int y);
 
 private:
     WindowManager&   _window_manager;

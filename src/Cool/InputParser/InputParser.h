@@ -1,7 +1,6 @@
 #include <Cool/Dependencies/Dirty.h>
 #include <Cool/Dependencies/InputFactory_Ref.h>
 #include <Cool/Dependencies/InputProvider_Ref.h>
-#include <tl/expected.hpp>
 
 namespace Cool {
 
@@ -24,5 +23,11 @@ auto try_parse_input(
 ) -> std::optional<AnyInput>;
 
 auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>&, Cool::InputProvider_Ref) -> std::string;
+
+/// Defines the uniform in shader code; e.g. something like `uniform float name;` (or something more complex for some types like Gradient).
+auto gen_input_shader_code(AnyInput const&, Cool::InputProvider_Ref) -> std::string;
+
+/// Defines the uniform in shader code; e.g. something like `uniform float name;` (or something more complex for some types like Gradient).
+auto gen_input_shader_code(AnyInput const&, Cool::InputProvider_Ref, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string;
 
 } // namespace Cool

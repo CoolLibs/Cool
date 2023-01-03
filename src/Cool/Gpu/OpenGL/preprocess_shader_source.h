@@ -1,8 +1,6 @@
 #pragma once
 #if defined(COOL_OPENGL)
 
-#include <tl/expected.hpp>
-
 namespace Cool::OpenGL {
 
 /// Preprocesses the source code (replaces `#include` with the content of the corresponding file, etc.) and returns it.

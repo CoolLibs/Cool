@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Input/MouveEventDispatcher.h>
 #include "ViewEvent.h"
 
@@ -8,13 +9,9 @@ class View {
 public:
     explicit View(std::string_view name)
         : _name{name}
-    {
-    }
-    /**
-     * @brief Displays the render target's image in an ImGui window
-     *
-     * @param name The name of the window
-     */
+    {}
+
+    /// Displays the given texture in an ImGui window
     void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
     void                     imgui_open_close_checkbox();
     std::optional<img::Size> size() const { return _size; }
@@ -49,6 +46,7 @@ private:
     ScreenCoordinates                     _position{};
     MouveEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
+    RenderTarget                          _render_target;
 };
 
 } // namespace Cool

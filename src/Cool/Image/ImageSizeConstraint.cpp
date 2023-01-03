@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-img::Size ImageSizeConstraint::applied_to(img::Size frame_size) const
+auto ImageSizeConstraint::applied_to(img::Size frame_size) const -> img::Size
 {
     if (wants_to_constrain_size())
     {
@@ -16,7 +16,7 @@ img::Size ImageSizeConstraint::applied_to(img::Size frame_size) const
     }
 }
 
-img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const
+auto ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const -> img::Size
 {
     float aspect_ratio = _is_controlling_aspect_ratio
                              ? _aspect_ratio.get()
@@ -33,7 +33,7 @@ img::Size ImageSizeConstraint::compute_constraints_on(img::Size frame_size) cons
         std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<img::Size::DataType>(1))};
 }
 
-bool ImageSizeConstraint::imgui()
+auto ImageSizeConstraint::imgui() -> bool
 {
     bool was_triggered = false;
     // Aspect Ratio

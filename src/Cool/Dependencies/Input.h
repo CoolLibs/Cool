@@ -30,12 +30,14 @@ private:
         const DirtyFlag&                  dirty_flag,
         std::string_view                  name,
         const std::optional<std::string>& description,
-        const VariableId<T>               default_variable_id
+        const VariableId<T>               default_variable_id,
+        int                               desired_color_space
     )
         : _dirty_flag{dirty_flag}
         , _name{name}
         , _description{description}
         , _default_variable_id{default_variable_id}
+        , _desired_color_space{desired_color_space}
     {
     }
 
@@ -48,6 +50,7 @@ public: // private: TODO(JF) make this private
     std::optional<std::string> _description;
     VariableId<T>              _default_variable_id;
     VariableId<T>              _current_variable_id;
+    int                        _desired_color_space{0}; // HACK in order to know which color space to convert to when sending the value to a shader. Only used by Color input.
 
 private:
     friend class cereal::access;
@@ -59,7 +62,8 @@ private:
             // cereal::make_nvp("Description", _description), // (JF): I don't think there is a need to serialize the description since it will be parsed from the shader each time, and applying presets and the like only affect the value of the variable.
             cereal::make_nvp("Default Variable ID", _default_variable_id),
             cereal::make_nvp("Current Variable ID", _current_variable_id),
-            cereal::make_nvp("Dirty Flag", _dirty_flag)
+            cereal::make_nvp("Dirty Flag", _dirty_flag),
+            cereal::make_nvp("desired color space", _desired_color_space)
         );
     }
 };

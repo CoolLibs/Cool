@@ -27,8 +27,13 @@ struct from_impl<"{value}"> {{
 def list_all_types():
     ret = ""
     for _, values in tfs_global_type_to_string_associations.items():
-        for value in values:
-            ret += "- " + value + "\\n"
+        if len(values) == 0:
+            raise Exception(
+                "At least one string must be specified for each type.")
+        ret += "- " + values[0]
+        if len(values) > 1:
+            ret += f" (aka {', aka '.join(values[1:])})"
+        ret += "\\n"
     ret = ret[:-2]
     return ret
 

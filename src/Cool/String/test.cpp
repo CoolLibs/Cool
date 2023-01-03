@@ -1,3 +1,5 @@
+#include <vector>
+#include "Cool/String/String.h"
 #if COOL_ENABLE_TESTS
 
 #include <stringify/stringify.hpp>
@@ -78,6 +80,12 @@ TEST_CASE("[Cool::String] replace()")
         std::string text = "Effect_intensity";
         Cool::String::replace_all(text, "_", " ");
         CHECK(text == "Effect intensity");
+    }
+    SUBCASE("replace_all_words()")
+    {
+        auto const text = "Test helloworld hello world hello something"s;
+        auto const res  = Cool::String::replace_all_words(text, "hello", "plop");
+        CHECK(res == "Test helloworld plop world plop something");
     }
     SUBCASE("replace_between_delimiters()")
     {
@@ -193,6 +201,12 @@ TEST_CASE("find_next_word_position")
     CHECK(Cool::String::find_next_word_position("ab(cd)ef ghij klmno", 0) == std::make_optional(std::make_pair<size_t, size_t>(0, 2)));
 }
 
+TEST_CASE("find_previous_word_position")
+{
+    CHECK(Cool::String::find_previous_word_position("Hello    World", 6) == std::make_optional(std::make_pair<size_t, size_t>(0, 5)));
+    CHECK(Cool::String::find_previous_word_position("Hello World   HI", 12) == std::make_optional(std::make_pair<size_t, size_t>(6, 11)));
+}
+
 TEST_CASE("next_word")
 {
     CHECK(Cool::String::next_word("abcdef ghij klmno", 6) == "ghij");
@@ -200,6 +214,14 @@ TEST_CASE("next_word")
     CHECK(Cool::String::next_word("abcdef ghij klmno", 3) == "def");
     CHECK(Cool::String::next_word("abcdef ghij klmno", 7, "i") == "gh");
     CHECK(Cool::String::next_word("ab(cd)ef ghij klmno", 0) == "ab");
+}
+
+TEST_CASE("all_words")
+{
+    CHECK(Cool::String::all_words("abcdef ghij klmno") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("  abcdef ghij klmno") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("abcdef ghij klmno  ") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
+    CHECK(Cool::String::all_words("  abcdef ghij klmno  ") == std::vector{"abcdef"s, "ghij"s, "klmno"s});
 }
 
 TEST_CASE("find_block")
@@ -454,6 +476,43 @@ TEST_CASE("contains_word()")
     CHECK(Cool::String::contains_word("", "Hello World") == false);
     CHECK(Cool::String::contains_word("", "") == false);
     CHECK(Cool::String::contains_word("Hello World", "Hello World") == true);
+}
+
+TEST_CASE("remove_comments()")
+{
+    CHECK(Cool::String::remove_comments("hello") == "hello");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something
+)STR") == R"STR(
+hello
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something)STR")
+          == R"STR(
+hello)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hello// something // else
+)STR") == R"STR(
+hello
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+hel/*lo
+wor*/ld
+)STR") == R"STR(
+helld
+)STR");
+
+    CHECK(Cool::String::remove_comments(R"STR(
+he//l/*lo
+wor*/ld
+)STR") == R"STR(
+he
+wor*/ld
+)STR");
 }
 
 #endif

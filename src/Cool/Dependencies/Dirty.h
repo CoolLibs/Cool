@@ -45,7 +45,7 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(id);
+        archive(cereal::make_nvp("ID", id));
     }
 };
 

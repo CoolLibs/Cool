@@ -57,7 +57,6 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 target_include_directories(Cool-PublicProperties INTERFACE src lib)
 target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
-
     <vector>
     <string>
     <memory>
@@ -83,8 +82,11 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <boxer/boxer.h>
     <nfd.hpp>
     <scope_guard/scope_guard.hpp>
+    <fmt/format.h>
     <fmt/core.h>
     <fmt/std.h>
+    <fmt/compile.h>
+    <tl/expected.hpp>
     <Cool/Log/Debug.h>
     <Cool/Serialization/filesystem.h>
     <Cool/Serialization/img.h>
@@ -214,6 +216,17 @@ elseif(COOL_USE_OPENGL)
 endif()
 
 target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
+
+# ImNodes
+add_library(ImNodes lib/imnodes/imnodes.cpp)
+target_include_directories(ImNodes PRIVATE
+    lib/imgui
+    lib # To access imnodes_config.h
+)
+target_link_libraries(Cool-PublicProperties INTERFACE ImNodes)
+target_link_libraries(ImNodes PUBLIC reg) # To define ImNode's ID as a reg::Id
+target_compile_features(ImNodes PUBLIC cxx_std_11)
+target_compile_definitions(ImNodes PUBLIC IMNODES_USER_CONFIG="imnodes_config.h")
 
 # ----------------
 # ---Copy files---

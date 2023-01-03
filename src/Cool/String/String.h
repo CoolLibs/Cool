@@ -1,16 +1,19 @@
 #pragma once
 #include <Cool/Camera/Camera.h>
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/Color.h>
+#include <Cool/StrongTypes/ColorAndAlpha.h>
 #include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/StrongTypes/RgbColor.h>
+#include <vector>
 
 namespace Cool::String {
 
-static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/"};
+static constexpr std::string_view default_word_delimiters{" \n\t\r,;{}[]():/+*-=&|^~%!?<>`."};
+static constexpr std::string_view default_word_delimiters_except_dot{" \n\t\r,;{}[]():/+*-=&|^~%!?<>`"};
 
 auto contains(std::string_view text, std::string_view characters) -> bool; // TODO remove me and use std::contains when it arrives in C++23
 
@@ -22,14 +25,12 @@ auto contains(std::string_view text, std::string_view characters) -> bool; // TO
  */
 auto to_lower(std::string_view str) -> std::string;
 
-/**
- * @brief Modifies *str* by replacing all occurences of *from* with *to*
- *
- * @param str
- * @param from
- * @param to
- */
-auto replace_all(std::string& str, std::string_view from, std::string_view to) -> void;
+/// Modifies `str` by replacing all occurrences of `from` with `to`.
+void replace_all(std::string& str, std::string_view from, std::string_view to);
+
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
+auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
 
 /**
  * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
@@ -85,18 +86,20 @@ struct find_matching_pair_params {
     char             closing = ')';
 };
 
-/**
- * @brief Returns the position of the first *opening* character and the position of the matching *closing* character,
- * or std::nullopt if no such pair was found.
- */
+/// Returns the position of the first `opening` character and the position of the matching `closing` character,
+/// or std::nullopt if no such pair was found.
 auto find_matching_pair(
     find_matching_pair_params p
 ) -> std::optional<std::pair<size_t, size_t>>;
 
-/**
- * @brief Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
- * The words appear in the same order in the list as they do in the text
- */
+/// Returns the position of the last `closing` character before `offset` and the position of the matching `opening` character,
+/// or std::nullopt if no such pair was found.
+auto rfind_matching_pair(
+    find_matching_pair_params p
+) -> std::optional<std::pair<size_t, size_t>>;
+
+/// Splits the text and returns the list of words. A new word is created whenever one or more characters of "delimiters" are encountered in the text
+/// The words appear in the same order in the list as they do in the text
 auto split_into_words(
     std::string_view text,
     std::string_view delimiters = default_word_delimiters
@@ -107,7 +110,7 @@ auto remove_whitespaces(std::string_view text) -> std::string;
 /// Returns true iff all the words in `text` are after a `//`.
 auto is_commented_out(std::string_view text) -> bool;
 
-/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     const std::string& text,
@@ -116,7 +119,7 @@ auto substring(
 ) -> std::string;
 
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
-/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     std::string_view text,
@@ -124,7 +127,7 @@ auto substring(
     size_t           end
 ) -> std::string_view;
 
-/// /!\ Unlinke the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     const std::string&        text,
@@ -132,30 +135,42 @@ auto substring(
 ) -> std::string;
 
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
-/// /!\ Unlinke the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
+/// /!\ Unlike the usual substr method of std::string_view, this function does not take a begin and a size, but instead a begin and an end.
 /// `begin` is included, `end` is excluded.
 auto substring(
     std::string_view          text,
     std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
-/**
- * @brief Returns the indices of the beginning and end of the next word in "text" after position "offset".
- * Words are considered to be separated by one or more characters of "delimiters".
- */
+/// Returns the indices of the beginning and end of the next word in "text" after position "starting_pos".
+/// Words are considered to be separated by one or more characters of "delimiters".
 auto find_next_word_position(
     std::string_view text,
-    size_t           offset,
+    size_t           starting_pos,
     std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
 
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
+/// Returns the indices of the beginning and end of the previous word in "text" before position "ending_pos".
+/// Words are considered to be separated by one or more characters of "delimiters".
+auto find_previous_word_position(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters = default_word_delimiters
+) -> std::optional<std::pair<size_t, size_t>>;
+
+/// /!\ The returned string_view is only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(
     std::string_view text,
     size_t           starting_pos = 0,
     std::string_view delimiters   = default_word_delimiters
 ) -> std::optional<std::string_view>;
+
+/// Returns all the words after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
+auto all_words(
+    std::string_view text,
+    std::string_view delimiters = default_word_delimiters
+) -> std::vector<std::string>;
 
 /// Returns the position of the first block of text in `text` after `offset`.
 /// A block is either a single word or a block delimited by parentheses.
@@ -202,7 +217,9 @@ auto value_from_string<glm::vec4>(std::string_view) -> std::optional<glm::vec4>;
 template<>
 auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
 template<>
-auto value_from_string<Cool::RgbColor>(std::string_view) -> std::optional<Cool::RgbColor>;
+auto value_from_string<Cool::Color>(std::string_view) -> std::optional<Cool::Color>;
+template<>
+auto value_from_string<Cool::ColorAndAlpha>(std::string_view) -> std::optional<Cool::ColorAndAlpha>;
 template<>
 auto value_from_string<Cool::Angle>(std::string_view) -> std::optional<Cool::Angle>;
 template<>
@@ -240,5 +257,8 @@ auto find_value_for_given_key(
 /// A word is delimited by `delimiters`.
 /// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
 auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters = default_word_delimiters) -> bool;
+
+/// Removes all `//` and `/* */` comments
+auto remove_comments(std::string const&) -> std::string;
 
 } // namespace Cool::String
