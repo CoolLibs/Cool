@@ -44,11 +44,6 @@ GLint Shader::uniform_location(std::string_view uniform_name) const
     }
 }
 
-static auto operator*(const ImVec4& lhs, const float rhs) -> ImVec4
-{
-    return ImVec4{lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs};
-}
-
 void Shader::set_uniform(std::string_view uniform_name, int v) const
 {
     assert_shader_is_bound(_shader.id());
