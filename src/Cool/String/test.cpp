@@ -444,10 +444,10 @@ TEST_CASE("Parsing a ivec2")
     );
 }
 
-TEST_CASE("Parsing a RgbColor")
+TEST_CASE("Parsing a Color")
 {
     CHECK(
-        Cool::String::value_from_string<Cool::RgbColor>("(1, 3, 4)") == Cool::RgbColor(glm::vec3(1.f, 3.f, 4.f))
+        Cool::String::value_from_string<Cool::Color>("(1, 3, 4)") == Cool::Color::from_srgb(glm::vec3(1.f, 3.f, 4.f))
     );
 }
 

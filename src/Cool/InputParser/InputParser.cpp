@@ -489,22 +489,22 @@ TEST_CASE("find_key_values()")
     CHECK(Cool::find_key_values("Hello // World") == " World");
 }
 
-TEST_CASE("Parsing a RgbColor")
+TEST_CASE("Parsing a Color")
 {
     {
-        const auto color_metadata = Cool::get_default_metadata<Cool::RgbColor>("// hdr");
+        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// hdr");
         CHECK(
             color_metadata.is_hdr == true
         );
     }
     {
-        const auto color_metadata = Cool::get_default_metadata<Cool::RgbColor>("// nohdr");
+        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// nohdr");
         CHECK(
             color_metadata.is_hdr == false
         );
     }
     {
-        const auto color_metadata = Cool::get_default_metadata<Cool::RgbColor>("// ");
+        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// ");
         CHECK(
             color_metadata.is_hdr == false
         );
