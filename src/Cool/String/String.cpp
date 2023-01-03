@@ -174,7 +174,7 @@ auto rfind_matching_pair(
         return std::nullopt;
 
     size_t counter = 1;
-    for (size_t pos = last_closed - 1; pos != -1; --pos)
+    for (size_t pos = last_closed - 1; pos != static_cast<size_t>(-1); --pos)
     {
         if (p.text[pos] == p.opening)
             counter--;
