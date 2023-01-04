@@ -38,9 +38,14 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    auto save_minimal(Archive const&) const -> float
     {
-        archive(cereal::make_nvp("Hue", value));
+        return value;
+    }
+    template<class Archive>
+    void load_minimal(Archive const&, float const& val)
+    {
+        value = val;
     }
 };
 
