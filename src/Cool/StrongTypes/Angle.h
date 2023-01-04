@@ -63,7 +63,7 @@ public:
     auto as_radians() const -> float { return value.value; }
     auto as_degrees() const -> float { return radians_to_degrees(value); }
 
-    auto imgui_widget(std::string_view name) -> bool;
+    auto imgui_widget(std::string_view name, int number_of_snaps, float snaps_offset) -> bool;
 
     friend auto operator==(Angle const& a, Angle const& b) -> bool { return a.value == b.value; }
 
@@ -86,9 +86,9 @@ inline auto to_string(Cool::Angle angle) -> std::string
     return std::to_string(angle.as_turns()) + " turn";
 }
 
-inline auto imgui_widget(std::string_view name, Cool::Angle& angle) -> bool
+inline auto imgui_widget(std::string_view name, Cool::Angle& angle, int number_of_snaps, float snaps_offset) -> bool
 {
-    return angle.imgui_widget(name);
+    return angle.imgui_widget(name, number_of_snaps, snaps_offset);
 }
 
 } // namespace Cool

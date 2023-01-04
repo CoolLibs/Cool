@@ -46,6 +46,24 @@ class VariableDescription:
     requires_shader_code_generation: bool = False
 
 
+def angle_metadatas():
+    return [
+        VariableMetadata(
+            name_in_shader="number_of_snaps",
+            field_name="number_of_snaps",
+            pretty_name="Number of snaps",
+            type="int",
+            default_value="24",
+        ),
+        VariableMetadata(
+            name_in_shader="snaps_offset",
+            field_name="snaps_offset",
+            pretty_name="Snaps offset (in fraction of a turn)",
+            type="float",
+            default_value="0.f",
+        ),
+    ]
+
 def all_variable_descriptions():
 
     return [
@@ -219,7 +237,7 @@ def all_variable_descriptions():
             cpp_type="Cool::Angle",
             glsl_type="float",
             include="<Cool/StrongTypes/Angle.h>",
-            metadatas=[],
+            metadatas=angle_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(
@@ -227,7 +245,7 @@ def all_variable_descriptions():
             cpp_type="Cool::Direction2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Direction2D.h>",
-            metadatas=[],
+            metadatas=angle_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(

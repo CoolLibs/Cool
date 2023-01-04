@@ -7,13 +7,20 @@
 
 template<>
 struct VariableMetadata<Cool::Direction2D> {
+    int   number_of_snaps{24};
+    float snaps_offset{0.f};
+
     friend auto operator<=>(const VariableMetadata<Cool::Direction2D>&, const VariableMetadata<Cool::Direction2D>&) = default;
 
 private:
     // Serialisation
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive&)
+    void serialize(Archive& archive)
     {
+        archive(
+            cereal::make_nvp("Number of snaps", number_of_snaps),
+            cereal::make_nvp("Snaps offset (in fraction of a turn)", snaps_offset)
+        );
     }
 };

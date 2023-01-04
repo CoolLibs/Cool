@@ -46,12 +46,9 @@ public:
     void rotate(Cool::Angle angle) { value += angle; };
     void set(Cool::Angle angle) { value = angle; };
     void set(glm::vec2 vector) { value = get_angle_from_vector(vector); };
-    auto imgui_widget(std::string_view name) -> bool
+    auto imgui_widget(std::string_view name, int number_of_snaps, float snaps_offset) -> bool
     {
-        return Cool::imgui_widget(
-            name.data(),
-            value
-        );
+        return Cool::imgui_widget(name.data(), value, number_of_snaps, snaps_offset);
     }
 
 private:
@@ -72,9 +69,9 @@ inline auto to_string(Cool::Direction2D direction) -> std::string
     return to_string(direction.as_angle());
 }
 
-inline auto imgui_widget(std::string_view name, Cool::Direction2D& direction) -> bool
+inline auto imgui_widget(std::string_view name, Cool::Direction2D& direction, int number_of_snaps, float snaps_offset) -> bool
 {
-    return direction.imgui_widget(name);
+    return direction.imgui_widget(name, number_of_snaps, snaps_offset);
 }
 
 } // namespace Cool

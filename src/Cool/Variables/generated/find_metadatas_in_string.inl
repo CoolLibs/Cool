@@ -116,16 +116,40 @@ auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Came
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Angle>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Angle>
 {
     Cool::VariableMetadata<Cool::Angle> metadata{};
+
+    const auto number_of_snaps = Cool::String::find_value_for_given_key<int>(key_values, "number_of_snaps");
+    if (number_of_snaps)
+    {
+        metadata.number_of_snaps = *number_of_snaps;
+    }
+
+    const auto snaps_offset = Cool::String::find_value_for_given_key<float>(key_values, "snaps_offset");
+    if (snaps_offset)
+    {
+        metadata.snaps_offset = *snaps_offset;
+    }
     return metadata;
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Direction2D>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Direction2D>
 {
     Cool::VariableMetadata<Cool::Direction2D> metadata{};
+
+    const auto number_of_snaps = Cool::String::find_value_for_given_key<int>(key_values, "number_of_snaps");
+    if (number_of_snaps)
+    {
+        metadata.number_of_snaps = *number_of_snaps;
+    }
+
+    const auto snaps_offset = Cool::String::find_value_for_given_key<float>(key_values, "snaps_offset");
+    if (snaps_offset)
+    {
+        metadata.snaps_offset = *snaps_offset;
+    }
     return metadata;
 }
 

@@ -7,14 +7,7 @@ namespace Cool {
 
 #include "generated/Variable_Angle.inl"
 
-inline auto imgui_widget(Variable<Angle>& var) -> bool
-{
-    return Cool::imgui_widget(var.name, var.value);
-}
-
-inline auto imgui_widget(VariableMetadata<Angle>&) -> bool
-{
-    return false;
-}
+auto imgui_widget(Variable<Angle>&) -> bool;
+auto imgui_widget(VariableMetadata<Angle>&) -> bool;
 
 } // namespace Cool
