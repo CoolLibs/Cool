@@ -8,11 +8,11 @@ auto Angle::imgui_widget(std::string_view name, int number_of_snaps, float snaps
     bool b = false;
     ImGui::PushID(name.data());
 
-    b |= ImGuiExtras::angle_wheel("", &value.value, number_of_snaps, snaps_offset, always_snap);
+    b |= ImGuiExtras::angle_wheel(name.data(), &value.value, number_of_snaps, snaps_offset, always_snap);
 
     ImGui::SameLine();
 
-    b |= ImGuiExtras::angle_slider(name.data(), &value.value);
+    b |= ImGuiExtras::angle_slider("", &value.value);
 
     ImGui::PopID();
     return b;
