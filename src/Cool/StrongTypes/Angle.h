@@ -63,10 +63,7 @@ public:
     auto as_radians() const -> float { return value.value; }
     auto as_degrees() const -> float { return radians_to_degrees(value); }
 
-    auto imgui_widget(std::string_view name) { return ImGuiExtras::angle_wheel(
-        name.data(),
-        &value.value
-    ); }
+    auto imgui_widget(std::string_view name) -> bool;
 
     friend auto operator==(Angle const& a, Angle const& b) -> bool { return a.value == b.value; }
 

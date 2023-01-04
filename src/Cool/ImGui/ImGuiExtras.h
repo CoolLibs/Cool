@@ -4,23 +4,15 @@
 
 namespace Cool::ImGuiExtras {
 
-/**
- * @brief A small "?" that displays some text when hovered.
- *
- * @param text
- */
+/// A small "?" that displays some text when hovered.
 void help_marker(const char* text);
 
-/**
- * @brief A widget to pick an angle (in radians), displayed as a direction on a wheel
- *
- * @param label Name displayed alongside the widget
- * @param value_p A pointer to the variable that the widget should modify
- * @param thickness Thickness of the line indicating the direction
- * @param radius Radius of the wheel (a.k.a. size of the widget)
- * @return true iff the widget was just used
- */
-bool angle_wheel(const char* label, float* value_p, float thickness = 2.0f, float radius = 25.0f);
+/// A widget to pick an angle (in radians), displayed as a direction on a wheel
+/// When SHIFT is pressed the angle will snap to some precise angles. `number_of_snaps` controls the number of such angles, and `snaps_offset` will offset these.
+/// `number_of_snaps` must be >= 1.
+auto angle_wheel(const char* label, float* value_p, int number_of_snaps = 24, float snaps_offset = 0.f) -> bool;
+
+auto angle_slider(const char* label, float* value_p) -> bool;
 
 bool direction_3d(const char* label, float* value_p1, float* value_p2);
 

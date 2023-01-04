@@ -10,6 +10,7 @@
 #include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
+#include "Cool/Math/constants.h"
 
 namespace Cool::ImGuiExtras {
 
@@ -26,8 +27,11 @@ void help_marker(const char* text)
     }
 }
 
-bool angle_wheel(const char* label, float* value_p, float thickness, float radius)
+bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float snaps_offset)
 {
+    static constexpr float thickness = 2.0f;
+    static constexpr float radius    = 25.0f;
+
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
     {
@@ -39,7 +43,7 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     //
     ImVec2 p      = ImGui::GetCursorScreenPos();
     ImVec2 center = ImVec2(p.x + radius, p.y + radius);
-    // Detect clic
+    // Detect click
     ImGui::InvisibleButton(label, ImVec2(radius * 2.0f, radius * 2.0f));
     bool is_active  = ImGui::IsItemActive();
     bool is_hovered = ImGui::IsItemHovered();
@@ -48,6 +52,11 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
     {
         ImVec2 mp = ImGui::GetIO().MousePos;
         *value_p  = atan2f(center.y - mp.y, mp.x - center.x);
+        if (ImGui::GetIO().KeyShift)
+        {
+            const float slice = tau / static_cast<float>(number_of_snaps);
+            *value_p          = std::floor(*value_p / slice + 0.5f + snaps_offset) * slice;
+        }
     }
 
     float x2 = cosf(*value_p) * radius + center.x;
@@ -73,6 +82,20 @@ bool angle_wheel(const char* label, float* value_p, float thickness, float radiu
         ImGui::MarkItemEdited(id);
     }
     return is_active;
+}
+
+auto angle_slider(const char* label, float* value_p) -> bool
+{
+    float angle_in_deg = *value_p / tau;
+    angle_in_deg       = angle_in_deg - std::floor(angle_in_deg);
+    angle_in_deg *= 360.f;
+
+    if (ImGui::SliderFloat(label, &angle_in_deg, 0.f, 360.f, "%.0f deg"))
+    {
+        *value_p = angle_in_deg * tau / 360.f;
+        return true;
+    }
+    return false;
 }
 
 bool direction_3d(const char* label, float* value_p1, float* value_p2)
