@@ -55,7 +55,7 @@ bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float s
         if (always_snap || ImGui::GetIO().KeyShift)
         {
             const float slice = tau / static_cast<float>(number_of_snaps);
-            *value_p          = std::floor(*value_p / slice + 0.5f + snaps_offset) * slice;
+            *value_p          = std::floor((*value_p - snaps_offset) / slice + 0.5f) * slice + snaps_offset;
         }
     }
 
