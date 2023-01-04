@@ -27,7 +27,7 @@ void help_marker(const char* text)
     }
 }
 
-bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float snaps_offset)
+bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float snaps_offset, bool always_snap)
 {
     static constexpr float thickness = 2.0f;
     static constexpr float radius    = 25.0f;
@@ -52,7 +52,7 @@ bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float s
     {
         ImVec2 mp = ImGui::GetIO().MousePos;
         *value_p  = atan2f(center.y - mp.y, mp.x - center.x);
-        if (ImGui::GetIO().KeyShift)
+        if (always_snap || ImGui::GetIO().KeyShift)
         {
             const float slice = tau / static_cast<float>(number_of_snaps);
             *value_p          = std::floor(*value_p / slice + 0.5f + snaps_offset) * slice;

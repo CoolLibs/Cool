@@ -8,9 +8,9 @@ namespace Cool::ImGuiExtras {
 void help_marker(const char* text);
 
 /// A widget to pick an angle (in radians), displayed as a direction on a wheel
-/// When SHIFT is pressed the angle will snap to some precise angles. `number_of_snaps` controls the number of such angles, and `snaps_offset` will offset these.
+/// When SHIFT is pressed (or `always_snap` is set to true) the angle will snap to some precise angles. `number_of_snaps` controls the number of such angles, and `snaps_offset` will offset these.
 /// `number_of_snaps` must be >= 1. `snaps_offset` is expressed in radians.
-auto angle_wheel(const char* label, float* value_p, int number_of_snaps = 24, float snaps_offset = 0.f) -> bool;
+auto angle_wheel(const char* label, float* value_p, int number_of_snaps = 24, float snaps_offset = 0.f, bool always_snap = false) -> bool;
 
 auto angle_slider(const char* label, float* value_p) -> bool;
 

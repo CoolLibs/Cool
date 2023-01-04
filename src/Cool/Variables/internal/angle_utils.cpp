@@ -4,7 +4,7 @@
 
 namespace Cool::internal {
 
-auto angle_metadata_widget(int& number_of_snaps, float& snaps_offset) -> bool
+auto angle_metadata_widget(int& number_of_snaps, float& snaps_offset, bool& always_snap) -> bool
 {
     bool b = false;
 
@@ -13,6 +13,8 @@ auto angle_metadata_widget(int& number_of_snaps, float& snaps_offset) -> bool
         number_of_snaps = 1;
 
     b |= ImGuiExtras::angle_slider("Snaps offset", &snaps_offset);
+
+    b |= ImGui::Checkbox("Always snap", &always_snap);
 
     return b;
 }

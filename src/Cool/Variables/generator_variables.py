@@ -58,9 +58,16 @@ def angle_metadatas():
         VariableMetadata(
             name_in_shader="snaps_offset",
             field_name="snaps_offset",
-            pretty_name="Snaps offset (in fraction of a turn)",
+            pretty_name="Snaps offset (in radians)",
             type="float",
             default_value="0.f",
+        ),
+        VariableMetadata(
+            name_in_shader="always_snap",
+            field_name="always_snap",
+            pretty_name="Always snap",
+            type="bool",
+            default_value="false",
         ),
     ]
 

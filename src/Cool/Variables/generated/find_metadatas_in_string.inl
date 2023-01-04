@@ -131,6 +131,12 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     {
         metadata.snaps_offset = *snaps_offset;
     }
+
+    const auto always_snap = Cool::String::find_value_for_given_key<bool>(key_values, "always_snap");
+    if (always_snap)
+    {
+        metadata.always_snap = *always_snap;
+    }
     return metadata;
 }
 
@@ -149,6 +155,12 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     if (snaps_offset)
     {
         metadata.snaps_offset = *snaps_offset;
+    }
+
+    const auto always_snap = Cool::String::find_value_for_given_key<bool>(key_values, "always_snap");
+    if (always_snap)
+    {
+        metadata.always_snap = *always_snap;
     }
     return metadata;
 }
