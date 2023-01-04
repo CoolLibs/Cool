@@ -23,13 +23,7 @@ struct Hue
     /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
     void set(float hue) { value = std::fmod(hue, 1.f); }
 
-    auto imgui_widget(std::string_view name) -> bool
-    {
-        return ImGuiExtras::hue_wheel(
-            name.data(),
-            &value
-        );
-    }
+    auto imgui_widget(std::string_view name) -> bool;
 
 private:
     float value{};
