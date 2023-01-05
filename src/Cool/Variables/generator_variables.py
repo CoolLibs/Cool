@@ -71,6 +71,17 @@ def angle_metadatas():
         ),
     ]
 
+
+def hdr_metadata():
+    return VariableMetadata(
+        name_in_shader="hdr",
+        field_name="is_hdr",
+        pretty_name="Is HDR",
+        type="bool",
+        default_value="false",
+    )
+
+
 def all_variable_descriptions():
 
     return [
@@ -202,13 +213,7 @@ def all_variable_descriptions():
             glsl_type="vec3",
             include="<Cool/StrongTypes/Color.h>",
             metadatas=[
-                VariableMetadata(
-                    name_in_shader="hdr",
-                    field_name="is_hdr",
-                    pretty_name="Is HDR",
-                    type="bool",
-                    default_value="false",
-                ),
+                hdr_metadata(),
             ],
             do_generate_get_default_metadata=False,
             requires_shader_code_generation=False,
@@ -219,13 +224,7 @@ def all_variable_descriptions():
             glsl_type="vec4",
             include="<Cool/StrongTypes/ColorAndAlpha.h>",
             metadatas=[
-                VariableMetadata(
-                    name_in_shader="hdr",
-                    field_name="is_hdr",
-                    pretty_name="Is HDR",
-                    type="bool",
-                    default_value="false",
-                ),
+                hdr_metadata(),
             ],
             do_generate_get_default_metadata=False,
             requires_shader_code_generation=False,
@@ -269,13 +268,7 @@ def all_variable_descriptions():
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/ColorPalette.h>",
             metadatas=[
-                VariableMetadata(
-                    name_in_shader="hdr",
-                    field_name="is_hdr",
-                    pretty_name="Is HDR",
-                    type="bool",
-                    default_value="true",
-                ),
+                hdr_metadata(),
             ],
             requires_shader_code_generation=True,
         ),
@@ -285,13 +278,7 @@ def all_variable_descriptions():
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/Gradient.h>",
             metadatas=[
-                VariableMetadata(
-                    name_in_shader="hdr",
-                    field_name="is_hdr",
-                    pretty_name="Is HDR",
-                    type="bool",
-                    default_value="true",
-                ),
+                hdr_metadata(),
                 VariableMetadata(
                     field_name="randomize_new_marks_colors",
                     pretty_name="Randomize new marks' colors",
