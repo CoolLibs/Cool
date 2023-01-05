@@ -6,9 +6,7 @@
 namespace Cool {
 
 template<typename Value>
-struct VariableMetadata {
-    VariableMetadata() = delete; // You should create a specialization of this template for each variable type that you want to use.
-};
+struct VariableMetadata; // You need to create a specialization of this template for each variable type that you want to use.
 
 template<typename Value>
 struct Variable {
@@ -18,7 +16,7 @@ struct Variable {
     Value                   default_value{value};
     VariableMetadata<Value> default_metadata{metadata};
 
-    friend bool operator==(const Variable<Value>&, const Variable<Value>&) = default;
+    friend auto operator==(const Variable<Value>&, const Variable<Value>&) -> bool = default;
 
 private:
     // Serialization
@@ -50,7 +48,7 @@ struct ImGuiVariableCallbacks {
 /// Returns true iff the `value` of the variable changed
 /// (Currently there is no way to know if the metadata changed)
 template<typename Value>
-auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks callbacks = {}) -> bool
+auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks const& callbacks = {}) -> bool
 {
     bool b = false;
     ImGuiExtras::maybe_disabled(var.value == var.default_value, "Disabled because it is already equal to the default value", [&]() {
