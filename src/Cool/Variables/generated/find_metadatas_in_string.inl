@@ -74,6 +74,24 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 {
     Cool::VariableMetadata<glm::vec2> metadata{};
 
+    const auto min_value = Cool::String::find_value_for_given_key<float>(key_values, "min");
+    if (min_value)
+    {
+        metadata.min_value = *min_value;
+    }
+
+    const auto max_value = Cool::String::find_value_for_given_key<float>(key_values, "max");
+    if (max_value)
+    {
+        metadata.max_value = *max_value;
+    }
+
+    const auto bounded = Cool::String::find_value_for_given_key<bool>(key_values, "bounded");
+    if (bounded)
+    {
+        metadata.bounded = *bounded;
+    }
+
     const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
     if (drag_speed)
     {
@@ -87,6 +105,24 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 {
     Cool::VariableMetadata<glm::vec3> metadata{};
 
+    const auto min_value = Cool::String::find_value_for_given_key<float>(key_values, "min");
+    if (min_value)
+    {
+        metadata.min_value = *min_value;
+    }
+
+    const auto max_value = Cool::String::find_value_for_given_key<float>(key_values, "max");
+    if (max_value)
+    {
+        metadata.max_value = *max_value;
+    }
+
+    const auto bounded = Cool::String::find_value_for_given_key<bool>(key_values, "bounded");
+    if (bounded)
+    {
+        metadata.bounded = *bounded;
+    }
+
     const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
     if (drag_speed)
     {
@@ -99,6 +135,24 @@ template<>
 auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<glm::vec4>
 {
     Cool::VariableMetadata<glm::vec4> metadata{};
+
+    const auto min_value = Cool::String::find_value_for_given_key<float>(key_values, "min");
+    if (min_value)
+    {
+        metadata.min_value = *min_value;
+    }
+
+    const auto max_value = Cool::String::find_value_for_given_key<float>(key_values, "max");
+    if (max_value)
+    {
+        metadata.max_value = *max_value;
+    }
+
+    const auto bounded = Cool::String::find_value_for_given_key<bool>(key_values, "bounded");
+    if (bounded)
+    {
+        metadata.bounded = *bounded;
+    }
 
     const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
     if (drag_speed)

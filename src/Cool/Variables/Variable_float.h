@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cool/Variables/internal/float_utils.h"
 #include "Variable.h"
 
 namespace Cool {
@@ -29,26 +30,7 @@ inline auto imgui_widget(Variable<float>& var) -> bool
 
 inline auto imgui_widget(VariableMetadata<float>& meta) -> bool
 {
-    static constexpr auto drag_speed = 0.01f;
-
-    bool b = false;
-
-    if (meta.bounded)
-    {
-        b |= ImGui::DragFloat("##1", &meta.min_value, drag_speed);
-        ImGui::SameLine();
-        ImGui::Text("to");
-        ImGui::SameLine();
-        b |= ImGui::DragFloat("##2", &meta.max_value, drag_speed);
-    }
-    else
-    {
-        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, drag_speed, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
-    }
-
-    b |= ImGui::Checkbox("Bounded", &meta.bounded);
-
-    return b;
+    return internal::float_metadata_widget(meta.min_value, meta.max_value, meta.bounded, meta.drag_speed);
 }
 
 } // namespace Cool

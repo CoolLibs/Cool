@@ -72,6 +72,38 @@ def angle_metadatas():
     ]
 
 
+def float_metadatas():
+    return [
+        VariableMetadata(
+            name_in_shader="min",  # TODO(JF) Remove "name_in_shader"
+            field_name="min_value",
+            pretty_name="Min Value",
+            type="float",
+            default_value="0.f",
+        ),
+        VariableMetadata(
+            name_in_shader="max",
+            field_name="max_value",
+            pretty_name="Max Value",
+            type="float",
+            default_value="1.f",
+        ),
+        VariableMetadata(
+            name_in_shader="bounded",
+            field_name="bounded",
+            pretty_name="Bounded",
+            type="bool",
+            default_value="false",
+        ),
+        VariableMetadata(
+            name_in_shader="drag_speed",
+            field_name="drag_speed",
+            pretty_name="Drag speed",
+            type="float",
+            default_value="0.01f",
+        ),
+    ]
+
 def hdr_metadata():
     return VariableMetadata(
         name_in_shader="hdr",
@@ -118,36 +150,7 @@ def all_variable_descriptions():
             input_type=["float"],
             cpp_type="float",
             glsl_type="float",
-            metadatas=[
-                VariableMetadata(
-                    name_in_shader="min",  # TODO(JF) Remove this
-                    field_name="min_value",
-                    pretty_name="Min Value",
-                    type="float",
-                    default_value="0.f",
-                ),
-                VariableMetadata(
-                    name_in_shader="max",
-                    field_name="max_value",
-                    pretty_name="Max Value",
-                    type="float",
-                    default_value="1.f",
-                ),
-                VariableMetadata(
-                    name_in_shader="bounded",
-                    field_name="bounded",
-                    pretty_name="Bounded",
-                    type="bool",
-                    default_value="false",
-                ),
-                VariableMetadata(
-                    name_in_shader="drag_speed",
-                    field_name="drag_speed",
-                    pretty_name="Drag speed",
-                    type="float",
-                    default_value="0.01f",
-                ),
-            ],
+            metadatas=float_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(
@@ -163,15 +166,7 @@ def all_variable_descriptions():
             cpp_type="glm::vec2",
             glsl_type="vec2",
             include="<glm/glm.hpp>",
-            metadatas=[
-                VariableMetadata(
-                    name_in_shader="drag_speed",
-                    field_name="drag_speed",
-                    pretty_name="Drag speed",
-                    type="float",
-                    default_value="0.01f",
-                ),
-            ],
+            metadatas=float_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(
@@ -179,15 +174,7 @@ def all_variable_descriptions():
             cpp_type="glm::vec3",
             glsl_type="vec3",
             include="<glm/glm.hpp>",
-            metadatas=[
-                VariableMetadata(
-                    name_in_shader="drag_speed",
-                    field_name="drag_speed",
-                    pretty_name="Drag speed",
-                    type="float",
-                    default_value="0.01f",
-                ),
-            ],
+            metadatas=float_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(
@@ -195,15 +182,7 @@ def all_variable_descriptions():
             cpp_type="glm::vec4",
             glsl_type="vec4",
             include="<glm/glm.hpp>",
-            metadatas=[
-                VariableMetadata(
-                    name_in_shader="drag_speed",
-                    field_name="drag_speed",
-                    pretty_name="Drag speed",
-                    type="float",
-                    default_value="0.01f",
-                ),
-            ],
+            metadatas=float_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(
