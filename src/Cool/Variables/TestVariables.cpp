@@ -1,3 +1,6 @@
+#include "Cool/Camera/Camera.h"
+#include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/StrongTypes/Point2D.h"
 #if DEBUG
 
 #include "TestVariables.h"
@@ -10,15 +13,43 @@ namespace Cool {
 void test_variables()
 {
     {
-        static Cool::Variable<Cool::Angle> angle{"Angle", 0.278_turn};
+        static Cool::Variable<bool> var_bool{"Bool", {}};
+        Cool::imgui(var_bool);
+    }
+    {
+        static Cool::Variable<int> var_int{"Int", {}};
+        Cool::imgui(var_int);
+    }
+    {
+        static Cool::Variable<float> var_float{"Float", {}};
+        Cool::imgui(var_float);
+    }
+    {
+        static Cool::Variable<glm::vec2> vector2{"Vector2", {}};
+        Cool::imgui(vector2);
+    }
+    {
+        static Cool::Variable<glm::vec3> vector3{"Vector3", {}};
+        Cool::imgui(vector3);
+    }
+    {
+        static Cool::Variable<glm::vec4> vector4{"Vector4", {}};
+        Cool::imgui(vector4);
+    }
+    {
+        static Cool::Variable<Cool::Point2D> point2D{"Point2D", {}};
+        Cool::imgui(point2D);
+    }
+    {
+        static Cool::Variable<Cool::Angle> angle{"Angle", {}};
         Cool::imgui(angle);
     }
     {
-        static Cool::Variable<Cool::Direction2D> direction2D{"Direction 2D", Cool::Direction2D{glm::vec2{0.f, 10.f}}};
+        static Cool::Variable<Cool::Direction2D> direction2D{"Direction 2D", {}};
         Cool::imgui(direction2D);
     }
     {
-        static Cool::Variable<Cool::Hue> hue{"Hue", Cool::Hue{0.5f}};
+        static Cool::Variable<Cool::Hue> hue{"Hue", {}};
         Cool::imgui(hue);
     }
     {
@@ -26,20 +57,20 @@ void test_variables()
         Cool::imgui(color);
     }
     {
+        static Cool::Variable<Cool::ColorAndAlpha> color{"Color and Alpha", Cool::ColorAndAlpha::from_srgb_straight_alpha(glm::vec4{1.f, 0.f, 0.5f, 1.f})};
+        Cool::imgui(color);
+    }
+    {
         static Cool::Variable<Cool::ColorPalette> color_palette{"Color Palette", Cool::ColorPalette{std::vector{Cool::Color::from_srgb(glm::vec3{0.f, 1.f, 0.75f}), Cool::Color::from_srgb(glm::vec3{1.f, 1.f, 0.5f}), Cool::Color::from_srgb(glm::vec3{1.f, 0.f, 0.5f})}}};
         Cool::imgui(color_palette);
     }
     {
-        static Cool::Variable<Cool::Gradient> gradient{"Gradient", Cool::Gradient{ImGG::GradientWidget{}}};
+        static Cool::Variable<Cool::Gradient> gradient{"Gradient", {}};
         Cool::imgui(gradient);
     }
     {
-        static Cool::Variable<glm::vec3> vector3{"Vector3", glm::vec3{1.f, 1.5f, 8.f}};
-        Cool::imgui(vector3);
-    }
-    {
-        static Cool::Variable<glm::vec4> vector4{"Vector4", glm::vec4{0.f, 1.f, 0.5f, 8.f}};
-        Cool::imgui(vector4);
+        static Cool::Variable<Cool::Camera> camera{"Camera 3D", {}};
+        Cool::imgui(camera);
     }
 }
 
