@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/ColorAndAlpha.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::ColorAndAlpha> {
     bool is_hdr{false};
@@ -22,3 +27,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<Cool::ColorAndAlpha>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::ColorAndAlpha>&) -> bool;
+
+} // namespace Cool

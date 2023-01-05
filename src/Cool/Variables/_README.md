@@ -4,7 +4,7 @@
 
 - Add your new type in "generate_variables.py" and run the script.
 
-- Copy-paste one of the existing Variable files (`Variable_float.h` for example) and replace the implementation of all the required functions for your type.
+- Copy-paste one of the existing Variable files (`Variable_float.h`/`Variable_float.cpp` for example) and replace the implementation of all the required functions for your type.
 
 - Update the documentation in "res/shaders/_README.md".
 

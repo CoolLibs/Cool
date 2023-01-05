@@ -5,6 +5,10 @@
  * -----------------------------------------------------------------------------
  */
 
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<bool> {
     friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
@@ -17,3 +21,8 @@ private:
     {
     }
 };
+
+auto imgui_widget(Variable<bool>&) -> bool;
+auto imgui_widget(VariableMetadata<bool>&) -> bool;
+
+} // namespace Cool

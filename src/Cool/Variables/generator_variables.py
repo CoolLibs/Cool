@@ -432,6 +432,11 @@ def variable_definition_factory(variable_type_and_metadatas):
     def variable_definition():
         has_metadatas = len(variable_type_and_metadatas.metadatas) > 0
         return f'''
+            {f'#include {variable_type_and_metadatas.include}' if variable_type_and_metadatas.include else ""}
+            #include "Variable.h"
+
+            namespace Cool {{
+
             template<>
             struct VariableMetadata<{variable_type_and_metadatas.cpp_type}> {{
                 {metadatas_definitions(variable_type_and_metadatas.metadatas)}
@@ -445,7 +450,13 @@ def variable_definition_factory(variable_type_and_metadatas):
                 void serialize(Archive&{" archive" if has_metadatas else ""})
                 {{{cereal_serialize_body(variable_type_and_metadatas.metadatas) if has_metadatas else ""}
                 }}
-            }};'''
+            }};
+
+            auto imgui_widget(Variable<{variable_type_and_metadatas.cpp_type}>&) -> bool;
+            auto imgui_widget(VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) -> bool;
+
+            }} // namespace Cool
+        '''
     return variable_definition
 
 

@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/Hue.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Hue> {
     friend auto operator<=>(const VariableMetadata<Cool::Hue>&, const VariableMetadata<Cool::Hue>&) = default;
@@ -17,3 +22,8 @@ private:
     {
     }
 };
+
+auto imgui_widget(Variable<Cool::Hue>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Hue>&) -> bool;
+
+} // namespace Cool

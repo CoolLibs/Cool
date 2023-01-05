@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/Camera/Camera.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Camera> {
     friend auto operator<=>(const VariableMetadata<Cool::Camera>&, const VariableMetadata<Cool::Camera>&) = default;
@@ -17,3 +22,8 @@ private:
     {
     }
 };
+
+auto imgui_widget(Variable<Cool::Camera>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Camera>&) -> bool;
+
+} // namespace Cool

@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/Gradient.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Gradient> {
     bool is_hdr{false};
@@ -24,3 +29,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<Cool::Gradient>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Gradient>&) -> bool;
+
+} // namespace Cool

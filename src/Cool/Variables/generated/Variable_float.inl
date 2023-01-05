@@ -5,6 +5,10 @@
  * -----------------------------------------------------------------------------
  */
 
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<float> {
     float min_value{0.f};
@@ -28,3 +32,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<float>&) -> bool;
+auto imgui_widget(VariableMetadata<float>&) -> bool;
+
+} // namespace Cool

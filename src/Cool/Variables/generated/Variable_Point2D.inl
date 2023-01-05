@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/Point2D.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Point2D> {
     friend auto operator<=>(const VariableMetadata<Cool::Point2D>&, const VariableMetadata<Cool::Point2D>&) = default;
@@ -17,3 +22,8 @@ private:
     {
     }
 };
+
+auto imgui_widget(Variable<Cool::Point2D>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Point2D>&) -> bool;
+
+} // namespace Cool

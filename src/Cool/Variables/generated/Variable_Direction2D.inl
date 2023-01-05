@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/Direction2D.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Direction2D> {
     int   number_of_snaps{24};
@@ -26,3 +31,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<Cool::Direction2D>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Direction2D>&) -> bool;
+
+} // namespace Cool

@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <glm/glm.hpp>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<glm::vec2> {
     float min_value{0.f};
@@ -28,3 +33,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<glm::vec2>&) -> bool;
+auto imgui_widget(VariableMetadata<glm::vec2>&) -> bool;
+
+} // namespace Cool

@@ -5,6 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/StrongTypes/Angle.h>
+#include "Variable.h"
+
+namespace Cool {
+
 template<>
 struct VariableMetadata<Cool::Angle> {
     int   number_of_snaps{24};
@@ -26,3 +31,8 @@ private:
         );
     }
 };
+
+auto imgui_widget(Variable<Cool::Angle>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Angle>&) -> bool;
+
+} // namespace Cool
