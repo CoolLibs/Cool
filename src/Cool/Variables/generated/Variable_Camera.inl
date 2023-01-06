@@ -7,6 +7,7 @@
 
 #include <Cool/Camera/Camera.h>
 #include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
 namespace Cool {
 

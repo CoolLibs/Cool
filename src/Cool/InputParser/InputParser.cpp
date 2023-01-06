@@ -15,70 +15,18 @@
 namespace Cool {
 
 template<typename T>
-static auto get_default_value(std::string_view key_values) -> T
-{
-    const auto default_T = Cool::String::find_value_for_given_key<T>(key_values, "default");
-
-    if (default_T)
-    {
-        return *default_T;
-    }
-
-    // `default` keyword is allowed to be omitted
-    const auto default_without_key = Cool::String::next_word(key_values, 0);
-    if (default_without_key)
-    {
-        const auto default_value = Cool::String::value_from_string<T>(*default_without_key);
-        if (default_value)
-        {
-            return *default_value;
-        }
-    }
-
-    return T{};
-}
-
-template<typename T>
-static auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<T>;
-
-template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Color>
-{
-    Cool::VariableMetadata<Cool::Color> metadata{};
-
-    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
-
-    return metadata;
-}
-
-template<>
-auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::ColorAndAlpha>
-{
-    Cool::VariableMetadata<Cool::ColorAndAlpha> metadata{};
-
-    metadata.is_hdr = Cool::String::contains_word("hdr", key_values);
-
-    return metadata;
-}
-
-#include <Cool/Variables/generated/find_metadatas_in_string.inl>
-
-template<typename T>
 static auto make_input(
     const std::string_view            name,
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
     InputFactory_Ref                  input_factory,
-    std::string_view                  key_values,
     std::string_view                  type
 ) -> Input<T>
 {
     auto input = input_factory.make<T>(
         InputDefinition<T>{
-            std::string{name},
-            description,
-            get_default_value<T>(key_values),
-            get_default_metadata<T>(key_values),
+            .name        = std::string{name},
+            .description = description,
         },
         dirty_flag
     );
@@ -100,11 +48,10 @@ static auto make_any_input(
     std::string_view                  name,
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
-    InputFactory_Ref                  input_factory,
-    std::string_view                  key_values
+    InputFactory_Ref                  input_factory
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, key_values, type));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, type));
 }
 
 struct TypeAndName_Ref {
@@ -147,22 +94,6 @@ static auto find_type_and_name(std::string_view line)
     };
 }
 
-/// Returns the string containing all the key<->values associations.
-/// That is, the string that is after the // on a line
-/// /!\ The returned string_views are only valid as long as the input string_view is valid!
-static auto find_key_values(
-    std::string_view line
-) -> std::string_view
-{
-    const auto comment_pos = line.find("//");
-    if (comment_pos == std::string_view::npos)
-    {
-        return "";
-    }
-    const auto key_values_start = comment_pos + 2; // +2 to skip the two slashes
-    return Cool::String::substring(line, key_values_start, line.length());
-}
-
 static auto parse_description(std::string_view line) -> std::optional<std::string>
 {
     auto pos = line.find("///");
@@ -187,19 +118,12 @@ auto try_parse_input(
         return std::nullopt;
     }
 
-    // TODO(JF) TODO(LD) Make this a reality
-    // const std::vector<std::pair<std::string, std::string>> replacements = {
-    //     std::make_pair("_", " "),
-    // };
-    // Cool::String::replace_all(name, "_", " ");
-
     return make_any_input(
         type_and_name->type,
         type_and_name->name,
         parse_description(line),
         dirty_flag,
-        input_factory,
-        find_key_values(line)
+        input_factory
     );
 }
 
@@ -476,18 +400,6 @@ doctest::String toString(const std::optional<T>& value)
     }
 }
 } // namespace doctest
-
-TEST_CASE("find_key_values()")
-{
-    CHECK(Cool::find_key_values("//") == "");
-    CHECK(Cool::find_key_values("// ") == " ");
-    CHECK(Cool::find_key_values("// Hello") == " Hello");
-    CHECK(Cool::find_key_values("/ Hello") == "");
-    CHECK(Cool::find_key_values("Hello") == "");
-    CHECK(Cool::find_key_values("Hello //") == "");
-    CHECK(Cool::find_key_values("Hello // ") == " ");
-    CHECK(Cool::find_key_values("Hello // World") == " World");
-}
 
 TEST_CASE("Parsing a Color")
 {

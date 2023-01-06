@@ -6,15 +6,18 @@
  */
 
 #include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
 namespace Cool {
 
 template<>
 struct VariableMetadata<int> {
-    int   min_value{0};
-    int   max_value{10};
-    bool  bounded{false};
-    float drag_speed{0.04f};
+    internal::BoundsMetadata<int> bounds{
+        .min        = 0,
+        .max        = 10,
+        .drag_speed = 0.04f,
+        .is_bounded = false,
+    };
 
     friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
 
@@ -25,10 +28,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Min Value", min_value),
-            cereal::make_nvp("Max Value", max_value),
-            cereal::make_nvp("Bounded", bounded),
-            cereal::make_nvp("Drag speed", drag_speed)
+            cereal::make_nvp("Bounds", bounds)
         );
     }
 };

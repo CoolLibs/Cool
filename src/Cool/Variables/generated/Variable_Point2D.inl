@@ -7,6 +7,7 @@
 
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
 namespace Cool {
 

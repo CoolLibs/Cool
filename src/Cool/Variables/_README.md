@@ -6,9 +6,7 @@
 
 - Copy-paste one of the existing Variable files (`Variable_float.h`/`Variable_float.cpp` for example) and replace the implementation of all the required functions for your type.
 
-- Update the documentation in "res/shaders/_README.md".
-
-- Add a specialization of `value_from_string` in `String`.
+- Update the documentation on the website (TODO(JF) Explain more).
 
 - If your variable needs special code to be generated in the shader (other than replacing `INPUT` with `uniform`), implement a specialization of `instantiate_shader_code__impl()`.
 

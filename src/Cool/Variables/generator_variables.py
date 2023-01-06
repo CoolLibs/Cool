@@ -30,7 +30,6 @@ class VariableMetadata:
     pretty_name: str
     type: str
     default_value: str
-    name_in_shader: str = ""
 
 
 @dataclass
@@ -49,21 +48,18 @@ class VariableDescription:
 def angle_metadatas():
     return [
         VariableMetadata(
-            name_in_shader="number_of_snaps",
             field_name="number_of_snaps",
             pretty_name="Number of snaps",
             type="int",
             default_value="24",
         ),
         VariableMetadata(
-            name_in_shader="snaps_offset",
             field_name="snaps_offset",
             pretty_name="Snaps offset (in radians)",
             type="float",
             default_value="0.f",
         ),
         VariableMetadata(
-            name_in_shader="always_snap",
             field_name="always_snap",
             pretty_name="Always snap",
             type="bool",
@@ -75,28 +71,24 @@ def angle_metadatas():
 def float_metadatas():
     return [
         VariableMetadata(
-            name_in_shader="min",  # TODO(JF) Remove "name_in_shader"
             field_name="min_value",
             pretty_name="Min Value",
             type="float",
             default_value="0.f",
         ),
         VariableMetadata(
-            name_in_shader="max",
             field_name="max_value",
             pretty_name="Max Value",
             type="float",
             default_value="1.f",
         ),
         VariableMetadata(
-            name_in_shader="bounded",
             field_name="bounded",
             pretty_name="Bounded",
             type="bool",
             default_value="false",
         ),
         VariableMetadata(
-            name_in_shader="drag_speed",
             field_name="drag_speed",
             pretty_name="Drag speed",
             type="float",
@@ -104,9 +96,9 @@ def float_metadatas():
         ),
     ]
 
+
 def hdr_metadata():
     return VariableMetadata(
-        name_in_shader="hdr",
         field_name="is_hdr",
         pretty_name="Is HDR",
         type="bool",
@@ -130,32 +122,15 @@ def all_variable_descriptions():
             glsl_type="int",
             metadatas=[
                 VariableMetadata(
-                    name_in_shader="min",
-                    field_name="min_value",
-                    pretty_name="Min Value",
-                    type="int",
-                    default_value="0",
-                ),
-                VariableMetadata(
-                    name_in_shader="max",
-                    field_name="max_value",
-                    pretty_name="Max Value",
-                    type="int",
-                    default_value="10",
-                ),
-                VariableMetadata(
-                    name_in_shader="bounded",
-                    field_name="bounded",
-                    pretty_name="Bounded",
-                    type="bool",
-                    default_value="false",
-                ),
-                VariableMetadata(
-                    name_in_shader="drag_speed",
-                    field_name="drag_speed",
-                    pretty_name="Drag speed",
-                    type="float",
-                    default_value="0.04f",
+                    field_name="bounds",
+                    pretty_name="Bounds",
+                    type="internal::BoundsMetadata<int>",
+                    default_value="""
+                        .min = 0,
+                        .max = 10,
+                        .drag_speed = 0.04f,
+                        .is_bounded = false,
+                    """,
                 ),
             ],
             requires_shader_code_generation=False,
@@ -174,7 +149,6 @@ def all_variable_descriptions():
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[
                 VariableMetadata(
-                    name_in_shader="drag_speed",
                     field_name="drag_speed",
                     pretty_name="Drag speed",
                     type="float",
@@ -391,28 +365,6 @@ def AnyInputRefToConst():
         map(lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>", all_variable_types())) + "\n>;"
 
 
-def find_metadatas_in_string():
-    out = ""
-    for variable_types_and_metadatas in all_variable_descriptions():
-        if variable_types_and_metadatas.do_generate_get_default_metadata == True:
-            out += f'''
-                template<>
-                auto get_default_metadata(std::string_view{" key_values" if variable_types_and_metadatas.metadatas else ""}) -> Cool::VariableMetadata<{variable_types_and_metadatas.cpp_type}>
-                {{
-                    Cool::VariableMetadata<{variable_types_and_metadatas.cpp_type}> metadata{{}};
-                '''
-            for variable_metadatas in variable_types_and_metadatas.metadatas:
-                out += f'''
-                    const auto {variable_metadatas.field_name} = Cool::String::find_value_for_given_key<{variable_metadatas.type}>(key_values, "{variable_metadatas.name_in_shader}");
-                    if ({variable_metadatas.field_name})
-                    {{
-                        metadata.{variable_metadatas.field_name} = *{variable_metadatas.field_name};
-                    }}
-                    '''
-            out += "return metadata;\n}\n"
-    return out
-
-
 def variables_includes():
     out = "\n"
     for variable_type in all_variable_types_without_namespaces():
@@ -456,6 +408,7 @@ def variable_definition_factory(variable_type_and_metadatas):
         return f'''
             {f'#include {variable_type_and_metadatas.include}' if variable_type_and_metadatas.include else ""}
             #include <Cool/Variables/Variable.h>
+            #include <Cool/Variables/internal/BoundsMetadata.h>
 
             namespace Cool {{
 
@@ -501,7 +454,6 @@ def files():
         AnyInputRef,
         AnyInputRefToConst,
         all_variable_includes,
-        find_metadatas_in_string,
         variables_includes,
         glsl_type,
         requires_shader_code_generation,

@@ -194,65 +194,6 @@ auto find_block_following(
     std::string_view key
 ) -> std::optional<std::string_view>;
 
-/// Converts the given string into the corresponding value.
-template<typename T>
-auto value_from_string(std::string_view) -> std::optional<T>; // Undefined template. No generic implementation, only specializations are allowed.
-
-template<>
-auto value_from_string<int>(std::string_view) -> std::optional<int>;
-template<>
-auto value_from_string<float>(std::string_view) -> std::optional<float>;
-template<>
-auto value_from_string<bool>(std::string_view) -> std::optional<bool>;
-template<>
-auto value_from_string<glm::vec2>(std::string_view) -> std::optional<glm::vec2>;
-template<>
-auto value_from_string<glm::ivec2>(std::string_view) -> std::optional<glm::ivec2>;
-template<>
-auto value_from_string<glm::vec3>(std::string_view) -> std::optional<glm::vec3>;
-template<>
-auto value_from_string<glm::ivec3>(std::string_view) -> std::optional<glm::ivec3>;
-template<>
-auto value_from_string<glm::vec4>(std::string_view) -> std::optional<glm::vec4>;
-template<>
-auto value_from_string<glm::ivec4>(std::string_view) -> std::optional<glm::ivec4>;
-template<>
-auto value_from_string<Cool::Color>(std::string_view) -> std::optional<Cool::Color>;
-template<>
-auto value_from_string<Cool::ColorAndAlpha>(std::string_view) -> std::optional<Cool::ColorAndAlpha>;
-template<>
-auto value_from_string<Cool::Angle>(std::string_view) -> std::optional<Cool::Angle>;
-template<>
-auto value_from_string<Cool::Direction2D>(std::string_view) -> std::optional<Cool::Direction2D>;
-template<>
-auto value_from_string<Cool::Hue>(std::string_view) -> std::optional<Cool::Hue>;
-template<>
-auto value_from_string<Cool::Camera>(std::string_view) -> std::optional<Cool::Camera>;
-template<>
-auto value_from_string<Cool::Gradient>(std::string_view) -> std::optional<Cool::Gradient>;
-template<>
-auto value_from_string<Cool::Point2D>(std::string_view) -> std::optional<Cool::Point2D>;
-template<>
-auto value_from_string<Cool::ColorPalette>(std::string_view) -> std::optional<Cool::ColorPalette>;
-
-/// Finds default value string in `text` following the `key` and returns the correspondant value
-template<typename T>
-auto find_value_for_given_key(
-    std::string_view text,
-    std::string_view key
-) -> std::optional<T>
-{
-    const auto value_as_string = find_block_following(text, key);
-    if (value_as_string)
-    {
-        return value_from_string<T>(*value_as_string);
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
-
 /// Returns true iff `word` is present in `text`.
 /// A word is delimited by `delimiters`.
 /// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".

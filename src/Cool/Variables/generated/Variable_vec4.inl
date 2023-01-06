@@ -6,6 +6,7 @@
  */
 
 #include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 #include <glm/glm.hpp>
 
 namespace Cool {
