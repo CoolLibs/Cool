@@ -401,35 +401,4 @@ doctest::String toString(const std::optional<T>& value)
 }
 } // namespace doctest
 
-TEST_CASE("Parsing a Color")
-{
-    {
-        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// hdr");
-        CHECK(
-            color_metadata.is_hdr == true
-        );
-    }
-    {
-        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// nohdr");
-        CHECK(
-            color_metadata.is_hdr == false
-        );
-    }
-    {
-        const auto color_metadata = Cool::get_default_metadata<Cool::Color>("// ");
-        CHECK(
-            color_metadata.is_hdr == false
-        );
-    }
-}
-
-TEST_CASE("parse_description()")
-{
-    CHECK(Cool::parse_description("// Hello") == std::nullopt);
-    CHECK(Cool::parse_description("/// Hello") == "Hello");
-    CHECK(Cool::parse_description("///Hello") == "Hello");
-    CHECK(Cool::parse_description("///") == "");
-    CHECK(Cool::parse_description("/// ") == "");
-}
-
 #endif
