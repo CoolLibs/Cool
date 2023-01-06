@@ -100,23 +100,25 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
 {
     bool b = false;
 
-    ImGuiExtras::maybe_disabled(meta.use_slider, "\"Use a slider\" is toggled so you are forced to have a min and a max.", [&]() {
+    if (!meta.use_slider)
+    {
         b |= ImGui::Checkbox("Has min", &meta.has_min_bound);
         ImGui::SameLine();
         b |= ImGui::Checkbox("Has max", &meta.has_max_bound);
-    });
+    };
 
-    ImGuiExtras::maybe_disabled(!meta.has_min_bound, "\"Has min\" is not toggled.", [&]() {
+    ImGuiExtras::maybe_disabled(!meta.has_min_bound && !meta.use_slider, "\"Has min\" is not toggled.", [&]() {
         b |= imgui_drag("Min", &meta.min, 0.01f);
     });
     ImGui::SameLine();
-    ImGuiExtras::maybe_disabled(!meta.has_max_bound, "\"Has max\" is not toggled.", [&]() {
+    ImGuiExtras::maybe_disabled(!meta.has_max_bound && !meta.use_slider, "\"Has max\" is not toggled.", [&]() {
         b |= imgui_drag("Max", &meta.max, 0.01f);
     });
 
-    ImGuiExtras::maybe_disabled(meta.use_slider, "\"Use a slider\" is toggled and doesn't need a drag speed.", [&]() {
+    if (!meta.use_slider)
+    {
         b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.01f, 0.001f, biggest_number<float>());
-    });
+    };
 
     b |= ImGui::Checkbox("Use a slider", &meta.use_slider);
 
