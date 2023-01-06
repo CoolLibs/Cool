@@ -11,8 +11,10 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<int> {
-    int min_value{0};
-    int max_value{10};
+    int   min_value{0};
+    int   max_value{10};
+    bool  bounded{false};
+    float drag_speed{0.04f};
 
     friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
 
@@ -24,7 +26,9 @@ private:
     {
         archive(
             cereal::make_nvp("Min Value", min_value),
-            cereal::make_nvp("Max Value", max_value)
+            cereal::make_nvp("Max Value", max_value),
+            cereal::make_nvp("Bounded", bounded),
+            cereal::make_nvp("Drag speed", drag_speed)
         );
     }
 };

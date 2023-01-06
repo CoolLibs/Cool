@@ -28,6 +28,18 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
     {
         metadata.max_value = *max_value;
     }
+
+    const auto bounded = Cool::String::find_value_for_given_key<bool>(key_values, "bounded");
+    if (bounded)
+    {
+        metadata.bounded = *bounded;
+    }
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
