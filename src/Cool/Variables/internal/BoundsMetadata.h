@@ -11,7 +11,7 @@ struct BoundsMetadata {
     float drag_speed{0.01f};
     bool  use_slider{false};
 
-    friend auto operator==(BoundsMetadata const&, BoundsMetadata const&) -> bool = default;
+    friend auto operator<=>(BoundsMetadata const&, BoundsMetadata const&) = default;
 
     template<class Archive>
     void serialize(Archive& archive)
