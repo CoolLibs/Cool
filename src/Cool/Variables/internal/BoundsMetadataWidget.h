@@ -152,7 +152,7 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
             });
         }
 
-        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.01f, 0.001f, biggest_number<float>());
+        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.0001f, 0.000001f, biggest_number<float>(), "%.6f");
     }
 
     b |= ImGui::Checkbox("Use a slider", &meta.use_slider);
