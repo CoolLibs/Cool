@@ -12,14 +12,19 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::Point2D> {
+    float drag_speed{0.00003f};
+
     friend auto operator<=>(const VariableMetadata<Cool::Point2D>&, const VariableMetadata<Cool::Point2D>&) = default;
 
 private:
     // Serialisation
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive&)
+    void serialize(Archive& archive)
     {
+        archive(
+            cereal::make_nvp("Drag speed", drag_speed)
+        );
     }
 };
 

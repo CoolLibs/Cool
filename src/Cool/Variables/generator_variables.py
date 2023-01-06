@@ -158,7 +158,15 @@ def all_variable_descriptions():
             cpp_type="Cool::Point2D",
             glsl_type="vec2",
             include="<Cool/StrongTypes/Point2D.h>",
-            metadatas=[],
+            metadatas=[
+                VariableMetadata(
+                    name_in_shader="drag_speed",
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.00003f",
+                ),
+            ],
             requires_shader_code_generation=False,
         ),
         VariableDescription(

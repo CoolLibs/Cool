@@ -18,6 +18,6 @@ private:
 };
 
 auto to_string(Point2D point2D) -> std::string;
-auto imgui_widget(std::string_view name, Point2D& point2D) -> bool;
+auto imgui_widget(std::string_view name, Point2D& point2D, float drag_speed = 0.003f) -> bool;
 
 } // namespace Cool

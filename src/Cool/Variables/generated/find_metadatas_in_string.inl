@@ -63,9 +63,15 @@ auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata
 }
 
 template<>
-auto get_default_metadata(std::string_view) -> Cool::VariableMetadata<Cool::Point2D>
+auto get_default_metadata(std::string_view key_values) -> Cool::VariableMetadata<Cool::Point2D>
 {
     Cool::VariableMetadata<Cool::Point2D> metadata{};
+
+    const auto drag_speed = Cool::String::find_value_for_given_key<float>(key_values, "drag_speed");
+    if (drag_speed)
+    {
+        metadata.drag_speed = *drag_speed;
+    }
     return metadata;
 }
 
