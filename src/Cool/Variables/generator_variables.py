@@ -77,8 +77,10 @@ def float_metadatas():
             default_value="""
                 .min = 0.f,
                 .max = 1.f,
+                .has_min_bound = false,
+                .has_max_bound = false,
                 .drag_speed = 0.01f,
-                .is_bounded = false,
+                .use_slider = false,
             """,
         ),
     ]
@@ -115,8 +117,10 @@ def all_variable_descriptions():
                     default_value="""
                         .min = 0,
                         .max = 10,
+                        .has_min_bound = false,
+                        .has_max_bound = false,
                         .drag_speed = 0.04f,
-                        .is_bounded = false,
+                        .use_slider = false,
                     """,
                 ),
             ],
