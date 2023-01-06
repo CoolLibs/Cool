@@ -71,28 +71,15 @@ def angle_metadatas():
 def float_metadatas():
     return [
         VariableMetadata(
-            field_name="min_value",
-            pretty_name="Min Value",
-            type="float",
-            default_value="0.f",
-        ),
-        VariableMetadata(
-            field_name="max_value",
-            pretty_name="Max Value",
-            type="float",
-            default_value="1.f",
-        ),
-        VariableMetadata(
-            field_name="bounded",
-            pretty_name="Bounded",
-            type="bool",
-            default_value="false",
-        ),
-        VariableMetadata(
-            field_name="drag_speed",
-            pretty_name="Drag speed",
-            type="float",
-            default_value="0.01f",
+            field_name="bounds",
+            pretty_name="Bounds",
+            type="internal::BoundsMetadata<float>",
+            default_value="""
+                .min = 0.f,
+                .max = 1.f,
+                .drag_speed = 0.01f,
+                .is_bounded = false,
+            """,
         ),
     ]
 

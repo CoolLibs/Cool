@@ -13,10 +13,12 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<glm::vec3> {
-    float min_value{0.f};
-    float max_value{1.f};
-    bool  bounded{false};
-    float drag_speed{0.01f};
+    internal::BoundsMetadata<float> bounds{
+        .min        = 0.f,
+        .max        = 1.f,
+        .drag_speed = 0.01f,
+        .is_bounded = false,
+    };
 
     friend auto operator<=>(const VariableMetadata<glm::vec3>&, const VariableMetadata<glm::vec3>&) = default;
 
@@ -27,10 +29,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Min Value", min_value),
-            cereal::make_nvp("Max Value", max_value),
-            cereal::make_nvp("Bounded", bounded),
-            cereal::make_nvp("Drag speed", drag_speed)
+            cereal::make_nvp("Bounds", bounds)
         );
     }
 };

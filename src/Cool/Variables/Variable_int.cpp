@@ -6,23 +6,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<int>& var) -> bool
 {
-    if (var.metadata.bounds.is_bounded)
-    {
-        return ImGui::SliderInt(
-            var.name.c_str(),
-            &var.value,
-            var.metadata.bounds.min,
-            var.metadata.bounds.max
-        );
-    }
-    else // NOLINT(readability-else-after-return)
-    {
-        return ImGui::DragInt(
-            var.name.c_str(),
-            &var.value,
-            var.metadata.bounds.drag_speed
-        );
-    }
+    return internal::imgui_widget(var.name.c_str(), &var.value, var.metadata.bounds);
 }
 
 auto imgui_widget(VariableMetadata<int>& meta) -> bool
