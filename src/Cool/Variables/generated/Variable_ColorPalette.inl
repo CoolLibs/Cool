@@ -6,7 +6,7 @@
  */
 
 #include <Cool/StrongTypes/ColorPalette.h>
-#include "Variable.h"
+#include <Cool/Variables/Variable.h>
 
 namespace Cool {
 

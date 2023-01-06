@@ -6,7 +6,7 @@
  */
 
 #include <Cool/StrongTypes/Angle.h>
-#include "Variable.h"
+#include <Cool/Variables/Variable.h>
 
 namespace Cool {
 

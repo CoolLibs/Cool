@@ -6,7 +6,7 @@
  */
 
 #include <Cool/Camera/Camera.h>
-#include "Variable.h"
+#include <Cool/Variables/Variable.h>
 
 namespace Cool {
 

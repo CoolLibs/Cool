@@ -433,7 +433,7 @@ def variable_definition_factory(variable_type_and_metadatas):
         has_metadatas = len(variable_type_and_metadatas.metadatas) > 0
         return f'''
             {f'#include {variable_type_and_metadatas.include}' if variable_type_and_metadatas.include else ""}
-            #include "Variable.h"
+            #include <Cool/Variables/Variable.h>
 
             namespace Cool {{
 

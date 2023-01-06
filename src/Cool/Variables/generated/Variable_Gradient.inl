@@ -6,7 +6,7 @@
  */
 
 #include <Cool/StrongTypes/Gradient.h>
-#include "Variable.h"
+#include <Cool/Variables/Variable.h>
 
 namespace Cool {
 

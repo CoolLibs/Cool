@@ -5,8 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
+#include <Cool/Variables/Variable.h>
 #include <glm/glm.hpp>
-#include "Variable.h"
 
 namespace Cool {
 

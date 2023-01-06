@@ -6,7 +6,7 @@
  */
 
 #include <Cool/StrongTypes/Point2D.h>
-#include "Variable.h"
+#include <Cool/Variables/Variable.h>
 
 namespace Cool {
 
