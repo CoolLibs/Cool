@@ -116,7 +116,7 @@ def all_variable_descriptions():
                     type="internal::BoundsMetadata<int>",
                     default_value="""
                         .min = 0,
-                        .max = 10,
+                        .max = 12,
                         .has_min_bound = false,
                         .has_max_bound = false,
                         .drag_speed = 0.04f,
