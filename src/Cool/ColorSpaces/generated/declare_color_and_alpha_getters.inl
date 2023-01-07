@@ -6,7 +6,7 @@
  */
 [[nodiscard]] auto as_CIELAB_PremultipliedA() const -> glm::vec4;
 [[nodiscard]] auto as_CIELAB_StraightA() const -> glm::vec4;
-[[nodiscard]] auto as_sRGB_PremultipliedA() const -> glm::vec4;
-[[nodiscard]] auto as_sRGB_StraightA() const -> glm::vec4;
 [[nodiscard]] auto as_LinearRGB_PremultipliedA() const -> glm::vec4;
 [[nodiscard]] auto as_LinearRGB_StraightA() const -> glm::vec4;
+[[nodiscard]] auto as_sRGB_PremultipliedA() const -> glm::vec4;
+[[nodiscard]] auto as_sRGB_StraightA() const -> glm::vec4;

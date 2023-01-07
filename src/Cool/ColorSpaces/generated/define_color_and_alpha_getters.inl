@@ -27,28 +27,6 @@ auto ColorAndAlpha::as_CIELAB_PremultipliedA() const -> glm::vec4
         _srgb_straight.a,
     };
 }
-auto ColorAndAlpha::as_sRGB_StraightA() const -> glm::vec4
-{
-    return {
-        (glm::vec3{
-            _srgb_straight.r,
-            _srgb_straight.g,
-            _srgb_straight.b,
-        }),
-        _srgb_straight.a,
-    };
-}
-auto ColorAndAlpha::as_sRGB_PremultipliedA() const -> glm::vec4
-{
-    return {
-        (glm::vec3{
-            _srgb_straight.r,
-            _srgb_straight.g,
-            _srgb_straight.b,
-        }) * _srgb_straight.a,
-        _srgb_straight.a,
-    };
-}
 auto ColorAndAlpha::as_LinearRGB_StraightA() const -> glm::vec4
 {
     return {
@@ -64,6 +42,28 @@ auto ColorAndAlpha::as_LinearRGB_PremultipliedA() const -> glm::vec4
 {
     return {
         LinearRGB_from_sRGB(glm::vec3{
+            _srgb_straight.r,
+            _srgb_straight.g,
+            _srgb_straight.b,
+        }) * _srgb_straight.a,
+        _srgb_straight.a,
+    };
+}
+auto ColorAndAlpha::as_sRGB_StraightA() const -> glm::vec4
+{
+    return {
+        (glm::vec3{
+            _srgb_straight.r,
+            _srgb_straight.g,
+            _srgb_straight.b,
+        }),
+        _srgb_straight.a,
+    };
+}
+auto ColorAndAlpha::as_sRGB_PremultipliedA() const -> glm::vec4
+{
+    return {
+        (glm::vec3{
             _srgb_straight.r,
             _srgb_straight.g,
             _srgb_straight.b,

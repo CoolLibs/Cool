@@ -51,12 +51,12 @@ struct from_impl<"CIELAB"> {
 };
 
 template<>
-struct from_impl<"sRGB"> {
+struct from_impl<"LinearRGB"> {
     using type = Cool::Color;
 };
 
 template<>
-struct from_impl<"LinearRGB"> {
+struct from_impl<"sRGB"> {
     using type = Cool::Color;
 };
 
@@ -71,22 +71,22 @@ struct from_impl<"CIELAB_StraightA"> {
 };
 
 template<>
-struct from_impl<"sRGB_PremultipliedA"> {
-    using type = Cool::ColorAndAlpha;
-};
-
-template<>
-struct from_impl<"sRGB_StraightA"> {
-    using type = Cool::ColorAndAlpha;
-};
-
-template<>
 struct from_impl<"LinearRGB_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
 
 template<>
 struct from_impl<"LinearRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"sRGB_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"sRGB_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
 

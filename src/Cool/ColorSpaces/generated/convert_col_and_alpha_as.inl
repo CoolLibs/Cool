@@ -11,14 +11,14 @@ return col.as_CIELAB_PremultipliedA();
 case Cool::ColorAndAlphaSpace::CIELAB_StraightA:
 return col.as_CIELAB_StraightA();
 
-case Cool::ColorAndAlphaSpace::sRGB_PremultipliedA:
-return col.as_sRGB_PremultipliedA();
-
-case Cool::ColorAndAlphaSpace::sRGB_StraightA:
-return col.as_sRGB_StraightA();
-
 case Cool::ColorAndAlphaSpace::LinearRGB_PremultipliedA:
 return col.as_LinearRGB_PremultipliedA();
 
 case Cool::ColorAndAlphaSpace::LinearRGB_StraightA:
 return col.as_LinearRGB_StraightA();
+
+case Cool::ColorAndAlphaSpace::sRGB_PremultipliedA:
+return col.as_sRGB_PremultipliedA();
+
+case Cool::ColorAndAlphaSpace::sRGB_StraightA:
+return col.as_sRGB_StraightA();

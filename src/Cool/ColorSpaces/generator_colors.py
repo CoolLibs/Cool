@@ -21,12 +21,12 @@ def color_spaces():
             user_facing_name="CIELAB",
         ),
         ColorSpace(
-            name_in_code="sRGB",
-            user_facing_name="sRGB",
-        ),
-        ColorSpace(
             name_in_code="LinearRGB",
             user_facing_name="Linear RGB",
+        ),
+        ColorSpace(
+            name_in_code="sRGB",
+            user_facing_name="sRGB",
         ),
     ]
 
