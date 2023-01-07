@@ -17,6 +17,10 @@ class AlphaSpace:
 def color_spaces():
     return [
         ColorSpace(
+            name_in_code="CIELAB",
+            user_facing_name="CIELAB",
+        ),
+        ColorSpace(
             name_in_code="sRGB",
             user_facing_name="sRGB",
         ),
@@ -24,22 +28,18 @@ def color_spaces():
             name_in_code="LinearRGB",
             user_facing_name="Linear RGB",
         ),
-        ColorSpace(
-            name_in_code="CIELAB",
-            user_facing_name="CIELAB",
-        ),
     ]
 
 
 def alpha_spaces():
     return [
         AlphaSpace(
-            name_in_code="StraightA",
-            user_facing_name="Straight Alpha",
-        ),
-        AlphaSpace(
             name_in_code="PremultipliedA",
             user_facing_name="Premultiplied Alpha",
+        ),
+        AlphaSpace(
+            name_in_code="StraightA",
+            user_facing_name="Straight Alpha",
         ),
     ]
 

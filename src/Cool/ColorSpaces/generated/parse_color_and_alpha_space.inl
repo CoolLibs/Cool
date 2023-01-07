@@ -4,15 +4,15 @@
  * Instead, go to "generator_colors.py" and edit the "parse_color_and_alpha_space" function there.
  * -----------------------------------------------------------------------------
  */
-if (text == "sRGB_StraightA")
-    return ColorAndAlphaSpace::sRGB_StraightA;
-if (text == "sRGB_PremultipliedA")
-    return ColorAndAlphaSpace::sRGB_PremultipliedA;
-if (text == "LinearRGB_StraightA")
-    return ColorAndAlphaSpace::LinearRGB_StraightA;
-if (text == "LinearRGB_PremultipliedA")
-    return ColorAndAlphaSpace::LinearRGB_PremultipliedA;
-if (text == "CIELAB_StraightA")
-    return ColorAndAlphaSpace::CIELAB_StraightA;
 if (text == "CIELAB_PremultipliedA")
     return ColorAndAlphaSpace::CIELAB_PremultipliedA;
+if (text == "CIELAB_StraightA")
+    return ColorAndAlphaSpace::CIELAB_StraightA;
+if (text == "sRGB_PremultipliedA")
+    return ColorAndAlphaSpace::sRGB_PremultipliedA;
+if (text == "sRGB_StraightA")
+    return ColorAndAlphaSpace::sRGB_StraightA;
+if (text == "LinearRGB_PremultipliedA")
+    return ColorAndAlphaSpace::LinearRGB_PremultipliedA;
+if (text == "LinearRGB_StraightA")
+    return ColorAndAlphaSpace::LinearRGB_StraightA;

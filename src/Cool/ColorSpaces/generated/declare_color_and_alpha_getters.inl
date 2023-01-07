@@ -4,9 +4,9 @@
  * Instead, go to "generator_colors.py" and edit the "declare_color_and_alpha_getters" function there.
  * -----------------------------------------------------------------------------
  */
-[[nodiscard]] auto as_sRGB_StraightA() const -> glm::vec4;
-[[nodiscard]] auto as_sRGB_PremultipliedA() const -> glm::vec4;
-[[nodiscard]] auto as_LinearRGB_StraightA() const -> glm::vec4;
-[[nodiscard]] auto as_LinearRGB_PremultipliedA() const -> glm::vec4;
-[[nodiscard]] auto as_CIELAB_StraightA() const -> glm::vec4;
 [[nodiscard]] auto as_CIELAB_PremultipliedA() const -> glm::vec4;
+[[nodiscard]] auto as_CIELAB_StraightA() const -> glm::vec4;
+[[nodiscard]] auto as_sRGB_PremultipliedA() const -> glm::vec4;
+[[nodiscard]] auto as_sRGB_StraightA() const -> glm::vec4;
+[[nodiscard]] auto as_LinearRGB_PremultipliedA() const -> glm::vec4;
+[[nodiscard]] auto as_LinearRGB_StraightA() const -> glm::vec4;

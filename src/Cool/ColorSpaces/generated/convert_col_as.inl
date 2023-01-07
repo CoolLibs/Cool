@@ -5,11 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
+case Cool::ColorSpace::CIELAB:
+return col.as_CIELAB();
+
 case Cool::ColorSpace::sRGB:
 return col.as_sRGB();
 
 case Cool::ColorSpace::LinearRGB:
 return col.as_LinearRGB();
-
-case Cool::ColorSpace::CIELAB:
-return col.as_CIELAB();

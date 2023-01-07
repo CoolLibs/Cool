@@ -4,6 +4,6 @@
  * Instead, go to "generator_colors.py" and edit the "color_space_enum" function there.
  * -----------------------------------------------------------------------------
  */
-sRGB,
-    LinearRGB,
-    CIELAB
+CIELAB,
+    sRGB,
+    LinearRGB

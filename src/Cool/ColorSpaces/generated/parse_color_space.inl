@@ -4,9 +4,9 @@
  * Instead, go to "generator_colors.py" and edit the "parse_color_space" function there.
  * -----------------------------------------------------------------------------
  */
+if (text == "CIELAB")
+    return ColorSpace::CIELAB;
 if (text == "sRGB")
     return ColorSpace::sRGB;
 if (text == "LinearRGB")
     return ColorSpace::LinearRGB;
-if (text == "CIELAB")
-    return ColorSpace::CIELAB;
