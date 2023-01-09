@@ -47,7 +47,12 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     // clang-format on
 }
 
-void AppManager::run(std::function<void()> on_update)
+void AppManager::run(
+#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
+    std::function<void()> reset_imgui_context,
+#endif
+    std::function<void()> on_update
+)
 {
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
@@ -68,6 +73,9 @@ void AppManager::run(std::function<void()> on_update)
     while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
     {
         glfwPollEvents();
+#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
+        reset_imgui_context();
+#endif
         update();
         on_update();
     }

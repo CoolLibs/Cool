@@ -1,6 +1,7 @@
 #if defined(COOL_OPENGL)
 
-#include "WindowFactory_OpenGL.h"
+#include "WindowFactory_OpenGL.h" // Must be included first
+//
 #include <Cool/Utils/Version.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
@@ -16,8 +17,7 @@ WindowFactory_OpenGL::WindowFactory_OpenGL()
 
 void WindowFactory_OpenGL::shut_down(WindowManager& window_manager)
 {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
+    shutdown_imgui();
     ImGui::DestroyContext();
     window_manager.windows().clear();
     glfwTerminate();
@@ -96,6 +96,20 @@ void WindowFactory_OpenGL::setup_imgui(Window_OpenGL& window)
     std::string glslVersion = "#version " + std::to_string(COOL_OPENGL_VERSION);
     ImGui_ImplOpenGL3_Init(glslVersion.c_str());
 }
+
+void WindowFactory_OpenGL::shutdown_imgui()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+}
+
+#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
+void WindowFactory_OpenGL::reset(Window_OpenGL& main_window)
+{
+    shutdown_imgui();
+    setup_imgui(main_window);
+}
+#endif
 
 } // namespace Cool
 

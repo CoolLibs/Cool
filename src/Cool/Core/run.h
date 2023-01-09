@@ -99,7 +99,12 @@ void run(
             load_from_file};
         // Run the app
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
-        app_manager.run(create_autosaver(auto_serializer));
+        app_manager.run(
+#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
+            [&]() { window_factory.reset(); },
+#endif
+            create_autosaver(auto_serializer)
+        );
 #if defined(COOL_VULKAN)
         vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
