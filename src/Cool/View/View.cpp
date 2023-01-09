@@ -11,7 +11,7 @@ static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
     auto       pipeline = FullscreenPipeline{};
     auto const err      = pipeline.compile(R"STR(#version 410
 out vec4 out_Color;
-in vec2 _uv;
+layout(location = 0) in vec2 _uv;
 uniform float _aspect_ratio;
 
 void main()
