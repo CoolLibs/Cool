@@ -7,9 +7,10 @@ namespace Cool {
 
 class InputProvider_Ref {
 public:
-    InputProvider_Ref(const VariableRegistries& registries, float render_target_aspect_ratio, float time)
+    InputProvider_Ref(const VariableRegistries& registries, float render_target_aspect_ratio, float height, float time)
         : _variable_registries{registries}
         , _render_target_aspect_ratio{render_target_aspect_ratio}
+        , _height{height}
         , _time{time}
     {
     }
@@ -44,6 +45,11 @@ public:
         return _render_target_aspect_ratio;
     }
 
+    float operator()(const Input_Height&) const
+    {
+        return _height;
+    }
+
     auto operator()(const Input_Time&) const -> float
     {
         return _time;
@@ -57,6 +63,7 @@ public:
 private:
     std::reference_wrapper<const VariableRegistries> _variable_registries;
     float                                            _render_target_aspect_ratio;
+    float                                            _height;
     float                                            _time;
 };
 

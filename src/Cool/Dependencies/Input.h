@@ -138,6 +138,8 @@ private:
 
 struct Input_AspectRatio {
 };
+struct Input_Height {
+};
 struct Input_Time {
 };
 
