@@ -25,14 +25,7 @@ float length_squared(vec3 p)
     return dot(p, p);
 }
 
-float hash_0_to_1(vec3 p)
-{
-    p = fract(p * .1031);
-    p += dot(p, p.zyx + 31.32);
-    return fract((p.x + p.y) * p.z);
-}
-
-vec3 hash_minus_1_to_1(vec3 p)
+vec3 hash_0_to_1_3D_to_3D(vec3 p)
 {
     p = vec3(
         dot(p, vec3(127.1, 311.7, 74.7)),
@@ -40,7 +33,12 @@ vec3 hash_minus_1_to_1(vec3 p)
         dot(p, vec3(113.5, 271.9, 124.6))
     );
 
-    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+    return fract(sin(p) * 43758.5453123);
+}
+
+vec3 hash_minus_1_to_1_3D_to_3D(vec3 p)
+{
+    return -1.0 + 2.0 * hash_0_to_1_3D_to_3D(p);
 }
 
 vec2 hash_0_to_1_1D_to_2D(float n)
@@ -53,6 +51,10 @@ vec2 hash_0_to_1_2D_to_2D(vec2 p)
     vec3 a = fract(p.xyx * vec3(123.34, 234.34, 345.65));
     a += dot(a, a + 34.45);
     return fract(vec2(a.x * a.y, a.y * a.z));
+}
+
+float hash_0_to_1_2D_to_1D (vec2 p){
+    return fract(sin(dot(p, vec2(12.9898,78.233)*2.0)) * 43758.5453);
 }
 
 mat2 rotation_2D(float angle)
