@@ -53,8 +53,9 @@ vec2 hash_0_to_1_2D_to_2D(vec2 p)
     return fract(vec2(a.x * a.y, a.y * a.z));
 }
 
-float hash_0_to_1_2D_to_1D (vec2 p){
-    return fract(sin(dot(p, vec2(12.9898,78.233)*2.0)) * 43758.5453);
+float hash_0_to_1_2D_to_1D(vec2 p)
+{
+    return fract(sin(dot(p, vec2(12.9898, 78.233) * 2.0)) * 43758.5453);
 }
 
 mat2 rotation_2D(float angle)
@@ -71,6 +72,11 @@ vec3 rotation_around_axis(vec3 p, vec3 ax, float ro)
 {
     // from https://suricrasia.online/demoscene/functions/
     return mix(dot(ax, p) * ax, p, cos(ro)) + cross(ax, p) * sin(ro);
+}
+
+vec2 vec2_from_polar(float radius, float angle)
+{
+    return radius * vec2(cos(angle), sin(angle));
 }
 
 #define saturate(v) clamp(v, 0., 1.)
