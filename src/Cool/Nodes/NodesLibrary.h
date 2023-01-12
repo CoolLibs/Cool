@@ -32,13 +32,18 @@ public:
         return &*it;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter) const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool& enter_key_pressed) const -> NodeDefinition const*
     {
         for (NodeDefinition const& def : _definitions)
         {
             if (!internal::name_matches_filter(def.name(), nodes_filter))
                 continue;
 
+            if (enter_key_pressed){
+                enter_key_pressed=0;
+                return &def;
+            }
+            
             if (ImGui::Selectable(def.name().c_str()))
                 return &def;
         }

@@ -54,6 +54,8 @@ private:
     // bool      _all_nodes_have_a_valid_template = true;
     bool _window_is_hovered = true;
     std::string _nodes_filter{};
+    bool _should_be_focused = 1;
+    bool _enter_key_pressed = 0;
 
 private:
     // Serialization
