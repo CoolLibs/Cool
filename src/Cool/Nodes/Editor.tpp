@@ -140,7 +140,8 @@ auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
 {
     return _window_is_hovered
            && (ImGui::IsMouseReleased(ImGuiMouseButton_Middle)
-               || ImGui::IsKeyReleased(ImGuiKey_A));
+               || (ImGui::IsKeyReleased(ImGuiKey_A) && !ImGui::GetIO().WantTextInput)
+           );
 }
 
 template<NodesCfg_Concept NodesCfg>
