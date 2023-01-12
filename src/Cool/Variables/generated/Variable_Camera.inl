@@ -5,26 +5,29 @@
  * -----------------------------------------------------------------------------
  */
 
-#include <Cool/Camera/Camera.h>
-#include <Cool/Variables/Variable.h>
-#include <Cool/Variables/internal/BoundsMetadata.h>
+            #include <Cool/Camera/Camera.h>
+            #include <Cool/Variables/Variable.h>
+            #include <Cool/Variables/internal/BoundsMetadata.h>
 
-namespace Cool {
+            namespace Cool {
 
-template<>
-struct VariableMetadata<Cool::Camera> {
-    friend auto operator<=>(const VariableMetadata<Cool::Camera>&, const VariableMetadata<Cool::Camera>&) = default;
+            template<>
+            struct VariableMetadata<Cool::Camera> {
+                
 
-private:
-    // Serialisation
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive&)
-    {
-    }
-};
+                friend auto operator<=>(const VariableMetadata<Cool::Camera>&, const VariableMetadata<Cool::Camera>&) = default;
 
-auto imgui_widget(Variable<Cool::Camera>&) -> bool;
-auto imgui_widget(VariableMetadata<Cool::Camera>&) -> bool;
+            private:
+                // Serialisation
+                friend class cereal::access;
+                template<class Archive>
+                void serialize(Archive&)
+                {
+                }
+            };
 
-} // namespace Cool
+            auto imgui_widget(Variable<Cool::Camera>&) -> bool;
+            auto imgui_widget(VariableMetadata<Cool::Camera>&) -> bool;
+
+            } // namespace Cool
+        

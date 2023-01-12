@@ -2,6 +2,7 @@
 #if COOL_OPENGL
 
 #include <Cool/StrongTypes/Angle.h>
+#include <Cool/StrongTypes/Camera2D.h>
 #include <Cool/StrongTypes/Color.h>
 #include <Cool/StrongTypes/ColorAndAlpha.h>
 #include <Cool/StrongTypes/ColorPalette.h>
@@ -42,6 +43,7 @@ public:
     void set_uniform(std::string_view uniform_name, const ImGG::ColorRGBA&) const;
     void set_uniform(std::string_view uniform_name, const Gradient&) const;
     void set_uniform(std::string_view uniform_name, Point2D) const;
+    void set_uniform(std::string_view uniform_name, Camera2D const&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

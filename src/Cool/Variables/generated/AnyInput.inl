@@ -6,18 +6,20 @@
  */
 
 using AnyInput = std::variant<
-    Input<bool>,
-    Input<int>,
-    Input<float>,
-    Input<Cool::Point2D>,
-    Input<glm::vec2>,
-    Input<glm::vec3>,
-    Input<glm::vec4>,
-    Input<Cool::Color>,
-    Input<Cool::ColorAndAlpha>,
-    Input<Cool::Camera>,
-    Input<Cool::Angle>,
-    Input<Cool::Direction2D>,
-    Input<Cool::Hue>,
-    Input<Cool::ColorPalette>,
-    Input<Cool::Gradient> >;
+Input<bool>,
+Input<int>,
+Input<float>,
+Input<Cool::Point2D>,
+Input<glm::vec2>,
+Input<glm::vec3>,
+Input<glm::vec4>,
+Input<Cool::Color>,
+Input<Cool::ColorAndAlpha>,
+Input<Cool::Camera>,
+Input<Cool::Camera2D>,
+Input<Cool::Angle>,
+Input<Cool::Direction2D>,
+Input<Cool::Hue>,
+Input<Cool::ColorPalette>,
+Input<Cool::Gradient>
+>;

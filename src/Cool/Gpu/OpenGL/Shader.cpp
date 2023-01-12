@@ -1,3 +1,4 @@
+#include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "imgui.h"
 #if defined(COOL_OPENGL)
@@ -145,6 +146,10 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
 void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
 {
     set_uniform(uniform_name, point2D.value);
+}
+void Shader::set_uniform(std::string_view uniform_name, Camera2D const& cam) const
+{
+    set_uniform(uniform_name, cam.transform_matrix());
 }
 
 } // namespace Cool::OpenGL

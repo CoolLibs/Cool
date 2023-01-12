@@ -5,6 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 
+
 template<>
 struct from_impl<"bool"> {
     using type = bool;
@@ -93,6 +94,11 @@ struct from_impl<"sRGB_StraightA"> {
 template<>
 struct from_impl<"Camera"> {
     using type = Cool::Camera;
+};
+
+template<>
+struct from_impl<"Camera2D"> {
+    using type = Cool::Camera2D;
 };
 
 template<>

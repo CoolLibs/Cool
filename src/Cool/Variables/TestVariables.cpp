@@ -3,10 +3,11 @@
 #include "Cool/StrongTypes/Point2D.h"
 #if DEBUG
 
-#include "TestVariables.h"
 #include <Cool/Variables/Variables.h>
 #include <imgui/imgui.h>
 #include <vector>
+#include "TestVariables.h"
+
 
 namespace Cool {
 
@@ -70,6 +71,10 @@ void test_variables()
     }
     {
         static Cool::Variable<Cool::Camera> camera{"Camera 3D", {}};
+        Cool::imgui(camera);
+    }
+    {
+        static Cool::Variable<Cool::Camera2D> camera{"Camera 2D", {}};
         Cool::imgui(camera);
     }
 }

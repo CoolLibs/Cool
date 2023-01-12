@@ -205,6 +205,14 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
+            input_type=["Camera2D"],
+            cpp_type="Cool::Camera2D",
+            glsl_type="mat3",
+            include="<Cool/StrongTypes/Camera2D.h>",
+            metadatas=[],
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
             input_type=["Angle"],
             cpp_type="Cool::Angle",
             glsl_type="float",
