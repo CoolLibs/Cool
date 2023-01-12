@@ -79,6 +79,11 @@ vec2 vec2_from_polar(float radius, float angle)
     return radius * vec2(cos(angle), sin(angle));
 }
 
+vec2 complex_product(vec2 a, vec2 b) { 
+    return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x); 
+}
+
+
 #define saturate(v) clamp(v, 0., 1.)
 
 #define FLT_MAX 3.402823466e+38
