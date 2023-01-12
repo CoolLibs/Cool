@@ -148,8 +148,7 @@ template<NodesCfg_Concept NodesCfg>
 void NodesEditor<NodesCfg>::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
-    _nodes_filter.clear();
-    _should_be_focused = 1;
+    _search_bar.on_nodes_menu_open();
 
     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 }
@@ -229,15 +228,9 @@ auto NodesEditor<NodesCfg>::
         NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
     ) -> bool
 {
-    if (_should_be_focused){
-        ImGui::SetKeyboardFocusHere();
-        _should_be_focused = 0;
-    }
+    bool const should_select_first_node = _search_bar.imgui_widget();
 
-    if (ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue))
-        _enter_key_pressed=1;
-
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_nodes_filter, _enter_key_pressed);
+    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node);
     if (!maybe_node_definition)
         return false;
 
