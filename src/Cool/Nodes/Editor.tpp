@@ -227,7 +227,9 @@ auto NodesEditor<NodesCfg>::
         NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
     ) -> bool
 {
-    auto const* maybe_node_definition = library.imgui_nodes_menu();
+    ImGui::InputText("Filter", &_nodes_filter);
+
+    auto const* maybe_node_definition = library.imgui_nodes_menu(_nodes_filter);
     if (!maybe_node_definition)
         return false;
 

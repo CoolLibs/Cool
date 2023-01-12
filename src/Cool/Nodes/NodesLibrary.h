@@ -4,6 +4,10 @@
 
 namespace Cool {
 
+namespace internal {
+auto name_matches_filter(std::string const& name, std::string const& filter) -> bool;
+}
+
 template<NodeDefinition_Concept NodeDefinition>
 class NodesLibrary {
 public:
@@ -28,10 +32,13 @@ public:
         return &*it;
     }
 
-    auto imgui_nodes_menu() const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter) const -> NodeDefinition const*
     {
         for (NodeDefinition const& def : _definitions)
         {
+            if (!internal::name_matches_filter(def.name(), nodes_filter))
+                continue;
+
             if (ImGui::Selectable(def.name().c_str()))
                 return &def;
         }

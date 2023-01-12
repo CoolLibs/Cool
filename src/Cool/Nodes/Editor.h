@@ -53,6 +53,7 @@ private:
     Graph<typename NodesCfg::NodeT> _graph;
     // bool      _all_nodes_have_a_valid_template = true;
     bool _window_is_hovered = true;
+    std::string _nodes_filter{};
 
 private:
     // Serialization
