@@ -25,6 +25,13 @@ public:
     /**
      * @brief
      *
+     * @return The texture ID of the "reset" icon
+     */
+    static const Texture& reset() { return get(Path::cool_res() / "icons/reset.png"); }
+
+    /**
+     * @brief
+     *
      * @return The texture ID of the "folder" icon
      */
     static const Texture& folder() { return get(Path::cool_res() / "icons/folder.png"); }
