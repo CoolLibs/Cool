@@ -11,6 +11,12 @@ void imgui_timeline(auto& clock)
     {
         clock.toggle_play_pause();
     }
+
+    if (ImGui::IsKeyReleased(ImGuiKey_Space) && !ImGui::GetIO().WantTextInput)
+    {
+        clock.toggle_play_pause();
+    }
+
     ImGui::SameLine();
     float t = clock.time();
     if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f"))
