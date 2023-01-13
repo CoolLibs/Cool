@@ -1,12 +1,12 @@
 #pragma once
-
 #include "Cool/StrongTypes/Angle.h"
+
 namespace Cool {
 
 struct Camera2D {
-    glm::vec2 translation{};
-    Angle     rotate{};
-    float     zoom{};
+    glm::vec2 translation{0.f, 0.f};
+    Angle     rotate{Radians(0.f)};
+    float     zoom{1.f};
 
     auto transform_matrix() const -> glm::mat3;
 

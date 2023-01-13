@@ -3,6 +3,7 @@
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
+#include "imgui.h"
 
 namespace Cool {
 
@@ -277,7 +278,7 @@ void MessageConsole::imgui_show_all_messages()
                     msg.message.category.c_str()
                 );
                 ImGui::SameLine();
-                ImGui::Text("%s", msg.message.message.c_str());
+                ImGui::TextUnformatted(msg.message.message.c_str());
 
                 const bool close_button_is_hovered = [&] {
                     if (!is_clearable(msg))
