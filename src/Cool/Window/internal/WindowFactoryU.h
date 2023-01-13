@@ -1,7 +1,9 @@
 #pragma once
+#include <Cool/Path/Path.h>
 #include "../Window.h"
 #include "../WindowManager.h"
 #include "WindowConfig.h"
+#include "img/src/Load.h"
 
 namespace Cool::WindowFactoryU {
 
@@ -17,6 +19,12 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
         glfwGetError(&error_description);
         Log::Debug::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
     }
+    auto      icon = img::load(Cool::Path::root() / config.icon_path, 4, false);
+    GLFWimage image;
+    image.width  = icon.width();
+    image.height = icon.height();
+    image.pixels = icon.data();
+    glfwSetWindowIcon(window.glfw(), 1, &image);
     return window;
 }
 
