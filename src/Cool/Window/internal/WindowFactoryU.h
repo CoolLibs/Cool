@@ -19,7 +19,8 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
         glfwGetError(&error_description);
         Log::Debug::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
     }
-    auto      icon = img::load(Cool::Path::root() / config.icon_path, 4, false);
+    // TODO(WG) First check that COOL_APP_ICON_FILE has been set
+    auto      icon = img::load(Cool::Path::root() / COOL_APP_ICON_FILE, 4, false);
     GLFWimage image;
     image.width  = icon.width();
     image.height = icon.height();

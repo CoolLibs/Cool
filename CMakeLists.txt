@@ -246,6 +246,21 @@ function(cool_setup TARGET_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 
+# ------------------
+# ---Set app icon---
+# ------------------
+
+# TODO(WG) Document .rc and .ico files
+# IMAGE_FILE must be relative to the executable (a.k.a. Cool::Path::root())
+function(Cool__set_app_icon
+    TARGET
+    RC_FILE
+    IMAGE_FILE
+)
+    target_sources(${TARGET} PRIVATE ${RC_FILE})
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_APP_ICON_FILE=\"${IMAGE_FILE}\")
+endfunction()
+
 # ---------------------
 # ---Setup the tests---
 # ---------------------
