@@ -7,6 +7,8 @@
 
 namespace Cool::WindowFactoryU {
 
+void set_window_icon(GLFWwindow* window);
+
 template<typename Window_Impl>
 Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_manager, GLFWwindow* window_to_share_opengl_context_with = nullptr)
 {
@@ -19,13 +21,8 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
         glfwGetError(&error_description);
         Log::Debug::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
     }
-    // TODO(WG) First check that COOL_APP_ICON_FILE has been set
-    auto      icon = img::load(Cool::Path::root() / COOL_APP_ICON_FILE, 4, false);
-    GLFWimage image;
-    image.width  = icon.width();
-    image.height = icon.height();
-    image.pixels = icon.data();
-    glfwSetWindowIcon(window.glfw(), 1, &image);
+
+    set_window_icon(window.glfw());
     return window;
 }
 

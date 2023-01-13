@@ -250,8 +250,11 @@ endfunction()
 # ---Set app icon---
 # ------------------
 
-# TODO(WG) Document .rc and .ico files
-# IMAGE_FILE must be relative to the executable (a.k.a. Cool::Path::root())
+# RC_FILE must contain the relative path to a .rc file. By default it is in app-ressources
+# This .rc file refers to an .ico (scalable Windows icon format, containing different sizes at once) name, in the same folder as .rc
+# For more info about .ico, see https://docs.fileformat.com/image/ico/ 
+# IMAGE_FILE must be relative to the executable (a.k.a. Cool::Path::root()), can be any type of image format.
+
 function(Cool__set_app_icon
     TARGET
     RC_FILE
