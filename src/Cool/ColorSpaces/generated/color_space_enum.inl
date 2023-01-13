@@ -6,4 +6,5 @@
  */
 CIELAB,
     LinearRGB,
-    sRGB
+    sRGB,
+    HSLuv

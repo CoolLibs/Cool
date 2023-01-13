@@ -71,3 +71,25 @@ auto ColorAndAlpha::as_sRGB_PremultipliedA() const -> glm::vec4
         _srgb_straight.a,
     };
 }
+auto ColorAndAlpha::as_HSLuv_StraightA() const -> glm::vec4
+{
+    return {
+        HSLuv_from_sRGB(glm::vec3{
+            _srgb_straight.r,
+            _srgb_straight.g,
+            _srgb_straight.b,
+        }),
+        _srgb_straight.a,
+    };
+}
+auto ColorAndAlpha::as_HSLuv_PremultipliedA() const -> glm::vec4
+{
+    return {
+        HSLuv_from_sRGB(glm::vec3{
+            _srgb_straight.r,
+            _srgb_straight.g,
+            _srgb_straight.b,
+        }) * _srgb_straight.a,
+        _srgb_straight.a,
+    };
+}

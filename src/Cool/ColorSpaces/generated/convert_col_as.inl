@@ -13,3 +13,6 @@ return col.as_LinearRGB();
 
 case Cool::ColorSpace::sRGB:
 return col.as_sRGB();
+
+case Cool::ColorSpace::HSLuv:
+return col.as_HSLuv();

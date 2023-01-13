@@ -5,7 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-
 template<>
 struct from_impl<"bool"> {
     using type = bool;
@@ -62,6 +61,11 @@ struct from_impl<"sRGB"> {
 };
 
 template<>
+struct from_impl<"HSLuv"> {
+    using type = Cool::Color;
+};
+
+template<>
 struct from_impl<"CIELAB_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
@@ -88,6 +92,16 @@ struct from_impl<"sRGB_PremultipliedA"> {
 
 template<>
 struct from_impl<"sRGB_StraightA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"HSLuv_PremultipliedA"> {
+    using type = Cool::ColorAndAlpha;
+};
+
+template<>
+struct from_impl<"HSLuv_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
 
