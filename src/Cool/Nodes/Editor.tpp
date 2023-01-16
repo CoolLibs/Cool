@@ -2,6 +2,7 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "imgui.h"
 
 namespace Cool {
 
@@ -229,8 +230,9 @@ auto NodesEditor<NodesCfg>::
     ) -> bool
 {
     bool const should_select_first_node = _search_bar.imgui_widget();
+    bool is_search_bar_focused = ImGui::IsItemActive();
 
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node);
+    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, is_search_bar_focused);
     if (!maybe_node_definition)
         return false;
 

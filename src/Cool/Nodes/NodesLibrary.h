@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NodeDefinition_Concept.h"
+#include "imgui.h"
+#include "imgui_internal.h"
 
 namespace Cool {
 
@@ -12,6 +14,7 @@ template<NodeDefinition_Concept NodeDefinition>
 struct NodesCategory {
     std::string                 name{};
     std::vector<NodeDefinition> definitions{};
+    bool                        isOpen = false;
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -41,19 +44,46 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first) const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused) const -> NodeDefinition const*
     {
-        for (auto const& category : _categories)
+        for (auto& category : _categories)
         {
-            if (ImGui::CollapsingHeader(category.name.c_str()))
+            category.isOpen=false;  
+            bool visible = true;
+            if (!nodes_filter.empty())
             {
+                visible = false;
                 for (NodeDefinition const& def : category.definitions)
                 {
-                    if (!internal::name_matches_filter(def.name(), nodes_filter))
-                        continue;
+                    if (internal::name_matches_filter(def.name(), nodes_filter))
+                    {
+                        category.isOpen = true;
+                        visible         = true;
+                    }
+                }
+            }
+            // p_visible != NULL && *p_visible == false
 
-                    if (select_first || ImGui::Selectable(def.name().c_str()))
-                        return &def;
+            if (visible)
+            {
+                if (search_bar_focused)
+                    ImGui::SetNextItemOpen(category.isOpen);
+
+                if (ImGui::CollapsingHeader(category.name.c_str()))
+                {
+                    for (NodeDefinition const& def : category.definitions)
+                    {
+                        if (!internal::name_matches_filter(def.name(), nodes_filter))
+                        {
+                            //     ImGui::CollapsingHeader(category.name.c_str(), false);
+                            continue;
+                        }
+
+                        if (select_first || ImGui::Selectable(def.name().c_str()))
+                        {
+                            return &def;
+                        }
+                    }
                 }
             }
         }
@@ -81,7 +111,7 @@ public:
     void clear() { _categories.clear(); }
 
 private:
-    std::vector<NodesCategory<NodeDefinition>> _categories;
+    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
