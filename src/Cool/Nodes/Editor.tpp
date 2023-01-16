@@ -187,9 +187,9 @@ auto NodesEditor<NodesCfg>::imgui_window(
     bool graph_has_changed = false;
     ImGui::Begin("Nodes");
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
+    graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();
     {
-        graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
         {
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
