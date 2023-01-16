@@ -8,7 +8,7 @@ void SearchBarState::on_nodes_menu_open()
     _should_be_focused = true;
 }
 
-auto SearchBarState::get_nodes_filter() const ->  std::string const&
+auto SearchBarState::get_nodes_filter() const -> std::string const&
 {
     return _nodes_filter;
 }
@@ -20,7 +20,10 @@ auto SearchBarState::imgui_widget() -> bool
         ImGui::SetKeyboardFocusHere();
         _should_be_focused = false;
     }
-    return ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PushID(868686);
+    bool const b = ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PopID();
+    return b;
 }
 
 } // namespace Cool::internal
