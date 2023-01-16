@@ -43,18 +43,10 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first) const -> NodeDefinition const*
     {
-        struct PopTree { // NOLINT
-            ~PopTree()
-            {
-                ImGui::TreePop();
-            }
-        };
-
         for (auto const& category : _categories)
         {
-            if (ImGui::TreeNode(category.name.c_str()))
+            if (ImGui::CollapsingHeader(category.name.c_str()))
             {
-                auto const pop_tree = PopTree{};
                 for (NodeDefinition const& def : category.definitions)
                 {
                     if (!internal::name_matches_filter(def.name(), nodes_filter))
