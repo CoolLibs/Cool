@@ -13,10 +13,9 @@ namespace Cool {
 auto Camera2D::transform_matrix() const -> glm::mat3
 {
     glm::mat3 res{1.};
-
-    res *= glm::translate(res, this->translation);
-    res *= glm::rotate(res, this->rotate.as_radians());
-    res *= glm::scale(res, {1 / this->zoom, 1 / this->zoom});
+    res = glm::rotate(res, this->rotate.as_radians());
+    res = glm::scale(res, {1 / this->zoom, 1 / this->zoom});
+    res = glm::translate(res, this->translation);
 
     return {res};
 }
