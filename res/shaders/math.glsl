@@ -95,6 +95,11 @@ vec2 complex_product(vec2 a, vec2 b)
     return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
+vec2 complex_division(vec2 n, vec2 d)
+{
+    return vec2(n.x * d.x + n.y * d.y, n.y * d.x - n.x * d.y) / (d.x * d.x + d.y * d.y);
+}
+
 #define saturate(v) clamp(v, 0., 1.)
 
 #define FLT_MAX 3.402823466e+38

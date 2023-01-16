@@ -56,7 +56,8 @@ public:
                 continue;
             }
 
-            library.add_definition(*definition);
+            auto const category_name = File::without_file_name(std::filesystem::relative(entry.path(), _folder_path));
+            library.add_definition(*definition, category_name.string());
         }
 
         return true; // TODO(JF) Only return true if a file has changed
