@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/Gpu/RenderTarget.h>
-#include <Cool/Input/MouveEventDispatcher.h>
+#include <Cool/Input/MouseEventDispatcher.h>
 #include "ViewEvent.h"
 
 namespace Cool {
@@ -44,7 +44,7 @@ private:
     bool                                  _window_is_hovered = false;
     std::optional<img::Size>              _size              = std::nullopt; // Can be nullopt when the window is closed
     ScreenCoordinates                     _position{};
-    MouveEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
+    MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
 };

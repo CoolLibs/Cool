@@ -3,7 +3,7 @@
 #include <Cool/Camera/ViewController_Orbital.h>
 #include <Cool/Constants/Constants.h>
 #include <Cool/Input/MouseCoordinates.h>
-#include <Cool/Input/MouveEventDispatcher.h>
+#include <Cool/Input/MouseEventDispatcher.h>
 #include "Camera.h"
 
 namespace Cool {
@@ -12,7 +12,7 @@ class CameraManager {
 public:
     explicit CameraManager(const glm::vec3& position = Constants::default_camera_position, const glm::vec3& look_at = glm::vec3{0.f});
 
-    void hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher);
+    void hook_events(MouseEventDispatcher<ViewCoordinates>& dispatcher);
     auto inverse_view_projection_matrix(float aspect_ratio) const -> glm::mat4;
     void reset_transform();
     void imgui();
