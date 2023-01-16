@@ -168,12 +168,13 @@ float max_chroma_for_lh(float l, float h)
 
 vec3 Cool_HSLuv_from_XYZ(vec3 c)
 {
+    c *= 100.;
     //XYZ -> LUV
-    float var_u = (4.0 * c.x) / (c.x + (15.0 * c.y) + (3.0 * c.z));
-    float var_v = (9.0 * c.y) / (c.x + (15.0 * c.y) + (3.0 * c.z));
-    float l = (c.y <=  epsilon) ? c.y *  kappa :  116.0 * pow(c.y,1./3.) - 16.0 ;
-    float u = 13.0 * l * (var_u -  ref_u);
-    float v = 13.0 * l * (var_v -  ref_v);
+    float var_u = (4. * c.x) / (c.x + (15. * c.y) + (3. * c.z));
+    float var_v = (9. * c.y) / (c.x + (15. * c.y) + (3. * c.z));
+    float l = (c.y <=  epsilon) ? c.y *  kappa :  116. * pow(c.y,1./3.) - 16.;
+    float u = 13. * l * (var_u -  ref_u);
+    float v = 13. * l * (var_v -  ref_v);
 
     c.x = l;
     if (l < 0.00000001){
@@ -203,14 +204,14 @@ vec3 Cool_HSLuv_from_XYZ(vec3 c)
     float s;
 
     /* White and black: disambiguate saturation */
-    if(l > 99.9999999 || l < 0.00000001) s = 0.;
+    if(l > 0.9999999 || l < 0.00000001) s = 0.;
     else s = c2 / max_chroma_for_lh(l, h)* 100.;
 
     /* Grays: disambiguate hue */
     if (c2 < 0.00000001)
         h = 0.;
 
-    return  vec3(h,s,l);
+    return  vec3(h/360.,s/100.,l/100.);
 }
 
 vec3 Cool_XYZ_from_HSLuv( vec3 c)
@@ -222,7 +223,7 @@ vec3 Cool_XYZ_from_HSLuv( vec3 c)
     float c2;
 
     /* White and black: disambiguate chroma */
-    if(l > 99.9999999 || l < 0.00000001)
+    if(l > 0.99999999 || l < 0.00000001)
         c2 = 0.;
     else
         c2 =  max_chroma_for_lh(l,h);
@@ -233,7 +234,7 @@ vec3 Cool_XYZ_from_HSLuv( vec3 c)
     }
 
     //lch -> LUV
-    float hrad = h * 0.01745329251994329577;  /* (pi / 180.0) */
+    float hrad = h * TAU;
     float u = cos(hrad) * c2;
     float v = sin(hrad) * c2;
 
@@ -246,7 +247,7 @@ vec3 Cool_XYZ_from_HSLuv( vec3 c)
     float x = -(9.0 * y * var_u) / ((var_u - 4.0) * var_v - var_u * var_v);
     float z = (9.0 * y - (15.0 * var_v * y) - (var_v * x)) / (3.0 * var_v);
 
-    return  vec3(x,y,z);
+    return  vec3(x,y,z) / 100.;
 }
 
 //SRGB
