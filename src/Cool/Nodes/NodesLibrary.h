@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cereal/archives/json.hpp>
+#include <filesystem>
 #include "Cool/Nodes/NodesLibrary.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/as_json.h"
@@ -7,8 +9,7 @@
 #include "NodeDefinition_Concept.h"
 #include "imgui.h"
 #include "imgui_internal.h"
-#include <cereal/archives/json.hpp>
-#include <filesystem>
+
 
 namespace Cool {
 
@@ -90,7 +91,12 @@ public:
             if (search_bar_focused || just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
-            if (ImGui::CollapsingHeader(category.name.c_str()))
+            
+            glm::vec3 color = category.config.color.as_sRGB(); 
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x * 255, color.y * 255, color.z * 255)));
+            auto const b = ImGui::CollapsingHeader(category.name.c_str());
+            ImGui::PopStyleColor();
+            if (b)
             {
                 for (NodeDefinition const& def : category.definitions)
                 {
@@ -128,14 +134,15 @@ public:
 
         std::filesystem::path const url = Cool::Path::root() / "Nodes" / category_name / "category_config.json";
 
-        if(std::filesystem::exists(url))
+        if (std::filesystem::exists(url))
         {
+            // std::filesystem::remove(url);
             Serialization::from_json(_categories.back().config.color, url);
         }
         else
         {
-            auto color = Cool::Color::from_srgb(glm::vec3(1,0,0));
-            Serialization::to_json( color, url, "Color");
+            auto color = Cool::Color::from_srgb(glm::vec3(1, 0, 0));
+            Serialization::to_json(color, url, "Color");
         }
         _categories.back().definitions.push_back(definition);
     }
