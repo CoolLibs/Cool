@@ -10,7 +10,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
-
 namespace Cool {
 
 namespace internal {
@@ -91,11 +90,13 @@ public:
             if (search_bar_focused || just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
-            
-            glm::vec3 color = category.config.color.as_sRGB(); 
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x * 255, color.y * 255, color.z * 255)));
+            glm::vec3 color = category.config.color.as_sRGB();
+            color*= 255.;
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x, color.y, color.z)));
+            color*= 1.5;
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(ImColor(color.x, color.y, color.z)));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(ImColor(color.x, color.y, color.z)));
             auto const b = ImGui::CollapsingHeader(category.name.c_str());
-            ImGui::PopStyleColor();
             if (b)
             {
                 for (NodeDefinition const& def : category.definitions)
@@ -111,6 +112,7 @@ public:
                     }
                 }
             }
+            ImGui::PopStyleColor(3);
         }
         return nullptr;
     }
