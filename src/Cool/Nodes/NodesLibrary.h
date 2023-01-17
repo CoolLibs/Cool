@@ -14,7 +14,6 @@ template<NodeDefinition_Concept NodeDefinition>
 struct NodesCategory {
     std::string                 name{};
     std::vector<NodeDefinition> definitions{};
-    bool                        isOpen = false; // TODO(WG) TODO(RS) Mettre en variable locale
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -46,10 +45,10 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> NodeDefinition const*
     {
-        for (auto& category : _categories)
+        for (auto const& category : _categories)
         {
-            category.isOpen = false;
-            bool visible    = true;
+            bool is_open = false;
+            bool visible = true;
             if (!nodes_filter.empty())
             {
                 visible = false;
@@ -57,18 +56,17 @@ public:
                 {
                     if (internal::name_matches_filter(def.name(), nodes_filter))
                     {
-                        category.isOpen = true;
-                        visible         = true;
+                        is_open = true;
+                        visible = true;
                     }
                 }
-
             }
 
             if (!visible)
                 continue;
 
             if (search_bar_focused || just_opened)
-                ImGui::SetNextItemOpen(category.isOpen);
+                ImGui::SetNextItemOpen(is_open);
 
             if (ImGui::CollapsingHeader(category.name.c_str()))
             {
@@ -76,7 +74,6 @@ public:
                 {
                     if (!internal::name_matches_filter(def.name(), nodes_filter))
                     {
-                        //     ImGui::CollapsingHeader(category.name.c_str(), false);
                         continue;
                     }
 
