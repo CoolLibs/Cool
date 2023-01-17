@@ -14,6 +14,8 @@ void set_window_icon(GLFWwindow* window)
         .pixels = icon.data(),
     };
     glfwSetWindowIcon(window, 1, &image);
+#else
+    (void)window; // Prevent warning
 #endif
 }
 
