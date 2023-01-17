@@ -1,8 +1,14 @@
 #pragma once
 
+#include "Cool/Nodes/NodesLibrary.h"
+#include "Cool/Path/Path.h"
+#include "Cool/Serialization/as_json.h"
+#include "Cool/StrongTypes/Color.h"
 #include "NodeDefinition_Concept.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include <cereal/archives/json.hpp>
+#include <filesystem>
 
 namespace Cool {
 
@@ -10,10 +16,26 @@ namespace internal {
 auto name_matches_filter(std::string const& name, std::string const& filter) -> bool;
 }
 
+struct NodesCategoryConfig {
+    Cool::Color color;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Color", color)
+        ); // serialize things by passing them to the archive
+    }
+};
+
 template<NodeDefinition_Concept NodeDefinition>
 struct NodesCategory {
     std::string                 name{};
     std::vector<NodeDefinition> definitions{};
+    NodesCategoryConfig         config{};
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -103,12 +125,24 @@ public:
 
         // Add new category if not found
         _categories.push_back({.name = category_name});
+
+        std::filesystem::path const url = Cool::Path::root() / "Nodes" / category_name / "category_config.json";
+
+        if(std::filesystem::exists(url))
+        {
+            Serialization::from_json(_categories.back().config.color, url);
+        }
+        else
+        {
+            auto color = Cool::Color::from_srgb(glm::vec3(1,0,0));
+            Serialization::to_json( color, url, "Color");
+        }
         _categories.back().definitions.push_back(definition);
     }
     void clear() { _categories.clear(); }
 
 private:
-    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
+    std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
