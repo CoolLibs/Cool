@@ -2,6 +2,7 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "imgui.h"
 
 namespace Cool {
 
@@ -148,8 +149,7 @@ template<NodesCfg_Concept NodesCfg>
 void NodesEditor<NodesCfg>::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
-    _nodes_filter.clear();
-    _should_be_focused = 1;
+    _search_bar.on_nodes_menu_open();
 
     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 }
@@ -162,12 +162,16 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 {
     bool b = false;
 
+    bool menu_just_opened = false;
     if (wants_to_open_nodes_menu())
+    {
         open_nodes_menu();
+        menu_just_opened = true;
+    }
 
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        if (imgui_nodes_menu(nodes_cfg, library))
+        if (imgui_nodes_menu(nodes_cfg, library, menu_just_opened))
         {
             ImGui::CloseCurrentPopup();
             b = true;
@@ -188,9 +192,9 @@ auto NodesEditor<NodesCfg>::imgui_window(
     bool graph_has_changed = false;
     ImGui::Begin("Nodes");
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
+    graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();
     {
-        graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
         {
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
@@ -226,18 +230,14 @@ template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::
     imgui_nodes_menu(
         NodesCfg const&                                         nodes_cfg,
-        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
+        bool                                                    menu_just_opened
     ) -> bool
 {
-    if (_should_be_focused){
-        ImGui::SetKeyboardFocusHere();
-        _should_be_focused = 0;
-    }
+    bool const should_select_first_node = _search_bar.imgui_widget();
+    bool       should_open_all_categories = ImGui::IsItemEdited();
 
-    if (ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue))
-        _enter_key_pressed=1;
-
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_nodes_filter, _enter_key_pressed);
+    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
     if (!maybe_node_definition)
         return false;
 
