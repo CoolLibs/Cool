@@ -1,9 +1,7 @@
 #pragma once
-#include <Cool/Path/Path.h>
 #include "../Window.h"
 #include "../WindowManager.h"
 #include "WindowConfig.h"
-#include "img/src/Load.h"
 
 namespace Cool::WindowFactoryU {
 
@@ -23,6 +21,7 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
     }
 
     set_window_icon(window.glfw());
+
     return window;
 }
 
