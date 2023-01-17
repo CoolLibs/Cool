@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NodeDefinition_Concept.h"
+#include "imgui.h"
 
 namespace Cool {
 
@@ -41,10 +42,31 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first) const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> NodeDefinition const*
     {
         for (auto const& category : _categories)
         {
+            bool is_open = false;
+            bool is_visible = true;
+            if (!nodes_filter.empty())
+            {
+                is_visible = false;
+                for (NodeDefinition const& def : category.definitions)
+                {
+                    if (internal::name_matches_filter(def.name(), nodes_filter))
+                    {
+                        is_open = true;
+                        is_visible = true;
+                    }
+                }
+            }
+
+            if (!is_visible)
+                continue;
+
+            if (open_all_categories || menu_just_opened)
+                ImGui::SetNextItemOpen(is_open);
+
             if (ImGui::CollapsingHeader(category.name.c_str()))
             {
                 for (NodeDefinition const& def : category.definitions)

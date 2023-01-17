@@ -2,6 +2,7 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "imgui.h"
 
 namespace Cool {
 
@@ -161,12 +162,16 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 {
     bool b = false;
 
+    bool menu_just_opened = false;
     if (wants_to_open_nodes_menu())
+    {
         open_nodes_menu();
+        menu_just_opened = true;
+    }
 
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        if (imgui_nodes_menu(nodes_cfg, library))
+        if (imgui_nodes_menu(nodes_cfg, library, menu_just_opened))
         {
             ImGui::CloseCurrentPopup();
             b = true;
@@ -225,12 +230,14 @@ template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::
     imgui_nodes_menu(
         NodesCfg const&                                         nodes_cfg,
-        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
+        bool                                                    menu_just_opened
     ) -> bool
 {
     bool const should_select_first_node = _search_bar.imgui_widget();
+    bool       should_open_all_categories = ImGui::IsItemEdited();
 
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node);
+    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
     if (!maybe_node_definition)
         return false;
 
