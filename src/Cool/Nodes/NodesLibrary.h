@@ -14,7 +14,7 @@ template<NodeDefinition_Concept NodeDefinition>
 struct NodesCategory {
     std::string                 name{};
     std::vector<NodeDefinition> definitions{};
-    bool                        isOpen = false;
+    bool                        isOpen = false; // TODO(WG) TODO(RS) Mettre en variable locale
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -44,12 +44,12 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused) const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> NodeDefinition const*
     {
         for (auto& category : _categories)
         {
-            category.isOpen=false;  
-            bool visible = true;
+            category.isOpen = false;
+            bool visible    = true;
             if (!nodes_filter.empty())
             {
                 visible = false;
@@ -61,28 +61,28 @@ public:
                         visible         = true;
                     }
                 }
+
             }
-            // p_visible != NULL && *p_visible == false
 
-            if (visible)
+            if (!visible)
+                continue;
+
+            if (search_bar_focused || just_opened)
+                ImGui::SetNextItemOpen(category.isOpen);
+
+            if (ImGui::CollapsingHeader(category.name.c_str()))
             {
-                if (search_bar_focused)
-                    ImGui::SetNextItemOpen(category.isOpen);
-
-                if (ImGui::CollapsingHeader(category.name.c_str()))
+                for (NodeDefinition const& def : category.definitions)
                 {
-                    for (NodeDefinition const& def : category.definitions)
+                    if (!internal::name_matches_filter(def.name(), nodes_filter))
                     {
-                        if (!internal::name_matches_filter(def.name(), nodes_filter))
-                        {
-                            //     ImGui::CollapsingHeader(category.name.c_str(), false);
-                            continue;
-                        }
+                        //     ImGui::CollapsingHeader(category.name.c_str(), false);
+                        continue;
+                    }
 
-                        if (select_first || ImGui::Selectable(def.name().c_str()))
-                        {
-                            return &def;
-                        }
+                    if (select_first || ImGui::Selectable(def.name().c_str()))
+                    {
+                        return &def;
                     }
                 }
             }
