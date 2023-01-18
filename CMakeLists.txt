@@ -246,6 +246,31 @@ function(cool_setup TARGET_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 
+# ------------------
+# ---Set the app icon---
+# ------------------
+# Call this function if you want to set an icon for your app.
+# It will be used as the executable's icon and be visible in the corner of your app's window.
+# To do so you will need both a .png and .ico files containing your logo.
+#
+# The .ico will only be used at compile time. For more info about .ico, see https://docs.fileformat.com/image/ico/.
+# It needs to be in the same folder as a .rc file # containing "IDI_ICON1 ICON DISCARDABLE "your_icon.ico""
+# where your_icon.ico is the name of your .ico file.
+# `RC_FILE` is the path to that .rc file.
+#
+# The .png (or actually any image format supported by CoolLab) will be used at runtime.
+# It needs to be copied alongside your executable using `Cool__target_copy_file` or `Cool__target_copy_folder`.
+# `IMAGE_FILE` is the path to that .png file.
+# It MUST be relative to the root of your project (a.k.a. to `Cool::Path::root()`).
+function(Cool__set_app_icon
+    TARGET
+    RC_FILE
+    IMAGE_FILE
+)
+    target_sources(${TARGET} PRIVATE ${RC_FILE})
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_APP_ICON_FILE=\"${IMAGE_FILE}\")
+endfunction()
+
 # ---------------------
 # ---Setup the tests---
 # ---------------------

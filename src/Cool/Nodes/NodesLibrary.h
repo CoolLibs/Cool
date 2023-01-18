@@ -5,7 +5,6 @@
 #include "NodeDefinition_Concept.h"
 #include "NodesCategoryConfig.h"
 #include "imgui.h"
-#include "imgui_internal.h"
 
 namespace Cool {
 
@@ -60,29 +59,29 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> NodeDefinition const*
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> NodeDefinition const*
     {
         for (auto& category : _categories)
         {
             bool is_open = false;
-            bool visible = true;
+            bool is_visible = true;
             if (!nodes_filter.empty())
             {
-                visible = false;
-                for (NodeDefinition const& def : category.definitions())
+                is_visible = false;
+                for (NodeDefinition const& def : category.definitions)
                 {
                     if (internal::name_matches_filter(def.name(), nodes_filter))
                     {
                         is_open = true;
-                        visible = true;
+                        is_visible = true;
                     }
                 }
             }
 
-            if (!visible)
+            if (!is_visible)
                 continue;
 
-            if (search_bar_focused || just_opened)
+            if (open_all_categories || menu_just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
             bool collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
@@ -94,14 +93,10 @@ public:
                 for (NodeDefinition const& def : category.definitions())
                 {
                     if (!internal::name_matches_filter(def.name(), nodes_filter))
-                    {
                         continue;
-                    }
 
                     if (select_first || ImGui::Selectable(def.name().c_str()))
-                    {
                         return &def;
-                    }
                 }
             }
         }
@@ -130,7 +125,7 @@ public:
     void clear() { _categories.clear(); }
 
 private:
-    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
+    std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
