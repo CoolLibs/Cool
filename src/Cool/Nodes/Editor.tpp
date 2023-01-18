@@ -235,7 +235,7 @@ auto NodesEditor<NodesCfg>::
     ) -> bool
 {
     bool const should_select_first_node = _search_bar.imgui_widget();
-    bool       is_search_bar_focused    = ImGui::IsItemEdited(); // TODO Only when typing?
+    bool       is_search_bar_focused    = ImGui::IsItemEdited();
 
     auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, is_search_bar_focused, just_opened);
     if (!maybe_node_definition)

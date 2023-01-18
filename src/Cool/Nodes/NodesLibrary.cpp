@@ -1,5 +1,6 @@
 #include "NodesLibrary.h"
 #include <wafl/wafl.hpp>
+#include "imgui.h"
 
 namespace Cool::internal {
 

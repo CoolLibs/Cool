@@ -1,12 +1,13 @@
 #pragma once
 
-#include <cereal/archives/json.hpp>
+#include <algorithm>
 #include <filesystem>
 #include "Cool/Nodes/NodesLibrary.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/as_json.h"
 #include "Cool/StrongTypes/Color.h"
 #include "NodeDefinition_Concept.h"
+#include "NodesCategoryConfig.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -14,28 +15,26 @@ namespace Cool {
 
 namespace internal {
 auto name_matches_filter(std::string const& name, std::string const& filter) -> bool;
-}
+auto popup(Cool::Color& color) -> bool;
+} // namespace internal
 
-struct NodesCategoryConfig {
-    Cool::Color color;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(
-            cereal::make_nvp("Color", color)
-        ); // serialize things by passing them to the archive
-    }
-};
 
 template<NodeDefinition_Concept NodeDefinition>
 struct NodesCategory {
     std::string                 name{};
     std::vector<NodeDefinition> definitions{};
     NodesCategoryConfig         config{};
+    auto display_collapsing_header() -> bool {
+            auto const normal_color = this->config.get_color().as_sRGB();
+            auto const bright_color = glm::vec3(normal_color.x*1.3,normal_color.y*1.3,normal_color.z*1.3);
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(normal_color.x,normal_color.y,normal_color.z,1.)));
+            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(ImColor(bright_color.x,bright_color.y,bright_color.z,1.)));
+            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(ImColor(bright_color.x,bright_color.y,bright_color.z,1.)));
+
+            auto const b = ImGui::CollapsingHeader(this->name.c_str());
+            ImGui::PopStyleColor(3);
+            return b;
+    }
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -67,7 +66,7 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> NodeDefinition const*
     {
-        for (auto const& category : _categories)
+        for (auto& category : _categories)
         {
             bool is_open = false;
             bool visible = true;
@@ -90,14 +89,14 @@ public:
             if (search_bar_focused || just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
-            glm::vec3 color = category.config.color.as_sRGB();
-            color*= 255.;
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x, color.y, color.z)));
-            color*= 1.5;
-            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(ImColor(color.x, color.y, color.z)));
-            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(ImColor(color.x, color.y, color.z)));
-            auto const b = ImGui::CollapsingHeader(category.name.c_str());
-            if (b)
+            bool collapsing_header_clicked = category.display_collapsing_header();  
+
+            if (category.config.popup())
+            {
+                category.config.set_color(category.name);
+            }
+
+            if (collapsing_header_clicked)
             {
                 for (NodeDefinition const& def : category.definitions)
                 {
@@ -112,7 +111,6 @@ public:
                     }
                 }
             }
-            ImGui::PopStyleColor(3);
         }
         return nullptr;
     }
@@ -138,8 +136,7 @@ public:
 
         if (std::filesystem::exists(url))
         {
-            // std::filesystem::remove(url);
-            Serialization::from_json(_categories.back().config.color, url);
+            _categories.back().config.serialize_from_json(url);
         }
         else
         {
@@ -151,7 +148,7 @@ public:
     void clear() { _categories.clear(); }
 
 private:
-    std::vector<NodesCategory<NodeDefinition>> _categories;
+    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
