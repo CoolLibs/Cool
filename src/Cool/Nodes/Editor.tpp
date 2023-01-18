@@ -206,7 +206,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
             for (auto& [id, node] : _graph.nodes())
             {
                 auto      cat     = library.get_category(node.category_name());
-                glm::vec3 cat_col = cat->config.color.as_sRGB();
+                glm::vec3 cat_col = cat->config().get_color().as_sRGB();
 
                 ImVec4 col(cat_col.x, cat_col.y, cat_col.z, 1.);
 
@@ -254,7 +254,7 @@ auto NodesEditor<NodesCfg>::
         bool                                                    menu_just_opened
     ) -> bool
 {
-    bool const should_select_first_node = _search_bar.imgui_widget();
+    bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
     auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);

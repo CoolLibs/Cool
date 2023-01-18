@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
 #include "NodesCategoryConfig.h"
 #include "imgui.h"
@@ -28,7 +29,7 @@ public:
 
 private:
     std::vector<NodeDefinition> _definitions{};
-    NodesCategoryConfig         _config{};
+    NodesCategoryConfig         _config;
     std::string                 _name{};
 };
 
@@ -46,10 +47,10 @@ public:
     {
         for (auto const& category : _categories)
         {
-            if (category.name != id_names.category_name)
+            if (category.name() != id_names.category_name)
                 continue;
 
-            const auto it = std::find_if(category.definitions.begin(), category.definitions.end(), [&](const NodeDefinition& def) {
+            const auto it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](const NodeDefinition& def) {
                 return def.name() == id_names.definition_name;
             });
 
@@ -62,10 +63,10 @@ public:
     {
         for (auto& category : _categories)
         {
-            if (category.name != id_names.category_name)
+            if (category.name() != id_names.category_name)
                 continue;
 
-            const auto it = std::find_if(category.definitions.begin(), category.definitions.end(), [&](const NodeDefinition& def) {
+            const auto it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](const NodeDefinition& def) {
                 return def.name() == id_names.definition_name;
             });
             if (it != category.definitions().end())
@@ -77,7 +78,7 @@ public:
     // just need the category name ?
     auto get_category(std::string category_name) const -> const NodesCategory<NodeDefinition>*
     {
-        const auto it = std::find_if(_categories.begin(), _categories.end(), [&](const NodesCategory<NodeDefinition>& cat) { return cat.name == category_name; });
+        const auto it = std::find_if(_categories.begin(), _categories.end(), [&](const NodesCategory<NodeDefinition>& cat) { return cat.name() == category_name; });
         if (it != _categories.end())
             return &*it;
         return nullptr;
@@ -87,16 +88,16 @@ public:
     {
         for (auto& category : _categories)
         {
-            bool is_open = false;
+            bool is_open    = false;
             bool is_visible = true;
             if (!nodes_filter.empty())
             {
                 is_visible = false;
-                for (NodeDefinition const& def : category.definitions)
+                for (NodeDefinition const& def : category.definitions())
                 {
                     if (internal::name_matches_filter(def.name(), nodes_filter))
                     {
-                        is_open = true;
+                        is_open    = true;
                         is_visible = true;
                     }
                 }
@@ -121,8 +122,7 @@ public:
 
                     if (select_first || ImGui::Selectable(def.name().c_str()))
                     {
-                        ImGui::PopStyleColor(3);
-                        return NodeCategoryIdentifier<NodeDefinition>{def, category.name};
+                        return NodeCategoryIdentifier<NodeDefinition>{def, category.name()};
                     }
                 }
             }
@@ -152,7 +152,7 @@ public:
     void clear() { _categories.clear(); }
 
 private:
-    std::vector<NodesCategory<NodeDefinition>> _categories;
+    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
