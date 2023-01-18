@@ -140,6 +140,10 @@ endif()
 # ---Add libraries---
 # -------------------
 
+# folder_watcher
+add_subdirectory(lib/folder_watcher)
+target_link_libraries(Cool-PublicProperties INTERFACE folder_watcher::folder_watcher)
+
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
 target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
