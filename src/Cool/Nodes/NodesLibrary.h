@@ -1,43 +1,35 @@
 #pragma once
 
-#include <cereal/archives/json.hpp>
-#include <filesystem>
-#include <string>
-#include "Cool/Nodes/NodeDefinitionIdentifier.h"
-#include "Cool/Nodes/NodesLibrary.h"
-#include "Cool/Path/Path.h"
-#include "Cool/Serialization/as_json.h"
-#include "Cool/StrongTypes/Color.h"
-#include "NodeDefinitionIdentifier.h"
+#include <utility>
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "NodeDefinition_Concept.h"
+#include "NodesCategoryConfig.h"
 #include "imgui.h"
 
 namespace Cool {
 
 namespace internal {
-auto name_matches_filter(std::string const& name, std::string const& filter) -> bool;
-}
-
-struct NodesCategoryConfig {
-    Cool::Color color;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(
-            cereal::make_nvp("Color", color)
-        ); // serialize things by passing them to the archive
-    }
-};
+auto name_matches_filter(std::string const& _name, std::string const& filter) -> bool;
+} // namespace internal
 
 template<NodeDefinition_Concept NodeDefinition>
-struct NodesCategory {
-    std::string                 name{};
-    std::vector<NodeDefinition> definitions{};
-    NodesCategoryConfig         config{};
+class NodesCategory {
+public:
+    NodesCategory(std::string name, std::filesystem::path const& path)
+        : _name{std::move(name)}
+        , _config{path}
+    {}
+
+    auto definitions() const -> auto const& { return _definitions; }
+    auto definitions() -> auto& { return _definitions; }
+    auto config() const -> auto const& { return _config; }
+    auto config() -> auto& { return _config; }
+    auto name() const -> auto const& { return _name; }
+
+private:
+    std::vector<NodeDefinition> _definitions{};
+    NodesCategoryConfig         _config{};
+    std::string                 _name{};
 };
 
 template<NodeDefinition_Concept NodeDefinition>
@@ -76,7 +68,7 @@ public:
             const auto it = std::find_if(category.definitions.begin(), category.definitions.end(), [&](const NodeDefinition& def) {
                 return def.name() == id_names.definition_name;
             });
-            if (it != category.definitions.end())
+            if (it != category.definitions().end())
                 return &*it;
         }
         return nullptr;
@@ -93,7 +85,7 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeCategoryIdentifier<NodeDefinition>>
     {
-        for (auto const& category : _categories)
+        for (auto& category : _categories)
         {
             bool is_open = false;
             bool is_visible = true;
@@ -116,16 +108,13 @@ public:
             if (open_all_categories || menu_just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
-            glm::vec3 color = category.config.color.as_sRGB();
-            color *= 255.;
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x, color.y, color.z)));
-            color *= 1.5;
-            ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(ImColor(color.x, color.y, color.z)));
-            ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(ImColor(color.x, color.y, color.z)));
-            auto const b = ImGui::CollapsingHeader(category.name.c_str());
-            if (b)
+            bool collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
+
+            category.config().imgui_popup();
+
+            if (collapsing_header_clicked)
             {
-                for (NodeDefinition const& def : category.definitions)
+                for (NodeDefinition const& def : category.definitions())
                 {
                     if (!internal::name_matches_filter(def.name(), nodes_filter))
                         continue;
@@ -137,41 +126,28 @@ public:
                     }
                 }
             }
-            ImGui::PopStyleColor(3);
         }
         return std::nullopt;
     }
 
-    void add_definition(NodeDefinition const& definition, std::string category_name)
+    void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder)
     {
         if (category_name.empty())
             category_name = "Unnamed Category";
 
+        // Add definition to the corresponding category if it exists
         for (auto& category : _categories)
         {
-            if (category.name != category_name)
+            if (category.name() != category_name)
                 continue;
 
-            category.definitions.push_back(definition);
+            category.definitions().push_back(definition);
             return;
         }
 
         // Add new category if not found
-        _categories.push_back({.name = category_name});
-
-        std::filesystem::path const url = Cool::Path::root() / "Nodes" / category_name / "category_config.json";
-
-        if (std::filesystem::exists(url))
-        {
-            // std::filesystem::remove(url);
-            Serialization::from_json(_categories.back().config.color, url);
-        }
-        else
-        {
-            auto color = Cool::Color::from_srgb(glm::vec3(1, 0, 0));
-            Serialization::to_json(color, url, "Color");
-        }
-        _categories.back().definitions.push_back(definition);
+        _categories.push_back(NodesCategory<NodeDefinition>{category_name, category_folder});
+        _categories.back().definitions().push_back(definition);
     }
     void clear() { _categories.clear(); }
 
