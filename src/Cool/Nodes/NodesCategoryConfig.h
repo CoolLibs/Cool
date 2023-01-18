@@ -1,7 +1,7 @@
-#include <cereal/archives/json.hpp>
 #include <filesystem>
-#include <utility>
 #include "Cool/StrongTypes/Color.h"
+
+namespace Cool {
 
 class NodesCategoryConfig {
 public:
@@ -11,7 +11,7 @@ public:
         load_from_json();
     }
 
-    [[nodiscard]] auto get_color() const -> Cool::Color { return _color; }
+    [[nodiscard]] auto get_color() const -> Color { return _color; }
 
     auto imgui_popup() -> bool;
 
@@ -20,7 +20,7 @@ private:
     void load_from_json();
 
 private:
-    Cool::Color           _color{};
+    Color                 _color{};
     std::filesystem::path _path_to_json{};
 
 private:
@@ -34,3 +34,5 @@ private:
         );
     }
 };
+
+} // namespace Cool

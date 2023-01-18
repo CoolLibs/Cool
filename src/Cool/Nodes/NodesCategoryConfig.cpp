@@ -2,42 +2,44 @@
 #include <filesystem>
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/as_json.h"
+#include "Cool/Variables/internal/color_utils.h"
 #include "imgui.h"
+
+namespace Cool {
 
 void NodesCategoryConfig::save_to_json() const
 {
-    Cool::Serialization::to_json(
-        *this,
-        _path_to_json
-    );
+    Serialization::to_json(*this, _path_to_json);
 }
 
 void NodesCategoryConfig::load_from_json()
 {
-    Cool::Serialization::from_json(*this, _path_to_json)
+    Serialization::from_json(*this, _path_to_json)
         .send_error_if_any([&](std::string const& message) {
-            return Cool::Message{
+            return Message{
                 .category = "Nodes Category",
                 .message  = fmt::format("Failed to load category config for '{}':\n{}", _path_to_json, message),
-                .severity = Cool::MessageSeverity::Warning,
+                .severity = MessageSeverity::Warning,
             };
         },
-                           Cool::Log::ToUser::console());
+                           Log::ToUser::console());
 }
 
 auto NodesCategoryConfig::imgui_popup() -> bool
 {
-    bool color_modified = false;
+    bool b = false;
 
     if (ImGui::BeginPopupContextItem())
     {
-        if (imgui_widget("Color :", _color, ImGuiColorEditFlags_PickerHueBar))
+        if (imgui_widget("Color", _color, internal::color_imgui_flags(false)))
         {
-            color_modified = true;
+            b = true;
             save_to_json();
         }
         ImGui::EndPopup();
     }
 
-    return color_modified;
+    return b;
 }
+
+} // namespace Cool
