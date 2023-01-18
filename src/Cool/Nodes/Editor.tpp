@@ -2,7 +2,11 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "Cool/Nodes/NodesLibrary.h"
+#include "NodesLibrary.h"
+#include "glm/fwd.hpp"
 #include "imgui.h"
+#include "imnodes/imnodes.h"
 
 namespace Cool {
 
@@ -55,8 +59,10 @@ template<NodesCfg_Concept NodesCfg>
 void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
 {
     ImNodes::BeginNodeTitleBar();
+    ImGui::TextUnformatted(nodes_cfg.cat_name(node).c_str());
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImNodes::EndNodeTitleBar();
+
     draw_node_pins(node);
     draw_node_body(node, id, nodes_cfg);
 }
@@ -199,9 +205,23 @@ auto NodesEditor<NodesCfg>::imgui_window(
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
             {
+                auto      cat     = library.get_category(node.category_name());
+                glm::vec3 cat_col = cat->config.color.as_sRGB();
+
+                ImVec4 col(cat_col.x, cat_col.y, cat_col.z, 1.);
+
+                auto category_color = ImGui::GetColorU32(col);
+
+                ImNodes::PushColorStyle(ImNodesCol_TitleBar, category_color);
+                ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, category_color);
+                ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, category_color);
+
                 ImNodes::BeginNode(id);
                 draw_node<NodesCfg>(node, id, nodes_cfg);
                 ImNodes::EndNode();
+                ImNodes::PopColorStyle();
+                ImNodes::PopColorStyle();
+                ImNodes::PopColorStyle();
             }
         }
         {
@@ -237,11 +257,12 @@ auto NodesEditor<NodesCfg>::
     bool const should_select_first_node = _search_bar.imgui_widget();
     bool       is_search_bar_focused    = ImGui::IsItemEdited(); // TODO Only when typing?
 
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, is_search_bar_focused, just_opened);
-    if (!maybe_node_definition)
+    auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, is_search_bar_focused, just_opened);
+
+    if (!maybe_node_definition_id)
         return false;
 
-    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition));
+    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
     ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
 
     return true;

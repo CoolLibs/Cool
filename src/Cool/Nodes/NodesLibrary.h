@@ -2,10 +2,13 @@
 
 #include <cereal/archives/json.hpp>
 #include <filesystem>
+#include <string>
+#include "Cool/Nodes/NodeDefinitionIdentifier.h"
 #include "Cool/Nodes/NodesLibrary.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/as_json.h"
 #include "Cool/StrongTypes/Color.h"
+#include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -39,25 +42,40 @@ struct NodesCategory {
 };
 
 template<NodeDefinition_Concept NodeDefinition>
+struct NodeCategoryIdentifier {
+    NodeDefinition def;
+    std::string    category_name;
+};
+
+template<NodeDefinition_Concept NodeDefinition>
 class NodesLibrary {
 public:
-    auto get_definition(std::string_view definition_name) const -> const NodeDefinition*
+    // need to get the category name
+    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) const -> const NodeDefinition*
     {
         for (auto const& category : _categories)
         {
+            if (category.name != id_names.category_name)
+                continue;
+
             const auto it = std::find_if(category.definitions.begin(), category.definitions.end(), [&](const NodeDefinition& def) {
-                return def.name() == definition_name;
+                return def.name() == id_names.definition_name;
             });
+
             if (it != category.definitions.end())
                 return &*it;
         }
     }
-    auto get_definition(std::string_view definition_name) -> NodeDefinition*
+
+    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
     {
         for (auto& category : _categories)
         {
+            if (category.name != id_names.category_name)
+                continue;
+
             const auto it = std::find_if(category.definitions.begin(), category.definitions.end(), [&](const NodeDefinition& def) {
-                return def.name() == definition_name;
+                return def.name() == id_names.definition_name;
             });
             if (it != category.definitions.end())
                 return &*it;
@@ -65,7 +83,16 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> NodeDefinition const*
+    // just need the category name ?
+    auto get_category(std::string category_name) const -> const NodesCategory<NodeDefinition>*
+    {
+        const auto it = std::find_if(_categories.begin(), _categories.end(), [&](const NodesCategory<NodeDefinition>& cat) { return cat.name == category_name; });
+        if (it != _categories.end())
+            return &*it;
+        return nullptr;
+    }
+
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> std::optional<NodeCategoryIdentifier<NodeDefinition>>
     {
         for (auto const& category : _categories)
         {
@@ -91,9 +118,9 @@ public:
                 ImGui::SetNextItemOpen(is_open);
 
             glm::vec3 color = category.config.color.as_sRGB();
-            color*= 255.;
+            color *= 255.;
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(ImColor(color.x, color.y, color.z)));
-            color*= 1.5;
+            color *= 1.5;
             ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(ImColor(color.x, color.y, color.z)));
             ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(ImColor(color.x, color.y, color.z)));
             auto const b = ImGui::CollapsingHeader(category.name.c_str());
@@ -108,13 +135,14 @@ public:
 
                     if (select_first || ImGui::Selectable(def.name().c_str()))
                     {
-                        return &def;
+                        ImGui::PopStyleColor(3);
+                        return NodeCategoryIdentifier<NodeDefinition>{def, category.name};
                     }
                 }
             }
             ImGui::PopStyleColor(3);
         }
-        return nullptr;
+        return std::nullopt;
     }
 
     void add_definition(NodeDefinition const& definition, std::string category_name)
