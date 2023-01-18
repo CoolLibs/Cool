@@ -5,7 +5,7 @@ namespace Cool {
 class Color {
 public:
     Color() = default;
-    static auto from_srgb(glm::vec3 const& srgb) -> Color;
+    [[nodiscard]] static auto from_srgb(glm::vec3 const& srgb) -> Color;
 
 #include "Cool/ColorSpaces/generated/declare_color_getters.inl"
 
