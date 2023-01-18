@@ -10,7 +10,7 @@ auto to_string(Camera2D const&) -> std::string
 {
     return {};
 }
-auto imgui_widget(std::string_view name, Camera2D&) -> bool
+auto imgui_widget(std::string_view, Camera2D&) -> bool
 {
     return {};
 }

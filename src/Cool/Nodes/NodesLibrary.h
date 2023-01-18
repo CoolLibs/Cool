@@ -11,7 +11,6 @@
 #include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
 #include "imgui.h"
-#include "imgui_internal.h"
 
 namespace Cool {
 
@@ -92,29 +91,29 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool search_bar_focused, bool just_opened) const -> std::optional<NodeCategoryIdentifier<NodeDefinition>>
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeCategoryIdentifier<NodeDefinition>>
     {
         for (auto const& category : _categories)
         {
             bool is_open = false;
-            bool visible = true;
+            bool is_visible = true;
             if (!nodes_filter.empty())
             {
-                visible = false;
+                is_visible = false;
                 for (NodeDefinition const& def : category.definitions)
                 {
                     if (internal::name_matches_filter(def.name(), nodes_filter))
                     {
                         is_open = true;
-                        visible = true;
+                        is_visible = true;
                     }
                 }
             }
 
-            if (!visible)
+            if (!is_visible)
                 continue;
 
-            if (search_bar_focused || just_opened)
+            if (open_all_categories || menu_just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
             glm::vec3 color = category.config.color.as_sRGB();
@@ -129,9 +128,7 @@ public:
                 for (NodeDefinition const& def : category.definitions)
                 {
                     if (!internal::name_matches_filter(def.name(), nodes_filter))
-                    {
                         continue;
-                    }
 
                     if (select_first || ImGui::Selectable(def.name().c_str()))
                     {

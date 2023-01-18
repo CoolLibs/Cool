@@ -5,6 +5,8 @@
 
 namespace Cool::WindowFactoryU {
 
+void set_window_icon(GLFWwindow* window);
+
 template<typename Window_Impl>
 Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_manager, GLFWwindow* window_to_share_opengl_context_with = nullptr)
 {
@@ -17,6 +19,9 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
         glfwGetError(&error_description);
         Log::Debug::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
     }
+
+    set_window_icon(window.glfw());
+
     return window;
 }
 
