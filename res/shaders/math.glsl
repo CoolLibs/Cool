@@ -36,6 +36,12 @@ float length_squared(vec4 p)
     return dot(p, p);
 }
 
+float hash_0_to_1_3D_to_1D(vec3 p)
+{
+    return fract(sin(dot(p, vec3(12.9898, 78.233, 74.7) * 2.0)) * 43758.5453);
+
+}
+
 vec3 hash_0_to_1_3D_to_3D(vec3 p)
 {
     p = vec3(
@@ -68,6 +74,7 @@ float hash_0_to_1_2D_to_1D(vec2 p)
 {
     return fract(sin(dot(p, vec2(12.9898, 78.233) * 2.0)) * 43758.5453);
 }
+
 
 mat2 rotation_2D(float angle)
 {
