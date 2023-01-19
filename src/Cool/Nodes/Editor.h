@@ -12,7 +12,7 @@ namespace Cool {
 namespace internal {
 struct SearchBarState {
 public:
-    void on_nodes_menu_open();
+    void               on_nodes_menu_open();
     [[nodiscard]] auto get_nodes_filter() const -> std::string const&;
     /// Returns true iff we should select the first node.
     auto imgui_widget() -> bool;

@@ -32,4 +32,9 @@ auto imgui_widget(std::string_view name, Color& color, ImGuiColorEditFlags flags
     return false;
 }
 
+auto Color::brighter() const -> Color
+{
+    return Color::from_srgb(as_sRGB() * 1.3f);
+}
+
 } // namespace Cool
