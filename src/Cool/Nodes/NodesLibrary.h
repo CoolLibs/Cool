@@ -45,9 +45,12 @@ public:
     auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) const -> NodeDefinition const* { return internal_get_definition(*this, id_names); }
     auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition* { return internal_get_definition(*this, id_names); }
 
-    auto get_category(std::string category_name) const -> const NodesCategory<NodeDefinition>*
+    auto get_category(std::string const& category_name) const -> NodesCategory<NodeDefinition> const*
     {
-        const auto it = std::find_if(_categories.begin(), _categories.end(), [&](const NodesCategory<NodeDefinition>& cat) { return cat.name() == category_name; });
+        auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
+            return cat.name() == category_name;
+        });
+
         if (it != _categories.end())
             return &*it;
         return nullptr;
@@ -124,23 +127,23 @@ private:
     template<typename T>
     static auto internal_get_definition(T&& nodes_library, Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
     {
-        for (auto&& category : nodes_library._categories)
-        {
-            if (category.name() != id_names.category_name)
-                continue;
+        // Find category
+        auto const* category = nodes_library.get_category(id_names.category_name);
+        if (!category)
+            return nullptr;
 
-            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
-                return def.name() == id_names.definition_name;
-            });
-
-            if (it != category.definitions().end())
-                return &*it;
-        }
+        // Find definition inside the category
+        auto const it = std::find_if(category->definitions().begin(), category->definitions().end(), [&](NodeDefinition const& def) {
+            return def.name() == id_names.definition_name;
+        });
+        if (it != category->definitions().end())
+            return &*it;
         return nullptr;
     }
 
 private:
-    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
+    mutable std::vector<NodesCategory<NodeDefinition>>
+        _categories;
 };
 
 } // namespace Cool
