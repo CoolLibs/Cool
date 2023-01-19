@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
@@ -48,6 +49,17 @@ public:
     auto get_category(std::string const& category_name) const -> NodesCategory<NodeDefinition> const*
     {
         auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
+            return cat.name() == category_name;
+        });
+
+        if (it != _categories.end())
+            return &*it;
+        return nullptr;
+    }
+
+    auto get_category(std::string const& category_name) -> NodesCategory<NodeDefinition>*
+    {
+        auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
             return cat.name() == category_name;
         });
 
@@ -121,6 +133,29 @@ public:
         _categories.push_back(NodesCategory<NodeDefinition>{category_name, category_folder});
         _categories.back().definitions().push_back(definition);
     }
+
+    void remove_definition(NodeDefinitionIdentifier const& identifier)
+    {
+        auto category = get_category(identifier.category_name);
+
+        if (!category)
+            return;
+
+        // Remove the node from the definitions
+        std::erase_if(category->definitions(), [identifier](NodeDefinition const& def) {
+            return def.name() == identifier.definition_name;
+        });
+
+        // TODO
+        /*if (category.definitions.empty())
+        {
+            // Remove the category from _categories
+            std::erase_if(_categories, [node_cat_name](NodesCategory<NodeDefinition> const& category) {
+                return category.name == node_cat_name;
+            });
+        }*/
+    }
+
     void clear() { _categories.clear(); }
 
 private:
