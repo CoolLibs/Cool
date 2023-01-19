@@ -13,6 +13,7 @@ concept NodesCfg_Concept =
            // clang-format off
             { cfg.make_node(def) } -> std::convertible_to<typename Cfg::NodeT>;
             { cfg.name(node) } -> std::convertible_to<std::string>;
+            { cfg.category_name(node) } -> std::convertible_to<std::string>;
             cfg.imgui_node_body(node, id);
            // clang-format on
        };

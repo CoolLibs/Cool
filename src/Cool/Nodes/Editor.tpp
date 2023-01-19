@@ -60,7 +60,7 @@ void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const&
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImGui::SameLine();
-    ImGui::TextDisabled("(%s)", nodes_cfg.cat_name(node).c_str());
+    ImGui::TextDisabled("(%s)", nodes_cfg.category_name(node).c_str());
     ImNodes::EndNodeTitleBar();
 
     draw_node_pins(node);
