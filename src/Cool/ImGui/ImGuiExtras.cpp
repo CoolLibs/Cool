@@ -588,7 +588,7 @@ static auto glm_to_imvec4(glm::vec3 const& v)
 auto colored_collapsing_header(std::string_view name, Cool::Color const& color) -> bool
 {
     auto const base_color   = color.as_sRGB();
-    auto const bright_color = base_color * 1.3f;
+    auto const bright_color = color.brighter().as_sRGB();
 
     ImGui::PushStyleColor(ImGuiCol_Header, glm_to_imvec4(base_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered, glm_to_imvec4(bright_color));

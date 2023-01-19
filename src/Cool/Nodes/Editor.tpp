@@ -2,9 +2,8 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
-#include "Cool/Nodes/NodesLibrary.h"
+#include "ImNodesHelpers.h"
 #include "NodesLibrary.h"
-#include "glm/fwd.hpp"
 #include "imgui.h"
 #include "imnodes/imnodes.h"
 
@@ -59,8 +58,9 @@ template<NodesCfg_Concept NodesCfg>
 void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
 {
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(nodes_cfg.cat_name(node).c_str());
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
+    ImGui::SameLine();
+    ImGui::TextDisabled("(%s)", nodes_cfg.cat_name(node).c_str());
     ImNodes::EndNodeTitleBar();
 
     draw_node_pins(node);
@@ -205,23 +205,14 @@ auto NodesEditor<NodesCfg>::imgui_window(
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
             {
-                auto      cat     = library.get_category(node.category_name());
-                glm::vec3 cat_col = cat->config().get_color().as_sRGB();
-
-                ImVec4 col(cat_col.x, cat_col.y, cat_col.z, 1.);
-
-                auto category_color = ImGui::GetColorU32(col);
-
-                ImNodes::PushColorStyle(ImNodesCol_TitleBar, category_color);
-                ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, category_color);
-                ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, category_color);
+                auto const cat                        = library.get_category(node.category_name());
+                auto const set_scoped_title_bar_color = ScopedTitleBarColor{
+                    cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
+                };
 
                 ImNodes::BeginNode(id);
                 draw_node<NodesCfg>(node, id, nodes_cfg);
                 ImNodes::EndNode();
-                ImNodes::PopColorStyle();
-                ImNodes::PopColorStyle();
-                ImNodes::PopColorStyle();
             }
         }
         {

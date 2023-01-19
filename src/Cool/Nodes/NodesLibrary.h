@@ -17,8 +17,8 @@ template<NodeDefinition_Concept NodeDefinition>
 class NodesCategory {
 public:
     NodesCategory(std::string name, std::filesystem::path const& path)
-        : _name{std::move(name)}
-        , _config{path}
+        : _config{path}
+        , _name{std::move(name)}
     {}
 
     auto definitions() const -> auto const& { return _definitions; }
