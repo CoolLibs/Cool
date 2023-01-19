@@ -11,6 +11,14 @@ void imgui_timeline(auto& clock)
     {
         clock.toggle_play_pause();
     }
+
+    ImGui::SameLine();
+    if (ImGuiExtras::button_with_icon((Icons::reset().imgui_texture_id())))
+    {
+        clock.set_time(0.f);
+    }
+    Cool::ImGuiExtras::tooltip("Reset time to 0.");
+
     ImGui::SameLine();
     float t = clock.time();
     if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f"))

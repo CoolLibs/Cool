@@ -9,6 +9,20 @@
 
 namespace Cool {
 
+namespace internal {
+struct SearchBarState {
+public:
+    void               on_nodes_menu_open();
+    [[nodiscard]] auto get_nodes_filter() const -> std::string const&;
+    /// Returns true iff we should select the first node.
+    auto imgui_widget() -> bool;
+
+private:
+    bool        _should_be_focused = true;
+    std::string _nodes_filter{};
+};
+} // namespace internal
+
 template<NodesCfg_Concept NodesCfg>
 class NodesEditor {
 public:
@@ -42,7 +56,7 @@ private:
 private:
     /* Nodes Library */
     auto draw_nodes_library_menu_ifn(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
-    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, bool just_opened) -> bool;
     auto wants_to_open_nodes_menu() -> bool;
     void open_nodes_menu();
 
@@ -52,10 +66,8 @@ private:
     internal::UniqueImNodeContext   _context;
     Graph<typename NodesCfg::NodeT> _graph;
     // bool      _all_nodes_have_a_valid_template = true;
-    bool _window_is_hovered = true;
-    std::string _nodes_filter{};
-    bool _should_be_focused = 1;
-    bool _enter_key_pressed = 0;
+    bool                     _window_is_hovered = true;
+    internal::SearchBarState _search_bar{};
 
 private:
     // Serialization

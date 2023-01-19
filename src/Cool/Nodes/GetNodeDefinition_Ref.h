@@ -12,13 +12,13 @@ public:
         : _library{library}
     {}
 
-    auto operator()(std::string_view definition_name) const -> const NodeDefinition*
+    auto operator()(Cool::NodeDefinitionIdentifier const& id_names) const -> const NodeDefinition*
     {
-        return _library.get().get_definition(definition_name);
+        return _library.get().get_definition(id_names);
     }
-    auto operator()(std::string_view definition_name) -> NodeDefinition*
+    auto operator()(Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
     {
-        return _library.get().get_definition(definition_name);
+        return _library.get().get_definition(id_names);
     }
 
 private:

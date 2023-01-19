@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include "Cool/StrongTypes/Color.h"
 
 namespace Cool::ImGuiExtras {
 
@@ -196,5 +197,8 @@ auto link(std::string_view url, std::string_view label) -> bool;
 /// `widget` must be a function that draws some ImGui widgets.
 /// If `should_bring_attention` is false, just renders the widget as usual. This is a convenience that makes calling code nicer.
 void bring_attention_if(bool should_bring_attention, std::function<void()> widget);
+
+///
+auto colored_collapsing_header(std::string_view name, Cool::Color const& color) -> bool;
 
 } // namespace Cool::ImGuiExtras

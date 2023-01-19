@@ -1,5 +1,6 @@
-const float TAU = 6.283185307180;
-const float PI  = 3.141592653590;
+const float TAU    = 6.283185307180;
+const float PI     = 3.141592653590;
+const float sqrt_3 = 1.73205;
 
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
@@ -20,7 +21,17 @@ float ndot(vec2 a, vec2 b)
     return a.x * b.x - a.y * b.y;
 }
 
+float length_squared(vec2 p)
+{
+    return dot(p, p);
+}
+
 float length_squared(vec3 p)
+{
+    return dot(p, p);
+}
+
+float length_squared(vec4 p)
 {
     return dot(p, p);
 }
@@ -79,10 +90,15 @@ vec2 vec2_from_polar(float radius, float angle)
     return radius * vec2(cos(angle), sin(angle));
 }
 
-vec2 complex_product(vec2 a, vec2 b) { 
-    return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x); 
+vec2 complex_product(vec2 a, vec2 b)
+{
+    return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
+vec2 complex_division(vec2 n, vec2 d)
+{
+    return vec2(n.x * d.x + n.y * d.y, n.y * d.x - n.x * d.y) / (d.x * d.x + d.y * d.y);
+}
 
 #define saturate(v) clamp(v, 0., 1.)
 

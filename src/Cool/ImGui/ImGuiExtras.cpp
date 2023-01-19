@@ -580,4 +580,23 @@ void bring_attention_if(bool should_bring_attention, std::function<void()> widge
     }
 }
 
+static auto glm_to_imvec4(glm::vec3 const& v)
+{
+    return ImVec4(v.x, v.y, v.z, 1.f);
+}
+
+auto colored_collapsing_header(std::string_view name, Cool::Color const& color) -> bool
+{
+    auto const base_color   = color.as_sRGB();
+    auto const bright_color = color.brighter().as_sRGB();
+
+    ImGui::PushStyleColor(ImGuiCol_Header, glm_to_imvec4(base_color));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, glm_to_imvec4(bright_color));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, glm_to_imvec4(bright_color));
+
+    auto const b = ImGui::CollapsingHeader(name.data());
+    ImGui::PopStyleColor(3);
+    return b;
+}
+
 } // namespace Cool::ImGuiExtras
