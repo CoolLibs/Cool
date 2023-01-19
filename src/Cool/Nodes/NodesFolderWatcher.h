@@ -28,19 +28,17 @@ public:
     template<NodeDefinition_Concept NodeDefinition, NodeDefinitionParser<NodeDefinition> Parser>
     auto update(NodesLibrary<NodeDefinition>& library, Parser&& parse_definition) -> bool;
 
-    void change_path(std::filesystem::path folder_path);
-
-    void force_refresh() { _has_changed = true; } // TODO(JF) Remove
+    void change_path(std::filesystem::path const&);
 
 private:
     void handle_error(std::filesystem::path const& definition_path, std::string const& message);
 
 private:
     // TODO(JF) Folder Watcher, or at least a file watcher for each current node to auto refresh it
-    std::filesystem::path                            _folder_path;
+    folder_watcher::FolderWatcher                    _folder_watcher{};
     std::string                                      _extension;
-    bool                                             _has_changed{true}; // TODO(JF) Remove, use update of folder watcher instead
     std::map<std::filesystem::path, Cool::MessageId> _errors{};
+    folder_watcher::Callbacks                        _callbacks{};
 };
 
 } // namespace Cool

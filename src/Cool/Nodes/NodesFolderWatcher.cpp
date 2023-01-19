@@ -1,16 +1,18 @@
 #include "NodesFolderWatcher.h"
+#include <utility>
+#include "Cool/Nodes/NodesFolderWatcher.h"
 
 namespace Cool {
 
 NodesFolderWatcher::NodesFolderWatcher(std::filesystem::path folder_path, std::string extension)
-    : _folder_path{std::move(folder_path)}
+    : _folder_watcher{std::move(folder_path)}
     , _extension{std::move(extension)}
-{}
-
-void NodesFolderWatcher::change_path(std::filesystem::path folder_path)
 {
-    _folder_path = std::move(folder_path);
-    _has_changed = true;
+}
+
+void NodesFolderWatcher::change_path(std::filesystem::path const& folder_path)
+{
+    _folder_watcher.set_folder_path(_callbacks, folder_path);
 }
 
 void NodesFolderWatcher::handle_error(std::filesystem::path const& definition_path, std::string const& message)
