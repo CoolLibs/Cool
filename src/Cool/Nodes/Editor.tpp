@@ -249,7 +249,6 @@ auto NodesEditor<NodesCfg>::
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
     auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
-
     if (!maybe_node_definition_id)
         return false;
 

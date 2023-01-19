@@ -34,7 +34,7 @@ private:
 };
 
 template<NodeDefinition_Concept NodeDefinition>
-struct NodeCategoryIdentifier {
+struct NodeDefinitionAndCategoryName {
     NodeDefinition def;
     std::string    category_name;
 };
@@ -42,40 +42,9 @@ struct NodeCategoryIdentifier {
 template<NodeDefinition_Concept NodeDefinition>
 class NodesLibrary {
 public:
-    // need to get the category name
-    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) const -> const NodeDefinition*
-    {
-        for (auto const& category : _categories)
-        {
-            if (category.name() != id_names.category_name)
-                continue;
+    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) const -> NodeDefinition const* { return internal_get_definition(*this, id_names); }
+    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition* { return internal_get_definition(*this, id_names); }
 
-            const auto it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](const NodeDefinition& def) {
-                return def.name() == id_names.definition_name;
-            });
-
-            if (it != category.definitions.end())
-                return &*it;
-        }
-    }
-
-    auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
-    {
-        for (auto& category : _categories)
-        {
-            if (category.name() != id_names.category_name)
-                continue;
-
-            const auto it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](const NodeDefinition& def) {
-                return def.name() == id_names.definition_name;
-            });
-            if (it != category.definitions().end())
-                return &*it;
-        }
-        return nullptr;
-    }
-
-    // just need the category name ?
     auto get_category(std::string category_name) const -> const NodesCategory<NodeDefinition>*
     {
         const auto it = std::find_if(_categories.begin(), _categories.end(), [&](const NodesCategory<NodeDefinition>& cat) { return cat.name() == category_name; });
@@ -84,7 +53,7 @@ public:
         return nullptr;
     }
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeCategoryIdentifier<NodeDefinition>>
+    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName<NodeDefinition>>
     {
         for (auto& category : _categories)
         {
@@ -122,7 +91,7 @@ public:
 
                     if (select_first || ImGui::Selectable(def.name().c_str()))
                     {
-                        return NodeCategoryIdentifier<NodeDefinition>{def, category.name()};
+                        return NodeDefinitionAndCategoryName<NodeDefinition>{def, category.name()};
                     }
                 }
             }
@@ -150,6 +119,25 @@ public:
         _categories.back().definitions().push_back(definition);
     }
     void clear() { _categories.clear(); }
+
+private:
+    template<typename T>
+    static auto internal_get_definition(T&& nodes_library, Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
+    {
+        for (auto&& category : nodes_library._categories)
+        {
+            if (category.name() != id_names.category_name)
+                continue;
+
+            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
+                return def.name() == id_names.definition_name;
+            });
+
+            if (it != category.definitions().end())
+                return &*it;
+        }
+        return nullptr;
+    }
 
 private:
     mutable std::vector<NodesCategory<NodeDefinition>> _categories;
