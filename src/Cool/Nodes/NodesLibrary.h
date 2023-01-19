@@ -127,23 +127,23 @@ private:
     template<typename T>
     static auto internal_get_definition(T&& nodes_library, Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
     {
-        // Find category
-        auto const* category = nodes_library.get_category(id_names.category_name);
-        if (!category)
-            return nullptr;
+        for (auto&& category : nodes_library._categories)
+        {
+            if (category.name() != id_names.category_name)
+                continue;
 
-        // Find definition inside the category
-        auto const it = std::find_if(category->definitions().begin(), category->definitions().end(), [&](NodeDefinition const& def) {
-            return def.name() == id_names.definition_name;
-        });
-        if (it != category->definitions().end())
-            return &*it;
+            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
+                return def.name() == id_names.definition_name;
+            });
+
+            if (it != category.definitions().end())
+                return &*it;
+        }
         return nullptr;
     }
 
 private:
-    mutable std::vector<NodesCategory<NodeDefinition>>
-        _categories;
+    mutable std::vector<NodesCategory<NodeDefinition>> _categories;
 };
 
 } // namespace Cool
