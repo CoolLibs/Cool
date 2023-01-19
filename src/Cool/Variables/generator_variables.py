@@ -209,7 +209,7 @@ def all_variable_descriptions():
             cpp_type="Cool::Camera2D",
             glsl_type="mat3",
             include="<Cool/StrongTypes/Camera2D.h>",
-            metadatas=[],
+            metadatas=angle_metadatas(),
             requires_shader_code_generation=False,
         ),
         VariableDescription(

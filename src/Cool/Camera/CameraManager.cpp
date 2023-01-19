@@ -10,7 +10,7 @@ CameraManager::CameraManager(const glm::vec3& position, const glm::vec3& look_at
     _view_controller.set_distance_to_orbit_center(glm::distance(position, look_at));
 }
 
-void CameraManager::hook_events(MouveEventDispatcher<ViewCoordinates>& dispatcher)
+void CameraManager::hook_events(MouseEventDispatcher<ViewCoordinates>& dispatcher)
 {
     CameraU::hook_events(dispatcher, _view_controller, _camera);
 }

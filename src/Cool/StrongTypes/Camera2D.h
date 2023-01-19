@@ -1,10 +1,12 @@
 #pragma once
+#include "Cool/StrongTypes/Angle.h"
 
 namespace Cool {
 
 struct Camera2D {
-    glm::vec2 translation{};
-    float     zoom{};
+    glm::vec2 translation{0.f, 0.f};
+    Angle     rotation{Radians(0.f)};
+    float     zoom{1.f};
 
     auto transform_matrix() const -> glm::mat3;
 
@@ -18,12 +20,13 @@ private:
     {
         archive(
             cereal::make_nvp("Translation", translation),
-            cereal::make_nvp("Zoom", zoom)
+            cereal::make_nvp("Zoom", zoom),
+            cereal::make_nvp("Rotation", rotation)
         );
     }
 };
 
 auto to_string(Camera2D const&) -> std::string;
-auto imgui_widget(std::string_view name, Camera2D&) -> bool;
+auto imgui_widget(std::string_view name, Camera2D& cam, int number_of_snaps, float snaps_offset, bool always_snap) -> bool;
 
 } // namespace Cool

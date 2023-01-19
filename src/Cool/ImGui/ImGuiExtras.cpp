@@ -139,7 +139,7 @@ void tooltip(const char* text)
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
-        ImGui::Text("%s", text);
+        ImGui::TextUnformatted(text);
         ImGui::EndTooltip();
     }
 }
@@ -370,7 +370,7 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
     }
     else
     {
-        ImGui::Text("%s", label);
+        ImGui::TextUnformatted(label);
     }
     return was_used;
 }

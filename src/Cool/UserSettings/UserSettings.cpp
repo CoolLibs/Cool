@@ -4,6 +4,15 @@
 
 namespace Cool {
 
+auto UserSettings::imgui() -> bool
+{
+    bool b = false;
+    b |= imgui_autosave();
+    b |= imgui_camera2D_zoom_sensitivity();
+
+    return b;
+}
+
 auto UserSettings::imgui_autosave() -> bool
 {
     return ImGuiExtras::checkbox_with_submenu("Autosave", &autosave_enabled, [&]() {
@@ -14,12 +23,9 @@ auto UserSettings::imgui_autosave() -> bool
     });
 }
 
-auto UserSettings::imgui() -> bool
+auto UserSettings::imgui_camera2D_zoom_sensitivity() -> bool
 {
-    bool b = false;
-    b |= imgui_autosave();
-
-    return b;
+    return ImGui::SliderFloat("Camera 2D zoom sensitivity", &camera2D_zoom_sensitivity, 1.0001f, 1.2f);
 }
 
 } // namespace Cool

@@ -22,7 +22,7 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
 {
     bool value_has_changed = false;
 
-    ImGui::Text("%s", name.data());
+    ImGui::TextUnformatted(name.data());
     ImGui::BeginGroup();
     for (size_t i = 0; i < palette.value.size(); i++)
     {
