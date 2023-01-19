@@ -14,15 +14,14 @@ auto Camera2D::transform_matrix() const -> glm::mat3
 {
     glm::mat3 res{1.};
     res = glm::rotate(res, this->rotate.as_radians());
-    res = glm::scale(res, {1 / this->zoom, 1 / this->zoom});
     res = glm::translate(res, this->translation);
+    res = glm::scale(res, {1 / this->zoom, 1 / this->zoom});
 
     return {res};
 }
 
 auto to_string(Camera2D const& cam) -> std::string
 {
-    // return fmt::format("{} (Transformation)", glm::to_string(cam.transform_matrix()));
     return fmt::format("{} Translation {} Rotation {} Zoom", Cool::stringify(cam.translation), Cool::stringify(cam.rotate), Cool::stringify(cam.zoom));
 }
 
