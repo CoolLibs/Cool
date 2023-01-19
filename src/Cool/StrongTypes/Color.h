@@ -7,6 +7,9 @@ public:
     Color() = default;
     [[nodiscard]] static auto from_srgb(glm::vec3 const& srgb) -> Color;
 
+    /// Returns a brighter version of this color.
+    [[nodiscard]] auto brighter() const -> Color;
+
 #include "Cool/ColorSpaces/generated/declare_color_getters.inl"
 
     friend auto operator==(Color const&, Color const&) -> bool = default;

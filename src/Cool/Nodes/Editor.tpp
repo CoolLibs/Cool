@@ -2,7 +2,10 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "ImNodesHelpers.h"
+#include "NodesLibrary.h"
 #include "imgui.h"
+#include "imnodes/imnodes.h"
 
 namespace Cool {
 
@@ -56,7 +59,10 @@ void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const&
 {
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
+    ImGui::SameLine();
+    ImGui::TextDisabled("(%s)", nodes_cfg.category_name(node).c_str());
     ImNodes::EndNodeTitleBar();
+
     draw_node_pins(node);
     draw_node_body(node, id, nodes_cfg);
 }
@@ -199,6 +205,11 @@ auto NodesEditor<NodesCfg>::imgui_window(
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
             {
+                auto const cat                        = library.get_category(node.category_name());
+                auto const set_scoped_title_bar_color = ScopedTitleBarColor{
+                    cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
+                };
+
                 ImNodes::BeginNode(id);
                 draw_node<NodesCfg>(node, id, nodes_cfg);
                 ImNodes::EndNode();
@@ -234,14 +245,14 @@ auto NodesEditor<NodesCfg>::
         bool                                                    menu_just_opened
     ) -> bool
 {
-    bool const should_select_first_node = _search_bar.imgui_widget();
+    bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
-    auto const* maybe_node_definition = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
-    if (!maybe_node_definition)
+    auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
+    if (!maybe_node_definition_id)
         return false;
 
-    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition));
+    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
     ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
 
     return true;
