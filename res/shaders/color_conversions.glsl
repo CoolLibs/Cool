@@ -111,143 +111,182 @@ vec3 Cool_LinearRGB_from_CIELAB(vec3 c)
 
 
 // Start of [Block3]
-struct Bounds {
-        float a;
-        float b;
-};
-  const float kappa = 903.29629629629629629630;
-  const float epsilon = 0.00885645167903563082;
+// https://github.com/williammalo/hsluv-glsl
+/*
+HSLUV-GLSL v4.2
+HSLUV is a human-friendly alternative to HSL. ( http://www.hsluv.org )
+GLSL port by William Malo ( https://github.com/williammalo )
+Put this code in your fragment shader.
+*/
 
-  const float ref_u = 0.19783000664283680764;
-  const float ref_v = 0.46831999493879100370;
-
-  const vec3 m[3] = {vec3(3.24096994190452134377, -1.53738317757009345794, -0.49861076029300328366), vec3(-0.96924363628087982613,  1.87596750150772066772,  0.04155505740717561247),  vec3(0.05563007969699360846, -0.20397695888897656435,  1.05697151424287856072)};
-
-void get_bounds(float l,  Bounds bounds[6])
-{
-    float tl = l + 16.;
-    float sub1 = (tl * tl * tl) / 1560896.;
-    float sub2 = (sub1 >  epsilon ? sub1 : (l /  kappa));
-    int t;
-
-    for(int channel = 0; channel < 3; channel++) {
-        float m1 =  m[channel].x;
-        float m2 =  m[channel].y;
-        float m3 =  m[channel].z;
-
-        for (t = 0; t < 2; t++) {
-            float top1 = (284517. * m1 - 94839. * m3) * sub2;
-            float top2 = (838422. * m3 + 769860. * m2 + 731718. * m1) * l * sub2 -  769860. * t * l;
-            float bottom = (632260. * m3 - 126452. * m2) * sub2 + 126452. * t;
-
-            bounds[channel * 2 + t].a = top1 / bottom;
-            bounds[channel * 2 + t].b = top2 / bottom;
-        }
-    }
+vec3 hsluv_intersectLineLine(vec3 line1x, vec3 line1y, vec3 line2x, vec3 line2y) {
+    return (line1y - line2y) / (line2x - line1x);
 }
 
-float ray_length_until_intersect(float theta, Bounds line)
-{
-    return line.b / (sin(theta) - line.a * cos(theta));
+vec3 hsluv_distanceFromPole(vec3 pointx,vec3 pointy) {
+    return sqrt(pointx*pointx + pointy*pointy);
 }
 
-float max_chroma_for_lh(float l, float h)
-{
-    float min_len = FLT_MAX;
-    float hrad = h * 0.01745329251994329577; /* (2 * pi / 360) */
-    Bounds bounds[6];
-    get_bounds(l, bounds);
-    for(int i = 0; i < 6; i++) {
-        float len =  ray_length_until_intersect(hrad, bounds[i]);
-
-        if(len >= 0  &&  len < min_len)
-            min_len = len;
-    }
-    return min_len;
+vec3 hsluv_lengthOfRayUntilIntersect(float theta, vec3 x, vec3 y) {
+    vec3 len = y / (sin(theta) - x * cos(theta));
+    if (len.r < 0.0) {len.r=1000.0;}
+    if (len.g < 0.0) {len.g=1000.0;}
+    if (len.b < 0.0) {len.b=1000.0;}
+    return len;
 }
 
-vec3 Cool_HSLuv_from_XYZ(vec3 c)
-{
-    c *= 100.;
-    //XYZ -> LUV
-    float var_u = (4. * c.x) / (c.x + (15. * c.y) + (3. * c.z));
-    float var_v = (9. * c.y) / (c.x + (15. * c.y) + (3. * c.z));
-    float l = (c.y <=  epsilon) ? c.y *  kappa :  116. * pow(c.y,1./3.) - 16.;
-    float u = 13. * l * (var_u -  ref_u);
-    float v = 13. * l * (var_v -  ref_v);
+float hsluv_maxSafeChromaForL(float L){
+    mat3 m2 = mat3(
+         3.2409699419045214  ,-0.96924363628087983 , 0.055630079696993609,
+        -1.5373831775700935  , 1.8759675015077207  ,-0.20397695888897657 ,
+        -0.49861076029300328 , 0.041555057407175613, 1.0569715142428786  
+    );
+    float sub0 = L + 16.0;
+    float sub1 = sub0 * sub0 * sub0 * .000000641;
+    float sub2 = sub1 > 0.0088564516790356308 ? sub1 : L / 903.2962962962963;
 
-    c.x = l;
-    if (l < 0.00000001){
-        c.y = 0.;
-        c.z = 0.;
-    }
+    vec3 top1   = (284517.0 * m2[0] - 94839.0  * m2[2]) * sub2;
+    vec3 bottom = (632260.0 * m2[2] - 126452.0 * m2[1]) * sub2;
+    vec3 top2   = (838422.0 * m2[2] + 769860.0 * m2[1] + 731718.0 * m2[0]) * L * sub2;
 
-    else {
-        c.y = u;
-        c.z = v;
-    }
+    vec3 bounds0x = top1 / bottom;
+    vec3 bounds0y = top2 / bottom;
 
-    //LUV -> lch
-    float h;
-    float c2 = sqrt(u * u + v * v);
+    vec3 bounds1x =              top1 / (bottom+126452.0);
+    vec3 bounds1y = (top2-769860.0*L) / (bottom+126452.0);
 
-    /* Grays: disambiguate hue */
-    if(c2 < 0.00000001) {
-        h = 0;
-    } else {
-        h = atan(v, u) * 57.29577951308232087680;  /* (180 / pi) */
-        if(h < 0.)
-            h += 360.0;
-    }
+    vec3 xs0 = hsluv_intersectLineLine(bounds0x, bounds0y, -1.0/bounds0x, vec3(0.0) );
+    vec3 xs1 = hsluv_intersectLineLine(bounds1x, bounds1y, -1.0/bounds1x, vec3(0.0) );
 
-    //lch -> HSLuv
-    float s;
+    vec3 lengths0 = hsluv_distanceFromPole( xs0, bounds0y + xs0 * bounds0x );
+    vec3 lengths1 = hsluv_distanceFromPole( xs1, bounds1y + xs1 * bounds1x );
 
-    /* White and black: disambiguate saturation */
-    if(l > 0.9999999 || l < 0.00000001) s = 0.;
-    else s = c2 / max_chroma_for_lh(l, h)* 100.;
-
-    /* Grays: disambiguate hue */
-    if (c2 < 0.00000001)
-        h = 0.;
-
-    return  vec3(h/360.,s/100.,l/100.);
+    return  min(lengths0.r,
+            min(lengths1.r,
+            min(lengths0.g,
+            min(lengths1.g,
+            min(lengths0.b,
+                lengths1.b)))));
 }
 
-vec3 Cool_XYZ_from_HSLuv( vec3 c)
-{
-    //HSLuv -> lch
-    float h = c.x;
-    float s = c.y;
-    float l = c.z;
-    float c2;
+float hsluv_maxChromaForLH(float L, float H) {
 
-    /* White and black: disambiguate chroma */
-    if(l > 0.99999999 || l < 0.00000001)
-        c2 = 0.;
-    else
-        c2 =  max_chroma_for_lh(l,h);
+    float hrad = radians(H);
 
-    /* Grays: disambiguate hue */
-    if (s < 0.00000001){
-        h = 0.;
+    mat3 m2 = mat3(
+         3.2409699419045214  ,-0.96924363628087983 , 0.055630079696993609,
+        -1.5373831775700935  , 1.8759675015077207  ,-0.20397695888897657 ,
+        -0.49861076029300328 , 0.041555057407175613, 1.0569715142428786  
+    );
+    float sub1 = pow(L + 16.0, 3.0) / 1560896.0;
+    float sub2 = sub1 > 0.0088564516790356308 ? sub1 : L / 903.2962962962963;
+
+    vec3 top1   = (284517.0 * m2[0] - 94839.0  * m2[2]) * sub2;
+    vec3 bottom = (632260.0 * m2[2] - 126452.0 * m2[1]) * sub2;
+    vec3 top2   = (838422.0 * m2[2] + 769860.0 * m2[1] + 731718.0 * m2[0]) * L * sub2;
+
+    vec3 bound0x = top1 / bottom;
+    vec3 bound0y = top2 / bottom;
+
+    vec3 bound1x =              top1 / (bottom+126452.0);
+    vec3 bound1y = (top2-769860.0*L) / (bottom+126452.0);
+
+    vec3 lengths0 = hsluv_lengthOfRayUntilIntersect(hrad, bound0x, bound0y );
+    vec3 lengths1 = hsluv_lengthOfRayUntilIntersect(hrad, bound1x, bound1y );
+
+    return  min(lengths0.r,
+            min(lengths1.r,
+            min(lengths0.g,
+            min(lengths1.g,
+            min(lengths0.b,
+                lengths1.b)))));
+}
+
+float hsluv_yToL(float Y){
+    return Y <= 0.0088564516790356308 ? Y * 903.2962962962963 : 116.0 * pow(Y, 1.0 / 3.0) - 16.0;
+}
+
+float hsluv_lToY(float L) {
+    return L <= 8.0 ? L / 903.2962962962963 : pow((L + 16.0) / 116.0, 3.0);
+}
+
+vec3 xyzToLuv(vec3 tuple){
+    float X = tuple.x;
+    float Y = tuple.y;
+    float Z = tuple.z;
+
+    float L = hsluv_yToL(Y);
+    
+    float div = 1./dot(tuple,vec3(1,15,3)); 
+
+    return vec3(
+        1.,
+        (52. * (X*div) - 2.57179),
+        (117.* (Y*div) - 6.08816)
+    ) * L;
+}
+
+
+vec3 luvToXyz(vec3 tuple) {
+    float L = tuple.x;
+
+    float U = tuple.y / (13.0 * L) + 0.19783000664283681;
+    float V = tuple.z / (13.0 * L) + 0.468319994938791;
+
+    float Y = hsluv_lToY(L);
+    float X = 2.25 * U * Y / V;
+    float Z = (3./V - 5.)*Y - (X/3.);
+
+    return vec3(X, Y, Z);
+}
+
+vec3 luvToLch(vec3 tuple) {
+    float L = tuple.x;
+    float U = tuple.y;
+    float V = tuple.z;
+
+    float C = length(tuple.yz);
+    float H = degrees(atan(V,U));
+    if (H < 0.0) {
+        H = 360.0 + H;
     }
+    
+    return vec3(L, C, H);
+}
 
-    //lch -> LUV
-    float hrad = h * TAU;
-    float u = cos(hrad) * c2;
-    float v = sin(hrad) * c2;
+vec3 lchToLuv(vec3 tuple) {
+    float hrad = radians(tuple.b);
+    return vec3(
+        tuple.r,
+        cos(hrad) * tuple.g,
+        sin(hrad) * tuple.g
+    );
+}
 
-    //LUV -> XYZ
-    if (l <= 0.00000001) return  vec3(0);
+vec3 hsluvToLch(vec3 tuple) {
+    tuple.g *= hsluv_maxChromaForLH(tuple.b, tuple.r) * .01;
+    return tuple.bgr;
+}
 
-    float var_u = u / (13.0 * l) +  ref_u;
-    float var_v = v / (13.0 * l) +  ref_v;
-    float y = (l <= 8.0)? l /  kappa : ((l + 16.0) / 116.0)*((l + 16.0) / 116.0)*((l + 16.0) / 116.0);
-    float x = -(9.0 * y * var_u) / ((var_u - 4.0) * var_v - var_u * var_v);
-    float z = (9.0 * y - (15.0 * var_v * y) - (var_v * x)) / (3.0 * var_v);
+vec3 lchToHsluv(vec3 tuple) {
+    tuple.g /= hsluv_maxChromaForLH(tuple.r, tuple.b) * .01;
+    return tuple.bgr;
+}
 
-    return  vec3(x,y,z) / 100.;
+vec3 lchToXyz(vec3 tuple) {
+    return luvToXyz(lchToLuv(tuple));
+}
+
+vec3 xyzToLch(vec3 tuple) {
+    return luvToLch(xyzToLuv(tuple));
+}
+
+vec3 Cool_XYZ_from_HSLuv(vec3 tuple) {
+    return lchToXyz(hsluvToLch(tuple * vec3(360., 100., 100.)));
+}
+
+vec3 Cool_HSLuv_from_XYZ(vec3 tuple) {
+    return lchToHsluv(xyzToLch(tuple)) / vec3(360., 100., 100.);
 }
 
 //SRGB
