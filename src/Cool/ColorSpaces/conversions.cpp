@@ -153,19 +153,10 @@ auto LinearRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
-/* for RGB */
-static const glm::vec3 m[3] = {
+static const glm::vec3 some_matrix[3] = {
     {3.24096994190452134377, -1.53738317757009345794, -0.49861076029300328366},
     {-0.96924363628087982613, 1.87596750150772066772, 0.04155505740717561247},
     {0.05563007969699360846, -0.20397695888897656435, 1.05697151424287856072}};
-
-/* for XYZ */
-static const glm::vec3 m_inv[3] = {
-    {0.41239079926595948129, 0.35758433938387796373, 0.18048078840183428751},
-    {0.21263900587151035754, 0.71516867876775592746, 0.07219231536073371500},
-    {0.01933081871559185069, 0.11919477979462598791, 0.95053215224966058086}};
-
 static constexpr float ref_u = 0.19783000664283680764f;
 static constexpr float ref_v = 0.46831999493879100370f;
 
@@ -187,9 +178,9 @@ static void get_bounds(float l, Bounds bounds[6])
 
     for (channel = 0; channel < 3; channel++)
     {
-        float m1 = m[channel].x;
-        float m2 = m[channel].y;
-        float m3 = m[channel].z;
+        float m1 = some_matrix[channel].x;
+        float m2 = some_matrix[channel].y;
+        float m3 = some_matrix[channel].z;
 
         for (t = 0; t < 2; t++)
         {
@@ -201,16 +192,6 @@ static void get_bounds(float l, Bounds bounds[6])
             bounds[channel * 2 + t].b = top2 / bottom;
         }
     }
-}
-
-static float intersect_line_line(Bounds const& line1, Bounds const& line2)
-{
-    return (line1.b - line2.b) / (line2.a - line1.a);
-}
-
-static float dist_from_pole_squared(float x, float y)
-{
-    return x * x + y * y;
 }
 
 static float ray_length_until_intersect(float theta, Bounds const& line)
