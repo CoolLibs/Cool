@@ -27,6 +27,12 @@ public:
     auto config() const -> auto const& { return _config; }
     auto config() -> auto& { return _config; }
     auto name() const -> auto const& { return _name; }
+    void sort()
+    {
+        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2) {
+            return d1.name() < d2.name();
+        });
+    }
 
 private:
     std::vector<NodeDefinition> _definitions{};
@@ -126,6 +132,7 @@ public:
                 continue;
 
             category.definitions().push_back(definition);
+            category.sort();
             return;
         }
 
