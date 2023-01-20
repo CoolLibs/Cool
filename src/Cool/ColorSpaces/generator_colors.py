@@ -28,6 +28,10 @@ def color_spaces():
             name_in_code="sRGB",
             user_facing_name="sRGB",
         ),
+        ColorSpace(
+            name_in_code="HSLuv",
+            user_facing_name="HSLuv",
+        ),
     ]
 
 
