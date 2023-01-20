@@ -1,6 +1,6 @@
+#include "Cool/Nodes/NodeDefinitionIdentifier.h"
 #include "NodeDefinitionIdentifier.h"
 #include "folder_watcher/src/FolderWatcher.hpp"
-
 
 namespace Cool {
 
@@ -32,13 +32,17 @@ auto NodesFolderWatcher::update(NodesLibrary<NodeDefinition>& library, Parser&& 
 
         .on_file_removed = [this, &library, &parse_definition](std::filesystem::path const& path) {
             auto identifier = NodeDefinitionIdentifier{
-                .definition_name = File::file_name_without_extension(path),
-                .category_name = File::without_file_name(std::filesystem::relative(path, _folder_watcher.get_folder_path())),
+                .definition_name = File::file_name_without_extension(path).string(),
+                .category_name = File::without_file_name(std::filesystem::relative(path, _folder_watcher.get_folder_path())).string(),
             };
             library.remove_definition(identifier); },
+
+
         .on_file_changed = [](std::filesystem::path const& path) {
             // faire fonction remove_definition
         },
+
+        
         // ToDo fix this error by calling console
         .on_invalid_folder_path = [this](std::filesystem::path const& path) { handle_error(path, "The Nodes folder path is not valid."); },
     };

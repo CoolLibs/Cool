@@ -8,8 +8,10 @@
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/Nodes/NodesFolderWatcher.h"
 #include "Cool/Nodes/NodesLibrary.h"
 #include "folder_watcher/src/FolderWatcher.hpp"
+
 
 namespace Cool {
 
