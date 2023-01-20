@@ -5,113 +5,98 @@
  * -----------------------------------------------------------------------------
  */
 
-            template<>
-            auto glsl_type<bool>() -> std::string { 
-                return "bool";
-            }
-            
+template<>
+auto glsl_type<bool>() -> std::string
+{
+    return "bool";
+}
 
+template<>
+auto glsl_type<int>() -> std::string
+{
+    return "int";
+}
 
-            template<>
-            auto glsl_type<int>() -> std::string { 
-                return "int";
-            }
-            
+template<>
+auto glsl_type<float>() -> std::string
+{
+    return "float";
+}
 
+template<>
+auto glsl_type<Cool::Point2D>() -> std::string
+{
+    return "vec2";
+}
 
-            template<>
-            auto glsl_type<float>() -> std::string { 
-                return "float";
-            }
-            
+template<>
+auto glsl_type<glm::vec2>() -> std::string
+{
+    return "vec2";
+}
 
+template<>
+auto glsl_type<glm::vec3>() -> std::string
+{
+    return "vec3";
+}
 
-            template<>
-            auto glsl_type<Cool::Point2D>() -> std::string { 
-                return "vec2";
-            }
-            
+template<>
+auto glsl_type<glm::vec4>() -> std::string
+{
+    return "vec4";
+}
 
+template<>
+auto glsl_type<Cool::Color>() -> std::string
+{
+    return "vec3";
+}
 
-            template<>
-            auto glsl_type<glm::vec2>() -> std::string { 
-                return "vec2";
-            }
-            
+template<>
+auto glsl_type<Cool::ColorAndAlpha>() -> std::string
+{
+    return "vec4";
+}
 
+template<>
+auto glsl_type<Cool::Camera>() -> std::string
+{
+    return "mat4";
+}
 
-            template<>
-            auto glsl_type<glm::vec3>() -> std::string { 
-                return "vec3";
-            }
-            
+template<>
+auto glsl_type<Cool::Camera2D>() -> std::string
+{
+    return "mat3";
+}
 
+template<>
+auto glsl_type<Cool::Angle>() -> std::string
+{
+    return "float";
+}
 
-            template<>
-            auto glsl_type<glm::vec4>() -> std::string { 
-                return "vec4";
-            }
-            
+template<>
+auto glsl_type<Cool::Direction2D>() -> std::string
+{
+    return "vec2";
+}
 
+template<>
+auto glsl_type<Cool::Hue>() -> std::string
+{
+    return "float";
+}
 
-            template<>
-            auto glsl_type<Cool::Color>() -> std::string { 
-                return "vec3";
-            }
-            
+template<>
+auto glsl_type<Cool::ColorPalette>() -> std::string
+{
+    return "NO TYPE THIS IS A FUNCTION";
+}
 
-
-            template<>
-            auto glsl_type<Cool::ColorAndAlpha>() -> std::string { 
-                return "vec4";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Camera>() -> std::string { 
-                return "mat4";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Camera2D>() -> std::string { 
-                return "mat3";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Angle>() -> std::string { 
-                return "float";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Direction2D>() -> std::string { 
-                return "vec2";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Hue>() -> std::string { 
-                return "float";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::ColorPalette>() -> std::string { 
-                return "NO TYPE THIS IS A FUNCTION";
-            }
-            
-
-
-            template<>
-            auto glsl_type<Cool::Gradient>() -> std::string { 
-                return "NO TYPE THIS IS A FUNCTION";
-            }
-            
+template<>
+auto glsl_type<Cool::Gradient>() -> std::string
+{
+    return "NO TYPE THIS IS A FUNCTION";
+}

@@ -5,39 +5,37 @@
  * -----------------------------------------------------------------------------
  */
 
-            
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<int> {
-                internal::BoundsMetadata<int> bounds{
-                        .min = 0,
-                        .max = 12,
-                        .has_min_bound = false,
-                        .has_max_bound = false,
-                        .drag_speed = 0.04f,
-                        .use_slider = false,
-                    };
+template<>
+struct VariableMetadata<int> {
+    internal::BoundsMetadata<int> bounds{
+        .min           = 0,
+        .max           = 12,
+        .has_min_bound = false,
+        .has_max_bound = false,
+        .drag_speed    = 0.04f,
+        .use_slider    = false,
+    };
 
-                friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
+    friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive& archive)
-                {
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
         archive(
-cereal::make_nvp("Bounds", bounds)
+            cereal::make_nvp("Bounds", bounds)
         );
-                }
-            };
+    }
+};
 
-            auto imgui_widget(Variable<int>&) -> bool;
-            auto imgui_widget(VariableMetadata<int>&) -> bool;
+auto imgui_widget(Variable<int>&) -> bool;
+auto imgui_widget(VariableMetadata<int>&) -> bool;
 
-            } // namespace Cool
-        
+} // namespace Cool

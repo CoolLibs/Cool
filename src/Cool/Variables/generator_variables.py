@@ -143,7 +143,7 @@ def all_variable_descriptions():
                     field_name="drag_speed",
                     pretty_name="Drag speed",
                     type="float",
-                    default_value="0.00003f",
+                    default_value="0.0001f",
                 ),
             ],
             requires_shader_code_generation=False,
