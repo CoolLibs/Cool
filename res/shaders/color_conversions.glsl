@@ -282,11 +282,11 @@ vec3 CoolHsluv__xyzToLch(vec3 tuple) {
 }
 
 vec3 Cool_XYZ_from_HSLuv(vec3 tuple) {
-    return CoolHsluv__lchToXyz(CoolHsluv__hsluvToLch(tuple * vec3(360., 100., 100.)));
+    return CoolHsluv__lchToXyz(CoolHsluv__hsluvToLch(saturate(tuple) * vec3(360., 100., 100.)));
 }
 
 vec3 Cool_HSLuv_from_XYZ(vec3 tuple) {
-    return CoolHsluv__lchToHsluv(CoolHsluv__xyzToLch(tuple)) / vec3(360., 100., 100.);
+    return CoolHsluv__lchToHsluv(CoolHsluv__xyzToLch(saturate(tuple))) / vec3(360., 100., 100.);
 }
 
 // SRGB

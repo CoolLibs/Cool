@@ -388,7 +388,7 @@ static void lch2hsluv(glm::vec3& in_out)
 
 auto XYZ_from_HSLuv(glm::vec3 const& col) -> glm::vec3
 {
-    glm::vec3 tmp = col * glm::vec3{360., 100.f, 100.f};
+    glm::vec3 tmp = saturate(col) * glm::vec3{360., 100.f, 100.f};
 
     hsluv2lch(tmp);
     lch2luv(tmp);
@@ -399,7 +399,7 @@ auto XYZ_from_HSLuv(glm::vec3 const& col) -> glm::vec3
 
 auto HSLuv_from_XYZ(glm::vec3 const& col) -> glm::vec3
 {
-    glm::vec3 tmp = col;
+    glm::vec3 tmp = saturate(col);
 
     xyz2luv(tmp);
     luv2lch(tmp);
