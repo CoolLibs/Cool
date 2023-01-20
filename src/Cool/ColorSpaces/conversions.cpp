@@ -1,8 +1,5 @@
 #include "conversions.h"
 #include <algorithm>
-#include "Cool/ColorSpaces/conversions.h"
-#include "Cool/Math/constants.h"
-#include "glm/fwd.hpp"
 
 namespace Cool {
 
