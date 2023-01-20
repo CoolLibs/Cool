@@ -17,7 +17,8 @@ template<NodeDefinition_Concept NodeDefinition>
 class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
     NodesDefinitionUpdater(NodesLibrary<NodeDefinition>& library, NodeDefinitionParser<NodeDefinition> parse_definition)
-        : _library(library), _parse_definition(parse_definition)
+        : _library{library}
+        , _parse_definition{parse_definition}
     {}
 
     void add_definition(std::filesystem::path const& path, std::filesystem::path const& root) override
@@ -36,18 +37,17 @@ public:
             return;
         }
 
-        auto const category_name   = File::without_file_name(std::filesystem::relative(path, root)).string();
+        auto const category_name   = File::without_file_name(std::filesystem::relative(path, root)).string(); // TODO(ML) Refactor into function
         auto const category_folder = File::without_file_name(path).string();
         _library.add_definition(*definition, category_name, category_folder);
     }
 
     void remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) override
     {
-        auto identifier = NodeDefinitionIdentifier{
+        _library.remove_definition({
             .definition_name = File::file_name_without_extension(path).string(),
             .category_name   = File::without_file_name(std::filesystem::relative(path, root)).string(),
-        };
-        _library.remove_definition(identifier);
+        });
     }
 
 private:

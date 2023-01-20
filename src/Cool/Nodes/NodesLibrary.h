@@ -29,9 +29,8 @@ public:
     auto name() const -> auto const& { return _name; }
     void sort()
     {
-        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2) {
-            return d1.name() < d2.name();
-        });
+        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2)
+                  { return d1.name() < d2.name(); });
     }
 
 private:
@@ -54,9 +53,8 @@ public:
 
     auto get_category(std::string const& category_name) const -> NodesCategory<NodeDefinition> const*
     {
-        auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
-            return cat.name() == category_name;
-        });
+        auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat)
+                                     { return cat.name() == category_name; });
 
         if (it != _categories.end())
             return &*it;
@@ -65,9 +63,8 @@ public:
 
     auto get_category(std::string const& category_name) -> NodesCategory<NodeDefinition>*
     {
-        auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
-            return cat.name() == category_name;
-        });
+        auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat)
+                               { return cat.name() == category_name; });
 
         if (it != _categories.end())
             return &*it;
@@ -143,27 +140,21 @@ public:
 
     void remove_definition(NodeDefinitionIdentifier const& identifier)
     {
-        auto category = get_category(identifier.category_name);
-
+        auto* category = get_category(identifier.category_name);
         if (!category)
             return;
 
         // Remove the node from the definitions
-        std::erase_if(category->definitions(), [identifier](NodeDefinition const& def) {
-            return def.name() == identifier.definition_name;
-        });
+        std::erase_if(category->definitions(), [&](NodeDefinition const& def)
+                      { return def.name() == identifier.definition_name; });
 
-        // TODO
-        /*if (category.definitions.empty())
+        // Remove the category from _categories if is now empty.
+        if (category->definitions().empty())
         {
-            // Remove the category from _categories
-            std::erase_if(_categories, [node_cat_name](NodesCategory<NodeDefinition> const& category) {
-                return category.name == node_cat_name;
-            });
-        }*/
+            std::erase_if(_categories, [&](NodesCategory<NodeDefinition> const& category)
+                          { return category.name() == identifier.category_name; });
+        }
     }
-
-    void clear() { _categories.clear(); }
 
 private:
     template<typename T>
@@ -174,9 +165,8 @@ private:
             if (category.name() != id_names.category_name)
                 continue;
 
-            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
-                return def.name() == id_names.definition_name;
-            });
+            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def)
+                                         { return def.name() == id_names.definition_name; });
 
             if (it != category.definitions().end())
                 return &*it;
