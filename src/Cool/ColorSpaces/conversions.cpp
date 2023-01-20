@@ -169,11 +169,11 @@ static const glm::vec3 m_inv[3] = {
     {0.21263900587151035754, 0.71516867876775592746, 0.07219231536073371500},
     {0.01933081871559185069, 0.11919477979462598791, 0.95053215224966058086}};
 
-static const float ref_u = 0.19783000664283680764f;
-static const float ref_v = 0.46831999493879100370f;
+static constexpr float ref_u = 0.19783000664283680764f;
+static constexpr float ref_v = 0.46831999493879100370f;
 
-static const float kappa   = 903.29629629629629629630f;
-static const float epsilon = 0.00885645167903563082f;
+static constexpr float kappa   = 903.29629629629629629630f;
+static constexpr float epsilon = 0.00885645167903563082f;
 
 struct Bounds {
     float a;
@@ -219,28 +219,6 @@ static float dist_from_pole_squared(float x, float y)
 static float ray_length_until_intersect(float theta, Bounds const& line)
 {
     return line.b / (sin(theta) - line.a * cos(theta));
-}
-
-static float max_safe_chroma_for_l(float l)
-{
-    float  min_len_squared = FLT_MAX;
-    Bounds bounds[6];
-
-    get_bounds(l, bounds);
-    for (int i = 0; i < 6; i++)
-    {
-        float m1 = bounds[i].a;
-        float b1 = bounds[i].b;
-        /* x where line intersects with perpendicular running though (0, 0) */
-        Bounds line2    = {-1.f / m1, 0.f};
-        float  x        = intersect_line_line(bounds[i], line2);
-        float  distance = dist_from_pole_squared(x, b1 + x * m1);
-
-        if (distance < min_len_squared)
-            min_len_squared = distance;
-    }
-
-    return std::sqrt(min_len_squared);
 }
 
 static float max_chroma_for_lh(float l, float h)

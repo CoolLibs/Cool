@@ -119,15 +119,15 @@ GLSL port by William Malo ( https://github.com/williammalo )
 Put this code in your fragment shader.
 */
 
-vec3 hsluv_intersectLineLine(vec3 line1x, vec3 line1y, vec3 line2x, vec3 line2y) {
+vec3 CoolHsluv__intersectLineLine(vec3 line1x, vec3 line1y, vec3 line2x, vec3 line2y) {
     return (line1y - line2y) / (line2x - line1x);
 }
 
-vec3 hsluv_distanceFromPole(vec3 pointx,vec3 pointy) {
+vec3 CoolHsluv__distanceFromPole(vec3 pointx,vec3 pointy) {
     return sqrt(pointx*pointx + pointy*pointy);
 }
 
-vec3 hsluv_lengthOfRayUntilIntersect(float theta, vec3 x, vec3 y) {
+vec3 CoolHsluv__lengthOfRayUntilIntersect(float theta, vec3 x, vec3 y) {
     vec3 len = y / (sin(theta) - x * cos(theta));
     if (len.r < 0.0) {len.r=1000.0;}
     if (len.g < 0.0) {len.g=1000.0;}
@@ -135,7 +135,7 @@ vec3 hsluv_lengthOfRayUntilIntersect(float theta, vec3 x, vec3 y) {
     return len;
 }
 
-float hsluv_maxSafeChromaForL(float L){
+float CoolHsluv__maxSafeChromaForL(float L){
     mat3 m2 = mat3(
          3.2409699419045214  ,-0.96924363628087983 , 0.055630079696993609,
         -1.5373831775700935  , 1.8759675015077207  ,-0.20397695888897657 ,
@@ -155,11 +155,11 @@ float hsluv_maxSafeChromaForL(float L){
     vec3 bounds1x =              top1 / (bottom+126452.0);
     vec3 bounds1y = (top2-769860.0*L) / (bottom+126452.0);
 
-    vec3 xs0 = hsluv_intersectLineLine(bounds0x, bounds0y, -1.0/bounds0x, vec3(0.0) );
-    vec3 xs1 = hsluv_intersectLineLine(bounds1x, bounds1y, -1.0/bounds1x, vec3(0.0) );
+    vec3 xs0 = CoolHsluv__intersectLineLine(bounds0x, bounds0y, -1.0/bounds0x, vec3(0.0) );
+    vec3 xs1 = CoolHsluv__intersectLineLine(bounds1x, bounds1y, -1.0/bounds1x, vec3(0.0) );
 
-    vec3 lengths0 = hsluv_distanceFromPole( xs0, bounds0y + xs0 * bounds0x );
-    vec3 lengths1 = hsluv_distanceFromPole( xs1, bounds1y + xs1 * bounds1x );
+    vec3 lengths0 = CoolHsluv__distanceFromPole( xs0, bounds0y + xs0 * bounds0x );
+    vec3 lengths1 = CoolHsluv__distanceFromPole( xs1, bounds1y + xs1 * bounds1x );
 
     return  min(lengths0.r,
             min(lengths1.r,
@@ -169,7 +169,7 @@ float hsluv_maxSafeChromaForL(float L){
                 lengths1.b)))));
 }
 
-float hsluv_maxChromaForLH(float L, float H) {
+float CoolHsluv__maxChromaForLH(float L, float H) {
 
     float hrad = radians(H);
 
@@ -191,8 +191,8 @@ float hsluv_maxChromaForLH(float L, float H) {
     vec3 bound1x =              top1 / (bottom+126452.0);
     vec3 bound1y = (top2-769860.0*L) / (bottom+126452.0);
 
-    vec3 lengths0 = hsluv_lengthOfRayUntilIntersect(hrad, bound0x, bound0y );
-    vec3 lengths1 = hsluv_lengthOfRayUntilIntersect(hrad, bound1x, bound1y );
+    vec3 lengths0 = CoolHsluv__lengthOfRayUntilIntersect(hrad, bound0x, bound0y );
+    vec3 lengths1 = CoolHsluv__lengthOfRayUntilIntersect(hrad, bound1x, bound1y );
 
     return  min(lengths0.r,
             min(lengths1.r,
@@ -202,20 +202,20 @@ float hsluv_maxChromaForLH(float L, float H) {
                 lengths1.b)))));
 }
 
-float hsluv_yToL(float Y){
+float CoolHsluv__yToL(float Y){
     return Y <= 0.0088564516790356308 ? Y * 903.2962962962963 : 116.0 * pow(Y, 1.0 / 3.0) - 16.0;
 }
 
-float hsluv_lToY(float L) {
+float CoolHsluv__lToY(float L) {
     return L <= 8.0 ? L / 903.2962962962963 : pow((L + 16.0) / 116.0, 3.0);
 }
 
-vec3 xyzToLuv(vec3 tuple){
+vec3 CoolHsluv__xyzToLuv(vec3 tuple){
     float X = tuple.x;
     float Y = tuple.y;
     float Z = tuple.z;
 
-    float L = hsluv_yToL(Y);
+    float L = CoolHsluv__yToL(Y);
     
     float div = 1./dot(tuple,vec3(1,15,3)); 
 
@@ -227,20 +227,20 @@ vec3 xyzToLuv(vec3 tuple){
 }
 
 
-vec3 luvToXyz(vec3 tuple) {
+vec3 CoolHsluv__luvToXyz(vec3 tuple) {
     float L = tuple.x;
 
     float U = tuple.y / (13.0 * L) + 0.19783000664283681;
     float V = tuple.z / (13.0 * L) + 0.468319994938791;
 
-    float Y = hsluv_lToY(L);
+    float Y = CoolHsluv__lToY(L);
     float X = 2.25 * U * Y / V;
     float Z = (3./V - 5.)*Y - (X/3.);
 
     return vec3(X, Y, Z);
 }
 
-vec3 luvToLch(vec3 tuple) {
+vec3 CoolHsluv__luvToLch(vec3 tuple) {
     float L = tuple.x;
     float U = tuple.y;
     float V = tuple.z;
@@ -254,7 +254,7 @@ vec3 luvToLch(vec3 tuple) {
     return vec3(L, C, H);
 }
 
-vec3 lchToLuv(vec3 tuple) {
+vec3 CoolHsluv__lchToLuv(vec3 tuple) {
     float hrad = radians(tuple.b);
     return vec3(
         tuple.r,
@@ -263,33 +263,33 @@ vec3 lchToLuv(vec3 tuple) {
     );
 }
 
-vec3 hsluvToLch(vec3 tuple) {
-    tuple.g *= hsluv_maxChromaForLH(tuple.b, tuple.r) * .01;
+vec3 CoolHsluv__hsluvToLch(vec3 tuple) {
+    tuple.g *= CoolHsluv__maxChromaForLH(tuple.b, tuple.r) * .01;
     return tuple.bgr;
 }
 
-vec3 lchToHsluv(vec3 tuple) {
-    tuple.g /= hsluv_maxChromaForLH(tuple.r, tuple.b) * .01;
+vec3 CoolHsluv__lchToHsluv(vec3 tuple) {
+    tuple.g /= CoolHsluv__maxChromaForLH(tuple.r, tuple.b) * .01;
     return tuple.bgr;
 }
 
-vec3 lchToXyz(vec3 tuple) {
-    return luvToXyz(lchToLuv(tuple));
+vec3 CoolHsluv__lchToXyz(vec3 tuple) {
+    return CoolHsluv__luvToXyz(CoolHsluv__lchToLuv(tuple));
 }
 
-vec3 xyzToLch(vec3 tuple) {
-    return luvToLch(xyzToLuv(tuple));
+vec3 CoolHsluv__xyzToLch(vec3 tuple) {
+    return CoolHsluv__luvToLch(CoolHsluv__xyzToLuv(tuple));
 }
 
 vec3 Cool_XYZ_from_HSLuv(vec3 tuple) {
-    return lchToXyz(hsluvToLch(tuple * vec3(360., 100., 100.)));
+    return CoolHsluv__lchToXyz(CoolHsluv__hsluvToLch(tuple * vec3(360., 100., 100.)));
 }
 
 vec3 Cool_HSLuv_from_XYZ(vec3 tuple) {
-    return lchToHsluv(xyzToLch(tuple)) / vec3(360., 100., 100.);
+    return CoolHsluv__lchToHsluv(CoolHsluv__xyzToLch(tuple)) / vec3(360., 100., 100.);
 }
 
-//SRGB
+// SRGB
 vec3 Cool_HSLuv_from_sRGB( vec3 c)
 {
     return Cool_HSLuv_from_XYZ(Cool_XYZ_from_sRGB(c));
@@ -299,7 +299,7 @@ vec3 Cool_sRGB_from_HSLuv( vec3 c){
     return Cool_sRGB_from_XYZ(Cool_XYZ_from_HSLuv(c));
 }
 
-//LinearRGB
+// LinearRGB
 vec3 Cool_HSLuv_from_LinearRGB( vec3 c){
     return Cool_HSLuv_from_XYZ(Cool_XYZ_from_LinearRGB(c));
 }
@@ -308,7 +308,7 @@ vec3 Cool_LinearRGB_from_HSLuv( vec3 c){
     return Cool_LinearRGB_from_XYZ(Cool_XYZ_from_HSLuv(c));
 }
 
-//CIELAB
+// CIELAB
 vec3 Cool_HSLuv_from_CIELAB( vec3 c){
     return Cool_HSLuv_from_XYZ(Cool_XYZ_from_CIELAB(c));
 }
