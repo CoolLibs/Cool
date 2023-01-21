@@ -76,3 +76,6 @@
 [submodule "lib/imnodes"]
 	path = lib/imnodes
 	url = https://github.com/CoolLibs/imnodes
+[submodule "lib/folder_watcher"]
+	path = lib/folder_watcher
+	url = https://github.com/CoolLibs/folder_watcher.git
