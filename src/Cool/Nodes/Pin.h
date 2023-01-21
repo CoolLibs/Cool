@@ -17,6 +17,8 @@ public:
     auto name() const -> std::string const& { return _name; }
     auto id() const -> PinId const& { return _id; }
 
+    void set_id(PinId const& id) { _id = id; }
+
     virtual void show() const = 0;
 
 protected:

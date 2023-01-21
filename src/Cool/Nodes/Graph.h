@@ -5,7 +5,6 @@
 #include "LinkId.h"
 #include "NodeId.h"
 #include "Node_Concept.h"
-#include "NodesCfg_Concept.h"
 
 namespace Cool {
 
