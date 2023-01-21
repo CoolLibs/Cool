@@ -3,8 +3,9 @@
 #include "Cool/File/File.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Nodes/NodeDefinitionIdentifier.h"
-#include "Cool/Nodes/NodeDefinition_Concept.h"
+#include "Cool/Nodes/NodesCfg_Concept.h"
 #include "Cool/Nodes/NodesLibrary.h"
+#include "Graph.h"
 #include "INodesDefinitionUpdater.h"
 #include "folder_watcher/folder_watcher.hpp"
 
@@ -13,11 +14,18 @@ namespace Cool {
 template<NodeDefinition_Concept NodeDefinition>
 using NodeDefinitionParser = std::function<tl::expected<NodeDefinition, std::string>(std::filesystem::path const&, std::string const&)>;
 
-template<NodeDefinition_Concept NodeDefinition>
+template<NodesCfg_Concept NodesConfig>
 class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
-    NodesDefinitionUpdater(NodesLibrary<NodeDefinition>& library, NodeDefinitionParser<NodeDefinition> parse_definition)
-        : _library{library}
+    NodesDefinitionUpdater(
+        NodesConfig const&                                          config,
+        Graph<typename NodesConfig::NodeT>&                         graph,
+        NodesLibrary<typename NodesConfig::NodeDefinitionT>&        library,
+        NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> parse_definition
+    )
+        : _config{config}
+        , _graph{graph}
+        , _library{library}
         , _parse_definition{parse_definition}
     {}
 
@@ -37,9 +45,22 @@ public:
             return;
         }
 
-        auto const category_name   = File::without_file_name(std::filesystem::relative(path, root)).string(); // TODO(ML) Refactor into function
+        auto category_name = File::without_file_name(std::filesystem::relative(path, root)).string(); //
+        if (category_name.empty())                                                                    // TODO(ML) Refactor into function
+            category_name = "Unnamed Category";                                                       //
+
         auto const category_folder = File::without_file_name(path).string();
         _library.add_definition(*definition, category_name, category_folder);
+
+        {
+            // Update all nodes that use that definition
+            auto lock = std::unique_lock{_graph.nodes().mutex()};
+            for (auto& [_, node] : _graph.nodes())
+            {
+                if (node.category_name() == category_name && node.definition_name() == definition->name())
+                    _config.update_node_with_new_definition(node, *definition);
+            }
+        }
     }
 
     void remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) override
@@ -64,8 +85,10 @@ private:
     }
 
 private:
-    NodesLibrary<NodeDefinition>&                    _library;
-    NodeDefinitionParser<NodeDefinition>             _parse_definition;
-    std::map<std::filesystem::path, Cool::MessageId> _errors{};
+    NodesConfig const&                                          _config;
+    Graph<typename NodesConfig::NodeT>&                         _graph;
+    NodesLibrary<typename NodesConfig::NodeDefinitionT>&        _library;
+    NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> _parse_definition;
+    std::map<std::filesystem::path, Cool::MessageId>            _errors{};
 };
 }; // namespace Cool

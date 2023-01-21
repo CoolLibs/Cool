@@ -119,9 +119,6 @@ public:
 
     void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder)
     {
-        if (category_name.empty())
-            category_name = "Unnamed Category";
-
         // Add definition to the corresponding category if it exists
         for (auto& category : _categories)
         {
