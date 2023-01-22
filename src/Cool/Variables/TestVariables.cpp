@@ -1,11 +1,12 @@
-#include "Cool/Camera/Camera.h"
-#include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "Cool/StrongTypes/Point2D.h"
+#include "Cool/StrongTypes/TextureWrapper.h"
 #if DEBUG
 
 #include <Cool/Variables/Variables.h>
 #include <imgui/imgui.h>
 #include <vector>
+#include "Cool/Camera/Camera.h"
+#include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/StrongTypes/Point2D.h"
 #include "TestVariables.h"
 
 
@@ -76,6 +77,10 @@ void test_variables()
     {
         static Cool::Variable<Cool::Camera2D> camera{"Camera 2D", {}};
         Cool::imgui(camera);
+    }
+    {
+        static Cool::Variable<Cool::TextureWrapper> tex{"Texture", {}};
+        Cool::imgui(tex);
     }
 }
 

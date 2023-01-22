@@ -152,6 +152,23 @@ void Shader::set_uniform(std::string_view uniform_name, Camera2D const& cam) con
     set_uniform(uniform_name, cam.transform_matrix());
 }
 
+static auto max_number_of_texture_slots() -> GLint
+{
+    GLint res{};
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
+    return res;
+}
+void Shader::set_uniform(std::string_view uniform_name, TextureWrapper const& tex) const
+{
+    static GLint       current_slot = 0;
+    static GLint const max_slots    = max_number_of_texture_slots();
+
+    tex.texture().attachToSlot(current_slot);
+    set_uniform(uniform_name, current_slot);
+
+    current_slot = (current_slot + 1) % max_slots;
+}
+
 } // namespace Cool::OpenGL
 
 #endif

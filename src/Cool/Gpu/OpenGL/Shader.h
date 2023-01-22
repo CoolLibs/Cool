@@ -10,6 +10,7 @@
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
+#include <Cool/StrongTypes/TextureWrapper.h>
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
@@ -44,6 +45,7 @@ public:
     void set_uniform(std::string_view uniform_name, const Gradient&) const;
     void set_uniform(std::string_view uniform_name, Point2D) const;
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
+    void set_uniform(std::string_view uniform_name, TextureWrapper const&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;
