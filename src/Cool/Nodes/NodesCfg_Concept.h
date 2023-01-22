@@ -17,7 +17,8 @@ concept NodesCfg_Concept =
             { cfg.name(node) } -> std::convertible_to<std::string>;
             { cfg.category_name(node) } -> std::convertible_to<std::string>;
             cfg.imgui_node_body(node, id);
-           // clang-format on
+            cfg.widget_to_rename_node(node);
+            // clang-format on
        };
 
 } // namespace Cool

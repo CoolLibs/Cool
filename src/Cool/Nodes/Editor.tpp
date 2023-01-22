@@ -98,9 +98,13 @@ auto draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const&
 {
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
-    ImGui::SameLine();
-    ImGui::TextDisabled("(%s)", nodes_cfg.category_name(node).c_str());
     ImNodes::EndNodeTitleBar();
+
+    if (ImGui::BeginPopupContextItem())
+    {
+        nodes_cfg.widget_to_rename_node(node);
+        ImGui::EndPopup();
+    }
 
     bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
 
