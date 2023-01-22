@@ -18,6 +18,7 @@ public:
     auto add_link(Link) -> LinkId;
     void remove_link(LinkId const&);
     void remove_link_going_into(PinId const&);
+    void remove_link_coming_from(PinId const&);
 
     /**
      * @brief Assumes that pin is an input pin and returns the node that is connected to it (or nullptr if there is none)
