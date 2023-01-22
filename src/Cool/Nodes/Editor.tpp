@@ -2,6 +2,7 @@
 #include <Cool/Log/ToUser.h>
 // #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
+#include "Cool/Nodes/NodeDefinition_Concept.h"
 #include "ImNodesHelpers.h"
 #include "NodesLibrary.h"
 #include "imgui.h"
@@ -54,8 +55,46 @@ void draw_node_body(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg c
     ImGui::EndGroup();
 }
 
+template<NodeDefinition_Concept NodeDefinition>
+static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> float
+{
+    float max = 0.f;
+    for (auto const& def : defs)
+        max = std::max(max, ImGui::CalcTextSize(def.name().c_str()).x);
+    return max + 20.f;
+}
+
 template<NodesCfg_Concept NodesCfg>
-void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
+static auto dropdown_to_switch_between_nodes_of_the_same_category(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
+{
+    auto const* category = library.get_category(node.category_name());
+    if (!category)
+        return false;
+
+    bool graph_has_changed = false;
+
+    ImGui::SetNextItemWidth(calc_max_text_width(category->definitions()));
+    if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
+    {
+        for (auto const& def : category->definitions())
+        {
+            ImGui::PushID(&def);
+            bool const is_selected = def.name() == node.definition_name();
+            if (ImGui::Selectable(def.name().c_str(), is_selected))
+            {
+                nodes_cfg.update_node_with_new_definition(node, def, graph);
+                graph_has_changed = true;
+            }
+            ImGui::PopID();
+        }
+        ImGui::EndCombo();
+    }
+
+    return graph_has_changed;
+}
+
+template<NodesCfg_Concept NodesCfg>
+auto draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
 {
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
@@ -63,8 +102,12 @@ void draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const&
     ImGui::TextDisabled("(%s)", nodes_cfg.category_name(node).c_str());
     ImNodes::EndNodeTitleBar();
 
+    bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
+
     draw_node_pins(node);
     draw_node_body(node, id, nodes_cfg);
+
+    return graph_has_changed;
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -211,7 +254,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
                 };
 
                 ImNodes::BeginNode(id);
-                draw_node<NodesCfg>(node, id, nodes_cfg);
+                graph_has_changed |= draw_node<NodesCfg>(node, id, nodes_cfg, library, _graph);
                 ImNodes::EndNode();
             }
         }
