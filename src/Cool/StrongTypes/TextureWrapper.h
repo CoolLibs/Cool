@@ -8,7 +8,7 @@ class TextureWrapper {
 public:
     auto imgui_widget() -> bool;
 
-    [[nodiscard]] auto texture() const -> Texture const& { return *_texture; }
+    [[nodiscard]] auto texture() const -> Texture const&;
 
     friend auto operator==(TextureWrapper const& a, TextureWrapper const& b) -> bool { return a._absolute_path == b._absolute_path; }
 
