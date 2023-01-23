@@ -39,7 +39,6 @@ float length_squared(vec4 p)
 float hash_0_to_1_3D_to_1D(vec3 p)
 {
     return fract(sin(dot(p, vec3(12.9898, 78.233, 74.7) * 2.0)) * 43758.5453);
-
 }
 
 vec3 hash_0_to_1_3D_to_3D(vec3 p)
@@ -75,7 +74,6 @@ float hash_0_to_1_2D_to_1D(vec2 p)
     return fract(sin(dot(p, vec2(12.9898, 78.233) * 2.0)) * 43758.5453);
 }
 
-
 mat2 rotation_2D(float angle)
 {
     float c = cos(angle);
@@ -95,6 +93,12 @@ vec3 rotation_around_axis(vec3 p, vec3 ax, float ro)
 vec2 vec2_from_polar(float radius, float angle)
 {
     return radius * vec2(cos(angle), sin(angle));
+}
+
+vec2 polar_from_vec2(vec2 pos)
+{
+    float r = length(pos);
+    return vec2(r, pos.y > 0 ? acos(dot(pos, vec2(1, 0)) / r) : 2 * PI - acos(dot(pos, vec2(1, 0)) / r));
 }
 
 vec2 complex_product(vec2 a, vec2 b)
