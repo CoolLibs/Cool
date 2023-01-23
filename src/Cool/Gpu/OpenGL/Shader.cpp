@@ -1,5 +1,6 @@
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/StrongTypes/MathExpression.h"
 #include "imgui.h"
 #if defined(COOL_OPENGL)
 

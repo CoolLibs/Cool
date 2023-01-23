@@ -100,3 +100,9 @@ auto glsl_type<Cool::Gradient>() -> std::string
 {
     return "NO TYPE THIS IS A FUNCTION";
 }
+
+template<>
+auto glsl_type<Cool::MathExpression>() -> std::string
+{
+    return "NO TYPE THIS IS A FUNCTION";
+}

@@ -21,4 +21,5 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::Direction2D>,
     InputDefinition<Cool::Hue>,
     InputDefinition<Cool::ColorPalette>,
-    InputDefinition<Cool::Gradient> >;
+    InputDefinition<Cool::Gradient>,
+    InputDefinition<Cool::MathExpression> >;

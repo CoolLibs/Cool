@@ -139,3 +139,8 @@ template<>
 struct from_impl<"Gradient"> {
     using type = Cool::Gradient;
 };
+
+template<>
+struct from_impl<"MathExpression"> {
+    using type = Cool::MathExpression;
+};
