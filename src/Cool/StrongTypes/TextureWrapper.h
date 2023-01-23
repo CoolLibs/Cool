@@ -27,6 +27,7 @@ public:
     auto imgui_widget() -> bool;
 
     [[nodiscard]] auto texture() const -> Texture const&;
+    [[nodiscard]] auto aspect_ratio() const -> float { return texture().aspect_ratio(); }
 
     friend auto operator==(TextureWrapper const& a, TextureWrapper const& b) -> bool { return a._absolute_path == b._absolute_path; }
 

@@ -165,7 +165,7 @@ void Shader::set_uniform(std::string_view uniform_name, TextureWrapper const& te
 
     tex.texture().attachToSlot(current_slot);
     set_uniform(fmt::format("{}.tex", uniform_name), current_slot);
-    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), 16.f / 9.f);
+    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
 
     current_slot = (current_slot + 1) % max_slots;
 }
