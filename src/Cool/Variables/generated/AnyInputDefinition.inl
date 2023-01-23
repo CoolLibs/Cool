@@ -6,20 +6,19 @@
  */
 
 using AnyInputDefinition = std::variant<
-InputDefinition<bool>,
-InputDefinition<int>,
-InputDefinition<float>,
-InputDefinition<Cool::Point2D>,
-InputDefinition<glm::vec2>,
-InputDefinition<glm::vec3>,
-InputDefinition<glm::vec4>,
-InputDefinition<Cool::Color>,
-InputDefinition<Cool::ColorAndAlpha>,
-InputDefinition<Cool::Camera>,
-InputDefinition<Cool::Camera2D>,
-InputDefinition<Cool::Angle>,
-InputDefinition<Cool::Direction2D>,
-InputDefinition<Cool::Hue>,
-InputDefinition<Cool::ColorPalette>,
-InputDefinition<Cool::Gradient>
->;
+    InputDefinition<bool>,
+    InputDefinition<int>,
+    InputDefinition<float>,
+    InputDefinition<Cool::Point2D>,
+    InputDefinition<glm::vec2>,
+    InputDefinition<glm::vec3>,
+    InputDefinition<glm::vec4>,
+    InputDefinition<Cool::Color>,
+    InputDefinition<Cool::ColorAndAlpha>,
+    InputDefinition<Cool::Camera>,
+    InputDefinition<Cool::Camera2D>,
+    InputDefinition<Cool::Angle>,
+    InputDefinition<Cool::Direction2D>,
+    InputDefinition<Cool::Hue>,
+    InputDefinition<Cool::ColorPalette>,
+    InputDefinition<Cool::Gradient> >;

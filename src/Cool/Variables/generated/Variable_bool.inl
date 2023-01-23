@@ -5,29 +5,25 @@
  * -----------------------------------------------------------------------------
  */
 
-            
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<bool> {
-                
+template<>
+struct VariableMetadata<bool> {
+    friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
 
-                friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive&)
+    {
+    }
+};
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive&)
-                {
-                }
-            };
+auto imgui_widget(Variable<bool>&) -> bool;
+auto imgui_widget(VariableMetadata<bool>&) -> bool;
 
-            auto imgui_widget(Variable<bool>&) -> bool;
-            auto imgui_widget(VariableMetadata<bool>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool

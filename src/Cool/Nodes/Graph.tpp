@@ -60,6 +60,15 @@ void Graph<Node>::remove_link_going_into(PinId const& pin_id)
 }
 
 template<Node_Concept Node>
+void Graph<Node>::remove_link_coming_from(PinId const& pin_id)
+{
+    std::unique_lock lock{_links.mutex()};
+    std::erase_if(_links.underlying_container(), [&](auto const& pair) {
+        return pair.second.from_pin_id == pin_id;
+    });
+}
+
+template<Node_Concept Node>
 auto Graph<Node>::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};

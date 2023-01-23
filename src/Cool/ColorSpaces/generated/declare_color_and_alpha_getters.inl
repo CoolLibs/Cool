@@ -10,3 +10,5 @@
 [[nodiscard]] auto as_LinearRGB_StraightA() const -> glm::vec4;
 [[nodiscard]] auto as_sRGB_PremultipliedA() const -> glm::vec4;
 [[nodiscard]] auto as_sRGB_StraightA() const -> glm::vec4;
+[[nodiscard]] auto as_HSLuv_PremultipliedA() const -> glm::vec4;
+[[nodiscard]] auto as_HSLuv_StraightA() const -> glm::vec4;

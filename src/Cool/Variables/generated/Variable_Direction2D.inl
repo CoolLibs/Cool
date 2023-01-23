@@ -5,36 +5,35 @@
  * -----------------------------------------------------------------------------
  */
 
-            #include <Cool/StrongTypes/Direction2D.h>
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/StrongTypes/Direction2D.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<Cool::Direction2D> {
-                int number_of_snaps{24};
-float snaps_offset{0.f};
-bool always_snap{false};
+template<>
+struct VariableMetadata<Cool::Direction2D> {
+    int   number_of_snaps{24};
+    float snaps_offset{0.f};
+    bool  always_snap{false};
 
-                friend auto operator<=>(const VariableMetadata<Cool::Direction2D>&, const VariableMetadata<Cool::Direction2D>&) = default;
+    friend auto operator<=>(const VariableMetadata<Cool::Direction2D>&, const VariableMetadata<Cool::Direction2D>&) = default;
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive& archive)
-                {
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
         archive(
-cereal::make_nvp("Number of snaps", number_of_snaps),
-cereal::make_nvp("Snaps offset (in radians)", snaps_offset),
-cereal::make_nvp("Always snap", always_snap)
+            cereal::make_nvp("Number of snaps", number_of_snaps),
+            cereal::make_nvp("Snaps offset (in radians)", snaps_offset),
+            cereal::make_nvp("Always snap", always_snap)
         );
-                }
-            };
+    }
+};
 
-            auto imgui_widget(Variable<Cool::Direction2D>&) -> bool;
-            auto imgui_widget(VariableMetadata<Cool::Direction2D>&) -> bool;
+auto imgui_widget(Variable<Cool::Direction2D>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::Direction2D>&) -> bool;
 
-            } // namespace Cool
-        
+} // namespace Cool

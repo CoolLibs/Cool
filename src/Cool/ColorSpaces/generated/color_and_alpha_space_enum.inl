@@ -9,4 +9,6 @@ CIELAB_PremultipliedA,
     LinearRGB_PremultipliedA,
     LinearRGB_StraightA,
     sRGB_PremultipliedA,
-    sRGB_StraightA
+    sRGB_StraightA,
+    HSLuv_PremultipliedA,
+    HSLuv_StraightA

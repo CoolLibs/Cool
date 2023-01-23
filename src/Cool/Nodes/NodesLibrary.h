@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
@@ -26,6 +27,11 @@ public:
     auto config() const -> auto const& { return _config; }
     auto config() -> auto& { return _config; }
     auto name() const -> auto const& { return _name; }
+    void sort()
+    {
+        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2)
+                  { return d1.name() < d2.name(); });
+    }
 
 private:
     std::vector<NodeDefinition> _definitions{};
@@ -47,9 +53,18 @@ public:
 
     auto get_category(std::string const& category_name) const -> NodesCategory<NodeDefinition> const*
     {
-        auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat) {
-            return cat.name() == category_name;
-        });
+        auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat)
+                                     { return cat.name() == category_name; });
+
+        if (it != _categories.end())
+            return &*it;
+        return nullptr;
+    }
+
+    auto get_category(std::string const& category_name) -> NodesCategory<NodeDefinition>*
+    {
+        auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory<NodeDefinition> const& cat)
+                               { return cat.name() == category_name; });
 
         if (it != _categories.end())
             return &*it;
@@ -104,9 +119,6 @@ public:
 
     void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder)
     {
-        if (category_name.empty())
-            category_name = "Unnamed Category";
-
         // Add definition to the corresponding category if it exists
         for (auto& category : _categories)
         {
@@ -114,6 +126,7 @@ public:
                 continue;
 
             category.definitions().push_back(definition);
+            category.sort();
             return;
         }
 
@@ -121,7 +134,24 @@ public:
         _categories.push_back(NodesCategory<NodeDefinition>{category_name, category_folder});
         _categories.back().definitions().push_back(definition);
     }
-    void clear() { _categories.clear(); }
+
+    void remove_definition(NodeDefinitionIdentifier const& identifier)
+    {
+        auto* category = get_category(identifier.category_name);
+        if (!category)
+            return;
+
+        // Remove the node from the definitions
+        std::erase_if(category->definitions(), [&](NodeDefinition const& def)
+                      { return def.name() == identifier.definition_name; });
+
+        // Remove the category from _categories if is now empty.
+        if (category->definitions().empty())
+        {
+            std::erase_if(_categories, [&](NodesCategory<NodeDefinition> const& category)
+                          { return category.name() == identifier.category_name; });
+        }
+    }
 
 private:
     template<typename T>
@@ -132,9 +162,8 @@ private:
             if (category.name() != id_names.category_name)
                 continue;
 
-            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
-                return def.name() == id_names.definition_name;
-            });
+            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def)
+                                         { return def.name() == id_names.definition_name; });
 
             if (it != category.definitions().end())
                 return &*it;
