@@ -21,4 +21,5 @@ using AnyVariable = std::variant<
     Variable<Cool::Direction2D>,
     Variable<Cool::Hue>,
     Variable<Cool::ColorPalette>,
-    Variable<Cool::Gradient> >;
+    Variable<Cool::Gradient>,
+    Variable<Cool::TextureWrapper> >;

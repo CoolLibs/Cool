@@ -18,6 +18,8 @@ public:
     Texture(const Texture&)            = delete; // Non-copyable
     Texture& operator=(const Texture&) = delete; // Non-copyable
 
+    [[nodiscard]] auto aspect_ratio() const -> float { return _aspect_ratio; }
+
     ImTextureID imgui_texture_id() const { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(m_textureID)); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 
     /// <summary>
@@ -47,7 +49,7 @@ public:
     /// Can be either GL_CLAMP_TO_EDGE, GL_REPEAT, GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE (one repetition and then we clamp) or GL_CLAMP_TO_BORDER (like clamp, but uses a fixed color instead of the color at the edge of the texture)
     /// </param>
     /// <returns></returns>
-    static GLuint LoadTexture(std::filesystem::path filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE);
+    static GLuint LoadTexture(std::filesystem::path filepath, GLint interpolationMode = GL_LINEAR, GLint wrapMode = GL_CLAMP_TO_EDGE, float* out_aspect_ratio = nullptr);
 
     /// <summary>
     /// Creates an OpenGL texture. You are then responsible for destroying it with Texture::DestroyTexture()
@@ -114,6 +116,7 @@ public:
 
 private:
     GLuint m_textureID = static_cast<GLuint>(-1);
+    float  _aspect_ratio{};
 #if DEBUG
     bool m_bDataUploaded = false;
 #endif

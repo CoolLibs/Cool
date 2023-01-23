@@ -139,3 +139,8 @@ template<>
 struct from_impl<"Gradient"> {
     using type = Cool::Gradient;
 };
+
+template<>
+struct from_impl<"Texture"> {
+    using type = Cool::TextureWrapper;
+};

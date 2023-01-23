@@ -245,7 +245,7 @@ vec4 {}(float x)
                )
                : fmt::format(
                    FMT_COMPILE(R"STR( 
-// #include "_COOL_RES_/shaders/GradientMark.glsl"
+#include "_COOL_RES_/shaders/GradientMark.glsl"
 const int {number_of_marks} = {gradient_size};
 uniform GradientMark {gradient_marks}[{number_of_marks}];
 
