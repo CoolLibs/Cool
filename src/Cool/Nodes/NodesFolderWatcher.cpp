@@ -11,38 +11,45 @@ NodesFolderWatcher::NodesFolderWatcher(std::filesystem::path folder_path, std::s
 
 auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
 {
-    bool has_changed = false;
+    bool has_changed     = false;
+    auto const clear_errors_and_check_extension = [&](std::filesystem::path const& path)
+    {
+        Cool::Log::ToUser::console().remove(_error_message_id);
+
+        if (path.extension() != _extension)
+            return false;
+
+        has_changed = true;
+        return true;
+    };
 
     _folder_watcher.update({
-        .on_file_added =
-            [&](std::filesystem::path const& path)
+        .on_file_added = [&](std::filesystem::path const& path)
         {
-            // TODO(ML) refcator into function
-            Cool::Log::ToUser::console().remove(_error_message_id);
-            if (path.extension() != _extension)
+            if (!clear_errors_and_check_extension(path))
                 return;
-            has_changed = true;
 
             updater.add_definition(path, _folder_watcher.get_folder_path());
         },
 
-        .on_file_removed =
-            [&](std::filesystem::path const& path)
+        .on_file_removed = [&](std::filesystem::path const& path)
         {
-            has_changed = true;
+            if (!clear_errors_and_check_extension(path))
+                return;
+            
             updater.remove_definition(path, _folder_watcher.get_folder_path());
         },
 
-        .on_file_changed =
-            [&](std::filesystem::path const& path)
+        .on_file_changed = [&](std::filesystem::path const& path)
         {
-            has_changed = true;
+            if (!clear_errors_and_check_extension(path))
+                return;
+            
             updater.remove_definition(path, _folder_watcher.get_folder_path());
             updater.add_definition(path, _folder_watcher.get_folder_path());
         },
 
-        .on_invalid_folder_path =
-            [&](std::filesystem::path const& path)
+        .on_invalid_folder_path = [&](std::filesystem::path const& path)
         {
             has_changed = true;
             Cool::Log::ToUser::console().send(
