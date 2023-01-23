@@ -44,6 +44,7 @@ void TextureWrapper::try_load_texture_from_path()
     }
     catch (std::exception const& e)
     {
+        _texture.reset();
         Cool::Log::ToUser::console().send(
             _error_id,
             Message{
