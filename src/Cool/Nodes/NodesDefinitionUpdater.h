@@ -11,6 +11,8 @@
 
 namespace Cool {
 
+auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string;
+
 template<NodeDefinition_Concept NodeDefinition>
 using NodeDefinitionParser = std::function<tl::expected<NodeDefinition, std::string>(std::filesystem::path const&, std::string const&)>;
 
@@ -45,7 +47,7 @@ public:
             return;
         }
 
-        auto category_name = get_category_name(path, root);
+        const auto category_name = get_category_name(path, root);
 
         auto const category_folder = File::without_file_name(path).string();
         _library.add_definition(*definition, category_name, category_folder);
@@ -70,12 +72,6 @@ public:
     }
 
 private:
-    auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string
-    {
-        std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
-        return category_name.empty() ? "Unnamed Category" : category_name;
-    }
-
     void handle_error(std::filesystem::path const& definition_path, std::string const& message)
     {
         Cool::Log::ToUser::console().send(
