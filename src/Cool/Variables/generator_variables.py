@@ -264,7 +264,7 @@ def all_variable_descriptions():
         VariableDescription(
             input_type=["Texture"],
             cpp_type="Cool::TextureWrapper",
-            glsl_type="sampler2D",
+            glsl_type="TextureWrapper",
             include="<Cool/StrongTypes/TextureWrapper.h>",
             metadatas=[],
             requires_shader_code_generation=False,
