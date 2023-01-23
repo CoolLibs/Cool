@@ -39,7 +39,9 @@ void TextureWrapper::try_load_texture_from_path()
 {
     try
     {
-        _texture = std::make_shared<Texture>(_absolute_path);
+        _texture         = std::make_shared<Texture>(_absolute_path, GL_LINEAR, GL_CLAMP_TO_BORDER);
+        GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
         Cool::Log::ToUser::console().remove(_error_id);
     }
     catch (std::exception const& e)
