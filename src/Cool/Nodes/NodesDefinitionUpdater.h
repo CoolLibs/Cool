@@ -45,9 +45,7 @@ public:
             return;
         }
 
-        auto category_name = File::without_file_name(std::filesystem::relative(path, root)).string(); //
-        if (category_name.empty())                                                                    // TODO(ML) Refactor into function
-            category_name = "Unnamed Category";                                                       //
+        auto category_name = get_category_name(path, root);
 
         auto const category_folder = File::without_file_name(path).string();
         _library.add_definition(*definition, category_name, category_folder);
@@ -67,11 +65,17 @@ public:
     {
         _library.remove_definition({
             .definition_name = File::file_name_without_extension(path).string(),
-            .category_name   = File::without_file_name(std::filesystem::relative(path, root)).string(),
+            .category_name   = get_category_name(path, root),
         });
     }
 
 private:
+    auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string
+    {
+        std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+        return category_name.empty() ? "Unnamed Category" : category_name;
+    }
+
     void handle_error(std::filesystem::path const& definition_path, std::string const& message)
     {
         Cool::Log::ToUser::console().send(

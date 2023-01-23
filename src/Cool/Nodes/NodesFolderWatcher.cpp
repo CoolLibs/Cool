@@ -17,11 +17,8 @@ auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
         .on_file_added =
             [&](std::filesystem::path const& path)
         {
-            // TODO(ML) refcator into function
-            Cool::Log::ToUser::console().remove(_error_message_id);
-            if (path.extension() != _extension)
+            if (!has_initialized(path, has_changed))
                 return;
-            has_changed = true;
 
             updater.add_definition(path, _folder_watcher.get_folder_path());
         },
@@ -29,14 +26,18 @@ auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
         .on_file_removed =
             [&](std::filesystem::path const& path)
         {
-            has_changed = true;
+            if (!has_initialized(path, has_changed))
+                return;
+            
             updater.remove_definition(path, _folder_watcher.get_folder_path());
         },
 
         .on_file_changed =
             [&](std::filesystem::path const& path)
         {
-            has_changed = true;
+            if (!has_initialized(path, has_changed))
+                return;
+            
             updater.remove_definition(path, _folder_watcher.get_folder_path());
             updater.add_definition(path, _folder_watcher.get_folder_path());
         },
@@ -57,6 +58,17 @@ auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
     });
 
     return has_changed;
+}
+
+auto NodesFolderWatcher::has_initialized(std::filesystem::path const& path, bool& has_changed) -> bool
+{
+    Cool::Log::ToUser::console().remove(_error_message_id);
+
+    if (path.extension() != _extension)
+        return false;
+    
+    has_changed = true;
+    return true;
 }
 
 }; // namespace Cool
