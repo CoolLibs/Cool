@@ -47,7 +47,7 @@ public:
             return;
         }
 
-        const auto category_name = get_category_name(path, root);
+        auto const category_name = get_category_name(path, root);
 
         auto const category_folder = File::without_file_name(path).string();
         _library.add_definition(*definition, category_name, category_folder);

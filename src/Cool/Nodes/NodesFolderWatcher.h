@@ -12,6 +12,7 @@ public:
 
     /// Returns true iff a node definition has been added, removed or updated in the library.
     auto update(INodesDefinitionUpdater&) -> bool;
+    
 private:
     folder_watcher::FolderWatcher _folder_watcher{};
     std::string                   _extension;

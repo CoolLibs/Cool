@@ -12,7 +12,7 @@ NodesFolderWatcher::NodesFolderWatcher(std::filesystem::path folder_path, std::s
 auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
 {
     bool has_changed     = false;
-    auto clear_errors_and_check_extension = [&](std::filesystem::path const& path)
+    auto const clear_errors_and_check_extension = [&](std::filesystem::path const& path)
     {
         Cool::Log::ToUser::console().remove(_error_message_id);
 
