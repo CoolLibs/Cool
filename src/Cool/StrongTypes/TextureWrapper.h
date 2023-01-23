@@ -42,9 +42,14 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    void save(Archive& archive) const
     {
         archive(cereal::make_nvp("Path", _absolute_path));
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        archive(_absolute_path);
         try_load_texture_from_path();
     }
 };
