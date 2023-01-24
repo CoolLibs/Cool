@@ -262,6 +262,14 @@ def all_variable_descriptions():
             requires_shader_code_generation=True,
         ),
         VariableDescription(
+            input_type=["Texture"],
+            cpp_type="Cool::TextureWrapper",
+            glsl_type="TextureWrapper",
+            include="<Cool/StrongTypes/TextureWrapper.h>",
+            metadatas=[],
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
             input_type=["MathExpression"],
             cpp_type="Cool::MathExpression",
             glsl_type="NO TYPE THIS IS A FUNCTION",

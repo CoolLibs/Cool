@@ -22,4 +22,5 @@ using AnyInputRefToConst = std::variant<
     std::reference_wrapper<const Input<Cool::Hue>>,
     std::reference_wrapper<const Input<Cool::ColorPalette>>,
     std::reference_wrapper<const Input<Cool::Gradient>>,
+    std::reference_wrapper<const Input<Cool::TextureWrapper>>,
     std::reference_wrapper<const Input<Cool::MathExpression>>>;

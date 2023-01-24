@@ -102,6 +102,12 @@ auto glsl_type<Cool::Gradient>() -> std::string
 }
 
 template<>
+auto glsl_type<Cool::TextureWrapper>() -> std::string
+{
+    return "TextureWrapper";
+}
+
+template<>
 auto glsl_type<Cool::MathExpression>() -> std::string
 {
     return "NO TYPE THIS IS A FUNCTION";

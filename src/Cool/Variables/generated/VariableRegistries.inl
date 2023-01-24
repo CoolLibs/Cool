@@ -22,4 +22,5 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<Cool::Hue>>,
     reg::Registry<Cool::Variable<Cool::ColorPalette>>,
     reg::Registry<Cool::Variable<Cool::Gradient>>,
+    reg::Registry<Cool::Variable<Cool::TextureWrapper>>,
     reg::Registry<Cool::Variable<Cool::MathExpression>>>;

@@ -53,5 +53,8 @@ if constexpr (std::is_same_v<T, Cool::ColorPalette>)
 if constexpr (std::is_same_v<T, Cool::Gradient>)
     return true;
 
+if constexpr (std::is_same_v<T, Cool::TextureWrapper>)
+    return false;
+
 if constexpr (std::is_same_v<T, Cool::MathExpression>)
     return true;

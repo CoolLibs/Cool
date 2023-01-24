@@ -1,3 +1,4 @@
+#include "img/src/SizeU.h"
 #if defined(COOL_OPENGL)
 
 #include "../Texture.h"
@@ -12,6 +13,10 @@ Texture::~Texture()
 
 Texture::Texture(Texture&& rhs) noexcept
     : m_textureID{rhs.m_textureID}
+    , _aspect_ratio{rhs._aspect_ratio}
+#if DEBUG
+    , m_bDataUploaded{rhs.m_bDataUploaded}
+#endif
 {
     rhs.m_textureID = static_cast<GLuint>(-1);
 }
@@ -21,7 +26,11 @@ Texture& Texture::operator=(Texture&& rhs) noexcept
     if (this != &rhs)
     {
         m_textureID     = rhs.m_textureID;
+        _aspect_ratio   = rhs._aspect_ratio;
         rhs.m_textureID = static_cast<GLuint>(-1);
+#if DEBUG
+        m_bDataUploaded = rhs.m_bDataUploaded;
+#endif
     }
     return *this;
 }
@@ -45,14 +54,14 @@ void Texture::DestroyTexture(GLuint texID)
 }
 
 Texture::Texture(std::filesystem::path filepath, GLint interpolationMode, GLint wrapMode)
-    : m_textureID(LoadTexture(filepath, interpolationMode, wrapMode))
 {
+    m_textureID = LoadTexture(filepath, interpolationMode, wrapMode, &_aspect_ratio);
 #if DEBUG
     m_bDataUploaded = true;
 #endif
 }
 
-GLuint Texture::LoadTexture(std::filesystem::path filepath, GLint interpolationMode, GLint wrapMode)
+GLuint Texture::LoadTexture(std::filesystem::path filepath, GLint interpolationMode, GLint wrapMode, float* out_aspect_ratio)
 {
     // Load image
     const auto image = img::load(filepath, 4);
@@ -62,6 +71,11 @@ GLuint Texture::LoadTexture(std::filesystem::path filepath, GLint interpolationM
     GLDebug(glBindTexture(GL_TEXTURE_2D, texID));
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(image.size().width()), static_cast<GLsizei>(image.size().height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data()));
     //
+    if (out_aspect_ratio)
+    {
+        *out_aspect_ratio = img::SizeU::aspect_ratio(image.size());
+    }
+
     return texID;
 }
 

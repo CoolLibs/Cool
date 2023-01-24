@@ -16,6 +16,7 @@
 #include <Cool/Variables/Variable_Hue.h>
 #include <Cool/Variables/Variable_MathExpression.h>
 #include <Cool/Variables/Variable_Point2D.h>
+#include <Cool/Variables/Variable_TextureWrapper.h>
 #include <Cool/Variables/Variable_bool.h>
 #include <Cool/Variables/Variable_float.h>
 #include <Cool/Variables/Variable_int.h>
