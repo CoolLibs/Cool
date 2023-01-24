@@ -5,6 +5,13 @@
 
 namespace Cool {
 
+enum class TextureRepeatMode {
+    None,
+    Mirror,
+    Mosaic,
+    Clamp
+};
+
 class TextureWrapper {
 public:
     TextureWrapper()                                             = default;
@@ -13,6 +20,7 @@ public:
     TextureWrapper(TextureWrapper const& o)
         : _absolute_path{o._absolute_path}
         , _texture{o._texture}
+        , _repeat_mode{o._repeat_mode}
     {}
     auto operator=(TextureWrapper const& o) -> TextureWrapper&
     {
@@ -20,6 +28,7 @@ public:
         {
             _absolute_path = o._absolute_path;
             _texture       = o._texture;
+            _repeat_mode   = o._repeat_mode;
         }
         return *this;
     }
@@ -33,10 +42,12 @@ public:
 
 private:
     void try_load_texture_from_path();
+    void apply_repeat_mode();
 
 private:
     std::filesystem::path    _absolute_path{};
     std::shared_ptr<Texture> _texture{}; // We need a shared_ptr to make the class copyable
+    TextureRepeatMode        _repeat_mode{TextureRepeatMode::None};
     MessageId                _error_id{};
 
 private:
@@ -45,7 +56,10 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-        archive(cereal::make_nvp("Path", _absolute_path));
+        archive(
+            cereal::make_nvp("Path", _absolute_path),
+            cereal::make_nvp("Repeat Mode", _repeat_mode)
+        );
     }
     template<class Archive>
     void load(Archive& archive)
