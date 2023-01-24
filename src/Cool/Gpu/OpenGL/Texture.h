@@ -14,8 +14,9 @@ public:
     struct Config {
         glpp::Interpolation interpolation_mode{glpp::Interpolation::Linear};
         glpp::Wrap          wrap_mode{glpp::Wrap::ClampToEdge};
-    };
 
+        Config(){}; // NOLINT(*-use-equals-default) Need to declare a non-defaulted default constructor to work around a bug in Clang
+    };
     /// Creates an empty texture.
     explicit Texture(Config = {});
     /// Create a texture with the given size and no pixel data.
@@ -46,7 +47,7 @@ public:
 
 private:
     glpp::Texture2D _tex{};
-    float  _aspect_ratio{};
+    float           _aspect_ratio{};
 #if DEBUG
     bool _data_has_been_uploaded{false};
 #endif
