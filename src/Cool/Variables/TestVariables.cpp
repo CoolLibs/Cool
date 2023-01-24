@@ -1,5 +1,6 @@
 #include "Cool/Camera/Camera.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/StrongTypes/MathExpression.h"
 #include "Cool/StrongTypes/Point2D.h"
 #if DEBUG
 
@@ -76,6 +77,10 @@ void test_variables()
     {
         static Cool::Variable<Cool::Camera2D> camera{"Camera 2D", {}};
         Cool::imgui(camera);
+    }
+    {
+        static Cool::Variable<Cool::MathExpression> math_expression{"Math Expression", {}};
+        Cool::imgui(math_expression);
     }
 }
 

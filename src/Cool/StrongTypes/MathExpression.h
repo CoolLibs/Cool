@@ -1,9 +1,11 @@
 #pragma once
 
+#include "cereal/types/string.hpp"
+
 namespace Cool {
 
 struct MathExpression {
-    std::string expression{};
+    std::string expression{"x"};
 
     friend auto operator==(const MathExpression&, const MathExpression&) -> bool = default;
 

@@ -10,6 +10,7 @@
 #include "Cool/ColorSpaces/ColorAndAlphaSpace.h"
 #include "Cool/ColorSpaces/ColorSpace.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/StrongTypes/MathExpression.h"
 #include "fmt/format.h"
 
 namespace Cool {
@@ -286,7 +287,7 @@ static auto gen_code__number_of_colors_variable_name(std::string_view name)
 template<>
 auto gen_input_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
 {
-    // NB: we create a fnuction rather than an array to hold our calette. That is because glsl doesn't allow arrays of size 0.
+    // NB: we create a function rather than an array to hold our palette. That is because glsl doesn't allow arrays of size 0.
     using namespace fmt::literals;
     return value.value.empty()
                ? fmt::format(
@@ -319,6 +320,23 @@ vec3 {color_palette_function}(int index)
                    "color_palette_function"_a = name,
                    "color_palette_name"_a     = internal::color_palette_array_name(name)
                );
+}
+
+template<>
+auto gen_input_shader_code__impl(const Cool::MathExpression& expression, std::string_view name) -> std::string
+{
+    using namespace fmt::literals;
+    return fmt::format(
+        FMT_COMPILE(
+            R"STR(
+float math_expression_result(float x)
+{{
+    return {expression};
+}};
+            )STR"
+        ),
+        "expression"_a = expression.expression
+    );
 }
 
 template<typename T>
