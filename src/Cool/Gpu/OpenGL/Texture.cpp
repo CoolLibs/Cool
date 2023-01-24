@@ -26,9 +26,9 @@ Texture::Texture(img::Image const& image, Config config)
     set_image(image);
 }
 
-void Texture::set_size(img::Size const&)
+void Texture::set_size(img::Size const& size)
 {
-    glpp::
+    _tex.resize({static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())});
 }
 
 void Texture::set_image(img::Image const&)
@@ -45,7 +45,7 @@ void Texture::set_wrap_mode(glpp::Wrap wrap_mode)
 
 void Texture::bind()
 {
-    glpp::bind_texture(_id);
+    _tex.bind();
 }
 
 void Texture::unbind()
@@ -53,20 +53,13 @@ void Texture::unbind()
     glpp::bind_texture<glpp::TextureKind::Tex2D>(0);
 }
 
-void Texture::attachToSlot(int slot) const
+void Texture::attach_to_slot(int slot) const
 {
 #if DEBUG
-    if (m_textureID == static_cast<GLuint>(-1))
-    {
-        Log::Debug::error("Texture::attachToSlot", "You haven't generated that texture yet!");
-    }
-    if (!m_bDataUploaded)
-    {
-        Log::Debug::error("Texture::attachToSlot", "You must upload some data (at least a width and height) before using the texture.");
-    }
+    if (!_data_has_been_uploaded)
+        Log::Debug::error("Texture::attach_to_slot", "You must upload some data (at least a width and height) before using the texture.");
 #endif
-    GLDebug(glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(slot)));
-    GLDebug(glBindTexture(GL_TEXTURE_2D, m_textureID));
+    _tex.bind_to_texture_unit(slot);
 }
 
 } // namespace Cool::OpenGL

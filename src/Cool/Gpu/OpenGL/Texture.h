@@ -1,4 +1,5 @@
 #pragma once
+#include "glpp-extended/src/Texture2D.h"
 #if defined(COOL_OPENGL)
 
 #include <glpp/glpp.hpp>
@@ -31,7 +32,7 @@ public:
     static void unbind();
 
     /// The native OpenGL ID of the texture.
-    [[nodiscard]] auto id() const -> GLuint { return *_id; }
+    [[nodiscard]] auto id() const -> GLuint { return *_tex; }
     /// The ID that ImGui expects
     [[nodiscard]] auto imgui_texture_id() const -> ImTextureID { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(id())); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 
@@ -41,13 +42,13 @@ public:
     /// Attaches your texture to a slot, so that it is ready to be read by a shader.
     /// </summary>
     /// <param name="slot">The slot. This should match the "uniform sampler2D u_TextureSlot" in your shader that is set through set_uniform(slot)</param>
-    void attachToSlot(int slot) const;
+    void attach_to_slot(int slot) const;
 
 private:
-    glpp::UniqueTexture2D _id{};
+    glpp::Texture2D _tex{};
     float  _aspect_ratio{};
 #if DEBUG
-    bool m_bDataUploaded{false};
+    bool _data_has_been_uploaded{false};
 #endif
 };
 

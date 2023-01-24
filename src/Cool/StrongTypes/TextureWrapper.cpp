@@ -7,16 +7,14 @@
 #include "Cool/Log/ToUser.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/StrongTypes/TextureWrapper.h"
+#include "img/src/Image.h"
+#include "img/src/Size.h"
 
 namespace Cool {
 
 static auto gen_dummy_texture() -> Texture
 {
-    Texture tex{};
-    tex.genTexture();
-    std::array<unsigned char, 3> data = {255, 0, 255};
-    tex.uploadRGB(1, 1, data.data());
-    return tex;
+    return Texture{img::Image(img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data())};
 }
 
 [[nodiscard]] auto TextureWrapper::texture() const -> Texture const&
@@ -49,7 +47,7 @@ void TextureWrapper::try_load_texture_from_path()
 {
     try
     {
-        _texture = std::make_shared<Texture>(_absolute_path, GL_LINEAR);
+        _texture = std::make_shared<Texture>(img::load(_absolute_path));
         apply_repeat_mode();
         Cool::Log::ToUser::console().remove(_error_id);
     }
@@ -69,39 +67,31 @@ void TextureWrapper::try_load_texture_from_path()
 
 void TextureWrapper::apply_repeat_mode()
 {
-    GLDebug(glBindTexture(GL_TEXTURE_2D, _texture->ID()));
-
     switch (_repeat_mode)
     {
     case TextureRepeatMode::None:
     {
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+        _texture->set_wrap_mode(glpp::Wrap::ClampToBorder);
         GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};
         GLDebug(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color));
         break;
     }
     case TextureRepeatMode::Mirror:
     {
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT));
+        _texture->set_wrap_mode(glpp::Wrap::MirroredRepeat);
         break;
     }
     case TextureRepeatMode::Mosaic:
     {
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+        _texture->set_wrap_mode(glpp::Wrap::Repeat);
         break;
     }
     case TextureRepeatMode::Clamp:
     {
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+        _texture->set_wrap_mode(glpp::Wrap::ClampToEdge);
         break;
     }
     }
-
-    GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 } // namespace Cool
