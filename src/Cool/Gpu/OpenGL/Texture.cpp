@@ -14,6 +14,9 @@ Texture::~Texture()
 Texture::Texture(Texture&& rhs) noexcept
     : m_textureID{rhs.m_textureID}
     , _aspect_ratio{rhs._aspect_ratio}
+#if DEBUG
+    , m_bDataUploaded{rhs.m_bDataUploaded}
+#endif
 {
     rhs.m_textureID = static_cast<GLuint>(-1);
 }
@@ -25,6 +28,9 @@ Texture& Texture::operator=(Texture&& rhs) noexcept
         m_textureID     = rhs.m_textureID;
         _aspect_ratio   = rhs._aspect_ratio;
         rhs.m_textureID = static_cast<GLuint>(-1);
+#if DEBUG
+        m_bDataUploaded = rhs.m_bDataUploaded;
+#endif
     }
     return *this;
 }
