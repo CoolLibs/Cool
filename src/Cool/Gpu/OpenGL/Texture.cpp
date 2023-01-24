@@ -1,5 +1,11 @@
 #include "glpp/Functions/Texture.h"
+#include <stdint.h>
+#include "glpp-extended/src/ImageSize.h"
+#include "glpp/Enums/Channels.h"
+#include "glpp/Enums/InternalFormat.h"
+#include "glpp/Enums/TexelDataType.h"
 #include "glpp/Enums/TextureKind.h"
+#include "img/src/Size.h"
 #if defined(COOL_OPENGL)
 
 #include <img/img.hpp>
@@ -26,21 +32,58 @@ Texture::Texture(img::Image const& image, Config config)
     set_image(image);
 }
 
-void Texture::set_size(img::Size const& size)
+Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, Config config)
+    : Texture{config}
 {
-    _tex.resize({static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())});
+    set_image(size, channels_count, data);
 }
 
-void Texture::set_image(img::Image const&)
+static auto img_to_glpp_size(img::Size const& size) -> glpp::ImageSize
 {
+    return {static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())};
+}
+
+void Texture::set_size(img::Size const& size)
+{
+    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _tex.resize(img_to_glpp_size(size));
+}
+
+void Texture::set_image(img::Image const& img)
+{
+    set_image(img.size(), img.channels_count(), img.data());
+}
+
+void Texture::set_image(img::Size const& size, int channels_count, uint8_t const* data)
+{
+    assert(channels_count == 3 || channels_count == 4);
+
+    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _tex.upload_data(
+        img_to_glpp_size(size),
+        data,
+        {
+            .internal_format = channels_count == 3 ? glpp::InternalFormat::RGB : glpp::InternalFormat::RGBA,
+            .channels        = channels_count == 3 ? glpp::Channels::RGB : glpp::Channels::RGBA,
+            .texel_data_type = glpp::TexelDataType::UnsignedByte,
+        }
+    );
+#if DEBUG
+    _data_has_been_uploaded = true;
+#endif
 }
 
 void Texture::set_interpolation_mode(glpp::Interpolation interpolation_mode)
 {
+    bind();
+    glpp::set_minification_filter<glpp::TextureKind::Tex2D>(*_tex, interpolation_mode);
+    glpp::set_magnification_filter<glpp::TextureKind::Tex2D>(*_tex, interpolation_mode);
 }
 
 void Texture::set_wrap_mode(glpp::Wrap wrap_mode)
 {
+    bind();
+    glpp::set_wrap<glpp::TextureKind::Tex2D>(*_tex, wrap_mode);
 }
 
 void Texture::bind()

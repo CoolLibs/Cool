@@ -14,7 +14,7 @@ namespace Cool {
 
 static auto gen_dummy_texture() -> Texture
 {
-    return Texture{img::Image(img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data())};
+    return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
 }
 
 [[nodiscard]] auto TextureWrapper::texture() const -> Texture const&
@@ -73,7 +73,7 @@ void TextureWrapper::apply_repeat_mode()
     {
         _texture->set_wrap_mode(glpp::Wrap::ClampToBorder);
         GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};
-        GLDebug(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color));
+        GLDebug(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
         break;
     }
     case TextureRepeatMode::Mirror:
