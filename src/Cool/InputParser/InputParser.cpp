@@ -329,13 +329,14 @@ auto gen_input_shader_code__impl(const Cool::MathExpression& expression, std::st
     return fmt::format(
         FMT_COMPILE(
             R"STR(
-float math_expression_result(float x)
+float {name}(float x)
 {{
     return {expression};
 }};
             )STR"
         ),
-        "expression"_a = expression.expression
+        "expression"_a = expression.expression,
+        "name"_a = name
     );
 }
 

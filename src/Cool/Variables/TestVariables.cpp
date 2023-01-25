@@ -8,6 +8,7 @@
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "Cool/StrongTypes/Point2D.h"
 #include "Cool/StrongTypes/TextureWrapper.h"
+#include "Cool/StrongTypes/MathExpression.h"
 
 namespace Cool {
 
