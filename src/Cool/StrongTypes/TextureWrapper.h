@@ -64,7 +64,7 @@ private:
     template<class Archive>
     void load(Archive& archive)
     {
-        archive(_absolute_path);
+        archive(_absolute_path, _repeat_mode);
         try_load_texture_from_path();
     }
 };

@@ -67,6 +67,9 @@ void TextureWrapper::try_load_texture_from_path()
 
 void TextureWrapper::apply_repeat_mode()
 {
+    if (!_texture)
+        return;
+
     switch (_repeat_mode)
     {
     case TextureRepeatMode::None:
