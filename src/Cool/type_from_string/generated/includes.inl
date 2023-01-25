@@ -13,6 +13,7 @@
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
+#include <Cool/StrongTypes/MathExpression.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/StrongTypes/TextureWrapper.h>
 #include <glm/glm.hpp>

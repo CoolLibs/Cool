@@ -22,4 +22,5 @@ using AnyInputRef = std::variant<
     std::reference_wrapper<Input<Cool::Hue>>,
     std::reference_wrapper<Input<Cool::ColorPalette>>,
     std::reference_wrapper<Input<Cool::Gradient>>,
-    std::reference_wrapper<Input<Cool::TextureWrapper>>>;
+    std::reference_wrapper<Input<Cool::TextureWrapper>>,
+    std::reference_wrapper<Input<Cool::MathExpression>>>;

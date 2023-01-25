@@ -55,3 +55,6 @@ if constexpr (std::is_same_v<T, Cool::Gradient>)
 
 if constexpr (std::is_same_v<T, Cool::TextureWrapper>)
     return false;
+
+if constexpr (std::is_same_v<T, Cool::MathExpression>)
+    return true;

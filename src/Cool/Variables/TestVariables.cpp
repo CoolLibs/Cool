@@ -1,14 +1,14 @@
-#include "Cool/StrongTypes/TextureWrapper.h"
 #if DEBUG
 
+#include "TestVariables.h"
 #include <Cool/Variables/Variables.h>
 #include <imgui/imgui.h>
 #include <vector>
 #include "Cool/Camera/Camera.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "Cool/StrongTypes/Point2D.h"
-#include "TestVariables.h"
-
+#include "Cool/StrongTypes/TextureWrapper.h"
+#include "Cool/StrongTypes/MathExpression.h"
 
 namespace Cool {
 
@@ -77,6 +77,10 @@ void test_variables()
     {
         static Cool::Variable<Cool::Camera2D> camera{"Camera 2D", {}};
         Cool::imgui(camera);
+    }
+    {
+        static Cool::Variable<Cool::MathExpression> math_expression{"Math Expression", {}};
+        Cool::imgui(math_expression);
     }
     {
         static Cool::Variable<Cool::TextureWrapper> tex{"Texture", {}};
