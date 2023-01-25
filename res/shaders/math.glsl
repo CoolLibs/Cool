@@ -95,10 +95,18 @@ vec2 vec2_from_polar(float radius, float angle)
     return radius * vec2(cos(angle), sin(angle));
 }
 
-vec2 polar_from_vec2(vec2 pos)
+float Cool_angle(vec2 v)
 {
-    float r = length(pos);
-    return vec2(r, pos.y > 0 ? acos(dot(pos, vec2(1, 0)) / r) : 2 * PI - acos(dot(pos, vec2(1, 0)) / r));
+    return v.x != 0.
+               ? atan(v.y, v.x)
+           : v.y > 0.
+               ? PI / 2.
+               : -PI / 2.;
+}
+
+vec2 Cool_polar_coordinates(vec2 v)
+{
+    return vec2(length(v), Cool_angle(v));
 }
 
 vec2 complex_product(vec2 a, vec2 b)
