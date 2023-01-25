@@ -11,17 +11,21 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    auto save_minimal(Archive const&) const -> std::string
     {
-        // Minimal split serialization
-        // https://uscilab.github.io/cereal/serialization_functions.html
-        archive(expression);
+        return expression;
+    }
+
+    template<class Archive>
+    void load_minimal(Archive const&, std::string const& value)
+    {
+        expression = value;
     }
 };
 
 inline auto to_string(const MathExpression& math_expression) -> std::string
 {
-    return "\"" + math_expression.expression  + "\"";
+    return fmt::format("\"{}.\"", math_expression.expression);
 }
 
 auto imgui_widget(std::string_view name, MathExpression& expression) -> bool;
