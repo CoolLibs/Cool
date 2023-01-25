@@ -323,7 +323,7 @@ vec3 {color_palette_function}(int index)
 }
 
 template<>
-auto gen_input_shader_code__impl(const Cool::MathExpression& expression, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(Cool::MathExpression const& expression, std::string_view name) -> std::string
 {
     using namespace fmt::literals;
     return fmt::format(

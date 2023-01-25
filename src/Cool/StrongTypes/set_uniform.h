@@ -12,10 +12,9 @@ static void set_uniform(Cool::OpenGL::Shader const& shader, std::string_view nam
     shader.set_uniform(name, value);
 }
 
-static void set_uniform(Cool::OpenGL::Shader const& shader, std::string_view name, Cool::MathExpression const&)
+static void set_uniform(Cool::OpenGL::Shader const&, std::string_view, Cool::MathExpression const&)
 {
     // We don't want any set_uniform() for MathExpression since we want to generate the shader code.
-    return;
 }
 
 template<>

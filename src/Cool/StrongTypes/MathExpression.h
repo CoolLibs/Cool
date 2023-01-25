@@ -5,7 +5,7 @@ namespace Cool {
 struct MathExpression {
     std::string expression{"x"};
 
-    friend auto operator==(const MathExpression&, const MathExpression&) -> bool = default;
+    friend auto operator==(MathExpression const&, MathExpression const&) -> bool = default;
 
 private:
     // Serialization
@@ -23,9 +23,9 @@ private:
     }
 };
 
-inline auto to_string(const MathExpression& math_expression) -> std::string
+inline auto to_string(MathExpression const& math_expression) -> std::string
 {
-    return fmt::format("\"{}.\"", math_expression.expression);
+    return fmt::format("\"{}\"", math_expression.expression);
 }
 
 auto imgui_widget(std::string_view name, MathExpression& expression) -> bool;
