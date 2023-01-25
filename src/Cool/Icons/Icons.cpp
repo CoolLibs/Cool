@@ -1,5 +1,6 @@
 #include "Icons.h"
 #include <Cool/File/File.h>
+#include "img/src/Load.h"
 #if DEBUG
 #include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Log/ToUser.h>
@@ -21,7 +22,7 @@ const Texture& Icons::get(std::filesystem::path image_path)
             Log::Debug::info("Icons", fmt::format("Generating texture for \"{}\"", path));
         }
 #endif
-        _map[path] = Texture{path};
+        _map[path] = Texture{img::load(path)};
         return _map[path];
     }
     else

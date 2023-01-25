@@ -46,10 +46,11 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
 )
 
 set(HACK_RESET_IMGUI_CTX_EVERY_FRAME OFF CACHE BOOL "A hack to workaround a bug in ImNodes on some GPUs")
+
 if(HACK_RESET_IMGUI_CTX_EVERY_FRAME)
-target_compile_definitions(Cool-PublicProperties INTERFACE
-    "HACK_RESET_IMGUI_CTX_EVERY_FRAME"
-)
+    target_compile_definitions(Cool-PublicProperties INTERFACE
+        "HACK_RESET_IMGUI_CTX_EVERY_FRAME"
+    )
 endif()
 
 # ----------------------
@@ -131,9 +132,9 @@ elseif(COOL_USE_OPENGL)
     target_compile_definitions(Cool-PublicProperties INTERFACE
         COOL_OPENGL
         COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
-    add_subdirectory(lib/glpp)
-    target_compile_definitions(glpp PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
-    target_link_libraries(Cool-PublicProperties INTERFACE glpp::glpp)
+    add_subdirectory(lib/glpp-extended)
+    target_compile_definitions(glpp-extended PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
+    target_link_libraries(Cool-PublicProperties INTERFACE glpp::extended)
 endif()
 
 # -------------------
@@ -156,10 +157,6 @@ target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 # GLFW
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
-
-# glm
-add_subdirectory(lib/glm)
-target_link_libraries(Cool-PublicProperties INTERFACE glm::glm)
 
 # cereal
 target_include_directories(Cool-PublicProperties INTERFACE lib/cereal/include)
