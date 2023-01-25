@@ -1,38 +1,37 @@
+#if defined(COOL_OPENGL)
+
 #include "glpp/Functions/Texture.h"
-#include <stdint.h>
+#include <img/img.hpp>
+#include "../Texture.h"
 #include "glpp-extended/src/ImageSize.h"
 #include "glpp/Enums/Channels.h"
 #include "glpp/Enums/InternalFormat.h"
 #include "glpp/Enums/TexelDataType.h"
 #include "glpp/Enums/TextureKind.h"
 #include "img/src/Size.h"
-#if defined(COOL_OPENGL)
-
-#include <img/img.hpp>
-#include "../Texture.h"
 #include "img/src/SizeU.h"
 
 namespace Cool::OpenGL {
 
-Texture::Texture(Config config)
+Texture::Texture(TextureConfig config)
 {
     set_wrap_mode(config.wrap_mode);
     set_interpolation_mode(config.interpolation_mode);
 }
 
-Texture::Texture(img::Size const& size, Config config)
+Texture::Texture(img::Size const& size, TextureConfig config)
     : Texture{config}
 {
     set_size(size);
 }
 
-Texture::Texture(img::Image const& image, Config config)
+Texture::Texture(img::Image const& image, TextureConfig config)
     : Texture{config}
 {
     set_image(image);
 }
 
-Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, Config config)
+Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, TextureConfig config)
     : Texture{config}
 {
     set_image(size, channels_count, data);

@@ -8,25 +8,23 @@
 
 namespace Cool::OpenGL {
 
+struct TextureConfig {
+    glpp::Interpolation interpolation_mode{glpp::Interpolation::Linear};
+    glpp::Wrap          wrap_mode{glpp::Wrap::ClampToEdge};
+};
+
 /// A wrapper for an OpenGL texture2D.
 class Texture {
 public:
-    struct Config {
-        glpp::Interpolation interpolation_mode{glpp::Interpolation::Linear};
-        glpp::Wrap          wrap_mode{glpp::Wrap::ClampToEdge};
-
-        Config(){}; // NOLINT(*-use-equals-default) Need to declare a non-defaulted default constructor to work around a bug in Clang
-    };
-
     /// Creates an empty texture.
-    explicit Texture(Config = {});
+    explicit Texture(TextureConfig = {});
     /// Create a texture with the given size and no pixel data.
-    explicit Texture(img::Size const&, Config = {});
+    explicit Texture(img::Size const&, TextureConfig = {});
     /// Create a texture containing a copy of the image's data.
-    explicit Texture(img::Image const&, Config = {});
+    explicit Texture(img::Image const&, TextureConfig = {});
     /// Create a texture containing a copy of data.
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
-    explicit Texture(img::Size const&, int channels_count, uint8_t const* data, Config = {});
+    explicit Texture(img::Size const&, int channels_count, uint8_t const* data, TextureConfig = {});
 
     void set_size(img::Size const&);
     void set_image(img::Image const&);

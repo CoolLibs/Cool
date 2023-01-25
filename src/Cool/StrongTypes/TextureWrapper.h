@@ -21,6 +21,7 @@ public:
         : _absolute_path{o._absolute_path}
         , _texture{o._texture}
         , _repeat_mode{o._repeat_mode}
+        , _interpolation_mode{o._interpolation_mode}
     {}
     auto operator=(TextureWrapper const& o) -> TextureWrapper&
     {
@@ -29,6 +30,7 @@ public:
             _absolute_path = o._absolute_path;
             _texture       = o._texture;
             _repeat_mode   = o._repeat_mode;
+            _interpolation_mode = o._interpolation_mode;
         }
         return *this;
     }
@@ -48,6 +50,7 @@ private:
     std::filesystem::path    _absolute_path{};
     std::shared_ptr<Texture> _texture{}; // We need a shared_ptr to make the class copyable
     TextureRepeatMode        _repeat_mode{TextureRepeatMode::None};
+    glpp::Interpolation      _interpolation_mode{glpp::Interpolation::Linear};
     MessageId                _error_id{};
 
 private:
@@ -58,13 +61,18 @@ private:
     {
         archive(
             cereal::make_nvp("Path", _absolute_path),
-            cereal::make_nvp("Repeat Mode", _repeat_mode)
+            cereal::make_nvp("Repeat Mode", _repeat_mode),
+            cereal::make_nvp("Interpolation Mode", _interpolation_mode)
         );
     }
     template<class Archive>
     void load(Archive& archive)
     {
-        archive(_absolute_path, _repeat_mode);
+        archive(
+            _absolute_path,
+            _repeat_mode,
+            _interpolation_mode
+        );
         try_load_texture_from_path();
     }
 };

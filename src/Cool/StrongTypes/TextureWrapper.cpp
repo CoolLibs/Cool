@@ -35,9 +35,18 @@ auto TextureWrapper::imgui_widget() -> bool
 
     if (ImGui::Combo("Repeat Mode", reinterpret_cast<int*>(&_repeat_mode), "None\0Mirror\0Mosaic\0Clamp\0\0"))
     {
-        if (_texture)
-            apply_repeat_mode();
+        apply_repeat_mode();
         b = true;
+    }
+    {
+        int mode = _interpolation_mode == glpp::Interpolation::NearestNeighbour ? 0 : 1;
+        if (ImGui::Combo("Interpolation Mode", &mode, "Nearest Neighbour\0Linear\0\0"))
+        {
+            _interpolation_mode = mode == 0 ? glpp::Interpolation::NearestNeighbour : glpp::Interpolation::Linear;
+            if (_texture)
+                _texture->set_interpolation_mode(_interpolation_mode);
+            b = true;
+        }
     }
 
     return b;
@@ -47,7 +56,7 @@ void TextureWrapper::try_load_texture_from_path()
 {
     try
     {
-        _texture = std::make_shared<Texture>(img::load(_absolute_path));
+        _texture = std::make_shared<Texture>(img::load(_absolute_path), OpenGL::TextureConfig{.interpolation_mode = _interpolation_mode});
         apply_repeat_mode();
         Cool::Log::ToUser::console().remove(_error_id);
     }
