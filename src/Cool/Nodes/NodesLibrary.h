@@ -7,6 +7,7 @@
 #include "NodeDefinition_Concept.h"
 #include "NodesCategoryConfig.h"
 #include "imgui.h"
+#include "scope_guard/scope_guard.hpp"
 
 namespace Cool {
 
@@ -75,6 +76,9 @@ public:
     {
         for (auto& category : _categories)
         {
+            ImGui::PushID(&category);
+            auto const pop_automatically = sg::make_scope_guard([]() { ImGui::PopID(); });
+
             bool is_open    = false;
             bool is_visible = true;
             if (!nodes_filter.empty())
@@ -96,7 +100,7 @@ public:
             if (open_all_categories || menu_just_opened)
                 ImGui::SetNextItemOpen(is_open);
 
-            bool collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
+            bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
 
             category.config().imgui_popup();
 
