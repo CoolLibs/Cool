@@ -7,8 +7,6 @@
 
 namespace Cool {
 
-static std::vector<unsigned int> AlreadydisplayedIds;
-
 void APIENTRY GLDebugCallback(
     GLenum       source,
     GLenum       type,
@@ -19,12 +17,12 @@ void APIENTRY GLDebugCallback(
     const void* /*userParam*/
 )
 {
-    // Check if we have already seen the message
-    if (std::find(AlreadydisplayedIds.begin(), AlreadydisplayedIds.end(), id) != AlreadydisplayedIds.end())
-    {
-        return;
+    { // Check if we have already seen the message
+        static std::vector<unsigned int> already_seen_ids;
+        if (std::find(already_seen_ids.begin(), already_seen_ids.end(), id) != already_seen_ids.end())
+            return;
+        already_seen_ids.push_back(id);
     }
-    AlreadydisplayedIds.push_back(id);
 
     // Make message
     std::string message;
