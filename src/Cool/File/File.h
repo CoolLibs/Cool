@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <string_view>
 
 namespace Cool {
 
@@ -43,6 +44,10 @@ public:
      * @return A file name that isn't in use yet; it will be file_name, eventually postfixed with a number in parenthesis
      */
     static auto find_available_name(std::filesystem::path folder_path, std::filesystem::path file_name, std::filesystem::path extension) -> std::filesystem::path;
+
+    /// Overwrites the content of the file and set it to `content`.
+    /// Creates the file if it doesn't exist yet.
+    static void set_content(std::filesystem::path const& file_path, std::string_view content);
 };
 
 } // namespace Cool

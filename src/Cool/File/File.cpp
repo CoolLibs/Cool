@@ -120,4 +120,15 @@ auto File::find_available_name(std::filesystem::path folder_path, std::filesyste
     return out_name;
 }
 
+void File::set_content(std::filesystem::path const& file_path, std::string_view content)
+{
+    create_folders_for_file_if_they_dont_exist(file_path);
+
+    auto file = std::ofstream{file_path};
+    if (!file.is_open())
+        return;
+
+    file << content;
+}
+
 } // namespace Cool
