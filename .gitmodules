@@ -79,3 +79,6 @@
 [submodule "lib/glpp-extended"]
 	path = lib/glpp-extended
 	url = https://github.com/CoolLibs/glpp-extended
+[submodule "lib/os_name"]
+	path = lib/os_name
+	url = https://github.com/CoolLibs/os_name

@@ -205,6 +205,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE wafl::wafl)
 add_subdirectory(lib/open_link)
 target_link_libraries(Cool-PublicProperties INTERFACE open_link::open_link)
 
+# os_name
+add_subdirectory(lib/os_name)
+target_link_libraries(Cool-PublicProperties INTERFACE os_name::os_name)
+
 # tl::expected
 target_include_directories(Cool-PublicProperties INTERFACE lib/expected/include)
 
