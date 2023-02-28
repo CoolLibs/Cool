@@ -16,15 +16,25 @@ class Kind(Enum):
 class DebugOption:
     name_in_code: str
     name_in_ui: str
+    available_in_release: bool
     window_name: str = ""
     kind: Kind = Kind.CHECKBOX
     default_value: bool = False
     detailed_description: str = ""
 
 
+def build_type(code: str, debug_option: DebugOption) -> str:
+    if debug_option.available_in_release:
+        return code
+    else:
+        return f"""#if DEBUG
+{code}
+#endif"""
+
 def debug_options_variables(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f"bool {debug_option.name_in_code}{{{'true' if debug_option.default_value else 'false'}}};",
+                         build_type(
+                             f"bool {debug_option.name_in_code}{{{'true' if debug_option.default_value else 'false'}}};", debug_option),
                          debug_options))
 
 
@@ -33,21 +43,23 @@ def window_name(debug_option: DebugOption):
 
 
 def option_implementation(debug_option: DebugOption):
-    match debug_option.kind:
-        case Kind.CHECKBOX | Kind.BUTTON:
-            return f"[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return instance().{debug_option.name_in_code}; }}"
-        case Kind.WINDOW:
-            return f"""static void {debug_option.name_in_code}(std::function<void()> callback)
-            {{
-                if (instance().{debug_option.name_in_code}) 
+    def code():
+        match debug_option.kind:
+            case Kind.CHECKBOX | Kind.BUTTON:
+                return f"[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return instance().{debug_option.name_in_code}; }}"
+            case Kind.WINDOW:
+                return f"""static void {debug_option.name_in_code}(std::function<void()> callback)
                 {{
-                    ImGui::Begin("{window_name(debug_option)}", &instance().{debug_option.name_in_code});
-                    callback();
-                    ImGui::End();
-                }}
-            }}"""
-        case _:
-            return ""
+                    if (instance().{debug_option.name_in_code}) 
+                    {{
+                        ImGui::Begin("{window_name(debug_option)}", &instance().{debug_option.name_in_code});
+                        callback();
+                        ImGui::End();
+                    }}
+                }}"""
+            case _:
+                return ""
+    return build_type(code(), debug_option)
 
 
 def imgui_widget(debug_option: DebugOption):
@@ -74,25 +86,25 @@ def passes_the_filter(debug_option: DebugOption):
 
 def imgui_ui_for_all_options(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f'''
+                         build_type(f'''
                         if ({passes_the_filter(debug_option)})
                         {{
                             {imgui_widget(debug_option)}
                             {f'ImGui::SameLine(); Cool::ImGuiExtras::help_marker("{debug_option.detailed_description}");' if debug_option.detailed_description else ""}
                         }}
-                        ''',
+                        ''', debug_option),
                          debug_options))
 
 
 def toggle_first_option(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f'''
+                         build_type(f'''
                         if ({passes_the_filter(debug_option)})
                         {{
                             instance().{debug_option.name_in_code} = !instance().{debug_option.name_in_code};
                             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
                         }}
-                        ''',
+                        ''', debug_option),
                          debug_options))
 
 
@@ -101,22 +113,32 @@ def filter_out_buttons(debug_options: list[DebugOption]):
 
 
 def cereal_make_nvp(debug_options: list[DebugOption]):
-    return ",\n".join(map(lambda debug_option:
+    def code(options):
+        return ",\n".join(map(lambda debug_option:
                           f'cereal::make_nvp("{debug_option.name_in_ui}", {debug_option.name_in_code})',
-                          filter_out_buttons(debug_options)))
+                              filter_out_buttons(options)))
+    debug = code(debug_options)
+    release = code(
+        filter(lambda dbg: dbg.available_in_release, debug_options))
+
+    return f"""#if DEBUG
+{debug}
+#else
+{release}
+#endif
+"""
 
 
 def reset_all(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
-                         f'instance().{debug_option.name_in_code} = {"true" if debug_option.default_value else "false"};',
+                         build_type(
+                             f'instance().{debug_option.name_in_code} = {"true" if debug_option.default_value else "false"};', debug_option),
                          filter_out_buttons(debug_options)))
 
 
 def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
     backslash = "\\"
     return f"""
-#if DEBUG
-
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
 #include <Cool/ImGui/ImGuiExtras.h>
@@ -199,8 +221,6 @@ private:
 }};
 
 }} // namespace {namespace}
-
-#endif
 """
 
 

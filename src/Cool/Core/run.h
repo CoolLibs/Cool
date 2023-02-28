@@ -45,12 +45,10 @@ static auto create_autosaver(Cool::AutoSerializer<App> const& auto_serializer) -
         {
             auto_serializer.save();
             last_time = now;
-#if DEBUG
             if (DebugOptions::log_when_autosaving())
             {
-                Log::Debug::info("Autosave", "The application was just saved.");
+                Log::ToUser::info("Autosave", "The application was just saved.");
             }
-#endif
         }
     };
 }

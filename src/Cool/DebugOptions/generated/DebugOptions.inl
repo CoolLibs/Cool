@@ -5,8 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-#if DEBUG
-
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/as_json.h>
@@ -21,6 +19,7 @@ namespace Cool {
 
 class DebugOptions {
 public:
+#if DEBUG
     static void test_message_console__window(std::function<void()> callback)
     {
         if (instance().test_message_console__window)
@@ -30,12 +29,22 @@ public:
             ImGui::End();
         }
     }
-    [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
+#endif
+    [[nodiscard]] static auto log_when_autosaving() -> bool&
+    {
+        return instance().log_when_autosaving;
+    }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
-    [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
-    static void               test_presets__window(std::function<void()> callback)
+#if DEBUG
+    [[nodiscard]] static auto log_opengl_info() -> bool&
+    {
+        return instance().log_opengl_info;
+    }
+#endif
+#if DEBUG
+    static void test_presets__window(std::function<void()> callback)
     {
         if (instance().test_presets__window)
         {
@@ -44,18 +53,32 @@ public:
             ImGui::End();
         }
     }
-    [[nodiscard]] static auto imgui_item_picker() -> bool& { return instance().imgui_item_picker; }
+#endif
+#if DEBUG
+    [[nodiscard]] static auto imgui_item_picker() -> bool&
+    {
+        return instance().imgui_item_picker;
+    }
+#endif
 
 private:
     struct Instance {
+#if DEBUG
         bool test_message_console__window{false};
+#endif
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_icon{false};
         bool log_number_of_threads_in_the_thread_pool{false};
+#if DEBUG
         bool log_opengl_info{false};
+#endif
+#if DEBUG
         bool test_presets__window{false};
+#endif
+#if DEBUG
         bool imgui_item_picker{false};
+#endif
 
     private:
         // Serialization
@@ -64,6 +87,7 @@ private:
         void serialize(Archive& archive)
         {
             archive(
+#if DEBUG
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
@@ -71,19 +95,32 @@ private:
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window)
+#else
+                cereal::make_nvp("Log when autosaving", log_when_autosaving),
+                cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
+                cereal::make_nvp("Log when creating icon", log_when_creating_icon),
+                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
+#endif
+
             );
         }
     };
 
     static void reset_all()
     {
-        instance().test_message_console__window                     = false;
+#if DEBUG
+        instance().test_message_console__window = false;
+#endif
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_icon                           = false;
         instance().log_number_of_threads_in_the_thread_pool         = false;
-        instance().log_opengl_info                                  = false;
-        instance().test_presets__window                             = false;
+#if DEBUG
+        instance().log_opengl_info = false;
+#endif
+#if DEBUG
+        instance().test_presets__window = false;
+#endif
     }
 
     static void save_to_file()
@@ -121,10 +158,14 @@ private:
 
     static void imgui_ui_for_all_options(std::string_view filter)
     {
+#if DEBUG
+
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Test Message Console", &instance().test_message_console__window);
         }
+
+#endif
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
@@ -146,15 +187,23 @@ private:
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
         }
 
+#if DEBUG
+
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
         }
 
+#endif
+#if DEBUG
+
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Test Presets", &instance().test_presets__window);
         }
+
+#endif
+#if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
         {
@@ -167,15 +216,21 @@ private:
             ImGui::SameLine();
             Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.");
         }
+
+#endif
     }
 
     static void toggle_first_option(std::string_view filter)
     {
+#if DEBUG
+
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console__window = !instance().test_message_console__window;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
+
+#endif
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
@@ -201,11 +256,16 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
+#if DEBUG
+
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
             instance().log_opengl_info = !instance().log_opengl_info;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
+
+#endif
+#if DEBUG
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
@@ -213,14 +273,17 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
+#endif
+#if DEBUG
+
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
         {
             instance().imgui_item_picker = !instance().imgui_item_picker;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
+
+#endif
     }
 };
 
 } // namespace Cool
-
-#endif

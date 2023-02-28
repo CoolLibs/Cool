@@ -1,5 +1,4 @@
 #pragma once
-#if DEBUG
 
 #include <Cool/ImGui/ImGuiExtras.h>
 #include "DebugOptions.h"
@@ -107,5 +106,3 @@ private:
 };
 
 } // namespace Cool
-
-#endif

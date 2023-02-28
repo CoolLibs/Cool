@@ -196,10 +196,8 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
         alpha_checkerboard_pipeline().draw();
     });
 
-#if DEBUG
     if (Cool::DebugOptions::log_when_rendering_alpha_checkerboard_background())
-        Cool::Log::Debug::info("Alpha Checkerboard", "Rendered");
-#endif
+        Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
 }
 
 void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)

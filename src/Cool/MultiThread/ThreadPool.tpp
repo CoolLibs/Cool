@@ -13,12 +13,10 @@ template<typename Job>
 ThreadPool<Job>::ThreadPool(size_t nb_threads)
     : _nb_threads(nb_threads)
 {
-#if DEBUG
     if (DebugOptions::log_number_of_threads_in_the_thread_pool())
     {
-        Log::Debug::info("ThreadPool::ThreadPool", "Using " + stringify(nb_threads) + " threads in the thread pool");
+        Log::ToUser::info("ThreadPool::ThreadPool", "Using " + stringify(nb_threads) + " threads in the thread pool");
     }
-#endif
 }
 
 template<typename Job>
