@@ -221,9 +221,9 @@ bool input_uint(const char* label, unsigned int* value_p)
     return ImGui::InputScalar(label, ImGuiDataType_U32, value_p, nullptr, nullptr, "%u");
 }
 
-bool slider_uint32(const char* label, uint32_t* v, uint32_t v_min, uint32_t v_max, const char* format, float power)
+bool slider_uint32(const char* label, uint32_t* v, uint32_t v_min, uint32_t v_max, const char* format, ImGuiSliderFlags flags)
 {
-    return ImGui::SliderScalar(label, ImGuiDataType_U32, v, &v_min, &v_max, format, power);
+    return ImGui::SliderScalar(label, ImGuiDataType_U32, v, &v_min, &v_max, format, flags);
 }
 
 void warning_text(const char* text)
