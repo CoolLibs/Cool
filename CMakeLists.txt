@@ -45,14 +45,6 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
 
-set(HACK_RESET_IMGUI_CTX_EVERY_FRAME OFF CACHE BOOL "A hack to workaround a bug in ImNodes on some GPUs")
-
-if(HACK_RESET_IMGUI_CTX_EVERY_FRAME)
-    target_compile_definitions(Cool-PublicProperties INTERFACE
-        "HACK_RESET_IMGUI_CTX_EVERY_FRAME"
-    )
-endif()
-
 # ----------------------
 # ---Add Cool sources---
 # ----------------------

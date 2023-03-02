@@ -105,9 +105,7 @@ void run(
         // Run the app
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
         app_manager.run(
-#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
-            [&]() { window_factory.reset(); },
-#endif
+            [&]() { if(user_settings().hack_reset_imgui_context_each_frame) window_factory.reset(); },
             create_autosaver(auto_serializer)
         );
 #if defined(COOL_VULKAN)

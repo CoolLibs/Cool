@@ -16,9 +16,7 @@ public:
     static void    setup_secondary_window(Window_OpenGL&, WindowManager& window_manager);
     Window_OpenGL& make_window(const WindowConfig& config, WindowManager& window_manager);
 
-#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
-    void reset(Window_OpenGL& main_window);
-#endif
+    void reset(Window_OpenGL& main_window); // Only used to HACK_RESET_IMGUI_CTX_EVERY_FRAME
 
 private:
     void setupGLDebugging();

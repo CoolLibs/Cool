@@ -12,6 +12,7 @@ auto UserSettings::imgui() -> bool
     b |= imgui_autosave();
     b |= imgui_camera2D_zoom_sensitivity();
     b |= imgui_enable_multiviewport();
+    b |= imgui_hack_reset_imgui_context_each_frame();
 
     return b;
 }
@@ -43,6 +44,15 @@ auto UserSettings::imgui_enable_multiviewport() -> bool
     }
     ImGui::SameLine();
     ImGuiExtras::help_marker("Allows you to drag sub-windows outside of the main window. Disabling this can fix the UI visual glitches that appear on some computers.");
+    return b;
+}
+
+auto UserSettings::imgui_hack_reset_imgui_context_each_frame() -> bool
+{
+    bool const b = ImGui::Checkbox("HACK to fix UI visual glitches", &hack_reset_imgui_context_each_frame);
+    if (b && hack_reset_imgui_context_each_frame)
+        disable_imgui_multiviewport(); // Multiviewport doesn't work while we use this hack
+
     return b;
 }
 

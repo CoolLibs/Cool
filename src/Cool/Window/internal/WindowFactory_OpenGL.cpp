@@ -103,13 +103,11 @@ void WindowFactory_OpenGL::shutdown_imgui()
     ImGui_ImplGlfw_Shutdown();
 }
 
-#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
 void WindowFactory_OpenGL::reset(Window_OpenGL& main_window)
 {
     shutdown_imgui();
     setup_imgui(main_window);
 }
-#endif
 
 } // namespace Cool
 

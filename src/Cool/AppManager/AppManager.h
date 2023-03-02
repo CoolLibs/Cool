@@ -23,9 +23,7 @@ public:
     /// Runs the app's update loop continuously, until the user closes the main window.
     /// Also calls `on_update()` after every update.
     void run(
-#if HACK_RESET_IMGUI_CTX_EVERY_FRAME
         std::function<void()> reset_imgui_context,
-#endif
         std::function<void()> on_update
     );
 
