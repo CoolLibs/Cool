@@ -22,10 +22,7 @@ public:
 
     /// Runs the app's update loop continuously, until the user closes the main window.
     /// Also calls `on_update()` after every update.
-    void run(
-        std::function<void()> reset_imgui_context,
-        std::function<void()> on_update
-    );
+    void run(std::function<void()> on_update);
 
 private:
     void update();

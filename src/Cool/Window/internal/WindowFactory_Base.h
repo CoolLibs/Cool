@@ -39,11 +39,6 @@ public:
      */
     RenderTarget_Impl& impl() { return _impl; }
 
-    void reset() // Only used to HACK_RESET_IMGUI_CTX_EVERY_FRAME
-    {
-        _impl.reset(_window_manager.main_window());
-    }
-
 private:
     void        initialize_glfw();
     void        initialize_imgui();

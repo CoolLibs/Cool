@@ -81,12 +81,6 @@ void run(
         window_factory.make_secondary_window(windows_configs[i]);
     }
 
-    // Multiviewport setting
-    if (user_settings().enable_multiviewport)
-        enable_imgui_multiviewport();
-    else
-        disable_imgui_multiviewport();
-
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto app = App{window_factory.window_manager()};
@@ -104,10 +98,7 @@ void run(
             load_from_file};
         // Run the app
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
-        app_manager.run(
-            [&]() { if(user_settings().hack_reset_imgui_context_each_frame) window_factory.reset(); },
-            create_autosaver(auto_serializer)
-        );
+        app_manager.run(create_autosaver(auto_serializer));
 #if defined(COOL_VULKAN)
         vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif

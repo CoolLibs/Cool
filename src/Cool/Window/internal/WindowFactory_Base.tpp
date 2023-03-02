@@ -1,9 +1,9 @@
+#include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
 #include <Cool/Log/ToUser.h>
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
-#include "Cool/ImGui/MultiViewport.h"
-#include "Cool/UserSettings/UserSettings.h"
+
 
 namespace Cool {
 
@@ -69,10 +69,12 @@ void WindowFactory_Base<T>::initialize_imgui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     set_imgui_ini_filepath();
-    enable_imgui_multiviewport();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably comming directly from ImGui)
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
     // io.ConfigViewportsNoAutoMerge = true;
     // io.ConfigViewportsNoTaskBarIcon = true;

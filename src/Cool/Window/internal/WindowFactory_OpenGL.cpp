@@ -103,12 +103,6 @@ void WindowFactory_OpenGL::shutdown_imgui()
     ImGui_ImplGlfw_Shutdown();
 }
 
-void WindowFactory_OpenGL::reset(Window_OpenGL& main_window)
-{
-    shutdown_imgui();
-    setup_imgui(main_window);
-}
-
 } // namespace Cool
 
 #endif
