@@ -62,6 +62,16 @@ void run(
 {
     // Init
     init_config.set_paths();
+    // Auto serialize the UserSettings // Done very early because other things might need it
+    Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
+        Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
+        [](std::string const& message) {
+            Cool::Log::ToUser::console().send(Cool::Message{
+                .category = "Loading Project",
+                .message  = message,
+                .severity = Cool::MessageSeverity::Warning,
+            });
+        }};
     // Create window.s
     assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
@@ -70,19 +80,16 @@ void run(
     {
         window_factory.make_secondary_window(windows_configs[i]);
     }
+
+    // Multiviewport setting
+    if (user_settings().enable_multiviewport)
+        enable_imgui_multiviewport();
+    else
+        disable_imgui_multiviewport();
+
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto app = App{window_factory.window_manager()};
-        // Auto serialize the UserSettings // Done before the auto_serializer of the App, just in case the loading / construction of the App needs access to the UserSettings
-        Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
-            Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
-            [](std::string const& message) {
-                Cool::Log::ToUser::console().send(Cool::Message{
-                    .category = "Loading Project",
-                    .message  = message,
-                    .severity = Cool::MessageSeverity::Warning,
-                });
-            }};
         // Auto serialize the App
         Cool::AutoSerializer<App> auto_serializer{
             Cool::Path::root() / "cache/last-session.json", "App", app,
