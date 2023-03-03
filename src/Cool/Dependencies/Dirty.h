@@ -1,6 +1,7 @@
 #pragma once
 
 #include <reg/reg.hpp>
+#include <utility>
 
 namespace Cool {
 
@@ -33,12 +34,12 @@ private:
     friend class DirtyFlagFactory_Ref;
     friend class IsDirty_Ref;
 
-    explicit DirtyFlag(reg::Id<internal::IsDirty> id)
-        : id{id}
+    explicit DirtyFlag(reg::SharedId<internal::IsDirty> id)
+        : id{std::move(id)}
     {
     }
 
-    reg::Id<internal::IsDirty> id;
+    reg::SharedId<internal::IsDirty> id;
 
 private:
     friend class cereal::access;
@@ -60,7 +61,7 @@ public:
 
     auto make()
     {
-        return DirtyFlag{_registry.get().create({})};
+        return DirtyFlag{_registry.get().create_shared({})};
     }
 
 private:
@@ -76,7 +77,7 @@ public:
 
     void operator()(const DirtyFlag& flag, bool is_dirty)
     {
-        _registry.get().set(flag.id, {is_dirty});
+        _registry.get().set(flag.id.raw(), {is_dirty});
     }
 
 private:
@@ -124,7 +125,7 @@ public:
 
     auto operator()(const DirtyFlag& flag) const -> bool
     {
-        const auto dirty = _registry.get().get(flag.id);
+        const auto dirty = _registry.get().get(flag.id.raw());
         if (!dirty.has_value())
         {
             throw std::runtime_error{"DirtyFlag has been deleted but someone still had a handle to it!"};

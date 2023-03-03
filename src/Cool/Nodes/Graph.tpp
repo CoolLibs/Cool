@@ -4,7 +4,7 @@ namespace Cool {
 template<Node_Concept Node>
 auto Graph<Node>::add_node(Node const& node) -> NodeId
 {
-    return _nodes.create(node);
+    return _nodes.create_raw(node);
 }
 
 template<Node_Concept Node>
@@ -41,7 +41,7 @@ void Graph<Node>::remove_all_nodes()
 template<Node_Concept Node>
 auto Graph<Node>::add_link(Link link) -> LinkId
 {
-    return _links.create(link);
+    return _links.create_raw(link);
 }
 
 template<Node_Concept Node>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Variables/Variables.h>
+#include <utility>
 #include "Input.h"
 #include "InputDefinition.h"
 #include "VariableId.h"
@@ -11,11 +12,11 @@ namespace Cool {
 class InputFactory_Ref {
 public:
     InputFactory_Ref(
-        VariableRegistries&             variable_registries,
-        const VariableId<Cool::Camera>& default_camera_id
+        VariableRegistries&            variable_registries,
+        SharedVariableId<Cool::Camera> default_camera_id
     )
         : _variable_registries{variable_registries}
-        , _default_camera_id{default_camera_id}
+        , _default_camera_id{std::move(default_camera_id)}
     {
     }
 
@@ -26,7 +27,7 @@ public:
             dirty_flag,
             def.name,
             def.description,
-            _variable_registries.get().create(
+            _variable_registries.get().create_shared(
                 Cool::Variable<T>{def.name, def.default_value, def.metadata}
             ),
             def.desired_color_space,
@@ -37,7 +38,7 @@ public:
 
 private:
     std::reference_wrapper<VariableRegistries> _variable_registries;
-    VariableId<Cool::Camera>                   _default_camera_id;
+    SharedVariableId<Cool::Camera>             _default_camera_id;
 };
 
 template<>

@@ -7,5 +7,7 @@ namespace Cool {
 
 template<typename T>
 using VariableId = reg::Id<Cool::Variable<T>>;
+template<typename T>
+using SharedVariableId = reg::SharedId<Cool::Variable<T>>;
 
-}
+} // namespace Cool

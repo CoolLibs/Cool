@@ -84,7 +84,7 @@ auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
     else
     {
         set_default_value_to_current_value(preset);
-        return _presets.create(preset);
+        return _presets.create_raw(preset);
     }
 }
 

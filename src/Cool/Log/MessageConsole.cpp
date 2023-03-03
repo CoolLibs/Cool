@@ -10,18 +10,15 @@ namespace Cool {
 
 void MessageConsole::send(MessageId& id, const Message& message)
 {
-    if (!_messages.contains(id))
+    if (!_messages.contains(id.raw()))
     {
-        id = MessageId{
-            _messages,
-            internal::MessageWithMetadata{
-                .message = message,
-            },
-        };
+        id = _messages.create_unique(internal::MessageWithMetadata{
+            .message = message,
+        });
     }
     else
     {
-        _messages.with_mutable_ref(id, [&](internal::MessageWithMetadata& data) {
+        _messages.with_mutable_ref(id.raw(), [&](internal::MessageWithMetadata& data) {
             data.message = message;
             data.count++;
             data.timestamp           = std::chrono::system_clock::now();
@@ -29,16 +26,15 @@ void MessageConsole::send(MessageId& id, const Message& message)
         });
     }
 
-    on_message_sent(id);
+    on_message_sent(id.raw());
 }
 
 void MessageConsole::send(const Message& message)
 {
-    const auto id = _messages.create(internal::MessageWithMetadata{
+    auto const id = _messages.create_raw(internal::MessageWithMetadata{
         .message                = message,
         .forced_to_be_clearable = true,
-    }
-    );
+    });
 
     on_message_sent(id);
 }
@@ -52,7 +48,7 @@ void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 
 void MessageConsole::remove(const MessageId& id)
 {
-    remove(id.get());
+    remove(id.raw());
 }
 
 void MessageConsole::remove(const internal::RawMessageId& id)
@@ -113,8 +109,8 @@ void MessageConsole::close_window()
 
 auto MessageConsole::should_highlight(const MessageId& id) -> bool
 {
-    return !id.get().underlying_uuid().is_nil()
-           && id == _selected_message;
+    return !id.raw().underlying_uuid().is_nil()
+           && id.raw() == _selected_message;
 }
 
 static auto color(MessageSeverity severity) -> ImVec4

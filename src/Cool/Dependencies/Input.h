@@ -18,7 +18,7 @@ public:
     void set_dirty_if_depends_on(const VariableId<T>& variable_id, SetDirty_Ref set_dirty) const
     {
         if (_current_variable_id == variable_id
-            || (_current_variable_id.underlying_uuid().is_nil() && _default_variable_id == variable_id))
+            || (_current_variable_id.underlying_uuid().is_nil() && _default_variable_id.raw() == variable_id))
         {
             set_dirty(_dirty_flag);
         }
@@ -30,7 +30,7 @@ private:
         const DirtyFlag&                  dirty_flag,
         std::string_view                  name,
         const std::optional<std::string>& description,
-        const VariableId<T>               default_variable_id,
+        SharedVariableId<T>               default_variable_id,
         int                               desired_color_space
     )
         : _dirty_flag{dirty_flag}
@@ -44,11 +44,10 @@ private:
 public: // private: TODO(JF) make this private
     friend class InputProvider_Ref;
     friend class Ui_Ref;
-    friend class InputDestructor_Ref;
     DirtyFlag                  _dirty_flag;
     std::string                _name; // NB: both the Input and the Variables have a name, because they are two different things and the current variable could be coming from a global pool and not be related to this Input at all.
     std::optional<std::string> _description;
-    VariableId<T>              _default_variable_id;
+    SharedVariableId<T>        _default_variable_id; // TODO(JF) Can't it be unique instead of shared?
     VariableId<T>              _current_variable_id;
     int                        _desired_color_space{0}; // HACK in order to know which color space to convert to when sending the value to a shader. Only used by Color input.
 
@@ -148,22 +147,6 @@ struct Input_Time {
 #include <Cool/Variables/generated/AnyInput.inl>
 #include <Cool/Variables/generated/AnyInputRef.inl>
 #include <Cool/Variables/generated/AnyInputRefToConst.inl>
-
-class InputDestructor_Ref {
-public:
-    explicit InputDestructor_Ref(VariableRegistries& registries)
-        : _variable_registries{registries}
-    {
-    }
-
-    void operator()(const AnyInput& input)
-    {
-        std::visit([&](auto&& input) { _variable_registries.get().destroy(input._default_variable_id); }, input);
-    }
-
-private:
-    std::reference_wrapper<VariableRegistries> _variable_registries;
-};
 
 using AllInputRefsToConst = std::vector<AnyInputRefToConst>;
 
