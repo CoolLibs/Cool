@@ -3,6 +3,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
+#include "Cool/Log/Debug.h"
 
 namespace Cool {
 
@@ -23,8 +24,16 @@ void main()
     out_Color = vec4(vec3(grey), 1.);
 }
 )STR");
-    if (err)
-        Cool::Log::Debug::error_without_breakpoint("Alpha Checkerboard Shader", *err);
+    err.send_error_if_any(
+        [&](std::string const& message) {
+            return Message{
+                .category = "Alpha Checkerboard Shader",
+                .message  = message,
+                .severity = MessageSeverity::Error,
+            };
+        },
+        Cool::Log::Debug::console()
+    );
 
     return pipeline;
 }

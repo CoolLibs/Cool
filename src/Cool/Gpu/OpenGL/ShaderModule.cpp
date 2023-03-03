@@ -22,11 +22,11 @@ static void validate_shader_module(GLuint id)
     }
 }
 
-static OptionalErrorMessage compile_shader_module(GLuint id, const ShaderDescription& desc)
+static auto compile_shader_module(GLuint id, const ShaderDescription& desc) -> std::optional<std::string>
 {
     auto preprocessed_source = preprocess_shader_source(desc.source_code);
     if (!preprocessed_source)
-        return OptionalErrorMessage{preprocessed_source.error()};
+        return preprocessed_source.error();
 
     auto src = preprocessed_source->c_str();
     GLDebug(glShaderSource(id, 1, &src, nullptr));
@@ -38,7 +38,7 @@ static OptionalErrorMessage compile_shader_module(GLuint id, const ShaderDescrip
 ShaderModule::ShaderModule(const ShaderDescription& desc)
     : _shader_module{desc.kind}
 {
-    const auto err = compile_shader_module(_shader_module.id(), desc);
+    auto const err = compile_shader_module(_shader_module.id(), desc);
     if (err)
         throw std::runtime_error{*err};
 }

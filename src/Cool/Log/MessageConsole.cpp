@@ -3,6 +3,7 @@
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
+#include "Cool/Log/Message.h"
 #include "imgui.h"
 
 namespace Cool {
@@ -251,6 +252,15 @@ void MessageConsole::imgui_menu_bar()
     show_number_of_messages_of_given_severity(MessageSeverity::Info);
 }
 
+static void imgui_button_copy_to_clipboard(ClipboardContent const& clipboard)
+{
+    if (ImGui::Button(fmt::format("Copy {} to clipboard", clipboard.title).c_str()))
+    {
+        ImGui::SetClipboardText(clipboard.content.c_str());
+        ImGui::CloseCurrentPopup();
+    }
+};
+
 void MessageConsole::imgui_show_all_messages()
 {
     const auto previously_selected_message{_selected_message};
@@ -307,11 +317,17 @@ void MessageConsole::imgui_show_all_messages()
                 if (ImGui::IsPopupOpen("##ContextMenu"))
                 {
                     ImGui::BeginPopup("##ContextMenu");
-                    if (ImGui::Button("Copy full message to clipboard"))
+
+                    if (!msg.message.clipboard_contents)
                     {
-                        ImGui::SetClipboardText(msg.message.message.c_str());
-                        ImGui::CloseCurrentPopup();
+                        imgui_button_copy_to_clipboard({.title = "full message", .content = msg.message.message});
                     }
+                    else
+                    {
+                        for (auto const& clipboard_content : *msg.message.clipboard_contents)
+                            imgui_button_copy_to_clipboard(clipboard_content);
+                    }
+
                     ImGui::EndPopup();
                 }
 

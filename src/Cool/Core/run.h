@@ -65,12 +65,17 @@ void run(
     // Auto serialize the UserSettings // Done very early because other things might need it
     Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
         Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
-        [](std::string const& message) {
-            Cool::Log::ToUser::console().send(Cool::Message{
-                .category = "Loading Project",
-                .message  = message,
-                .severity = Cool::MessageSeverity::Warning,
-            });
+        [](OptionalErrorMessage const& error) {
+            error.send_error_if_any(
+                [&](std::string const& message) {
+                    return Cool::Message{
+                        .category = "Loading Project",
+                        .message  = message,
+                        .severity = Cool::MessageSeverity::Warning,
+                    };
+                },
+                Cool::Log::ToUser::console()
+            );
         }};
     // Create window.s
     assert(!windows_configs.empty());
@@ -87,12 +92,17 @@ void run(
         // Auto serialize the App
         Cool::AutoSerializer<App> auto_serializer{
             Cool::Path::root() / "cache/last-session.json", "App", app,
-            [](std::string const& message) {
-                Cool::Log::ToUser::console().send(Cool::Message{
-                    .category = "Loading Project",
-                    .message  = message,
-                    .severity = Cool::MessageSeverity::Warning,
-                });
+            [](OptionalErrorMessage const& error) {
+                error.send_error_if_any(
+                    [&](std::string const& message) {
+                        return Cool::Message{
+                            .category = "Loading Project",
+                            .message  = message,
+                            .severity = Cool::MessageSeverity::Warning,
+                        };
+                    },
+                    Cool::Log::ToUser::console()
+                );
                 throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
             },
             load_from_file};

@@ -1,3 +1,4 @@
+#include "Cool/Log/Message.h"
 #if defined(COOL_OPENGL)
 
 #include "FullscreenPipeline.h"
@@ -54,13 +55,16 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
     catch (const std::exception& e)
     {
         on_error();
-        const auto preprocessed_source = preprocess_shader_source(fragment_shader_source_code);
+        auto const        preprocessed_source = preprocess_shader_source(fragment_shader_source_code);
+        std::string const shader_code         = preprocessed_source
+                                                    ? *preprocessed_source
+                                                    : ""s; // Log nothing because we know the exception already contains the error message from the preprocessing failure.
         return OptionalErrorMessage{
-            e.what()
-            + (preprocessed_source
-                   ? std::string{"\nThe source code we tried to compile was:\n"} + *preprocessed_source
-                   : "" // Log nothing because we know the exception already contains the error message from the preprocessing failure.
-            )};
+            fmt::format("{}\nThe source code we tried to compile was:\n{}", e.what(), shader_code),
+            std::vector<ClipboardContent>{
+                {.title = "shader code", .content = shader_code},
+                {.title = "error message", .content = e.what()},
+            }};
     }
 }
 

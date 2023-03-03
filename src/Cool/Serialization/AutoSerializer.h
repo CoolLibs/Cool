@@ -1,5 +1,6 @@
 #pragma once
 #include <concepts>
+#include "Cool/Log/OptionalErrorMessage.h"
 #include "as_json.h"
 
 namespace Cool {
@@ -7,7 +8,7 @@ namespace Cool {
 template<typename T>
 class AutoSerializer {
 public:
-    template<std::invocable<std::string const&> OnError>
+    template<std::invocable<OptionalErrorMessage const&> OnError>
     AutoSerializer(
         std::filesystem::path const& path,
         std::string_view             key_name_in_json,
@@ -26,7 +27,7 @@ public:
 
         const auto error = Serialization::from_json(_d.object_to_serialize.get(), _d.path);
         if (error)
-            on_error(*error);
+            on_error(error);
     }
 
     ~AutoSerializer()

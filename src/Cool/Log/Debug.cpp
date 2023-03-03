@@ -2,56 +2,63 @@
 
 namespace Cool::Log::Debug {
 
-void info(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways.
+void info(std::string const& category, std::string const& message, std::optional<std::vector<ClipboardContent>> const& clipboard_contents) // We take string& instead of string_view because Message needs strings anyways.
 {
 #if DEBUG
     console().send(Message{
-        .category = category,
-        .message  = message,
-        .severity = MessageSeverity::Info,
+        .category           = category,
+        .message            = message,
+        .severity           = MessageSeverity::Info,
+        .clipboard_contents = clipboard_contents,
     });
 #else
     (void)category;
     (void)message;
+    (void)clipboard_contents;
 #endif
 }
 
-void warning(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways.
+void warning(std::string const& category, std::string const& message, std::optional<std::vector<ClipboardContent>> const& clipboard_contents) // We take string& instead of string_view because Message needs strings anyways.
 {
 #if DEBUG
     console().send(Message{
-        .category = category,
-        .message  = message,
-        .severity = MessageSeverity::Warning,
+        .category           = category,
+        .message            = message,
+        .severity           = MessageSeverity::Warning,
+        .clipboard_contents = clipboard_contents,
     });
 #else
     (void)category;
     (void)message;
+    (void)clipboard_contents;
 #endif
 }
 
-void error(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways.
+void error(std::string const& category, std::string const& message, std::optional<std::vector<ClipboardContent>> const& clipboard_contents) // We take string& instead of string_view because Message needs strings anyways.
 {
 #if DEBUG
-    error_without_breakpoint(category, message);
+    error_without_breakpoint(category, message, clipboard_contents);
     assert(false);
 #else
     (void)category;
     (void)message;
+    (void)clipboard_contents;
 #endif
 }
 
-void error_without_breakpoint(const std::string& category, const std::string& message) // We take string& instead of string_view because Message needs strings anyways.
+void error_without_breakpoint(std::string const& category, std::string const& message, std::optional<std::vector<ClipboardContent>> const& clipboard_contents) // We take string& instead of string_view because Message needs strings anyways.
 {
 #if DEBUG
     console().send(Message{
-        .category = category,
-        .message  = message,
-        .severity = MessageSeverity::Error,
+        .category           = category,
+        .message            = message,
+        .severity           = MessageSeverity::Error,
+        .clipboard_contents = clipboard_contents,
     });
 #else
     (void)category;
     (void)message;
+    (void)clipboard_contents;
 #endif
 }
 
