@@ -24,6 +24,7 @@ void main()
     out_Color = vec4(vec3(grey), 1.);
 }
 )STR");
+#if DEBUG
     err.send_error_if_any(
         [&](std::string const& message) {
             return Message{
@@ -34,6 +35,9 @@ void main()
         },
         Cool::Log::Debug::console()
     );
+#else
+    (void)err;
+#endif
 
     return pipeline;
 }
