@@ -89,6 +89,7 @@ private:
             _graph,
             editor_state
         );
+        ImNodes::SetCurrentContext(&*_context);
         ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
         // update_templates_and_nodes();
     }
