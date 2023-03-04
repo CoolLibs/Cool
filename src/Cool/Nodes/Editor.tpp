@@ -1,6 +1,5 @@
 
 #include <Cool/Log/ToUser.h>
-// #include <GLFW/glfw3.h>
 #include <imnodes/imnodes_internal.h>
 #include "Cool/Nodes/NodeDefinition_Concept.h"
 #include "ImNodesHelpers.h"
@@ -9,22 +8,6 @@
 #include "imnodes/imnodes.h"
 
 namespace Cool {
-
-//
-// template<NodesCfg_Concept NodesCfg>
-// bool NodesEditor<NodesCfg>::tree_has_changed()
-// {
-//     bool b             = _graph_has_changed;
-//     _graph_has_changed = false;
-//     return b;
-// }
-
-//
-// template<NodesCfg_Concept NodesCfg>
-// void NodesEditor<NodesCfg>::on_graph_change()
-// {
-//     _graph_has_changed = true;
-// }
 
 void draw_node_pins(Node_Concept auto const& node)
 {
@@ -242,6 +225,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
 ) -> bool
 {
     ImNodes::SetCurrentContext(&*_context);
+
     bool graph_has_changed = false;
     ImGui::Begin("Nodes");
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
@@ -278,10 +262,6 @@ auto NodesEditor<NodesCfg>::imgui_window(
     ImGui::End();
 
     return graph_has_changed;
-    // if (graph_has_changed)
-    // {
-    //     on_graph_change();
-    // }
 }
 
 template<NodesCfg_Concept NodesCfg>
@@ -304,50 +284,5 @@ auto NodesEditor<NodesCfg>::
 
     return true;
 }
-
-// void Editor::update_templates_and_nodes()
-// {
-//     _all_nodes_have_a_valid_template = true;
-//     _factory.reload_templates();
-//     for (auto& node : _graph.nodes)
-//     {
-//         const auto node_template = std::find_if(
-//             _factory.templates().begin(),
-//             _factory.templates().end(),
-//             [&](const NodeTemplate& node_template) {
-//                 return node_template.name == node.node_template_name;
-//             }
-//         );
-
-//         // waiting for xcode to support std::ranges::find_if
-//         // const auto node_template = std::ranges::find_if(_factory.templates(), [&](const NodeTemplate& node_template) {
-//         // return node_template.name == node.node_template_name;
-//         // });
-//         if (node_template == _factory.templates().end())
-//         {
-//             _all_nodes_have_a_valid_template = false;
-//             Cool::Log::ToUser::warning(
-//                 "is0 " + node.node_template_name,
-//                 fmt::format("Can't find node file '{0}.is0' Your graph can't be compiled.\nEither add a '{0}.is0' file or delete all {0} nodes.", node.node_template_name)
-//             );
-//         }
-//         else
-//         {
-//             // Update params
-//             node.parameter_list = Cool::ParameterU::update_parameters(node_template->parameters, node.parameter_list);
-//             // Update input pins
-//             const auto nb_pins = node_template->sdf_identifiers.size();
-//             if (nb_pins < node.input_pins.size())
-//             {
-//                 for (size_t i = nb_pins; i < node.input_pins.size(); ++i)
-//                 {
-//                     _graph.delete_link_going_to(node.input_pins[i].id());
-//                 }
-//             }
-//             node.input_pins.resize(nb_pins);
-//         }
-//     }
-//     on_graph_change();
-// }
 
 } // namespace Cool

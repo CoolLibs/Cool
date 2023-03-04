@@ -26,28 +26,13 @@ private:
 template<NodesCfg_Concept NodesCfg>
 class NodesEditor {
 public:
-    explicit NodesEditor(std::string_view /* nodes_folder_path */)
-    // : _factory{nodes_folder_path}
-    {
-    }
     auto imgui_window(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
-    // void update_templates_and_nodes();
-    // void ask_to_open_nodes_menu();
-    // bool tree_has_changed();
-    // bool tree_is_valid() const { return _all_nodes_have_a_valid_template; }
-    // auto tree() const -> const NodeGraph& { return _graph; }
     auto add_node(typename NodesCfg::NodeT const& node) -> NodeId { return _graph.add_node(node); }
-    // void remove_all_nodes()
-    // {
-    //     _graph.remove_all_nodes();
-    //     _graph_has_changed = true;
-    // }
 
     auto graph() const -> auto const& { return _graph; }
     auto graph() -> auto& { return _graph; }
 
 private:
-    // void on_graph_change();
     auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
     auto               handle_node_deletion() -> bool;
@@ -65,9 +50,8 @@ private:
 private:
     internal::UniqueImNodeContext   _context;
     Graph<typename NodesCfg::NodeT> _graph;
-    // bool      _all_nodes_have_a_valid_template = true;
-    bool                     _window_is_hovered = true;
-    internal::SearchBarState _search_bar{};
+    bool                            _window_is_hovered = true;
+    internal::SearchBarState        _search_bar{};
 
 private:
     // Serialization
@@ -91,7 +75,6 @@ private:
         );
         ImNodes::SetCurrentContext(&*_context);
         ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
-        // update_templates_and_nodes();
     }
 };
 
