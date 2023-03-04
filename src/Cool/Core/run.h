@@ -90,6 +90,9 @@ void run(
         window_factory.make_secondary_window(windows_configs[i]);
     }
 
+    // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
+    Icons::close_button();
+
     // Create and run the App
     const auto run_loop = [&](bool load_from_file) {
         auto app = App{window_factory.window_manager()};
