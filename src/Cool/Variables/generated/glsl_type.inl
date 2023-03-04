@@ -102,9 +102,9 @@ auto glsl_type<Cool::Gradient>() -> std::string
 }
 
 template<>
-auto glsl_type<Cool::TextureWrapper>() -> std::string
+auto glsl_type<Cool::TextureInfo>() -> std::string
 {
-    return "TextureWrapper";
+    return "TextureInfo";
 }
 
 template<>

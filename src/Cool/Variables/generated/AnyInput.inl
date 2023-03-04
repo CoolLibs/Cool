@@ -22,5 +22,5 @@ using AnyInput = std::variant<
     Input<Cool::Hue>,
     Input<Cool::ColorPalette>,
     Input<Cool::Gradient>,
-    Input<Cool::TextureWrapper>,
+    Input<Cool::TextureInfo>,
     Input<Cool::MathExpression> >;

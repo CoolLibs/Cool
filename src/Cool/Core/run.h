@@ -11,6 +11,8 @@
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
+#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "InitConfig.h"
 
 namespace Cool {
@@ -29,6 +31,8 @@ inline void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Icons::shut_down();
+    TextureLibrary::instance().clear();
+    TextureSamplerLibrary::instance().clear();
     FullscreenPipeline::shut_down();
 }
 

@@ -22,5 +22,5 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::Hue>,
     InputDefinition<Cool::ColorPalette>,
     InputDefinition<Cool::Gradient>,
-    InputDefinition<Cool::TextureWrapper>,
+    InputDefinition<Cool::TextureInfo>,
     InputDefinition<Cool::MathExpression> >;

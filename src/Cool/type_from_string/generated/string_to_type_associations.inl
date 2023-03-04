@@ -142,7 +142,7 @@ struct from_impl<"Gradient"> {
 
 template<>
 struct from_impl<"Texture"> {
-    using type = Cool::TextureWrapper;
+    using type = Cool::TextureInfo;
 };
 
 template<>

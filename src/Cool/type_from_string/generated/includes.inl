@@ -5,6 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 #include <Cool/Camera/Camera.h>
+#include <Cool/Gpu/TextureInfo.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Camera2D.h>
 #include <Cool/StrongTypes/Color.h>
@@ -15,5 +16,4 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/MathExpression.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/StrongTypes/TextureWrapper.h>
 #include <glm/glm.hpp>

@@ -6,9 +6,8 @@
 #include <vector>
 #include "Cool/Camera/Camera.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "Cool/StrongTypes/Point2D.h"
-#include "Cool/StrongTypes/TextureWrapper.h"
 #include "Cool/StrongTypes/MathExpression.h"
+#include "Cool/StrongTypes/Point2D.h"
 
 namespace Cool {
 
@@ -83,7 +82,7 @@ void test_variables()
         Cool::imgui(math_expression);
     }
     {
-        static Cool::Variable<Cool::TextureWrapper> tex{"Texture", {}};
+        static Cool::Variable<Cool::TextureInfo> tex{"Texture", {}};
         Cool::imgui(tex);
     }
 }

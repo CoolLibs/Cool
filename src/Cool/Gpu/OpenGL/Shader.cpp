@@ -1,3 +1,5 @@
+#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "imgui.h"
@@ -158,12 +160,15 @@ static auto max_number_of_texture_slots() -> GLint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return res;
 }
-void Shader::set_uniform(std::string_view uniform_name, TextureWrapper const& tex) const
+void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& texture_info) const
 {
     static GLint       current_slot = 0;
     static GLint const max_slots    = max_number_of_texture_slots();
 
-    tex.texture().attach_to_slot(current_slot);
+    Texture const& tex = TextureLibrary::instance().get(texture_info.absolute_path);
+
+    tex.attach_to_slot(current_slot);
+    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
     set_uniform(fmt::format("{}.tex", uniform_name), current_slot);
     set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
 
