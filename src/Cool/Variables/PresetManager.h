@@ -115,10 +115,10 @@ private:
     };
 
 private:
-    reg::OrderedRegistry<Preset2> _presets;
-    PresetId                      _current_preset_id;
-    std::string                   _new_preset_name;
-    RenamerWidget                 _rename_widget;
+    reg::RawOrderedRegistry<Preset2> _presets;
+    PresetId                         _current_preset_id;
+    std::string                      _new_preset_name;
+    RenamerWidget                    _rename_widget;
 
     Cool::SerializerOnDemand _serializer;
 

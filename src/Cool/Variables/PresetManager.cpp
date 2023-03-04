@@ -9,7 +9,7 @@ namespace Cool {
 
 /// Returns the ID of the first Preset that matches the `predicate`, or a null ID if there was none.
 static auto find_preset(
-    reg::OrderedRegistry<Preset2> const&       presets,
+    reg::RawOrderedRegistry<Preset2> const&    presets,
     std::function<bool(const Preset2&)> const& predicate
 ) -> PresetId
 {

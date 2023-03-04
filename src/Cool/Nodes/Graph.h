@@ -35,8 +35,8 @@ public:
     auto links() const -> auto const& { return _links; }
 
 private:
-    reg::Registry<Node> _nodes;
-    reg::Registry<Link> _links;
+    reg::RawRegistry<Node> _nodes;
+    reg::RawRegistry<Link> _links;
 
 private:
     // Serialization
