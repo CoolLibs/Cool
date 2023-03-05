@@ -8,22 +8,22 @@
 
 namespace Cool {
 
-auto File::exists(std::filesystem::path file_path) -> bool
+auto File::exists(std::filesystem::path const& file_path) -> bool
 {
     return std::filesystem::exists(file_path);
 }
 
-auto File::file_name(std::filesystem::path file_path) -> std::filesystem::path
+auto File::file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.filename();
 }
 
-auto File::file_name_without_extension(std::filesystem::path file_path) -> std::filesystem::path
+auto File::file_name_without_extension(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.stem();
 }
 
-auto File::extension(std::filesystem::path file_path) -> std::filesystem::path
+auto File::extension(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.extension();
 }
@@ -33,7 +33,7 @@ auto File::without_extension(std::filesystem::path file_path) -> std::filesystem
     return file_path.replace_extension();
 }
 
-auto File::without_file_name(std::filesystem::path file_path) -> std::filesystem::path
+auto File::without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     if (!file_path.has_filename())
         return file_path;
@@ -41,7 +41,7 @@ auto File::without_file_name(std::filesystem::path file_path) -> std::filesystem
         return file_path.parent_path();
 }
 
-auto File::to_string(std::filesystem::path file_path) -> tl::expected<std::string, std::string>
+auto File::to_string(std::filesystem::path const& file_path) -> tl::expected<std::string, std::string>
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(file_path.string());
@@ -62,7 +62,7 @@ auto File::to_string(std::filesystem::path file_path) -> tl::expected<std::strin
     return str;
 }
 
-bool File::create_folders_if_they_dont_exist(std::filesystem::path folder_path)
+auto File::create_folders_if_they_dont_exist(std::filesystem::path const& folder_path) -> bool
 {
     if (!exists(folder_path))
     {
@@ -80,12 +80,12 @@ bool File::create_folders_if_they_dont_exist(std::filesystem::path folder_path)
     return true;
 }
 
-bool File::create_folders_for_file_if_they_dont_exist(std::filesystem::path file_path)
+auto File::create_folders_for_file_if_they_dont_exist(std::filesystem::path const& file_path) -> bool
 {
     return create_folders_if_they_dont_exist(without_file_name(file_path));
 }
 
-auto File::find_available_name(std::filesystem::path folder_path, std::filesystem::path file_name, std::filesystem::path extension) -> std::filesystem::path
+auto File::find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
 {
     std::string const name = Cool::File::without_extension(file_name).string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis

@@ -3,12 +3,12 @@
 
 namespace Cool {
 
-static bool is_valid_file_path(std::filesystem::path path)
+static auto is_valid_file_path(std::filesystem::path const& path) -> bool
 {
-    return File::exists(path.string()) && !std::filesystem::is_directory(path);
+    return File::exists(path) && !std::filesystem::is_directory(path);
 }
 
-static auto time_of_last_change(std::filesystem::path path) -> std::filesystem::file_time_type
+static auto time_of_last_change(std::filesystem::path const& path) -> std::optional<std::filesystem::file_time_type>
 {
     try
     {
@@ -16,86 +16,55 @@ static auto time_of_last_change(std::filesystem::path path) -> std::filesystem::
     }
     catch (...)
     {
-        return {};
+        return std::nullopt;
     }
 }
 
-FileWatcher::FileWatcher(std::filesystem::path path, FileWatcher_Config config)
-    : _path{path}
-    , _time_of_last_change{time_of_last_change(path)}
-    , _config{config}
+FileWatcher::FileWatcher(std::filesystem::path const& path, FileWatcher_Callbacks const& callbacks, FileWatcher_Config config)
+    : _config{config}
 {
+    set_path(path, callbacks);
 }
 
-void FileWatcher::update(FileWatcher_Callbacks callbacks) const
+void FileWatcher::set_path(std::filesystem::path const& path, FileWatcher_Callbacks const& callbacks)
 {
-    std::visit([&](auto&& validity) { update_validity(validity, is_valid_file_path(_path), callbacks); }, _path_validity);
+    _path                = path;
+    _time_of_last_change = time_of_last_change(path);
+    _time_of_last_check  = clock::now();
+    call_appropriate_callback(callbacks);
+}
+
+void FileWatcher::update(FileWatcher_Callbacks const& callbacks) const
+{
+    { // Wait for the delay between checks
+        auto const now          = clock::now();
+        auto const elapsed_time = std::chrono::duration<float>{now - _time_of_last_check};
+        if (elapsed_time.count() < _config.delay_between_checks)
+            return;
+        _time_of_last_check = now;
+    }
+
+    { // Check if the file was updated since last check
+        auto const last_change = time_of_last_change(_path);
+        if (last_change == _time_of_last_change)
+            return;
+        _time_of_last_change = last_change;
+    }
+
+    call_appropriate_callback(callbacks);
+}
+
+void FileWatcher::call_appropriate_callback(FileWatcher_Callbacks const& callbacks) const
+{
     if (path_is_valid())
-    {
-        using clock = std::chrono::steady_clock;
-        // Init static variable (it is static so that we don't need to include chrono in the header file)
-        static auto _time_of_last_check = clock::now();
-        // Wait for delay between checks
-        const auto now          = clock::now();
-        const auto elapsed_time = std::chrono::duration<float>{now - _time_of_last_check};
-        if (elapsed_time.count() > _config.delay_between_checks)
-        {
-            _time_of_last_check = now;
-            // Check file was updated since last check
-            const auto last_change = time_of_last_change(_path);
-            if (last_change != _time_of_last_change)
-            {
-                on_file_changed(callbacks);
-            }
-        }
-    }
-}
-
-void FileWatcher::on_file_changed(FileWatcher_Callbacks callbacks) const
-{
-    _path_validity       = Valid{};
-    _time_of_last_change = time_of_last_change(_path);
-    callbacks.on_file_changed(_path.string());
-}
-
-void FileWatcher::on_path_invalid(FileWatcher_Callbacks callbacks) const
-{
-    _path_validity = Invalid{};
-    callbacks.on_path_invalid(_path.string());
-}
-
-void FileWatcher::set_path(std::filesystem::path path)
-{
-    _path          = path;
-    _path_validity = Unknown{};
-}
-
-void FileWatcher::update_validity(Valid, bool is_valid, FileWatcher_Callbacks callbacks) const
-{
-    if (!is_valid)
-    {
-        on_path_invalid(callbacks);
-    }
-}
-
-void FileWatcher::update_validity(Invalid, bool is_valid, FileWatcher_Callbacks callbacks) const
-{
-    if (is_valid)
-    {
-        on_file_changed(callbacks);
-    }
-}
-
-void FileWatcher::update_validity(Unknown, bool is_valid, FileWatcher_Callbacks callbacks) const
-{
-    if (is_valid)
-    {
-        on_file_changed(callbacks);
-    }
+        callbacks.on_file_changed(_path);
     else
-    {
-        on_path_invalid(callbacks);
-    }
+        callbacks.on_path_invalid(_path);
+}
+
+auto FileWatcher::path_is_valid() const -> bool
+{
+    return _time_of_last_change != std::nullopt;
 }
 
 } // namespace Cool

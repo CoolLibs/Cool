@@ -24,8 +24,8 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
-            name_in_code="log_when_creating_icon",
-            name_in_ui="Log when creating icon",
+            name_in_code="log_when_creating_textures",
+            name_in_ui="Log when creating textures",
             available_in_release=True,
         ),
         DebugOption(

@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include "Cool/FileWatcher/FileWatcher.h"
 #include "Texture.h"
 #include "TextureInfo.h"
 
@@ -11,10 +12,11 @@ namespace Cool {
 /// re-loads it if the source file changes.
 class TextureLibrary {
 public:
-    /// Might return nullptr if the file does not exist or is not an image.
     [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const&;
 
     void clear() { _textures.clear(); }
+    /// Returns true iff at least one of the textures in the library has changed.
+    auto update() -> bool;
 
     [[nodiscard]] static auto instance() -> TextureLibrary&
     {
@@ -23,8 +25,7 @@ public:
     }
 
 private:
-    std::map<std::filesystem::path, Texture> _textures;
-    // TODO(JF) File watchers for all the textures we are currently storing
+    std::map<std::filesystem::path, std::pair<Texture, FileWatcher>> _textures;
 };
 
 } // namespace Cool

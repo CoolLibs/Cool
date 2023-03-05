@@ -3,6 +3,7 @@
 #include <Cool/Gpu/Vulkan/Context.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
+#include "Cool/Gpu/TextureLibrary.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
 #if defined(COOL_VULKAN)
@@ -90,6 +91,8 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+    if (TextureLibrary::instance().update())
+        _app.trigger_rerender();
     _app.update();
     imgui_new_frame();
     check_for_imgui_item_picker_request();

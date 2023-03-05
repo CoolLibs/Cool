@@ -14,9 +14,13 @@ public:
      */
     virtual void update() = 0;
 
+    /// Called when a global setting changed and the app will need to rerender.
+    /// (Useful if the app has optimizations that only make it render when something changes).
+    virtual void trigger_rerender(){};
+
     /**
      * @brief User inputs are only dispatched to the app when this returns true.
-     * It can be usefull to set if to false for example while you are exporting a video and you want to prevent the user accidentally changing parameters.
+     * It can be useful to set if to false for example while you are exporting a video and you want to prevent the user accidentally changing parameters.
      */
     virtual bool inputs_are_allowed() const = 0;
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <Cool/FileWatcher/FileWatcher.h>
 #include <Cool/Log/MessageSender.h>
+#include <filesystem>
 #include <reg/reg.hpp>
 #include "Dirty.h"
 #include "VariableId.h"
@@ -67,6 +68,7 @@ private:
     }
 };
 
+// TODO(JF) Is this class still used?
 class Input_File {
 public:
     Input_File() = default; // For serialization :( Remove whenever possible
@@ -75,27 +77,30 @@ public:
     {
     }
 
+    auto file_watcher_callbacks(SetDirty_Ref set_dirty) -> FileWatcher_Callbacks
+    {
+        return {
+            .on_file_changed =
+                [&](std::filesystem::path const&) {
+                    set_dirty(_dirty_flag);
+                    _path_error.clear();
+                },
+            .on_path_invalid =
+                [&](std::filesystem::path const& path) {
+                    _path_error.send(
+                        {
+                            .category = "Input File",
+                            .message  = fmt::format("Invalid path: \"{}\"", path),
+                            .severity = Cool::MessageSeverity::Error,
+                        }
+                    );
+                },
+        };
+    }
+
     void update(SetDirty_Ref set_dirty)
     {
-        file_watcher.update(
-            {
-                .on_file_changed =
-                    [&](std::string_view) {
-                        set_dirty(_dirty_flag);
-                        _path_error.clear();
-                    },
-                .on_path_invalid =
-                    [&](std::string_view path) {
-                        _path_error.send(
-                            {
-                                .category = "Input File",
-                                .message  = fmt::format("Invalid path: \"{}\"", path),
-                                .severity = Cool::MessageSeverity::Error,
-                            }
-                        );
-                    },
-            }
-        );
+        file_watcher.update(file_watcher_callbacks(set_dirty));
     }
 
     auto should_highlight() const -> bool
@@ -107,7 +112,7 @@ public: // private: // TODO(JF) Make this private!
     friend class Ui_Ref;
     friend class InputProvider_Ref;
     friend class InputDestructor_Ref;
-    Cool::FileWatcher file_watcher{};
+    Cool::FileWatcher file_watcher{"", FileWatcher_NoCallbacks()};
     DirtyFlag         _dirty_flag;
 
 private:

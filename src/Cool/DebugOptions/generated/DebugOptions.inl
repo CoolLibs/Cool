@@ -35,7 +35,7 @@ public:
         return instance().log_when_autosaving;
     }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
-    [[nodiscard]] static auto log_when_creating_icon() -> bool& { return instance().log_when_creating_icon; }
+    [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 #if DEBUG
     [[nodiscard]] static auto log_opengl_info() -> bool&
@@ -68,7 +68,7 @@ private:
 #endif
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
-        bool log_when_creating_icon{false};
+        bool log_when_creating_textures{false};
         bool log_number_of_threads_in_the_thread_pool{false};
 #if DEBUG
         bool log_opengl_info{false};
@@ -91,14 +91,14 @@ private:
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
-                cereal::make_nvp("Log when creating icon", log_when_creating_icon),
+                cereal::make_nvp("Log when creating textures", log_when_creating_textures),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window)
 #else
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
-                cereal::make_nvp("Log when creating icon", log_when_creating_icon),
+                cereal::make_nvp("Log when creating textures", log_when_creating_textures),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
 #endif
 
@@ -113,7 +113,7 @@ private:
 #endif
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
-        instance().log_when_creating_icon                           = false;
+        instance().log_when_creating_textures                       = false;
         instance().log_number_of_threads_in_the_thread_pool         = false;
 #if DEBUG
         instance().log_opengl_info = false;
@@ -177,9 +177,9 @@ private:
             ImGui::Checkbox("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
         }
 
-        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when creating icon", &instance().log_when_creating_icon);
+            ImGui::Checkbox("Log when creating textures", &instance().log_when_creating_textures);
         }
 
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
@@ -244,9 +244,9 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
-        if (wafl::similarity_match({filter, "Log when creating icon"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
-            instance().log_when_creating_icon = !instance().log_when_creating_icon;
+            instance().log_when_creating_textures = !instance().log_when_creating_textures;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
