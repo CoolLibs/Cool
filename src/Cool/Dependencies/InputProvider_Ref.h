@@ -61,11 +61,6 @@ public:
         return _camera2D;
     }
 
-    auto operator()(const Input_File& file_input) const -> std::filesystem::path
-    {
-        return file_input.file_watcher.path();
-    }
-
     auto variable_registries() -> VariableRegistries& { return _variable_registries; }
 
 private:
