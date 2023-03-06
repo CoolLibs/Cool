@@ -213,7 +213,7 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp(ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 0), ImVec2(1, 1), ImGui::GetColorU32(tint_color));
+    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 1), ImVec2(1, 0), ImGui::GetColorU32(tint_color));
 }
 
 bool input_uint(const char* label, unsigned int* value_p)

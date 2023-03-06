@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <map>
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Texture.h"
@@ -27,8 +28,19 @@ public:
         return inst;
     }
 
+    void imgui_debug_view() const;
+
 private:
-    std::map<std::filesystem::path, std::pair<Texture, FileWatcher>> _textures;
+    void reload_texture(std::filesystem::path const& path);
+
+private:
+    using clock = std::chrono::steady_clock;
+    struct Data {
+        std::optional<Texture> texture{};
+        FileWatcher            file_watcher{};
+        clock::time_point      date_of_last_request{};
+    };
+    std::map<std::filesystem::path, Data> _textures;
 };
 
 } // namespace Cool

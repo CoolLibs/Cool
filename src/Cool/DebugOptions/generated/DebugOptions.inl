@@ -36,6 +36,15 @@ public:
     }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
+    static void               texture_library_debug_view(std::function<void()> callback)
+    {
+        if (instance().texture_library_debug_view)
+        {
+            ImGui::Begin("Texture Library", &instance().texture_library_debug_view);
+            callback();
+            ImGui::End();
+        }
+    }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 #if DEBUG
     [[nodiscard]] static auto log_opengl_info() -> bool&
@@ -69,6 +78,7 @@ private:
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_textures{false};
+        bool texture_library_debug_view{false};
         bool log_number_of_threads_in_the_thread_pool{false};
 #if DEBUG
         bool log_opengl_info{false};
@@ -92,6 +102,7 @@ private:
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
+                cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window)
@@ -99,6 +110,7 @@ private:
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
+                cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
 #endif
 
@@ -114,6 +126,7 @@ private:
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_textures                       = false;
+        instance().texture_library_debug_view                       = false;
         instance().log_number_of_threads_in_the_thread_pool         = false;
 #if DEBUG
         instance().log_opengl_info = false;
@@ -182,6 +195,11 @@ private:
             ImGui::Checkbox("Log when creating textures", &instance().log_when_creating_textures);
         }
 
+        if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("View Texture Library", &instance().texture_library_debug_view);
+        }
+
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
         {
             ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
@@ -247,6 +265,12 @@ private:
         if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
             instance().log_when_creating_textures = !instance().log_when_creating_textures;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
+        {
+            instance().texture_library_debug_view = !instance().texture_library_debug_view;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

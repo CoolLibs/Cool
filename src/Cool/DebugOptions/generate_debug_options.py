@@ -29,6 +29,13 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
+            name_in_code="texture_library_debug_view",
+            name_in_ui="View Texture Library",
+            available_in_release=True,
+            window_name="Texture Library",
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="log_number_of_threads_in_the_thread_pool",
             name_in_ui="Log the number of threads in the thread pool",
             available_in_release=True,
