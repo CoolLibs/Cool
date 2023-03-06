@@ -7,9 +7,6 @@
 
 namespace Cool {
 
-// TODO(JF) We do not rerender when a texture that was not found suddenly appears.
-// TODO(JF) Debug Option to view all the textures in the library
-
 /// Compared to the Icons class, this one does not assume that the
 /// images will be found nor that they will stay the same forever.
 /// This is why it adds checks to see if the texture exists, and
