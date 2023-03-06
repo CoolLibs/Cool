@@ -6,7 +6,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<int>& var) -> bool
 {
-    return internal::imgui_widget(var.name.c_str(), &var.value, var.metadata.bounds);
+    return internal::imgui_widget(var.name().c_str(), &var.value(), var.metadata().bounds);
 }
 
 auto imgui_widget(VariableMetadata<int>& meta) -> bool

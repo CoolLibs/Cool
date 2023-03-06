@@ -47,7 +47,7 @@ static void set_default_value_to_current_value(Preset2& preset)
     for (auto& variable : preset.values)
     {
         std::visit([](auto&& variable) {
-            variable.default_value = variable.value;
+            variable.default_value() = variable.value();
         },
                    variable);
     }

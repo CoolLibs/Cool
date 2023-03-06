@@ -4,7 +4,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<Hue>& var) -> bool
 {
-    return imgui_widget(var.name, var.value);
+    return imgui_widget(var.name(), var.value());
 }
 
 auto imgui_widget(VariableMetadata<Hue>&) -> bool

@@ -28,7 +28,7 @@ public:
             def.name,
             def.description,
             _variable_registries.get().create_shared(
-                Cool::Variable<T>{def.name, def.default_value, def.metadata}
+                Cool::Variable<T>{{def.name, def.default_value, def.metadata}}
             ),
             def.desired_color_space,
         };

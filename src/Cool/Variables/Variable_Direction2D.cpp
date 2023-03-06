@@ -5,7 +5,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<Direction2D>& var) -> bool
 {
-    return imgui_widget(var.name, var.value, var.metadata.number_of_snaps, var.metadata.snaps_offset, var.metadata.always_snap);
+    return imgui_widget(var.name(), var.value(), var.metadata().number_of_snaps, var.metadata().snaps_offset, var.metadata().always_snap);
 }
 
 auto imgui_widget(VariableMetadata<Direction2D>& meta) -> bool

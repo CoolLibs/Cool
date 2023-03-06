@@ -4,7 +4,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<Point2D>& var) -> bool
 {
-    return imgui_widget(var.name.c_str(), var.value, var.metadata.drag_speed);
+    return imgui_widget(var.name().c_str(), var.value(), var.metadata().drag_speed);
 }
 
 auto imgui_widget(VariableMetadata<Point2D>& meta) -> bool

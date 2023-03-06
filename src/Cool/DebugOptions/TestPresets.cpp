@@ -12,7 +12,7 @@ void TestPresets::imgui()
     ImGui::NewLine();
     if (ImGui::Button("Add a field in the settings"))
     {
-        _current_settings.push_back(Cool::Variable<int>{.name = std::to_string(_next_field_name++), .value = 5});
+        _current_settings.push_back(Cool::Variable<int>{{.name = std::to_string(_next_field_name++), .value = 5}});
     }
     if (ImGui::Button("Remove a field in the settings"))
     {
@@ -27,9 +27,9 @@ void TestPresets::imgui()
         if (_manager.contains(test_id)) // Check if the adding was successful
         {
             _manager.edit(test_id, {
-                                       Cool::Variable<int>{.name = "First", .value = 0},
-                                       Cool::Variable<float>{.name = "Second", .value = 0.f},
-                                       Cool::Variable<float>{.name = "Third", .value = 0.f},
+                                       Cool::Variable<int>{{.name = "First", .value = 0}},
+                                       Cool::Variable<float>{{.name = "Second", .value = 0.f}},
+                                       Cool::Variable<float>{{.name = "Third", .value = 0.f}},
                                    });
         }
     }

@@ -6,7 +6,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<Angle>& var) -> bool
 {
-    return Cool::imgui_widget(var.name, var.value, var.metadata.number_of_snaps, var.metadata.snaps_offset, var.metadata.always_snap);
+    return Cool::imgui_widget(var.name(), var.value(), var.metadata().number_of_snaps, var.metadata().snaps_offset, var.metadata().always_snap);
 }
 
 auto imgui_widget(VariableMetadata<Angle>& meta) -> bool

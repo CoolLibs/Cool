@@ -7,10 +7,10 @@ namespace Cool {
 auto imgui_widget(Variable<Gradient>& var) -> bool
 {
     return imgui_widget(
-        var.name,
-        var.value,
-        var.metadata.randomize_new_marks_colors,
-        internal::color_imgui_flags(var.metadata.is_hdr)
+        var.name(),
+        var.value(),
+        var.metadata().randomize_new_marks_colors,
+        internal::color_imgui_flags(var.metadata().is_hdr)
     );
 }
 

@@ -8,7 +8,7 @@ namespace Cool {
 
 class InputProvider_Ref {
 public:
-    InputProvider_Ref(const VariableRegistries& registries, float render_target_aspect_ratio, float height, float time, glm::mat3 const& camera2D)
+    InputProvider_Ref(VariableRegistries& registries, float render_target_aspect_ratio, float height, float time, glm::mat3 const& camera2D)
         : _variable_registries{registries}
         , _render_target_aspect_ratio{render_target_aspect_ratio}
         , _height{height}
@@ -23,14 +23,14 @@ public:
             auto const maybe_variable = _variable_registries.get().get(input._current_variable_id);
             if (maybe_variable)
             {
-                return maybe_variable->value;
+                return maybe_variable->value();
             }
         }
         { // Try the default variable
             auto const maybe_variable = _variable_registries.get().get(input._default_variable_id.raw());
             if (maybe_variable)
             {
-                return maybe_variable->value;
+                return maybe_variable->value();
             }
         }
         // Default, this should not happen
@@ -66,8 +66,10 @@ public:
         return file_input.file_watcher.path();
     }
 
+    auto variable_registries() -> VariableRegistries& { return _variable_registries; }
+
 private:
-    std::reference_wrapper<const VariableRegistries> _variable_registries;
+    std::reference_wrapper<VariableRegistries>       _variable_registries;
     float                                            _render_target_aspect_ratio;
     float                                            _height;
     float                                            _time;

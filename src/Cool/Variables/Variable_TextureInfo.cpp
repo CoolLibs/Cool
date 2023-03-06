@@ -4,7 +4,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<TextureInfo>& var) -> bool
 {
-    return var.value.imgui_widget();
+    return var.value().imgui_widget();
 }
 
 auto imgui_widget(VariableMetadata<TextureInfo>&) -> bool

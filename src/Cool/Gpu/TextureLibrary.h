@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <map>
+#include <optional>
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Texture.h"
 #include "TextureInfo.h"
@@ -18,6 +19,7 @@ public:
     void clear() { _textures.clear(); }
     /// Returns true iff at least one of the textures in the library has changed.
     auto update() -> bool;
+    auto error_from(std::filesystem::path const&) -> std::optional<std::string>;
 
     [[nodiscard]] static auto instance() -> TextureLibrary&
     {
@@ -33,9 +35,10 @@ private:
 private:
     using clock = std::chrono::steady_clock;
     struct Data {
-        std::optional<Texture> texture{};
-        FileWatcher            file_watcher{};
-        clock::time_point      date_of_last_request{};
+        std::optional<Texture>     texture{};
+        FileWatcher                file_watcher{};
+        clock::time_point          date_of_last_request{};
+        std::optional<std::string> error_message{};
     };
     std::map<std::filesystem::path, Data> _textures;
 };

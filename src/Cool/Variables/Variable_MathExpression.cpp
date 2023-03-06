@@ -6,7 +6,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<Cool::MathExpression>& var) -> bool
 {
-    return imgui_widget(var.name.c_str(), var.value);
+    return imgui_widget(var.name().c_str(), var.value());
 }
 auto imgui_widget(VariableMetadata<Cool::MathExpression>&) -> bool
 {

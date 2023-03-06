@@ -43,7 +43,7 @@ auto TextureLibrary::get(std::filesystem::path const& path) -> Texture const&
     it->second.date_of_last_request = clock::now();
 
     auto const& maybe_tex = it->second.texture;
-    if (!maybe_tex) // Texture might be nullopt simply because it hasn't been used in a while. Try to reload the texture.
+    if (!maybe_tex && !it->second.error_message) // Texture ise nullopt simply because it hasn't been used in a while. Reload the texture.
         reload_texture(path);
 
     if (!maybe_tex)
@@ -58,6 +58,7 @@ void TextureLibrary::reload_texture(std::filesystem::path const& path)
 {
     try
     {
+        _textures[path].error_message = std::nullopt;
         _textures[path].texture = std::nullopt;
         _textures[path].texture = Texture{img::load(path)};
         if (DebugOptions::log_when_creating_textures())
@@ -65,6 +66,7 @@ void TextureLibrary::reload_texture(std::filesystem::path const& path)
     }
     catch (std::exception const& e)
     {
+        _textures[path].error_message = e.what();
     }
 }
 
@@ -83,6 +85,11 @@ auto TextureLibrary::update() -> bool
     }
 
     return has_changed;
+}
+
+auto TextureLibrary::error_from(std::filesystem::path const& path) -> std::optional<std::string>
+{
+    return _textures[path].error_message;
 }
 
 void TextureLibrary::imgui_debug_view() const
