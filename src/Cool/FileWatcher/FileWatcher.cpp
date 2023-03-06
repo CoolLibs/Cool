@@ -1,17 +1,15 @@
 #include "FileWatcher.h"
 #include <Cool/File/File.h>
+#include <filesystem>
 
 namespace Cool {
-
-static auto is_valid_file_path(std::filesystem::path const& path) -> bool
-{
-    return File::exists(path) && !std::filesystem::is_directory(path);
-}
 
 static auto time_of_last_change(std::filesystem::path const& path) -> std::optional<std::filesystem::file_time_type>
 {
     try
     {
+        if (!std::filesystem::is_regular_file(path)) // The file watcher doesn't accept directories nor special files, only regular files. Returning nullopt will make us consider that the path is invalid.
+            return std::nullopt;
         return std::filesystem::last_write_time(path);
     }
     catch (...)
