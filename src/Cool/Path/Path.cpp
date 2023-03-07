@@ -11,7 +11,9 @@ bool Path::_cool_res_is_initialized = false;
 
 const std::filesystem::path& Path::root()
 {
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
     assert(_root_is_initialized);
+#endif
     return _root;
 }
 
@@ -26,7 +28,9 @@ void Path::initialize_root(std::filesystem::path path)
 
 const std::filesystem::path& Path::cool_res()
 {
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
     assert(_cool_res_is_initialized);
+#endif
     return _cool_res;
 }
 

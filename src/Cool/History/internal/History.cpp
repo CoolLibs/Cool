@@ -47,7 +47,9 @@ void History::end_undo_group()
 
 void History::add_action(Action action)
 {
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
     assert(_an_undo_group_is_open && "add_action() must be called between a call to begin_undo_group() and a call to end_undo_group()");
+#endif
     _tmp_action_buffer.push_back(action);
 }
 
