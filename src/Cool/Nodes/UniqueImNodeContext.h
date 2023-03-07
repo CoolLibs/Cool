@@ -9,6 +9,7 @@ public:
     UniqueImNodeContext()
         : _context{ImNodes::CreateContext()}
     {
+        ImNodes::SetCurrentContext(_context);
         static const bool b                                   = true;
         ImNodes::GetIO().LinkDetachWithModifierClick.Modifier = &b;
         ImNodes::GetIO().AltMouseButton                       = ImGuiMouseButton_Right;
