@@ -13,10 +13,20 @@ struct TextureInfo {
     friend auto operator<=>(TextureInfo const& a, TextureInfo const& b)
     {
         // operator<=> implemented manually because MacOS's standard library doesn't have it yet for std::filesystem::path :(
-        auto const order = a.sampler <=> b.sampler;
-        if (order != std::strong_ordering::equal)
-            return order;
-        return a.absolute_path.string() <=> b.absolute_path.string();
+
+        {
+            auto const order = a.sampler <=> b.sampler;
+            if (order != std::strong_ordering::equal)
+                return order;
+        }
+        {
+            int const order = strcmp(a.absolute_path.string().c_str(), b.absolute_path.string().c_str());
+            if (order < 0)
+                return std::strong_ordering::less;
+            if (order > 0)
+                return std::strong_ordering::greater;
+            return std::strong_ordering::equal;
+        }
     }
 
 private:
