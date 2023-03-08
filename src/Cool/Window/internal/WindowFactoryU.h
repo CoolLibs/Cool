@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/Log/ToUser.h>
 #include "../Window.h"
 #include "../WindowManager.h"
 #include "WindowConfig.h"
@@ -17,7 +18,7 @@ Window& make_window_with_glfw(const WindowConfig& config, WindowManager& window_
     {
         const char* error_description; // NOLINT
         glfwGetError(&error_description);
-        Log::Debug::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
+        Log::ToUser::error("glfw", fmt::format("Window creation failed:\n{}", error_description));
     }
 
     set_window_icon(window.glfw());
