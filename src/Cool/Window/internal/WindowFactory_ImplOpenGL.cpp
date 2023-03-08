@@ -1,3 +1,4 @@
+#include <stdexcept>
 #if defined(COOL_OPENGL)
 #include "WindowFactory_ImplOpenGL.h" // Must be included first
 //
@@ -81,9 +82,7 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #if DEBUG
     if (COOL_OPENGL_VERSION >= 430)
-    {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    }
 #endif
     // Create window
     auto&       windows      = window_manager.windows();
@@ -93,7 +92,7 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     WindowFactoryU::apply_config(config, window);
     // Load Glad
     if (!gladLoadGL(glfwGetProcAddress)) // NOLINT
-        Log::ToUser::error("WindowFactory_ImplOpenGL::make_window", "Failed to load OpenGL functions");
+        throw std::runtime_error{"Failed to load OpenGL functions"};
     //
     return window;
 }

@@ -1,10 +1,10 @@
 #include "WindowFactory.h"
 #include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
-#include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
+#include <stdexcept>
 
 namespace Cool {
 
@@ -20,7 +20,7 @@ static void initialize_glfw()
     {
         const char* error_description; // NOLINT(*-init-variables)
         glfwGetError(&error_description);
-        Log::ToUser::error("WindowFactory::initialize_glfw", fmt::format("Initialization failed:\n{}", error_description));
+        throw std::runtime_error{fmt::format("GLFW initialization failed:\n{}", error_description)};
     }
 }
 
