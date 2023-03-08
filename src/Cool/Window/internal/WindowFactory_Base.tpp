@@ -79,6 +79,25 @@ void WindowFactory_Base<T>::initialize_imgui()
     // io.ConfigViewportsNoAutoMerge = true;
     // io.ConfigViewportsNoTaskBarIcon = true;
 
+    // Fonts
+    // Merge icons into default tool font
+    io.Fonts->AddFontDefault();
+    float baseFontSize = 13.0f;        // 13.0f is the size of the default font. Change to the font size you use.
+    float iconFontSize = baseFontSize; //* 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+
+    ImFontConfig config;
+    config.MergeMode                       = true;
+    config.PixelSnapH                      = true;
+    config.GlyphMinAdvanceX                = iconFontSize; // Use if you want to make the icon monospaced
+    static const ImWchar     icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+    ImVector<ImWchar>        ranges;
+    ImFontGlyphRangesBuilder builder;
+    // builder.AddText("Hello world");
+    builder.AddText(ICON_FA_DIAGRAM_PROJECT);
+    builder.BuildRanges(&ranges);
+    io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Font Awesome 6 Free-Solid-900.otf").string().c_str(), iconFontSize, &config, icon_ranges);
+    io.Fonts->Build();
+
     // Setup style
     ImGui::StyleColorsClassic();
     ImGuiStyle& style                 = ImGui::GetStyle();

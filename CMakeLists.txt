@@ -81,6 +81,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <cereal/types/variant.hpp>
     <boxer/boxer.h>
     <nfd.hpp>
+    <IconFontCppHeaders/IconsFontAwesome6.h>
     <scope_guard/scope_guard.hpp>
     <fmt/format.h>
     <fmt/core.h>

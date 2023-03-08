@@ -82,3 +82,6 @@
 [submodule "lib/os_name"]
 	path = lib/os_name
 	url = https://github.com/CoolLibs/os_name
+[submodule "lib/IconFontCppHeaders"]
+	path = lib/IconFontCppHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders
