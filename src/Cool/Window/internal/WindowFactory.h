@@ -5,41 +5,32 @@
 
 namespace Cool {
 
-/// A wrapper for (Glfw + Vulkan/OpenGL + ImGui)'s initialization and shutdown, as well as windows creation
+/// A wrapper for [Glfw + Vulkan/OpenGL + ImGui]'s initialization and shutdown, as well as windows creation.
 class WindowFactory {
 public:
     WindowFactory();
     ~WindowFactory();
+    WindowFactory(const WindowFactory&)                        = delete;
+    auto operator=(const WindowFactory&) -> WindowFactory&     = delete;
+    WindowFactory(WindowFactory&&) noexcept                    = delete;
+    auto operator=(WindowFactory&&) noexcept -> WindowFactory& = delete;
 
-    WindowManager& window_manager() { return _window_manager; }
+    auto window_manager() -> WindowManager& { return _window_manager; }
 
-    /**
-     * @brief Creates the main window. A main window is required for the application to run.
-     * There can only be one such main window. If you want more windows, use make_secondary_window()
-     * @return Window& A reference to the window (it is actually stored in the window_manager() who handles its lifetime).
-     */
-    Window& make_main_window(const WindowConfig& config);
+    /// Creates the main window. A main window is required for the application to run.
+    /// There can only be one such main window. If you want more windows, use `make_secondary_window()`.
+    /// This returns a reference to the window (it is actually stored in the `window_manager()`, which handles its lifetime).
+    auto make_main_window(WindowConfig const&) -> Window&;
 
-    /**
-     * @brief Creates a secondary window. It will not have an ImGui context.
-     * You can create as many secondary windows as you want.
-     * NB : you must also create one main window for the application to run.
-     * @return Window& A reference to the window (it is actually stored in the window_manager() who handles its lifetime).
-     */
-    Window& make_secondary_window(const WindowConfig& config);
+    /// Creates a secondary window. It will not have an ImGui context.
+    /// You can create as many secondary windows as you want.
+    /// NB: you must also create one main window for the application to run.
+    /// This returns a reference to the window (it is actually stored in the `window_manager()`, which handles its lifetime).
+    auto make_secondary_window(WindowConfig const&) -> Window&;
 
-    /**
-     * @brief Returns the underlying implementation for a given graphics API.
-     * Note that if you use this your app wont be compatible with other graphics APIs (probably not a big deal, but better safe than sorry)
-     *
-     * @return RenderTarget_Impl&
-     */
-    WindowFactory_Impl& impl() { return _impl; }
-
-private:
-    void        initialize_glfw();
-    void        initialize_imgui();
-    static void glfw_error_callback(int error, const char* description);
+    /// Returns the underlying implementation for a given graphics API (OpenGL, Vulkan, ...).
+    /// Note that if you use this your app wont be compatible with other graphics APIs if you decide to switch one day (probably not a big deal, but better safe than sorry).
+    auto impl() -> WindowFactory_Impl& { return _impl; }
 
 private:
     WindowManager      _window_manager;
