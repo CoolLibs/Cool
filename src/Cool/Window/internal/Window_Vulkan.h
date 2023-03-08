@@ -16,7 +16,7 @@ struct VulkanWindowState {
 
 class Window_Vulkan : public Window_Base {
 public:
-    // To construct a window, use WindowFactory_Vulkan::make_window()
+    // To construct a window, use WindowFactory_ImplVulkan::make_window()
     Window_Vulkan(GLFWwindow* window);
     Window_Vulkan(Window_Vulkan&&) noexcept            = default;
     Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
@@ -34,7 +34,7 @@ public:
     VulkanWindowState _vulkan_window_state;
 
 private:
-    friend class WindowFactory_Vulkan;
+    friend class WindowFactory_ImplVulkan;
     bool _present_mode_mailbox_is_avaible = false;
 };
 

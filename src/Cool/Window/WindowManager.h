@@ -16,8 +16,7 @@ public:
     }
 
 private:
-    template<typename T>
-    friend class WindowFactory_Base;
+    friend class WindowFactory;
     void set_main_window(Window& window)
     {
         assert(_main_window == nullptr && "You can only have one main window !");
