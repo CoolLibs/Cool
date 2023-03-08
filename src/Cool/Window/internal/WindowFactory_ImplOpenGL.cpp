@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include "GLFW/glfw3.h"
 #if defined(COOL_OPENGL)
 #include "WindowFactory_ImplOpenGL.h" // Must be included first
 //
@@ -52,7 +53,7 @@ static void setup_opengl_debugging()
 }
 #endif
 
-static void setup_imgui(Window_OpenGL& window)
+static void setup_imgui(Window& window)
 {
     static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
     ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
@@ -60,7 +61,7 @@ static void setup_imgui(Window_OpenGL& window)
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 }
 
-void WindowFactory_ImplOpenGL::setup_main_window(Window_OpenGL& window)
+void WindowFactory_ImplOpenGL::setup_main_window(Window& window)
 {
 #if DEBUG
     setup_opengl_debugging();
@@ -68,12 +69,12 @@ void WindowFactory_ImplOpenGL::setup_main_window(Window_OpenGL& window)
     setup_imgui(window);
 }
 
-void WindowFactory_ImplOpenGL::setup_secondary_window(Window_OpenGL&, WindowManager& window_manager)
+void WindowFactory_ImplOpenGL::setup_secondary_window(Window&, WindowManager& window_manager)
 {
-    window_manager.main_window().make_current();
+    glfwMakeContextCurrent(window_manager.main_window().glfw());
 }
 
-auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowManager& window_manager) -> Window_OpenGL&
+auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowManager& window_manager) -> Window&
 {
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
@@ -87,8 +88,8 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     // Create window
     auto&       windows      = window_manager.windows();
     GLFWwindow* other_window = windows.empty() ? nullptr : windows.back().glfw();
-    auto&       window       = WindowFactoryU::make_window_with_glfw<Window_OpenGL>(config, window_manager, other_window);
-    window.make_current();
+    auto&       window       = WindowFactoryU::make_window_with_glfw(config, window_manager, other_window);
+    glfwMakeContextCurrent(window.glfw());
     WindowFactoryU::apply_config(config, window);
     // Load Glad
     if (!gladLoadGL(glfwGetProcAddress)) // NOLINT

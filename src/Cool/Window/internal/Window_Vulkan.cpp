@@ -7,11 +7,6 @@
 
 namespace Cool {
 
-Window_Vulkan::Window_Vulkan(GLFWwindow* window)
-    : Window_Base{window}
-{
-}
-
 Window_Vulkan::~Window_Vulkan()
 {
     ImGui_ImplVulkanH_DestroyWindow(

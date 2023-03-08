@@ -4,6 +4,7 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
 #include "Cool/Gpu/TextureLibrary.h"
+#include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
 #if defined(COOL_VULKAN)
@@ -108,7 +109,7 @@ static void prepare_windows(WindowManager& window_manager)
         window.check_for_swapchain_rebuild();
     }
 #elif defined(COOL_OPENGL)
-    window_manager.main_window().make_current();
+    glfwMakeContextCurrent(window_manager.main_window().glfw());
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
 #endif

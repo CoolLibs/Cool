@@ -14,12 +14,8 @@ struct VulkanWindowState {
     bool                     g_SwapChainRebuild = false;
 };
 
-class Window_Vulkan : public Window_Base {
+class Window_Vulkan {
 public:
-    // To construct a window, use WindowFactory_ImplVulkan::make_window()
-    Window_Vulkan(GLFWwindow* window);
-    Window_Vulkan(Window_Vulkan&&) noexcept            = default;
-    Window_Vulkan& operator=(Window_Vulkan&&) noexcept = default;
     ~Window_Vulkan();
 
     void check_for_swapchain_rebuild();
