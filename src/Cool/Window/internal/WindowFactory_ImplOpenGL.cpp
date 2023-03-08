@@ -1,5 +1,4 @@
 #if defined(COOL_OPENGL)
-
 #include "WindowFactory_ImplOpenGL.h" // Must be included first
 //
 #include <Cool/Utils/Version.h>
@@ -10,9 +9,10 @@
 
 namespace Cool {
 
-WindowFactory_ImplOpenGL::WindowFactory_ImplOpenGL()
+static void shutdown_imgui()
 {
-    static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 }
 
 void WindowFactory_ImplOpenGL::shut_down(WindowManager& window_manager)
@@ -26,9 +26,44 @@ void WindowFactory_ImplOpenGL::shut_down(WindowManager& window_manager)
 #endif
 }
 
+#if DEBUG
+static void setup_opengl_debugging()
+{
+    if (COOL_OPENGL_VERSION < 430)
+        return;
+
+    int flags; // NOLINT
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+    {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(GLDebugCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    }
+    else
+    {
+        Log::Debug::warning(
+            "WindowFactory_ImplOpenGL::setupGLDebugging",
+            "Couldn't setup OpenGL Debugging"
+        );
+    }
+}
+#endif
+
+static void setup_imgui(Window_OpenGL& window)
+{
+    static_assert(COOL_OPENGL_VERSION >= 330 && "ImGui requires at least OpenGL 3.3");
+    ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
+    std::string const glsl_version = fmt::format("#version {}", COOL_OPENGL_VERSION);
+    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
+}
+
 void WindowFactory_ImplOpenGL::setup_main_window(Window_OpenGL& window)
 {
-    setupGLDebugging();
+#if DEBUG
+    setup_opengl_debugging();
+#endif
     setup_imgui(window);
 }
 
@@ -37,7 +72,7 @@ void WindowFactory_ImplOpenGL::setup_secondary_window(Window_OpenGL&, WindowMana
     window_manager.main_window().make_current();
 }
 
-Window_OpenGL& WindowFactory_ImplOpenGL::make_window(const WindowConfig& config, WindowManager& window_manager)
+auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowManager& window_manager) -> Window_OpenGL&
 {
     // Window flags
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
@@ -58,49 +93,9 @@ Window_OpenGL& WindowFactory_ImplOpenGL::make_window(const WindowConfig& config,
     WindowFactoryU::apply_config(config, window);
     // Load Glad
     if (!gladLoadGL(glfwGetProcAddress)) // NOLINT
-    {
-        Log::Debug::error("WindowFactory_ImplOpenGL::make_window", "Failed to initialize Glad");
-    }
+        Log::ToUser::error("WindowFactory_ImplOpenGL::make_window", "Failed to load OpenGL functions");
     //
     return window;
-}
-
-void WindowFactory_ImplOpenGL::setupGLDebugging()
-{
-#if DEBUG
-    if (COOL_OPENGL_VERSION >= 430)
-    {
-        int flags; // NOLINT
-        glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-        {
-            glEnable(GL_DEBUG_OUTPUT);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-            glDebugMessageCallback(GLDebugCallback, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-        }
-        else
-        {
-            Log::Debug::warning(
-                "WindowFactory_ImplOpenGL::setupGLDebugging",
-                "Couldn't setup OpenGL Debugging"
-            );
-        }
-    }
-#endif
-}
-
-void WindowFactory_ImplOpenGL::setup_imgui(Window_OpenGL& window)
-{
-    ImGui_ImplGlfw_InitForOpenGL(window.glfw(), false);
-    std::string glslVersion = "#version " + std::to_string(COOL_OPENGL_VERSION);
-    ImGui_ImplOpenGL3_Init(glslVersion.c_str());
-}
-
-void WindowFactory_ImplOpenGL::shutdown_imgui()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
 }
 
 } // namespace Cool

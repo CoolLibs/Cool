@@ -28,13 +28,8 @@ public:
     /// This returns a reference to the window (it is actually stored in the `window_manager()`, which handles its lifetime).
     auto make_secondary_window(WindowConfig const&) -> Window&;
 
-    /// Returns the underlying implementation for a given graphics API (OpenGL, Vulkan, ...).
-    /// Note that if you use this your app wont be compatible with other graphics APIs if you decide to switch one day (probably not a big deal, but better safe than sorry).
-    auto impl() -> WindowFactory_Impl& { return _impl; }
-
 private:
-    WindowManager      _window_manager;
-    WindowFactory_Impl _impl;
+    WindowManager _window_manager;
 };
 
 } // namespace Cool

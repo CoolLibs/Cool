@@ -84,15 +84,15 @@ WindowFactory::~WindowFactory()
 
 auto WindowFactory::make_main_window(WindowConfig const& config) -> Window&
 {
-    auto& window = _impl.make_window(config, _window_manager);
-    _impl.setup_main_window(window);
+    auto& window = WindowFactory_Impl::make_window(config, _window_manager);
+    WindowFactory_Impl::setup_main_window(window);
     _window_manager.set_main_window(window);
     return window;
 }
 
 auto WindowFactory::make_secondary_window(const WindowConfig& config) -> Window&
 {
-    auto& window = _impl.make_window(config, _window_manager);
+    auto& window = WindowFactory_Impl::make_window(config, _window_manager);
     WindowFactory_Impl::setup_secondary_window(window, _window_manager);
     return window;
 }

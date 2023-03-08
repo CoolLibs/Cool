@@ -7,19 +7,11 @@
 
 namespace Cool {
 
-class WindowFactory_ImplOpenGL {
-public:
-    WindowFactory_ImplOpenGL();
+struct WindowFactory_ImplOpenGL {
     static void shut_down(WindowManager& window_manager);
-
-    void           setup_main_window(Window_OpenGL& window);
-    static void    setup_secondary_window(Window_OpenGL&, WindowManager& window_manager);
-    Window_OpenGL& make_window(const WindowConfig& config, WindowManager& window_manager);
-
-private:
-    void        setupGLDebugging();
-    void        setup_imgui(Window_OpenGL& window);
-    static void shutdown_imgui();
+    static void setup_main_window(Window_OpenGL& window);
+    static void setup_secondary_window(Window_OpenGL&, WindowManager& window_manager);
+    static auto make_window(WindowConfig const& config, WindowManager& window_manager) -> Window_OpenGL&;
 };
 
 } // namespace Cool
