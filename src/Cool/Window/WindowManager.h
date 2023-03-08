@@ -6,12 +6,12 @@ namespace Cool {
 
 class WindowManager {
 public:
-    std::list<Window>& windows() { return _windows; }
-    Window&            find(GLFWwindow* glfw_window);
+    [[nodiscard]] auto windows() -> std::list<Window>& { return _windows; }
+    [[nodiscard]] auto find(GLFWwindow* glfw_window) -> Window&;
 
-    Window& main_window()
+    [[nodiscard]] auto main_window() -> Window&
     {
-        assert(_main_window != nullptr && "You forgot to create a main window !");
+        assert(_main_window != nullptr && "You forgot to create a main window!"); // NOLINT(readability-simplify-boolean-expr)
         return *_main_window;
     }
 
@@ -19,7 +19,7 @@ private:
     friend class WindowFactory;
     void set_main_window(Window& window)
     {
-        assert(_main_window == nullptr && "You can only have one main window !");
+        assert(_main_window == nullptr && "You can only have one main window!"); // NOLINT(readability-simplify-boolean-expr)
         _main_window = &window;
     }
 

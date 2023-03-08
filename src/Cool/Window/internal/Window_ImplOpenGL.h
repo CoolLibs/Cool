@@ -10,7 +10,7 @@ public:
     [[nodiscard]] auto framerate_is_capped() const -> bool { return _framerate_is_capped; }
 
 private:
-    bool _framerate_is_capped = true;
+    bool _framerate_is_capped{true};
 };
 
 } // namespace Cool

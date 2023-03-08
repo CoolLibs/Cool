@@ -2,9 +2,9 @@
 
 namespace Cool {
 
-Window& WindowManager::find(GLFWwindow* glfw_window)
+auto WindowManager::find(GLFWwindow* glfw_window) -> Window&
 {
-    return *std::find_if(std::begin(_windows), std::end(_windows), [&](const Window& window) {
+    return *std::find_if(std::begin(_windows), std::end(_windows), [&](Window const& window) {
         return window.glfw() == glfw_window;
     });
 }
