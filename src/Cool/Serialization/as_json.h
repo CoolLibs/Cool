@@ -17,7 +17,7 @@ namespace Cool::Serialization {
 template<typename T>
 auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessage
 {
-    if (File::exists(file_path.string()))
+    if (File::exists(file_path))
     {
         std::ifstream is(file_path);
         try
@@ -29,12 +29,12 @@ auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalError
         }
         catch (const std::exception& e)
         {
-            return std::string_view{fmt::format("Invalid \"{}\" file.\nStarting with default values instead.\n{}", file_path.string(), e.what())};
+            return std::string_view{fmt::format("Invalid {} file.\nStarting with default values instead.\n{}", file_path, e.what())};
         }
     }
     else
     {
-        return std::string_view{fmt::format("\"{}\" not found.\nStarting with default values instead.", file_path.string())};
+        return std::string_view{fmt::format("{} not found.\nStarting with default values instead.", file_path)};
     }
     return {};
 }
@@ -50,7 +50,7 @@ auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalError
 template<typename T>
 void to_json(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0")
 {
-    if (File::create_folders_for_file_if_they_dont_exist(file_path.string()))
+    if (File::create_folders_for_file_if_they_dont_exist(file_path))
     {
         std::ofstream os(file_path);
         {
