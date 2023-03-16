@@ -19,6 +19,7 @@ auto NodesFolderWatcher::update(INodesDefinitionUpdater& updater) -> bool
         if (path.extension() != _extension)
             return false;
 
+        Cool::Log::ToUser::console().remove(_node_parsing_errors[path]);
         has_changed = true;
         return true;
     };

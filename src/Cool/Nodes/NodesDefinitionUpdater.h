@@ -23,12 +23,14 @@ public:
         NodesConfig const&                                          config,
         Graph<typename NodesConfig::NodeT>&                         graph,
         NodesLibrary<typename NodesConfig::NodeDefinitionT>&        library,
-        NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> parse_definition
+        NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> parse_definition,
+        std::map<std::filesystem::path, Cool::MessageId>&           errors
     )
         : _config{config}
         , _graph{graph}
         , _library{library}
         , _parse_definition{parse_definition}
+        , _errors{errors}
     {}
 
     void add_definition(std::filesystem::path const& path, std::filesystem::path const& root) override
@@ -89,6 +91,6 @@ private:
     Graph<typename NodesConfig::NodeT>&                         _graph;
     NodesLibrary<typename NodesConfig::NodeDefinitionT>&        _library;
     NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> _parse_definition;
-    std::map<std::filesystem::path, Cool::MessageId>            _errors{};
+    std::map<std::filesystem::path, Cool::MessageId>&           _errors;
 };
 }; // namespace Cool
