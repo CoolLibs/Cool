@@ -46,7 +46,7 @@ public:
 
 private:
     void remove(const internal::RawMessageId&);
-    void after_clearing();
+    void close_window_if_empty();
     void close_window();
     void on_message_sent(const internal::RawMessageId&);
     void show_number_of_messages_of_given_severity(MessageSeverity);

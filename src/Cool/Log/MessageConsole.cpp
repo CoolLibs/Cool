@@ -43,7 +43,6 @@ void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
-    refresh_counts_per_severity();
 }
 
 void MessageConsole::remove(const MessageId& id)
@@ -57,14 +56,13 @@ void MessageConsole::remove(const internal::RawMessageId& id)
         return;
 
     _messages.destroy(id);
-    after_clearing();
+    close_window_if_empty();
 }
 
-void MessageConsole::after_clearing()
+void MessageConsole::close_window_if_empty()
 {
     if (_messages.is_empty())
         close_window();
-    refresh_counts_per_severity();
 }
 
 void MessageConsole::clear()
@@ -98,7 +96,7 @@ void MessageConsole::clear(std::function<bool(const Message&)> predicate)
         });
     }
 
-    after_clearing();
+    close_window_if_empty(); // We have only cleared the clearable messages, so it is not guaranteed that the window will be empty.
 }
 
 void MessageConsole::close_window()
@@ -191,6 +189,8 @@ void MessageConsole::imgui_window()
 {
     if (_is_open)
     {
+        refresh_counts_per_severity();
+
         if (!_message_just_sent.underlying_uuid().is_nil())
         {
             ImGui::SetNextWindowToFront();
@@ -375,6 +375,7 @@ void MessageConsole::refresh_counts_per_severity()
     {
         _counts_per_severity.increment(id_and_message.second.message.severity);
     }
+    close_window_if_empty();
 }
 
 MessageConsole::MessagesCountPerSeverity::MessagesCountPerSeverity()
