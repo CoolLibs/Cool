@@ -39,6 +39,17 @@ void TestMessageConsole::imgui(Cool::MessageConsole& message_console)
     }
     ImGui::Separator();
     ImGui::NewLine();
+    if (ImGui::Button("Send a scoped message"))
+    {
+        _scoped_message_id.emplace();
+        message_console.send(*_scoped_message_id, Cool::Message{.category = "Scoped", .message = "This is a scoped message", .severity = Cool::MessageSeverity::Error});
+    }
+    if (ImGui::Button("Destroy the scoped message id"))
+    {
+        _scoped_message_id.reset();
+    }
+    ImGui::Separator();
+    ImGui::NewLine();
     if (ImGui::Button("Send Info to the Debug console"))
     {
         Cool::Log::Debug::info("Test", "Hello World");

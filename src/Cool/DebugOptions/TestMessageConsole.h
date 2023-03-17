@@ -2,6 +2,7 @@
 #if DEBUG
 
 #include <Cool/Log/MessageConsole.h>
+#include "Cool/Log/MessageId.h"
 
 namespace Cool {
 
@@ -31,8 +32,9 @@ private:
     void imgui(Message& message, Cool::MessageConsole& message_console);
 
 private:
-    std::vector<Message> _messages{};
-    size_t               _next_message_number{0};
+    std::vector<Message>     _messages{};
+    size_t                   _next_message_number{0};
+    std::optional<MessageId> _scoped_message_id{};
 };
 
 } // namespace Cool
