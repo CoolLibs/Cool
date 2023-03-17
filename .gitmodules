@@ -87,4 +87,4 @@
 	url = https://github.com/juliettef/IconFontCppHeaders
 [submodule "lib/imgui_markdown"]
 	path = lib/imgui_markdown
-	url = https://github.com/juliettef/imgui_markdown
+	url = https://github.com/CoolLibs/imgui_markdown
