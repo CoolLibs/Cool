@@ -49,7 +49,7 @@ private:
 
 private:
     internal::UniqueImNodeContext   _context;
-    Graph<typename NodesCfg::NodeT> _graph;
+    GraphImpl                       _graph;
     bool                            _window_is_hovered = true;
     internal::SearchBarState        _search_bar{};
 

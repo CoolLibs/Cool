@@ -54,7 +54,8 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 # -----------------------------
 # ---Set include directories---
 # -----------------------------
-target_include_directories(Cool-PublicProperties INTERFACE src lib)
+target_include_directories(Cool-PublicProperties INTERFACE src)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib)
 target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
     <vector>
@@ -87,6 +88,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <fmt/core.h>
     <fmt/std.h>
     <fmt/compile.h>
+    <gsl/gsl>
     <tl/expected.hpp>
     <Cool/Log/Debug.h>
     <Cool/Serialization/filesystem.h>
@@ -152,7 +154,7 @@ add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 
 # cereal
-target_include_directories(Cool-PublicProperties INTERFACE lib/cereal/include)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
 
 # smart
 add_subdirectory(lib/smart)
@@ -165,6 +167,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
+
+# GSL
+add_subdirectory(lib/gsl)
+target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
 
 # img
 add_subdirectory(lib/img)
@@ -203,7 +209,7 @@ add_subdirectory(lib/os_name)
 target_link_libraries(Cool-PublicProperties INTERFACE os_name::os_name)
 
 # tl::expected
-target_include_directories(Cool-PublicProperties INTERFACE lib/expected/include)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/include)
 
 # Dear ImGui
 add_subdirectory(lib/imgui)

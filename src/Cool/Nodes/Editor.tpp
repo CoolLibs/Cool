@@ -9,6 +9,10 @@
 
 namespace Cool {
 
+// TODO(JF) Remove
+template<typename T>
+concept Node_Concept = true;
+
 void draw_node_pins(Node_Concept auto const& node)
 {
     ImGui::BeginGroup();
@@ -48,21 +52,21 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
 }
 
 template<NodesCfg_Concept NodesCfg>
-static auto dropdown_to_switch_between_nodes_of_the_same_category(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::NodeOwner& node, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, GraphImpl& graph) -> bool
 {
-    auto const* category = library.get_category(node.category_name());
+    auto const* category = library.get_category(node->category_name());
     if (!category)
         return false;
 
     bool graph_has_changed = false;
 
     ImGui::SetNextItemWidth(calc_max_text_width(category->definitions()));
-    if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
+    if (ImGui::BeginCombo(category->name().c_str(), node->definition_name().c_str()))
     {
         for (auto const& def : category->definitions())
         {
             ImGui::PushID(&def);
-            bool const is_selected = def.name() == node.definition_name();
+            bool const is_selected = def.name() == node->definition_name();
             if (ImGui::Selectable(def.name().c_str(), is_selected))
             {
                 nodes_cfg.update_node_with_new_definition(node, def, graph);
@@ -77,22 +81,23 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(typename Nodes
 }
 
 template<NodesCfg_Concept NodesCfg>
-auto draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
+auto draw_node(Cool::NodeOwner& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, GraphImpl& graph) -> bool
 {
+    auto& concrete_node = static_cast<typename NodesCfg::NodeT&>(*node);
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
+    ImGui::TextUnformatted(nodes_cfg.name(concrete_node).c_str());
     ImNodes::EndNodeTitleBar();
 
     if (ImGui::BeginPopupContextItem())
     {
-        nodes_cfg.widget_to_rename_node(node);
+        nodes_cfg.widget_to_rename_node(concrete_node);
         ImGui::EndPopup();
     }
 
     bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
 
-    draw_node_pins(node);
-    draw_node_body(node, id, nodes_cfg);
+    draw_node_pins(concrete_node);
+    draw_node_body(concrete_node, id, nodes_cfg);
 
     return graph_has_changed;
 }
@@ -236,7 +241,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
             std::unique_lock lock{_graph.nodes().mutex()};
             for (auto& [id, node] : _graph.nodes())
             {
-                auto const cat                        = library.get_category(node.category_name());
+                auto const cat                        = library.get_category(node->category_name());
                 auto const set_scoped_title_bar_color = ScopedTitleBarColor{
                     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
                 };

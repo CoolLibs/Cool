@@ -21,7 +21,7 @@ class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
     NodesDefinitionUpdater(
         NodesConfig const&                                          config,
-        Graph<typename NodesConfig::NodeT>&                         graph,
+        GraphImpl&                                                  graph,
         NodesLibrary<typename NodesConfig::NodeDefinitionT>&        library,
         NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> parse_definition,
         std::map<std::filesystem::path, Cool::MessageId>&           errors
@@ -59,7 +59,7 @@ public:
             // auto lock = std::unique_lock{_graph.nodes().mutex()};
             for (auto& [_, node] : _graph.nodes())
             {
-                if (node.category_name() == category_name && node.definition_name() == definition->name())
+                if (node->category_name() == category_name && node->definition_name() == definition->name())
                     _config.update_node_with_new_definition(node, *definition, _graph);
             }
         }
@@ -88,7 +88,7 @@ private:
 
 private:
     NodesConfig const&                                          _config;
-    Graph<typename NodesConfig::NodeT>&                         _graph;
+    GraphImpl&                                                  _graph;
     NodesLibrary<typename NodesConfig::NodeDefinitionT>&        _library;
     NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> _parse_definition;
     std::map<std::filesystem::path, Cool::MessageId>&           _errors;

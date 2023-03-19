@@ -88,3 +88,6 @@
 [submodule "lib/imgui_markdown"]
 	path = lib/imgui_markdown
 	url = https://github.com/CoolLibs/imgui_markdown
+[submodule "lib/GSL"]
+	path = lib/GSL
+	url = https://github.com/microsoft/GSL
