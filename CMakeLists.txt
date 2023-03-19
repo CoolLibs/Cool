@@ -19,9 +19,9 @@ target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 
 # Set warning level
 if(MSVC)
-    target_compile_options(Cool-PrivateProperties INTERFACE /W3)
+    target_compile_options(Cool-PrivateProperties INTERFACE /W4)
 else()
-    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors)
+    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
 endif()
 
 # Maybe enable warnings as errors
@@ -54,7 +54,8 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 # -----------------------------
 # ---Set include directories---
 # -----------------------------
-target_include_directories(Cool-PublicProperties INTERFACE src lib)
+target_include_directories(Cool-PublicProperties INTERFACE src)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib)
 target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
     <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
     <vector>
@@ -152,7 +153,7 @@ add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 
 # cereal
-target_include_directories(Cool-PublicProperties INTERFACE lib/cereal/include)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
 
 # smart
 add_subdirectory(lib/smart)
@@ -203,7 +204,7 @@ add_subdirectory(lib/os_name)
 target_link_libraries(Cool-PublicProperties INTERFACE os_name::os_name)
 
 # tl::expected
-target_include_directories(Cool-PublicProperties INTERFACE lib/expected/include)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/include)
 
 # Dear ImGui
 add_subdirectory(lib/imgui)

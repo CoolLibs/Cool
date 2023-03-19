@@ -298,9 +298,11 @@ auto find_previous_word_position(
 
     auto idx1 = text.find_last_of(delimiters, idx2);
     if (idx1 == std::string_view::npos)
-        idx1 = -1;
+        idx1 = 0;
+    else
+        idx1 += 1;
 
-    return std::make_pair(idx1 + 1, idx2 + 1);
+    return std::make_pair(idx1, idx2 + 1);
 }
 
 auto next_word(
