@@ -31,7 +31,7 @@ void WindowFactory_ImplOpenGL::shut_down(WindowManager& window_manager)
 #if DEBUG
 static void setup_opengl_debugging()
 {
-    if (COOL_OPENGL_VERSION < 430)
+    if constexpr (COOL_OPENGL_VERSION < 430)
         return;
 
     int flags; // NOLINT
@@ -82,7 +82,7 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #if DEBUG
-    if (COOL_OPENGL_VERSION >= 430)
+    if constexpr (COOL_OPENGL_VERSION >= 430)
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
     // Create window
