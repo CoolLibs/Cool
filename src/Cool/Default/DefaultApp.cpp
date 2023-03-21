@@ -1,7 +1,6 @@
 #include "DefaultApp.h"
 #include <Cool/Input/Input.h>
 #include <Cool/Log/ToUser.h>
-#include <Cool/Parameter/ParametersHistory.h>
 #include <Cool/Time/ClockU.h>
 
 namespace CoolDefault {
@@ -150,11 +149,11 @@ void DefaultApp::on_keyboard_event(const Cool::KeyboardEvent& event)
     {
         if (Cool::UserInput::matches_char("z", event.key) && event.mods.ctrl())
         {
-            Cool::ParametersHistory::get().move_backward();
+            // Cool::ParametersHistory::get().move_backward();
         }
         if (Cool::UserInput::matches_char("y", event.key) && event.mods.ctrl())
         {
-            Cool::ParametersHistory::get().move_forward();
+            // Cool::ParametersHistory::get().move_forward();
         }
     }
 }
