@@ -176,8 +176,9 @@ add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
 # serv
-add_subdirectory(lib/serv)
-target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
+### Disabled for now, we will reintroduce it when we will use it
+# add_subdirectory(lib/serv)
+# target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 
 # stringify
 add_subdirectory(lib/stringify)
