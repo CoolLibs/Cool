@@ -300,7 +300,7 @@ static void luv2lch(glm::vec3& in_out)
     }
     else
     {
-        h = atan2(v, u) * 57.29577951308232087680f; /* (180 / pi) */
+        h = std::atan2(v, u) * 57.29577951f; /* (180 / pi) */
         if (h < 0.f)
             h += 360.f;
     }
