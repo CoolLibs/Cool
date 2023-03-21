@@ -273,8 +273,6 @@ endfunction()
 # ---------------------
 # ---Setup the tests---
 # ---------------------
-message(COOL_SOURCES)
-message(${COOL_SOURCES})
 add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
 target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
