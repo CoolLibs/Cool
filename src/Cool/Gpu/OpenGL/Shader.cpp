@@ -154,16 +154,16 @@ void Shader::set_uniform(std::string_view uniform_name, Camera2D const& cam) con
     set_uniform(uniform_name, cam.transform_matrix());
 }
 
-static auto max_number_of_texture_slots() -> GLint
+static auto max_number_of_texture_slots() -> GLuint
 {
     GLint res{};
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
-    return res;
+    return static_cast<GLuint>(res);
 }
 void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& texture_info) const
 {
-    static GLint       current_slot = 0;
-    static GLint const max_slots    = max_number_of_texture_slots();
+    static GLuint       current_slot = 0;
+    static GLuint const max_slots    = max_number_of_texture_slots();
 
     Texture const& tex = TextureLibrary::instance().get(texture_info.absolute_path);
 

@@ -17,13 +17,13 @@ void ExportSize::apply_aspect_ratio()
     if (_last_changed_side == ImageSizeU::WH::Width)
     {
         _size.set_height(static_cast<decltype(_size)::DataType>(
-            _size.width() / _aspect_ratio.get()
+            static_cast<float>(_size.width()) / _aspect_ratio.get()
         ));
     }
     else
     {
         _size.set_width(static_cast<decltype(_size)::DataType>(
-            _size.height() * _aspect_ratio.get()
+            static_cast<float>(_size.height()) * _aspect_ratio.get()
         ));
     }
 }

@@ -20,7 +20,7 @@ struct ColorPalette
     void remove_color(size_t index)
     {
         assert(index < value.size());
-        value.erase(value.begin() + index);
+        value.erase(value.begin() + static_cast<decltype(value)::difference_type>(index));
     }
 
     void add_color(Color color = {}) { value.push_back(color); }
@@ -28,8 +28,8 @@ struct ColorPalette
     void move_color(size_t old_index, size_t new_index)
     {
         algorithms::translocate(
-            std::next(value.begin(), old_index),
-            std::next(value.begin(), new_index)
+            std::next(value.begin(), static_cast<decltype(value)::difference_type>(old_index)),
+            std::next(value.begin(), static_cast<decltype(value)::difference_type>(new_index))
         );
     }
 

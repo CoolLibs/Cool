@@ -209,6 +209,7 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 
 # Dear ImGui
 add_subdirectory(lib/imgui)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)

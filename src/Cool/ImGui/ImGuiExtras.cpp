@@ -458,8 +458,9 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     const int   segment_per_arc = ImMax(4, static_cast<int>(wheel_r_outer) / 12);
     for (int n = 0; n < 6; n++)
     {
-        const float a0             = (n) / 6.0f * 2.0f * IM_PI - aeps;
-        const float a1             = (n + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
+        const auto  nn             = static_cast<float>(n);
+        const float a0             = nn / 6.0f * 2.0f * IM_PI - aeps;
+        const float a1             = (nn + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
         const int   vert_start_idx = draw_list.VtxBuffer.Size;
         draw_list.PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
         draw_list.PathStroke(col_white, 0, wheel_thickness);

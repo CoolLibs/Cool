@@ -45,7 +45,7 @@ auto to_string(T val, int min_nb_of_characters = 0) -> std::string
     int         dn  = min_nb_of_characters - static_cast<int>(str.size()); // We must use an int because the result can be negative
     if (dn > 0)
     {
-        str = std::string(dn, '0') + str;
+        str = std::string(static_cast<size_t>(dn), '0') + str;
     }
     return str;
 }
