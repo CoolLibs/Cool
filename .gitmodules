@@ -88,3 +88,6 @@
 [submodule "lib/imgui_markdown"]
 	path = lib/imgui_markdown
 	url = https://github.com/CoolLibs/imgui_markdown
+[submodule "lib/ImGui_StyleEditor"]
+	path = lib/ImGui_StyleEditor
+	url = https://github.com/CoolLibs/ImGui_StyleEditor/

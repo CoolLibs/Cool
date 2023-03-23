@@ -236,6 +236,11 @@ target_link_libraries(ImNodes PUBLIC reg) # To define ImNode's ID as a reg::Id
 target_compile_features(ImNodes PUBLIC cxx_std_11)
 target_compile_definitions(ImNodes PUBLIC IMNODES_USER_CONFIG="imnodes_config.h")
 
+# ImStyleEd
+add_subdirectory(lib/ImGui_StyleEditor)
+target_include_directories(ImStyleEd PRIVATE lib)
+target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
+
 # ----------------
 # ---Copy files---
 # ----------------
