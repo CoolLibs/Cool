@@ -48,14 +48,6 @@ static void imgui_load_fonts()
     io.Fonts->Build();
 }
 
-static void imgui_setup_style()
-{
-    ImGui::StyleColorsClassic();
-    ImGuiStyle& style                 = ImGui::GetStyle();
-    style.WindowRounding              = 0.0f;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-}
-
 static void initialize_imgui()
 {
     IMGUI_CHECKVERSION();
@@ -68,7 +60,6 @@ static void initialize_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     imgui_load_fonts();
-    imgui_setup_style();
 }
 
 WindowFactory::WindowFactory()

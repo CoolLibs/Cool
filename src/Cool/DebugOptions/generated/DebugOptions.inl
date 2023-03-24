@@ -63,6 +63,15 @@ public:
         }
     }
 #endif
+    static void color_themes_advanced_config_window(std::function<void()> callback)
+    {
+        if (instance().color_themes_advanced_config_window)
+        {
+            ImGui::Begin("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
+            callback();
+            ImGui::End();
+        }
+    }
 #if DEBUG
     [[nodiscard]] static auto imgui_item_picker() -> bool&
     {
@@ -86,6 +95,7 @@ private:
 #if DEBUG
         bool test_presets__window{false};
 #endif
+        bool color_themes_advanced_config_window{false};
 #if DEBUG
         bool imgui_item_picker{false};
 #endif
@@ -105,13 +115,15 @@ private:
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
-                cereal::make_nvp("Test Presets", test_presets__window)
+                cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #else
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
-                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
+                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #endif
 
             );
@@ -134,6 +146,7 @@ private:
 #if DEBUG
         instance().test_presets__window = false;
 #endif
+        instance().color_themes_advanced_config_window = false;
     }
 
     static void save_to_file()
@@ -221,6 +234,12 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Color Themes: Advanced Config"}) >= wafl::Matches::Strongly)
+        {
+            ImGui::Checkbox("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
+        }
+
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
@@ -298,6 +317,13 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Color Themes: Advanced Config"}) >= wafl::Matches::Strongly)
+        {
+            instance().color_themes_advanced_config_window = !instance().color_themes_advanced_config_window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)

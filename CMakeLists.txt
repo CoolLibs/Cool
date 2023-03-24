@@ -141,7 +141,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE folder_watcher::folder_wat
 
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
-target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
+target_include_directories(imgui_gradient SYSTEM PRIVATE lib) # imgui_gradient needs acces to imgui
 target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 
 # algorithms
@@ -227,7 +227,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 
 # ImNodes
 add_library(ImNodes lib/imnodes/imnodes.cpp)
-target_include_directories(ImNodes PRIVATE
+target_include_directories(ImNodes SYSTEM PRIVATE
     lib/imgui
     lib # To access imnodes_config.h
 )
@@ -238,7 +238,7 @@ target_compile_definitions(ImNodes PUBLIC IMNODES_USER_CONFIG="imnodes_config.h"
 
 # ImStyleEd
 add_subdirectory(lib/ImGui_StyleEditor)
-target_include_directories(ImStyleEd PRIVATE lib)
+target_include_directories(ImStyleEd SYSTEM PRIVATE lib)
 target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 
 # ----------------
