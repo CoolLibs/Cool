@@ -1,5 +1,3 @@
-#if DEBUG
-
 #include "TestPresets.h"
 
 namespace Lab {
@@ -36,5 +34,3 @@ void TestPresets::imgui()
 }
 
 } // namespace Lab
-
-#endif

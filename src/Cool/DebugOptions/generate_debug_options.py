@@ -10,7 +10,7 @@ def all_debug_options():
         DebugOption(
             name_in_code="test_message_console__window",
             name_in_ui="Test Message Console",
-            available_in_release=False,
+            available_in_release=True,
             kind=Kind.WINDOW,
         ),
         DebugOption(
@@ -48,7 +48,7 @@ def all_debug_options():
         DebugOption(
             name_in_code="test_presets__window",
             name_in_ui="Test Presets",
-            available_in_release=False,
+            available_in_release=True,
             kind=Kind.WINDOW,
         ),
         DebugOption(

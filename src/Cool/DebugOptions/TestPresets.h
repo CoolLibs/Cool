@@ -1,5 +1,4 @@
 #pragma once
-#if DEBUG
 
 #include <Cool/Path/Path.h>
 #include <Cool/Variables/PresetManager.h>
@@ -23,5 +22,3 @@ private:
 };
 
 } // namespace Lab
-
-#endif

@@ -1,5 +1,3 @@
-#if DEBUG
-
 #include "TestMessageConsole.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 
@@ -94,5 +92,3 @@ void TestMessageConsole::imgui(TestMessageConsole::Message& message, Cool::Messa
 }
 
 } // namespace Cool
-
-#endif
