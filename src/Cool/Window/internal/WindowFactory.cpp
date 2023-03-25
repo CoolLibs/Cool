@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
+#include <filesystem>
 #include <stdexcept>
 
 namespace Cool {
@@ -32,10 +33,19 @@ static void set_imgui_ini_filepath()
 
 static void imgui_load_fonts()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    // Merge icons into default font
-    io.Fonts->AddFontDefault();
+    ImGuiIO&               io        = ImGui::GetIO();
     static constexpr float font_size = 13.0f; // 13.0f is the size of the default font. Change to the font size you use.
+
+    { // Main font
+        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/main_font.otf";
+        if (!std::filesystem::exists(path))
+            io.Fonts->AddFontDefault();
+        else
+            io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+    }
+    // Merge icons into default font
     ImFontConfig           config;
     config.MergeMode                   = true;
     config.PixelSnapH                  = true;
