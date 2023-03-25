@@ -622,8 +622,7 @@ auto toggle(const char* label, bool* v) -> bool
         return false;
     }
 
-    bool hovered, held; // NOLINT
-
+    bool       hovered, held; // NOLINT
     const bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held, ImGuiButtonFlags_PressedOnClick);
     if (pressed)
     {
@@ -636,18 +635,18 @@ auto toggle(const char* label, bool* v) -> bool
 
     const float            radius     = height * 0.50f;
     float                  t          = *v ? 1.0f : 0.0f;
-    static constexpr float ANIM_SPEED = 0.08f;
     if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
     {
+        static constexpr float ANIM_SPEED = 0.08f;
         float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
         t            = *v ? (t_anim) : (1.0f - t_anim);
     }
 
     ImU32 col_bg;
     if (ImGui::IsItemHovered())
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered), ImGui::GetStyleColorVec4(ImGuiCol_CheckMark), t));
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered), ImGui::GetStyleColorVec4(ImGuiCol_SliderGrabActive), t));
     else
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_CheckMark)), t));
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)), t));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
