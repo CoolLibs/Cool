@@ -34,7 +34,7 @@ static void set_imgui_ini_filepath()
 static void imgui_load_fonts()
 {
     ImGuiIO&               io        = ImGui::GetIO();
-    static constexpr float font_size = 13.0f; // 13.0f is the size of the default font. Change to the font size you use.
+    static constexpr float font_size = 16.0f;
 
     { // Main font
         auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
