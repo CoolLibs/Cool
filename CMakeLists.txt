@@ -248,11 +248,13 @@ include("CMakeUtils/files_and_folders.cmake")
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_config.json) # This prevents the following copy command from failing
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # This prevents the following copy command from failing
+Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
     Cool__target_copy_file(${TARGET_NAME} imgui.ini)
     Cool__target_copy_file(${TARGET_NAME} color_config.json)
     Cool__target_copy_file(${TARGET_NAME} color_themes.json)
+    Cool__target_copy_file(${TARGET_NAME} style.json)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 
