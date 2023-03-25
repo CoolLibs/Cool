@@ -65,7 +65,7 @@ def option_implementation(debug_option: DebugOption):
 def imgui_widget(debug_option: DebugOption):
     match debug_option.kind:
         case Kind.CHECKBOX | Kind.WINDOW:
-            return f'ImGui::Checkbox("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});'
+            return f'ImGuiExtras::toggle("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});'
         case Kind.BUTTON:
             return f'''
             instance().{debug_option.name_in_code} = ImGui::Button("##{debug_option.name_in_ui}", {{ImGui::GetFrameHeight(), ImGui::GetFrameHeight()}});

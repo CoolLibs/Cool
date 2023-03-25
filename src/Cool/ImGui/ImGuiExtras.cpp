@@ -600,4 +600,40 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
     return b;
 }
 
+auto toggle(const char* label, bool* v) -> bool
+{
+    ImVec2      p         = ImGui::GetCursorScreenPos();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    float height = ImGui::GetFrameHeight();
+    float width  = height * 1.55f;
+    float radius = height * 0.50f;
+
+    ImGui::InvisibleButton(label, ImVec2(width, height));
+    const bool was_clicked = ImGui::IsItemClicked();
+    if (was_clicked)
+        *v = !*v;
+
+    float t = *v ? 1.0f : 0.0f;
+
+    ImGuiContext& g          = *GImGui;
+    float         ANIM_SPEED = 0.08f;
+    if (g.LastActiveId == g.CurrentWindow->GetID(label)) // && g.LastActiveIdTimer < ANIM_SPEED)
+    {
+        float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+        t            = *v ? (t_anim) : (1.0f - t_anim);
+    }
+
+    ImU32 col_bg;
+    if (ImGui::IsItemHovered())
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered), ImGui::GetStyleColorVec4(ImGuiCol_CheckMark), t));
+    else
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_CheckMark)), t));
+
+    draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+    draw_list->AddText(ImVec2(p.x + width + ImGui::GetStyle().ItemInnerSpacing.x, p.y + ImGui::GetStyle().ItemInnerSpacing.y), ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_Text)), label);
+    return was_clicked;
+}
+
 } // namespace Cool::ImGuiExtras

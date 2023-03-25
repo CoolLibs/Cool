@@ -173,51 +173,51 @@ private:
     {
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Test Message Console", &instance().test_message_console__window);
+            ImGuiExtras::toggle("Test Message Console", &instance().test_message_console__window);
         }
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when autosaving", &instance().log_when_autosaving);
+            ImGuiExtras::toggle("Log when autosaving", &instance().log_when_autosaving);
         }
 
         if (wafl::similarity_match({filter, "Log when rendering alpha checkerboard background"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
+            ImGuiExtras::toggle("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
         }
 
         if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when creating textures", &instance().log_when_creating_textures);
+            ImGuiExtras::toggle("Log when creating textures", &instance().log_when_creating_textures);
         }
 
         if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("View Texture Library", &instance().texture_library_debug_view);
+            ImGuiExtras::toggle("View Texture Library", &instance().texture_library_debug_view);
         }
 
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
+            ImGuiExtras::toggle("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
         }
 
 #if DEBUG
 
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
+            ImGuiExtras::toggle("Log OpenGL info", &instance().log_opengl_info);
         }
 
 #endif
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Test Presets", &instance().test_presets__window);
+            ImGuiExtras::toggle("Test Presets", &instance().test_presets__window);
         }
 
         if (wafl::similarity_match({filter, "Color Themes: Advanced Config"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
+            ImGuiExtras::toggle("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
         }
 
 #if DEBUG

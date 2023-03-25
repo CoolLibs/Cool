@@ -201,4 +201,7 @@ void bring_attention_if(bool should_bring_attention, std::function<void()> widge
 ///
 auto colored_collapsing_header(std::string_view name, Cool::Color const& color) -> bool;
 
+///
+auto toggle(const char* label, bool* v) -> bool;
+
 } // namespace Cool::ImGuiExtras
