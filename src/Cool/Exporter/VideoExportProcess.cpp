@@ -62,18 +62,28 @@ auto VideoExportProcess::estimated_remaining_time() -> float
 
 void VideoExportProcess::imgui()
 {
-    int frame_count = _nb_frames_which_finished_exporting.load();
+    const int frame_count = _nb_frames_which_finished_exporting.load();
+
+    // Progress bar
+    const float progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
+    ImGui::ProgressBar(progress, ImVec2(-1.f, 0.f));
+
+    // Frames count
     ImGui::TextUnformatted(
         fmt::format(
-            "Exported {} / {} frames",
+            "{} / {} frames",
             String::to_string(frame_count, nb_digits(_total_nb_of_frames_in_sequence)),
             _total_nb_of_frames_in_sequence
         )
             .c_str()
     );
+
+    // Remaining time
     ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
+
+    // Stop exporting
     if (ImGui::Button("Stop exporting"))
     {
         _should_stop_asap = true;
