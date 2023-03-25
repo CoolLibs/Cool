@@ -7,8 +7,9 @@ namespace Cool {
 
 class View {
 public:
-    explicit View(std::string_view name)
+    explicit View(std::string_view name, bool is_closable = false)
         : _name{name}
+        , _is_closable{is_closable}
     {}
 
     /// Displays the given texture in an ImGui window
@@ -39,7 +40,8 @@ private:
     bool contains(ViewCoordinates pos, ImageSizeInsideView image_size);
 
 private:
-    std::string                           _name              = "";
+    std::string                           _name;
+    bool                                  _is_closable;
     bool                                  _is_open           = true;
     bool                                  _window_is_hovered = false;
     std::optional<img::Size>              _size              = std::nullopt; // Can be nullopt when the window is closed
