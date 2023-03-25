@@ -71,7 +71,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
 
 void View::imgui_open_close_checkbox()
 {
-    ImGui::Checkbox(_name.c_str(), &_is_open);
+    ImGuiExtras::toggle(_name.c_str(), &_is_open);
 }
 
 static auto window_to_screen(WindowCoordinates position, GLFWwindow* window) -> ScreenCoordinates
