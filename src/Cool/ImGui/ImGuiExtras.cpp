@@ -602,23 +602,42 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
 
 auto toggle(const char* label, bool* v) -> bool
 {
-    ImVec2      p         = ImGui::GetCursorScreenPos();
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
 
-    float height = ImGui::GetFrameHeight();
-    float width  = height * 1.55f;
-    float radius = height * 0.50f;
+    ImGuiContext&     g          = *GImGui;
+    const ImGuiStyle& style      = g.Style;
+    const ImGuiID     id         = window->GetID(label);
+    const ImVec2      label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2      p          = ImGui::GetCursorScreenPos();
 
-    ImGui::InvisibleButton(label, ImVec2(width, height));
-    const bool was_clicked = ImGui::IsItemClicked();
-    if (was_clicked)
-        *v = !*v;
+    const float  height = ImGui::GetFrameHeight();
+    const float  width  = height * 1.55f;
+    const ImVec2 pos    = window->DC.CursorPos;
+    const ImRect total_bb(pos, pos + ImVec2(width + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+    ImGui::ItemSize(total_bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(total_bb, id))
+    {
+        return false;
+    }
 
-    float t = *v ? 1.0f : 0.0f;
+    bool hovered, held; // NOLINT
 
-    ImGuiContext& g          = *GImGui;
-    float         ANIM_SPEED = 0.08f;
-    if (g.LastActiveId == g.CurrentWindow->GetID(label)) // && g.LastActiveIdTimer < ANIM_SPEED)
+    const bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held, ImGuiButtonFlags_PressedOnClick);
+    if (pressed)
+    {
+        *v = !(*v);
+        ImGui::MarkItemEdited(id);
+    }
+
+    const ImRect check_bb(pos, pos + ImVec2(width, height));
+    ImGui::RenderNavHighlight(total_bb, id);
+
+    const float            radius     = height * 0.50f;
+    float                  t          = *v ? 1.0f : 0.0f;
+    static constexpr float ANIM_SPEED = 0.08f;
+    if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
     {
         float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
         t            = *v ? (t_anim) : (1.0f - t_anim);
@@ -630,10 +649,15 @@ auto toggle(const char* label, bool* v) -> bool
     else
         col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_CheckMark)), t));
 
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
     draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
-    draw_list->AddText(ImVec2(p.x + width + ImGui::GetStyle().ItemInnerSpacing.x, p.y + ImGui::GetStyle().ItemInnerSpacing.y), ImGui::GetColorU32(ImGui::GetStyleColorVec4(ImGuiCol_Text)), label);
-    return was_clicked;
+
+    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
+    if (label_size.x > 0.0f)
+        ImGui::RenderText(label_pos, label);
+
+    return pressed;
 }
 
 } // namespace Cool::ImGuiExtras
