@@ -48,24 +48,6 @@ auto glsl_type<glm::vec4>() -> std::string
 }
 
 template<>
-auto glsl_type<glm::mat2>() -> std::string
-{
-    return "mat2";
-}
-
-template<>
-auto glsl_type<glm::mat3>() -> std::string
-{
-    return "mat3";
-}
-
-template<>
-auto glsl_type<glm::mat4>() -> std::string
-{
-    return "mat4";
-}
-
-template<>
 auto glsl_type<Cool::Color>() -> std::string
 {
     return "vec3";
@@ -129,4 +111,22 @@ template<>
 auto glsl_type<Cool::MathExpression>() -> std::string
 {
     return "NO TYPE THIS IS A FUNCTION";
+}
+
+template<>
+auto glsl_type<glm::mat2>() -> std::string
+{
+    return "mat2";
+}
+
+template<>
+auto glsl_type<glm::mat3>() -> std::string
+{
+    return "mat3";
+}
+
+template<>
+auto glsl_type<glm::mat4>() -> std::string
+{
+    return "mat4";
 }

@@ -13,7 +13,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(cereal::make_nvp("Point2D", value));
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 

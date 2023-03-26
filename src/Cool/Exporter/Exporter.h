@@ -65,12 +65,16 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Video Settings", _video_export_params),
             cereal::make_nvp("Image Size", _export_size),
             cereal::make_nvp("Image Output Folder", _folder_path_for_image),
             cereal::make_nvp("Video Output Folder", _folder_path_for_video)
         );
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 

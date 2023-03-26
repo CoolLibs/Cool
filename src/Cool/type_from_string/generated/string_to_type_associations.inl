@@ -46,21 +46,6 @@ struct from_impl<"vec4"> {
 };
 
 template<>
-struct from_impl<"mat2"> {
-    using type = glm::mat2;
-};
-
-template<>
-struct from_impl<"mat3"> {
-    using type = glm::mat3;
-};
-
-template<>
-struct from_impl<"mat4"> {
-    using type = glm::mat4;
-};
-
-template<>
 struct from_impl<"CIELAB"> {
     using type = Cool::Color;
 };
@@ -163,4 +148,19 @@ struct from_impl<"Texture"> {
 template<>
 struct from_impl<"MathExpression"> {
     using type = Cool::MathExpression;
+};
+
+template<>
+struct from_impl<"mat2"> {
+    using type = glm::mat2;
+};
+
+template<>
+struct from_impl<"mat3"> {
+    using type = glm::mat3;
+};
+
+template<>
+struct from_impl<"mat4"> {
+    using type = glm::mat4;
 };

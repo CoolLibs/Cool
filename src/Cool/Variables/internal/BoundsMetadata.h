@@ -16,6 +16,7 @@ struct BoundsMetadata {
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Has min bound", has_min_bound),
             cereal::make_nvp("Min", min),
@@ -24,6 +25,9 @@ struct BoundsMetadata {
             cereal::make_nvp("Drag speed", drag_speed),
             cereal::make_nvp("Use slider", use_slider)
         );
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 

@@ -26,15 +26,6 @@ if constexpr (std::is_same_v<T, glm::vec3>)
 if constexpr (std::is_same_v<T, glm::vec4>)
     return false;
 
-if constexpr (std::is_same_v<T, glm::mat2>)
-    return false;
-
-if constexpr (std::is_same_v<T, glm::mat3>)
-    return false;
-
-if constexpr (std::is_same_v<T, glm::mat4>)
-    return false;
-
 if constexpr (std::is_same_v<T, Cool::Color>)
     return false;
 
@@ -67,3 +58,12 @@ if constexpr (std::is_same_v<T, Cool::TextureInfo>)
 
 if constexpr (std::is_same_v<T, Cool::MathExpression>)
     return true;
+
+if constexpr (std::is_same_v<T, glm::mat2>)
+    return false;
+
+if constexpr (std::is_same_v<T, glm::mat3>)
+    return false;
+
+if constexpr (std::is_same_v<T, glm::mat4>)
+    return false;

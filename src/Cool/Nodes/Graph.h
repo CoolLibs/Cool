@@ -45,10 +45,14 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Nodes", _nodes),
             cereal::make_nvp("Links", _links)
         );
+#else
+        (void)archive;
+#endif
     }
 };
 

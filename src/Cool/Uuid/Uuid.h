@@ -20,7 +20,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+#if COOL_SERIALIZATION
         archive(cereal::make_nvp("Value", _uuid));
+#else
+        (void)archive;
+#endif
     }
 };
 

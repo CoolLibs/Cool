@@ -173,30 +173,6 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type=["mat2"],
-            cpp_type="glm::mat2",
-            glsl_type="mat2",
-            include="<glm/glm.hpp>",
-            metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
-        ),
-        VariableDescription(
-            input_type=["mat3"],
-            cpp_type="glm::mat3",
-            glsl_type="mat3",
-            include="<glm/glm.hpp>",
-            metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
-        ),
-        VariableDescription(
-            input_type=["mat4"],
-            cpp_type="glm::mat4",
-            glsl_type="mat4",
-            include="<glm/glm.hpp>",
-            metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
-        ),
-        VariableDescription(
             input_type=list(map(lambda x: x.name_in_code,
                                 generator_colors.color_spaces())),
             cpp_type="Cool::Color",
@@ -300,6 +276,30 @@ def all_variable_descriptions():
             include="<Cool/StrongTypes/MathExpression.h>",
             metadatas=[],
             requires_shader_code_generation=True,
+        ),
+        VariableDescription(
+            input_type=["mat2"],
+            cpp_type="glm::mat2",
+            glsl_type="mat2",
+            include="<glm/glm.hpp>",
+            metadatas=float_metadatas(),
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
+            input_type=["mat3"],
+            cpp_type="glm::mat3",
+            glsl_type="mat3",
+            include="<glm/glm.hpp>",
+            metadatas=float_metadatas(),
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
+            input_type=["mat4"],
+            cpp_type="glm::mat4",
+            glsl_type="mat4",
+            include="<glm/glm.hpp>",
+            metadatas=float_metadatas(),
+            requires_shader_code_generation=False,
         ),
     ]
 
@@ -429,9 +429,13 @@ def cereal_make_nvp(metadatas: List[VariableMetadata]):
 
 def cereal_serialize_body(metadatas: List[VariableMetadata]):
     return f'''
+// #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
 {cereal_make_nvp(metadatas)}
-        );'''
+        );
+// #else
+//         (void)archive;
+// #endif'''
 
 
 def metadatas_definitions(metadatas: List[VariableMetadata]):

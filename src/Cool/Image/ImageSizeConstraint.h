@@ -46,6 +46,7 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Is controlling the number of pixels", _is_controlling_nb_pixels),
             cereal::make_nvp("Number of pixels", _nb_pixels),
@@ -53,6 +54,9 @@ private:
             cereal::make_nvp("Aspect ratio", _aspect_ratio),
             cereal::make_nvp("Interpolation mode", _interpolation_mode)
         );
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 
