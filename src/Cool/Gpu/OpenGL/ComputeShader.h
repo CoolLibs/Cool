@@ -4,7 +4,7 @@
 #include <Cool/File/File.h>
 #include "Shader.h"
 
-namespace Cool {
+namespace Cool::OpenGL {
 
 #if DEBUG
 #define ASSERT_SHADER_IS_BOUND              \
@@ -128,6 +128,6 @@ void main() {
 )V0G0N";
 };
 
-} // namespace Cool
+} // namespace Cool::OpenGL
 
 #endif
