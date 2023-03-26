@@ -1,7 +1,7 @@
 
 #include <Cool/Log/ToUser.h>
 #include <imnodes/imnodes_internal.h>
-#include "Cool/Nodes/NodeDefinition_Concept.h"
+#include "Cool/Nodes/NodeDefinition.h"
 #include "ImNodesHelpers.h"
 #include "NodesLibrary.h"
 #include "imgui.h"
@@ -52,7 +52,7 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
 }
 
 template<NodesCfg_Concept NodesCfg>
-static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::NodeOwner& node, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, GraphImpl& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::NodeOwner& node, NodesCfg const& nodes_cfg, NodesLibrary const& library, GraphImpl& graph) -> bool
 {
     auto const* category = library.get_category(node->category_name());
     if (!category)
@@ -81,7 +81,7 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::NodeOwne
 }
 
 template<NodesCfg_Concept NodesCfg>
-auto draw_node(Cool::NodeOwner& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, GraphImpl& graph) -> bool
+auto draw_node(Cool::NodeOwner& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary const& library, GraphImpl& graph) -> bool
 {
     auto& concrete_node = static_cast<typename NodesCfg::NodeT&>(*node);
     ImNodes::BeginNodeTitleBar();
@@ -197,8 +197,8 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
-    NodesCfg const&                                         nodes_cfg,
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+    NodesCfg const&     nodes_cfg,
+    NodesLibrary const& library
 ) -> bool
 {
     bool b = false;
@@ -225,8 +225,8 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
 
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::imgui_window(
-    NodesCfg const&                                         nodes_cfg,
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+    NodesCfg const&     nodes_cfg,
+    NodesLibrary const& library
 ) -> bool
 {
     ImNodes::SetCurrentContext(&*_context);
@@ -272,9 +272,9 @@ auto NodesEditor<NodesCfg>::imgui_window(
 template<NodesCfg_Concept NodesCfg>
 auto NodesEditor<NodesCfg>::
     imgui_nodes_menu(
-        NodesCfg const&                                         nodes_cfg,
-        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
-        bool                                                    menu_just_opened
+        NodesCfg const&     nodes_cfg,
+        NodesLibrary const& library,
+        bool                menu_just_opened
     ) -> bool
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();

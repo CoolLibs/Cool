@@ -26,7 +26,7 @@ private:
 template<NodesCfg_Concept NodesCfg>
 class NodesEditor {
 public:
-    auto imgui_window(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
+    auto imgui_window(NodesCfg const&, NodesLibrary const&) -> bool;
     auto add_node(typename NodesCfg::NodeT const& node) -> NodeId { return _graph.add_node(node); }
 
     auto graph() const -> auto const& { return _graph; }
@@ -40,8 +40,8 @@ private:
 
 private:
     /* Nodes Library */
-    auto draw_nodes_library_menu_ifn(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&) -> bool;
-    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary<typename NodesCfg::NodeDefinitionT> const&, bool just_opened) -> bool;
+    auto draw_nodes_library_menu_ifn(NodesCfg const&, NodesLibrary const&) -> bool;
+    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary const&, bool just_opened) -> bool;
     auto wants_to_open_nodes_menu() -> bool;
     void open_nodes_menu();
 

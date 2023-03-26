@@ -1,7 +1,6 @@
 #pragma once
 #include "Cool/Nodes/Graph.h"
 #include "Cool/Nodes/NodesLibrary.h"
-#include "NodeDefinition_Concept.h"
 
 namespace Cool {
 

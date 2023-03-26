@@ -13,18 +13,17 @@ namespace Cool {
 
 auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string;
 
-template<NodeDefinition_Concept NodeDefinition>
 using NodeDefinitionParser = std::function<tl::expected<NodeDefinition, std::string>(std::filesystem::path const&, std::string const&)>;
 
 template<NodesCfg_Concept NodesConfig>
 class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
     NodesDefinitionUpdater(
-        NodesConfig const&                                          config,
-        GraphImpl&                                                  graph,
-        NodesLibrary<typename NodesConfig::NodeDefinitionT>&        library,
-        NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> parse_definition,
-        std::map<std::filesystem::path, Cool::MessageId>&           errors
+        NodesConfig const&                                config,
+        GraphImpl&                                        graph,
+        NodesLibrary&                                     library,
+        NodeDefinitionParser                              parse_definition,
+        std::map<std::filesystem::path, Cool::MessageId>& errors
     )
         : _config{config}
         , _graph{graph}
@@ -89,8 +88,9 @@ private:
 private:
     NodesConfig const&                                          _config;
     GraphImpl&                                                  _graph;
-    NodesLibrary<typename NodesConfig::NodeDefinitionT>&        _library;
-    NodeDefinitionParser<typename NodesConfig::NodeDefinitionT> _parse_definition;
+    NodesLibrary&                                               _library;
+    NodeDefinitionParser                                        _parse_definition;
     std::map<std::filesystem::path, Cool::MessageId>&           _errors;
 };
+
 }; // namespace Cool
