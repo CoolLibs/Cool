@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #if defined(COOL_OPENGL)
 
 #include <Cool/File/File.h>
@@ -101,6 +102,17 @@ void main() {
 }
 )V0G0N";
 };
+
+/// <summary>
+/// Loads a compute shader from a file.
+/// </summary>
+/// <param name="filePath">The path to the file containing the compute shader source code.
+template<unsigned int WorkGroupSizeX = 256, unsigned int WorkGroupSizeY = 1, unsigned int WorkGroupSizeZ = 1>
+auto load_compute_shader_from_file(const std::filesystem::path& filePath)
+-> ComputeShader<WorkGroupSizeX, WorkGroupSizeY, WorkGroupSizeZ>
+{
+    return ComputeShader{*File::to_string(filePath)};
+}
 
 } // namespace Cool::OpenGL
 
