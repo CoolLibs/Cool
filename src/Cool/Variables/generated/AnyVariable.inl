@@ -13,9 +13,6 @@ using AnyVariable = std::variant<
     Variable<glm::vec2>,
     Variable<glm::vec3>,
     Variable<glm::vec4>,
-    Variable<glm::mat2>,
-    Variable<glm::mat3>,
-    Variable<glm::mat4>,
     Variable<Cool::Color>,
     Variable<Cool::ColorAndAlpha>,
     Variable<Cool::Camera>,
@@ -26,4 +23,7 @@ using AnyVariable = std::variant<
     Variable<Cool::ColorPalette>,
     Variable<Cool::Gradient>,
     Variable<Cool::TextureInfo>,
-    Variable<Cool::MathExpression> >;
+    Variable<Cool::MathExpression>,
+    Variable<glm::mat2>,
+    Variable<glm::mat3>,
+    Variable<glm::mat4> >;

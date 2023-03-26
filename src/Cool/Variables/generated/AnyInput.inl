@@ -13,9 +13,6 @@ using AnyInput = std::variant<
     Input<glm::vec2>,
     Input<glm::vec3>,
     Input<glm::vec4>,
-    Input<glm::mat2>,
-    Input<glm::mat3>,
-    Input<glm::mat4>,
     Input<Cool::Color>,
     Input<Cool::ColorAndAlpha>,
     Input<Cool::Camera>,
@@ -26,4 +23,7 @@ using AnyInput = std::variant<
     Input<Cool::ColorPalette>,
     Input<Cool::Gradient>,
     Input<Cool::TextureInfo>,
-    Input<Cool::MathExpression> >;
+    Input<Cool::MathExpression>,
+    Input<glm::mat2>,
+    Input<glm::mat3>,
+    Input<glm::mat4> >;

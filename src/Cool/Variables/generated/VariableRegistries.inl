@@ -13,9 +13,6 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<glm::vec2>>,
     reg::Registry<Cool::Variable<glm::vec3>>,
     reg::Registry<Cool::Variable<glm::vec4>>,
-    reg::Registry<Cool::Variable<glm::mat2>>,
-    reg::Registry<Cool::Variable<glm::mat3>>,
-    reg::Registry<Cool::Variable<glm::mat4>>,
     reg::Registry<Cool::Variable<Cool::Color>>,
     reg::Registry<Cool::Variable<Cool::ColorAndAlpha>>,
     reg::Registry<Cool::Variable<Cool::Camera>>,
@@ -26,4 +23,7 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<Cool::ColorPalette>>,
     reg::Registry<Cool::Variable<Cool::Gradient>>,
     reg::Registry<Cool::Variable<Cool::TextureInfo>>,
-    reg::Registry<Cool::Variable<Cool::MathExpression>>>;
+    reg::Registry<Cool::Variable<Cool::MathExpression>>,
+    reg::Registry<Cool::Variable<glm::mat2>>,
+    reg::Registry<Cool::Variable<glm::mat3>>,
+    reg::Registry<Cool::Variable<glm::mat4>>>;

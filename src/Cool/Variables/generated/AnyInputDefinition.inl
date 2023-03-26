@@ -13,9 +13,6 @@ using AnyInputDefinition = std::variant<
     InputDefinition<glm::vec2>,
     InputDefinition<glm::vec3>,
     InputDefinition<glm::vec4>,
-    InputDefinition<glm::mat2>,
-    InputDefinition<glm::mat3>,
-    InputDefinition<glm::mat4>,
     InputDefinition<Cool::Color>,
     InputDefinition<Cool::ColorAndAlpha>,
     InputDefinition<Cool::Camera>,
@@ -26,4 +23,7 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::ColorPalette>,
     InputDefinition<Cool::Gradient>,
     InputDefinition<Cool::TextureInfo>,
-    InputDefinition<Cool::MathExpression> >;
+    InputDefinition<Cool::MathExpression>,
+    InputDefinition<glm::mat2>,
+    InputDefinition<glm::mat3>,
+    InputDefinition<glm::mat4> >;

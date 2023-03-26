@@ -13,9 +13,6 @@ using AnyInputRefToConst = std::variant<
     std::reference_wrapper<const Input<glm::vec2>>,
     std::reference_wrapper<const Input<glm::vec3>>,
     std::reference_wrapper<const Input<glm::vec4>>,
-    std::reference_wrapper<const Input<glm::mat2>>,
-    std::reference_wrapper<const Input<glm::mat3>>,
-    std::reference_wrapper<const Input<glm::mat4>>,
     std::reference_wrapper<const Input<Cool::Color>>,
     std::reference_wrapper<const Input<Cool::ColorAndAlpha>>,
     std::reference_wrapper<const Input<Cool::Camera>>,
@@ -26,4 +23,7 @@ using AnyInputRefToConst = std::variant<
     std::reference_wrapper<const Input<Cool::ColorPalette>>,
     std::reference_wrapper<const Input<Cool::Gradient>>,
     std::reference_wrapper<const Input<Cool::TextureInfo>>,
-    std::reference_wrapper<const Input<Cool::MathExpression>>>;
+    std::reference_wrapper<const Input<Cool::MathExpression>>,
+    std::reference_wrapper<const Input<glm::mat2>>,
+    std::reference_wrapper<const Input<glm::mat3>>,
+    std::reference_wrapper<const Input<glm::mat4>>>;

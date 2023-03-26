@@ -13,9 +13,6 @@ using AnyInputRef = std::variant<
     std::reference_wrapper<Input<glm::vec2>>,
     std::reference_wrapper<Input<glm::vec3>>,
     std::reference_wrapper<Input<glm::vec4>>,
-    std::reference_wrapper<Input<glm::mat2>>,
-    std::reference_wrapper<Input<glm::mat3>>,
-    std::reference_wrapper<Input<glm::mat4>>,
     std::reference_wrapper<Input<Cool::Color>>,
     std::reference_wrapper<Input<Cool::ColorAndAlpha>>,
     std::reference_wrapper<Input<Cool::Camera>>,
@@ -26,4 +23,7 @@ using AnyInputRef = std::variant<
     std::reference_wrapper<Input<Cool::ColorPalette>>,
     std::reference_wrapper<Input<Cool::Gradient>>,
     std::reference_wrapper<Input<Cool::TextureInfo>>,
-    std::reference_wrapper<Input<Cool::MathExpression>>>;
+    std::reference_wrapper<Input<Cool::MathExpression>>,
+    std::reference_wrapper<Input<glm::mat2>>,
+    std::reference_wrapper<Input<glm::mat3>>,
+    std::reference_wrapper<Input<glm::mat4>>>;
