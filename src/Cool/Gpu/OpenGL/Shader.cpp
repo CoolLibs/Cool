@@ -175,6 +175,8 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
     current_slot = (current_slot + 1) % max_slots;
 }
 
+auto Shader::id() const -> GLuint { return _shader.id(); }
+
 } // namespace Cool::OpenGL
 
 #endif

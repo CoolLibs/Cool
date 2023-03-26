@@ -47,6 +47,8 @@ public:
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
     void set_uniform(std::string_view uniform_name, TextureInfo const&) const;
 
+    auto id() const -> GLuint;
+
 private:
     GLint uniform_location(std::string_view uniform_name) const;
 
