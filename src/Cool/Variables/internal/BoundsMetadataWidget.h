@@ -1,6 +1,8 @@
 #pragma once
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <glm/gtc/matrix_access.hpp>
 #include "BoundsMetadata.h"
+#include "glm/matrix.hpp"
 #include "imgui.h"
 
 namespace Cool::internal {
@@ -43,6 +45,45 @@ inline auto imgui_drag(const char* label, glm::vec4* val, float drag_speed, floa
 {
     return ImGui::DragFloat4(label, glm::value_ptr(*val), drag_speed, min, max);
 }
+inline auto imgui_drag(const char* label, glm::mat2* val, float drag_speed, float min, float max) -> bool
+{
+    bool b = false;
+    ImGui::PushID(val);
+    glm::mat2 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    b |= ImGui::DragFloat2(label, glm::value_ptr(mat[0]), drag_speed, min, max);
+    b |= ImGui::DragFloat2("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
+}
+inline auto imgui_drag(const char* label, glm::mat3* val, float drag_speed, float min, float max) -> bool
+{
+    bool b = false;
+    ImGui::PushID(val);
+    glm::mat3 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    b |= ImGui::DragFloat3(label, glm::value_ptr(mat[0]), drag_speed, min, max);
+    b |= ImGui::DragFloat3("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
+    b |= ImGui::DragFloat3("##2", glm::value_ptr(mat[2]), drag_speed, min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
+}
+inline auto imgui_drag(const char* label, glm::mat4* val, float drag_speed, float min, float max) -> bool
+{
+    bool b = false;
+    ImGui::PushID(val);
+    glm::mat4 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    b |= ImGui::DragFloat4(label, glm::value_ptr(mat[0]), drag_speed, min, max);
+    b |= ImGui::DragFloat4("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
+    b |= ImGui::DragFloat4("##2", glm::value_ptr(mat[2]), drag_speed, min, max);
+    b |= ImGui::DragFloat4("##3", glm::value_ptr(mat[3]), drag_speed, min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
+}
 
 inline auto imgui_slider(const char* label, int* val, int min, int max) -> bool
 {
@@ -63,6 +104,45 @@ inline auto imgui_slider(const char* label, glm::vec3* val, float min, float max
 inline auto imgui_slider(const char* label, glm::vec4* val, float min, float max) -> bool
 {
     return ImGui::SliderFloat4(label, glm::value_ptr(*val), min, max);
+}
+inline auto imgui_slider(const char* label, glm::mat2* val, float min, float max) -> bool
+{
+    bool      b   = false;
+    glm::mat2 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    ImGui::PushID(val);
+    b |= ImGui::SliderFloat2(label, glm::value_ptr(mat[0]), min, max);
+    b |= ImGui::SliderFloat2("##1", glm::value_ptr(mat[1]), min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
+}
+inline auto imgui_slider(const char* label, glm::mat3* val, float min, float max) -> bool
+{
+    bool      b   = false;
+    glm::mat3 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    ImGui::PushID(val);
+    b |= ImGui::SliderFloat3(label, glm::value_ptr(mat[0]), min, max);
+    b |= ImGui::SliderFloat3("##1", glm::value_ptr(mat[1]), min, max);
+    b |= ImGui::SliderFloat3("##2", glm::value_ptr(mat[2]), min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
+}
+inline auto imgui_slider(const char* label, glm::mat4* val, float min, float max) -> bool
+{
+    bool      b   = false;
+    glm::mat4 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
+    ImGui::PushID(val);
+    b |= ImGui::SliderFloat4(label, glm::value_ptr(mat[0]), min, max);
+    b |= ImGui::SliderFloat4("##1", glm::value_ptr(mat[1]), min, max);
+    b |= ImGui::SliderFloat4("##2", glm::value_ptr(mat[2]), min, max);
+    b |= ImGui::SliderFloat4("##3", glm::value_ptr(mat[3]), min, max);
+    ImGui::PopID();
+    if (b)
+        *val = glm::transpose(mat);
+    return b;
 }
 
 template<typename T>

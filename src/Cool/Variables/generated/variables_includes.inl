@@ -20,6 +20,9 @@
 #include <Cool/Variables/Variable_bool.h>
 #include <Cool/Variables/Variable_float.h>
 #include <Cool/Variables/Variable_int.h>
+#include <Cool/Variables/Variable_mat2.h>
+#include <Cool/Variables/Variable_mat3.h>
+#include <Cool/Variables/Variable_mat4.h>
 #include <Cool/Variables/Variable_vec2.h>
 #include <Cool/Variables/Variable_vec3.h>
 #include <Cool/Variables/Variable_vec4.h>
