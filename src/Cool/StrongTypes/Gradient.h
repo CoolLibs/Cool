@@ -88,36 +88,39 @@ namespace cereal {
 template<class Archive>
 void serialize(Archive& archive, ImGG::Mark& mark)
 {
-#if COOL_SERIALIZATION
+    // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
     archive(
         cereal::make_nvp("Mark position", mark.position),
         cereal::make_nvp("Mark color", mark.color)
     );
-#else
-    (void)archive;
-#endif
+    // #else
+    //     (void)archive;
+    //     (void)mark;
+    // #endif
 }
 
 template<class Archive>
 void save(Archive& archive, ImGG::RelativePosition const& position)
 {
-#if COOL_SERIALIZATION
+    // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
     archive(cereal::make_nvp("Relative position", position.get()));
-#else
-    (void)archive;
-#endif
+    // #else
+    //     (void)archive;
+    //     (void)position;
+    // #endif
 }
 
 template<class Archive>
 void load(Archive& archive, ImGG::RelativePosition& position)
 {
-#if COOL_SERIALIZATION
+    // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
     float position_loaded{};
     archive(position_loaded);
     position = ImGG::RelativePosition{position_loaded};
-#else
-    (void)archive;
-#endif
+    // #else
+    //     (void)archive;
+    //     (void)position;
+    // #endif
 }
 
 } // namespace cereal
