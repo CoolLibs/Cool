@@ -1,39 +1,16 @@
 #pragma once
 
-#include <regex>
+namespace Cool {
+/// Represents a `#define name value` macro
+struct HashDefine {
+    std::string name;
+    std::string value;
+};
+} // namespace Cool
 
 namespace Cool::RegExp {
 
-static const std::regex includes{R"(#include *\"(.*)\")"};
-
-inline auto file_path_to_include(const std::string& text) -> std::optional<std::filesystem::path>
-{
-    std::smatch matches;
-    if (std::regex_search(text, matches, includes))
-    {
-        return std::filesystem::path{std::string{matches[1]}};
-    }
-    else
-    {
-        return std::nullopt;
-    }
-}
+auto file_path_to_include(std::string const& line) -> std::optional<std::filesystem::path>;
+auto hash_define(std::string const& line) -> std::optional<HashDefine>;
 
 } // namespace Cool::RegExp
-
-#if COOL_ENABLE_TESTS
-#include <doctest/doctest.h>
-TEST_CASE("[Cool::RegExp] #include")
-{
-    // Given
-    const auto text =
-        "some random text;\n"
-        "#include   \"filename.ext\"ranbom_bits\n"
-        "more randomness\n";
-    // When
-    const auto result = Cool::RegExp::file_path_to_include(text);
-    // Then
-    CHECK(result.has_value());
-    CHECK(*result == "filename.ext");
-}
-#endif
