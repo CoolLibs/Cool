@@ -6,14 +6,16 @@
 
 namespace Cool::OpenGL {
 
+static void assert_compute_shader_is_bound(GLuint id)
+{
 #if DEBUG
-#define ASSERT_SHADER_IS_BOUND              \
-    GLint id;                               \
-    glGetIntegerv(GL_CURRENT_PROGRAM, &id); \
-    assert(id == _shader._program_id && "You must call compute_shader->bind() before calling compute()");
+    GLint current_id;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &current_id);
+    assert(static_cast<GLuint>(current_id) == id && "The compute shader must be bound before calling compute().");
 #else
-#define ASSERT_SHADER_IS_BOUND
+    (void)id;
 #endif
+}
 
 /// <summary>
 /// A wrapper for an OpenGL compute shader.
@@ -84,10 +86,10 @@ public:
         assert(WorkGroupSizeX != 0);
         assert(WorkGroupSizeY != 0);
         assert(WorkGroupSizeZ != 0);
-        ASSERT_SHADER_IS_BOUND
         _shader.set_uniform("NumberOfComputationsX", nb_computations_x);
         _shader.set_uniform("NumberOfComputationsY", nb_computations_y);
         _shader.set_uniform("NumberOfComputationsZ", nb_computations_z);
+        assert_compute_shader_is_bound(_shader.id());
         GLDebug(glDispatchCompute(
             (nb_computations_x - 1) / WorkGroupSizeX + 1,
             (nb_computations_y - 1) / WorkGroupSizeY + 1,
