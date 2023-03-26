@@ -56,10 +56,14 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Transform", _transform_matrix),
             cereal::make_nvp("Projection", _projection)
         );
+#else
+        (void)archive;
+#endif
     }
 };
 

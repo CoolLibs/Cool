@@ -21,10 +21,14 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Name", name),
             cereal::make_nvp("Values", values)
         );
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 
@@ -128,9 +132,13 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Presets", _presets)
         );
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 

@@ -23,9 +23,13 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Drag speed", drag_speed)
         );
+#else
+        (void)archive;
+#endif
     }
 };
 

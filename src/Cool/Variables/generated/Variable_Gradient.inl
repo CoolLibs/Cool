@@ -24,10 +24,14 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Is HDR", is_hdr),
             cereal::make_nvp("Randomize new marks' colors", randomize_new_marks_colors)
         );
+#else
+        (void)archive;
+#endif
     }
 };
 

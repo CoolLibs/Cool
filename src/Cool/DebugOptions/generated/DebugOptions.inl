@@ -95,6 +95,7 @@ private:
         template<class Archive>
         void serialize(Archive& archive)
         {
+            // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
             archive(
 #if DEBUG
                 cereal::make_nvp("Test Message Console", test_message_console__window),
@@ -118,6 +119,9 @@ private:
 #endif
 
             );
+            // #else
+            //         (void)archive;
+            // #endif
         }
     };
 

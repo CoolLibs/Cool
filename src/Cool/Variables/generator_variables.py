@@ -429,9 +429,13 @@ def cereal_make_nvp(metadatas: List[VariableMetadata]):
 
 def cereal_serialize_body(metadatas: List[VariableMetadata]):
     return f'''
+// #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
 {cereal_make_nvp(metadatas)}
-        );'''
+        );
+// #else
+//         (void)archive;
+// #endif'''
 
 
 def metadatas_definitions(metadatas: List[VariableMetadata]):

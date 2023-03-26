@@ -165,9 +165,13 @@ private:
         template<class Archive>
         void serialize(Archive& archive)
         {{
+// #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
             archive(
                 {cereal_make_nvp(debug_options)}
             );
+// #else
+//         (void)archive;
+// #endif
         }}
     }};
 
