@@ -19,7 +19,6 @@ namespace Cool {
 
 class DebugOptions {
 public:
-#if DEBUG
     static void test_message_console__window(std::function<void()> callback)
     {
         if (instance().test_message_console__window)
@@ -29,11 +28,7 @@ public:
             ImGui::End();
         }
     }
-#endif
-    [[nodiscard]] static auto log_when_autosaving() -> bool&
-    {
-        return instance().log_when_autosaving;
-    }
+    [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
     static void               texture_library_debug_view(std::function<void()> callback)
@@ -52,7 +47,6 @@ public:
         return instance().log_opengl_info;
     }
 #endif
-#if DEBUG
     static void test_presets__window(std::function<void()> callback)
     {
         if (instance().test_presets__window)
@@ -62,7 +56,15 @@ public:
             ImGui::End();
         }
     }
-#endif
+    static void color_themes_advanced_config_window(std::function<void()> callback)
+    {
+        if (instance().color_themes_advanced_config_window)
+        {
+            ImGui::Begin("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
+            callback();
+            ImGui::End();
+        }
+    }
 #if DEBUG
     [[nodiscard]] static auto imgui_item_picker() -> bool&
     {
@@ -72,9 +74,7 @@ public:
 
 private:
     struct Instance {
-#if DEBUG
         bool test_message_console__window{false};
-#endif
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_textures{false};
@@ -83,9 +83,8 @@ private:
 #if DEBUG
         bool log_opengl_info{false};
 #endif
-#if DEBUG
         bool test_presets__window{false};
-#endif
+        bool color_themes_advanced_config_window{false};
 #if DEBUG
         bool imgui_item_picker{false};
 #endif
@@ -105,13 +104,17 @@ private:
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
-                cereal::make_nvp("Test Presets", test_presets__window)
+                cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #else
+                cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
-                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool)
+                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #endif
 
             );
@@ -120,9 +123,7 @@ private:
 
     static void reset_all()
     {
-#if DEBUG
-        instance().test_message_console__window = false;
-#endif
+        instance().test_message_console__window                     = false;
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_textures                       = false;
@@ -131,9 +132,8 @@ private:
 #if DEBUG
         instance().log_opengl_info = false;
 #endif
-#if DEBUG
-        instance().test_presets__window = false;
-#endif
+        instance().test_presets__window                = false;
+        instance().color_themes_advanced_config_window = false;
     }
 
     static void save_to_file()
@@ -171,56 +171,55 @@ private:
 
     static void imgui_ui_for_all_options(std::string_view filter)
     {
-#if DEBUG
-
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Test Message Console", &instance().test_message_console__window);
+            Cool::ImGuiExtras::toggle("Test Message Console", &instance().test_message_console__window);
         }
-
-#endif
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when autosaving", &instance().log_when_autosaving);
+            Cool::ImGuiExtras::toggle("Log when autosaving", &instance().log_when_autosaving);
         }
 
         if (wafl::similarity_match({filter, "Log when rendering alpha checkerboard background"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
+            Cool::ImGuiExtras::toggle("Log when rendering alpha checkerboard background", &instance().log_when_rendering_alpha_checkerboard_background);
         }
 
         if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log when creating textures", &instance().log_when_creating_textures);
+            Cool::ImGuiExtras::toggle("Log when creating textures", &instance().log_when_creating_textures);
         }
 
         if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("View Texture Library", &instance().texture_library_debug_view);
+            Cool::ImGuiExtras::toggle("View Texture Library", &instance().texture_library_debug_view);
         }
 
         if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
+            Cool::ImGuiExtras::toggle("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
         }
 
 #if DEBUG
 
         if (wafl::similarity_match({filter, "Log OpenGL info"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Log OpenGL info", &instance().log_opengl_info);
+            Cool::ImGuiExtras::toggle("Log OpenGL info", &instance().log_opengl_info);
         }
 
 #endif
-#if DEBUG
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
-            ImGui::Checkbox("Test Presets", &instance().test_presets__window);
+            Cool::ImGuiExtras::toggle("Test Presets", &instance().test_presets__window);
         }
 
-#endif
+        if (wafl::similarity_match({filter, "Color Themes: Advanced Config"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
+        }
+
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
@@ -240,15 +239,11 @@ private:
 
     static void toggle_first_option(std::string_view filter)
     {
-#if DEBUG
-
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console__window = !instance().test_message_console__window;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
-
-#endif
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
         {
@@ -289,7 +284,6 @@ private:
         }
 
 #endif
-#if DEBUG
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
@@ -297,7 +291,12 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
-#endif
+        if (wafl::similarity_match({filter, "Color Themes: Advanced Config"}) >= wafl::Matches::Strongly)
+        {
+            instance().color_themes_advanced_config_window = !instance().color_themes_advanced_config_window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)

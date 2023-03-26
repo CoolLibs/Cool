@@ -357,7 +357,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
 {
     ImGui::PushID(label);
-    bool was_used = ImGui::Checkbox("##checkbox", bool_p);
+    bool was_used = ImGuiExtras::toggle("##checkbox", bool_p);
     ImGui::PopID();
     ImGui::SameLine();
     if (*bool_p)
@@ -458,8 +458,9 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     const int   segment_per_arc = ImMax(4, static_cast<int>(wheel_r_outer) / 12);
     for (int n = 0; n < 6; n++)
     {
-        const float a0             = (n) / 6.0f * 2.0f * IM_PI - aeps;
-        const float a1             = (n + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
+        const auto  nn             = static_cast<float>(n);
+        const float a0             = nn / 6.0f * 2.0f * IM_PI - aeps;
+        const float a1             = (nn + 1.0f) / 6.0f * 2.0f * IM_PI + aeps;
         const int   vert_start_idx = draw_list.VtxBuffer.Size;
         draw_list.PathArcTo(wheel_center, (wheel_r_inner + wheel_r_outer) * 0.5f, a0, a1, segment_per_arc);
         draw_list.PathStroke(col_white, 0, wheel_thickness);
@@ -597,6 +598,65 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
     auto const b = ImGui::CollapsingHeader(name.data());
     ImGui::PopStyleColor(3);
     return b;
+}
+
+auto toggle(const char* label, bool* v) -> bool
+{
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext&     g          = *GImGui;
+    const ImGuiStyle& style      = g.Style;
+    const ImGuiID     id         = window->GetID(label);
+    const ImVec2      label_size = ImGui::CalcTextSize(label, nullptr, true);
+    const ImVec2      p          = ImGui::GetCursorScreenPos();
+
+    const float  height = ImGui::GetFrameHeight();
+    const float  width  = height * 1.55f;
+    const ImVec2 pos    = window->DC.CursorPos;
+    const ImRect total_bb(pos, pos + ImVec2(width + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+    ImGui::ItemSize(total_bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(total_bb, id))
+    {
+        return false;
+    }
+
+    bool       hovered, held; // NOLINT
+    const bool pressed = ImGui::ButtonBehavior(total_bb, id, &hovered, &held, ImGuiButtonFlags_PressedOnClick);
+    if (pressed)
+    {
+        *v = !(*v);
+        ImGui::MarkItemEdited(id);
+    }
+
+    const ImRect check_bb(pos, pos + ImVec2(width, height));
+    ImGui::RenderNavHighlight(total_bb, id);
+
+    const float            radius     = height * 0.50f;
+    float                  t          = *v ? 1.0f : 0.0f;
+    if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
+    {
+        static constexpr float ANIM_SPEED = 0.08f;
+        float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+        t            = *v ? (t_anim) : (1.0f - t_anim);
+    }
+
+    ImU32 col_bg;
+    if (ImGui::IsItemHovered())
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered), ImGui::GetStyleColorVec4(ImGuiCol_SliderGrabActive), t));
+    else
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)), t));
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+
+    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
+    if (label_size.x > 0.0f)
+        ImGui::RenderText(label_pos, label);
+
+    return pressed;
 }
 
 } // namespace Cool::ImGuiExtras

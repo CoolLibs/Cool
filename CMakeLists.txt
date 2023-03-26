@@ -142,7 +142,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE folder_watcher::folder_wat
 
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
-target_include_directories(imgui_gradient PRIVATE lib) # imgui_gradient needs acces to imgui
+target_include_directories(imgui_gradient SYSTEM PRIVATE lib) # imgui_gradient needs acces to imgui
 target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 
 # algorithms
@@ -181,8 +181,9 @@ add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
 # serv
-add_subdirectory(lib/serv)
-target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
+### Disabled for now, we will reintroduce it when we will use it
+# add_subdirectory(lib/serv)
+# target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 
 # stringify
 add_subdirectory(lib/stringify)
@@ -213,6 +214,7 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 
 # Dear ImGui
 add_subdirectory(lib/imgui)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
@@ -230,7 +232,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 
 # ImNodes
 add_library(ImNodes lib/imnodes/imnodes.cpp)
-target_include_directories(ImNodes PRIVATE
+target_include_directories(ImNodes SYSTEM PRIVATE
     lib/imgui
     lib # To access imnodes_config.h
 )
@@ -239,14 +241,25 @@ target_link_libraries(ImNodes PUBLIC reg) # To define ImNode's ID as a reg::Id
 target_compile_features(ImNodes PUBLIC cxx_std_11)
 target_compile_definitions(ImNodes PUBLIC IMNODES_USER_CONFIG="imnodes_config.h")
 
+# ImStyleEd
+add_subdirectory(lib/ImGui_StyleEditor)
+target_include_directories(ImStyleEd SYSTEM PRIVATE lib)
+target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
+
 # ----------------
 # ---Copy files---
 # ----------------
 include("CMakeUtils/files_and_folders.cmake")
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
+Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_config.json) # This prevents the following copy command from failing
+Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # This prevents the following copy command from failing
+Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
     Cool__target_copy_file(${TARGET_NAME} imgui.ini)
+    Cool__target_copy_file(${TARGET_NAME} color_config.json)
+    Cool__target_copy_file(${TARGET_NAME} color_themes.json)
+    Cool__target_copy_file(${TARGET_NAME} style.json)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
 endfunction()
 

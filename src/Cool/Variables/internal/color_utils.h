@@ -13,7 +13,7 @@ inline auto color_imgui_flags(bool is_hdr) -> ImGuiColorEditFlags
 
 inline auto color_metadata_widget(bool& is_hdr) -> bool
 {
-    const bool b = ImGui::Checkbox("HDR", &is_hdr);
+    const bool b = ImGuiExtras::toggle("HDR", &is_hdr);
     ImGui::SameLine();
     ImGuiExtras::help_marker("Allows the RGB values to go outside of the [0, 1] range.");
     return b;
@@ -21,7 +21,7 @@ inline auto color_metadata_widget(bool& is_hdr) -> bool
 
 inline auto color_and_alpha_metadata_widget(bool& is_hdr) -> bool
 {
-    const bool b = ImGui::Checkbox("HDR", &is_hdr);
+    const bool b = ImGuiExtras::toggle("HDR", &is_hdr);
     ImGui::SameLine();
     ImGuiExtras::help_marker("Allows the RGBA values to go outside of the [0, 1] range.");
     return b;

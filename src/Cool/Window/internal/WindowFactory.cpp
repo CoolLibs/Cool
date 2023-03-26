@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
+#include <filesystem>
 #include <stdexcept>
 
 namespace Cool {
@@ -32,10 +33,19 @@ static void set_imgui_ini_filepath()
 
 static void imgui_load_fonts()
 {
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO&               io        = ImGui::GetIO();
+    static constexpr float font_size = 16.0f;
+
+    { // Main font
+        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/main_font.otf";
+        if (!std::filesystem::exists(path))
+            io.Fonts->AddFontDefault();
+        else
+            io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+    }
     // Merge icons into default font
-    io.Fonts->AddFontDefault();
-    static constexpr float font_size = 13.0f; // 13.0f is the size of the default font. Change to the font size you use.
     ImFontConfig           config;
     config.MergeMode                   = true;
     config.PixelSnapH                  = true;
@@ -48,27 +58,21 @@ static void imgui_load_fonts()
     io.Fonts->Build();
 }
 
-static void imgui_setup_style()
-{
-    ImGui::StyleColorsClassic();
-    ImGuiStyle& style                 = ImGui::GetStyle();
-    style.WindowRounding              = 0.0f;
-    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-}
-
 static void initialize_imgui()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     set_imgui_ini_filepath();
     ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigDockingAlwaysTabBar  = true;
+    io.ConfigDragClickToInputText = true;
+    ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
 #if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     imgui_load_fonts();
-    imgui_setup_style();
 }
 
 WindowFactory::WindowFactory()

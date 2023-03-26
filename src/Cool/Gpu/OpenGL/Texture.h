@@ -45,7 +45,7 @@ public:
 
     /// Attaches your texture to a slot, so that it is ready to be read by a shader.
     /// This `slot` is the value that you should also send to your shader as the value of a "uniform sampler2D u_YourTextureUniform"
-    void attach_to_slot(int slot) const;
+    void attach_to_slot(GLuint slot) const;
 
 private:
     glpp::Texture2D _tex{};

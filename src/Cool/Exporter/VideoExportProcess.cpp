@@ -56,24 +56,34 @@ auto VideoExportProcess::estimated_remaining_time() -> float
     const auto nb_frames_to_render = static_cast<float>(_total_nb_of_frames_in_sequence - _nb_frames_sent_to_thread_pool);
 
     return nb_frames_to_render * _average_time_between_two_renders
-           + (_thread_pool.nb_jobs_in_queue() + _thread_pool.size() / 2.f) * _average_export_time / _thread_pool.size()
+           + (static_cast<float>(_thread_pool.nb_jobs_in_queue()) + static_cast<float>(_thread_pool.size()) / 2.f) * _average_export_time / static_cast<float>(_thread_pool.size())
            + 1.f;
 }
 
 void VideoExportProcess::imgui()
 {
-    int frame_count = _nb_frames_which_finished_exporting.load();
+    const int frame_count = _nb_frames_which_finished_exporting.load();
+
+    // Progress bar
+    const float progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
+    ImGui::ProgressBar(progress, ImVec2(-1.f, 0.f));
+
+    // Frames count
     ImGui::TextUnformatted(
         fmt::format(
-            "Exported {} / {} frames",
+            "{} / {} frames",
             String::to_string(frame_count, nb_digits(_total_nb_of_frames_in_sequence)),
             _total_nb_of_frames_in_sequence
         )
             .c_str()
     );
+
+    // Remaining time
     ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
+
+    // Stop exporting
     if (ImGui::Button("Stop exporting"))
     {
         _should_stop_asap = true;

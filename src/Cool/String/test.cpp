@@ -77,14 +77,14 @@ TEST_CASE("[Cool::String] replace()")
     };
     SUBCASE("replace_all()")
     {
-        std::string text = "Effect_intensity";
-        Cool::String::replace_all(text, "_", " ");
-        CHECK(text == "Effect intensity");
+        std::string str = "Effect_intensity";
+        Cool::String::replace_all(str, "_", " ");
+        CHECK(str == "Effect intensity");
     }
     SUBCASE("replace_all_words()")
     {
-        auto const text = "Test helloworld hello world hello something"s;
-        auto const res  = Cool::String::replace_all_words(text, "hello", "plop");
+        auto const str = "Test helloworld hello world hello something"s;
+        auto const res = Cool::String::replace_all_words(str, "hello", "plop");
         CHECK(res == "Test helloworld plop world plop something");
     }
     SUBCASE("replace_between_delimiters()")

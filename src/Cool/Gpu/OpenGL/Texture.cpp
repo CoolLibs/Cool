@@ -95,7 +95,7 @@ void Texture::unbind()
     glpp::bind_texture<glpp::TextureKind::Tex2D>(0);
 }
 
-void Texture::attach_to_slot(int slot) const
+void Texture::attach_to_slot(GLuint slot) const
 {
 #if DEBUG
     if (!_data_has_been_uploaded)

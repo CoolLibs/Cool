@@ -1,4 +1,5 @@
 #include "ImGuiWindow.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 
 namespace Cool {
 
@@ -15,7 +16,7 @@ void ImGuiWindow::show(std::function<void()> widgets)
 void ImGuiWindow::open_close_checkbox()
 {
     bool should_open = _is_open;
-    if (ImGui::Checkbox(_title, &should_open))
+    if (ImGuiExtras::toggle(_title, &should_open))
     {
         if (should_open)
         {

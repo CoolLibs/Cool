@@ -185,8 +185,9 @@ static void get_bounds(float l, Bounds bounds[6])
         for (t = 0; t < 2; t++)
         {
             float top1   = (284517.f * m1 - 94839.f * m3) * sub2;
-            float top2   = (838422.f * m3 + 769860.f * m2 + 731718.f * m1) * l * sub2 - 769860.f * t * l;
-            float bottom = (632260.f * m3 - 126452.f * m2) * sub2 + 126452.f * t;
+            auto const tt     = static_cast<float>(t);
+            float      top2   = (838422.f * m3 + 769860.f * m2 + 731718.f * m1) * l * sub2 - 769860.f * tt * l;
+            float      bottom = (632260.f * m3 - 126452.f * m2) * sub2 + 126452.f * tt;
 
             bounds[channel * 2 + t].a = top1 / bottom;
             bounds[channel * 2 + t].b = top2 / bottom;
@@ -196,7 +197,7 @@ static void get_bounds(float l, Bounds bounds[6])
 
 static float ray_length_until_intersect(float theta, Bounds const& line)
 {
-    return line.b / (sin(theta) - line.a * cos(theta));
+    return line.b / (std::sin(theta) - line.a * std::cos(theta));
 }
 
 static float max_chroma_for_lh(float l, float h)
@@ -300,7 +301,7 @@ static void luv2lch(glm::vec3& in_out)
     }
     else
     {
-        h = atan2(v, u) * 57.29577951308232087680f; /* (180 / pi) */
+        h = std::atan2(v, u) * 57.29577951f; /* (180 / pi) */
         if (h < 0.f)
             h += 360.f;
     }

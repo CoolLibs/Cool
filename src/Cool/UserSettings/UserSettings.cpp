@@ -8,7 +8,9 @@ namespace Cool {
 auto UserSettings::imgui() -> bool
 {
     bool b = false;
+    ImGui::SeparatorText("Autosave");
     b |= imgui_autosave();
+    ImGui::SeparatorText("Camera");
     b |= imgui_camera2D_zoom_sensitivity();
 
     return b;

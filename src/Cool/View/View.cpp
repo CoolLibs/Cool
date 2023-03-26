@@ -59,7 +59,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-    ImGui::Begin(_name.c_str(), &_is_open, ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin(_name.c_str(), _is_closable ? &_is_open : nullptr, ImGuiWindowFlags_NoScrollbar);
     store_window_size();
     store_window_position();
     _window_is_hovered = ImGui::IsWindowHovered();
@@ -71,7 +71,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
 
 void View::imgui_open_close_checkbox()
 {
-    ImGui::Checkbox(_name.c_str(), &_is_open);
+    ImGuiExtras::toggle(_name.c_str(), &_is_open);
 }
 
 static auto window_to_screen(WindowCoordinates position, GLFWwindow* window) -> ScreenCoordinates
@@ -117,8 +117,8 @@ auto View::contains(ViewCoordinates pos, ImageSizeInsideView image_size) -> bool
     const auto img_size = image_size.fit_into(*_size);
 
     const auto pos_in_img = pos + glm::vec2{
-                                (img_size.width() - _size->width()) * 0.5f,
-                                (img_size.height() - _size->height()) * 0.5f,
+                                (img_size.width() - static_cast<float>(_size->width())) * 0.5f,
+                                (img_size.height() - static_cast<float>(_size->height())) * 0.5f,
                             };
     return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width()
            && pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
