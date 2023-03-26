@@ -23,7 +23,6 @@ static void assert_compute_shader_is_bound(GLuint id)
 template<unsigned int WorkGroupSizeX = 256, unsigned int WorkGroupSizeY = 1, unsigned int WorkGroupSizeZ = 1>
 class ComputeShader {
 public:
-    ComputeShader() = default;
     /// <summary>
     /// </summary>
     /// <param name="filePath">The path to the file containing the compute shader source code.
@@ -50,28 +49,6 @@ public:
     /// </summary>
     inline auto operator*() -> Shader& { return _shader; }
 
-    /// <summary>
-    /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
-    /// </summary>
-    /// <param name="filePath">Path to the file containing the code of the compute shader.</param>
-    void create_program_from_file(std::string_view file_path)
-    {
-        std::string source_code;
-        File::to_string(file_path, &source_code);
-        create_program_from_code(source_code);
-    }
-
-    /// <summary>
-    /// Sets up the code for the compute shader. Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp
-    /// </summary>
-    /// <param name="source_code">The source code of the compute shader.</param>
-    void create_program_from_code(std::string_view source_code)
-    {
-        _shader.create_program({ShaderCode::FromCode(
-            ShaderType::Compute,
-            _boilerplate_source_code + std::string(source_code)
-        )});
-    }
     /// <summary>
     /// Calls the compute shader.
     /// </summary>
