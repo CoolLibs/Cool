@@ -24,21 +24,16 @@ template<unsigned int WorkGroupSizeX = 256, unsigned int WorkGroupSizeY = 1, uns
 class ComputeShader {
 public:
     /// <summary>
+    /// Loads a compute shader from the given source code
     /// </summary>
     /// <param name="filePath">The path to the file containing the compute shader source code.
     /// Please note that a bit of the boilerplate code is done automatically for you and your shader should follow the template that you will find in Cool/OpenGL/example/computeShaderTemplate.comp</param>
-    ComputeShader(std::string_view file_path)
-    {
-        create_program_from_file(file_path);
-    }
-    ComputeShader(ComputeShader&& o) noexcept
-        : _shader(std::move(o._shader))
-    {
-    }
-    void operator=(ComputeShader&& o)
-    {
-        _shader = std::move(o._shader);
-    }
+    explicit ComputeShader(std::string_view source_code) : 
+    _shader{ShaderModule{{
+                _boilerplate_source_code + std::string(source_code),
+                ShaderKind::Compute,
+            }}}
+    {}
 
     /// <summary>
     /// Returns the underlying Cool::Shader that is managed by this ComputeShader
