@@ -58,9 +58,6 @@ private:
 private:
     UniqueShader                                   _shader;
     mutable std::unordered_map<std::string, GLint> _uniform_locations;
-
-    template<unsigned int, unsigned int, unsigned int>
-    friend class ComputeShader;
 };
 
 } // namespace Cool::OpenGL
