@@ -52,7 +52,7 @@ def option_implementation(debug_option: DebugOption):
                 {{
                     if (instance().{debug_option.name_in_code}) 
                     {{
-                        ImGui::Begin("{window_name(debug_option)}", &instance().{debug_option.name_in_code});
+                        ImGui::Begin("{window_name(debug_option)}", &instance().{debug_option.name_in_code}, ImGuiWindowFlags_NoFocusOnAppearing);
                         callback();
                         ImGui::End();
                     }}
