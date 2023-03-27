@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/String/String.h"
 #include "NodeDefinitionIdentifier.h"
 #include "NodeDefinition_Concept.h"
 #include "NodesCategoryConfig.h"
@@ -137,6 +138,12 @@ public:
         // Add new category if not found
         _categories.push_back(NodesCategory<NodeDefinition>{category_name, category_folder});
         _categories.back().definitions().push_back(definition);
+        std::sort(
+            _categories.begin(), _categories.end(),
+            [](NodesCategory<NodeDefinition> const& c1, NodesCategory<NodeDefinition> const& c2) {
+                return Cool::String::to_lower(c1.name()) < Cool::String::to_lower(c2.name());
+            }
+        );
     }
 
     void remove_definition(NodeDefinitionIdentifier const& identifier)
