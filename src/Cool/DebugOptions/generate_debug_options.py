@@ -52,6 +52,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="color_themes_editor",
+            name_in_ui="Color Themes: Editor",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="color_themes_advanced_config_window",
             name_in_ui="Color Themes: Advanced Config",
             available_in_release=True,

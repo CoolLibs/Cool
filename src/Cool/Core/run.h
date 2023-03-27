@@ -66,7 +66,14 @@ void run(
 {
     // Init
     init_config.set_paths();
-    // Auto serialize the UserSettings // Done very early because other things might need it
+    // Create window.s
+    assert(!windows_configs.empty());
+    auto window_factory = Cool::WindowFactory{};
+    window_factory.make_main_window(windows_configs[0]);
+    for (size_t i = 1; i < windows_configs.size(); ++i)
+        window_factory.make_secondary_window(windows_configs[i]);
+
+    // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
     Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
         Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
         [](OptionalErrorMessage const& error) {
@@ -81,14 +88,6 @@ void run(
                 Cool::Log::ToUser::console()
             );
         }};
-    // Create window.s
-    assert(!windows_configs.empty());
-    auto window_factory = Cool::WindowFactory{};
-    window_factory.make_main_window(windows_configs[0]);
-    for (size_t i = 1; i < windows_configs.size(); ++i)
-    {
-        window_factory.make_secondary_window(windows_configs[i]);
-    }
 
     // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
     Icons::close_button();
@@ -124,10 +123,10 @@ void run(
     {
         run_loop(true);
     }
-    catch (const internal::PreviousSessionLoadingFailed_Exception&) // Make sure to start with a clean default App if deserialization fails
-    {
+        catch (const internal::PreviousSessionLoadingFailed_Exception&) // Make sure to start with a clean default App if deserialization fails
+        {
         run_loop(false);
-    }
+        }
     Cool::shut_down();
 }
 
