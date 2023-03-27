@@ -205,6 +205,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE open_link::open_link)
 add_subdirectory(lib/os_name)
 target_link_libraries(Cool-PublicProperties INTERFACE os_name::os_name)
 
+# wants_dark_theme
+add_subdirectory(lib/wants_dark_theme)
+target_link_libraries(Cool-PublicProperties INTERFACE wants_dark_theme::wants_dark_theme)
+
 # tl::expected
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/include)
 
