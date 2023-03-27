@@ -9,6 +9,8 @@ public:
     void imgui();
     void imgui_advanced_config();
 
+    void apply_os_preferences();
+
 private:
     ImStyleEd::Editor _editor{{
         .themes_path = Cool::Path::root() / "color_themes.json",
