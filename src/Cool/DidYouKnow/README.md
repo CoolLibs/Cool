@@ -7,12 +7,12 @@
 - double-click on lower right corner to auto fit window to its contents.
 - TAB/SHIFT+TAB to cycle through keyboard editable fields.
 - Text editor:
- - Hold SHIFT or use mouse to select text.
- - CTRL+Left/Right to word jump.
- - CTRL+Shift+Left/Right to select words.
- - CTRL+A or Double-Click to select all.
- - CTRL+X,CTRL+C,CTRL+V to use OS clipboard/
- - CTRL+Z,CTRL+Y to undo/redo.
+   - Hold SHIFT or use mouse to select text.
+   - CTRL+Left/Right to word jump.
+   - CTRL+Shift+Left/Right to select words.
+   - CTRL+A or Double-Click to select all.
+   - CTRL+X,CTRL+C,CTRL+V to use OS clipboard/
+   - CTRL+Z,CTRL+Y to undo/redo.
  - ESCAPE to revert text to its original value.
 - Double-click on title bar to collapse window.
 - CTRL+Tab to select a window.
