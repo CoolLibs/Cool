@@ -12,9 +12,9 @@ void ColorThemes::imgui_theme_picker()
         if (ImGuiExtras::toggle("Use OS color theme", &is_using_os_theme))
         {
             if (is_using_os_theme)
-                _use_os_theme.emplace();
+                _use_os_theme = OsThemeChecker{};
             else
-                _use_os_theme.reset();
+                _use_os_theme = std::nullopt;
         }
     }
 

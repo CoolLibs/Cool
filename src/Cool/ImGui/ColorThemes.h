@@ -49,9 +49,9 @@ private:
     void load_minimal(Archive const&, bool const& value)
     {
         if (value)
-            _use_os_theme.emplace();
+            _use_os_theme = OsThemeChecker{};
         else
-            _use_os_theme.reset();
+            _use_os_theme = std::nullopt;
     }
 };
 
