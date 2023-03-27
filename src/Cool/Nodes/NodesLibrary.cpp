@@ -1,4 +1,5 @@
 #include "NodesLibrary.h"
+#include <Cool/String/String.h>
 #include <wafl/wafl.hpp>
 
 namespace Cool {
@@ -97,6 +98,12 @@ void NodesLibrary::add_definition(NodeDefinition const& definition, std::string 
     // Add new category if not found
     _categories.push_back(NodesCategory{category_name, category_folder});
     _categories.back().definitions().push_back(definition);
+    std::sort(
+        _categories.begin(), _categories.end(),
+        [](NodesCategory const& c1, NodesCategory const& c2) {
+            return Cool::String::to_lower(c1.name()) < Cool::String::to_lower(c2.name());
+        }
+    );
 }
 
 void NodesLibrary::remove_definition(NodeDefinitionIdentifier const& identifier)

@@ -1,4 +1,5 @@
 #pragma once
+#include "Cool/ImGui/ColorThemes.h"
 
 namespace Cool {
 
@@ -6,6 +7,8 @@ struct UserSettings {
     bool  autosave_enabled{true};
     float autosave_delay_in_seconds{5.f};
     float camera2D_zoom_sensitivity{1.1f};
+
+    Cool::ColorThemes color_themes{};
 
     auto imgui() -> bool;
 
@@ -22,7 +25,8 @@ private:
         archive(
             cereal::make_nvp("Autosave enabled", autosave_enabled),
             cereal::make_nvp("Autosave delay in seconds", autosave_delay_in_seconds),
-            cereal::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity)
+            cereal::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
+            cereal::make_nvp("Use OS color theme", color_themes)
         );
         // #else
         //         (void)archive;
