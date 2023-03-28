@@ -94,3 +94,6 @@
 [submodule "lib/wants_dark_theme"]
 	path = lib/wants_dark_theme
 	url = https://github.com/CoolLibs/wants_dark_theme
+[submodule "lib/GSL"]
+	path = lib/GSL
+	url = https://github.com/microsoft/GSL

@@ -1,15 +1,37 @@
-
-#include <Cool/Log/ToUser.h>
-#include <imnodes/imnodes_internal.h>
-#include "Cool/Nodes/NodeDefinition_Concept.h"
+#include "EditorImpl.h"
 #include "ImNodesHelpers.h"
-#include "NodesLibrary.h"
-#include "imgui.h"
-#include "imnodes/imnodes.h"
 
 namespace Cool {
 
-void draw_node_pins(Node_Concept auto const& node)
+namespace internal {
+
+void SearchBarState::on_nodes_menu_open()
+{
+    _nodes_filter.clear();
+    _should_be_focused = true;
+}
+
+auto SearchBarState::get_nodes_filter() const -> std::string const&
+{
+    return _nodes_filter;
+}
+
+auto SearchBarState::imgui_widget() -> bool
+{
+    if (_should_be_focused)
+    {
+        ImGui::SetKeyboardFocusHere();
+        _should_be_focused = false;
+    }
+    ImGui::PushID(868686);
+    bool const b = ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::PopID();
+    return b;
+}
+
+} // namespace internal
+
+static void draw_node_pins(Node const& node)
 {
     ImGui::BeginGroup();
     for (auto const& pin : node.input_pins())
@@ -24,8 +46,7 @@ void draw_node_pins(Node_Concept auto const& node)
     ImGui::EndGroup();
 }
 
-template<NodesCfg_Concept NodesCfg>
-void draw_node_body(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
+static void draw_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
 {
     ImGui::BeginGroup();
     ImGui::PushID(&node);
@@ -38,7 +59,6 @@ void draw_node_body(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg c
     ImGui::EndGroup();
 }
 
-template<NodeDefinition_Concept NodeDefinition>
 static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> float
 {
     float max = 0.f;
@@ -47,8 +67,7 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
     return max + 20.f;
 }
 
-template<NodesCfg_Concept NodesCfg>
-static auto dropdown_to_switch_between_nodes_of_the_same_category(typename NodesCfg::NodeT& node, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     auto const* category = library.get_category(node.category_name());
     if (!category)
@@ -76,8 +95,7 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(typename Nodes
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library, Graph<typename NodesCfg::NodeT>& graph) -> bool
+static auto draw_node(Cool::Node& node, NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     ImNodes::BeginNodeTitleBar();
     ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
@@ -97,8 +115,7 @@ auto draw_node(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const&
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
+auto NodesEditorImpl::handle_link_creation() -> bool
 {
     PinId from_pin_id;
     PinId to_pin_id;
@@ -113,8 +130,7 @@ auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
     return true;
 }
 
-template<NodesCfg_Concept NodesCfg>
-bool NodesEditor<NodesCfg>::handle_link_deletion()
+auto NodesEditorImpl::handle_link_deletion() -> bool
 {
     bool has_deleted_some = false;
     {
@@ -127,7 +143,7 @@ bool NodesEditor<NodesCfg>::handle_link_deletion()
     }
 
     {
-        const int num_selected = ImNodes::NumSelectedLinks();
+        int const num_selected = ImNodes::NumSelectedLinks();
         if (num_selected > 0 && wants_to_delete_selection())
         {
             has_deleted_some           = true;
@@ -142,8 +158,7 @@ bool NodesEditor<NodesCfg>::handle_link_deletion()
     return has_deleted_some;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
+auto NodesEditorImpl::handle_node_deletion() -> bool
 {
     if (!wants_to_delete_selection())
         return false;
@@ -163,8 +178,7 @@ auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
     return true;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::wants_to_delete_selection() const -> bool
+auto NodesEditorImpl::wants_to_delete_selection() const -> bool
 {
     return _window_is_hovered
            && !ImGui::GetIO().WantTextInput
@@ -172,8 +186,7 @@ auto NodesEditor<NodesCfg>::wants_to_delete_selection() const -> bool
                || ImGui::IsKeyReleased(ImGuiKey_Backspace));
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
+auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 {
     return _window_is_hovered
            && (ImGui::IsMouseReleased(ImGuiMouseButton_Middle)
@@ -181,8 +194,7 @@ auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
            );
 }
 
-template<NodesCfg_Concept NodesCfg>
-void NodesEditor<NodesCfg>::open_nodes_menu()
+void NodesEditorImpl::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
     _search_bar.on_nodes_menu_open();
@@ -190,10 +202,9 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
-    NodesCfg const&                                         nodes_cfg,
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+auto NodesEditorImpl::draw_nodes_library_menu_ifn(
+    NodesConfig const&  nodes_cfg,
+    NodesLibrary const& library
 ) -> bool
 {
     bool b = false;
@@ -218,10 +229,9 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
     return b;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::imgui_window(
-    NodesCfg const&                                         nodes_cfg,
-    NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library
+auto NodesEditorImpl::imgui_window(
+    NodesConfig const&  nodes_cfg,
+    NodesLibrary const& library
 ) -> bool
 {
     ImNodes::SetCurrentContext(&*_context);
@@ -232,26 +242,24 @@ auto NodesEditor<NodesCfg>::imgui_window(
     graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();
     {
+        std::unique_lock lock{_graph.nodes().mutex()};
+        for (auto& [id, node] : _graph.nodes())
         {
-            std::unique_lock lock{_graph.nodes().mutex()};
-            for (auto& [id, node] : _graph.nodes())
-            {
-                auto const cat                        = library.get_category(node.category_name());
-                auto const set_scoped_title_bar_color = ScopedTitleBarColor{
-                    cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
-                };
+            auto const cat                        = library.get_category(node.category_name());
+            auto const set_scoped_title_bar_color = ScopedTitleBarColor{
+                cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
+            };
 
-                ImNodes::BeginNode(id);
-                graph_has_changed |= draw_node<NodesCfg>(node, id, nodes_cfg, library, _graph);
-                ImNodes::EndNode();
-            }
+            ImNodes::BeginNode(id);
+            graph_has_changed |= draw_node(node, id, nodes_cfg, library, _graph);
+            ImNodes::EndNode();
         }
+    }
+    {
+        std::shared_lock lock{_graph.links().mutex()};
+        for (auto const& [id, link] : _graph.links())
         {
-            std::shared_lock lock{_graph.links().mutex()};
-            for (auto const& [id, link] : _graph.links())
-            {
-                ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
-            }
+            ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
         }
     }
     ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
@@ -264,13 +272,11 @@ auto NodesEditor<NodesCfg>::imgui_window(
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::
-    imgui_nodes_menu(
-        NodesCfg const&                                         nodes_cfg,
-        NodesLibrary<typename NodesCfg::NodeDefinitionT> const& library,
-        bool                                                    menu_just_opened
-    ) -> bool
+auto NodesEditorImpl::imgui_nodes_menu(
+    NodesConfig const&  nodes_cfg,
+    NodesLibrary const& library,
+    bool                menu_just_opened
+) -> bool
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
@@ -279,7 +285,7 @@ auto NodesEditor<NodesCfg>::
     if (!maybe_node_definition_id)
         return false;
 
-    const auto id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
+    auto const id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
     ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
 
     return true;

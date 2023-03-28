@@ -89,6 +89,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <fmt/core.h>
     <fmt/std.h>
     <fmt/compile.h>
+    <gsl/gsl>
     <tl/expected.hpp>
     <Cool/Log/Debug.h>
     <Cool/Serialization/filesystem.h>
@@ -167,6 +168,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
+
+# GSL
+add_subdirectory(lib/gsl)
+target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
 
 # img
 add_subdirectory(lib/img)

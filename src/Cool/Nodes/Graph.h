@@ -3,15 +3,14 @@
 #include <reg/reg.hpp>
 #include "Link.h"
 #include "LinkId.h"
+#include "Node.h"
 #include "NodeId.h"
-#include "Node_Concept.h"
 
 namespace Cool {
 
-template<Node_Concept Node>
 class Graph {
 public:
-    auto add_node(Node const&) -> NodeId;
+    auto add_node(Node) -> NodeId;
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
@@ -20,19 +19,47 @@ public:
     void remove_link_going_into(PinId const&);
     void remove_link_coming_from(PinId const&);
 
-    /**
-     * @brief Assumes that pin is an input pin and returns the node that is connected to it (or nullptr if there is none)
-     */
-    // const Node* find_input_node(const Pin& pin) const;
-    // auto find_node_with_output_pin(PinId const&) const -> Node const*;
-    // const Pin&  find_pin(PinId id);
-    // bool        has_no_successor(const Node& node) const;
     auto input_node_id(PinId const&, OutputPin* out__output_pin = nullptr) const -> NodeId;
 
     auto nodes() -> auto& { return _nodes; }
     auto nodes() const -> auto const& { return _nodes; }
     auto links() -> auto& { return _links; }
     auto links() const -> auto const& { return _links; }
+
+    template<Node_Concept NodeT>
+    [[nodiscard]] auto try_get_node(NodeId const& id) -> NodeT*
+    {
+        Node* const node = _nodes.get_mutable_ref(id);
+        if (!node)
+            return nullptr;
+        return &node->downcast<NodeT>();
+    }
+    template<Node_Concept NodeT>
+    [[nodiscard]] auto try_get_node(NodeId const& id) const -> NodeT const*
+    {
+        Node const* const node = _nodes.get_ref(id);
+        if (!node)
+            return nullptr;
+        return &node->downcast<NodeT>();
+    }
+    template<Node_Concept NodeT>
+    void for_each_node(std::function<void(NodeT&)> const& callback)
+    {
+        std::unique_lock lock{nodes().mutex()};
+        for (auto& [_, node] : nodes())
+        {
+            callback(node.downcast<NodeT>());
+        }
+    }
+    template<Node_Concept NodeT>
+    void for_each_node(std::function<void(NodeT const&)> const& callback) const
+    {
+        std::shared_lock lock{nodes().mutex()};
+        for (auto const& [_, node] : nodes())
+        {
+            callback(node.downcast<NodeT>());
+        }
+    }
 
 private:
     reg::RawRegistry<Node> _nodes;
@@ -56,5 +83,3 @@ private:
 };
 
 } // namespace Cool
-
-#include "Graph.tpp"
