@@ -1,4 +1,6 @@
 #pragma once
+#include <cereal/archives/json.hpp>
+#include <cereal/types/polymorphic.hpp>
 #include "Node.h"
 
 #if COOL_SERIALIZATION
