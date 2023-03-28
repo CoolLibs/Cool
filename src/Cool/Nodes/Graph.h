@@ -48,7 +48,7 @@ public:
         std::unique_lock lock{nodes().mutex()};
         for (auto& [_, node] : nodes())
         {
-            callback(node.downcast<template NodeT>());
+            callback(node.template downcast<NodeT>());
         }
     }
     template<Node_Concept NodeT>
@@ -57,7 +57,7 @@ public:
         std::shared_lock lock{nodes().mutex()};
         for (auto const& [_, node] : nodes())
         {
-            callback(node.downcast<template NodeT>());
+            callback(node.template downcast<NodeT>());
         }
     }
 
