@@ -9,7 +9,7 @@
 
 namespace Cool {
 
-void draw_node_pins(Node_Concept auto const& node)
+inline void draw_node_pins(Node_Concept auto const& node)
 {
     ImGui::BeginGroup();
     for (auto const& pin : node.input_pins())
@@ -24,8 +24,7 @@ void draw_node_pins(Node_Concept auto const& node)
     ImGui::EndGroup();
 }
 
-template<NodesCfg_Concept NodesCfg>
-void draw_node_body(typename NodesCfg::NodeT& node, NodeId const& id, NodesCfg const& nodes_cfg)
+inline void draw_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
 {
     ImGui::BeginGroup();
     ImGui::PushID(&node);
@@ -47,8 +46,7 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
     return max + 20.f;
 }
 
-template<NodesCfg_Concept NodesCfg>
-static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesCfg const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     auto const* category = library.get_category(node.category_name());
     if (!category)
@@ -76,30 +74,27 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto draw_node(Cool::Node& node, NodeId const& id, NodesCfg const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+inline auto draw_node(Cool::Node& node, NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
-    auto& concrete_node = node.downcast<typename NodesCfg::NodeT>();
     ImNodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted(nodes_cfg.name(concrete_node).c_str());
+    ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImNodes::EndNodeTitleBar();
 
     if (ImGui::BeginPopupContextItem())
     {
-        nodes_cfg.widget_to_rename_node(concrete_node);
+        nodes_cfg.widget_to_rename_node(node);
         ImGui::EndPopup();
     }
 
     bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
 
-    draw_node_pins(concrete_node);
-    draw_node_body(concrete_node, id, nodes_cfg);
+    draw_node_pins(node);
+    draw_node_body(node, id, nodes_cfg);
 
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
+inline auto NodesEditor::handle_link_creation() -> bool
 {
     PinId from_pin_id;
     PinId to_pin_id;
@@ -114,8 +109,7 @@ auto NodesEditor<NodesCfg>::handle_link_creation() -> bool
     return true;
 }
 
-template<NodesCfg_Concept NodesCfg>
-bool NodesEditor<NodesCfg>::handle_link_deletion()
+inline bool NodesEditor::handle_link_deletion()
 {
     bool has_deleted_some = false;
     {
@@ -143,8 +137,7 @@ bool NodesEditor<NodesCfg>::handle_link_deletion()
     return has_deleted_some;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
+inline auto NodesEditor::handle_node_deletion() -> bool
 {
     if (!wants_to_delete_selection())
         return false;
@@ -164,8 +157,7 @@ auto NodesEditor<NodesCfg>::handle_node_deletion() -> bool
     return true;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::wants_to_delete_selection() const -> bool
+inline auto NodesEditor::wants_to_delete_selection() const -> bool
 {
     return _window_is_hovered
            && !ImGui::GetIO().WantTextInput
@@ -173,8 +165,7 @@ auto NodesEditor<NodesCfg>::wants_to_delete_selection() const -> bool
                || ImGui::IsKeyReleased(ImGuiKey_Backspace));
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
+inline auto NodesEditor::wants_to_open_nodes_menu() -> bool
 {
     return _window_is_hovered
            && (ImGui::IsMouseReleased(ImGuiMouseButton_Middle)
@@ -182,8 +173,7 @@ auto NodesEditor<NodesCfg>::wants_to_open_nodes_menu() -> bool
            );
 }
 
-template<NodesCfg_Concept NodesCfg>
-void NodesEditor<NodesCfg>::open_nodes_menu()
+inline void NodesEditor::open_nodes_menu()
 {
     ImGui::OpenPopup("_nodes_library");
     _search_bar.on_nodes_menu_open();
@@ -191,9 +181,8 @@ void NodesEditor<NodesCfg>::open_nodes_menu()
     _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
-    NodesCfg const&     nodes_cfg,
+inline auto NodesEditor::draw_nodes_library_menu_ifn(
+    NodesConfig const&  nodes_cfg,
     NodesLibrary const& library
 ) -> bool
 {
@@ -219,9 +208,8 @@ auto NodesEditor<NodesCfg>::draw_nodes_library_menu_ifn(
     return b;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::imgui_window(
-    NodesCfg const&     nodes_cfg,
+inline auto NodesEditor::imgui_window(
+    NodesConfig const&  nodes_cfg,
     NodesLibrary const& library
 ) -> bool
 {
@@ -243,7 +231,7 @@ auto NodesEditor<NodesCfg>::imgui_window(
                 };
 
                 ImNodes::BeginNode(id);
-                graph_has_changed |= draw_node<NodesCfg>(node, id, nodes_cfg, library, _graph);
+                graph_has_changed |= draw_node(node, id, nodes_cfg, library, _graph);
                 ImNodes::EndNode();
             }
         }
@@ -265,13 +253,11 @@ auto NodesEditor<NodesCfg>::imgui_window(
     return graph_has_changed;
 }
 
-template<NodesCfg_Concept NodesCfg>
-auto NodesEditor<NodesCfg>::
-    imgui_nodes_menu(
-        NodesCfg const&     nodes_cfg,
-        NodesLibrary const& library,
-        bool                menu_just_opened
-    ) -> bool
+inline auto NodesEditor::imgui_nodes_menu(
+    NodesConfig const&  nodes_cfg,
+    NodesLibrary const& library,
+    bool                menu_just_opened
+) -> bool
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();

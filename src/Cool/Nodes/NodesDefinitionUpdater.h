@@ -1,12 +1,13 @@
 #pragma once
 
+#include <utility>
 #include "Cool/File/File.h"
 #include "Cool/Log/ToUser.h"
-#include "Cool/Nodes/NodeDefinitionIdentifier.h"
-#include "Cool/Nodes/NodesCfg_Concept.h"
-#include "Cool/Nodes/NodesLibrary.h"
 #include "Graph.h"
 #include "INodesDefinitionUpdater.h"
+#include "NodeDefinitionIdentifier.h"
+#include "NodesConfig.h"
+#include "NodesLibrary.h"
 #include "folder_watcher/folder_watcher.hpp"
 
 namespace Cool {
@@ -15,7 +16,6 @@ auto get_category_name(std::filesystem::path const& path, std::filesystem::path 
 
 using NodeDefinitionParser = std::function<tl::expected<NodeDefinition, std::string>(std::filesystem::path const&, std::string const&)>;
 
-template<NodesCfg_Concept NodesConfig>
 class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
     NodesDefinitionUpdater(
@@ -28,7 +28,7 @@ public:
         : _config{config}
         , _graph{graph}
         , _library{library}
-        , _parse_definition{parse_definition}
+        , _parse_definition{std::move(parse_definition)}
         , _errors{errors}
     {}
 

@@ -4,7 +4,7 @@
 #include "Graph.h"
 #include "Node.h"
 #include "NodeId.h"
-#include "NodesCfg_Concept.h"
+#include "NodesConfig.h"
 #include "NodesLibrary.h"
 #include "UniqueImNodeContext.h"
 
@@ -24,11 +24,10 @@ private:
 };
 } // namespace internal
 
-template<NodesCfg_Concept NodesCfg>
 class NodesEditor {
 public:
-    auto imgui_window(NodesCfg const&, NodesLibrary const&) -> bool;
-    auto add_node(typename NodesCfg::NodeT const& node) -> NodeId { return _graph.add_node(node); }
+    auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool;
+    auto add_node(Node const& node) -> NodeId { return _graph.add_node(node); }
 
     auto graph() const -> auto const& { return _graph; }
     auto graph() -> auto& { return _graph; }
@@ -41,8 +40,8 @@ private:
 
 private:
     /* Nodes Library */
-    auto draw_nodes_library_menu_ifn(NodesCfg const&, NodesLibrary const&) -> bool;
-    auto imgui_nodes_menu(NodesCfg const&, NodesLibrary const&, bool just_opened) -> bool;
+    auto draw_nodes_library_menu_ifn(NodesConfig const&, NodesLibrary const&) -> bool;
+    auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> bool;
     auto wants_to_open_nodes_menu() -> bool;
     void open_nodes_menu();
 
