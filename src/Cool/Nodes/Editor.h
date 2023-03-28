@@ -1,6 +1,5 @@
 #pragma once
 
-#include <imnodes/imnodes_internal.h>
 #include "Graph.h"
 #include "Node.h"
 #include "NodeId.h"
@@ -42,7 +41,7 @@ private:
     /* Nodes Library */
     auto draw_nodes_library_menu_ifn(NodesConfig const&, NodesLibrary const&) -> bool;
     auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> bool;
-    auto wants_to_open_nodes_menu() -> bool;
+    auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
     ImVec2 _next_node_position = {0.f, 0.f};
@@ -86,5 +85,3 @@ private:
 };
 
 } // namespace Cool
-
-#include "Editor.tpp"
