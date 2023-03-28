@@ -170,7 +170,7 @@ add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
 
 # GSL
-add_subdirectory(lib/gsl)
+add_subdirectory(lib/GSL)
 target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
 
 # img

@@ -6,6 +6,7 @@
 #include "NodesConfig.h"
 #include "NodesLibrary.h"
 #include "UniqueImNodeContext.h"
+#include "imnodes/imnodes_internal.h"
 
 namespace Cool {
 
