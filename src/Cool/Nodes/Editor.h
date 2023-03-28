@@ -2,6 +2,7 @@
 
 #include <imnodes/imnodes_internal.h>
 #include "Graph.h"
+#include "Node.h"
 #include "NodeId.h"
 #include "NodesCfg_Concept.h"
 #include "NodesLibrary.h"
@@ -49,7 +50,7 @@ private:
 
 private:
     internal::UniqueImNodeContext   _context;
-    GraphImpl                       _graph;
+    Graph                           _graph;
     bool                            _window_is_hovered = true;
     internal::SearchBarState        _search_bar{};
 

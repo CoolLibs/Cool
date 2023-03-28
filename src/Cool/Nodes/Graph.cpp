@@ -3,18 +3,18 @@
 
 namespace Cool {
 
-auto GraphImpl::add_node(NodeOwner node) -> NodeId
+auto Graph::add_node(Node node) -> NodeId
 {
     return _nodes.create_raw(std::move(node));
 }
 
-void GraphImpl::remove_node(NodeId const& node_id)
+void Graph::remove_node(NodeId const& node_id)
 {
     auto const maybe_node = _nodes.get(node_id);
     if (!maybe_node)
         return;
 
-    auto const& node = **maybe_node;
+    auto const& node = *maybe_node;
 
     { // Remove links connected to the node
         std::unique_lock lock{_links.mutex()};
@@ -33,23 +33,23 @@ void GraphImpl::remove_node(NodeId const& node_id)
     _nodes.destroy(node_id);
 }
 
-void GraphImpl::remove_all_nodes()
+void Graph::remove_all_nodes()
 {
     _nodes.clear();
     _links.clear();
 }
 
-auto GraphImpl::add_link(Link link) -> LinkId
+auto Graph::add_link(Link link) -> LinkId
 {
     return _links.create_raw(link);
 }
 
-void GraphImpl::remove_link(LinkId const& id)
+void Graph::remove_link(LinkId const& id)
 {
     _links.destroy(id);
 }
 
-void GraphImpl::remove_link_going_into(PinId const& pin_id)
+void Graph::remove_link_going_into(PinId const& pin_id)
 {
     std::unique_lock lock{_links.mutex()};
     std::erase_if(_links.underlying_container(), [&](auto const& pair) {
@@ -57,7 +57,7 @@ void GraphImpl::remove_link_going_into(PinId const& pin_id)
     });
 }
 
-void GraphImpl::remove_link_coming_from(PinId const& pin_id)
+void Graph::remove_link_coming_from(PinId const& pin_id)
 {
     std::unique_lock lock{_links.mutex()};
     std::erase_if(_links.underlying_container(), [&](auto const& pair) {
@@ -65,7 +65,7 @@ void GraphImpl::remove_link_coming_from(PinId const& pin_id)
     });
 }
 
-auto GraphImpl::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
+auto Graph::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};
     std::shared_lock links_lock{links().mutex()};
@@ -80,7 +80,7 @@ auto GraphImpl::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) c
         // Find the other node connected to that link
         for (auto const& [other_node_id, other_node] : nodes())
         {
-            for (OutputPin const& output_pin : other_node->output_pins())
+            for (OutputPin const& output_pin : other_node.output_pins())
             {
                 if (output_pin.id() == link.from_pin_id)
                 {
@@ -93,38 +93,6 @@ auto GraphImpl::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) c
     }
 
     return {};
-}
-
-auto GraphImpl::try_get_node_impl(NodeId const& id) -> BaseNode*
-{
-    NodeOwner const* const node = _nodes.get_ref(id);
-    if (!node)
-        return nullptr;
-    return node->get();
-}
-auto GraphImpl::try_get_node_impl(NodeId const& id) const -> BaseNode const*
-{
-    NodeOwner const* const node = _nodes.get_ref(id);
-    if (!node)
-        return nullptr;
-    return node->get();
-}
-
-void GraphImpl::for_each_node_impl(std::function<void(BaseNode&)> const& callback)
-{
-    std::unique_lock lock{nodes().mutex()};
-    for (auto& [_, node] : nodes())
-    {
-        callback(*node);
-    }
-}
-void GraphImpl::for_each_node_impl(std::function<void(BaseNode const&)> const& callback) const
-{
-    std::shared_lock lock{nodes().mutex()};
-    for (auto const& [_, node] : nodes())
-    {
-        callback(*node);
-    }
 }
 
 } // namespace Cool

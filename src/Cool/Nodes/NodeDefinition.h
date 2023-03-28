@@ -10,6 +10,20 @@ concept NodeDefinition_Concept = requires(T node_def) { // clang-format off
 
 class NodeDefinition {
 public:
+    [[nodiscard]] auto name() const -> std::string { return _pimpl->get_name(); }
+
+    template<NodeDefinition_Concept NodeDefT>
+    [[nodiscard]] auto downcast() -> NodeDefT&
+    {
+        return static_cast<Model<NodeDefT>&>(*_pimpl)._node_def;
+    }
+    template<NodeDefinition_Concept NodeDefT>
+    [[nodiscard]] auto downcast() const -> NodeDefT const&
+    {
+        return static_cast<Model<NodeDefT> const&>(*_pimpl)._node_def;
+    }
+
+public: // Type-erasure implementation details
     NodeDefinition() = default;
 
     template<NodeDefinition_Concept NodeDefT>
@@ -30,21 +44,8 @@ public:
     auto operator=(NodeDefinition&&) noexcept -> NodeDefinition& = default;
     ~NodeDefinition()                                            = default;
 
-    [[nodiscard]] auto name() const -> std::string { return _pimpl->get_name(); }
-
-    template<NodeDefinition_Concept NodeDefT>
-    [[nodiscard]] auto downcast() -> NodeDefT&
-    {
-        return static_cast<Model<NodeDefT>&>(*_pimpl)._node_def;
-    }
-    template<NodeDefinition_Concept NodeDefT>
-    [[nodiscard]] auto downcast() const -> NodeDefT const&
-    {
-        return static_cast<Model<NodeDefT> const&>(*_pimpl)._node_def;
-    }
-
 private:
-    struct Concept {
+    struct Concept { // NOLINT(*-special-member-functions)
         virtual ~Concept() = default;
 
         [[nodiscard]] virtual auto get_name() const -> std::string           = 0;
@@ -62,7 +63,7 @@ private:
             return _node_def.name();
         }
 
-        [[nodiscard]] auto clone() const -> std::unique_ptr<Concept>
+        [[nodiscard]] auto clone() const -> std::unique_ptr<Concept> override
         {
             return std::make_unique<Model>(*this);
         }

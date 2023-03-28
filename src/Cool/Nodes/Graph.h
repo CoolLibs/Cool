@@ -1,19 +1,16 @@
 #pragma once
 
 #include <reg/reg.hpp>
-#include "BaseNode.h"
-#include "Cool/Nodes/BaseNode.h"
 #include "Link.h"
 #include "LinkId.h"
+#include "Node.h"
 #include "NodeId.h"
 
 namespace Cool {
 
-using NodeOwner = std::shared_ptr<BaseNode>;
-
-class GraphImpl {
+class Graph {
 public:
-    auto add_node(NodeOwner) -> NodeId;
+    auto add_node(Node) -> NodeId;
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
@@ -29,15 +26,44 @@ public:
     auto links() -> auto& { return _links; }
     auto links() const -> auto const& { return _links; }
 
-protected:
-    [[nodiscard]] auto try_get_node_impl(NodeId const& id) -> BaseNode*;
-    [[nodiscard]] auto try_get_node_impl(NodeId const& id) const -> BaseNode const*;
-    void               for_each_node_impl(std::function<void(BaseNode&)> const& callback);
-    void               for_each_node_impl(std::function<void(BaseNode const&)> const& callback) const;
+    template<Node_Concept NodeT>
+    [[nodiscard]] auto try_get_node(NodeId const& id) -> NodeT*
+    {
+        Node* const node = _nodes.get_mutable_ref(id);
+        if (!node)
+            return nullptr;
+        return &node->downcast<NodeT>();
+    }
+    template<Node_Concept NodeT>
+    [[nodiscard]] auto try_get_node(NodeId const& id) const -> NodeT const*
+    {
+        Node const* const node = _nodes.get_ref(id);
+        if (!node)
+            return nullptr;
+        return &node->downcast<NodeT>();
+    }
+    template<Node_Concept NodeT>
+    void for_each_node(std::function<void(NodeT&)> const& callback)
+    {
+        std::unique_lock lock{nodes().mutex()};
+        for (auto& [_, node] : nodes())
+        {
+            callback(node.downcast<NodeT>());
+        }
+    }
+    template<Node_Concept NodeT>
+    void for_each_node(std::function<void(NodeT const&)> const& callback) const
+    {
+        std::shared_lock lock{nodes().mutex()};
+        for (auto const& [_, node] : nodes())
+        {
+            callback(node.downcast<NodeT>());
+        }
+    }
 
 private:
-    reg::RawRegistry<NodeOwner> _nodes;
-    reg::RawRegistry<Link>      _links;
+    reg::RawRegistry<Node> _nodes;
+    reg::RawRegistry<Link> _links;
 
 private:
     // Serialization
@@ -53,35 +79,6 @@ private:
 #else
         (void)archive;
 #endif
-    }
-};
-
-/// Adds functions that manipulate the concrete node type instead of `Cool::BaseNode`.
-template<typename ConcreteNode>
-class Graph : public GraphImpl {
-public:
-    /// Returns a pointer to the node referenced by the `id`, or nullptr if the node does not exist.
-    [[nodiscard]] auto try_get_node(NodeId const& id) -> ConcreteNode*
-    {
-        return static_cast<ConcreteNode*>(try_get_node_impl(id));
-    }
-    /// Returns a pointer to the node referenced by the `id`, or nullptr if the node does not exist.
-    [[nodiscard]] auto try_get_node(NodeId const& id) const -> ConcreteNode const*
-    {
-        return static_cast<ConcreteNode const*>(try_get_node_impl(id));
-    }
-
-    void for_each_node(std::function<void(ConcreteNode&)> const& callback)
-    {
-        for_each_node_impl([&](BaseNode& node) {
-            callback(static_cast<ConcreteNode&>(node));
-        });
-    }
-    void for_each_node(std::function<void(ConcreteNode const&)> const& callback) const
-    {
-        for_each_node_impl([&](BaseNode const& node) {
-            callback(static_cast<ConcreteNode const&>(node));
-        });
     }
 };
 
