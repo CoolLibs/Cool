@@ -1,5 +1,4 @@
 #include "Graph.h"
-#include <cstddef>
 
 namespace Cool {
 
