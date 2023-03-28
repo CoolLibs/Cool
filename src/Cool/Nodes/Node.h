@@ -56,7 +56,7 @@ public: // Type-erasure implementation details
     auto operator=(Node&&) noexcept -> Node& = default;
     ~Node()                                  = default;
 
-private:
+public:              // Must be public in order for Cereal to register the polymorphic types
     struct Concept { // NOLINT(*-special-member-functions)
         virtual ~Concept() = default;
 
@@ -72,6 +72,7 @@ private:
 
     template<Node_Concept NodeT>
     struct Model : public Concept {
+        Model() = default;
         explicit Model(NodeT def)
             : _node{std::move(def)}
         {}
@@ -107,10 +108,40 @@ private:
         }
 
         NodeT _node;
+
+    private:
+        // Serialization
+        friend class cereal::access;
+        template<class Archive>
+        void serialize(Archive& archive)
+        {
+#if COOL_SERIALIZATION
+            archive(
+                cereal::make_nvp("Node", _node)
+            );
+#else
+            (void)archive;
+#endif
+        }
     };
 
 private:
     std::unique_ptr<Concept> _pimpl;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+#if COOL_SERIALIZATION
+        archive(
+            cereal::make_nvp("pimpl", _pimpl)
+        );
+#else
+        (void)archive;
+#endif
+    }
 };
 
 } // namespace Cool
