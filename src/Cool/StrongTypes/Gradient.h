@@ -60,6 +60,8 @@ inline auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool s
             .flags                                       = ImGG::Flag::NoResetButton,
             .color_edit_flags                            = flags,
             .should_use_a_random_color_for_the_new_marks = should_use_a_random_color_for_the_new_marks,
+            .plus_button_text                            = "+",
+            .minus_button_text                           = "-",
         }
     );
     modified |= ImGG::interpolation_mode_widget("Interpolation Mode", &gradient.value.gradient().interpolation_mode());
