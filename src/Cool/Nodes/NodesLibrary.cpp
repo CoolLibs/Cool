@@ -61,7 +61,9 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
         if (open_all_categories || menu_just_opened)
             ImGui::SetNextItemOpen(is_open);
 
+        ImGui::PushID(13452);
         bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
+        ImGui::PopID();
 
         category.config().imgui_popup();
 
