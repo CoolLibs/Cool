@@ -3,6 +3,7 @@
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/Log/Message.h"
 #include "imgui.h"
 
@@ -209,7 +210,9 @@ void MessageConsole::imgui_window()
             "##Messages", ImVec2(0.f, 0.f), false,
             ImGuiWindowFlags_AlwaysUseWindowPadding
         );
+        ImGui::PushFont(Font::console());
         imgui_show_all_messages();
+        ImGui::PopFont();
         ImGui::EndChild();
 
         ImGui::End();

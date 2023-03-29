@@ -6,6 +6,7 @@
 #include <imgui/imgui.h>
 #include <filesystem>
 #include <stdexcept>
+#include "Cool/ImGui/Fonts.h"
 
 namespace Cool {
 
@@ -55,6 +56,10 @@ static void imgui_load_fonts()
         (Cool::Path::cool_res() / "fonts/Font Awesome 6 Free-Solid-900.otf").string().c_str(),
         font_size, &config, icon_ranges
     );
+
+    // Console font
+    Font::console() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);
+
     io.Fonts->Build();
 }
 
