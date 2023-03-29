@@ -644,13 +644,14 @@ auto toggle(const char* label, bool* v) -> bool
 
     ImU32 col_bg;
     if (ImGui::IsItemHovered())
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBgHovered), ImGui::GetStyleColorVec4(ImGuiCol_SliderGrabActive), t));
+        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_Button), ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive), t));
     else
         col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)), t));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_ButtonActive : ImGuiCol_SliderGrab]));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_Button : ImGuiCol_FrameBg]));
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (label_size.x > 0.0f)
