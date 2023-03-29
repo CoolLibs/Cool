@@ -14,7 +14,7 @@ public:
     auto imgui(float width = 0.f) -> bool;
 
 private:
-    float _ratio = 16.f / 9.f;
+    float _ratio = 1.f;
 
 private:
     // Serialization
