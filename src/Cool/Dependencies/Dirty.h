@@ -14,11 +14,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
+        // #if COOL_SERIALIZATION
         archive(cereal::make_nvp("Is Dirty", is_dirty));
-#else
-        (void)archive;
-#endif
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 
@@ -50,11 +50,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
+        // #if COOL_SERIALIZATION
         archive(cereal::make_nvp("ID", id));
-#else
-        (void)archive;
-#endif
+        // #else
+        //         (void)archive;
+        // #endif
     }
 };
 
