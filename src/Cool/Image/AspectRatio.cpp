@@ -40,12 +40,22 @@ auto AspectRatio::imgui(float width) -> bool
         std::make_pair("      3 / 2     ", 3.f / 2.f),
         std::make_pair("      4 / 3     ", 4.f / 3.f),
         std::make_pair("      1 / 1     ", 1.f),
-        std::make_pair("      9 / 16     ", 9.f / 16.f),
+        std::make_pair("      9 / 16    ", 9.f / 16.f),
         std::make_pair("      2 / 3     ", 2.f / 3.f),
         std::make_pair("      3 / 4     ", 3.f / 4.f),
     };
 
-    if (ImGui::BeginCombo("##aspect_ratio_dropdown", "", ImGuiComboFlags_NoPreview))
+    if (width != 0.f)
+        ImGui::SetNextItemWidth(width);
+    if (ImGui::InputFloat("##aspect_ratio_slider", &_ratio, 0.f, 0.f, imgui_string(_ratio).c_str(), ImGuiInputTextFlags_CharsScientific, ImDrawFlags_RoundCornersLeft))
+    {
+        _ratio = make_valid_ratio(_ratio);
+        b      = true;
+    }
+
+    ImGui::SameLine(0.f, 0.f);
+
+    if (ImGui::BeginCombo("##aspect_ratio_dropdown", "", ImGuiComboFlags_NoPreview, ImDrawFlags_RoundCornersRight))
     {
         for (auto const& ratio : ratios)
         {
@@ -57,15 +67,7 @@ auto AspectRatio::imgui(float width) -> bool
         }
         ImGui::EndCombo();
     }
-    ImGui::SameLine(0.f, 0.f);
-    if (width != 0.f)
-        ImGui::SetNextItemWidth(width);
 
-    if (ImGui::SliderFloat("##aspect_ratio_slider", &_ratio, 0.5f, 2.f, imgui_string(_ratio).c_str()))
-    {
-        _ratio = make_valid_ratio(_ratio);
-        b      = true;
-    }
     return b;
 }
 
