@@ -25,15 +25,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Number of snaps", number_of_snaps),
             cereal::make_nvp("Snaps offset (in radians)", snaps_offset),
             cereal::make_nvp("Always snap", always_snap)
         );
-        // #else
-        //         (void)archive;
-        // #endif
     }
 };
 

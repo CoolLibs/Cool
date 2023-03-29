@@ -115,13 +115,9 @@ public:              // Must be public in order for Cereal to register the polym
         template<class Archive>
         void serialize(Archive& archive)
         {
-#if COOL_SERIALIZATION
             archive(
                 cereal::make_nvp("Node", _node)
             );
-#else
-            (void)archive;
-#endif
         }
     };
 
@@ -134,13 +130,9 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("pimpl", _pimpl)
         );
-#else
-        (void)archive;
-#endif
     }
 };
 

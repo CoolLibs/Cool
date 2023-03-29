@@ -59,36 +59,26 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Graph", _graph),
             cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
-#else
-        (void)archive;
-#endif
     }
 
     template<class Archive>
     void load(Archive& archive)
     {
-#if COOL_SERIALIZATION
         std::string editor_state;
         archive(
             _graph,
             editor_state
         );
         ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
-#else
-        (void)archive;
-#endif
     }
 };
 
 } // namespace Cool
 
-#if COOL_SERIALIZATION
 #include <cereal/archives/json.hpp>
 CEREAL_REGISTER_TYPE(Cool::NodesEditorImpl);                                     /*NOLINT*/
 CEREAL_REGISTER_POLYMORPHIC_RELATION(Cool::INodesEditor, Cool::NodesEditorImpl); /*NOLINT*/
-#endif

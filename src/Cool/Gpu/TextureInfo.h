@@ -35,15 +35,11 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Path", absolute_path),
             cereal::make_nvp("Repeat Mode", sampler.repeat_mode),
             cereal::make_nvp("Interpolation Mode", sampler.interpolation_mode)
         );
-#else
-        (void)archive;
-#endif
     }
 };
 

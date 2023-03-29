@@ -57,7 +57,6 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Name", _name),
             // cereal::make_nvp("Description", _description), // (JF): I don't think there is a need to serialize the description since it will be parsed from the shader each time, and applying presets and the like only affect the value of the variable.
@@ -66,9 +65,6 @@ private:
             cereal::make_nvp("Dirty Flag", _dirty_flag),
             cereal::make_nvp("desired color space", _desired_color_space)
         );
-#else
-        (void)archive;
-#endif
     }
 };
 

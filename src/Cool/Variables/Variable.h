@@ -79,7 +79,6 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("Name", data.name),
             cereal::make_nvp("Value", data.value),
@@ -87,9 +86,6 @@ private:
             cereal::make_nvp("Default Value", data.default_value),
             cereal::make_nvp("Default Metadata", data.default_metadata)
         );
-        // #else
-        //         (void)archive;
-        // #endif
     }
 };
 

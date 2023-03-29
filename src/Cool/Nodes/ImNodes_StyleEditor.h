@@ -13,7 +13,6 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        // #if COOL_SERIALIZATION // This one is pretty useful to have all the time, don't disable it.
         archive(
             cereal::make_nvp("NodeBackground", ImNodes::GetStyle().Colors[ImNodesCol_NodeBackground]),
             cereal::make_nvp("NodeBackgroundHovered", ImNodes::GetStyle().Colors[ImNodesCol_NodeBackgroundHovered]),
@@ -45,9 +44,6 @@ private:
             cereal::make_nvp("MiniMapCanvas", ImNodes::GetStyle().Colors[ImNodesCol_MiniMapCanvas]),
             cereal::make_nvp("MiniMapCanvasOutline", ImNodes::GetStyle().Colors[ImNodesCol_MiniMapCanvasOutline])
         );
-        // #else
-        //         (void)archive;
-        // #endif
     }
 };
 

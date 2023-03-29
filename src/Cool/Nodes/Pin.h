@@ -34,14 +34,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Name", _name),
             cereal::make_nvp("ID", _id)
         );
-#else
-        (void)archive;
-#endif
     }
 };
 
@@ -58,13 +54,9 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
         );
-#else
-        (void)archive;
-#endif
     }
 };
 
@@ -81,13 +73,9 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-#if COOL_SERIALIZATION
         archive(
             cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
         );
-#else
-        (void)archive;
-#endif
     }
 };
 
