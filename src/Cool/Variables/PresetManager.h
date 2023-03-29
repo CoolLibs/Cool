@@ -36,12 +36,7 @@ using PresetId = reg::Id<Preset2>;
 
 class PresetManager {
 public:
-    explicit PresetManager(std::filesystem::path const& path)
-        : _serializer{path, "PresetManager"}
-    {
-        auto const maybe_err = _serializer.load(*this);
-        std::ignore          = maybe_err; // Ignore errors when file not found
-    }
+    explicit PresetManager(std::filesystem::path const& path);
 
     [[nodiscard]] auto path() const -> auto const& { return _serializer.path(); }
 

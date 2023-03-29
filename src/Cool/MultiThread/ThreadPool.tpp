@@ -1,4 +1,5 @@
 #include <Cool/DebugOptions/DebugOptions.h>
+#include <Cool/Log/ToUser.h>
 #include <stringify/stringify.hpp>
 
 namespace Cool {

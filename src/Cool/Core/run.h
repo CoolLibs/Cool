@@ -9,11 +9,14 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
+#include <Cool/Serialization/as_json.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "InitConfig.h"
+//
+#include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
 namespace Cool {
 
@@ -36,8 +39,7 @@ inline void shut_down()
     FullscreenPipeline::shut_down();
 }
 
-template<typename App>
-static auto create_autosaver(Cool::AutoSerializer<App> const& auto_serializer) -> std::function<void()>
+inline auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>
 {
     return [&auto_serializer]() {
         if (!user_settings().autosave_enabled)
@@ -74,8 +76,10 @@ void run(
         window_factory.make_secondary_window(windows_configs[i]);
 
     // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
-    Cool::AutoSerializer<UserSettings> auto_serializer_user_settings{
-        Cool::Path::root() / "cache/user-settings.json", "User Settings", user_settings(),
+    auto auto_serializer_user_settings = Cool::AutoSerializer{};
+    auto_serializer_user_settings.init<UserSettings, cereal::JSONInputArchive>(
+        Cool::Path::root() / "cache/user-settings.json",
+        user_settings(),
         [](OptionalErrorMessage const& error) {
             error.send_error_if_any(
                 [&](std::string const& message) {
@@ -87,7 +91,11 @@ void run(
                 },
                 Cool::Log::ToUser::console()
             );
-        }};
+        },
+        [&](std::filesystem::path const& path) {
+            Serialization::to_json<UserSettings, cereal::JSONOutputArchive>(user_settings(), path, "User Settings");
+        }
+    );
 
     // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
     Icons::close_button();
@@ -96,8 +104,9 @@ void run(
     const auto run_loop = [&](bool load_from_file) {
         auto app = App{window_factory.window_manager()};
         // Auto serialize the App
-        Cool::AutoSerializer<App> auto_serializer{
-            Cool::Path::root() / "cache/last-session.json", "App", app,
+        Cool::AutoSerializer auto_serializer;
+        auto_serializer.init<App, cereal::JSONInputArchive>(
+            Cool::Path::root() / "cache/last-session.json", app,
             [](OptionalErrorMessage const& error) {
                 error.send_error_if_any(
                     [&](std::string const& message) {
@@ -111,7 +120,11 @@ void run(
                 );
                 throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
             },
-            load_from_file};
+            [&](std::filesystem::path const& path) {
+                Serialization::to_json<App, cereal::JSONOutputArchive>(app, path, "App");
+            },
+            load_from_file
+        );
         // Run the app
         auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
         app_manager.run(create_autosaver(auto_serializer));

@@ -41,7 +41,7 @@ set(COOL_PATH_INTERNAL ${COOL_PATH} CACHE INTERNAL "") # Make a global variable 
 
 target_compile_definitions(Cool-PublicProperties INTERFACE
     $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
-    $<$<NOT:$<CONFIG:Debug>>:COOL_SERIALIZATION> # Define COOL_SERIALIZATION in release mode (serialization is very slow to compile so we don't want it while developing).
+    COOL_SERIALIZATION # Define COOL_SERIALIZATION in release mode (serialization is very slow to compile so we don't want it while developing).
     COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
 )
@@ -79,7 +79,6 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <cereal/access.hpp>
     <cereal/types/vector.hpp>
     <cereal/types/string.hpp>
-    <cereal/types/memory.hpp>
     <cereal/types/variant.hpp>
     <boxer/boxer.h>
     <nfd.hpp>

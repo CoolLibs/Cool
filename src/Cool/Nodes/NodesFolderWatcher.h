@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "Cool/Log/MessageId.h"
 #include "INodesDefinitionUpdater.h"
 #include "folder_watcher/folder_watcher.hpp"

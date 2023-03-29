@@ -5,27 +5,26 @@
 
 namespace Cool {
 
-template<typename T>
 class AutoSerializer {
 public:
-    template<std::invocable<OptionalErrorMessage const&> OnError>
-    AutoSerializer(
-        std::filesystem::path const& path,
-        std::string_view             key_name_in_json,
-        T&                           object_to_serialize,
-        OnError&&                    on_error,
-        bool                         load_from_file = true
+    AutoSerializer() = default;
+    template<typename T, typename InputArchive>
+    void init(
+        std::filesystem::path const&                            path,
+        T&                                                      object_to_serialize,
+        std::function<void(OptionalErrorMessage const&)> const& on_error,
+        std::function<void(std::filesystem::path const&)>       on_save,
+        bool                                                    load_from_file = true
     )
-        : _d{
-            .path                = path,
-            .key_name_in_json    = std::string{key_name_in_json},
-            .object_to_serialize = object_to_serialize,
-        }
     {
+        _d = {
+            .path    = path,
+            .on_save = std::move(on_save),
+        };
         if (!load_from_file)
             return;
 
-        const auto error = Serialization::from_json(_d.object_to_serialize.get(), _d.path);
+        auto const error = Serialization::from_json<T, InputArchive>(object_to_serialize, _d.path);
         if (error)
             on_error(error);
     }
@@ -36,15 +35,18 @@ public:
             save();
     }
 
-    AutoSerializer(AutoSerializer<T> const&)                    = delete;
-    auto operator=(AutoSerializer<T> const&) -> AutoSerializer& = delete;
-    AutoSerializer(AutoSerializer<T>&& o) noexcept
+    AutoSerializer(AutoSerializer const&)                    = delete;
+    auto operator=(AutoSerializer const&) -> AutoSerializer& = delete;
+    AutoSerializer(AutoSerializer&& o) noexcept
         : _d{std::move(o._d)}
     {
         o._has_been_moved_from = true;
     }
-    auto operator=(AutoSerializer<T>&& o) noexcept -> AutoSerializer&
+    auto operator=(AutoSerializer&& o) noexcept -> AutoSerializer&
     {
+        if (&o == this)
+            return *this;
+
         _d                     = std::move(o._d);
         o._has_been_moved_from = true;
         return *this;
@@ -52,16 +54,15 @@ public:
 
     void save() const
     {
-        Serialization::to_json(_d.object_to_serialize.get(), _d.path, _d.key_name_in_json);
+        _d.on_save(_d.path);
     }
 
-    auto path() const { return _d.path; }
+    [[nodiscard]] auto path() const { return _d.path; }
 
 private:
     struct Data { // Needed to simplify writing our move operators
-        std::filesystem::path     path;
-        std::string               key_name_in_json;
-        std::reference_wrapper<T> object_to_serialize;
+        std::filesystem::path                             path;
+        std::function<void(std::filesystem::path const&)> on_save;
     };
     Data _d;
     bool _has_been_moved_from{false};

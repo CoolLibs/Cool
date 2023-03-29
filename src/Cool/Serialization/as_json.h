@@ -2,7 +2,6 @@
 
 #include <Cool/File/File.h>
 #include <Cool/Log/OptionalErrorMessage.h>
-#include <cereal/archives/json.hpp>
 #include <fstream>
 
 namespace Cool::Serialization {
@@ -14,7 +13,7 @@ namespace Cool::Serialization {
  * @param data A reference to the data to initialize
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
-template<typename T>
+template<typename T, typename InputArchive>
 auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessage
 {
     if (File::exists(file_path))
@@ -22,7 +21,7 @@ auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalError
         std::ifstream is(file_path);
         try
         {
-            cereal::JSONInputArchive archive(is);
+            auto archive = InputArchive{is};
             archive(
                 data
             );
@@ -47,14 +46,14 @@ auto from_json(T& data, std::filesystem::path const& file_path) -> OptionalError
  * @param file_path The path to the JSON file. It will be created if it doesn't exist already.
  * @param field_name An optional name that will be given to data inside the JSON file (for readability purposes).
  */
-template<typename T>
+template<typename T, typename OutputArchive>
 void to_json(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0")
 {
     if (File::create_folders_for_file_if_they_dont_exist(file_path))
     {
         std::ofstream os(file_path);
         {
-            cereal::JSONOutputArchive archive(os);
+            auto archive = OutputArchive{os};
             archive(
                 cereal::make_nvp(field_name.data(), data)
             );

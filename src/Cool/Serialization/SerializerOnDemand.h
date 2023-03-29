@@ -16,16 +16,16 @@ public:
         , _key_name_in_json{key_name_in_json}
     {}
 
-    template<typename T>
+    template<typename T, typename InputArchive>
     auto load(T& object) const -> OptionalErrorMessage
     {
-        return Serialization::from_json(object, _path);
+        return Serialization::from_json<T, InputArchive>(object, _path);
     }
 
-    template<typename T>
+    template<typename T, typename OutputArchive>
     void save(T const& object) const
     {
-        Serialization::to_json(object, _path, _key_name_in_json);
+        Serialization::to_json<T, OutputArchive>(object, _path, _key_name_in_json);
     }
 
     [[nodiscard]] auto path() const -> auto const& { return _path; }

@@ -1,4 +1,5 @@
 #include "NodesCategoryConfig.h"
+#include <cereal/archives/json.hpp>
 #include <filesystem>
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/as_json.h"
@@ -9,12 +10,12 @@ namespace Cool {
 
 void NodesCategoryConfig::save_to_json() const
 {
-    Serialization::to_json(*this, _path_to_json);
+    Serialization::to_json<decltype(*this), cereal::JSONOutputArchive>(*this, _path_to_json);
 }
 
 void NodesCategoryConfig::load_from_json()
 {
-    Serialization::from_json(*this, _path_to_json)
+    Serialization::from_json<decltype(*this), cereal::JSONInputArchive>(*this, _path_to_json)
         .send_error_if_any([&](std::string const& message) {
             return Message{
                 .category = "Nodes Category",

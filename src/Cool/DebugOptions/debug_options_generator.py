@@ -31,6 +31,7 @@ def build_type(code: str, debug_option: DebugOption) -> str:
 {code}
 #endif"""
 
+
 def debug_options_variables(debug_options: list[DebugOption]):
     return "\n".join(map(lambda debug_option:
                          build_type(
@@ -139,8 +140,6 @@ def reset_all(debug_options: list[DebugOption]):
 def DebugOptions(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
     backslash = "\\"
     return f"""
-#include <Cool/Path/Path.h>
-#include <Cool/Serialization/as_json.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <wafl/wafl.hpp>
 
@@ -180,29 +179,8 @@ private:
         {reset_all(debug_options)}
     }}
 
-    static void save_to_file()
-    {{
-        Cool::Serialization::to_json(
-            instance(),
-            Cool::Path::root() / "{cache_file_name}.json",
-            "Debug Options"
-        );
-    }}
-
-    static auto load_debug_options() -> Instance
-    {{
-        auto the_instance = Instance{{}};
-        Cool::Serialization::from_json(the_instance, Cool::Path::root() / "{cache_file_name}.json")
-            .send_error_if_any([](const std::string& message) {{
-                return Cool::Message{{
-                    .category         = "Loading Debug Options",
-                    .message = message,
-                    .severity         = Cool::MessageSeverity::Warning,
-                }};
-            }},
-                               Cool::Log::ToUser::console());
-        return the_instance;
-    }}
+    static void save_to_file();
+    static auto load_debug_options() -> Instance;
 
     static auto instance() -> Instance&
     {{
@@ -228,6 +206,43 @@ private:
 """
 
 
+def DebugOptionsCpp(debug_options: list[DebugOption], namespace: str, cache_file_name: str):
+    backslash = "\\"
+    return f"""
+#include <Cool/Path/Path.h>
+#include <Cool/Serialization/as_json.h>
+#include <cereal/archives/json.hpp>
+
+namespace {namespace} {{
+
+void DebugOptions::save_to_file()
+{{
+    Cool::Serialization::to_json<DebugOptions::Instance, cereal::JSONOutputArchive>(
+        instance(),
+        Cool::Path::root() / "{cache_file_name}.json",
+        "Debug Options"
+    );
+}}
+
+auto DebugOptions::load_debug_options() -> Instance
+{{
+    auto the_instance = Instance{{}};
+    Cool::Serialization::from_json<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::root() / "{cache_file_name}.json")
+        .send_error_if_any([](const std::string& message) {{
+            return Cool::Message{{
+                .category         = "Loading Debug Options",
+                .message = message,
+                .severity         = Cool::MessageSeverity::Warning,
+            }};
+        }},
+                            Cool::Log::ToUser::console());
+    return the_instance;
+}}
+
+}} // namespace {namespace}
+"""
+
+
 def generate_debug_options(
     output_folder: str,
     namespace: str,
@@ -245,9 +260,14 @@ def generate_debug_options(
     def fn():
         return DebugOptions(debug_options=debug_options, namespace=namespace, cache_file_name=cache_file_name)
     fn.__name__ = "DebugOptions"
+
+    def fn2():
+        return DebugOptionsCpp(debug_options=debug_options, namespace=namespace, cache_file_name=cache_file_name)
+    fn2.__name__ = "DebugOptionsCpp"
     generate_files.generate(
         folder=output_folder,
         files=[
             fn,
+            fn2,
         ],
     )
