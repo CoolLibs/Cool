@@ -2,7 +2,7 @@
 #include <concepts>
 #include <utility>
 #include "Cool/Log/OptionalErrorMessage.h"
-#include "Cool/Serialization/as_json.h"
+#include "Cool/Serialization/Serialization.h"
 
 namespace Cool {
 
@@ -19,13 +19,13 @@ public:
     template<typename T, typename InputArchive>
     auto load(T& object) const -> OptionalErrorMessage
     {
-        return Serialization::from_json<T, InputArchive>(object, _path);
+        return Serialization::load<T, InputArchive>(object, _path);
     }
 
     template<typename T, typename OutputArchive>
     void save(T const& object) const
     {
-        Serialization::to_json<T, OutputArchive>(object, _path, _key_name_in_json);
+        Serialization::save<T, OutputArchive>(object, _path, _key_name_in_json);
     }
 
     [[nodiscard]] auto path() const -> auto const& { return _path; }

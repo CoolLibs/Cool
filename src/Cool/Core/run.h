@@ -9,7 +9,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
-#include <Cool/Serialization/as_json.h>
+#include <Cool/Serialization/Serialization.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
 #include "Cool/Gpu/TextureLibrary.h"
@@ -93,7 +93,7 @@ void run(
             );
         },
         [&](std::filesystem::path const& path) {
-            Serialization::to_json<UserSettings, cereal::JSONOutputArchive>(user_settings(), path, "User Settings");
+            Serialization::save<UserSettings, cereal::JSONOutputArchive>(user_settings(), path, "User Settings");
         }
     );
 
@@ -121,7 +121,7 @@ void run(
                 throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
             },
             [&](std::filesystem::path const& path) {
-                Serialization::to_json<App, cereal::JSONOutputArchive>(app, path, "App");
+                Serialization::save<App, cereal::JSONOutputArchive>(app, path, "App");
             },
             load_from_file
         );

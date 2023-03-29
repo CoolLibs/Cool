@@ -1,7 +1,7 @@
 #pragma once
 #include <concepts>
 #include "Cool/Log/OptionalErrorMessage.h"
-#include "as_json.h"
+#include "Serialization.h"
 
 namespace Cool {
 
@@ -24,7 +24,7 @@ public:
         if (!load_from_file)
             return;
 
-        auto const error = Serialization::from_json<T, InputArchive>(object_to_serialize, _d.path);
+        auto const error = Serialization::load<T, InputArchive>(object_to_serialize, _d.path);
         if (error)
             on_error(error);
     }

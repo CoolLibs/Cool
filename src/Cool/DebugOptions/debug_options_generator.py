@@ -206,14 +206,14 @@ def DebugOptionsCpp(debug_options: list[DebugOption], namespace: str, cache_file
     backslash = "\\"
     return f"""
 #include <Cool/Path/Path.h>
-#include <Cool/Serialization/as_json.h>
+#include <Cool/Serialization/Serialization.h>
 #include <cereal/archives/json.hpp>
 
 namespace {namespace} {{
 
 void DebugOptions::save_to_file()
 {{
-    Cool::Serialization::to_json<DebugOptions::Instance, cereal::JSONOutputArchive>(
+    Cool::Serialization::save<DebugOptions::Instance, cereal::JSONOutputArchive>(
         instance(),
         Cool::Path::root() / "{cache_file_name}.json",
         "Debug Options"
@@ -223,7 +223,7 @@ void DebugOptions::save_to_file()
 auto DebugOptions::load_debug_options() -> Instance
 {{
     auto the_instance = Instance{{}};
-    Cool::Serialization::from_json<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::root() / "{cache_file_name}.json")
+    Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::root() / "{cache_file_name}.json")
         .send_error_if_any([](const std::string& message) {{
             return Cool::Message{{
                 .category         = "Loading Debug Options",
