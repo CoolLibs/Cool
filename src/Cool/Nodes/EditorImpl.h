@@ -1,4 +1,6 @@
 #pragma once
+#include <cereal/archives/json.hpp>
+#include <cereal/types/polymorphic.hpp>
 #include "Graph.h"
 #include "IEditor.h"
 #include "Node.h"
@@ -85,3 +87,8 @@ private:
 };
 
 } // namespace Cool
+
+#if COOL_SERIALIZATION
+CEREAL_REGISTER_TYPE(Cool::NodesEditorImpl);                                     /*NOLINT*/
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Cool::INodesEditor, Cool::NodesEditorImpl); /*NOLINT*/
+#endif
