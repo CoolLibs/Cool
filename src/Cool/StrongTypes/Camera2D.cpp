@@ -34,7 +34,6 @@ auto imgui_widget(std::string_view name, Camera2D& cam, int number_of_snaps, flo
 {
     bool b = false;
 
-    ImGui::TextUnformatted(name.data());
     ImGui::BeginGroup();
     ImGui::PushID(name.data());
 
