@@ -69,7 +69,7 @@ bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float s
             ? ImGuiCol_FrameBgHovered
             : ImGuiCol_FrameBg
     );
-    ImU32       col32line = ImGui::GetColorU32(ImGuiCol_SliderGrabActive);
+    ImU32       col32line = ImGui::GetColorU32(ImGuiCol_SliderGrab);
     ImU32       col32text = ImGui::GetColorU32(ImGuiCol_Text);
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddCircleFilled(center, radius, col32);
