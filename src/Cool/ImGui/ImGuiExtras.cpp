@@ -17,7 +17,7 @@ namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
-    ImGui::TextDisabled("(?)");
+    ImGui::TextDisabled(ICOMOON_INFO);
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
