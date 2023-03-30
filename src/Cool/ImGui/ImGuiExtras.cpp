@@ -1,4 +1,5 @@
 #include "ImGuiExtras.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -258,7 +259,7 @@ auto folder_dialog_button(
     std::filesystem::path  initial_folder
 ) -> bool
 {
-    if (!button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
+    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -276,7 +277,7 @@ auto file_dialog_button(
     std::filesystem::path               initial_folder
 ) -> bool
 {
-    if (!button_with_icon(Cool::Icons::folder().imgui_texture_id(), ImVec4(1.f, 1.f, 1.f, 1.f), ImVec4(0.1f, 0.1f, 0.1f, 1.f)))
+    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;

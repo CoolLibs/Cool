@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <stdexcept>
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool {
 
@@ -35,7 +36,7 @@ static void set_imgui_ini_filepath()
 static void imgui_load_fonts()
 {
     ImGuiIO&               io        = ImGui::GetIO();
-    static constexpr float font_size = 16.0f;
+    static constexpr float font_size = 16.0f; // Our icons font renders best at a multiple of 16px
 
     { // Main font
         auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
@@ -46,16 +47,17 @@ static void imgui_load_fonts()
         else
             io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
     }
-    // Merge icons into default font
-    ImFontConfig           config;
-    config.MergeMode                   = true;
-    config.PixelSnapH                  = true;
-    config.GlyphMinAdvanceX            = font_size;                     // Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0}; // NOLINT(*-avoid-c-arrays)
-    io.Fonts->AddFontFromFileTTF(
-        (Cool::Path::cool_res() / "fonts/Font Awesome 6 Free-Solid-900.otf").string().c_str(),
-        font_size, &config, icon_ranges
-    );
+    { // Merge icons into default font
+        ImFontConfig config;
+        config.MergeMode                   = true;
+        config.PixelSnapH                  = true;
+        config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
+        static const ImWchar icon_ranges[] = {ICOMOON_RANGE_BEGIN, ICOMOON_RANGE_END, 0}; // NOLINT(*-avoid-c-arrays)
+        io.Fonts->AddFontFromFileTTF(
+            (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
+            font_size, &config, icon_ranges
+        );
+    }
 
     // Console font
     Font::console() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);

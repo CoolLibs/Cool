@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/ImGui/ImGuiExtras.h>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "DebugOptions.h"
 
 namespace Cool {
@@ -17,8 +18,8 @@ public:
         {
             ImGui::SetKeyboardFocusHere();
         }
-        if (ImGui::InputText(
-                "Filter", &instance().filter,
+        if (ImGui::InputTextWithHint(
+                "##Filter", ICOMOON_SEARCH " Filter debug options", &instance().filter,
                 ImGuiInputTextFlags_EnterReturnsTrue
             ))
         {

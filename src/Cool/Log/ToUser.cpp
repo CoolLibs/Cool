@@ -1,4 +1,5 @@
 #include "ToUser.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool::Log::ToUser {
 
@@ -34,7 +35,7 @@ void error(std::string const& category, std::string const& message, std::optiona
 
 auto console() -> MessageConsole&
 {
-    static auto the_console = MessageConsole{"Console"};
+    static auto the_console = MessageConsole{ICOMOON_INFO " Console"};
     return the_console;
 }
 

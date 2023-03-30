@@ -1,4 +1,6 @@
 #include "EditorImpl.h"
+#include <imgui.h>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "ImNodesHelpers.h"
 
 namespace Cool {
@@ -24,7 +26,7 @@ auto SearchBarState::imgui_widget() -> bool
         _should_be_focused = false;
     }
     ImGui::PushID(868686);
-    bool const b = ImGui::InputText("Filter", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
+    bool const b = ImGui::InputTextWithHint("##Filter", ICOMOON_SEARCH " Search for a node or category", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
     ImGui::PopID();
     return b;
 }
@@ -237,7 +239,7 @@ auto NodesEditorImpl::imgui_window(
     ImNodes::SetCurrentContext(&*_context);
 
     bool graph_has_changed = false;
-    ImGui::Begin(ICON_FA_DIAGRAM_PROJECT " Nodes");
+    ImGui::Begin(ICOMOON_TREE " Nodes");
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();

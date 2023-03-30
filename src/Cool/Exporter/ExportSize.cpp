@@ -2,6 +2,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <smart/smart.hpp>
 #include <stringify/stringify.hpp>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool {
 
@@ -50,7 +51,11 @@ auto ExportSize::imgui() -> bool
     ImGui::EndDisabled();
 
     ImGui::SameLine();
-    b |= ImGui::Checkbox("##lock_ratio", &_aspect_ratio_is_locked);
+    if (ImGui::Button(_aspect_ratio_is_locked ? ICOMOON_LOCK : ICOMOON_UNLOCKED))
+    {
+        b                       = true;
+        _aspect_ratio_is_locked = !_aspect_ratio_is_locked;
+    }
     ImGuiExtras::tooltip("Lock the aspect ratio");
 
     if (b && _aspect_ratio_is_locked)

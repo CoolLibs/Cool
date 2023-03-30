@@ -2,18 +2,19 @@
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include "Clock.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool::ClockU {
 
 void imgui_timeline(auto& clock)
 {
-    if (ImGuiExtras::button_with_icon((clock.is_playing() ? Icons::pause() : Icons::play()).imgui_texture_id()))
+    if (ImGui::Button(clock.is_playing() ? ICOMOON_PAUSE2 : ICOMOON_PLAY3))
     {
         clock.toggle_play_pause();
     }
 
     ImGui::SameLine();
-    if (ImGuiExtras::button_with_icon((Icons::reset().imgui_texture_id())))
+    if (ImGui::Button(ICOMOON_PREVIOUS2))
     {
         clock.set_time(0.f);
     }

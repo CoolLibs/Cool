@@ -1,4 +1,5 @@
 #include "Debug.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool::Log::Debug {
 
@@ -65,7 +66,7 @@ void error_without_breakpoint(std::string const& category, std::string const& me
 #if DEBUG
 auto console() -> MessageConsole&
 {
-    static auto the_console = MessageConsole{"Debug Console"};
+    static auto the_console = MessageConsole{ICOMOON_INFO " Debug Console"};
     return the_console;
 }
 #endif

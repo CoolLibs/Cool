@@ -1,0 +1,2954 @@
+[
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "home, house",
+        "name": "home"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "home2, house2",
+        "name": "home2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "home3, house3",
+        "name": "home3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "office, buildings",
+        "name": "office"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "newspaper, news",
+        "name": "newspaper"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pencil, write",
+        "name": "pencil"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pencil2, write2",
+        "name": "pencil2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "quill, feather",
+        "name": "quill"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pen, write3",
+        "name": "pen"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "blog, pen2",
+        "name": "blog"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eyedropper, color",
+        "name": "eyedropper"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "droplet, color2",
+        "name": "droplet"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paint-format, format",
+        "name": "paint-format"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "image, picture",
+        "name": "image"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "images, pictures",
+        "name": "images"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "camera, photo",
+        "name": "camera"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "headphones, headset",
+        "name": "headphones"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "music, song",
+        "name": "music"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "play, video",
+        "name": "play"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "film, video2",
+        "name": "film"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "video-camera, video3",
+        "name": "video-camera"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "dice, game",
+        "name": "dice"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pacman, game2",
+        "name": "pacman"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spades, cards",
+        "name": "spades"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "clubs, cards2",
+        "name": "clubs"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "diamonds, cards3",
+        "name": "diamonds"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bullhorn, megaphone",
+        "name": "bullhorn"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "connection, wifi",
+        "name": "connection"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "podcast, broadcast",
+        "name": "podcast"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "feed, wave",
+        "name": "feed"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mic, microphone",
+        "name": "mic"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "book, read",
+        "name": "book"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "books, library",
+        "name": "books"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "library2, bank",
+        "name": "library"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-text, file",
+        "name": "file-text"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "profile, file2",
+        "name": "profile"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-empty, file3",
+        "name": "file-empty"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "files-empty, files",
+        "name": "files-empty"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-text2, file4",
+        "name": "file-text2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-picture, file5",
+        "name": "file-picture"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-music, file6",
+        "name": "file-music"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-play, file7",
+        "name": "file-play"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-video, file8",
+        "name": "file-video"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-zip, file9",
+        "name": "file-zip"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "copy, duplicate",
+        "name": "copy"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paste, clipboard-file",
+        "name": "paste"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stack, layers",
+        "name": "stack"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder, directory",
+        "name": "folder"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder-open, directory2",
+        "name": "folder-open"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder-plus, directory3",
+        "name": "folder-plus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder-minus, directory4",
+        "name": "folder-minus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder-download, directory5",
+        "name": "folder-download"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "folder-upload, directory6",
+        "name": "folder-upload"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "price-tag",
+        "name": "price-tag"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "price-tags",
+        "name": "price-tags"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "barcode",
+        "name": "barcode"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "qrcode",
+        "name": "qrcode"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ticket, theater",
+        "name": "ticket"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cart, purchase",
+        "name": "cart"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "coin-dollar, money",
+        "name": "coin-dollar"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "coin-euro, money2",
+        "name": "coin-euro"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "coin-pound, money3",
+        "name": "coin-pound"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "coin-yen, money4",
+        "name": "coin-yen"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "credit-card, money5",
+        "name": "credit-card"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "calculator, compute",
+        "name": "calculator"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lifebuoy, support",
+        "name": "lifebuoy"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "phone, telephone",
+        "name": "phone"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "phone-hang-up, telephone2",
+        "name": "phone-hang-up"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "address-book, contact",
+        "name": "address-book"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "envelop, mail",
+        "name": "envelop"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pushpin, pin",
+        "name": "pushpin"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "location, map-marker",
+        "name": "location"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "location2, map-marker2",
+        "name": "location2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "compass, direction",
+        "name": "compass"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "compass2, direction2",
+        "name": "compass2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "map, guide",
+        "name": "map"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "map2, guide2",
+        "name": "map2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "history, time",
+        "name": "history"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "clock, time2",
+        "name": "clock"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "clock2, time3",
+        "name": "clock2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "alarm, time4",
+        "name": "alarm"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bell, alarm2",
+        "name": "bell"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stopwatch, time5",
+        "name": "stopwatch"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "calendar, date",
+        "name": "calendar"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "printer, print",
+        "name": "printer"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "keyboard, typing",
+        "name": "keyboard"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "display, screen",
+        "name": "display"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "laptop, computer",
+        "name": "laptop"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mobile, cell-phone",
+        "name": "mobile"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mobile2, cell-phone2",
+        "name": "mobile2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tablet, mobile3",
+        "name": "tablet"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tv, television",
+        "name": "tv"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "drawer, box",
+        "name": "drawer"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "drawer2, box2",
+        "name": "drawer2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "box-add, box3",
+        "name": "box-add"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "box-remove, box4",
+        "name": "box-remove"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "download, save",
+        "name": "download"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "upload, load",
+        "name": "upload"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "floppy-disk, save2",
+        "name": "floppy-disk"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "drive, save3",
+        "name": "drive"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "database, db",
+        "name": "database"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "undo, ccw",
+        "name": "undo"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "redo, cw",
+        "name": "redo"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "undo2, left",
+        "name": "undo2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "redo2, right",
+        "name": "redo2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "forward, right2",
+        "name": "forward"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "reply, left2",
+        "name": "reply"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubble, comment",
+        "name": "bubble"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubbles, comments",
+        "name": "bubbles"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubbles2, comments2",
+        "name": "bubbles2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubble2, comment2",
+        "name": "bubble2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubbles3, comments3",
+        "name": "bubbles3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bubbles4, comments4",
+        "name": "bubbles4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "user, profile2",
+        "name": "user"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "users, group",
+        "name": "users"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "user-plus, user2",
+        "name": "user-plus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "user-minus, user3",
+        "name": "user-minus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "user-check, user4",
+        "name": "user-check"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "user-tie, user5",
+        "name": "user-tie"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "quotes-left, ldquo",
+        "name": "quotes-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "quotes-right, rdquo",
+        "name": "quotes-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "hour-glass, loading",
+        "name": "hour-glass"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner, loading2",
+        "name": "spinner"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner2, loading3",
+        "name": "spinner2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner3, loading4",
+        "name": "spinner3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner4, loading5",
+        "name": "spinner4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner5, loading6",
+        "name": "spinner5"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner6, loading7",
+        "name": "spinner6"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner7, loading8",
+        "name": "spinner7"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner8, loading9",
+        "name": "spinner8"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner9, loading10",
+        "name": "spinner9"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner10, loading11",
+        "name": "spinner10"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spinner11, loading12",
+        "name": "spinner11"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "binoculars, lookup",
+        "name": "binoculars"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "search, magnifier",
+        "name": "search"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "zoom-in, magnifier2",
+        "name": "zoom-in"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "zoom-out, magnifier3",
+        "name": "zoom-out"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "enlarge, expand",
+        "name": "enlarge"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shrink, collapse",
+        "name": "shrink"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "enlarge2, expand2",
+        "name": "enlarge2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shrink2, collapse2",
+        "name": "shrink2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "key, password",
+        "name": "key"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "key2, password2",
+        "name": "key2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lock, secure",
+        "name": "lock"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "unlocked, lock-open",
+        "name": "unlocked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wrench, tool",
+        "name": "wrench"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "equalizer, sliders",
+        "name": "equalizer"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "equalizer2, sliders2",
+        "name": "equalizer2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cog, gear",
+        "name": "cog"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cogs, gears",
+        "name": "cogs"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "hammer, tool2",
+        "name": "hammer"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "magic-wand, wizard",
+        "name": "magic-wand"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "aid-kit, health",
+        "name": "aid-kit"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bug, virus",
+        "name": "bug"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pie-chart, stats",
+        "name": "pie-chart"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stats-dots, stats2",
+        "name": "stats-dots"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stats-bars, stats3",
+        "name": "stats-bars"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stats-bars2, stats4",
+        "name": "stats-bars2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "trophy, cup",
+        "name": "trophy"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "gift, present",
+        "name": "gift"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "glass, drink",
+        "name": "glass"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "glass2, drink2",
+        "name": "glass2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mug, drink3",
+        "name": "mug"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spoon-knife, food",
+        "name": "spoon-knife"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "leaf, nature",
+        "name": "leaf"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "rocket, jet",
+        "name": "rocket"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "meter, gauge",
+        "name": "meter"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "meter2, gauge2",
+        "name": "meter2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "hammer2, gavel",
+        "name": "hammer2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "fire, flame",
+        "name": "fire"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lab, beta",
+        "name": "lab"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "magnet, attract",
+        "name": "magnet"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bin, trashcan",
+        "name": "bin"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bin2, trashcan2",
+        "name": "bin2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "briefcase, portfolio",
+        "name": "briefcase"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "airplane, travel",
+        "name": "airplane"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "truck, transit",
+        "name": "truck"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "road, asphalt",
+        "name": "road"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "accessibility",
+        "name": "accessibility"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "target, goal",
+        "name": "target"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shield, security",
+        "name": "shield"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "power, lightning",
+        "name": "power"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "switch",
+        "name": "switch"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "power-cord, plugin",
+        "name": "power-cord"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "clipboard, board",
+        "name": "clipboard"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "list-numbered, options",
+        "name": "list-numbered"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "list, todo",
+        "name": "list"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "list2, todo2",
+        "name": "list2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tree, branches",
+        "name": "tree"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "menu, list3",
+        "name": "menu"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "menu2, options2",
+        "name": "menu2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "menu3, options3",
+        "name": "menu3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "menu4, options4",
+        "name": "menu4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cloud, weather",
+        "name": "cloud"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cloud-download, cloud2",
+        "name": "cloud-download"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cloud-upload, cloud3",
+        "name": "cloud-upload"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cloud-check, cloud4",
+        "name": "cloud-check"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "download2, save4",
+        "name": "download2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "upload2, load2",
+        "name": "upload2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "download3, save5",
+        "name": "download3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "upload3, load3",
+        "name": "upload3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sphere, globe",
+        "name": "sphere"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "earth, globe2",
+        "name": "earth"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "link, chain",
+        "name": "link"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flag, report",
+        "name": "flag"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "attachment, paperclip",
+        "name": "attachment"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eye, views",
+        "name": "eye"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eye-plus, views2",
+        "name": "eye-plus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eye-minus, views3",
+        "name": "eye-minus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eye-blocked, views4",
+        "name": "eye-blocked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bookmark, ribbon",
+        "name": "bookmark"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bookmarks, ribbons",
+        "name": "bookmarks"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sun, weather2",
+        "name": "sun"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "contrast",
+        "name": "contrast"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "brightness-contrast",
+        "name": "brightness-contrast"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "star-empty, rate",
+        "name": "star-empty"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "star-half, rate2",
+        "name": "star-half"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "star-full, rate3",
+        "name": "star-full"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "heart, like",
+        "name": "heart"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "heart-broken, heart2",
+        "name": "heart-broken"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "man, male",
+        "name": "man"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "woman, female",
+        "name": "woman"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "man-woman, toilet",
+        "name": "man-woman"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "happy, emoticon",
+        "name": "happy"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "happy2, emoticon2",
+        "name": "happy2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "smile, emoticon3",
+        "name": "smile"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "smile2, emoticon4",
+        "name": "smile2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tongue, emoticon5",
+        "name": "tongue"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tongue2, emoticon6",
+        "name": "tongue2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sad, emoticon7",
+        "name": "sad"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sad2, emoticon8",
+        "name": "sad2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wink, emoticon9",
+        "name": "wink"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wink2, emoticon10",
+        "name": "wink2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "grin, emoticon11",
+        "name": "grin"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "grin2, emoticon12",
+        "name": "grin2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cool, emoticon13",
+        "name": "cool"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cool2, emoticon14",
+        "name": "cool2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "angry, emoticon15",
+        "name": "angry"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "angry2, emoticon16",
+        "name": "angry2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "evil, emoticon17",
+        "name": "evil"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "evil2, emoticon18",
+        "name": "evil2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shocked, emoticon19",
+        "name": "shocked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shocked2, emoticon20",
+        "name": "shocked2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "baffled, emoticon21",
+        "name": "baffled"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "baffled2, emoticon22",
+        "name": "baffled2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "confused, emoticon23",
+        "name": "confused"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "confused2, emoticon24",
+        "name": "confused2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "neutral, emoticon25",
+        "name": "neutral"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "neutral2, emoticon26",
+        "name": "neutral2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "hipster, emoticon27",
+        "name": "hipster"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "hipster2, emoticon28",
+        "name": "hipster2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wondering, emoticon29",
+        "name": "wondering"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wondering2, emoticon30",
+        "name": "wondering2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sleepy, emoticon31",
+        "name": "sleepy"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sleepy2, emoticon32",
+        "name": "sleepy2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "frustrated, emoticon33",
+        "name": "frustrated"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "frustrated2, emoticon34",
+        "name": "frustrated2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "crying, emoticon35",
+        "name": "crying"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "crying2, emoticon36",
+        "name": "crying2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "point-up, finger",
+        "name": "point-up"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "point-right, finger2",
+        "name": "point-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "point-down, finger3",
+        "name": "point-down"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "point-left, finger4",
+        "name": "point-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "warning, sign",
+        "name": "warning"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "notification, warning2",
+        "name": "notification"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "question, help",
+        "name": "question"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "plus, add",
+        "name": "plus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "minus, subtract",
+        "name": "minus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "info, information",
+        "name": "info"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cancel-circle, close",
+        "name": "cancel-circle"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "blocked, forbidden",
+        "name": "blocked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "cross, cancel",
+        "name": "cross"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "checkmark, tick",
+        "name": "checkmark"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "checkmark2, tick2",
+        "name": "checkmark2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "spell-check, spelling",
+        "name": "spell-check"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "enter, signin",
+        "name": "enter"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "exit, signout",
+        "name": "exit"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "play2, player",
+        "name": "play2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pause, player2",
+        "name": "pause"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stop, player3",
+        "name": "stop"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "previous, player4",
+        "name": "previous"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "next, player5",
+        "name": "next"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "backward, player6",
+        "name": "backward"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "forward2, player7",
+        "name": "forward2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "play3, player8",
+        "name": "play3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pause2, player9",
+        "name": "pause2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stop2, player10",
+        "name": "stop2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "backward2, player11",
+        "name": "backward2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "forward3, player12",
+        "name": "forward3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "first, player13",
+        "name": "first"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "last, player14",
+        "name": "last"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "previous2, player15",
+        "name": "previous2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "next2, player16",
+        "name": "next2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "eject, player17",
+        "name": "eject"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-high, volume",
+        "name": "volume-high"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-medium, volume2",
+        "name": "volume-medium"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-low, volume3",
+        "name": "volume-low"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-mute, volume4",
+        "name": "volume-mute"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-mute2, volume5",
+        "name": "volume-mute2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-increase, volume6",
+        "name": "volume-increase"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "volume-decrease, volume7",
+        "name": "volume-decrease"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "loop, repeat",
+        "name": "loop"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "loop2, repeat2",
+        "name": "loop2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "infinite",
+        "name": "infinite"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shuffle, random",
+        "name": "shuffle"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up-left, up-left",
+        "name": "arrow-up-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up, up",
+        "name": "arrow-up"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up-right, up-right",
+        "name": "arrow-up-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-right, right3",
+        "name": "arrow-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down-right, down-right",
+        "name": "arrow-down-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down, down",
+        "name": "arrow-down"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down-left, down-left",
+        "name": "arrow-down-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-left, left3",
+        "name": "arrow-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up-left2, up-left2",
+        "name": "arrow-up-left2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up2, up2",
+        "name": "arrow-up2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-up-right2, up-right2",
+        "name": "arrow-up-right2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-right2, right4",
+        "name": "arrow-right2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down-right2, down-right2",
+        "name": "arrow-down-right2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down2, down2",
+        "name": "arrow-down2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-down-left2, down-left2",
+        "name": "arrow-down-left2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "arrow-left2, left4",
+        "name": "arrow-left2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "circle-up, up3",
+        "name": "circle-up"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "circle-right, right5",
+        "name": "circle-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "circle-down, down3",
+        "name": "circle-down"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "circle-left, left5",
+        "name": "circle-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tab, arrows",
+        "name": "tab"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "move-up, sort",
+        "name": "move-up"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "move-down, sort2",
+        "name": "move-down"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-alpha-asc, arrange",
+        "name": "sort-alpha-asc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-alpha-desc, arrange2",
+        "name": "sort-alpha-desc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-numeric-asc, arrange3",
+        "name": "sort-numeric-asc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-numberic-desc, arrange4",
+        "name": "sort-numberic-desc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-amount-asc, arrange5",
+        "name": "sort-amount-asc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sort-amount-desc, arrange6",
+        "name": "sort-amount-desc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "command, cmd",
+        "name": "command"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "shift",
+        "name": "shift"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ctrl, control",
+        "name": "ctrl"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "opt, option",
+        "name": "opt"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "checkbox-checked, checkbox",
+        "name": "checkbox-checked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "checkbox-unchecked, checkbox2",
+        "name": "checkbox-unchecked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "radio-checked, radio-button",
+        "name": "radio-checked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "radio-checked2, radio-button2",
+        "name": "radio-checked2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "radio-unchecked, radio-button3",
+        "name": "radio-unchecked"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "crop, resize",
+        "name": "crop"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "make-group",
+        "name": "make-group"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ungroup",
+        "name": "ungroup"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "scissors, cut",
+        "name": "scissors"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "filter, funnel",
+        "name": "filter"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "font, typeface",
+        "name": "font"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ligature, typography",
+        "name": "ligature"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ligature2, typography2",
+        "name": "ligature2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "text-height, wysiwyg",
+        "name": "text-height"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "text-width, wysiwyg2",
+        "name": "text-width"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "font-size, wysiwyg3",
+        "name": "font-size"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "bold, wysiwyg4",
+        "name": "bold"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "underline, wysiwyg5",
+        "name": "underline"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "italic, wysiwyg6",
+        "name": "italic"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "strikethrough, wysiwyg7",
+        "name": "strikethrough"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "omega, wysiwyg8",
+        "name": "omega"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "sigma, wysiwyg9",
+        "name": "sigma"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "page-break, wysiwyg10",
+        "name": "page-break"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "superscript, wysiwyg11",
+        "name": "superscript"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "subscript, wysiwyg12",
+        "name": "subscript"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "superscript2, wysiwyg13",
+        "name": "superscript2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "subscript2, wysiwyg14",
+        "name": "subscript2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "text-color, wysiwyg15",
+        "name": "text-color"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pagebreak, wysiwyg16",
+        "name": "pagebreak"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "clear-formatting, wysiwyg17",
+        "name": "clear-formatting"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "table, wysiwyg18",
+        "name": "table"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "table2, wysiwyg19",
+        "name": "table2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "insert-template, wysiwyg20",
+        "name": "insert-template"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pilcrow, wysiwyg21",
+        "name": "pilcrow"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ltr, wysiwyg22",
+        "name": "ltr"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "rtl, wysiwyg23",
+        "name": "rtl"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "section, wysiwyg24",
+        "name": "section"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paragraph-left, wysiwyg25",
+        "name": "paragraph-left"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paragraph-center, wysiwyg26",
+        "name": "paragraph-center"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paragraph-right, wysiwyg27",
+        "name": "paragraph-right"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paragraph-justify, wysiwyg28",
+        "name": "paragraph-justify"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "indent-increase, wysiwyg29",
+        "name": "indent-increase"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "indent-decrease, wysiwyg30",
+        "name": "indent-decrease"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "share, out",
+        "name": "share"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "new-tab, out2",
+        "name": "new-tab"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "embed, code",
+        "name": "embed"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "embed2, code2",
+        "name": "embed2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "terminal, console",
+        "name": "terminal"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "share2, social",
+        "name": "share2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mail2, contact2",
+        "name": "mail"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mail3, contact3",
+        "name": "mail2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mail4, contact4",
+        "name": "mail3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "mail5, contact5",
+        "name": "mail4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "amazon",
+        "ligatures": "amazon, brand"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "google",
+        "ligatures": "google, brand2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "google2",
+        "ligatures": "google2, brand3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "google3",
+        "ligatures": "google3, brand4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "google-plus, brand5",
+        "name": "google-plus"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "google-plus2, brand6",
+        "name": "google-plus2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "google-plus3, brand7",
+        "name": "google-plus3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "hangouts",
+        "ligatures": "hangouts, brand8"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "google-drive, brand9",
+        "name": "google-drive"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "facebook, brand10",
+        "name": "facebook"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "facebook2, brand11",
+        "name": "facebook2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "instagram, brand12",
+        "name": "instagram"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "whatsapp",
+        "ligatures": "whatsapp, brand13"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "spotify",
+        "ligatures": "spotify, brand14"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "telegram",
+        "ligatures": "telegram, brand15"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "twitter, brand16",
+        "name": "twitter"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "vine",
+        "ligatures": "vine, brand17"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "vk",
+        "ligatures": "vk, brand18"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "renren",
+        "ligatures": "renren, brand19"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "sina-weibo",
+        "ligatures": "sina-weibo, brand20"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "feed2, rss",
+        "name": "rss"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "feed3, rss2",
+        "name": "rss2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "youtube, brand21",
+        "name": "youtube"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "youtube2, brand22",
+        "name": "youtube2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "twitch, brand23",
+        "name": "twitch"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "vimeo, brand24",
+        "name": "vimeo"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "vimeo2, brand25",
+        "name": "vimeo2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lanyrd, brand26",
+        "name": "lanyrd"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flickr, brand27",
+        "name": "flickr"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flickr2, brand28",
+        "name": "flickr2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flickr3, brand29",
+        "name": "flickr3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flickr4, brand30",
+        "name": "flickr4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "dribbble, brand31",
+        "name": "dribbble"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "behance",
+        "ligatures": "behance, brand32"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "behance2",
+        "ligatures": "behance2, brand33"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "deviantart, brand34",
+        "name": "deviantart"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "500px",
+        "ligatures": "500px, brand35"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "steam, brand36",
+        "name": "steam"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "steam2, brand37",
+        "name": "steam2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "dropbox, brand38",
+        "name": "dropbox"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "onedrive, brand39",
+        "name": "onedrive"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "github, brand40",
+        "name": "github"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "npm",
+        "ligatures": "npm, brand41"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "basecamp",
+        "ligatures": "basecamp, brand42"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "trello",
+        "ligatures": "trello, brand43"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "wordpress, brand44",
+        "name": "wordpress"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "joomla, brand45",
+        "name": "joomla"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "ello, brand46",
+        "name": "ello"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "blogger, brand47",
+        "name": "blogger"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "blogger2, brand48",
+        "name": "blogger2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tumblr, brand49",
+        "name": "tumblr"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tumblr2, brand50",
+        "name": "tumblr2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "yahoo, brand51",
+        "name": "yahoo"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "yahoo2",
+        "ligatures": "yahoo2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "tux, brand52",
+        "name": "tux"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "apple, brand53",
+        "name": "appleinc"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "finder, brand54",
+        "name": "finder"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "android, brand55",
+        "name": "android"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "windows, brand56",
+        "name": "windows"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "windows8, brand57",
+        "name": "windows8"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "soundcloud, brand58",
+        "name": "soundcloud"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "soundcloud2, brand59",
+        "name": "soundcloud2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "skype, brand60",
+        "name": "skype"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "reddit, brand61",
+        "name": "reddit"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "hackernews",
+        "ligatures": "hackernews, brand62"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "wikipedia",
+        "ligatures": "wikipedia, brand63"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "linkedin, brand64",
+        "name": "linkedin"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "linkedin2, brand65",
+        "name": "linkedin2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lastfm, brand66",
+        "name": "lastfm"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "lastfm2, brand67",
+        "name": "lastfm2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "delicious, brand68",
+        "name": "delicious"
+    },
+    {
+        "order": 0,
+        "name": "stumbleupon",
+        "prevSize": 16,
+        "ligatures": "stumbleupon, brand69"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stumbleupon2, brand70",
+        "name": "stumbleupon2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "stackoverflow, brand71",
+        "name": "stackoverflow"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "pinterest",
+        "ligatures": "pinterest, brand72"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "pinterest2, brand73",
+        "name": "pinterest2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "xing, brand74",
+        "name": "xing"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "xing2, brand75",
+        "name": "xing2",
+        "codes": [
+            61231
+        ]
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "flattr, brand76",
+        "name": "flattr"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "foursquare, brand77",
+        "name": "foursquare"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "yelp, brand78",
+        "name": "yelp"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "paypal, brand79",
+        "name": "paypal",
+        "codes": [
+            61234
+        ]
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "chrome, browser",
+        "name": "chrome"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "firefox, browser2",
+        "name": "firefox"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "IE, browser3",
+        "name": "IE"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "name": "edge",
+        "ligatures": "edge, browser4"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "safari, browser5",
+        "name": "safari"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "opera, browser6",
+        "name": "opera"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-pdf, file10",
+        "name": "file-pdf"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-openoffice, file11",
+        "name": "file-openoffice"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-word, file12",
+        "name": "file-word"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "file-excel, file13",
+        "name": "file-excel"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "libreoffice, file14",
+        "name": "libreoffice"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "html-five, w3c",
+        "name": "html-five"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "html-five2, w3c2",
+        "name": "html-five2"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "css3, w3c3",
+        "name": "css3"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "git, brand80",
+        "name": "git"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "codepen, brand81",
+        "name": "codepen"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "svg",
+        "name": "svg"
+    },
+    {
+        "order": 0,
+        "prevSize": 16,
+        "ligatures": "IcoMoon, icomoon",
+        "name": "IcoMoon"
+    }
+]
