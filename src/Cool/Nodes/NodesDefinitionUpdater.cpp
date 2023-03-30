@@ -31,6 +31,7 @@ void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, s
 
     {
         (void)_config;
+        (void)_graph;
         // Update all nodes that use that definition
         // TODO(JF) Reintroduce me (but for now it crashes :'(
         // auto lock = std::unique_lock{_graph.nodes().mutex()};
