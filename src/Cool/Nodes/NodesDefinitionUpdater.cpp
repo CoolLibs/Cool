@@ -31,12 +31,13 @@ void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, s
 
     {
         // Update all nodes that use that definition
+        // TODO(JF) Reintroduce me (but for now it crashes :'(
         // auto lock = std::unique_lock{_graph.nodes().mutex()};
-        for (auto& [_, node] : _graph.nodes())
-        {
-            if (node.category_name() == category_name && node.definition_name() == definition->name())
-                _config.update_node_with_new_definition(node, *definition, _graph);
-        }
+        // for (auto& [_, node] : _graph.nodes())
+        // {
+        //     if (node.category_name() == category_name && node.definition_name() == definition->name())
+        //         _config.update_node_with_new_definition(node, *definition, _graph);
+        // }
     }
 }
 
