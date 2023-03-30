@@ -12,10 +12,11 @@ namespace Cool {
 template<typename... Ts>
 class DebugOptionsManager {
 public:
-    static void imgui_ui_for_all_options(bool should_focus_the_filter = false)
+    static void imgui_ui_for_all_options(bool was_just_open = false)
     {
-        if (should_focus_the_filter)
+        if (was_just_open)
         {
+            reset_filter();
             ImGui::SetKeyboardFocusHere();
         }
         if (ImGui::InputTextWithHint(
@@ -25,12 +26,6 @@ public:
         {
             toggle_first_option();
         }
-        ImGui::SameLine();
-        if (ImGuiExtras::close_button())
-        {
-            reset_filter();
-        }
-        ImGuiExtras::tooltip("Clear the filter");
         ImGui::SameLine();
         if (ImGui::Button("Reset all debug options"))
         {
