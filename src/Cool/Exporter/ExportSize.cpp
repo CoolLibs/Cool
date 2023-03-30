@@ -1,5 +1,6 @@
 #include "ExportSize.h"
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <imgui.h>
 #include <smart/smart.hpp>
 #include <stringify/stringify.hpp>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
@@ -46,17 +47,21 @@ auto ExportSize::imgui() -> bool
     }
 
     ImGui::SameLine();
-    ImGui::BeginDisabled(!_aspect_ratio_is_locked);
-    b |= _aspect_ratio.imgui(150.f);
-    ImGui::EndDisabled();
-
+    ImGuiExtras::maybe_disabled(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
+        b |= _aspect_ratio.imgui(150.f);
+    });
     ImGui::SameLine();
     if (ImGui::Button(_aspect_ratio_is_locked ? ICOMOON_LOCK : ICOMOON_UNLOCKED))
     {
         b                       = true;
         _aspect_ratio_is_locked = !_aspect_ratio_is_locked;
     }
-    ImGuiExtras::tooltip("Lock the aspect ratio");
+    ImGui::SameLine();
+    ImGuiExtras::help_marker(
+        _aspect_ratio_is_locked
+            ? "Unlock the ratio to edit the width and the height independently."
+            : "Lock the ratio to tie the width and the height together and always keep the given ratio."
+    );
 
     if (b && _aspect_ratio_is_locked)
     {
