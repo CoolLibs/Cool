@@ -17,7 +17,7 @@ using NodeDefinitionParser = std::function<tl::expected<NodeDefinition, std::str
 class NodesDefinitionUpdater : public INodesDefinitionUpdater {
 public:
     NodesDefinitionUpdater(
-        NodesConfig const&                                config,
+        NodesConfig&                                      config,
         Graph&                                            graph,
         NodesLibrary&                                     library,
         NodeDefinitionParser                              parse_definition,
@@ -37,7 +37,7 @@ private:
     void handle_error(std::filesystem::path const& definition_path, std::string const& message);
 
 private:
-    NodesConfig const&                                          _config;
+    NodesConfig&                                                _config; // Take a non-const ref to force the compiler to detect when we are passing a concrete config and creating a type-erased Cool::NodesConfig on the fly, that is a temporary variable and we cannot keep a reference to it (For a const& the compiler would not complain though we are taking a reference to a temporary). Users must create a Cool::NodesConfig on their side and then pass it to us.
     Graph&                                                      _graph;
     NodesLibrary&                                               _library;
     NodeDefinitionParser                                        _parse_definition;
