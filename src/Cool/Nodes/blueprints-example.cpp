@@ -881,10 +881,6 @@ struct Example {
         if (ImGui::BeginPopup("Create New Node"))
         {
             nodes_menu(openPopupPosition);
-            // ImGui::SetCursorScreenPos(ImGui::GetMousePosOnOpeningCurrentPopup());
-
-            // auto drawList = ImGui::GetWindowDrawList();
-            // drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
 
             ImGui::EndPopup();
         }
@@ -892,9 +888,6 @@ struct Example {
             createNewNode = false;
         ed::Resume();
         ed::End();
-
-        auto editorMin = ImGui::GetItemRectMin();
-        auto editorMax = ImGui::GetItemRectMax();
     }
 
     int                                     m_NextId      = 1;
