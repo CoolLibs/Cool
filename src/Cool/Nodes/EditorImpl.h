@@ -48,7 +48,7 @@ private:
     ImVec2 _next_node_position = {0.f, 0.f};
 
 private:
-    internal::UniqueImNodeContext _context;
+    // internal::UniqueImNodeContext _context;
     Graph                         _graph;
     bool                          _window_is_hovered = true;
     internal::SearchBarState      _search_bar{};

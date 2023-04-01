@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "blueprints-example.h"
 
 namespace Cool {
 
@@ -240,45 +241,48 @@ auto NodesEditorImpl::imgui_window(
 ) -> bool
 {
     ImGui::Begin(ICOMOON_TREE " Nodes");
-    _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
-    ImNodes::SetCurrentEditor(&*_context);
-    ImNodes::Begin("My Editor", ImVec2(0.0, 0.0f));
-    bool graph_has_changed = false;
-    // std::unique_lock lock{_graph.nodes().mutex()};
-    int uniqueId = 1;
-    for (auto& [id, node] : _graph.nodes())
-    {
-        // auto const cat                        = library.get_category(node.category_name());
-        // auto const set_scoped_title_bar_color = ScopedTitleBarColor{
-        //     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
-        // };
-
-        auto const imnode_id = ImNodes::NodeId{&node};
-        ImNodes::BeginNode(imnode_id);
-        ImNodes::EndNode();
-        graph_has_changed |= draw_node(node, imnode_id, nodes_cfg, library, _graph);
-    }
-    ImNodes::End();
-    ImNodes::SetCurrentEditor(nullptr);
-    // ImNodes::SetCurrentContext(&*_context);
-
-    graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
-    // ImNodes::BeginNodeEditor();
-    // {
-    //     std::shared_lock lock{_graph.links().mutex()};
-    //     for (auto const& [id, link] : _graph.links())
-    //     {
-    //         ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
-    //     }
-    // }
-    // ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
-    // ImNodes::EndNodeEditor();
-    // graph_has_changed |= handle_link_creation();
-    // graph_has_changed |= handle_link_deletion();
-    // graph_has_changed |= handle_node_deletion();
+    blueprints_example();
     ImGui::End();
+    return false;
+    // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
+    // ImNodes::SetCurrentEditor(&*_context);
+    // ImNodes::Begin("My Editor", ImVec2(0.0, 0.0f));
+    // bool graph_has_changed = false;
+    // // std::unique_lock lock{_graph.nodes().mutex()};
+    // int uniqueId = 1;
+    // for (auto& [id, node] : _graph.nodes())
+    // {
+    //     // auto const cat                        = library.get_category(node.category_name());
+    //     // auto const set_scoped_title_bar_color = ScopedTitleBarColor{
+    //     //     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
+    //     // };
 
-    return graph_has_changed;
+    //     auto const imnode_id = ImNodes::NodeId{&node};
+    //     ImNodes::BeginNode(imnode_id);
+    //     ImNodes::EndNode();
+    //     graph_has_changed |= draw_node(node, imnode_id, nodes_cfg, library, _graph);
+    // }
+    // ImNodes::End();
+    // ImNodes::SetCurrentEditor(nullptr);
+    // // ImNodes::SetCurrentContext(&*_context);
+
+    // graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
+    // // ImNodes::BeginNodeEditor();
+    // // {
+    // //     std::shared_lock lock{_graph.links().mutex()};
+    // //     for (auto const& [id, link] : _graph.links())
+    // //     {
+    // //         ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
+    // //     }
+    // // }
+    // // ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
+    // // ImNodes::EndNodeEditor();
+    // // graph_has_changed |= handle_link_creation();
+    // // graph_has_changed |= handle_link_deletion();
+    // // graph_has_changed |= handle_node_deletion();
+    // ImGui::End();
+
+    // return graph_has_changed;
 }
 
 auto NodesEditorImpl::imgui_nodes_menu(
