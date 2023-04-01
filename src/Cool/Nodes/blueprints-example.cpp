@@ -149,30 +149,6 @@ struct Example {
         return ed::LinkId(GetNextId());
     }
 
-    void TouchNode(ed::NodeId id)
-    {
-        m_NodeTouchTime[id] = m_TouchTime;
-    }
-
-    float GetTouchProgress(ed::NodeId id)
-    {
-        auto it = m_NodeTouchTime.find(id);
-        if (it != m_NodeTouchTime.end() && it->second > 0.0f)
-            return (m_TouchTime - it->second) / m_TouchTime;
-        else
-            return 0.0f;
-    }
-
-    void UpdateTouch()
-    {
-        const auto deltaTime = ImGui::GetIO().DeltaTime;
-        for (auto& entry : m_NodeTouchTime)
-        {
-            if (entry.second > 0.0f)
-                entry.second -= deltaTime;
-        }
-    }
-
     Node* FindNode(ed::NodeId id)
     {
         for (auto& node : m_Nodes)
@@ -229,22 +205,6 @@ struct Example {
 
         return true;
     }
-
-    // void DrawItemRect(ImColor color, float expand = 0.0f)
-    //{
-    //     ImGui::GetWindowDrawList()->AddRect(
-    //         ImGui::GetItemRectMin() - ImVec2(expand, expand),
-    //         ImGui::GetItemRectMax() + ImVec2(expand, expand),
-    //         color);
-    // };
-
-    // void FillItemRect(ImColor color, float expand = 0.0f, float rounding = 0.0f)
-    //{
-    //     ImGui::GetWindowDrawList()->AddRectFilled(
-    //         ImGui::GetItemRectMin() - ImVec2(expand, expand),
-    //         ImGui::GetItemRectMax() + ImVec2(expand, expand),
-    //         color, rounding);
-    // };
 
     void BuildNode(Node* node)
     {
@@ -368,7 +328,6 @@ struct Example {
 
             node->State.assign(data, size);
 
-            self->TouchNode(nodeId);
 
             return true;
         };
@@ -537,23 +496,9 @@ struct Example {
         ImGui::End();
     }
 
-    void OnFrame(float deltaTime)
+    void OnFrame()
     {
-        UpdateTouch();
-
         ed::SetCurrentEditor(m_Editor);
-
-        // auto& style = ImGui::GetStyle();
-
-#if 0
-        {
-            for (auto x = -io.DisplaySize.y; x < io.DisplaySize.x; x += 10.0f)
-            {
-                ImGui::GetWindowDrawList()->AddLine(ImVec2(x, 0), ImVec2(x + io.DisplaySize.y, io.DisplaySize.y),
-                    IM_COL32(255, 255, 0, 255));
-            }
-        }
-#endif
 
         static ed::NodeId contextNodeId  = 0;
         static ed::LinkId contextLinkId  = 0;
@@ -565,10 +510,6 @@ struct Example {
         static float leftPaneWidth  = 000.0f;
         static float rightPaneWidth = 800.0f;
         Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming)
-
-        // ShowLeftPane(leftPaneWidth - 4.0f);
-
-        ImGui::SameLine(0.0f, 12.0f);
 
         ed::Begin("Node editor");
         {
@@ -1113,5 +1054,5 @@ void blueprints_example()
         example.OnStart();
         b = false;
     }
-    example.OnFrame(0.1f);
+    example.OnFrame();
 }
