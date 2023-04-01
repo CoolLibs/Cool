@@ -1,3 +1,4 @@
+#include <scope_guard/scope_guard.hpp>
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "utilities/builders.h"
 #include "utilities/widgets.h"
@@ -744,31 +745,31 @@ struct Example {
 
     void handle_deletions()
     {
-        if (ed::BeginDelete())
-        {
-            ed::LinkId linkId = 0;
-            while (ed::QueryDeletedLink(&linkId))
-            {
-                if (ed::AcceptDeletedItem())
-                {
-                    auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
-                    if (id != m_Links.end())
-                        m_Links.erase(id);
-                }
-            }
+        auto scope_guard = sg::make_scope_guard([] { ed::EndDelete(); });
+        if (!ed::BeginDelete())
+            return;
 
-            ed::NodeId nodeId = 0;
-            while (ed::QueryDeletedNode(&nodeId))
+        ed::LinkId linkId = 0;
+        while (ed::QueryDeletedLink(&linkId))
+        {
+            if (ed::AcceptDeletedItem())
             {
-                if (ed::AcceptDeletedItem())
-                {
-                    auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-                    if (id != m_Nodes.end())
-                        m_Nodes.erase(id);
-                }
+                auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
+                if (id != m_Links.end())
+                    m_Links.erase(id);
             }
         }
-        ed::EndDelete();
+
+        ed::NodeId nodeId = 0;
+        while (ed::QueryDeletedNode(&nodeId))
+        {
+            if (ed::AcceptDeletedItem())
+            {
+                auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
+                if (id != m_Nodes.end())
+                    m_Nodes.erase(id);
+            }
+        }
     }
 
     void render_editor()
