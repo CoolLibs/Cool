@@ -311,7 +311,6 @@ struct Example {
 
             node->State.assign(data, size);
 
-
             return true;
         };
 
@@ -762,27 +761,27 @@ struct Example {
 
     void render_editor()
     {
-            auto cursorTopLeft = ImGui::GetCursorScreenPos();
+        // auto cursorTopLeft = ImGui::GetCursorScreenPos();
 
-            util::BlueprintNodeBuilder builder{};
+        util::BlueprintNodeBuilder builder{};
 
-            for (auto& node : m_Nodes)
-            {
-                if (node.Type == NodeType::Blueprint)
-                    render_blueprint_node(node, builder);
-                if (node.Type == NodeType::Comment)
-                    render_comment_node(node);
-            }
+        for (auto& node : m_Nodes)
+        {
+            if (node.Type == NodeType::Blueprint)
+                render_blueprint_node(node, builder);
+            if (node.Type == NodeType::Comment)
+                render_comment_node(node);
+        }
 
-            for (auto& link : m_Links)
-                ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
+        for (auto& link : m_Links)
+            ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
 
-            if (!createNewNode)
-            {
-                check_some_things();
-            }
+        if (!createNewNode)
+        {
+            check_some_things();
+        }
 
-            ImGui::SetCursorScreenPos(cursorTopLeft);
+        // ImGui::SetCursorScreenPos(cursorTopLeft);
     }
 
     void nodes_menu(ImVec2 newNodePostion)
@@ -835,7 +834,7 @@ struct Example {
     {
         ed::SetCurrentEditor(m_Editor);
 
-        Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming)
+        Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming) EDIT this is caused by the suspend / resume
 
         ed::Begin("Node editor");
         {
@@ -862,10 +861,10 @@ struct Example {
         ed::End();
     }
 
-    int                                     m_NextId      = 1;
-    const int                               m_PinIconSize = 24;
-    std::vector<Node>                       m_Nodes;
-    std::vector<Link>                       m_Links;
+    int               m_NextId      = 1;
+    const int         m_PinIconSize = 24;
+    std::vector<Node> m_Nodes;
+    std::vector<Link> m_Links;
 
     ed::NodeId contextNodeId  = 0;
     ed::LinkId contextLinkId  = 0;
