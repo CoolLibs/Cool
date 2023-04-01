@@ -813,126 +813,129 @@ struct Example {
         ImGui::SetCursorScreenPos(cursorTopLeft);
     }
 
-    void OnFrame()
+    void nodes_menu(ImVec2 newNodePostion)
     {
-            ed::SetCurrentEditor(m_Editor);
+        Node* node = nullptr;
+        if (ImGui::MenuItem("Input Action"))
+            node = SpawnInputActionNode();
+        if (ImGui::MenuItem("Output Action"))
+            node = SpawnOutputActionNode();
+        if (ImGui::MenuItem("Branch"))
+            node = SpawnBranchNode();
+        if (ImGui::MenuItem("Do N"))
+            node = SpawnDoNNode();
+        ImGui::Separator();
+        if (ImGui::MenuItem("Comment"))
+            node = SpawnComment();
+        ImGui::Separator();
 
-            Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming)
+        if (node)
+        {
+            BuildNodes();
 
-            ed::Begin("Node editor");
+            createNewNode = false;
+
+            ed::SetNodePosition(node->ID, newNodePostion);
+
+            if (auto startPin = newNodeLinkPin)
             {
-                render_editor();
-            }
+                auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
 
-            auto openPopupPosition = ImGui::GetMousePos();
-            ed::Suspend();
-            if (ed::ShowBackgroundContextMenu())
-            {
-                ImGui::OpenPopup("Create New Node");
-                newNodeLinkPin = nullptr;
-            }
-            ed::Resume();
-
-            ed::Suspend();
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-
-            if (ImGui::BeginPopup("Create New Node"))
-            {
-                auto newNodePostion = openPopupPosition;
-                // ImGui::SetCursorScreenPos(ImGui::GetMousePosOnOpeningCurrentPopup());
-
-                // auto drawList = ImGui::GetWindowDrawList();
-                // drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
-
-                Node* node = nullptr;
-                if (ImGui::MenuItem("Input Action"))
-                    node = SpawnInputActionNode();
-                if (ImGui::MenuItem("Output Action"))
-                    node = SpawnOutputActionNode();
-                if (ImGui::MenuItem("Branch"))
-                    node = SpawnBranchNode();
-                if (ImGui::MenuItem("Do N"))
-                    node = SpawnDoNNode();
-                ImGui::Separator();
-                if (ImGui::MenuItem("Comment"))
-                    node = SpawnComment();
-                ImGui::Separator();
-
-                if (node)
+                for (auto& pin : pins)
                 {
-                    BuildNodes();
-
-                    createNewNode = false;
-
-                    ed::SetNodePosition(node->ID, newNodePostion);
-
-                    if (auto startPin = newNodeLinkPin)
+                    if (CanCreateLink(startPin, &pin))
                     {
-                        auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
+                        auto endPin = &pin;
+                        if (startPin->Kind == PinKind::Input)
+                            std::swap(startPin, endPin);
 
-                        for (auto& pin : pins)
-                        {
-                            if (CanCreateLink(startPin, &pin))
-                            {
-                                auto endPin = &pin;
-                                if (startPin->Kind == PinKind::Input)
-                                    std::swap(startPin, endPin);
+                        m_Links.emplace_back(Link(GetNextId(), startPin->ID, endPin->ID));
+                        m_Links.back().Color = GetIconColor(startPin->Type);
 
-                                m_Links.emplace_back(Link(GetNextId(), startPin->ID, endPin->ID));
-                                m_Links.back().Color = GetIconColor(startPin->Type);
-
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
-
-                ImGui::EndPopup();
             }
-            else
-                createNewNode = false;
-            ImGui::PopStyleVar();
-            ed::Resume();
+        }
+    }
 
-            ed::End();
+    void OnFrame()
+    {
+        ed::SetCurrentEditor(m_Editor);
 
-            auto editorMin = ImGui::GetItemRectMin();
-            auto editorMax = ImGui::GetItemRectMax();
+        Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming)
 
-            if (m_ShowOrdinals)
+        ed::Begin("Node editor");
+        {
+            render_editor();
+        }
+
+        auto openPopupPosition = ImGui::GetMousePos();
+        ed::Suspend();
+        if (ed::ShowBackgroundContextMenu())
+        {
+            ImGui::OpenPopup("Create New Node");
+            newNodeLinkPin = nullptr;
+        }
+        ed::Resume();
+
+        ed::Suspend();
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+
+        if (ImGui::BeginPopup("Create New Node"))
+        {
+            nodes_menu(openPopupPosition);
+            // ImGui::SetCursorScreenPos(ImGui::GetMousePosOnOpeningCurrentPopup());
+
+            // auto drawList = ImGui::GetWindowDrawList();
+            // drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
+
+            ImGui::EndPopup();
+        }
+        else
+            createNewNode = false;
+        ImGui::PopStyleVar();
+        ed::Resume();
+
+        ed::End();
+
+        auto editorMin = ImGui::GetItemRectMin();
+        auto editorMax = ImGui::GetItemRectMax();
+
+        if (m_ShowOrdinals)
+        {
+            int                     nodeCount = ed::GetNodeCount();
+            std::vector<ed::NodeId> orderedNodeIds;
+            orderedNodeIds.resize(static_cast<size_t>(nodeCount));
+            ed::GetOrderedNodeIds(orderedNodeIds.data(), nodeCount);
+
+            auto drawList = ImGui::GetWindowDrawList();
+            drawList->PushClipRect(editorMin, editorMax);
+
+            int ordinal = 0;
+            for (auto& nodeId : orderedNodeIds)
             {
-                int                     nodeCount = ed::GetNodeCount();
-                std::vector<ed::NodeId> orderedNodeIds;
-                orderedNodeIds.resize(static_cast<size_t>(nodeCount));
-                ed::GetOrderedNodeIds(orderedNodeIds.data(), nodeCount);
+                auto p0 = ed::GetNodePosition(nodeId);
+                auto p1 = p0 + ed::GetNodeSize(nodeId);
+                p0      = ed::CanvasToScreen(p0);
+                p1      = ed::CanvasToScreen(p1);
 
-                auto drawList = ImGui::GetWindowDrawList();
-                drawList->PushClipRect(editorMin, editorMax);
+                ImGuiTextBuffer builder;
+                builder.appendf("#%d", ordinal++);
 
-                int ordinal = 0;
-                for (auto& nodeId : orderedNodeIds)
-                {
-                    auto p0 = ed::GetNodePosition(nodeId);
-                    auto p1 = p0 + ed::GetNodeSize(nodeId);
-                    p0      = ed::CanvasToScreen(p0);
-                    p1      = ed::CanvasToScreen(p1);
+                auto textSize   = ImGui::CalcTextSize(builder.c_str());
+                auto padding    = ImVec2(2.0f, 2.0f);
+                auto widgetSize = textSize + padding * 2;
 
-                    ImGuiTextBuffer builder;
-                    builder.appendf("#%d", ordinal++);
+                auto widgetPosition = ImVec2(p1.x, p0.y) + ImVec2(0.0f, -widgetSize.y);
 
-                    auto textSize   = ImGui::CalcTextSize(builder.c_str());
-                    auto padding    = ImVec2(2.0f, 2.0f);
-                    auto widgetSize = textSize + padding * 2;
+                drawList->AddRectFilled(widgetPosition, widgetPosition + widgetSize, IM_COL32(100, 80, 80, 190), 3.0f, ImDrawFlags_RoundCornersAll);
+                drawList->AddRect(widgetPosition, widgetPosition + widgetSize, IM_COL32(200, 160, 160, 190), 3.0f, ImDrawFlags_RoundCornersAll);
+                drawList->AddText(widgetPosition + padding, IM_COL32(255, 255, 255, 255), builder.c_str());
+                    }
 
-                    auto widgetPosition = ImVec2(p1.x, p0.y) + ImVec2(0.0f, -widgetSize.y);
-
-                    drawList->AddRectFilled(widgetPosition, widgetPosition + widgetSize, IM_COL32(100, 80, 80, 190), 3.0f, ImDrawFlags_RoundCornersAll);
-                    drawList->AddRect(widgetPosition, widgetPosition + widgetSize, IM_COL32(200, 160, 160, 190), 3.0f, ImDrawFlags_RoundCornersAll);
-                    drawList->AddText(widgetPosition + padding, IM_COL32(255, 255, 255, 255), builder.c_str());
-                }
-
-                drawList->PopClipRect();
-            }
+                    drawList->PopClipRect();
+        }
     }
 
     int                                     m_NextId      = 1;
