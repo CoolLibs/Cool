@@ -763,12 +763,11 @@ struct Example {
         ed::NodeId nodeId = 0;
         while (ed::QueryDeletedNode(&nodeId))
         {
-            if (ed::AcceptDeletedItem())
-            {
-                auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-                if (id != m_Nodes.end())
-                    m_Nodes.erase(id);
-            }
+            if (!ed::AcceptDeletedItem())
+                continue;
+            auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
+            if (id != m_Nodes.end())
+                m_Nodes.erase(id);
         }
     }
 
