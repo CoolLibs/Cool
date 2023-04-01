@@ -642,142 +642,147 @@ struct Example {
         ed::EndGroupHint();
     }
 
+    void check_some_things()
+    {
+        if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
+        {
+            auto showLabel = [](const char* label, ImColor color) {
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetTextLineHeight());
+                auto size = ImGui::CalcTextSize(label);
+
+                auto padding = ImGui::GetStyle().FramePadding;
+                auto spacing = ImGui::GetStyle().ItemSpacing;
+
+                ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2(spacing.x, -spacing.y));
+
+                auto rectMin = ImGui::GetCursorScreenPos() - padding;
+                auto rectMax = ImGui::GetCursorScreenPos() + size + padding;
+
+                auto drawList = ImGui::GetWindowDrawList();
+                drawList->AddRectFilled(rectMin, rectMax, color, size.y * 0.15f);
+                ImGui::TextUnformatted(label);
+            };
+
+            ed::PinId startPinId = 0, endPinId = 0;
+            if (ed::QueryNewLink(&startPinId, &endPinId))
+            {
+                auto startPin = FindPin(startPinId);
+                auto endPin   = FindPin(endPinId);
+
+                newLinkPin = startPin ? startPin : endPin;
+
+                if (startPin->Kind == PinKind::Input)
+                {
+                    std::swap(startPin, endPin);
+                    std::swap(startPinId, endPinId);
+                }
+
+                if (startPin && endPin)
+                {
+                    if (endPin == startPin)
+                    {
+                        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+                    }
+                    else if (endPin->Kind == startPin->Kind)
+                    {
+                        showLabel("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
+                        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+                    }
+                    // else if (endPin->Node == startPin->Node)
+                    //{
+                    //     showLabel("x Cannot connect to self", ImColor(45, 32, 32, 180));
+                    //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
+                    // }
+                    else if (endPin->Type != startPin->Type)
+                    {
+                        showLabel("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
+                        ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
+                    }
+                    else
+                    {
+                        showLabel("+ Create Link", ImColor(32, 45, 32, 180));
+                        if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
+                        {
+                            m_Links.emplace_back(Link(GetNextId(), startPinId, endPinId));
+                            m_Links.back().Color = GetIconColor(startPin->Type);
+                        }
+                    }
+                }
+            }
+
+            ed::PinId pinId = 0;
+            if (ed::QueryNewNode(&pinId))
+            {
+                newLinkPin = FindPin(pinId);
+                if (newLinkPin)
+                    showLabel("+ Create Node", ImColor(32, 45, 32, 180));
+
+                if (ed::AcceptNewItem())
+                {
+                    createNewNode  = true;
+                    newNodeLinkPin = FindPin(pinId);
+                    newLinkPin     = nullptr;
+                    ed::Suspend();
+                    ImGui::OpenPopup("Create New Node");
+                    ed::Resume();
+                }
+            }
+        }
+        else
+            newLinkPin = nullptr;
+
+        ed::EndCreate();
+
+        if (ed::BeginDelete())
+        {
+            ed::LinkId linkId = 0;
+            while (ed::QueryDeletedLink(&linkId))
+            {
+                if (ed::AcceptDeletedItem())
+                {
+                    auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
+                    if (id != m_Links.end())
+                        m_Links.erase(id);
+                }
+            }
+
+            ed::NodeId nodeId = 0;
+            while (ed::QueryDeletedNode(&nodeId))
+            {
+                if (ed::AcceptDeletedItem())
+                {
+                    auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
+                    if (id != m_Nodes.end())
+                        m_Nodes.erase(id);
+                }
+            }
+        }
+        ed::EndDelete();
+    }
+
     void render_editor()
     {
-        auto cursorTopLeft = ImGui::GetCursorScreenPos();
+            auto cursorTopLeft = ImGui::GetCursorScreenPos();
 
-        util::BlueprintNodeBuilder builder{};
+            util::BlueprintNodeBuilder builder{};
 
-        for (auto& node : m_Nodes)
-        {
-            if (node.Type == NodeType::Blueprint)
-                render_blueprint_node(node, builder);
-            if (node.Type == NodeType::Comment)
-                render_comment_node(node);
-        }
-
-        for (auto& link : m_Links)
-            ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
-
-        if (!createNewNode)
-        {
-            if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
+            for (auto& node : m_Nodes)
             {
-                auto showLabel = [](const char* label, ImColor color) {
-                    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetTextLineHeight());
-                    auto size = ImGui::CalcTextSize(label);
-
-                    auto padding = ImGui::GetStyle().FramePadding;
-                    auto spacing = ImGui::GetStyle().ItemSpacing;
-
-                    ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2(spacing.x, -spacing.y));
-
-                    auto rectMin = ImGui::GetCursorScreenPos() - padding;
-                    auto rectMax = ImGui::GetCursorScreenPos() + size + padding;
-
-                    auto drawList = ImGui::GetWindowDrawList();
-                    drawList->AddRectFilled(rectMin, rectMax, color, size.y * 0.15f);
-                    ImGui::TextUnformatted(label);
-                };
-
-                ed::PinId startPinId = 0, endPinId = 0;
-                if (ed::QueryNewLink(&startPinId, &endPinId))
-                {
-                    auto startPin = FindPin(startPinId);
-                    auto endPin   = FindPin(endPinId);
-
-                    newLinkPin = startPin ? startPin : endPin;
-
-                    if (startPin->Kind == PinKind::Input)
-                    {
-                        std::swap(startPin, endPin);
-                        std::swap(startPinId, endPinId);
-                    }
-
-                    if (startPin && endPin)
-                    {
-                        if (endPin == startPin)
-                        {
-                            ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
-                        }
-                        else if (endPin->Kind == startPin->Kind)
-                        {
-                            showLabel("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
-                            ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
-                        }
-                        // else if (endPin->Node == startPin->Node)
-                        //{
-                        //     showLabel("x Cannot connect to self", ImColor(45, 32, 32, 180));
-                        //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
-                        // }
-                        else if (endPin->Type != startPin->Type)
-                        {
-                            showLabel("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
-                            ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
-                        }
-                        else
-                        {
-                            showLabel("+ Create Link", ImColor(32, 45, 32, 180));
-                            if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
-                            {
-                                m_Links.emplace_back(Link(GetNextId(), startPinId, endPinId));
-                                m_Links.back().Color = GetIconColor(startPin->Type);
-                            }
-                        }
-                    }
-                }
-
-                ed::PinId pinId = 0;
-                if (ed::QueryNewNode(&pinId))
-                {
-                    newLinkPin = FindPin(pinId);
-                    if (newLinkPin)
-                        showLabel("+ Create Node", ImColor(32, 45, 32, 180));
-
-                    if (ed::AcceptNewItem())
-                    {
-                        createNewNode  = true;
-                        newNodeLinkPin = FindPin(pinId);
-                        newLinkPin     = nullptr;
-                        ed::Suspend();
-                        ImGui::OpenPopup("Create New Node");
-                        ed::Resume();
-                    }
-                }
+                if (node.Type == NodeType::Blueprint)
+                    render_blueprint_node(node, builder);
+                if (node.Type == NodeType::Comment)
+                    render_comment_node(node);
             }
-            else
-                newLinkPin = nullptr;
 
-            ed::EndCreate();
+            for (auto& link : m_Links)
+                ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
 
-            if (ed::BeginDelete())
+            if (!createNewNode)
             {
-                ed::LinkId linkId = 0;
-                while (ed::QueryDeletedLink(&linkId))
-                {
-                    if (ed::AcceptDeletedItem())
-                    {
-                        auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
-                        if (id != m_Links.end())
-                            m_Links.erase(id);
-                    }
-                }
-
-                ed::NodeId nodeId = 0;
-                while (ed::QueryDeletedNode(&nodeId))
-                {
-                    if (ed::AcceptDeletedItem())
-                    {
-                        auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-                        if (id != m_Nodes.end())
-                            m_Nodes.erase(id);
-                    }
-                }
+                check_some_things();
             }
-            ed::EndDelete();
-        }
 
-        ImGui::SetCursorScreenPos(cursorTopLeft);
+            ImGui::SetCursorScreenPos(cursorTopLeft);
     }
 
     void nodes_menu(ImVec2 newNodePostion)
