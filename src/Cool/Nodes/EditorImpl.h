@@ -7,7 +7,7 @@
 #include "NodesConfig.h"
 #include "NodesLibrary.h"
 #include "UniqueImNodeContext.h"
-#include "imnodes/imnodes_internal.h"
+// #include "imnodes/imnodes_internal.h"
 
 namespace Cool {
 
@@ -60,20 +60,20 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Graph", _graph),
-            cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
+            cereal::make_nvp("Graph", _graph)
+            // cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
     }
 
     template<class Archive>
     void load(Archive& archive)
     {
-        std::string editor_state;
+        // std::string editor_state;
         archive(
-            _graph,
-            editor_state
+            _graph
+            // editor_state
         );
-        ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
+        // ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
     }
 };
 

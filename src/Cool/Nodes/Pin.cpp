@@ -15,16 +15,16 @@ void Pin::show_impl() const
 
 void InputPin::show() const
 {
-    ImNodes::BeginInputAttribute(id());
-    show_impl();
-    ImNodes::EndInputAttribute();
+    // ImNodes::BeginInputAttribute(id());
+    // show_impl();
+    // ImNodes::EndInputAttribute();
 }
 
 void OutputPin::show() const
 {
-    ImNodes::BeginOutputAttribute(id());
-    show_impl();
-    ImNodes::EndOutputAttribute();
+    // ImNodes::BeginOutputAttribute(id());
+    // show_impl();
+    // ImNodes::EndOutputAttribute();
 }
 
 } // namespace Cool

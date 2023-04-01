@@ -1,52 +1,52 @@
 #pragma once
 
-#include <imnodes/imnodes.h>
+#include <imgui-node-editor/imgui_node_editor.h>
+
+namespace ImNodes = ax::NodeEditor;
 
 namespace Cool::internal {
 
 class UniqueImNodeContext {
 public:
     UniqueImNodeContext()
-        : _context{ImNodes::CreateContext()}
+        : _context{ImNodes::CreateEditor(nullptr /*TODO(JF) use a Config*/)}
     {
-        ImNodes::SetCurrentContext(_context);
-        static const bool b                                   = true;
-        ImNodes::GetIO().LinkDetachWithModifierClick.Modifier = &b;
-        ImNodes::GetIO().AltMouseButton                       = ImGuiMouseButton_Right;
-        ImNodes::GetIO().EmulateThreeButtonMouse.Modifier     = &ImGui::GetIO().KeyShift;
+        // ImNodes::SetCurrentContext(_context);
+        // static const bool b                                   = true;
+        // ImNodes::GetIO().LinkDetachWithModifierClick.Modifier = &b;
+        // ImNodes::GetIO().AltMouseButton                       = ImGuiMouseButton_Right;
+        // ImNodes::GetIO().EmulateThreeButtonMouse.Modifier     = &ImGui::GetIO().KeyShift;
     }
     ~UniqueImNodeContext()
     {
         if (_context)
-        {
-            ImNodes::DestroyContext(_context);
-        }
+            ImNodes::DestroyEditor(_context);
     }
     UniqueImNodeContext(const UniqueImNodeContext&)            = delete;
-    UniqueImNodeContext& operator=(const UniqueImNodeContext&) = delete;
+    auto operator=(const UniqueImNodeContext&) -> UniqueImNodeContext& = delete;
     UniqueImNodeContext(UniqueImNodeContext&& rhs) noexcept
         : _context{rhs._context}
     {
         rhs._context = nullptr;
     };
-    UniqueImNodeContext& operator=(UniqueImNodeContext&& rhs) noexcept
+    auto operator=(UniqueImNodeContext&& rhs) noexcept -> UniqueImNodeContext&
     {
         if (this != &rhs)
         {
-            ImNodes::DestroyContext(_context);
+            ImNodes::DestroyEditor(_context);
             _context     = rhs._context;
             rhs._context = nullptr;
         }
         return *this;
     }
 
-    ImNodesContext&       operator*() { return *_context; }
-    ImNodesContext*       operator->() { return _context; }
-    const ImNodesContext& operator*() const { return *_context; }
-    const ImNodesContext* operator->() const { return _context; }
+    auto operator*() -> ImNodes::EditorContext& { return *_context; }
+    auto operator->() -> ImNodes::EditorContext* { return _context; }
+    auto operator*() const -> ImNodes::EditorContext const& { return *_context; }
+    auto operator->() const -> ImNodes::EditorContext const* { return _context; }
 
 private:
-    ImNodesContext* _context;
+    ImNodes::EditorContext* _context{nullptr};
 };
 
 } // namespace Cool::internal
