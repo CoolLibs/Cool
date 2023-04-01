@@ -12,14 +12,10 @@ auto gen_dump_string() -> std::string
     return fmt::format(
         R"STR(OS                : {}
 {}
-GPU API           : {}
-Working directory : {}
-Cool directory    : {})STR",
+GPU API           : {})STR",
         os_name(),
         full_gpu_info(),
-        gpu_api_version(),
-        Cool::Path::root(),
-        Cool::Path::cool_res()
+        gpu_api_version()
     );
 }
 
