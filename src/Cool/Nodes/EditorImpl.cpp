@@ -1,5 +1,6 @@
 #include "EditorImpl.h"
 #include <imgui.h>
+#include <imgui/imgui_internal.h>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool {
@@ -39,7 +40,7 @@ static void draw_node_pins(Node const& node)
         pin.show();
     ImGui::EndGroup();
 
-    ImGui::SameLine(200.f); // TODO(JF) Don't use a hardcoded value
+    ImGui::SameLine();
 
     ImGui::BeginGroup();
     for (auto const& pin : node.output_pins())
@@ -96,8 +97,10 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     return graph_has_changed;
 }
 
-static auto draw_node(Cool::Node& node, NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+static auto draw_node(Cool::Node& node, ImNodes::NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
+    auto* drawList = ImNodes::GetNodeBackgroundDrawList(id);
+    drawList->AddRectFilled({0.f, 0.f}, {100.f, 100.f}, 0xFFFFFFFF);
     // ImNodes::BeginNodeTitleBar();
     // ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     // ImNodes::EndNodeTitleBar();
@@ -110,8 +113,8 @@ static auto draw_node(Cool::Node& node, NodeId const& id, NodesConfig const& nod
 
     // bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
 
-    // draw_node_pins(node);
     // draw_node_body(node, id, nodes_cfg);
+    draw_node_pins(node);
 
     // return graph_has_changed;
     return false;
@@ -236,43 +239,31 @@ auto NodesEditorImpl::imgui_window(
     NodesLibrary const& library
 ) -> bool
 {
+    ImGui::Begin(ICOMOON_TREE " Nodes");
+    _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     ImNodes::SetCurrentEditor(&*_context);
     ImNodes::Begin("My Editor", ImVec2(0.0, 0.0f));
+    bool graph_has_changed = false;
+    // std::unique_lock lock{_graph.nodes().mutex()};
     int uniqueId = 1;
-    // Start drawing nodes.
-    ImNodes::BeginNode(uniqueId++);
-    ImGui::Text("Node A");
-    ImNodes::BeginPin(uniqueId++, ImNodes::PinKind::Input);
-    ImGui::Text("-> In");
-    ImNodes::EndPin();
-    ImGui::SameLine();
-    ImNodes::BeginPin(uniqueId++, ImNodes::PinKind::Output);
-    ImGui::Text("Out ->");
-    ImNodes::EndPin();
-    ImNodes::EndNode();
+    for (auto& [id, node] : _graph.nodes())
+    {
+        // auto const cat                        = library.get_category(node.category_name());
+        // auto const set_scoped_title_bar_color = ScopedTitleBarColor{
+        //     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
+        // };
+
+        auto const imnode_id = ImNodes::NodeId{&node};
+        ImNodes::BeginNode(imnode_id);
+        ImNodes::EndNode();
+        graph_has_changed |= draw_node(node, imnode_id, nodes_cfg, library, _graph);
+    }
     ImNodes::End();
     ImNodes::SetCurrentEditor(nullptr);
     // ImNodes::SetCurrentContext(&*_context);
 
-    // bool graph_has_changed = false;
-    // ImGui::Begin(ICOMOON_TREE " Nodes");
-    // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
-    // graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
+    graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     // ImNodes::BeginNodeEditor();
-    // {
-    //     std::unique_lock lock{_graph.nodes().mutex()};
-    //     for (auto& [id, node] : _graph.nodes())
-    //     {
-    //         auto const cat                        = library.get_category(node.category_name());
-    //         auto const set_scoped_title_bar_color = ScopedTitleBarColor{
-    //             cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
-    //         };
-
-    //         ImNodes::BeginNode(id);
-    //         graph_has_changed |= draw_node(node, id, nodes_cfg, library, _graph);
-    //         ImNodes::EndNode();
-    //     }
-    // }
     // {
     //     std::shared_lock lock{_graph.links().mutex()};
     //     for (auto const& [id, link] : _graph.links())
@@ -285,10 +276,9 @@ auto NodesEditorImpl::imgui_window(
     // graph_has_changed |= handle_link_creation();
     // graph_has_changed |= handle_link_deletion();
     // graph_has_changed |= handle_node_deletion();
-    // ImGui::End();
+    ImGui::End();
 
-    // return graph_has_changed;
-    return false;
+    return graph_has_changed;
 }
 
 auto NodesEditorImpl::imgui_nodes_menu(

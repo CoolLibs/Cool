@@ -1,4 +1,6 @@
 #include "Pin.h"
+#include <imgui-node-editor/imgui_node_editor.h>
+#include "UniqueImNodeContext.h"
 
 namespace Cool {
 
@@ -15,16 +17,16 @@ void Pin::show_impl() const
 
 void InputPin::show() const
 {
-    // ImNodes::BeginInputAttribute(id());
-    // show_impl();
-    // ImNodes::EndInputAttribute();
+    ImNodes::BeginPin(ImNodes::PinId{this}, ImNodes::PinKind::Input);
+    show_impl();
+    ImNodes::EndPin();
 }
 
 void OutputPin::show() const
 {
-    // ImNodes::BeginOutputAttribute(id());
-    // show_impl();
-    // ImNodes::EndOutputAttribute();
+    ImNodes::BeginPin(ImNodes::PinId{this}, ImNodes::PinKind::Output);
+    show_impl();
+    ImNodes::EndPin();
 }
 
 } // namespace Cool
