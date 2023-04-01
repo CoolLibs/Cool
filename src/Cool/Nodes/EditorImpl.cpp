@@ -240,7 +240,7 @@ auto NodesEditorImpl::imgui_window(
     NodesLibrary const& library
 ) -> bool
 {
-    ImGui::Begin(ICOMOON_TREE " Nodes");
+    ImGui::Begin(ICOMOON_TREE " Nodes", nullptr, ImGuiWindowFlags_NoScrollbar);
     blueprints_example();
     ImGui::End();
     return false;
