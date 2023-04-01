@@ -826,13 +826,7 @@ struct Example {
 
             auto openPopupPosition = ImGui::GetMousePos();
             ed::Suspend();
-            if (ed::ShowNodeContextMenu(&contextNodeId))
-                ImGui::OpenPopup("Node Context Menu");
-            else if (ed::ShowPinContextMenu(&contextPinId))
-                ImGui::OpenPopup("Pin Context Menu");
-            else if (ed::ShowLinkContextMenu(&contextLinkId))
-                ImGui::OpenPopup("Link Context Menu");
-            else if (ed::ShowBackgroundContextMenu())
+            if (ed::ShowBackgroundContextMenu())
             {
                 ImGui::OpenPopup("Create New Node");
                 newNodeLinkPin = nullptr;
@@ -841,66 +835,6 @@ struct Example {
 
             ed::Suspend();
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-            if (ImGui::BeginPopup("Node Context Menu"))
-            {
-                auto node = FindNode(contextNodeId);
-
-                ImGui::TextUnformatted("Node Context Menu");
-                ImGui::Separator();
-                if (node)
-                {
-                    ImGui::Text("ID: %p", node->ID.AsPointer());
-                    ImGui::Text("Type: %s", node->Type == NodeType::Blueprint ? "Blueprint" : "Comment");
-                    ImGui::Text("Inputs: %d", (int)node->Inputs.size());
-                    ImGui::Text("Outputs: %d", (int)node->Outputs.size());
-                }
-                else
-                    ImGui::Text("Unknown node: %p", contextNodeId.AsPointer());
-                ImGui::Separator();
-                if (ImGui::MenuItem("Delete"))
-                    ed::DeleteNode(contextNodeId);
-                ImGui::EndPopup();
-            }
-
-            if (ImGui::BeginPopup("Pin Context Menu"))
-            {
-                auto pin = FindPin(contextPinId);
-
-                ImGui::TextUnformatted("Pin Context Menu");
-                ImGui::Separator();
-                if (pin)
-                {
-                    ImGui::Text("ID: %p", pin->ID.AsPointer());
-                    if (pin->Node)
-                        ImGui::Text("Node: %p", pin->Node->ID.AsPointer());
-                    else
-                        ImGui::Text("Node: %s", "<none>");
-                }
-                else
-                    ImGui::Text("Unknown pin: %p", contextPinId.AsPointer());
-
-                ImGui::EndPopup();
-            }
-
-            if (ImGui::BeginPopup("Link Context Menu"))
-            {
-                auto link = FindLink(contextLinkId);
-
-                ImGui::TextUnformatted("Link Context Menu");
-                ImGui::Separator();
-                if (link)
-                {
-                    ImGui::Text("ID: %p", link->ID.AsPointer());
-                    ImGui::Text("From: %p", link->StartPinID.AsPointer());
-                    ImGui::Text("To: %p", link->EndPinID.AsPointer());
-                }
-                else
-                    ImGui::Text("Unknown link: %p", contextLinkId.AsPointer());
-                ImGui::Separator();
-                if (ImGui::MenuItem("Delete"))
-                    ed::DeleteLink(contextLinkId);
-                ImGui::EndPopup();
-            }
 
             if (ImGui::BeginPopup("Create New Node"))
             {
