@@ -877,10 +877,6 @@ struct Example {
             ImGui::OpenPopup("Create New Node");
             newNodeLinkPin = nullptr;
         }
-        ed::Resume();
-
-        ed::Suspend();
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 
         if (ImGui::BeginPopup("Create New Node"))
         {
@@ -894,72 +890,27 @@ struct Example {
         }
         else
             createNewNode = false;
-        ImGui::PopStyleVar();
         ed::Resume();
-
         ed::End();
 
         auto editorMin = ImGui::GetItemRectMin();
         auto editorMax = ImGui::GetItemRectMax();
-
-        if (m_ShowOrdinals)
-        {
-            int                     nodeCount = ed::GetNodeCount();
-            std::vector<ed::NodeId> orderedNodeIds;
-            orderedNodeIds.resize(static_cast<size_t>(nodeCount));
-            ed::GetOrderedNodeIds(orderedNodeIds.data(), nodeCount);
-
-            auto drawList = ImGui::GetWindowDrawList();
-            drawList->PushClipRect(editorMin, editorMax);
-
-            int ordinal = 0;
-            for (auto& nodeId : orderedNodeIds)
-            {
-                auto p0 = ed::GetNodePosition(nodeId);
-                auto p1 = p0 + ed::GetNodeSize(nodeId);
-                p0      = ed::CanvasToScreen(p0);
-                p1      = ed::CanvasToScreen(p1);
-
-                ImGuiTextBuffer builder;
-                builder.appendf("#%d", ordinal++);
-
-                auto textSize   = ImGui::CalcTextSize(builder.c_str());
-                auto padding    = ImVec2(2.0f, 2.0f);
-                auto widgetSize = textSize + padding * 2;
-
-                auto widgetPosition = ImVec2(p1.x, p0.y) + ImVec2(0.0f, -widgetSize.y);
-
-                drawList->AddRectFilled(widgetPosition, widgetPosition + widgetSize, IM_COL32(100, 80, 80, 190), 3.0f, ImDrawFlags_RoundCornersAll);
-                drawList->AddRect(widgetPosition, widgetPosition + widgetSize, IM_COL32(200, 160, 160, 190), 3.0f, ImDrawFlags_RoundCornersAll);
-                drawList->AddText(widgetPosition + padding, IM_COL32(255, 255, 255, 255), builder.c_str());
-                    }
-
-                    drawList->PopClipRect();
-        }
     }
 
     int                                     m_NextId      = 1;
     const int                               m_PinIconSize = 24;
     std::vector<Node>                       m_Nodes;
     std::vector<Link>                       m_Links;
-    ImTextureID                             m_HeaderBackground = nullptr;
-    ImTextureID                             m_SaveIcon         = nullptr;
-    ImTextureID                             m_RestoreIcon      = nullptr;
-    const float                             m_TouchTime        = 1.0f;
-    std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
-    bool                                    m_ShowOrdinals = false;
 
+    ed::NodeId contextNodeId  = 0;
+    ed::LinkId contextLinkId  = 0;
+    ed::PinId  contextPinId   = 0;
+    bool       createNewNode  = false;
+    Pin*       newNodeLinkPin = nullptr;
+    Pin*       newLinkPin     = nullptr;
 
-    
-             ed::NodeId contextNodeId  = 0;
-             ed::LinkId contextLinkId  = 0;
-             ed::PinId  contextPinId   = 0;
-             bool       createNewNode  = false;
-             Pin*       newNodeLinkPin = nullptr;
-             Pin*       newLinkPin     = nullptr;
-
-             float leftPaneWidth  = 000.0f;
-             float rightPaneWidth = 800.0f;
+    float leftPaneWidth  = 000.0f;
+    float rightPaneWidth = 800.0f;
 };
 
 void blueprints_example()
