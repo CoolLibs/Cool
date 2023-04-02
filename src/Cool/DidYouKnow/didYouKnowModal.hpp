@@ -7,7 +7,7 @@ class DidYouKnowModal {
 public:
     void open();
 
-    auto is_open() const -> bool;
+    [[nodiscard]] auto is_open() const -> bool;
 
     void imgui_window();
 

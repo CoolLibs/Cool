@@ -7,7 +7,7 @@ void DidYouKnowModal::open()
 {
     auto difference = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_current_timestamp);
 
-    size_t time_to_wait = 1 * 60 * 60; // 1 hour
+    int time_to_wait = 1 * 60 * 60; // 1 hour
 
     if (!_has_been_opened && difference > time_to_wait)
     {
@@ -28,12 +28,12 @@ void DidYouKnowModal::prepare_next_tip()
 
 auto DidYouKnowModal::is_open() const -> bool
 {
-    return ImGui::BeginPopupModal(_id.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize);
+    return ImGui::BeginPopupModal(_id.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
 void DidYouKnowModal::imgui_window()
 {
-    ImGui::Text(_text.c_str());
+    ImGui::Text("%s", _text.c_str());
     ImGui::Separator();
 
     if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -56,11 +56,11 @@ void DidYouKnowModal::imgui_window()
 
 void DidYouKnowModal::all_tips()
 {
-    if (ImGui::BeginPopupModal("All tips", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         for (const auto& tip : _all_tips)
         {
-            ImGui::Text(tip.c_str());
+            ImGui::Text("%s", tip.c_str());
             ImGui::Separator();
         }
         if (ImGui::Button("Got it !"))
