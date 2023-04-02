@@ -82,7 +82,7 @@ public:
     {
         if (instance().debug_did_you_know)
         {
-            ImGui::Begin("Debug: Did You Know?", &instance().debug_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin("Test 'Did You Know?'", &instance().debug_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -125,7 +125,7 @@ private:
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Debug: Did You Know?", debug_did_you_know)
+                cereal::make_nvp("Test 'Did You Know?'", debug_did_you_know)
 #else
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
@@ -136,7 +136,7 @@ private:
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Debug: Did You Know?", debug_did_you_know)
+                cereal::make_nvp("Test 'Did You Know?'", debug_did_you_know)
 #endif
 
             );
@@ -244,9 +244,9 @@ private:
 
 #endif
 
-        if (wafl::similarity_match({filter, "Debug: Did You Know?"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test 'Did You Know?'"}) >= wafl::Matches::Strongly)
         {
-            Cool::ImGuiExtras::toggle("Debug: Did You Know?", &instance().debug_did_you_know);
+            Cool::ImGuiExtras::toggle("Test 'Did You Know?'", &instance().debug_did_you_know);
         }
     }
 
@@ -326,7 +326,7 @@ private:
 
 #endif
 
-        if (wafl::similarity_match({filter, "Debug: Did You Know?"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test 'Did You Know?'"}) >= wafl::Matches::Strongly)
         {
             instance().debug_did_you_know = !instance().debug_did_you_know;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>

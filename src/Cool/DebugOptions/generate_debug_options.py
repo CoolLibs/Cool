@@ -72,7 +72,7 @@ def all_debug_options():
         ),
         DebugOption(
             name_in_code="debug_did_you_know",
-            name_in_ui="Debug: Did You Know?",
+            name_in_ui="Test 'Did You Know?'",
             available_in_release=True,
             kind=Kind.WINDOW,
         ),
