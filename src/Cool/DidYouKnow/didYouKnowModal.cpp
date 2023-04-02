@@ -68,29 +68,29 @@ void DidYouKnowModal::all_tips()
     }
 }
 
-void test_did_you_know(DidYouKnowModal& _did_you_know_)
+void test_did_you_know(DidYouKnowModal& _did_you_know)
 {
-    _did_you_know_.open();
+    _did_you_know.open();
 
-    if (_did_you_know_.is_open())
+    if (_did_you_know.is_open())
     {
-        _did_you_know_.imgui_window();
+        _did_you_know.imgui_window();
     }
 }
 
-void debug_did_you_know(DidYouKnowModal& _did_you_know_)
+void debug_did_you_know(DidYouKnowModal& _did_you_know)
 {
     if (ImGui::Button("Test DidYouKnow"))
     {
-        _did_you_know_._has_been_opened        = false;
-        _did_you_know_._timestamp_last_opening = std::chrono::system_clock::now() - std::chrono::hours(2);
+        _did_you_know._has_been_opened        = false;
+        _did_you_know._timestamp_last_opening = std::chrono::system_clock::now() - std::chrono::hours(2);
     }
 
     // imgui text with difference between current timestamp of did you know and current timestamp of now
-    ImGui::Text("Difference: %s", std::to_string(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_did_you_know_._timestamp_last_opening)).c_str());
+    ImGui::Text("Difference: %s", std::to_string(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_did_you_know._timestamp_last_opening)).c_str());
 
     // imgui text of current timestamp of did you know
-    ImGui::Text("Current timestamp: %s", std::to_string(std::chrono::system_clock::to_time_t(_did_you_know_._timestamp_last_opening)).c_str());
+    ImGui::Text("Current timestamp: %s", std::to_string(std::chrono::system_clock::to_time_t(_did_you_know._timestamp_last_opening)).c_str());
 
     // imgui text to precise how much time is needed to wait before showing the did you know again
     ImGui::Text("Time to wait: %s", std::to_string(1 * 60 * 60).c_str());

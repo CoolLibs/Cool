@@ -38,7 +38,7 @@ private:
 
     void prepare_next_tip();
 
-    friend void debug_did_you_know(DidYouKnowModal& _did_you_know_);
+    friend void debug_did_you_know(DidYouKnowModal& _did_you_know);
 
     // Serialization
     friend class cereal::access;
@@ -52,4 +52,4 @@ private:
     }
 };
 
-void test_did_you_know(DidYouKnowModal& _did_you_know_);
+void test_did_you_know(DidYouKnowModal& _did_you_know);
