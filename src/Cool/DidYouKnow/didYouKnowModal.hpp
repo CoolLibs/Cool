@@ -40,6 +40,7 @@ private:
 
     friend void debug_did_you_know(DidYouKnowModal& _did_you_know);
 
+private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
