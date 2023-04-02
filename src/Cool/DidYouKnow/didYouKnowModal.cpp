@@ -26,7 +26,7 @@ void DidYouKnowModal::prepare_next_tip()
     _text = _all_tips[_current_tip_index];
 }
 
-bool DidYouKnowModal::is_open() const
+auto DidYouKnowModal::is_open() const -> bool
 {
     return ImGui::BeginPopupModal(_id.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize);
 }

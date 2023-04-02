@@ -8,7 +8,7 @@ public:
     void open();
     void prepare_next_tip();
 
-    bool is_open() const;
+    auto is_open() const -> bool;
 
     void display_modal_content();
 
