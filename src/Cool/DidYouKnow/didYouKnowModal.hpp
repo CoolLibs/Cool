@@ -34,7 +34,7 @@ private:
 
     size_t _current_tip_index = 0;
 
-    std::chrono::system_clock::time_point _current_timestamp;
+    std::chrono::system_clock::time_point _timestamp_last_opening;
 
     void prepare_next_tip();
 
@@ -47,7 +47,7 @@ private:
     {
         archive(
             cereal::make_nvp("Last tip", _current_tip_index),
-            cereal::make_nvp("Last timestamp", _current_timestamp)
+            cereal::make_nvp("Last timestamp", _timestamp_last_opening)
         );
     }
 };
