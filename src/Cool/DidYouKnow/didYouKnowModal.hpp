@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "cereal/types/chrono.hpp"
 class DidYouKnowModal {
 public:
     DidYouKnowModal() = default;
@@ -26,7 +27,7 @@ private:
 
     size_t _current_tip_index = 0;
 
-    __time64_t _current_timestamp;
+    std::chrono::system_clock::time_point _current_timestamp;
 
     friend void debug_did_you_know(DidYouKnowModal& _did_you_know_);
 
