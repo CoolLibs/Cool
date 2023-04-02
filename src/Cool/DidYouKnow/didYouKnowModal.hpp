@@ -9,7 +9,7 @@ public:
 
     auto is_open() const -> bool;
 
-    void display_modal_content();
+    void imgui_window();
 
     void all_tips();
 

@@ -31,7 +31,7 @@ auto DidYouKnowModal::is_open() const -> bool
     return ImGui::BeginPopupModal(_id.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
-void DidYouKnowModal::display_modal_content()
+void DidYouKnowModal::imgui_window()
 {
     ImGui::Text(_text.c_str());
     ImGui::Separator();
@@ -75,7 +75,7 @@ void test_did_you_know(DidYouKnowModal& _did_you_know_)
 
     if (_did_you_know_.is_open())
     {
-        _did_you_know_.display_modal_content();
+        _did_you_know_.imgui_window();
     }
 }
 
