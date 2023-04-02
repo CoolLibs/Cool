@@ -4,11 +4,9 @@
 
 void DidYouKnowModal::open()
 {
-    const auto difference = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_timestamp_last_opening);
+    const auto difference = std::chrono::system_clock::now() - _timestamp_last_opening;
 
-    int time_to_wait = 1 * 60 * 60; // 1 hour
-
-    if (!_has_been_opened && difference > time_to_wait)
+    if (!_has_been_opened && difference > 1h)
     {
         _has_been_opened = true;
         ImGui::OpenPopup(_id.c_str());
