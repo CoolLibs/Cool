@@ -6,7 +6,6 @@
 class DidYouKnowModal {
 public:
     void open();
-    void prepare_next_tip();
 
     auto is_open() const -> bool;
 
@@ -36,6 +35,8 @@ private:
     size_t _current_tip_index = 0;
 
     std::chrono::system_clock::time_point _current_timestamp;
+
+    void prepare_next_tip();
 
     friend void debug_did_you_know(DidYouKnowModal& _did_you_know_);
 
