@@ -5,8 +5,6 @@
 #include "cereal/types/chrono.hpp"
 class DidYouKnowModal {
 public:
-    DidYouKnowModal() = default;
-
     void open();
     void prepare_next_tip();
 
