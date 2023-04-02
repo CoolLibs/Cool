@@ -81,7 +81,6 @@ void test_did_you_know(DidYouKnowModal& _did_you_know_)
 
 void debug_did_you_know(DidYouKnowModal& _did_you_know_)
 {
-    ImGui::Begin("Debug did you know");
     if (ImGui::Button("Test DidYouKnow"))
     {
         _did_you_know_._has_been_opened   = false;
@@ -96,6 +95,4 @@ void debug_did_you_know(DidYouKnowModal& _did_you_know_)
 
     // imgui text to precise how much time is needed to wait before showing the did you know again
     ImGui::Text("Time to wait: %s", std::to_string(1 * 60 * 60).c_str());
-
-    ImGui::End();
 }

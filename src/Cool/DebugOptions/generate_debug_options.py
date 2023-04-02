@@ -70,6 +70,12 @@ def all_debug_options():
             kind=Kind.BUTTON,
             detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
         ),
+        DebugOption(
+            name_in_code="debug_did_you_know",
+            name_in_ui="Debug: Did You Know?",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
     ]
 
 
