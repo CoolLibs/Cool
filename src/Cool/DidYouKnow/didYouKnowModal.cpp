@@ -4,7 +4,7 @@
 
 void DidYouKnowModal::open()
 {
-    auto difference = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_timestamp_last_opening);
+    const auto difference = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_timestamp_last_opening);
 
     int time_to_wait = 1 * 60 * 60; // 1 hour
 
