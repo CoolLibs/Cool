@@ -1,6 +1,5 @@
 #include "didYouKnowModal.hpp"
 #include <imgui.h>
-#include <vcruntime.h>
 #include <string>
 
 void DidYouKnowModal::open()
