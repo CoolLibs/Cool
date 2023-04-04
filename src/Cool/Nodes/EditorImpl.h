@@ -1,4 +1,5 @@
 #pragma once
+#include <imgui-node-editor/imgui_node_editor.h>
 #include <cereal/types/polymorphic.hpp>
 #include "Graph.h"
 #include "IEditor.h"
@@ -7,6 +8,8 @@
 #include "NodesConfig.h"
 #include "NodesLibrary.h"
 #include "UniqueImNodeContext.h"
+#include "blueprints-example.h"
+
 // #include "imnodes/imnodes_internal.h"
 
 namespace Cool {
@@ -60,7 +63,8 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Graph", _graph)
+            cereal::make_nvp("Graph", _graph),
+            cereal::make_nvp("Style", ImNodes::GetStyle())
             // cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
     }

@@ -434,9 +434,9 @@ struct Example {
         // ImVec2  PivotSize;
         // ImVec2  PivotScale;
         // float   PinCorners;
-        // float   PinRadius;
-        // float   PinArrowSize;
-        // float   PinArrowWidth;
+        ImGui::DragFloat("Pin Radius", &editorStyle.PinRadius, 0.001f, 0.0f, 5.0f);
+        ImGui::DragFloat("Pin Arrow Size", &editorStyle.PinArrowSize, 0.001f, 0.0f, 5.0f);
+        ImGui::DragFloat("Pin Arrow Width", &editorStyle.PinArrowWidth, 0.001f, 0.0f, 5.0f);
         ImGui::DragFloat("Group Rounding", &editorStyle.GroupRounding, 0.1f, 0.0f, 40.0f);
         ImGui::DragFloat("Group Border Width", &editorStyle.GroupBorderWidth, 0.1f, 0.0f, 15.0f);
 
