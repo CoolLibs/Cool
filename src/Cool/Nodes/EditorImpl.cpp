@@ -1,6 +1,7 @@
 #include "EditorImpl.h"
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "blueprints-example.h"
 
@@ -243,6 +244,10 @@ auto NodesEditorImpl::imgui_window(
     ImGui::Begin(ICOMOON_TREE " Nodes", nullptr, ImGuiWindowFlags_NoScrollbar);
     blueprints_example();
     ImGui::End();
+
+    Cool::DebugOptions::nodes_style_editor([&]() {
+        style_editor();
+    });
     return false;
     // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     // ImNodes::SetCurrentEditor(&*_context);

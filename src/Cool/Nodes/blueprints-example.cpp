@@ -406,12 +406,6 @@ struct Example {
 
     void ShowStyleEditor(bool* show = nullptr)
     {
-        if (!ImGui::Begin("Style", show))
-        {
-            ImGui::End();
-            return;
-        }
-
         auto paneWidth = ImGui::GetContentRegionAvail().x;
 
         auto& editorStyle = ed::GetStyle();
@@ -460,7 +454,7 @@ struct Example {
         ImGui::EndHorizontal();
 
         static ImGuiTextFilter filter;
-        filter.Draw("", paneWidth);
+        filter.Draw("dsf", paneWidth);
 
         ImGui::Spacing();
 
@@ -474,8 +468,6 @@ struct Example {
             ImGui::ColorEdit4(name, &editorStyle.Colors[i].x, edit_mode);
         }
         ImGui::PopItemWidth();
-
-        ImGui::End();
     }
 
     void render_blueprint_node(Node& node, util::BlueprintNodeBuilder& builder)
@@ -890,14 +882,24 @@ struct Example {
     float rightPaneWidth = 800.0f;
 };
 
-void blueprints_example()
+static auto example_instance() -> auto&
 {
     static Example example;
-    static bool    b = true;
+    return example;
+}
+
+void blueprints_example()
+{
+    static bool b = true;
     if (b)
     {
-        example.OnStart();
+        example_instance().OnStart();
         b = false;
     }
-    example.OnFrame();
+    example_instance().OnFrame();
+}
+
+void style_editor()
+{
+    example_instance().ShowStyleEditor();
 }
