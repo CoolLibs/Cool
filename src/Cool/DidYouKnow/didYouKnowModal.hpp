@@ -38,4 +38,4 @@ private:
     }
 };
 
-void test_did_you_know(DidYouKnowModal& _did_you_know);
+const std::chrono::hours timeToWait = 1h;
