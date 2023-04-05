@@ -1,8 +1,9 @@
 #include "didYouKnowModal.hpp"
 #include <imgui.h>
+#include <array>
 #include <string>
 
-const std::vector<std::string> allTips = {
+const std::array<const char*, 12> allTips = {
     "You can hold SHIFT to disable docking. Useful when you try to move a window around and docking gets in your way.",
     "The undo-history (CTRL+Z) of your modifications is preserved even when you close and re-open CoolLab! You can control its size in 'Settings > History Size'",
     "Talk about TDR to avoid crashes (https://www.artstation.com/blogs/sebastianbracht/ovQg/workaround-for-the-windows-tdr-crash-issue-while-using-substance-painter, https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiV6LmO27_9AhXmcaQEHYw5AdUQFnoECBMQAQ&url=https%3A%2F%2Fsubstance3d.adobe.com%2Fdocumentation%2Fspdoc%2Fgpu-drivers-crash-with-long-computations-tdr-crash-128745489.html&usg=AOvVaw3NUHI7sPGmV__7gxQR4w4U)",
@@ -16,16 +17,18 @@ const std::vector<std::string> allTips = {
     "Double-click on title bar to collapse window.",
     "CTRL+Tab to select a window. ImGui::BulletText('While inputing text:\n'); ImGui::Indent(); ImGui::BulletText('CTRL+Left/Right to word jump.'); ImGui::BulletText('CTRL+A or double-click to select all.'); ImGui::BulletText('CTRL+X/C/V to use clipboard cut/copy/paste.'); ImGui::BulletText('CTRL+Z,CTRL+Y to undo/redo.'); ImGui::BulletText('ESCAPE to revert.'); ImGui::Unindent(); ImGui::BulletText('With keyboard navigation enabled:'); ImGui::Indent(); ImGui::BulletText('Arrow keys to navigate.'); ImGui::BulletText('Space or enter to activate a widget.'); ImGui::BulletText('Return to input text into a widget.'); ImGui::BulletText('Escape to deactivate a widget, close popup, exit child window.'); ImGui::BulletText('Alt to jump to the menu layer of a window.');"};
 
-const std::string idDidYouKnow = "Did you know?";
+const char* const idDidYouKnow = "Did you know?";
+
+const std::chrono::hours timeToWait = 1h;
 
 void DidYouKnowModal::open()
 {
     const auto difference = std::chrono::system_clock::now() - _timestamp_last_opening;
 
-    if (!_has_been_opened && difference > 1h)
+    if (!_has_been_opened && difference > timeToWait)
     {
         _has_been_opened = true;
-        ImGui::OpenPopup(idDidYouKnow.c_str());
+        ImGui::OpenPopup(idDidYouKnow);
         _timestamp_last_opening = std::chrono::system_clock::now();
         return;
     }
@@ -40,7 +43,7 @@ void DidYouKnowModal::prepare_next_tip()
 
 void DidYouKnowModal::imgui_window()
 {
-    ImGui::Text("%s", allTips[_current_tip_index].c_str());
+    ImGui::Text("%s", allTips.at(_current_tip_index));
     ImGui::Separator();
 
     if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -66,7 +69,7 @@ void DidYouKnowModal::all_tips()
     {
         for (auto const& tip : allTips)
         {
-            ImGui::Text("%s", tip.c_str());
+            ImGui::Text("%s", tip);
             ImGui::Separator();
         }
         if (ImGui::Button("Got it!"))
@@ -79,7 +82,7 @@ void test_did_you_know(DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open();
 
-    if (ImGui::BeginPopupModal(idDidYouKnow.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal(idDidYouKnow, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         _did_you_know.imgui_window();
     }
@@ -100,5 +103,5 @@ void debug_did_you_know(DidYouKnowModal& _did_you_know)
     ImGui::Text("Current timestamp: %s", std::to_string(std::chrono::system_clock::to_time_t(_did_you_know._timestamp_last_opening)).c_str());
 
     // imgui text to precise how much time is needed to wait before showing the did you know again
-    ImGui::Text("Time to wait: %s", std::to_string(1 * 60 * 60).c_str());
+    ImGui::Text("Time to wait: %s h", std::to_string(timeToWait.count()).c_str());
 }
