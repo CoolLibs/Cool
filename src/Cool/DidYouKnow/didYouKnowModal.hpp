@@ -11,8 +11,6 @@ public:
 
     void imgui_window();
 
-    static void all_tips();
-
 private:
     std::string _id              = "Did you know?";
     bool        _has_been_opened = false;
@@ -22,6 +20,8 @@ private:
     std::chrono::system_clock::time_point _timestamp_last_opening;
 
     void prepare_next_tip();
+
+    static void all_tips();
 
     friend void debug_did_you_know(DidYouKnowModal& _did_you_know);
 
