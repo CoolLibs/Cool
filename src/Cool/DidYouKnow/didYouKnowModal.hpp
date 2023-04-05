@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
 #include "cereal/types/chrono.hpp"
@@ -14,7 +15,7 @@ private:
 
     size_t _current_tip_index = 0;
 
-    std::chrono::system_clock::time_point _timestamp_last_opening;
+    std::chrono::steady_clock::time_point _timestamp_last_opening;
 
     void prepare_next_tip();
 

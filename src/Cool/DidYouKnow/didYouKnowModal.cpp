@@ -1,7 +1,9 @@
 #include "didYouKnowModal.hpp"
 #include <imgui.h>
 #include <array>
+#include <chrono>
 #include <string>
+#include "fmt/compile.h"
 
 const std::array<const char*, 12> allTips = {
     "You can hold SHIFT to disable docking. Useful when you try to move a window around and docking gets in your way.",
@@ -23,13 +25,13 @@ const std::chrono::hours timeToWait = 1h;
 
 void DidYouKnowModal::open()
 {
-    const auto difference = std::chrono::system_clock::now() - _timestamp_last_opening;
+    const auto difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
     if (!_has_been_opened && difference > timeToWait)
     {
         _has_been_opened = true;
         ImGui::OpenPopup(idDidYouKnow);
-        _timestamp_last_opening = std::chrono::system_clock::now();
+        _timestamp_last_opening = std::chrono::steady_clock::now();
         return;
     }
 }
@@ -93,14 +95,14 @@ void debug_did_you_know(DidYouKnowModal& _did_you_know)
     if (ImGui::Button("Test DidYouKnow"))
     {
         _did_you_know._has_been_opened        = false;
-        _did_you_know._timestamp_last_opening = std::chrono::system_clock::now() - std::chrono::hours(2);
+        _did_you_know._timestamp_last_opening = std::chrono::steady_clock::now() - std::chrono::hours(2);
     }
 
     // imgui text with difference between current timestamp of did you know and current timestamp of now
-    ImGui::Text("Difference: %s", std::to_string(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - std::chrono::system_clock::to_time_t(_did_you_know._timestamp_last_opening)).c_str());
+    ImGui::Text("%s", fmt::format("Difference: {}", (std::chrono::steady_clock::now() - _did_you_know._timestamp_last_opening).count()).c_str());
 
     // imgui text of current timestamp of did you know
-    ImGui::Text("Current timestamp: %s", std::to_string(std::chrono::system_clock::to_time_t(_did_you_know._timestamp_last_opening)).c_str());
+    ImGui::Text("%s", fmt::format("Current timestamp: {} s", _did_you_know._timestamp_last_opening.time_since_epoch().count()).c_str());
 
     // imgui text to precise how much time is needed to wait before showing the did you know again
     ImGui::Text("Time to wait: %s h", std::to_string(timeToWait.count()).c_str());
