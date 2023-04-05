@@ -16,6 +16,8 @@ const std::vector<std::string> allTips = {
     "Double-click on title bar to collapse window.",
     "CTRL+Tab to select a window. ImGui::BulletText('While inputing text:\n'); ImGui::Indent(); ImGui::BulletText('CTRL+Left/Right to word jump.'); ImGui::BulletText('CTRL+A or double-click to select all.'); ImGui::BulletText('CTRL+X/C/V to use clipboard cut/copy/paste.'); ImGui::BulletText('CTRL+Z,CTRL+Y to undo/redo.'); ImGui::BulletText('ESCAPE to revert.'); ImGui::Unindent(); ImGui::BulletText('With keyboard navigation enabled:'); ImGui::Indent(); ImGui::BulletText('Arrow keys to navigate.'); ImGui::BulletText('Space or enter to activate a widget.'); ImGui::BulletText('Return to input text into a widget.'); ImGui::BulletText('Escape to deactivate a widget, close popup, exit child window.'); ImGui::BulletText('Alt to jump to the menu layer of a window.');"};
 
+const std::string idDidYouKnow = "Did you know?";
+
 void DidYouKnowModal::open()
 {
     const auto difference = std::chrono::system_clock::now() - _timestamp_last_opening;
@@ -23,7 +25,7 @@ void DidYouKnowModal::open()
     if (!_has_been_opened && difference > 1h)
     {
         _has_been_opened = true;
-        ImGui::OpenPopup("Did you know?");
+        ImGui::OpenPopup(idDidYouKnow.c_str());
         _timestamp_last_opening = std::chrono::system_clock::now();
         return;
     }
@@ -77,7 +79,7 @@ void test_did_you_know(DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open();
 
-    if (ImGui::BeginPopupModal("Did you know?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal(idDidYouKnow.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         _did_you_know.imgui_window();
     }
