@@ -66,25 +66,33 @@ void DidYouKnowModal::imgui_window()
 
         if (ImGui::Button("Show all tips", ImVec2(120, 0)))
         {
-            ImGui::OpenPopup("All tips");
+            ImGui::CloseCurrentPopup();
+
+            _show_all_tips = true;
         }
 
-        all_tips();
         ImGui::EndPopup();
+    }
+
+    if (_show_all_tips)
+    {
+        ImGui::Begin("All tips");
+        all_tips();
+        ImGui::End();
     }
 }
 
 void DidYouKnowModal::all_tips()
 {
-    if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    // if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    // {
+    for (auto const& tip : allTips)
     {
-        for (auto const& tip : allTips)
-        {
-            ImGui::Text("%s", tip);
-            ImGui::Separator();
-        }
-        if (ImGui::Button("Got it!"))
-            ImGui::CloseCurrentPopup();
-        ImGui::EndPopup();
+        ImGui::Text("%s", tip);
+        ImGui::Separator();
     }
+    // if (ImGui::Button("Got it!"))
+    //     ImGui::CloseCurrentPopup();
+    // ImGui::EndPopup();
+    // }
 }
