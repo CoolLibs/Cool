@@ -48,7 +48,6 @@ void DidYouKnowModal::imgui_window()
     }
 
     ImGui::SameLine();
-    ImGui::SetItemDefaultFocus();
 
     if (ImGui::Button("Show all tips", ImVec2(120, 0)))
     {
