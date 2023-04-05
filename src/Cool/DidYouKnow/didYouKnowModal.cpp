@@ -64,12 +64,12 @@ void DidYouKnowModal::all_tips()
 {
     if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        for (const auto& tip : allTips)
+        for (auto const& tip : allTips)
         {
             ImGui::Text("%s", tip.c_str());
             ImGui::Separator();
         }
-        if (ImGui::Button("Got it !"))
+        if (ImGui::Button("Got it!"))
             ImGui::CloseCurrentPopup();
         ImGui::EndPopup();
     }
