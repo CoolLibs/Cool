@@ -8,6 +8,8 @@ class DidYouKnowModal {
 public:
     void open();
 
+    void open_ifn();
+
     void imgui_window();
 
 private:

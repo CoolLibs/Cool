@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <array>
 #include <chrono>
+#include <iostream>
 #include <string>
 #include "fmt/compile.h"
 
@@ -25,6 +26,13 @@ const std::chrono::hours timeToWait = 1h;
 
 void DidYouKnowModal::open()
 {
+    _has_been_opened = true;
+    ImGui::OpenPopup(idDidYouKnow);
+    _timestamp_last_opening = std::chrono::steady_clock::now();
+}
+
+void DidYouKnowModal::open_ifn()
+{
     const auto difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
     if (!_has_been_opened && difference > timeToWait)
@@ -45,24 +53,27 @@ void DidYouKnowModal::prepare_next_tip()
 
 void DidYouKnowModal::imgui_window()
 {
-    ImGui::Text("%s", allTips.at(_current_tip_index));
-    ImGui::Separator();
-
-    if (ImGui::Button("OK", ImVec2(120, 0)))
+    if (ImGui::BeginPopupModal(idDidYouKnow, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::CloseCurrentPopup();
-        prepare_next_tip();
+        ImGui::Text("%s", allTips.at(_current_tip_index));
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+            prepare_next_tip();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Show all tips", ImVec2(120, 0)))
+        {
+            ImGui::OpenPopup("All tips");
+        }
+
+        all_tips();
+        ImGui::EndPopup();
     }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Show all tips", ImVec2(120, 0)))
-    {
-        ImGui::OpenPopup("All tips");
-    }
-
-    all_tips();
-    ImGui::EndPopup();
 }
 
 void DidYouKnowModal::all_tips()
@@ -82,21 +93,19 @@ void DidYouKnowModal::all_tips()
 
 void test_did_you_know(DidYouKnowModal& _did_you_know)
 {
-    _did_you_know.open();
+    _did_you_know.open_ifn();
 
-    if (ImGui::BeginPopupModal(idDidYouKnow, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        _did_you_know.imgui_window();
-    }
+    _did_you_know.imgui_window();
 }
 
 void debug_did_you_know(DidYouKnowModal& _did_you_know)
 {
     if (ImGui::Button("Test DidYouKnow"))
     {
-        _did_you_know._has_been_opened        = false;
-        _did_you_know._timestamp_last_opening = std::chrono::steady_clock::now() - std::chrono::hours(2);
+        _did_you_know.open();
     }
+
+    _did_you_know.imgui_window();
 
     // imgui text with difference between current timestamp of did you know and current timestamp of now
     ImGui::Text("%s", fmt::format("Difference: {}", (std::chrono::steady_clock::now() - _did_you_know._timestamp_last_opening).count()).c_str());
