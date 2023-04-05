@@ -7,13 +7,10 @@ class DidYouKnowModal {
 public:
     void open();
 
-    [[nodiscard]] auto is_open() const -> bool;
-
     void imgui_window();
 
 private:
-    std::string _id              = "Did you know?";
-    bool        _has_been_opened = false;
+    bool _has_been_opened = false;
 
     size_t _current_tip_index = 0;
 

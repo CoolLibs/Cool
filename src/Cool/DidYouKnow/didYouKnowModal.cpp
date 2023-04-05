@@ -23,7 +23,7 @@ void DidYouKnowModal::open()
     if (!_has_been_opened && difference > 1h)
     {
         _has_been_opened = true;
-        ImGui::OpenPopup(_id.c_str());
+        ImGui::OpenPopup("Did you know?");
         _timestamp_last_opening = std::chrono::system_clock::now();
         return;
     }
@@ -34,11 +34,6 @@ void DidYouKnowModal::prepare_next_tip()
     _current_tip_index++;
     if (_current_tip_index >= allTips.size())
         _current_tip_index = 0;
-}
-
-auto DidYouKnowModal::is_open() const -> bool
-{
-    return ImGui::BeginPopupModal(_id.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
 void DidYouKnowModal::imgui_window()
@@ -83,7 +78,7 @@ void test_did_you_know(DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open();
 
-    if (_did_you_know.is_open())
+    if (ImGui::BeginPopupModal("Did you know?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         _did_you_know.imgui_window();
     }
