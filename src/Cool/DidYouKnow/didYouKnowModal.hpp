@@ -22,7 +22,7 @@ private:
 
     void prepare_next_tip();
 
-    static void all_tips();
+    static void display_all_tips();
 
     friend void debug_did_you_know(DidYouKnowModal& _did_you_know);
 

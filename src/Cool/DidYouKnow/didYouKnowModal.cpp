@@ -6,7 +6,7 @@
 #include <string>
 #include "fmt/compile.h"
 
-static constexpr std::array allTips = {
+static constexpr std::array all_tips = {
     "You can hold SHIFT to disable docking. Useful when you try to move a window around and docking gets in your way.",
     "The undo-history (CTRL+Z) of your modifications is preserved even when you close and re-open CoolLab! You can control its size in 'Settings > History Size'",
     "Talk about TDR to avoid crashes (https://www.artstation.com/blogs/sebastianbracht/ovQg/workaround-for-the-windows-tdr-crash-issue-while-using-substance-painter, https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiV6LmO27_9AhXmcaQEHYw5AdUQFnoECBMQAQ&url=https%3A%2F%2Fsubstance3d.adobe.com%2Fdocumentation%2Fspdoc%2Fgpu-drivers-crash-with-long-computations-tdr-crash-128745489.html&usg=AOvVaw3NUHI7sPGmV__7gxQR4w4U)",
@@ -45,7 +45,7 @@ void DidYouKnowModal::open_ifn()
 void DidYouKnowModal::prepare_next_tip()
 {
     _current_tip_index++;
-    if (_current_tip_index >= allTips.size())
+    if (_current_tip_index >= all_tips.size())
         _current_tip_index = 0;
 }
 
@@ -53,7 +53,7 @@ void DidYouKnowModal::imgui_window()
 {
     if (ImGui::BeginPopupModal(idDidYouKnow, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("%s", allTips.at(_current_tip_index));
+        ImGui::Text("%s", all_tips.at(_current_tip_index));
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -77,16 +77,16 @@ void DidYouKnowModal::imgui_window()
     if (_show_all_tips)
     {
         ImGui::Begin("All tips");
-        all_tips();
+        display_all_tips();
         ImGui::End();
     }
 }
 
-void DidYouKnowModal::all_tips()
+void DidYouKnowModal::display_all_tips()
 {
     // if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     // {
-    for (auto const& tip : allTips)
+    for (auto const& tip : all_tips)
     {
         ImGui::Text("%s", tip);
         ImGui::Separator();
