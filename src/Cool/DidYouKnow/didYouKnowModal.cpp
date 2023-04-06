@@ -52,7 +52,7 @@ void DidYouKnowModal::imgui_window()
 {
     if (ImGui::BeginPopupModal(id_did_you_know, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::Text("%s", all_tips.at(_current_tip_index));
+        ImGui::TextUnformatted(all_tips.at(_current_tip_index));
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -70,6 +70,7 @@ void DidYouKnowModal::imgui_window()
             ImGui::CloseCurrentPopup();
 
             _show_all_tips = true;
+            prepare_next_tip();
         }
 
         ImGui::EndPopup();
