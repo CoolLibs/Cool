@@ -12,7 +12,9 @@ public:
 
     void open_ifn();
 
-    void imgui_window();
+    void imgui_windows();
+
+    static void imgui_all_tips();
 
 private:
     bool _is_open       = false;
@@ -23,8 +25,6 @@ private:
     std::chrono::steady_clock::time_point _timestamp_last_opening;
 
     void prepare_next_tip();
-
-    static void imgui_all_tips();
 
     friend void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know);
 

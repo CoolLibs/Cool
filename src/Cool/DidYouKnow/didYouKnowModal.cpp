@@ -48,7 +48,7 @@ void Cool::DidYouKnowModal::prepare_next_tip()
         _current_tip_index = 0;
 }
 
-void Cool::DidYouKnowModal::imgui_window()
+void Cool::DidYouKnowModal::imgui_windows()
 {
     if (ImGui::BeginPopupModal(id_did_you_know, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {

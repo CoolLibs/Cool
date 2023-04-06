@@ -4,7 +4,7 @@ void test_did_you_know(Cool::DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open_ifn();
 
-    _did_you_know.imgui_window();
+    _did_you_know.imgui_windows();
 }
 
 namespace Cool {
@@ -16,7 +16,7 @@ void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know)
         _did_you_know.open();
     }
 
-    _did_you_know.imgui_window();
+    _did_you_know.imgui_windows();
 
     // imgui text with difference between current timestamp of did you know and current timestamp of now
     ImGui::Text("%s", fmt::format("Difference: {}", (std::chrono::steady_clock::now() - _did_you_know._timestamp_last_opening).count()).c_str());
