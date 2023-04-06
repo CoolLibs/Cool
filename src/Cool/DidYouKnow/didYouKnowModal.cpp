@@ -88,7 +88,11 @@ void DidYouKnowModal::display_all_tips()
 {
     for (auto const& tip : all_tips)
     {
-        ImGui::Text("%s", tip);
-        ImGui::Separator();
+        ImGui::TextUnformatted(tip);
+
+        if (tip != all_tips.back())
+        {
+            ImGui::Separator();
+        }
     }
 }
