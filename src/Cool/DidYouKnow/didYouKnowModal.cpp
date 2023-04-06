@@ -86,15 +86,9 @@ void DidYouKnowModal::imgui_window()
 
 void DidYouKnowModal::display_all_tips()
 {
-    // if (ImGui::BeginPopupModal("All tips", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-    // {
     for (auto const& tip : all_tips)
     {
         ImGui::Text("%s", tip);
         ImGui::Separator();
     }
-    // if (ImGui::Button("Got it!"))
-    //     ImGui::CloseCurrentPopup();
-    // ImGui::EndPopup();
-    // }
 }
