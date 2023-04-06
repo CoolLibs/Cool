@@ -1,13 +1,15 @@
 #include "Cool/DidYouKnow/testDidYouKnowModal.hpp"
 
-void test_did_you_know(DidYouKnowModal& _did_you_know)
+void test_did_you_know(Cool::DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open_ifn();
 
     _did_you_know.imgui_window();
 }
 
-void debug_did_you_know(DidYouKnowModal& _did_you_know)
+namespace Cool {
+
+void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know)
 {
     if (ImGui::Button("Test DidYouKnow"))
     {
@@ -25,3 +27,4 @@ void debug_did_you_know(DidYouKnowModal& _did_you_know)
     // imgui text to precise how much time is needed to wait before showing the did you know again
     ImGui::Text("Time to wait: %s h", std::to_string(timeToWait.count()).c_str());
 }
+} // namespace Cool

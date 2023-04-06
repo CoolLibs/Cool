@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include "cereal/types/chrono.hpp"
+
+namespace Cool {
 class DidYouKnowModal {
 public:
     void open();
@@ -22,9 +24,9 @@ private:
 
     void prepare_next_tip();
 
-    static void display_all_tips();
+    static void imgui_all_tips();
 
-    friend void debug_did_you_know(DidYouKnowModal& _did_you_know);
+    friend void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know);
 
 private:
     // Serialization
@@ -38,5 +40,7 @@ private:
         );
     }
 };
+
+} // namespace Cool
 
 const std::chrono::hours timeToWait = 1h;

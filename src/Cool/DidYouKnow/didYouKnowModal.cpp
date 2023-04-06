@@ -22,14 +22,14 @@ static constexpr auto all_tips = std::array{
 
 static constexpr const char* const id_did_you_know = "Did you know?";
 
-void DidYouKnowModal::open()
+void Cool::DidYouKnowModal::open()
 {
     _is_open = true;
     ImGui::OpenPopup(id_did_you_know);
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
-void DidYouKnowModal::open_ifn()
+void Cool::DidYouKnowModal::open_ifn()
 {
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
@@ -41,14 +41,14 @@ void DidYouKnowModal::open_ifn()
     }
 }
 
-void DidYouKnowModal::prepare_next_tip()
+void Cool::DidYouKnowModal::prepare_next_tip()
 {
     _current_tip_index++;
     if (_current_tip_index >= all_tips.size())
         _current_tip_index = 0;
 }
 
-void DidYouKnowModal::imgui_window()
+void Cool::DidYouKnowModal::imgui_window()
 {
     if (ImGui::BeginPopupModal(id_did_you_know, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
@@ -79,12 +79,12 @@ void DidYouKnowModal::imgui_window()
     if (_show_all_tips)
     {
         ImGui::Begin("All tips");
-        display_all_tips();
+        imgui_all_tips();
         ImGui::End();
     }
 }
 
-void DidYouKnowModal::display_all_tips()
+void Cool::DidYouKnowModal::imgui_all_tips()
 {
     for (auto const& tip : all_tips)
     {
