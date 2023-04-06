@@ -24,21 +24,20 @@ static constexpr const char* const id_did_you_know = "Did you know?";
 
 void DidYouKnowModal::open()
 {
-    _has_been_opened = true;
+    _is_open = true;
     ImGui::OpenPopup(id_did_you_know);
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
 void DidYouKnowModal::open_ifn()
 {
-    const auto difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
+    auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
-    if (!_has_been_opened && difference > timeToWait)
+    if (!_is_open && difference > timeToWait)
     {
-        _has_been_opened = true;
+        _is_open = true;
         ImGui::OpenPopup(id_did_you_know);
         _timestamp_last_opening = std::chrono::steady_clock::now();
-        return;
     }
 }
 
@@ -58,6 +57,7 @@ void DidYouKnowModal::imgui_window()
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
         {
+            _is_open = false;
             ImGui::CloseCurrentPopup();
             prepare_next_tip();
         }
@@ -66,6 +66,7 @@ void DidYouKnowModal::imgui_window()
 
         if (ImGui::Button("Show all tips", ImVec2(120, 0)))
         {
+            _is_open = false;
             ImGui::CloseCurrentPopup();
 
             _show_all_tips = true;

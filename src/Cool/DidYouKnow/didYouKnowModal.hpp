@@ -13,8 +13,8 @@ public:
     void imgui_window();
 
 private:
-    bool _has_been_opened = false;
-    bool _show_all_tips   = false;
+    bool _is_open       = false;
+    bool _show_all_tips = false;
 
     size_t _current_tip_index = 0;
 
