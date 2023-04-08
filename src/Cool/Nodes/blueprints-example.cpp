@@ -430,15 +430,17 @@ struct Example {
         ImGui::DragFloat("Flow Marker Distance", &editorStyle.FlowMarkerDistance, 1.0f, 1.0f, 200.0f);
         ImGui::DragFloat("Flow Speed", &editorStyle.FlowSpeed, 1.0f, 1.0f, 2000.0f);
         ImGui::DragFloat("Flow Duration", &editorStyle.FlowDuration, 0.001f, 0.0f, 5.0f);
-        // ImVec2  PivotAlignment;
-        // ImVec2  PivotSize;
-        // ImVec2  PivotScale;
-        // float   PinCorners;
+        ImGui::DragFloat2("Pivot Alignment", (float*)&editorStyle.PivotAlignment);
+        ImGui::DragFloat2("Pivot Size", (float*)&editorStyle.PivotSize);
+        ImGui::DragFloat2("Pivot Scale", (float*)&editorStyle.PivotScale);
+        ImGui::DragFloat("Pin Corners", &editorStyle.PinCorners);
         ImGui::DragFloat("Pin Radius", &editorStyle.PinRadius, 0.001f, 0.0f, 5.0f);
         ImGui::DragFloat("Pin Arrow Size", &editorStyle.PinArrowSize, 0.001f, 0.0f, 5.0f);
         ImGui::DragFloat("Pin Arrow Width", &editorStyle.PinArrowWidth, 0.001f, 0.0f, 5.0f);
         ImGui::DragFloat("Group Rounding", &editorStyle.GroupRounding, 0.1f, 0.0f, 40.0f);
         ImGui::DragFloat("Group Border Width", &editorStyle.GroupBorderWidth, 0.1f, 0.0f, 15.0f);
+        ImGui::DragFloat("Highlight Connected Links", &editorStyle.HighlightConnectedLinks);
+        // ImGui::DragFloat("Snap Link To Pin Dir", &editorStyle.SnapLinkToPinDir);
     }
 
     void render_blueprint_node(Node& node, util::BlueprintNodeBuilder& builder)
