@@ -1,3 +1,3 @@
 #pragma once
 
-#include "generated/icomoon.inl"
+#include "generated_icons/icomoon.inl"

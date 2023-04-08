@@ -30,6 +30,7 @@ if __name__ == '__main__':
         os.path.join(Path(os.path.abspath(__file__)
                           ).parent.parent.parent.parent, "tooling", "generate_files.py")).load_module()
     generate_files.generate(
+        folder="generated_icons",
         files=[
             icomoon
         ],
