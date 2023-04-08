@@ -1,5 +1,6 @@
 #include "ImGuiExtras.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -514,7 +515,7 @@ static auto ImU32_from_ImVec4(ImVec4 color) -> ImU32
 
 static auto highlight_color(float opacity) -> ImVec4
 {
-    auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    auto col = GetStyle().highlight_items;
     col.w    = opacity;
     return col;
 }

@@ -100,6 +100,12 @@ static void register_imgui_extras_elements(ImStyleEd::Config& config)
         .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().toggle_bg_hovered = color; },
         .description = "",
     });
+    config.register_element(ImStyleEd::Element{
+        .name        = "HighlightItems",
+        .get_color   = []() { return ImGuiExtras::GetStyle().highlight_items; },
+        .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().highlight_items = color; },
+        .description = "Used for example when hovering some error messages to highlight the part of the UI that needs to be used in order to fix the error message.\nUse the \"Test Message Console\" debug option to send such an error message.",
+    });
 }
 
 } // namespace Cool

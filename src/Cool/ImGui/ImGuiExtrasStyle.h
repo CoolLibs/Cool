@@ -8,6 +8,7 @@ struct Style {
     ImVec4 toggle_hovered{};
     ImVec4 toggle_bg{};
     ImVec4 toggle_bg_hovered{};
+    ImVec4 highlight_items{};
 };
 
 [[nodiscard]] inline auto GetStyle() -> Style&
