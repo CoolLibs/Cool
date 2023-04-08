@@ -2,8 +2,11 @@
 #include <imgui.h>
 #include <wants_dark_theme/wants_dark_theme.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "ImGuiExtrasStyle.h"
 
 namespace Cool {
+
+static void register_imgui_extras_elements(ImStyleEd::Config& config);
 
 ColorThemes::ColorThemes()
     : _editor{
@@ -14,6 +17,7 @@ ColorThemes::ColorThemes()
         },
         [](ImStyleEd::Config& config) {
             ImStyleEd::register_all_imgui_color_elements(config);
+            register_imgui_extras_elements(config);
         }}
 {
 }
@@ -68,6 +72,34 @@ void ColorThemes::OsThemeChecker::update(ImStyleEd::Editor& editor)
         editor.apply_theme_if_any("Light");
     else
         editor.apply_theme_if_any("Dark");
+}
+
+static void register_imgui_extras_elements(ImStyleEd::Config& config)
+{
+    config.register_element(ImStyleEd::Element{
+        .name        = "Toggle",
+        .get_color   = []() { return ImGuiExtras::GetStyle().toggle; },
+        .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().toggle = color; },
+        .description = "",
+    });
+    config.register_element(ImStyleEd::Element{
+        .name        = "ToggleHovered",
+        .get_color   = []() { return ImGuiExtras::GetStyle().toggle_hovered; },
+        .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().toggle_hovered = color; },
+        .description = "",
+    });
+    config.register_element(ImStyleEd::Element{
+        .name        = "ToggleBg",
+        .get_color   = []() { return ImGuiExtras::GetStyle().toggle_bg; },
+        .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().toggle_bg = color; },
+        .description = "",
+    });
+    config.register_element(ImStyleEd::Element{
+        .name        = "ToggleBgHovered",
+        .get_color   = []() { return ImGuiExtras::GetStyle().toggle_bg_hovered; },
+        .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().toggle_bg_hovered = color; },
+        .description = "",
+    });
 }
 
 } // namespace Cool
