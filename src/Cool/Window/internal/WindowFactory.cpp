@@ -52,7 +52,7 @@ static void imgui_load_fonts()
         config.MergeMode                   = true;
         config.PixelSnapH                  = true;
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
-        static const ImWchar icon_ranges[] = {ICOMOON_RANGE_BEGIN, ICOMOON_RANGE_END, 0}; // NOLINT(*-avoid-c-arrays)
+        static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
         io.Fonts->AddFontFromFileTTF(
             (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
             font_size, &config, icon_ranges

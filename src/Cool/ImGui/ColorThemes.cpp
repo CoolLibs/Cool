@@ -2,8 +2,25 @@
 #include <imgui.h>
 #include <wants_dark_theme/wants_dark_theme.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "ImGuiExtrasStyle.h"
 
 namespace Cool {
+
+static void register_imgui_extras_elements(ImStyleEd::Config& config);
+
+ColorThemes::ColorThemes()
+    : _editor{
+        ImStyleEd::SerializationPaths{
+            .current_theme = Cool::Path::root() / "color_theme_current.json",
+            .themes        = Cool::Path::root() / "color_themes.json",
+            .config        = Cool::Path::root() / "color_config.json",
+        },
+        [](ImStyleEd::Config& config) {
+            ImStyleEd::register_all_imgui_color_elements(config);
+            register_imgui_extras_elements(config);
+        }}
+{
+}
 
 void ColorThemes::imgui_theme_picker()
 {
@@ -22,20 +39,19 @@ void ColorThemes::imgui_theme_picker()
         _use_os_theme.has_value(),
         "You are using the OS color theme. Disable the option above to edit your theme freely.",
         [&]() {
-            _editor.widget_theme_picker();
+            _editor.imgui_theme_selector();
         }
     );
 }
 
 void ColorThemes::imgui_basic_theme_editor()
 {
-    _editor.widget_theme_picker();
-    _editor.widget_theme_editor();
+    _editor.imgui_themes_editor();
 }
 
 void ColorThemes::imgui_advanced_config()
 {
-    _editor.widget_color_config();
+    _editor.imgui_config_editor();
 }
 
 void ColorThemes::update()
@@ -53,9 +69,14 @@ void ColorThemes::OsThemeChecker::update(ImStyleEd::Editor& editor)
         return;
 
     if (_color_mode == Mode::Light)
-        editor.apply_if_any("Light");
+        editor.apply_theme_if_any("Light");
     else
-        editor.apply_if_any("Dark");
+        editor.apply_theme_if_any("Dark");
+}
+
+static void register_imgui_extras_elements(ImStyleEd::Config& config)
+{
+#include "generated_style/register_elements.inl"
 }
 
 } // namespace Cool

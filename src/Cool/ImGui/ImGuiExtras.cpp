@@ -1,5 +1,6 @@
 #include "ImGuiExtras.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -12,6 +13,7 @@
 #include <open_link/open_link.hpp>
 #include <ostream>
 #include "Cool/Math/constants.h"
+#include "ImGuiExtrasStyle.h"
 
 namespace Cool::ImGuiExtras {
 
@@ -513,7 +515,7 @@ static auto ImU32_from_ImVec4(ImVec4 color) -> ImU32
 
 static auto highlight_color(float opacity) -> ImVec4
 {
-    auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    auto col = GetStyle().highlight_items;
     col.w    = opacity;
     return col;
 }
@@ -645,14 +647,14 @@ auto toggle(const char* label, bool* v) -> bool
 
     ImU32 col_bg;
     if (ImGui::IsItemHovered())
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_Button), ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive), t));
+        col_bg = ImGui::GetColorU32(ImLerp(GetStyle().toggle_bg_hovered, GetStyle().toggle_hovered, t));
     else
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)), t));
+        col_bg = ImGui::GetColorU32(ImLerp(GetStyle().toggle_bg, GetStyle().toggle, t));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_ButtonActive : ImGuiCol_SliderGrab]));
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_Button : ImGuiCol_FrameBg]));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(hovered ? GetStyle().toggle_hovered : GetStyle().toggle));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(hovered ? GetStyle().toggle_bg_hovered : GetStyle().toggle_bg));
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (label_size.x > 0.0f)
