@@ -439,35 +439,6 @@ struct Example {
         ImGui::DragFloat("Pin Arrow Width", &editorStyle.PinArrowWidth, 0.001f, 0.0f, 5.0f);
         ImGui::DragFloat("Group Rounding", &editorStyle.GroupRounding, 0.1f, 0.0f, 40.0f);
         ImGui::DragFloat("Group Border Width", &editorStyle.GroupBorderWidth, 0.1f, 0.0f, 15.0f);
-
-        ImGui::Separator();
-
-        static ImGuiColorEditFlags edit_mode = ImGuiColorEditFlags_DisplayRGB;
-        ImGui::BeginHorizontal("Color Mode", ImVec2(paneWidth, 0), 1.0f);
-        ImGui::TextUnformatted("Filter Colors");
-        ImGui::Spring();
-        ImGui::RadioButton("RGB", &edit_mode, ImGuiColorEditFlags_DisplayRGB);
-        ImGui::Spring(0);
-        ImGui::RadioButton("HSV", &edit_mode, ImGuiColorEditFlags_DisplayHSV);
-        ImGui::Spring(0);
-        ImGui::RadioButton("HEX", &edit_mode, ImGuiColorEditFlags_DisplayHex);
-        ImGui::EndHorizontal();
-
-        static ImGuiTextFilter filter;
-        filter.Draw("dsf", paneWidth);
-
-        ImGui::Spacing();
-
-        ImGui::PushItemWidth(-160);
-        for (int i = 0; i < ed::StyleColor_Count; ++i)
-        {
-            auto name = ed::GetStyleColorName((ed::StyleColor)i);
-            if (!filter.PassFilter(name))
-                continue;
-
-            ImGui::ColorEdit4(name, &editorStyle.Colors[i].x, edit_mode);
-        }
-        ImGui::PopItemWidth();
     }
 
     void render_blueprint_node(Node& node, util::BlueprintNodeBuilder& builder)
@@ -885,17 +856,22 @@ struct Example {
 static auto example_instance() -> auto&
 {
     static Example example;
+    static bool    b = true;
+    if (b)
+    {
+        example.OnStart();
+        b = false;
+    }
     return example;
+}
+
+void blueprint_hack_create_instance()
+{
+    example_instance();
 }
 
 void blueprints_example()
 {
-    static bool b = true;
-    if (b)
-    {
-        example_instance().OnStart();
-        b = false;
-    }
     example_instance().OnFrame();
 }
 

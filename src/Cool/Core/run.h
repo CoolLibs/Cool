@@ -14,7 +14,9 @@
 #include <Cool/Window/internal/WindowFactory.h>
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
+#include "Cool/Nodes/blueprints-example.h" // TODO HACK(JF) to create the context before applying style
 #include "InitConfig.h"
+
 //
 #include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
@@ -74,6 +76,8 @@ void run(
     window_factory.make_main_window(windows_configs[0]);
     for (size_t i = 1; i < windows_configs.size(); ++i)
         window_factory.make_secondary_window(windows_configs[i]);
+
+    blueprint_hack_create_instance(); // TODO HACK(JF) to create the context before applying style
 
     // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
     auto auto_serializer_user_settings = Cool::AutoSerializer{};

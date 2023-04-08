@@ -4,9 +4,9 @@
 
 void blueprints_example();
 void style_editor();
+void blueprint_hack_create_instance();
 
 namespace cereal {
-
 template<class Archive>
 void serialize(Archive& archive, ax::NodeEditor::Style& style)
 {
