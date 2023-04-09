@@ -43,4 +43,4 @@ private:
 
 } // namespace Cool
 
-const std::chrono::hours timeToWait = 1h;
+static constexpr auto timeToWait = 1h;
