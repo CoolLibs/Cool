@@ -2,7 +2,7 @@
 #include <fmt/chrono.h>
 #include <imgui.h>
 
-void test_did_you_know(Cool::DidYouKnowModal& _did_you_know)
+void did_you_know(Cool::DidYouKnowModal& _did_you_know)
 {
     _did_you_know.open_ifn();
 
@@ -11,7 +11,7 @@ void test_did_you_know(Cool::DidYouKnowModal& _did_you_know)
 
 namespace Cool {
 
-void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know)
+void test_did_you_know(Cool::DidYouKnowModal& _did_you_know)
 {
     if (ImGui::Button("Test DidYouKnow"))
     {

@@ -38,7 +38,7 @@ private:
 
     std::chrono::steady_clock::time_point _timestamp_last_opening = std::chrono::steady_clock::now();
 
-    friend void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know);
+    friend void test_did_you_know(Cool::DidYouKnowModal& _did_you_know);
 };
 
 } // namespace Cool

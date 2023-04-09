@@ -78,11 +78,11 @@ public:
         return instance().imgui_item_picker;
     }
 #endif
-    static void debug_did_you_know(std::function<void()> callback)
+    static void test_did_you_know(std::function<void()> callback)
     {
-        if (instance().debug_did_you_know)
+        if (instance().test_did_you_know)
         {
-            ImGui::Begin("Test 'Did You Know?'", &instance().debug_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin("Test \"Did you know?\"", &instance().test_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -105,7 +105,7 @@ private:
 #if DEBUG
         bool imgui_item_picker{false};
 #endif
-        bool debug_did_you_know{false};
+        bool test_did_you_know{false};
 
     private:
         // Serialization
@@ -125,7 +125,7 @@ private:
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Test 'Did You Know?'", debug_did_you_know)
+                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know)
 #else
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
@@ -136,7 +136,7 @@ private:
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Test 'Did You Know?'", debug_did_you_know)
+                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know)
 #endif
 
             );
@@ -157,7 +157,7 @@ private:
         instance().test_presets__window                = false;
         instance().color_themes_editor                 = false;
         instance().color_themes_advanced_config_window = false;
-        instance().debug_did_you_know                  = false;
+        instance().test_did_you_know                   = false;
     }
 
     static void save_to_file();
@@ -244,9 +244,9 @@ private:
 
 #endif
 
-        if (wafl::similarity_match({filter, "Test 'Did You Know?'"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
         {
-            Cool::ImGuiExtras::toggle("Test 'Did You Know?'", &instance().debug_did_you_know);
+            Cool::ImGuiExtras::toggle("Test \"Did you know?\"", &instance().test_did_you_know);
         }
     }
 
@@ -326,9 +326,9 @@ private:
 
 #endif
 
-        if (wafl::similarity_match({filter, "Test 'Did You Know?'"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
         {
-            instance().debug_did_you_know = !instance().debug_did_you_know;
+            instance().test_did_you_know = !instance().test_did_you_know;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
     }
