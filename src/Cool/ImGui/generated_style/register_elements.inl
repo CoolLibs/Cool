@@ -34,6 +34,13 @@ config.register_element(ImStyleEd::Element{
 });
 
 config.register_element(ImStyleEd::Element{
+    .name        = "ButtonsSeparator",
+    .get_color   = []() { return ImGuiExtras::GetStyle().buttons_separator; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().buttons_separator = color; },
+    .description = "Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).",
+});
+
+config.register_element(ImStyleEd::Element{
     .name        = "HighlightItems",
     .get_color   = []() { return ImGuiExtras::GetStyle().highlight_items; },
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().highlight_items = color; },

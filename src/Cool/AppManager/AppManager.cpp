@@ -1,9 +1,11 @@
 #include "AppManager.h"
 #include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Gpu/Vulkan/Context.h>
+#include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
 #include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/ImGui/Fonts.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -129,15 +131,21 @@ static void imgui_new_frame()
 
 static void imgui_render(IApp& app)
 {
-    // Menu bar
-    if (app.wants_to_show_menu_bar())
+    ImGui::PushFont(Font::regular()); // The default font is the bold one because the window titles can only use the default font. We then have to push the regular() font back.
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {9.f, 4.f}); // Normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
     {
-        ImGui::BeginMainMenuBar();
-        app.imgui_menus();
-        ImGui::EndMainMenuBar();
+        // Menu bar
+        if (app.wants_to_show_menu_bar())
+        {
+            ImGui::BeginMainMenuBar();
+            app.imgui_menus();
+            ImGui::EndMainMenuBar();
+        }
+        // Windows
+        app.imgui_windows();
     }
-    // Windows
-    app.imgui_windows();
+    ImGui::PopStyleVar();
+    ImGui::PopFont();
 }
 
 static void end_frame(WindowManager& window_manager)

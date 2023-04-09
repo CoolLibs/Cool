@@ -31,6 +31,11 @@ def all_elements():
             description='',
         ),
         Element(
+            name_in_code='buttons_separator',
+            name_in_ui='ButtonsSeparator',
+            description='Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).',
+        ),
+        Element(
             name_in_code='highlight_items',
             name_in_ui='HighlightItems',
             description='Used for example when hovering some error messages, to highlight the part of the UI that needs to be used in order to fix the error message. Use the "Test Message Console" debug option to send such an error message.',

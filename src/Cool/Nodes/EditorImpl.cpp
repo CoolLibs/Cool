@@ -1,4 +1,5 @@
 #include "EditorImpl.h"
+#include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 #include "Cool/DebugOptions/DebugOptions.h"
@@ -28,7 +29,7 @@ auto SearchBarState::imgui_widget() -> bool
         _should_be_focused = false;
     }
     ImGui::PushID(868686);
-    bool const b = ImGui::InputTextWithHint("##Filter", ICOMOON_SEARCH " Search for a node or category", &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
+    bool const b = ImGui::InputTextWithHint("##Filter", icon_fmt("Search for a node or category", ICOMOON_SEARCH).c_str(), &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
     ImGui::PopID();
     return b;
 }
@@ -241,8 +242,11 @@ auto NodesEditorImpl::imgui_window(
     NodesLibrary const& library
 ) -> bool
 {
-    ImGui::Begin(ICOMOON_TREE " Nodes", nullptr, ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
+    auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
+    ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
     blueprints_example();
+    ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
     Cool::DebugOptions::nodes_style_editor([&]() {

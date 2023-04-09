@@ -1,10 +1,7 @@
-#include "ImGuiExtras.h"
-#include "Cool/ImGui/IcoMoonCodepoints.h"
-#include "Cool/ImGui/ImGuiExtrasStyle.h"
-
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
+#include "ImGuiExtras.h"
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
@@ -12,6 +9,8 @@
 #include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
 
@@ -661,6 +660,15 @@ auto toggle(const char* label, bool* v) -> bool
         ImGui::RenderText(label_pos, label);
 
     return pressed;
+}
+
+void join_buttons()
+{
+    ImGui::SameLine();
+    ImGui::PushStyleColor(ImGuiCol_Separator, ImGuiExtras::GetStyle().buttons_separator);
+    ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
+    ImGui::PopStyleColor();
+    ImGui::SameLine();
 }
 
 } // namespace Cool::ImGuiExtras

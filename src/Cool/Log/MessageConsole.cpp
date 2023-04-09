@@ -196,7 +196,7 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name.c_str(), nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
 
         // Menu bar
         ImGuiExtras::background(
@@ -210,7 +210,7 @@ void MessageConsole::imgui_window()
             "##Messages", ImVec2(0.f, 0.f), false,
             ImGuiWindowFlags_AlwaysUseWindowPadding
         );
-        ImGui::PushFont(Font::console());
+        ImGui::PushFont(Font::monospace());
         imgui_show_all_messages();
         ImGui::PopFont();
         ImGui::EndChild();

@@ -204,4 +204,7 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
 ///
 auto toggle(const char* label, bool* v) -> bool;
 
+/// Draws a vertical separator between two buttons, and puts them on the same line.
+void join_buttons();
+
 } // namespace Cool::ImGuiExtras
