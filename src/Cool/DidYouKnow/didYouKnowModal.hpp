@@ -25,8 +25,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Last tip", _current_tip_index),
-            cereal::make_nvp("Last timestamp", _timestamp_last_opening)
+            cereal::make_nvp("Current tip", _current_tip_index),
+            cereal::make_nvp("Last opened", _timestamp_last_opening)
         );
     }
 
