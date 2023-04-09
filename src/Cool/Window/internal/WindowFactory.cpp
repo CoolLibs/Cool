@@ -50,6 +50,16 @@ static void imgui_load_fonts()
         );
     };
 
+    { // Bold font // Must be first so that it is the default font. This is mandatory if we want window titles to be bold, as they can only use the default font.
+        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
+        if (!std::filesystem::exists(path))
+            Font::bold() = io.Fonts->AddFontDefault();
+        else
+            Font::bold() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        merge_icons_into_current_font();
+    }
     { // Regular font
         auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
         if (!std::filesystem::exists(path))
@@ -58,16 +68,6 @@ static void imgui_load_fonts()
             Font::regular() = io.Fonts->AddFontDefault();
         else
             Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
-        merge_icons_into_current_font();
-    }
-    { // Bold font
-        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
-        if (!std::filesystem::exists(path))
-            Font::bold() = io.Fonts->AddFontDefault();
-        else
-            Font::bold() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         merge_icons_into_current_font();
     }
 
