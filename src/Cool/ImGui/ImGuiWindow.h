@@ -6,8 +6,8 @@ namespace Cool {
 
 class ImGuiWindow {
 public:
-    explicit ImGuiWindow(const char* title, bool is_open = true)
-        : _title{title}, _is_open{is_open}
+    explicit ImGuiWindow(std::string title, bool is_open = true)
+        : _title{std::move(title)}, _is_open{is_open}
     {
     }
 
@@ -32,7 +32,7 @@ public:
     auto on_open() -> EventDispatcher<OpenEvent>& { return _open_event_dispatcher; }
 
 private:
-    const char*                _title;
+    std::string                _title;
     bool                       _is_open;
     EventDispatcher<OpenEvent> _open_event_dispatcher;
 };

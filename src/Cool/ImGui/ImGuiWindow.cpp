@@ -7,7 +7,7 @@ void ImGuiWindow::show(std::function<void()> widgets)
 {
     if (_is_open)
     {
-        ImGui::Begin(_title, &_is_open);
+        ImGui::Begin(_title.c_str(), &_is_open);
         widgets();
         ImGui::End();
     }
@@ -16,7 +16,7 @@ void ImGuiWindow::show(std::function<void()> widgets)
 void ImGuiWindow::open_close_checkbox()
 {
     bool should_open = _is_open;
-    if (ImGuiExtras::toggle(_title, &should_open))
+    if (ImGuiExtras::toggle(_title.c_str(), &should_open))
     {
         if (should_open)
         {

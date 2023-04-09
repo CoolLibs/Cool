@@ -196,7 +196,7 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name.c_str(), nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
 
         // Menu bar
         ImGuiExtras::background(

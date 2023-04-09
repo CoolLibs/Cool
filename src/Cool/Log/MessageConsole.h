@@ -13,8 +13,8 @@ using RawMessageId = reg::Id<internal::MessageWithMetadata>;
 
 class MessageConsole {
 public:
-    explicit MessageConsole(const char* name = "Console")
-        : _name{name}
+    explicit MessageConsole(std::string name = "Console")
+        : _name{std::move(name)}
     {}
 
     /// If `id` is null, creates a new messages and sets `id` to reference it,
@@ -83,7 +83,7 @@ private:
     internal::RawMessageId                              _selected_message;
     bool                                                _is_open{false};
     internal::RawMessageId                              _message_just_sent{};
-    const char*                                         _name;
+    std::string                                         _name;
     MessagesCountPerSeverity                            _counts_per_severity{};
     IsSeverityHidden                                    _is_severity_hidden{};
 };

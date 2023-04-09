@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
+#include <Cool/ImGui/icon_fmt.h>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "DebugOptions.h"
 
@@ -20,7 +20,7 @@ public:
             ImGui::SetKeyboardFocusHere();
         }
         if (ImGui::InputTextWithHint(
-                "##Filter", ICOMOON_SEARCH " Filter debug options", &instance().filter,
+                "##Filter", icon_fmt("Filter debug options", ICOMOON_SEARCH).c_str(), &instance().filter,
                 ImGuiInputTextFlags_EnterReturnsTrue
             ))
         {

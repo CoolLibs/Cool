@@ -1,7 +1,8 @@
 #pragma once
 
+#include <Cool/ImGui/IcoMoonCodepoints.h>
 #include <Cool/ImGui/ImGuiWindow.h>
-#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include <Cool/ImGui/icon_fmt.h>
 #include "ExportSize.h"
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"
@@ -53,10 +54,10 @@ private:
     ExportSize            _export_size;
     std::filesystem::path _folder_path_for_image;
     std::filesystem::path _file_name{"img(0)"};
-    ImGuiWindow           _image_export_window{ICOMOON_UPLOAD2 "  Export an Image", false};
+    ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_UPLOAD2), false};
 
     std::filesystem::path             _folder_path_for_video;
-    ImGuiWindow                       _video_export_window{ICOMOON_UPLOAD2 "  Export a Video", false};
+    ImGuiWindow                       _video_export_window{icon_fmt("Export a Video", ICOMOON_UPLOAD2), false};
     std::optional<VideoExportProcess> _video_export_process;
     VideoExportParams                 _video_export_params;
 
