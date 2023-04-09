@@ -53,38 +53,25 @@ static void imgui_load_fonts()
     };
 
     { // Window title font // Must be first so that it is the default font. This is mandatory because window titles can only use the default font.
-        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
-        if (!std::filesystem::exists(path))
-            Font::window_title() = io.Fonts->AddFontDefault();
-        else
-            Font::window_title() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), window_title_font_size);
+
+        auto const path      = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
+        Font::window_title() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), window_title_font_size);
         merge_icons_into_current_font();
     }
     { // Bold font
-        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
-        if (!std::filesystem::exists(path))
-            Font::bold() = io.Fonts->AddFontDefault();
-        else
-            Font::bold() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
-        merge_icons_into_current_font();
+        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
+        Font::bold()    = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        // merge_icons_into_current_font(); // Not needed for now
     }
     { // Regular font
-        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/main_font.otf";
-        if (!std::filesystem::exists(path))
-            Font::regular() = io.Fonts->AddFontDefault();
-        else
-            Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Regular.otf";
+        Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         merge_icons_into_current_font();
     }
-
-    // Monospace font
-    Font::monospace() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);
+    { // Monospace font
+        auto const path   = Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-Regular.ttf";
+        Font::monospace() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+    }
 
     io.Fonts->Build();
 }
