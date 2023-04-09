@@ -44,6 +44,7 @@ static void imgui_load_fonts()
         ImFontConfig config;
         config.MergeMode  = true;
         config.PixelSnapH = true;
+        config.GlyphOffset = ImVec2{-4.f, +1.f};
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
         static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
         io.Fonts->AddFontFromFileTTF(
