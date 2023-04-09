@@ -5,24 +5,34 @@
 #include "Clock.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 namespace Cool::ClockU {
 
 void imgui_timeline(Cool::Clock& clock)
 {
-    if (ImGui::Button(clock.is_playing() ? ICOMOON_PAUSE2 : ICOMOON_PLAY3))
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0.f, 0.f});
     {
-        clock.toggle_play_pause();
+        // Reset time
+        if (ImGui::Button(ICOMOON_PREVIOUS2, {0.f, 0.f}, ImDrawFlags_RoundCornersLeft))
+        {
+            clock.set_time(0.f);
+        }
+        Cool::ImGuiExtras::tooltip("Reset time to 0.");
+
+        ImGuiExtras::join_buttons();
+
+        // Play / Pause
+        if (ImGui::Button(clock.is_playing() ? ICOMOON_PAUSE2 : ICOMOON_PLAY3, {0.f, 0.f}, ImDrawFlags_RoundCornersRight))
+        {
+            clock.toggle_play_pause();
+        }
     }
+    ImGui::PopStyleVar();
 
     ImGui::SameLine();
-    if (ImGui::Button(ICOMOON_PREVIOUS2))
-    {
-        clock.set_time(0.f);
-    }
-    Cool::ImGuiExtras::tooltip("Reset time to 0.");
 
-    ImGui::SameLine();
+    // Timeline
     float t = clock.time();
     ImGui::PushFont(Font::monospace());
     if (ImGui::DragFloat("##time", &t, 0.5f, 0.f, 0.f, "%.2f seconds"))

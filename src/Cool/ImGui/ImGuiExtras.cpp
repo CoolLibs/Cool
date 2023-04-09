@@ -663,4 +663,13 @@ auto toggle(const char* label, bool* v) -> bool
     return pressed;
 }
 
+void join_buttons()
+{
+    ImGui::SameLine();
+    ImGui::PushStyleColor(ImGuiCol_Separator, ImGuiExtras::GetStyle().buttons_separator);
+    ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
+    ImGui::PopStyleColor();
+    ImGui::SameLine();
+}
+
 } // namespace Cool::ImGuiExtras
