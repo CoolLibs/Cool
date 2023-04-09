@@ -1,7 +1,9 @@
 #pragma once
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <imgui.h>
 #include "Clock.h"
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool::ClockU {
@@ -22,10 +24,12 @@ void imgui_timeline(auto& clock)
 
     ImGui::SameLine();
     float t = clock.time();
-    if (ImGui::DragFloat("seconds", &t, 0.5f, 0.f, 0.f, "%.2f"))
+    ImGui::PushFont(Font::monospace());
+    if (ImGui::DragFloat("##time", &t, 0.5f, 0.f, 0.f, "%.2f seconds"))
     {
         clock.set_time(t);
     }
+    ImGui::PopFont();
 }
 
 void imgui_display_time(auto& clock)

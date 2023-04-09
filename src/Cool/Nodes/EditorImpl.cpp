@@ -239,7 +239,7 @@ auto NodesEditorImpl::imgui_window(
     ImNodes::SetCurrentContext(&*_context);
 
     bool graph_has_changed = false;
-    ImGui::Begin(ICOMOON_TREE " Nodes");
+    ImGui::Begin(ICOMOON_TREE "  Nodes");
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();

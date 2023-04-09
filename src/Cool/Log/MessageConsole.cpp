@@ -210,7 +210,7 @@ void MessageConsole::imgui_window()
             "##Messages", ImVec2(0.f, 0.f), false,
             ImGuiWindowFlags_AlwaysUseWindowPadding
         );
-        ImGui::PushFont(Font::console());
+        ImGui::PushFont(Font::monospace());
         imgui_show_all_messages();
         ImGui::PopFont();
         ImGui::EndChild();

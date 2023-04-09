@@ -14,7 +14,13 @@ inline auto bold() -> ImFont*&
     return font;
 }
 
-inline auto console() -> ImFont*&
+inline auto window_title() -> ImFont*&
+{
+    static ImFont* font{}; // NOLINT(*-avoid-non-const-global-variables)
+    return font;
+}
+
+inline auto monospace() -> ImFont*&
 {
     static ImFont* font{}; // NOLINT(*-avoid-non-const-global-variables)
     return font;

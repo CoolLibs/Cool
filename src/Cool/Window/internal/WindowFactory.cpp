@@ -36,7 +36,9 @@ static void set_imgui_ini_filepath()
 static void imgui_load_fonts()
 {
     ImGuiIO&               io        = ImGui::GetIO();
-    static constexpr float font_size = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
+    static constexpr float font_size              = 17.0f;
+    static constexpr float window_title_font_size = 19.0f;
+    static constexpr float icons_size             = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
 
     auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
@@ -46,11 +48,21 @@ static void imgui_load_fonts()
         static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
         io.Fonts->AddFontFromFileTTF(
             (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
-            font_size, &config, icon_ranges
+            icons_size, &config, icon_ranges
         );
     };
 
-    { // Bold font // Must be first so that it is the default font. This is mandatory if we want window titles to be bold, as they can only use the default font.
+    { // Window title font // Must be first so that it is the default font. This is mandatory because window titles can only use the default font.
+        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
+        if (!std::filesystem::exists(path))
+            Font::window_title() = io.Fonts->AddFontDefault();
+        else
+            Font::window_title() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), window_title_font_size);
+        merge_icons_into_current_font();
+    }
+    { // Bold font
         auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
         if (!std::filesystem::exists(path))
             path = Cool::Path::cool_res() / "fonts/bold_font.otf";
@@ -71,8 +83,8 @@ static void imgui_load_fonts()
         merge_icons_into_current_font();
     }
 
-    // Console font
-    Font::console() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);
+    // Monospace font
+    Font::monospace() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);
 
     io.Fonts->Build();
 }
