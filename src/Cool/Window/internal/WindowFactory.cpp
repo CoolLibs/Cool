@@ -36,27 +36,39 @@ static void set_imgui_ini_filepath()
 static void imgui_load_fonts()
 {
     ImGuiIO&               io        = ImGui::GetIO();
-    static constexpr float font_size = 16.0f; // Our icons font renders best at a multiple of 16px
+    static constexpr float font_size = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
 
-    { // Main font
-        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/main_font.otf";
-        if (!std::filesystem::exists(path))
-            io.Fonts->AddFontDefault();
-        else
-            io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
-    }
-    { // Merge icons into default font
+    auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
-        config.MergeMode                   = true;
-        config.PixelSnapH                  = true;
+        config.MergeMode  = true;
+        config.PixelSnapH = true;
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
         static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
         io.Fonts->AddFontFromFileTTF(
             (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
             font_size, &config, icon_ranges
         );
+    };
+
+    { // Regular font
+        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/main_font.otf";
+        if (!std::filesystem::exists(path))
+            Font::regular() = io.Fonts->AddFontDefault();
+        else
+            Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        merge_icons_into_current_font();
+    }
+    { // Bold font
+        auto path = Cool::Path::cool_res() / "fonts/bold_font.ttf";
+        if (!std::filesystem::exists(path))
+            path = Cool::Path::cool_res() / "fonts/bold_font.otf";
+        if (!std::filesystem::exists(path))
+            Font::bold() = io.Fonts->AddFontDefault();
+        else
+            Font::bold() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        merge_icons_into_current_font();
     }
 
     // Console font
