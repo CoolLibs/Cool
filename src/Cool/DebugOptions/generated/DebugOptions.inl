@@ -21,7 +21,7 @@ public:
     {
         if (instance().test_message_console__window)
         {
-            ImGui::Begin("Test Message Console", &instance().test_message_console__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Test Message Console", ICOMOON_WRENCH).c_str(), &instance().test_message_console__window, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -33,7 +33,7 @@ public:
     {
         if (instance().texture_library_debug_view)
         {
-            ImGui::Begin("Texture Library", &instance().texture_library_debug_view, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Texture Library", ICOMOON_WRENCH).c_str(), &instance().texture_library_debug_view, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -49,7 +49,7 @@ public:
     {
         if (instance().test_presets__window)
         {
-            ImGui::Begin("Test Presets", &instance().test_presets__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Test Presets", ICOMOON_WRENCH).c_str(), &instance().test_presets__window, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -58,7 +58,7 @@ public:
     {
         if (instance().color_themes_editor)
         {
-            ImGui::Begin("Color Themes: Editor", &instance().color_themes_editor, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Color Themes: Editor", ICOMOON_WRENCH).c_str(), &instance().color_themes_editor, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -67,7 +67,7 @@ public:
     {
         if (instance().color_themes_advanced_config_window)
         {
-            ImGui::Begin("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Color Themes: Advanced Config", ICOMOON_WRENCH).c_str(), &instance().color_themes_advanced_config_window, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
