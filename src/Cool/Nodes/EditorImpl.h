@@ -63,8 +63,7 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Graph", _graph),
-            cereal::make_nvp("Style", ImNodes::GetStyle())
+            cereal::make_nvp("Graph", _graph)
             // cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
     }
