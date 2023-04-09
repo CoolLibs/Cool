@@ -17,18 +17,8 @@ public:
     static void imgui_all_tips();
 
 private:
-    bool _is_open       = false;
-    bool _show_all_tips = false;
-
-    size_t _current_tip_index = 0;
-
-    std::chrono::steady_clock::time_point _timestamp_last_opening;
-
     void prepare_next_tip();
 
-    friend void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know);
-
-private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
@@ -39,6 +29,16 @@ private:
             cereal::make_nvp("Last timestamp", _timestamp_last_opening)
         );
     }
+
+private:
+    bool _is_open       = false;
+    bool _show_all_tips = false;
+
+    size_t _current_tip_index = 0;
+
+    std::chrono::steady_clock::time_point _timestamp_last_opening = std::chrono::steady_clock::now();
+
+    friend void debug_did_you_know(Cool::DidYouKnowModal& _did_you_know);
 };
 
 } // namespace Cool
