@@ -165,8 +165,7 @@ void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCo
 
 void View::store_window_size()
 {
-    auto size = ImGui::GetContentRegionAvail();
-    size.y -= 12.f; // HACK to properly fit the image size when the window title size is bigger than ImGui's default value
+    const auto size = ImGui::GetContentRegionAvail();
     if (size.x >= 1.f && size.y >= 1.f)
     {
         const auto new_size = std::make_optional(img::Size{
