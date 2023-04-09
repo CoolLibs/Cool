@@ -240,6 +240,8 @@ auto NodesEditorImpl::imgui_window(
 
     bool graph_has_changed = false;
     ImGui::Begin(ICOMOON_TREE "  Nodes");
+    auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
+    ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
     _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
     ImNodes::BeginNodeEditor();
@@ -269,6 +271,7 @@ auto NodesEditorImpl::imgui_window(
     graph_has_changed |= handle_link_creation();
     graph_has_changed |= handle_link_deletion();
     graph_has_changed |= handle_node_deletion();
+    ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
     return graph_has_changed;
