@@ -58,7 +58,6 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
-
     { // Begin window, maybe in fullscreen
         bool* const            p_open = _is_closable ? &_is_open : nullptr;
         ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -67,6 +66,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
         else
             ImGui::Begin(_name.c_str(), p_open, flags);
     }
+    ImGui::PopStyleVar();
 
     store_window_size();
     store_window_position();
@@ -77,7 +77,6 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     params.extra_widgets();
 
     ImGui::End();
-    ImGui::PopStyleVar();
 }
 
 void View::imgui_open_close_checkbox()
