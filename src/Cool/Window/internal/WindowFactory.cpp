@@ -85,11 +85,10 @@ static void initialize_imgui()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigWindowsMoveFromTitleBarOnly       = true; // Required because when we move a camera in a View we don't want to also move the window.
     io.ConfigDockingAlwaysTabBar               = true;
     io.ConfigDragClickToInputText              = true;
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD) // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     imgui_load_fonts();

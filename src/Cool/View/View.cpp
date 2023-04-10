@@ -67,15 +67,19 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
             ImGui::Begin(_name.c_str(), p_open, flags);
     }
     ImGui::PopStyleVar();
+    ImGui::PushStyleColor(ImGuiCol_NavHighlight, {0.f, 0.f, 0.f, 0.f});             // Hack because when escaping view's fullscreen with the ESCAPE key it gets nav-highlighted.
+    ImGui::BeginChild("##ChildWindow", {0.f, 0.f}, false, ImGuiWindowFlags_NoMove); // Hack to emulate `ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;` for this window only. Since we can drag a camera in a View we don't want the window to move at the same time.
+    {
+        store_window_size();
+        store_window_position();
+        _window_is_hovered = ImGui::IsWindowHovered();
 
-    store_window_size();
-    store_window_position();
-    _window_is_hovered = ImGui::IsWindowHovered();
+        display_image(image_texture_id, image_size_inside_view);
 
-    display_image(image_texture_id, image_size_inside_view);
-
-    params.extra_widgets();
-
+        params.extra_widgets();
+    }
+    ImGui::EndChild();
+    ImGui::PopStyleColor();
     ImGui::End();
 }
 
