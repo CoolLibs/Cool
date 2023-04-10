@@ -70,7 +70,7 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
     _image_export_window.show([&]() {
         _export_size.imgui();
         // File and Folders
-        ImGuiExtras::file("File Name", &_file_name);
+        ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
         ImGuiExtras::folder("Folder", &_folder_path_for_image);
         // Warning file exists
         ImGui::NewLine();
