@@ -168,6 +168,15 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4
     return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
+auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
+{
+    auto const size = ImGui::GetFrameHeight();
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.f);
+    bool const b = ImGui::Button(icon, {size, size}, flags);
+    ImGui::PopStyleVar();
+    return b;
+}
+
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, std::optional<float> frame_padding)
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
@@ -260,7 +269,7 @@ auto folder_dialog_button(
     std::filesystem::path  initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -278,7 +287,7 @@ auto file_dialog_button(
     std::filesystem::path               initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;

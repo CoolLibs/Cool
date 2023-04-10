@@ -56,6 +56,9 @@ auto colored_button(const char* label, float hue, const ImVec2& size = ImVec2(0,
  */
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1, 1, 1), const ImVec4& background_color = ImVec4(0, 0, 0, 1), float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 
+///
+auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
+
 /**
  * @brief A button that uses an image instead of text, but greyed out and you wan't click on it.
  *
