@@ -48,7 +48,7 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, bool fullscreen)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, ViewWindowParams const& params)
 {
     if (!_is_open)
     {
@@ -62,7 +62,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     { // Begin window, maybe in fullscreen
         bool* const            p_open = _is_closable ? &_is_open : nullptr;
         ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
-        if (fullscreen)
+        if (params.fullscreen)
             ImGuiExtras::begin_fullscreen(_name.c_str(), p_open, flags);
         else
             ImGui::Begin(_name.c_str(), p_open, flags);
@@ -71,7 +71,11 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     store_window_size();
     store_window_position();
     _window_is_hovered = ImGui::IsWindowHovered();
+
     display_image(image_texture_id, image_size_inside_view);
+
+    params.extra_widgets();
+
     ImGui::End();
     ImGui::PopStyleVar();
 }

@@ -15,7 +15,7 @@ struct RenderableView {
     RenderTarget render_target;
 
     void update_size(ImageSizeConstraint constraint);
-    void imgui_window(bool fullscreen = false);
+    void imgui_window(ViewWindowParams const& = {});
 };
 
 } // namespace Cool

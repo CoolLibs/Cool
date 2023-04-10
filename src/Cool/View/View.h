@@ -5,6 +5,12 @@
 
 namespace Cool {
 
+struct ViewWindowParams {
+    bool                  fullscreen    = false;
+    std::function<void()> extra_widgets = []() {
+    };
+};
+
 class View {
 public:
     explicit View(std::string_view name, bool is_closable = false)
@@ -13,7 +19,7 @@ public:
     {}
 
     /// Displays the given texture in an ImGui window
-    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view, bool fullscreen = false);
+    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view, ViewWindowParams const& = {});
     void                     imgui_open_close_checkbox();
     std::optional<img::Size> size() const { return _size; }
 
