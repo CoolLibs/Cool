@@ -47,7 +47,7 @@ auto AspectRatio::imgui(float width) -> bool
 
     if (width != 0.f)
         ImGui::SetNextItemWidth(width);
-    if (ImGui::InputFloat("##aspect_ratio_slider", &_ratio, 0.f, 0.f, imgui_string(_ratio).c_str(), ImGuiInputTextFlags_CharsScientific, ImDrawFlags_RoundCornersLeft))
+    if (ImGui::InputFloat("##aspect_ratio_input", &_ratio, 0.f, 0.f, imgui_string(_ratio).c_str(), ImGuiInputTextFlags_CharsScientific, ImDrawFlags_RoundCornersLeft))
     {
         _ratio = make_valid_ratio(_ratio);
         b      = true;
