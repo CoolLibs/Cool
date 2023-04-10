@@ -4,6 +4,8 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
+#include <imgui.h>
+#include "Cool/ImGui/icon_fmt.h"
 #include "ExporterU.h"
 
 namespace Cool {
@@ -42,10 +44,10 @@ auto Exporter::output_path() -> std::filesystem::path
 void Exporter::imgui_menu_items(imgui_menu_items_Params p)
 {
     // Calculate max button width
-    const char* longuest_text = "Video";
-    float       button_width  = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
+    std::string const longuest_text = icon_fmt("Video", ICOMOON_FILM, true);
+    float             button_width  = ImGui::CalcTextSize(longuest_text.c_str()).x + 2.f * ImGui::GetStyle().FramePadding.x;
     // Draw buttons
-    if (ImGui::Button("Image", ImVec2(button_width, 0.0f)))
+    if (ImGui::Button(icon_fmt("Image", ICOMOON_IMAGE, true).c_str(), ImVec2(button_width, 0.0f)))
     {
         if (p.open_image_exporter)
             (*p.open_image_exporter)();
@@ -54,7 +56,7 @@ void Exporter::imgui_menu_items(imgui_menu_items_Params p)
             _image_export_window.open();
         }
     }
-    if (ImGui::Button("Video", ImVec2(button_width, 0.0f)))
+    if (ImGui::Button(icon_fmt("Video", ICOMOON_FILM, true).c_str(), ImVec2(button_width, 0.0f)))
     {
         if (p.open_video_exporter)
             (*p.open_video_exporter)();
@@ -79,7 +81,7 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
             ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it?");
         }
         // Validation
-        if (ImGui::Button("Export as PNG"))
+        if (ImGui::Button(icon_fmt("Export as PNG", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
             ExporterU::export_image(_export_size, time, polaroid, output_path());
@@ -145,7 +147,8 @@ void Exporter::imgui_window_export_video()
             ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation
-            if (ImGui::Button("Start exporting"))
+            ImGui::NewLine();
+            if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();
                 begin_video_export();

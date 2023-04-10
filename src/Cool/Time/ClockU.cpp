@@ -13,8 +13,9 @@ void imgui_timeline(Cool::Clock& clock)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0.f, 0.f});
     {
+        auto const button_size = ImVec2{1.1f * ImGui::GetFrameHeight(), ImGui::GetFrameHeight()};
         // Reset time
-        if (ImGui::Button(ICOMOON_PREVIOUS2, {0.f, 0.f}, ImDrawFlags_RoundCornersLeft))
+        if (ImGui::Button(ICOMOON_PREVIOUS2, button_size, ImDrawFlags_RoundCornersLeft))
         {
             clock.set_time(0.f);
         }
@@ -23,7 +24,7 @@ void imgui_timeline(Cool::Clock& clock)
         ImGuiExtras::join_buttons();
 
         // Play / Pause
-        if (ImGui::Button(clock.is_playing() ? ICOMOON_PAUSE2 : ICOMOON_PLAY3, {0.f, 0.f}, ImDrawFlags_RoundCornersRight))
+        if (ImGui::Button(clock.is_playing() ? ICOMOON_PAUSE2 : ICOMOON_PLAY3, button_size, ImDrawFlags_RoundCornersRight))
         {
             clock.toggle_play_pause();
         }
