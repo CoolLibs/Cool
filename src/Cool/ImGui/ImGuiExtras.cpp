@@ -732,4 +732,14 @@ void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
     );
 }
 
+auto floating_button(const char* label) -> bool
+{
+    auto const prev_pos = ImGui::GetCursorScreenPos();
+    ImGui::SetCursorPos(ImGui::GetWindowSize() - ImVec2(50.f, 50.f));
+    bool const b = ImGui::Button(label);
+
+    ImGui::SetCursorScreenPos(prev_pos);
+    return b;
+}
+
 } // namespace Cool::ImGuiExtras
