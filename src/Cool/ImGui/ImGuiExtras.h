@@ -207,4 +207,7 @@ auto toggle(const char* label, bool* v) -> bool;
 /// Draws a vertical separator between two buttons, and puts them on the same line.
 void join_buttons();
 
+/// Just like ImGui::Begin() but the window will take the whole available space.
+void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0);
+
 } // namespace Cool::ImGuiExtras

@@ -671,4 +671,26 @@ void join_buttons()
     ImGui::SameLine();
 }
 
+void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
+{
+#ifdef IMGUI_HAS_VIEWPORT
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+#else
+    ImGui::SetNextWindowPos({0.0f, 0.0f});
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+#endif
+    ImGui::Begin(
+        name,
+        p_open,
+        flags
+            | ImGuiWindowFlags_NoDecoration
+            | ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoBringToFrontOnFocus
+    );
+}
+
 } // namespace Cool::ImGuiExtras
