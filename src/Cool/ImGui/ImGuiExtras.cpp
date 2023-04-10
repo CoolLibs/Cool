@@ -168,6 +168,13 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4
     return ImGui::ImageButton(tex_id, ImVec2(button_width, button_height), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f), frame_padding, background_color, tint_color);
 }
 
+void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, std::optional<float> frame_padding)
+{
+    const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
+    image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
+    tooltip(reason_for_disabling);
+}
+
 auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
 {
     auto const size = ImGui::GetFrameHeight();
@@ -177,11 +184,30 @@ auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
     return b;
 }
 
-void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, std::optional<float> frame_padding)
+auto checkbox_button(const char* icon, bool* v) -> bool
 {
-    const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
-    image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
-    tooltip(reason_for_disabling);
+    if (*v)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGuiExtras::GetStyle().checkbox_button);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGuiExtras::GetStyle().checkbox_button_hovered);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGuiExtras::GetStyle().checkbox_button_active);
+    }
+    else
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.f);
+    }
+    bool const b = button_with_text_icon(icon);
+    if (*v)
+    {
+        ImGui::PopStyleColor(3);
+    }
+    else
+    {
+        ImGui::PopStyleVar();
+    }
+    if (b)
+        *v = !*v;
+    return b;
 }
 
 auto close_button() -> bool

@@ -31,6 +31,21 @@ def all_elements():
             description='',
         ),
         Element(
+            name_in_code='checkbox_button',
+            name_in_ui='CheckboxButton',
+            description='',
+        ),
+        Element(
+            name_in_code='checkbox_button_hovered',
+            name_in_ui='CheckboxButtonHovered',
+            description='',
+        ),
+        Element(
+            name_in_code='checkbox_button_active',
+            name_in_ui='CheckboxButtonActive',
+            description='',
+        ),
+        Element(
             name_in_code='buttons_separator',
             name_in_ui='ButtonsSeparator',
             description='Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).',

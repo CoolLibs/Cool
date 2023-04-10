@@ -51,11 +51,7 @@ auto ExportSize::imgui() -> bool
         b |= _aspect_ratio.imgui(150.f);
     });
     ImGui::SameLine();
-    if (ImGui::Button(_aspect_ratio_is_locked ? ICOMOON_LOCK : ICOMOON_UNLOCKED))
-    {
-        b                       = true;
-        _aspect_ratio_is_locked = !_aspect_ratio_is_locked;
-    }
+    b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
     ImGui::SameLine();
     ImGuiExtras::help_marker(
         _aspect_ratio_is_locked

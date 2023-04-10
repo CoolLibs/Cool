@@ -56,9 +56,6 @@ auto colored_button(const char* label, float hue, const ImVec2& size = ImVec2(0,
  */
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1, 1, 1), const ImVec4& background_color = ImVec4(0, 0, 0, 1), float button_width = 18.f, float button_height = 18.f, int frame_padding = 1);
 
-///
-auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
-
 /**
  * @brief A button that uses an image instead of text, but greyed out and you wan't click on it.
  *
@@ -69,6 +66,12 @@ auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
  * @param frame_padding
  */
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, std::optional<float> frame_padding = 1.f);
+
+///
+auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
+
+/// A checkbox with the appearance of a button with a given icon.
+auto checkbox_button(const char* icon, bool* v) -> bool;
 
 /// Draws a clickable red cross.
 auto close_button() -> bool;
