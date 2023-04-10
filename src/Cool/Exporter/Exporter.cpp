@@ -1,5 +1,6 @@
 #include "Exporter.h"
 #include <Cool/File/File.h>
+#include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
@@ -132,7 +133,9 @@ void Exporter::imgui_window_export_video()
     if (is_exporting())
     {
         ImGui::Begin("Video export in progress");
+        ImGui::PushFont(Font::monospace());
         _video_export_process->imgui();
+        ImGui::PopFont();
         ImGui::End();
     }
     else
