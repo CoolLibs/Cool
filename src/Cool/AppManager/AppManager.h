@@ -26,6 +26,7 @@ public:
 
 private:
     void update();
+    void restore_imgui_ini_state_ifn();
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);

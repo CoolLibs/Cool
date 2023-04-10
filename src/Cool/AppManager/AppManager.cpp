@@ -76,6 +76,9 @@ void AppManager::run(std::function<void()> on_update)
         on_update();
     }
 #endif
+    // Restore any ImGui ini state that might have been stored
+    _app._wants_to_restore_ini_state = true;
+    restore_imgui_ini_state_ifn();
 }
 
 static void check_for_imgui_item_picker_request()
@@ -88,6 +91,17 @@ static void check_for_imgui_item_picker_request()
 #endif
 }
 
+void AppManager::restore_imgui_ini_state_ifn()
+{
+    if (!_app._wants_to_restore_ini_state
+        || !_app._imgui_ini_state_to_restore.has_value())
+        return;
+
+    ImGui::LoadIniSettingsFromMemory(_app._imgui_ini_state_to_restore->c_str());
+    _app._wants_to_restore_ini_state = false;
+    _app._imgui_ini_state_to_restore.reset();
+}
+
 void AppManager::update()
 {
     prepare_windows(_window_manager);
@@ -97,6 +111,7 @@ void AppManager::update()
     if (TextureLibrary::instance().update())
         _app.trigger_rerender();
     _app.update();
+    restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
