@@ -48,7 +48,7 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, bool fullscreen)
 {
     if (!_is_open)
     {
@@ -58,7 +58,16 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
-    ImGui::Begin(_name.c_str(), _is_closable ? &_is_open : nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    { // Begin window, maybe in fullscreen
+        bool* const            p_open = _is_closable ? &_is_open : nullptr;
+        ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+        if (fullscreen)
+            ImGuiExtras::begin_fullscreen(_name.c_str(), p_open, flags);
+        else
+            ImGui::Begin(_name.c_str(), p_open, flags);
+    }
+
     store_window_size();
     store_window_position();
     _window_is_hovered = ImGui::IsWindowHovered();

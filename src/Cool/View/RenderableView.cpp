@@ -10,11 +10,12 @@ void RenderableView::update_size(ImageSizeConstraint constraint)
     }
 }
 
-void RenderableView::imgui_window()
+void RenderableView::imgui_window(bool fullscreen)
 {
     view.imgui_window(
         render_target.imgui_texture_id(),
-        ImageSizeInsideView{render_target.current_size()}
+        ImageSizeInsideView{render_target.current_size()},
+        fullscreen
     );
 }
 
