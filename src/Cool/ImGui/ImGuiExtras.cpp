@@ -397,9 +397,15 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 
 auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
 {
+    bool was_used = false;
     ImGui::PushID(label);
     bool const menu_open = *bool_p;
-    bool       was_used  = ImGuiExtras::toggle(menu_open ? "##checkbox" : label, bool_p);
+
+    {
+        auto const toggle_label = std::string{menu_open ? "" : label} + "###checkbox"; // We use the ### to make sure the id of the widget won't depend on the part of the label before the ###. This allows us to keep the same id when switching between "" and `label`. This is required for the animation of the toggle to play properly.
+        was_used |= ImGuiExtras::toggle(toggle_label.c_str(), bool_p);
+    }
+
     if (menu_open)
     {
         ImGui::SameLine();
@@ -411,6 +417,7 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
             ImGui::EndMenu();
         }
     }
+
     ImGui::PopID();
     return was_used;
 }
