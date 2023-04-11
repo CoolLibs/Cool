@@ -28,8 +28,6 @@ public:
 
     void imgui_windows();
 
-    static void imgui_all_tips();
-
 private:
     void prepare_next_tip();
 
@@ -67,6 +65,8 @@ private:
 
     friend void test_did_you_know(Cool::DidYouKnowModal& _did_you_know);
 };
+
+void imgui_all_tips();
 
 } // namespace Cool
 

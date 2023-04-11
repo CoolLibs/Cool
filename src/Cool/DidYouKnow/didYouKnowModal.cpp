@@ -65,12 +65,12 @@ void Cool::DidYouKnowModal::imgui_windows()
     if (_show_all_tips)
     {
         ImGui::Begin("All tips");
-        imgui_all_tips();
+        Cool::imgui_all_tips();
         ImGui::End();
     }
 }
 
-void Cool::DidYouKnowModal::imgui_all_tips()
+void Cool::imgui_all_tips()
 {
     for (auto const& tip : all_tips)
     {
