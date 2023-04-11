@@ -3,14 +3,14 @@
 #include <imgui.h>
 #include "Cool/DidYouKnow/didYouKnowModal.hpp"
 
-void Cool::test_did_you_know(Cool::DidYouKnow& _did_you_know)
+void Cool::test_did_you_know(Cool::DidYouKnow& _did_you_know, std::span<const char* const>& all_tips)
 {
     if (ImGui::Button("Test DidYouKnow"))
     {
-        _did_you_know.open();
+        _did_you_know.open(all_tips);
     }
 
-    _did_you_know.imgui_windows();
+    _did_you_know.imgui_windows(all_tips);
 
     // imgui text with next time of opening
     ImGui::TextUnformatted(fmt::format("Next opening: {:%H:%M:%S}", (_did_you_know._timestamp_last_opening + timeToWait).time_since_epoch()).c_str());
