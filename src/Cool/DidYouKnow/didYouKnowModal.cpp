@@ -38,7 +38,11 @@ void Cool::DidYouKnow::imgui_windows()
 {
     if (ImGui::BeginPopupModal(id_did_you_know, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
+        ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 500); // set the wrap width to 500 pixels
+
         ImGui::TextUnformatted(all_tips.at(_current_tip_index));
+
+        ImGui::PopTextWrapPos();
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
