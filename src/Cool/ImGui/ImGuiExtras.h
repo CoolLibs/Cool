@@ -176,7 +176,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 /// A checkbox that, when ticked, displays a menu on the side.
 /// `submenu` is a function that calls the imgui widgets that should appear in the submenu, and returns true iff one of these widgets returned true.
 /// returns true iff the checkbox or a widget in the submenu was used this frame.
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu);
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
