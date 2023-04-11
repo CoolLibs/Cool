@@ -395,20 +395,24 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     ImGui::SetCursorScreenPos(prev_pos);
 }
 
-auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
+auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
 {
     ImGui::PushID(label);
-    bool was_used = ImGuiExtras::toggle(label, bool_p);
+    bool was_used = ImGuiExtras::toggle("##checkbox", bool_p);
+    ImGui::PopID();
+    ImGui::SameLine();
     if (*bool_p)
     {
-        ImGui::SameLine();
-        if (ImGui::BeginMenu("##submenu"))
+        if (ImGui::BeginMenu(label))
         {
             was_used |= submenu();
             ImGui::EndMenu();
         }
     }
-    ImGui::PopID();
+    else
+    {
+        ImGui::TextUnformatted(label);
+    }
     return was_used;
 }
 
