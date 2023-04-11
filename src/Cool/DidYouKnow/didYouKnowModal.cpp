@@ -36,7 +36,7 @@ void Cool::DidYouKnow::prepare_next_tip()
 
 void Cool::DidYouKnow::imgui_windows()
 {
-    if (ImGui::BeginPopupModal(id_did_you_know, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal(id_did_you_know, &_is_open, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 500); // set the wrap width to 500 pixels
 
