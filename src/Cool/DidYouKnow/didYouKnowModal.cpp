@@ -82,3 +82,10 @@ void Cool::imgui_all_tips()
         }
     }
 }
+
+void Cool::did_you_know(Cool::DidYouKnow& _did_you_know)
+{
+    _did_you_know.open_ifn();
+
+    _did_you_know.imgui_windows();
+}

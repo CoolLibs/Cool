@@ -72,6 +72,8 @@ private:
 
 void imgui_all_tips();
 
+void did_you_know(Cool::DidYouKnow& _did_you_know);
+
 } // namespace Cool
 
 static constexpr auto timeToWait = 1h;

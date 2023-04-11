@@ -2,13 +2,6 @@
 #include <fmt/chrono.h>
 #include <imgui.h>
 
-void Cool::did_you_know(Cool::DidYouKnow& _did_you_know)
-{
-    _did_you_know.open_ifn();
-
-    _did_you_know.imgui_windows();
-}
-
 void Cool::test_did_you_know(Cool::DidYouKnow& _did_you_know)
 {
     if (ImGui::Button("Test DidYouKnow"))
