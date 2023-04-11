@@ -76,7 +76,7 @@ auto AspectRatio::imgui(float width) -> bool
     if (width != 0.f)
         ImGui::SetNextItemWidth(width);
 
-    if (ImGui::InputText("##aspect_ratio_input", &_input, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll /* , ImDrawFlags_RoundCornersLeft */))
+    if (ImGui::InputText("##aspect_ratio_input", &_input, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr, ImDrawFlags_RoundCornersLeft))
     {
         _ratio = parse_ratio(_input);
         b      = true;
