@@ -50,8 +50,8 @@ auto ImageSizeConstraint::imgui() -> bool
         }
         return false;
     });
-    // Interpolation mode
-    ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
+    // Interpolation mode // Disabled for now as this would require a bit of work to apply it to the current view + I don't find this very useful, Nearest is always what you want imho.
+    // was_triggered |= ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
 
     return was_triggered;
 }
