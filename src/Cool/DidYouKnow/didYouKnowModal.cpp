@@ -64,7 +64,7 @@ void Cool::DidYouKnowModal::imgui_windows()
 
     if (_show_all_tips)
     {
-        ImGui::Begin("All tips");
+        ImGui::Begin("All tips", &_show_all_tips);
         Cool::imgui_all_tips();
         ImGui::End();
     }
