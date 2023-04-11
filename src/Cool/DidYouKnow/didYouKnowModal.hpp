@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <vector>
+#include "Cool/DidYouKnow/didYouKnowModal.hpp"
 #include "cereal/types/chrono.hpp"
 
 namespace Cool {
@@ -49,4 +50,4 @@ void update(Cool::DidYouKnow& _did_you_know, std::span<const char* const>& all_t
 
 } // namespace Cool
 
-static constexpr auto timeToWait = 1h;
+auto timeToWait() -> std::chrono::steady_clock::duration;

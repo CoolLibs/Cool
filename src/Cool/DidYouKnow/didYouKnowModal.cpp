@@ -9,6 +9,11 @@
 
 static constexpr const char* const id_did_you_know = "Did you know?";
 
+auto timeToWait() -> std::chrono::steady_clock::duration
+{
+    return 1h;
+}
+
 void Cool::DidYouKnow::open(std::span<const char* const>& all_tips)
 {
     if (_current_tip_index >= all_tips.size())
@@ -24,7 +29,7 @@ void Cool::DidYouKnow::open_ifn(std::span<const char* const>& all_tips)
         _current_tip_index = 0;
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
-    if (!_is_open && difference > timeToWait)
+    if (!_is_open && difference > timeToWait())
     {
         _is_open = true;
         ImGui::OpenPopup(id_did_you_know);
