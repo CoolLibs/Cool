@@ -20,7 +20,11 @@ static constexpr auto all_tips = std::array{
     "CTRL+Tab to select a window. ImGui::BulletText('While inputing text:\n'); ImGui::Indent(); ImGui::BulletText('CTRL+Left/Right to word jump.'); ImGui::BulletText('CTRL+A or double-click to select all.'); ImGui::BulletText('CTRL+X/C/V to use clipboard cut/copy/paste.'); ImGui::BulletText('CTRL+Z,CTRL+Y to undo/redo.'); ImGui::BulletText('ESCAPE to revert.'); ImGui::Unindent(); ImGui::BulletText('With keyboard navigation enabled:'); ImGui::Indent(); ImGui::BulletText('Arrow keys to navigate.'); ImGui::BulletText('Space or enter to activate a widget.'); ImGui::BulletText('Return to input text into a widget.'); ImGui::BulletText('Escape to deactivate a widget, close popup, exit child window.'); ImGui::BulletText('Alt to jump to the menu layer of a window.');"};
 
 namespace Cool {
-class DidYouKnowModal {
+/**
+ * @brief A class that manages the "Did you know" modal. It is used to display tips to the user at opening of software. Also it is possible to display all the tips at once.
+ *
+ */
+class DidYouKnow {
 public:
     void open();
 
@@ -63,7 +67,7 @@ private:
 
     std::chrono::steady_clock::time_point _timestamp_last_opening = std::chrono::steady_clock::now();
 
-    friend void test_did_you_know(Cool::DidYouKnowModal& _did_you_know);
+    friend void test_did_you_know(Cool::DidYouKnow& _did_you_know);
 };
 
 void imgui_all_tips();
