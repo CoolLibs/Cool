@@ -1,6 +1,7 @@
 #include "Cool/DidYouKnow/testDidYouKnowModal.hpp"
 #include <fmt/chrono.h>
 #include <imgui.h>
+#include "Cool/DidYouKnow/didYouKnowModal.hpp"
 
 void Cool::test_did_you_know(Cool::DidYouKnow& _did_you_know)
 {
@@ -11,8 +12,8 @@ void Cool::test_did_you_know(Cool::DidYouKnow& _did_you_know)
 
     _did_you_know.imgui_windows();
 
-    // imgui text with difference between current timestamp of did you know and current timestamp of now
-    ImGui::TextUnformatted(fmt::format("Difference: {}", (std::chrono::steady_clock::now() - _did_you_know._timestamp_last_opening)).c_str());
+    // imgui text with next time of opening
+    ImGui::TextUnformatted(fmt::format("Next opening: {:%H:%M:%S}", (_did_you_know._timestamp_last_opening + timeToWait).time_since_epoch()).c_str());
 
     // imgui text of current timestamp of did you know
     ImGui::TextUnformatted(fmt::format("Current timestamp: {}", _did_you_know._timestamp_last_opening.time_since_epoch()).c_str());
