@@ -45,7 +45,7 @@ void Cool::DidYouKnow::imgui_windows()
         ImGui::PopTextWrapPos();
         ImGui::Separator();
 
-        if (ImGui::Button("OK", ImVec2(120, 0)))
+        if (ImGui::Button("OK", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
         {
             _is_open = false;
             ImGui::CloseCurrentPopup();
