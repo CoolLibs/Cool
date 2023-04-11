@@ -29,9 +29,10 @@ void Cool::DidYouKnow::open_ifn(std::span<const char* const>& all_tips)
         _current_tip_index = 0;
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
-    if (!_is_open && difference > timeToWait())
+    if (_open_of_coollab && !_is_open && difference > timeToWait())
     {
-        _is_open = true;
+        _open_of_coollab = false;
+        _is_open         = true;
         ImGui::OpenPopup(id_did_you_know);
         _timestamp_last_opening = std::chrono::steady_clock::now();
     }

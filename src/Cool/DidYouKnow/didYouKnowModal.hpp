@@ -34,8 +34,9 @@ private:
     }
 
 private:
-    bool _is_open       = false;
-    bool _show_all_tips = false;
+    bool _open_of_coollab = true;
+    bool _is_open         = false;
+    bool _show_all_tips   = false;
 
     size_t _current_tip_index = 0;
 
