@@ -72,7 +72,7 @@ private:
 
 void imgui_all_tips();
 
-void did_you_know(Cool::DidYouKnow& _did_you_know);
+void update(Cool::DidYouKnow& _did_you_know);
 
 } // namespace Cool
 
