@@ -218,7 +218,8 @@ void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags
 
 /// Creates a button that is always in the bottom left corner of the current window.
 /// Since you might want several buttons lining up, you have to specify the order in which
-/// they should be drawn with `index`.
-auto floating_button(int index, const char* label) -> bool;
+/// they should be drawn with `index`. The direction in which the several buttons will go
+/// is controlled by `align_vertically`.
+auto floating_button(const char* label, int index, bool align_vertically = true) -> bool;
 
 } // namespace Cool::ImGuiExtras

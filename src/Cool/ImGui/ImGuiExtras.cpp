@@ -738,14 +738,21 @@ void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
     );
 }
 
-auto floating_button(int index, const char* label) -> bool
+auto floating_button(const char* label, int index, bool align_vertically) -> bool
 {
-    auto const size      = ImGui::GetFrameHeight();
-    auto const spacing_x = size + ImGui::GetStyle().WindowPadding.x;
-    auto const spacing_y = size + ImGui::GetStyle().WindowPadding.y + static_cast<float>(index) * (size + ImGui::GetStyle().ItemSpacing.y);
+    auto const spacing = [&]() { // Immediately-invoked lambda
+        auto const size        = ImGui::GetFrameHeight();
+        auto       spacing_tmp = ImGui::GetStyle().WindowPadding + ImVec2{size, size};
+        auto const offset      = static_cast<float>(index) * (size + ImGui::GetStyle().ItemSpacing.y);
+        if (align_vertically)
+            spacing_tmp.y += offset;
+        else
+            spacing_tmp.x += offset;
+        return spacing_tmp;
+    }();
 
     auto const prev_pos = ImGui::GetCursorScreenPos();
-    ImGui::SetCursorPos(ImGui::GetWindowSize() - ImVec2{spacing_x, spacing_y});
+    ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
     ImGui::PushStyleColor(ImGuiCol_Button, GetStyle().floating_button);
