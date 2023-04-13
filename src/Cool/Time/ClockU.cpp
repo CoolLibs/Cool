@@ -36,7 +36,7 @@ void imgui_timeline(Cool::Clock& clock)
     // Timeline
     float t = clock.time();
     ImGui::PushFont(Font::monospace());
-    if (ImGui::DragFloat("##time", &t, 0.5f, 0.f, 0.f, "%.2f seconds"))
+    if (ImGui::DragFloat("##time", &t, 0.01f, 0.f, 0.f, "%.2f seconds"))
     {
         clock.set_time(t);
     }
