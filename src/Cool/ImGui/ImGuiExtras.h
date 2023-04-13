@@ -216,7 +216,9 @@ void join_buttons();
 /// Just like ImGui::Begin() but the window will take the whole available space.
 void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0);
 
-// Creates a button that is always in the bottom left corner of the current window.
-auto floating_button(const char* label) -> bool;
+/// Creates a button that is always in the bottom left corner of the current window.
+/// Since you might want several buttons lining up, you have to specify the order in which
+/// they should be drawn with `index`.
+auto floating_button(int index, const char* label) -> bool;
 
 } // namespace Cool::ImGuiExtras

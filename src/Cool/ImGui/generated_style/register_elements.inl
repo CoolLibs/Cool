@@ -55,6 +55,27 @@ config.register_element(ImStyleEd::Element{
 });
 
 config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButton",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button = color; },
+    .description = "Small buttons that overlap the View",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonHovered",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_hovered; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_hovered = color; },
+    .description = "Small buttons that overlap the View",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonActive",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_active; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_active = color; },
+    .description = "Small buttons that overlap the View",
+});
+
+config.register_element(ImStyleEd::Element{
     .name        = "ButtonsSeparator",
     .get_color   = []() { return ImGuiExtras::GetStyle().buttons_separator; },
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().buttons_separator = color; },

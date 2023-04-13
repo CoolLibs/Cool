@@ -7,6 +7,7 @@ class Element:
     name_in_ui: str
     description: str
 
+floating_button_description = 'Small buttons that overlap the View'
 
 def all_elements():
     return [
@@ -44,6 +45,21 @@ def all_elements():
             name_in_code='checkbox_button_active',
             name_in_ui='CheckboxButtonActive',
             description='',
+        ),
+        Element(
+            name_in_code='floating_button',
+            name_in_ui='FloatingButton',
+            description=floating_button_description,
+        ),
+        Element(
+            name_in_code='floating_button_hovered',
+            name_in_ui='FloatingButtonHovered',
+            description=floating_button_description,
+        ),
+        Element(
+            name_in_code='floating_button_active',
+            name_in_ui='FloatingButtonActive',
+            description=floating_button_description,
         ),
         Element(
             name_in_code='buttons_separator',
