@@ -29,6 +29,8 @@ public:
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
     auto resize_event() -> auto& { return _resize_event_dispatcher; }
 
+    auto has_vertical_margins() const -> bool { return _size ? _has_vertical_margins : false; }
+
 private:
     void store_window_size();
     void store_window_position();
@@ -55,6 +57,8 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
+
+    bool _has_vertical_margins{false};
 };
 
 } // namespace Cool

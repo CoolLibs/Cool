@@ -3,6 +3,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
+#include <img/src/SizeU.h>
 #include "Cool/Log/Debug.h"
 
 namespace Cool {
@@ -233,6 +234,7 @@ void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image
         return;
 
     auto const size = image_size_inside_view.fit_into(*_size);
+    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 

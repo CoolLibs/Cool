@@ -16,6 +16,8 @@ struct RenderableView {
 
     void update_size(ImageSizeConstraint constraint);
     void imgui_window(ViewWindowParams const& = {});
+
+    auto has_vertical_margins() const -> bool { return view.has_vertical_margins(); }
 };
 
 } // namespace Cool
