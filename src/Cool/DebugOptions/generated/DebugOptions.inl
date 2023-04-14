@@ -54,6 +54,15 @@ public:
             ImGui::End();
         }
     }
+    static void style_editor(std::function<void()> callback)
+    {
+        if (instance().style_editor)
+        {
+            ImGui::Begin(Cool::icon_fmt("Style Editor", ICOMOON_WRENCH).c_str(), &instance().style_editor, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
     static void color_themes_editor(std::function<void()> callback)
     {
         if (instance().color_themes_editor)
@@ -91,6 +100,7 @@ private:
         bool log_opengl_info{false};
 #endif
         bool test_presets__window{false};
+        bool style_editor{false};
         bool color_themes_editor{false};
         bool color_themes_advanced_config_window{false};
 #if DEBUG
@@ -113,6 +123,7 @@ private:
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #else
@@ -123,6 +134,7 @@ private:
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
                 cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #endif
@@ -143,6 +155,7 @@ private:
         instance().log_opengl_info = false;
 #endif
         instance().test_presets__window                = false;
+        instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
         instance().color_themes_advanced_config_window = false;
     }
@@ -203,6 +216,11 @@ private:
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test Presets", &instance().test_presets__window);
+        }
+
+        if (wafl::similarity_match({filter, "Style Editor"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Style Editor", &instance().style_editor);
         }
 
         if (wafl::similarity_match({filter, "Color Themes: Editor"}) >= wafl::Matches::Strongly)
@@ -283,6 +301,12 @@ private:
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
             instance().test_presets__window = !instance().test_presets__window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Style Editor"}) >= wafl::Matches::Strongly)
+        {
+            instance().style_editor = !instance().style_editor;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

@@ -743,7 +743,7 @@ auto floating_button(const char* label, int index, bool align_vertically) -> boo
     auto const spacing = [&]() { // Immediately-invoked lambda
         auto const size        = ImGui::GetFrameHeight();
         auto       spacing_tmp = ImGui::GetStyle().WindowPadding + ImVec2{size, size};
-        auto const offset      = static_cast<float>(index) * (size + ImGui::GetStyle().ItemSpacing.y);
+        auto const offset      = static_cast<float>(index) * (size + GetStyle().floating_buttons_spacing);
         if (align_vertically)
             spacing_tmp.y += offset;
         else

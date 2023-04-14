@@ -94,7 +94,7 @@ def all_elements():
     ]
 
 
-def style_struct():
+def style_colors():
     def declaration(element: Element):
         return f'ImVec4 {element.name_in_code}{{0.f, 0.f, 0.f, 1.f}}; {"// " if element.description else ""}{element.description}'
     return '\n'.join(map(declaration, all_elements()))
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     generate_files.generate(
         folder="generated_style",
         files=[
-            style_struct,
+            style_colors,
             register_elements,
         ],
     )
