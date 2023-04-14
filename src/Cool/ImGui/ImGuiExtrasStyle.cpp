@@ -4,15 +4,9 @@
 
 namespace Cool::ImGuiExtras {
 
-auto Style::imgui() -> bool
+void Style::imgui()
 {
-    bool b = false;
-
-    ImGui::SliderFloat("Floating buttons spacing", &floating_buttons_spacing, 0.f, 20.f);
-    ImGui::SameLine();
-    ImGuiExtras::help_marker("Small buttons that overlap the View");
-
-    return b;
+#include "generated_style/style_imgui.inl"
 }
 
 } // namespace Cool::ImGuiExtras

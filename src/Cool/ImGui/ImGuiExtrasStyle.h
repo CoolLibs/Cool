@@ -5,10 +5,9 @@ namespace Cool::ImGuiExtras {
 
 struct Style {
 #include "generated_style/style_colors.inl"
+#include "generated_style/style_declaration.inl"
 
-    float floating_buttons_spacing = 4.f;
-
-    auto imgui() -> bool;
+    void imgui();
 
 private:
     // Serialization
@@ -17,7 +16,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Floating buttons spacing", floating_buttons_spacing)
+#include "generated_style/style_serialization.inl"
         );
     }
 };

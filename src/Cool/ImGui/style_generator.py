@@ -7,7 +7,9 @@ class ColorElement:
     name_in_ui: str
     description: str
 
+
 floating_button_description = 'Small buttons that overlap the View'
+
 
 def all_color_elements():
     return [
@@ -94,10 +96,58 @@ def all_color_elements():
     ]
 
 
+@dataclass
+class StyleSetting:
+    name_in_code: str
+    name_in_ui: str
+    description: str
+    default_value: str
+    cpp_type: str
+    widget_begin: str
+    widget_end: str
+
+
+def all_style_settings():
+    return [
+        StyleSetting(
+            name_in_code="floating_buttons_spacing",
+            name_in_ui="Floating buttons spacing",
+            description=floating_button_description,
+            default_value="4.f",
+            cpp_type="float",
+            widget_begin="ImGui::SliderFloat",
+            widget_end=" 0.f, 20.f",
+        ),
+    ]
+
+
+def style_declaration():
+    def code(s: StyleSetting):
+        return f'{s.cpp_type} {s.name_in_code}{{{s.default_value}}};'
+    return '\n'.join(map(code, all_style_settings()))
+
+
+def style_serialization():
+    def code(s: StyleSetting):
+        return f'cereal::make_nvp("{s.name_in_ui}", {s.name_in_code})'
+    return ',\n'.join(map(code, all_style_settings()))
+
+
+def style_imgui():
+    def code(s: StyleSetting):
+        return f'''
+{s.widget_begin}("{s.name_in_ui}", &{s.name_in_code}, {s.widget_end});
+{f"""ImGui::SameLine();
+    ImGuiExtras::help_marker("{s.description}");
+""" if s.description else ''
+}'''
+    return ',\n'.join(map(code, all_style_settings()))
+
+
 def style_colors():
-    def declaration(element: ColorElement):
+    def code(element: ColorElement):
         return f'ImVec4 {element.name_in_code}{{0.f, 0.f, 0.f, 1.f}}; {"// " if element.description else ""}{element.description}'
-    return '\n'.join(map(declaration, all_color_elements()))
+    return '\n'.join(map(code, all_color_elements()))
 
 
 def register_elements():
@@ -129,5 +179,8 @@ if __name__ == '__main__':
         files=[
             style_colors,
             register_elements,
+            style_declaration,
+            style_serialization,
+            style_imgui,
         ],
     )
