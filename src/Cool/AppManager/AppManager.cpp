@@ -20,7 +20,6 @@ namespace Cool {
 static void prepare_windows(WindowManager& window_manager);
 static void imgui_dockspace();
 static void imgui_new_frame();
-static void imgui_render(IApp& app);
 static void end_frame(WindowManager& window_manager);
 
 AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
@@ -144,7 +143,7 @@ static void imgui_new_frame()
     imgui_dockspace();
 }
 
-static void imgui_render(IApp& app)
+void AppManager::imgui_render(IApp& app)
 {
     float window_title_height_bias = 0.f;
 
@@ -170,6 +169,7 @@ static void imgui_render(IApp& app)
         }
         // Windows
         app.imgui_windows();
+        imgui_windows();
     }
     ImGui::PopStyleVar();
     ImGui::PopFont();
@@ -318,6 +318,13 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
     {
         app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
     }
+}
+
+void AppManager::imgui_windows()
+{
+    Cool::DebugOptions::style_editor([&]() {
+        _style_editor.imgui();
+    });
 }
 
 } // namespace Cool
