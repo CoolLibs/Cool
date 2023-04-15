@@ -116,7 +116,7 @@ def all_style_settings():
             default_value="4.f",
             cpp_type="float",
             widget_begin="ImGui::SliderFloat",
-            widget_end=" 0.f, 20.f",
+            widget_end=' 0.f, 20.f, "%.0f"',
         ),
         StyleSetting(
             name_in_code="frame_padding",
@@ -151,14 +151,23 @@ def style_serialization():
     return ',\n'.join(map(code, all_style_settings()))
 
 
-def style_imgui():
+def style_imgui_declarations():
+    def code(s: StyleSetting):
+        return f'''void imgui_{s.name_in_code}();'''
+    return '\n'.join(map(code, all_style_settings()))
+
+
+def style_imgui_definitions():
     def code(s: StyleSetting):
         return f'''
-{s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
-{f"""ImGui::SameLine();
-    ImGuiExtras::help_marker("{s.description}");
-""" if s.description else ''
-}'''
+void Style::imgui_{s.name_in_code}()
+{{
+    {s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
+    {f"""ImGui::SameLine();
+        ImGuiExtras::help_marker("{s.description}");
+    """ if s.description else ''
+    }
+}}'''
     return '\n'.join(map(code, all_style_settings()))
 
 
@@ -199,6 +208,7 @@ if __name__ == '__main__':
             register_elements,
             style_declaration,
             style_serialization,
-            style_imgui,
+            style_imgui_definitions,
+            style_imgui_declarations,
         ],
     )

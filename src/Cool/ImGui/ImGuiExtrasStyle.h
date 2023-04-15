@@ -6,8 +6,7 @@ namespace Cool::ImGuiExtras {
 struct Style {
 #include "generated_style/style_colors.inl"
 #include "generated_style/style_declaration.inl"
-
-    void imgui();
+#include "generated_style/style_imgui_declarations.inl"
 
 private:
     // Serialization

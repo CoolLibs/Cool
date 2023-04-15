@@ -28,9 +28,12 @@ void StyleEditor::imgui()
 
     ImGui::SeparatorText("Main");
     ImGui::SliderFloat2("WindowPadding", (float*)&ImGui::GetStyle().WindowPadding, 0.0f, 20.0f, "%.0f");
+    ImGuiExtras::GetStyle().imgui_frame_padding();
+    ImGuiExtras::GetStyle().imgui_title_bar_padding();
     ImGui::SliderFloat2("CellPadding", (float*)&ImGui::GetStyle().CellPadding, 0.0f, 20.0f, "%.0f");
     ImGui::SliderFloat2("ItemSpacing", (float*)&ImGui::GetStyle().ItemSpacing, 0.0f, 20.0f, "%.0f");
     ImGui::SliderFloat2("ItemInnerSpacing", (float*)&ImGui::GetStyle().ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
+    ImGuiExtras::GetStyle().imgui_floating_buttons_spacing();
     ImGui::SliderFloat2("TouchExtraPadding", (float*)&ImGui::GetStyle().TouchExtraPadding, 0.0f, 10.0f, "%.0f");
     ImGui::SliderFloat("IndentSpacing", &ImGui::GetStyle().IndentSpacing, 0.0f, 30.0f, "%.0f");
     ImGui::SliderFloat("ScrollbarSize", &ImGui::GetStyle().ScrollbarSize, 1.0f, 20.0f, "%.0f");
@@ -68,9 +71,6 @@ void StyleEditor::imgui()
     ImGui::SliderFloat2("SeparatorTextAlign", (float*)&ImGui::GetStyle().SeparatorTextAlign, 0.0f, 1.0f, "%.2f");
     ImGui::SliderFloat2("SeparatorTextPadding", (float*)&ImGui::GetStyle().SeparatorTextPadding, 0.0f, 40.0f, "%0.f");
     ImGui::SliderFloat("LogSliderDeadzone", &ImGui::GetStyle().LogSliderDeadzone, 0.0f, 12.0f, "%.0f");
-
-    ImGui::SeparatorText("Extras");
-    ImGuiExtras::GetStyle().imgui();
 
     ImGui::SeparatorText("Misc");
     ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&ImGui::GetStyle().DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
