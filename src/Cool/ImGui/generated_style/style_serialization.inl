@@ -4,4 +4,6 @@
  * Instead, go to "style_generator.py" and edit the "style_serialization" function there.
  * -----------------------------------------------------------------------------
  */
-cereal::make_nvp("Floating buttons spacing", floating_buttons_spacing)
+cereal::make_nvp("Floating buttons spacing", floating_buttons_spacing),
+    cereal::make_nvp("Frame padding", frame_padding),
+    cereal::make_nvp("Title bar padding", title_bar_padding)

@@ -118,6 +118,24 @@ def all_style_settings():
             widget_begin="ImGui::SliderFloat",
             widget_end=" 0.f, 20.f",
         ),
+        StyleSetting(
+            name_in_code="frame_padding",
+            name_in_ui="Frame padding",
+            description='',
+            default_value="9.f, 4.f",
+            cpp_type="ImVec2",
+            widget_begin="ImGui::SliderFloat2",
+            widget_end=' 0.f, 20.f, "%.0f"',
+        ),
+        StyleSetting(
+            name_in_code="title_bar_padding",
+            name_in_ui="Title bar padding",
+            description='',
+            default_value="9.f, 6.f",
+            cpp_type="ImVec2",
+            widget_begin="ImGui::SliderFloat2",
+            widget_end=' 0.f, 20.f, "%.0f"',
+        ),
     ]
 
 
@@ -136,12 +154,12 @@ def style_serialization():
 def style_imgui():
     def code(s: StyleSetting):
         return f'''
-{s.widget_begin}("{s.name_in_ui}", &{s.name_in_code}, {s.widget_end});
+{s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
 {f"""ImGui::SameLine();
     ImGuiExtras::help_marker("{s.description}");
 """ if s.description else ''
 }'''
-    return ',\n'.join(map(code, all_style_settings()))
+    return '\n'.join(map(code, all_style_settings()))
 
 
 def style_colors():

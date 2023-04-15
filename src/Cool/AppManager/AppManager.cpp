@@ -6,6 +6,7 @@
 #include <imgui/imgui_internal.h>
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -154,7 +155,7 @@ void AppManager::imgui_render(IApp& app)
 
     // Apply normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
     window_title_height_bias += 2.f * ImGui::GetStyle().FramePadding.y;
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {9.f, 4.f});
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGuiExtras::GetStyle().frame_padding);
     window_title_height_bias -= 2.f * ImGui::GetStyle().FramePadding.y;
 
     ImGui::GetCurrentContext()->window_title_height_bias = window_title_height_bias;
@@ -173,6 +174,7 @@ void AppManager::imgui_render(IApp& app)
     }
     ImGui::PopStyleVar();
     ImGui::PopFont();
+    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().title_bar_padding; // We need to apply the title_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
 static void end_frame(WindowManager& window_manager)

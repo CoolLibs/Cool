@@ -5,6 +5,10 @@
  * -----------------------------------------------------------------------------
  */
 
-ImGui::SliderFloat("Floating buttons spacing", &floating_buttons_spacing, 0.f, 20.f);
+ImGui::SliderFloat("Floating buttons spacing", (float*)&floating_buttons_spacing, 0.f, 20.f);
 ImGui::SameLine();
 ImGuiExtras::help_marker("Small buttons that overlap the View");
+
+ImGui::SliderFloat2("Frame padding", (float*)&frame_padding, 0.f, 20.f, "%.0f");
+
+ImGui::SliderFloat2("Title bar padding", (float*)&title_bar_padding, 0.f, 20.f, "%.0f");

@@ -4,4 +4,6 @@
  * Instead, go to "style_generator.py" and edit the "style_declaration" function there.
  * -----------------------------------------------------------------------------
  */
-float floating_buttons_spacing{4.f};
+float  floating_buttons_spacing{4.f};
+ImVec2 frame_padding{9.f, 4.f};
+ImVec2 title_bar_padding{9.f, 6.f};
