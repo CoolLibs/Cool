@@ -41,11 +41,12 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(imgui_menu_items_Params p)
+void Exporter::imgui_menu_items(imgui_menu_items_Params p, std::optional<std::string> longest_text)
 {
     // Calculate max button width
-    std::string const longuest_text = icon_fmt("Video", ICOMOON_FILM, true);
-    float             button_width  = ImGui::CalcTextSize(longuest_text.c_str()).x + 2.f * ImGui::GetStyle().FramePadding.x;
+    if (!longest_text)
+        longest_text = icon_fmt("Video", ICOMOON_FILM, true);
+    float const button_width = ImGui::CalcTextSize(longest_text->c_str()).x + 2.f * ImGui::GetStyle().FramePadding.x;
     // Draw buttons
     if (ImGui::Button(icon_fmt("Image", ICOMOON_IMAGE, true).c_str(), ImVec2(button_width, 0.0f)))
     {
