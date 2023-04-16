@@ -59,7 +59,7 @@ auto string_from_ratio(float ratio) -> std::string
                : fmt::format("{:.3f}", ratio);
 }
 
-auto AspectRatio::imgui(float width) -> bool
+auto AspectRatio::imgui(float width, const char* label) -> bool
 {
     bool b = false;
 
@@ -88,7 +88,7 @@ auto AspectRatio::imgui(float width) -> bool
 
     ImGui::SameLine(0.f, 0.f);
 
-    if (ImGui::BeginCombo("##aspect_ratio_dropdown", "", ImGuiComboFlags_NoPreview, ImDrawFlags_RoundCornersRight))
+    if (ImGui::BeginCombo(label, "", ImGuiComboFlags_NoPreview, ImDrawFlags_RoundCornersRight))
     {
         for (auto const& ratio : ratios)
         {

@@ -13,7 +13,7 @@ public:
     void set(float aspect_ratio);
 
     /// `width` is the size of the widget. Leave it at 0.f to get an automatic size.
-    auto imgui(float width = 0.f) -> bool;
+    auto imgui(float width = 0.f, const char* label = "##aspect_ratio_dropdown") -> bool;
 
 private:
     float       _ratio = 1.f;
