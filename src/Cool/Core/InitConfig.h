@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-inline auto root_path() -> std::filesystem::path
+inline auto compute_root_path() -> std::filesystem::path
 {
 #if DEBUG
     // When launching from an IDE (which almost always means we are in Debug mode)
@@ -24,11 +24,9 @@ inline auto root_path() -> std::filesystem::path
 }
 
 struct InitConfig {
-    /// Sets the paths to the root directory and to Cool/res
-    std::function<std::filesystem::path()> get_root_path = []() {
-        Cool::Path::initialize_root(root_path());
-        Cool::Path::initialize_cool_res(root + "/" + COOL_PATH + "/res");
-    };
+    std::filesystem::path root_path            = compute_root_path();
+    std::filesystem::path cool_res_path        = compute_root_path() / COOL_PATH / "res";
+    std::filesystem::path default_texture_path = "";
 };
 
 } // namespace Cool
