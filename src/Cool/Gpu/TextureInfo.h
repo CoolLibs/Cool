@@ -6,7 +6,7 @@
 namespace Cool {
 
 struct TextureInfo {
-    std::filesystem::path absolute_path{Cool::Path::root() / "res/images/logo mask.png"};
+    std::filesystem::path absolute_path{Cool::Path::default_texture()};
     TextureSamplerInfo    sampler{};
 
     auto        imgui_widget() -> bool;
