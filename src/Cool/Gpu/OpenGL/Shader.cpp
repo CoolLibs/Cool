@@ -169,8 +169,8 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
 
     tex.attach_to_slot(current_slot);
     GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
-    set_uniform(fmt::format("{}.tex", uniform_name), current_slot);
-    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
+    set_uniform(fmt::format("{}", uniform_name), current_slot);
+    // set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
 
     current_slot = (current_slot + 1) % max_slots;
 }
