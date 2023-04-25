@@ -83,9 +83,26 @@ TEST_CASE("[Cool::String] replace()")
     }
     SUBCASE("replace_all_words()")
     {
-        auto const str = "Test helloworld hello world hello something"s;
-        auto const res = Cool::String::replace_all_words(str, "hello", "plop");
-        CHECK(res == "Test helloworld plop world plop something");
+        {
+            auto const str = "Test helloworld hello world hello something"s;
+            auto const res = Cool::String::replace_all_words(str, "hello", "plop");
+            CHECK(res == "Test helloworld plop world plop something");
+        }
+        { // When `to` contains `from`
+            auto const str = "hello world"s;
+            auto const res = Cool::String::replace_all_words(str, "hello", "hello plop");
+            CHECK(res == "hello plop world");
+        }
+        { // When `to` contains `from`
+            auto const str = "hello world"s;
+            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello");
+            CHECK(res == "plop hello world");
+        }
+        { // When `to` contains `from`
+            auto const str = "hello world"s;
+            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello pouet");
+            CHECK(res == "plop hello pouet world");
+        }
     }
     SUBCASE("replace_between_delimiters()")
     {
