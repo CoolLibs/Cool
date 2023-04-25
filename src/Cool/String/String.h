@@ -28,9 +28,9 @@ auto to_lower(std::string_view str) -> std::string;
 /// Modifies `str` by replacing all occurrences of `from` with `to`.
 void replace_all(std::string& str, std::string_view from, std::string_view to);
 
-/// Modifies `str` by replacing all `from` words with `to`.
+/// Returns a new string where all `from` words have been replaced with `to`.
 /// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
-auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
+[[nodiscard]] auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
 
 /**
  * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
