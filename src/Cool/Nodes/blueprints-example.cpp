@@ -404,17 +404,9 @@ struct Example {
         ax::Widgets::Icon(ImVec2(static_cast<float>(m_PinIconSize), static_cast<float>(m_PinIconSize)), iconType, connected, color, ImColor(32, 32, 32, alpha));
     };
 
-    void ShowStyleEditor(bool* show = nullptr)
+    static void ShowStyleEditor()
     {
-        auto paneWidth = ImGui::GetContentRegionAvail().x;
-
         auto& editorStyle = ed::GetStyle();
-        ImGui::BeginHorizontal("Style buttons", ImVec2(paneWidth, 0), 1.0f);
-        ImGui::TextUnformatted("Values");
-        ImGui::Spring();
-        if (ImGui::Button("Reset to defaults"))
-            editorStyle = ed::Style();
-        ImGui::EndHorizontal();
         ImGui::Spacing();
         ImGui::DragFloat4("Node Padding", &editorStyle.NodePadding.x, 0.1f, 0.0f, 40.0f);
         ImGui::DragFloat("Node Rounding", &editorStyle.NodeRounding, 0.1f, 0.0f, 40.0f);
@@ -877,7 +869,7 @@ void blueprints_example()
     example_instance().OnFrame();
 }
 
-void style_editor()
+void nodes_style_editor()
 {
     example_instance().ShowStyleEditor();
 }
