@@ -61,17 +61,6 @@ config.register_element({
 });
 
 config.register_element({
-    "Nodes_SelNodeBorder",
-    []() {
-        return ax::NodeEditor::GetStyle().Colors[ax::NodeEditor::StyleColor_SelNodeBorder];
-    },
-    [](ImVec4 const& color) {
-        ax::NodeEditor::GetStyle().Colors[ax::NodeEditor::StyleColor_SelNodeBorder] = color;
-    },
-    "",
-});
-
-config.register_element({
     "Nodes_NodeSelRect",
     []() {
         return ax::NodeEditor::GetStyle().Colors[ax::NodeEditor::StyleColor_NodeSelRect];

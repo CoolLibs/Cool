@@ -43,6 +43,8 @@ def parse_color_elements() -> List[ColorElement]:
         | where(lambda l: l != "")
         | map(parse_one_line)
         | where(lambda x: x.id != "StyleColor_Count")
+        # Don't register SelNodeBorder because it is hardcoded to be the color of the category of the node
+        | where(lambda x: x.id != "StyleColor_SelNodeBorder")
     )
 
     return res
