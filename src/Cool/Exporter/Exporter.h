@@ -33,7 +33,7 @@ public:
     void imgui_windows(Polaroid polaroid, float time);
 
     /// The buttons to open the different exporter windows.
-    void imgui_menu_items(imgui_menu_items_Params = {});
+    void imgui_menu_items(imgui_menu_items_Params = {}, std::optional<std::string> longest_text = {});
 
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code
     void begin_video_export();
@@ -54,10 +54,10 @@ private:
     ExportSize            _export_size;
     std::filesystem::path _folder_path_for_image;
     std::filesystem::path _file_name{"img(0)"};
-    ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_UPLOAD2), false};
+    ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), false};
 
     std::filesystem::path             _folder_path_for_video;
-    ImGuiWindow                       _video_export_window{icon_fmt("Export a Video", ICOMOON_UPLOAD2), false};
+    ImGuiWindow                       _video_export_window{icon_fmt("Export a Video", ICOMOON_FILM), false};
     std::optional<VideoExportProcess> _video_export_process;
     VideoExportParams                 _video_export_params;
 

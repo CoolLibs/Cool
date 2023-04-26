@@ -52,8 +52,8 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
-            name_in_code="nodes_style_editor",
-            name_in_ui="Nodes style editor",
+            name_in_code="style_editor",
+            name_in_ui="Style Editor",
             available_in_release=True,
             kind=Kind.WINDOW,
         ),

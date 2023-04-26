@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cool/Path/Path.h"
 #if defined(COOL_VULKAN)
 #include <Cool/Gpu/Vulkan/Context.h>
 #endif
@@ -64,13 +65,16 @@ inline auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std
 
 template<typename App>
 void run(
-    const std::vector<WindowConfig>& windows_configs,
-    InitConfig                       init_config        = {},
+    std::vector<WindowConfig> const& windows_configs,
+    InitConfig const&                init_config        = {},
     AppManagerConfig                 app_manager_config = {}
 )
 {
-    // Init
-    init_config.set_paths();
+    // Init paths
+    Cool::Path::initialize_root(init_config.root_path);
+    Cool::Path::initialize_cool_res(init_config.cool_res_path);
+    Cool::Path::initialize_default_texture(init_config.default_texture_path);
+
     // Create window.s
     assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};

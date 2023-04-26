@@ -68,6 +68,15 @@ public:
      * @param event
      */
     virtual void on_mouse_move(const MouseMoveEvent<WindowCoordinates>& event) = 0;
+
+    // /!\ This has no effect if a state has already been saved and not been restored yet.
+    void save_windows_state();
+    void restore_windows_state();
+
+private:
+    friend class AppManager;
+    std::optional<std::string> _imgui_ini_state_to_restore{};
+    bool                       _wants_to_restore_ini_state{false};
 };
 
 } // namespace Cool

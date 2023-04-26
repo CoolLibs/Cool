@@ -249,9 +249,9 @@ auto NodesEditorImpl::imgui_window(
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
-    Cool::DebugOptions::nodes_style_editor([&]() {
-        style_editor();
-    });
+    // Cool::DebugOptions::nodes_style_editor([&]() {
+    //     style_editor();
+    // });
     return false;
     // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     // ImNodes::SetCurrentEditor(&*_context);

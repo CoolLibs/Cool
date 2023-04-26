@@ -18,7 +18,7 @@ namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
-    ImGui::TextDisabled(ICOMOON_INFO);
+    ImGui::TextDisabled(" " ICOMOON_INFO);
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -175,6 +175,41 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
     tooltip(reason_for_disabling);
 }
 
+auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
+{
+    auto const size = ImGui::GetFrameHeight();
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.f);
+    bool const b = ImGui::Button(icon, {size, size}, flags);
+    ImGui::PopStyleVar();
+    return b;
+}
+
+auto checkbox_button(const char* icon, bool* v) -> bool
+{
+    if (*v)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGuiExtras::GetStyle().checkbox_button);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGuiExtras::GetStyle().checkbox_button_hovered);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGuiExtras::GetStyle().checkbox_button_active);
+    }
+    else
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.f);
+    }
+    bool const b = button_with_text_icon(icon);
+    if (*v)
+    {
+        ImGui::PopStyleColor(3);
+    }
+    else
+    {
+        ImGui::PopStyleVar();
+    }
+    if (b)
+        *v = !*v;
+    return b;
+}
+
 auto close_button() -> bool
 {
     return button_with_icon(
@@ -260,7 +295,7 @@ auto folder_dialog_button(
     std::filesystem::path  initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -278,7 +313,7 @@ auto file_dialog_button(
     std::filesystem::path               initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -352,28 +387,38 @@ auto file_and_folder(
 
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
 {
+    auto const prev_pos = ImGui::GetCursorScreenPos();
+
     ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
     ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
+
+    ImGui::SetCursorScreenPos(prev_pos);
 }
 
-auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
+auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
 {
+    bool was_used = false;
     ImGui::PushID(label);
-    bool was_used = ImGuiExtras::toggle("##checkbox", bool_p);
-    ImGui::PopID();
-    ImGui::SameLine();
-    if (*bool_p)
+    bool const menu_open = *bool_p;
+
     {
-        if (ImGui::BeginMenu(label))
+        auto const toggle_label = std::string{menu_open ? "" : label} + "###checkbox"; // We use the ### to make sure the id of the widget won't depend on the part of the label before the ###. This allows us to keep the same id when switching between "" and `label`. This is required for the animation of the toggle to play properly.
+        was_used |= ImGuiExtras::toggle(toggle_label.c_str(), bool_p);
+    }
+
+    if (menu_open)
+    {
+        ImGui::SameLine();
+        if (ImGui::BeginMenu(label, true, ImGui::GetStyle().FramePadding.y))
         {
+            if (ImGui::IsItemClicked())
+                *bool_p = !bool_p;
             was_used |= submenu();
             ImGui::EndMenu();
         }
     }
-    else
-    {
-        ImGui::TextUnformatted(label);
-    }
+
+    ImGui::PopID();
     return was_used;
 }
 
@@ -669,6 +714,56 @@ void join_buttons()
     ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
     ImGui::PopStyleColor();
     ImGui::SameLine();
+}
+
+void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
+{
+#ifdef IMGUI_HAS_VIEWPORT
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+#else
+    ImGui::SetNextWindowPos({0.0f, 0.0f});
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+#endif
+    ImGui::Begin(
+        name,
+        p_open,
+        flags
+            | ImGuiWindowFlags_NoDecoration
+            | ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoBringToFrontOnFocus
+    );
+}
+
+auto floating_button(const char* label, int index, bool align_vertically) -> bool
+{
+    auto const spacing = [&]() { // Immediately-invoked lambda
+        auto const size        = ImGui::GetFrameHeight();
+        auto       spacing_tmp = ImGui::GetStyle().WindowPadding + ImVec2{size, size};
+        auto const offset      = static_cast<float>(index) * (size + GetStyle().floating_buttons_spacing);
+        if (align_vertically)
+            spacing_tmp.y += offset;
+        else
+            spacing_tmp.x += offset;
+        return spacing_tmp;
+    }();
+
+    auto const prev_pos = ImGui::GetCursorScreenPos();
+    ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+    ImGui::PushStyleColor(ImGuiCol_Button, GetStyle().floating_button);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GetStyle().floating_button_hovered);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GetStyle().floating_button_active);
+    bool const b = button_with_text_icon(label);
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar();
+
+    ImGui::SetCursorScreenPos(prev_pos);
+    return b;
 }
 
 } // namespace Cool::ImGuiExtras

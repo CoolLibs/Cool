@@ -44,6 +44,7 @@ static void imgui_load_fonts()
         ImFontConfig config;
         config.MergeMode  = true;
         config.PixelSnapH = true;
+        config.GlyphOffset = ImVec2{-4.f, +1.f};
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
         static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
         io.Fonts->AddFontFromFileTTF(
@@ -84,10 +85,10 @@ static void initialize_imgui()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigDockingAlwaysTabBar  = true;
-    io.ConfigDragClickToInputText = true;
+    io.ConfigDockingAlwaysTabBar               = true;
+    io.ConfigDragClickToInputText              = true;
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD) // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     imgui_load_fonts();

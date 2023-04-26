@@ -5,6 +5,12 @@
 
 namespace Cool {
 
+struct ViewWindowParams {
+    bool                  fullscreen    = false;
+    std::function<void()> extra_widgets = []() {
+    };
+};
+
 class View {
 public:
     explicit View(std::string_view name, bool is_closable = false)
@@ -13,7 +19,7 @@ public:
     {}
 
     /// Displays the given texture in an ImGui window
-    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view);
+    void                     imgui_window(ImTextureID image_texture_id, ImageSizeInsideView _image_size_inside_view, ViewWindowParams const& = {});
     void                     imgui_open_close_checkbox();
     std::optional<img::Size> size() const { return _size; }
 
@@ -22,6 +28,8 @@ public:
     void dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event);
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
     auto resize_event() -> auto& { return _resize_event_dispatcher; }
+
+    auto has_vertical_margins() const -> bool { return _size ? _has_vertical_margins : false; }
 
 private:
     void store_window_size();
@@ -49,6 +57,8 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
+
+    bool _has_vertical_margins{false};
 };
 
 } // namespace Cool

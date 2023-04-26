@@ -67,6 +67,12 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1
  */
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, std::optional<float> frame_padding = 1.f);
 
+///
+auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
+
+/// A checkbox with the appearance of a button with a given icon.
+auto checkbox_button(const char* icon, bool* v) -> bool;
+
 /// Draws a clickable red cross.
 auto close_button() -> bool;
 
@@ -170,7 +176,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 /// A checkbox that, when ticked, displays a menu on the side.
 /// `submenu` is a function that calls the imgui widgets that should appear in the submenu, and returns true iff one of these widgets returned true.
 /// returns true iff the checkbox or a widget in the submenu was used this frame.
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu);
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
@@ -206,5 +212,14 @@ auto toggle(const char* label, bool* v) -> bool;
 
 /// Draws a vertical separator between two buttons, and puts them on the same line.
 void join_buttons();
+
+/// Just like ImGui::Begin() but the window will take the whole available space.
+void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0);
+
+/// Creates a button that is always in the bottom left corner of the current window.
+/// Since you might want several buttons lining up, you have to specify the order in which
+/// they should be drawn with `index`. The direction in which the several buttons will go
+/// is controlled by `align_vertically`.
+auto floating_button(const char* label, int index, bool align_vertically = true) -> bool;
 
 } // namespace Cool::ImGuiExtras

@@ -1,6 +1,7 @@
 #include "ImageSizeConstraint.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include "ImageSizeU.h"
+#include "compute_image_size.h"
 
 namespace Cool {
 
@@ -18,19 +19,17 @@ auto ImageSizeConstraint::applied_to(img::Size frame_size) const -> img::Size
 
 auto ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const -> img::Size
 {
-    float aspect_ratio = _is_controlling_aspect_ratio
-                             ? _aspect_ratio.get()
-                             : img::SizeU::aspect_ratio(frame_size);
+    float const aspect_ratio = _is_controlling_aspect_ratio
+                                   ? _aspect_ratio.get()
+                                   : img::SizeU::aspect_ratio(frame_size);
 
-    auto nb_pixels = static_cast<float>(
+    auto const nb_pixels = static_cast<float>(
         _is_controlling_nb_pixels
             ? _nb_pixels
             : frame_size.width() * frame_size.height()
     );
 
-    return {
-        std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels * aspect_ratio))), static_cast<img::Size::DataType>(1)),
-        std::max(static_cast<img::Size::DataType>(std::round(std::sqrt(nb_pixels / aspect_ratio))), static_cast<img::Size::DataType>(1))};
+    return compute_image_size(aspect_ratio, nb_pixels);
 }
 
 auto ImageSizeConstraint::imgui() -> bool
@@ -50,8 +49,8 @@ auto ImageSizeConstraint::imgui() -> bool
         }
         return false;
     });
-    // Interpolation mode
-    ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
+    // Interpolation mode // Disabled for now as this would require a bit of work to apply it to the current view + I don't find this very useful, Nearest is always what you want imho.
+    // was_triggered |= ImGui::Combo("Interpolation Mode", reinterpret_cast<int*>(&_interpolation_mode), "Nearest\0Linear\0\0");
 
     return was_triggered;
 }

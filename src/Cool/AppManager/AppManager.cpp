@@ -6,6 +6,7 @@
 #include <imgui/imgui_internal.h>
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -20,7 +21,6 @@ namespace Cool {
 static void prepare_windows(WindowManager& window_manager);
 static void imgui_dockspace();
 static void imgui_new_frame();
-static void imgui_render(IApp& app);
 static void end_frame(WindowManager& window_manager);
 
 AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
@@ -76,6 +76,9 @@ void AppManager::run(std::function<void()> on_update)
         on_update();
     }
 #endif
+    // Restore any ImGui ini state that might have been stored
+    _app._wants_to_restore_ini_state = true;
+    restore_imgui_ini_state_ifn();
 }
 
 static void check_for_imgui_item_picker_request()
@@ -88,6 +91,17 @@ static void check_for_imgui_item_picker_request()
 #endif
 }
 
+void AppManager::restore_imgui_ini_state_ifn()
+{
+    if (!_app._wants_to_restore_ini_state
+        || !_app._imgui_ini_state_to_restore.has_value())
+        return;
+
+    ImGui::LoadIniSettingsFromMemory(_app._imgui_ini_state_to_restore->c_str());
+    _app._wants_to_restore_ini_state = false;
+    _app._imgui_ini_state_to_restore.reset();
+}
+
 void AppManager::update()
 {
     prepare_windows(_window_manager);
@@ -97,6 +111,7 @@ void AppManager::update()
     if (TextureLibrary::instance().update())
         _app.trigger_rerender();
     _app.update();
+    restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
@@ -129,10 +144,22 @@ static void imgui_new_frame()
     imgui_dockspace();
 }
 
-static void imgui_render(IApp& app)
+void AppManager::imgui_render(IApp& app)
 {
-    ImGui::PushFont(Font::regular()); // The default font is the bold one because the window titles can only use the default font. We then have to push the regular() font back.
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {9.f, 4.f}); // Normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
+    float window_title_height_bias = 0.f;
+
+    // Apply normal font. The default font is the bold one because the window titles can only use the default font. We then have to push the regular() font back.
+    window_title_height_bias += ImGui::GetFontSize();
+    ImGui::PushFont(Font::regular());
+    window_title_height_bias -= ImGui::GetFontSize();
+
+    // Apply normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
+    window_title_height_bias += 2.f * ImGui::GetStyle().FramePadding.y;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGuiExtras::GetStyle().frame_padding);
+    window_title_height_bias -= 2.f * ImGui::GetStyle().FramePadding.y;
+
+    ImGui::GetCurrentContext()->window_title_height_bias = window_title_height_bias;
+
     {
         // Menu bar
         if (app.wants_to_show_menu_bar())
@@ -143,9 +170,11 @@ static void imgui_render(IApp& app)
         }
         // Windows
         app.imgui_windows();
+        imgui_windows();
     }
     ImGui::PopStyleVar();
     ImGui::PopFont();
+    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().title_bar_padding; // We need to apply the title_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
 static void end_frame(WindowManager& window_manager)
@@ -291,6 +320,13 @@ void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, doubl
     {
         app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
     }
+}
+
+void AppManager::imgui_windows()
+{
+    Cool::DebugOptions::style_editor([&]() {
+        _style_editor.imgui();
+    });
 }
 
 } // namespace Cool
