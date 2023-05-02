@@ -54,7 +54,7 @@ static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginn
     else
     {
         if (fmt.separator)
-            ImGui::Separator();
+            ImGui::SeparatorText("");
         ImGui::NewLine();
         if (fmt.font)
             ImGui::PopFont();
