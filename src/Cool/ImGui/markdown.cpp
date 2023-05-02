@@ -5,29 +5,141 @@
 
 namespace Cool::ImGuiExtras {
 
-static void link_callback(ImGui::MarkdownLinkCallbackData data)
+static void link_clicked_callback(ImGui::MarkdownLinkCallbackData data)
 {
     if (data.isImage)
         return;
-    auto const url = std::string{data.link, static_cast<size_t>(data.linkLength)};
-    open_link(url.c_str());
+    open_link(std::string{data.link, static_cast<size_t>(data.linkLength)}.c_str()); // `link` is not a zero-terminated string, so we must construct a string from the pointer and the length.
 }
 
-static void ExampleMarkdownFormatCallback(const ImGui::MarkdownFormatInfo& markdownFormatInfo_, bool start_)
-{
-    // Call the default first so any settings can be overwritten by our implementation.
-    // Alternatively could be called or not called in a switch statement on a case by case basis.
-    // See defaultMarkdownFormatCallback definition for furhter examples of how to use it.
-    ImGui::defaultMarkdownFormatCallback(markdownFormatInfo_, start_);
+static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_beginning);
 
-    switch (markdownFormatInfo_.type)
+void markdown(std::string_view markdown_text)
+{
+    static auto const config = ImGui::MarkdownConfig{
+        .linkCallback = &link_clicked_callback,
+        // .tooltipCallback   = NULL;
+        .formatCallback = format_callback,
+    };
+    // mdConfig.imageCallback     = ImageCallback;
+    // mdConfig.headingFormats[0] = {H1, true};
+    // mdConfig.headingFormats[1] = {H2, true};
+    // mdConfig.headingFormats[2] = {H3, false};
+    // mdConfig.userData          = NULL;
+    ImGui::Markdown(markdown_text.data(), markdown_text.length(), config);
+}
+
+static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
+{
+    switch (info.type)
+    {
+    case ImGui::MarkdownFormatType::NORMAL_TEXT:
+        break;
+    case ImGui::MarkdownFormatType::EMPHASIS:
+    {
+        ImGui::MarkdownHeadingFormat fmt;
+        // default styling for emphasis uses last headingFormats - for your own styling
+        // implement EMPHASIS in your formatCallback
+        if (info.level == 1)
+        {
+            // normal emphasis
+            if (is_beginning)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+            }
+            else
+            {
+                ImGui::PopStyleColor();
+            }
+        }
+        else
+        {
+            // strong emphasis
+            fmt = info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1];
+            if (is_beginning)
+            {
+                if (fmt.font)
+                {
+                    ImGui::PushFont(fmt.font);
+                }
+            }
+            else
+            {
+                if (fmt.font)
+                {
+                    ImGui::PopFont();
+                }
+            }
+        }
+        break;
+    }
+    case ImGui::MarkdownFormatType::HEADING:
+    {
+        ImGui::MarkdownHeadingFormat fmt;
+        if (info.level > ImGui::MarkdownConfig::NUMHEADINGS)
+        {
+            fmt = info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1];
+        }
+        else
+        {
+            fmt = info.config->headingFormats[info.level - 1];
+        }
+        if (is_beginning)
+        {
+            if (fmt.font)
+            {
+                ImGui::PushFont(fmt.font);
+            }
+            ImGui::NewLine();
+        }
+        else
+        {
+            if (fmt.separator)
+            {
+                ImGui::Separator();
+                ImGui::NewLine();
+            }
+            else
+            {
+                ImGui::NewLine();
+            }
+            if (fmt.font)
+            {
+                ImGui::PopFont();
+            }
+        }
+        break;
+    }
+    case ImGui::MarkdownFormatType::UNORDERED_LIST:
+        break;
+    case ImGui::MarkdownFormatType::LINK:
+        if (is_beginning)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
+        }
+        else
+        {
+            ImGui::PopStyleColor();
+            if (info.itemHovered)
+            {
+                ImGui::UnderLine(ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
+            }
+            else
+            {
+                ImGui::UnderLine(ImGui::GetStyle().Colors[ImGuiCol_Button]);
+            }
+        }
+        break;
+    }
+
+    switch (info.type)
     {
     // example: change the colour of heading level 2
     case ImGui::MarkdownFormatType::HEADING:
     {
-        if (markdownFormatInfo_.level == 2)
+        if (info.level == 2)
         {
-            if (start_)
+            if (is_beginning)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
             }
@@ -48,21 +160,6 @@ static void ExampleMarkdownFormatCallback(const ImGui::MarkdownFormatInfo& markd
         break;
     }
     }
-}
-
-void markdown(std::string_view markdown_text)
-{
-    static auto const config = ImGui::MarkdownConfig{
-        .linkCallback = &link_callback,
-        // .tooltipCallback   = NULL;
-        .formatCallback = ExampleMarkdownFormatCallback,
-    };
-    // mdConfig.imageCallback     = ImageCallback;
-    // mdConfig.headingFormats[0] = {H1, true};
-    // mdConfig.headingFormats[1] = {H2, true};
-    // mdConfig.headingFormats[2] = {H3, false};
-    // mdConfig.userData          = NULL;
-    ImGui::Markdown(markdown_text.data(), markdown_text.length(), config);
 }
 
 } // namespace Cool::ImGuiExtras
