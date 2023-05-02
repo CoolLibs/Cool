@@ -6,9 +6,16 @@ namespace Cool {
 void test_markdown_formatting()
 {
     ImGuiExtras::markdown(R"markdown(
-# H1
-## H2
-### H3
+some text
+
+# Heading 1
+some text
+
+## Heading 2
+some text
+
+### Heading 3
+some text
 
 *emphasis*
 **strong emphasis**

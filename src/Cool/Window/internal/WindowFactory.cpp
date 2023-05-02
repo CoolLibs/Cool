@@ -60,8 +60,11 @@ static void imgui_load_fonts()
         merge_icons_into_current_font();
     }
     { // Bold font
-        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
-        Font::bold()    = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        auto const path   = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
+        Font::bold()      = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        Font::heading_1() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.6f);
+        Font::heading_2() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.3f);
+        Font::heading_3() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.1f);
         // merge_icons_into_current_font(); // Not needed for now
     }
     { // Italic font

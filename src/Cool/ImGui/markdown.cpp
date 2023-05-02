@@ -1,6 +1,7 @@
 #include "markdown.h"
 #include <imgui_markdown/imgui_markdown.h>
 #include <open_link/open_link.hpp>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Fonts.h"
 #include "imgui.h"
@@ -19,15 +20,9 @@ static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_begin
 void markdown(std::string_view markdown_text)
 {
     static auto const config = ImGui::MarkdownConfig{
-        .linkCallback = &link_clicked_callback,
-        // .tooltipCallback   = NULL;
-        .formatCallback = format_callback,
+        .linkCallback   = &link_clicked_callback,
+        .formatCallback = &format_callback,
     };
-    // mdConfig.imageCallback     = ImageCallback;
-    // mdConfig.headingFormats[0] = {H1, true};
-    // mdConfig.headingFormats[1] = {H2, true};
-    // mdConfig.headingFormats[2] = {H3, false};
-    // mdConfig.userData          = NULL;
     ImGui::Markdown(markdown_text.data(), markdown_text.length(), config);
 }
 
@@ -42,22 +37,22 @@ static void format_emphasis(ImGui::MarkdownFormatInfo const& info, bool is_begin
 
 static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    ImGui::MarkdownHeadingFormat fmt = info.level > ImGui::MarkdownConfig::NUMHEADINGS
-                                           ? info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1]
-                                           : info.config->headingFormats[info.level - 1]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+    auto* const font = info.level == 1
+                           ? Font::heading_1()
+                       : info.level == 2
+                           ? Font::heading_2()
+                       : info.level == 3
+                           ? Font::heading_3()
+                           : Font::bold();
     if (is_beginning)
     {
-        if (fmt.font)
-            ImGui::PushFont(fmt.font);
-        ImGui::NewLine();
+        ImGui::PushFont(font);
     }
     else
     {
-        if (fmt.separator)
-            ImGui::SeparatorText("");
-        ImGui::NewLine();
-        if (fmt.font)
-            ImGui::PopFont();
+        ImGui::PopFont();
+        if (info.level <= 2)
+            ImGui::Separator();
     }
 }
 
