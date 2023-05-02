@@ -2,6 +2,7 @@
 #include <imgui_markdown/imgui_markdown.h>
 #include <open_link/open_link.hpp>
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Fonts.h"
 #include "imgui.h"
 
 namespace Cool::ImGuiExtras {
@@ -32,33 +33,11 @@ void markdown(std::string_view markdown_text)
 
 static void format_emphasis(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    if (info.level == 1)
-    {
-        // normal emphasis
-        if (is_beginning)
-        {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-        }
-        else
-        {
-            ImGui::PopStyleColor();
-        }
-    }
+    auto const is_italic = info.level == 1;
+    if (is_beginning)
+        ImGui::PushFont(is_italic ? Font::italic() : Font::bold());
     else
-    {
-        // strong emphasis
-        auto const fmt = ImGui::MarkdownHeadingFormat{info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1]};
-        if (is_beginning)
-        {
-            if (fmt.font)
-                ImGui::PushFont(fmt.font);
-        }
-        else
-        {
-            if (fmt.font)
-                ImGui::PopFont();
-        }
-    }
+        ImGui::PopFont();
 }
 
 static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginning)

@@ -35,15 +35,15 @@ static void set_imgui_ini_filepath()
 
 static void imgui_load_fonts()
 {
-    ImGuiIO&               io        = ImGui::GetIO();
+    ImGuiIO&               io                     = ImGui::GetIO();
     static constexpr float font_size              = 17.0f;
     static constexpr float window_title_font_size = 19.0f;
     static constexpr float icons_size             = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
 
     auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
-        config.MergeMode  = true;
-        config.PixelSnapH = true;
+        config.MergeMode   = true;
+        config.PixelSnapH  = true;
         config.GlyphOffset = ImVec2{-4.f, +1.f};
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
         static const ImWchar icon_ranges[] = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0}; // NOLINT(*-avoid-c-arrays)
@@ -62,6 +62,11 @@ static void imgui_load_fonts()
     { // Bold font
         auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
         Font::bold()    = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        // merge_icons_into_current_font(); // Not needed for now
+    }
+    { // Italic font
+        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Italic.otf";
+        Font::italic()  = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         // merge_icons_into_current_font(); // Not needed for now
     }
     { // Regular font
