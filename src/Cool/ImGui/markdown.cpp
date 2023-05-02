@@ -86,15 +86,11 @@ static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_begin
     case ImGui::MarkdownFormatType::NORMAL_TEXT:
         break;
     case ImGui::MarkdownFormatType::EMPHASIS:
-    {
         format_emphasis(info, is_beginning);
         break;
-    }
     case ImGui::MarkdownFormatType::HEADING:
-    {
         format_heading(info, is_beginning);
         break;
-    }
     case ImGui::MarkdownFormatType::UNORDERED_LIST:
         break;
     case ImGui::MarkdownFormatType::LINK:

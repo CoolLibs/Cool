@@ -31,7 +31,7 @@ Normal text
 
 ![image](image identifier e.g. filename)
 
-***
+Separator:
 ___
 
 )markdown");
