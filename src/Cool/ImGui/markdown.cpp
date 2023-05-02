@@ -1,6 +1,7 @@
 #include "markdown.h"
 #include <imgui_markdown/imgui_markdown.h>
 #include <open_link/open_link.hpp>
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "imgui.h"
 
 namespace Cool::ImGuiExtras {
@@ -83,22 +84,18 @@ static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginn
 
 static void format_link(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    if (ImGui::IsItemHovered())
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    auto const color = info.itemHovered ? ImGuiExtras::GetStyle().link_hovered : ImGuiExtras::GetStyle().link;
     if (is_beginning)
     {
-        ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
+        ImGui::PushStyleColor(ImGuiCol_Text, color);
     }
     else
     {
         ImGui::PopStyleColor();
+        ImGui::UnderLine(color);
         if (info.itemHovered)
         {
-            ImGui::UnderLine(ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-        }
-        else
-        {
-            ImGui::UnderLine(ImGui::GetStyle().Colors[ImGuiCol_Button]);
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         }
     }
 }

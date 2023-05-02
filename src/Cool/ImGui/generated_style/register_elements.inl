@@ -116,3 +116,17 @@ config.register_element(ImStyleEd::Element{
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().gradient_mark_selected_hovered = color; },
     .description = "",
 });
+
+config.register_element(ImStyleEd::Element{
+    .name        = "Link",
+    .get_color   = []() { return ImGuiExtras::GetStyle().link; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "LinkHovered",
+    .get_color   = []() { return ImGuiExtras::GetStyle().link_hovered; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link_hovered = color; },
+    .description = "",
+});

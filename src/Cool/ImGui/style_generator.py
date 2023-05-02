@@ -93,6 +93,16 @@ def all_color_elements():
             name_in_ui='GradientMarkSelectedHovered',
             description='',
         ),
+        ColorElement(
+            name_in_code='link',
+            name_in_ui='Link',
+            description='',
+        ),
+        ColorElement(
+            name_in_code='link_hovered',
+            name_in_ui='LinkHovered',
+            description='',
+        ),
     ]
 
 
