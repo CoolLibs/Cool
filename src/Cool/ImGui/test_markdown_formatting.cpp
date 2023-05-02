@@ -5,7 +5,7 @@ namespace Cool {
 
 void test_markdown_formatting()
 {
-    ImGuiExtras::markdown(R"markdown(
+    static auto text = std::string{R"markdown(
 some text
 
 # Heading 1
@@ -41,7 +41,16 @@ Normal text
 Separator:
 ___
 
-)markdown");
+)markdown"};
+
+    auto const child_window_width = 0.5f * ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x;
+    ImGui::BeginChild("##1", ImVec2(child_window_width, 0.f));
+    ImGui::InputTextMultiline("##source", &text, ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), ImGuiInputTextFlags_AllowTabInput);
+    ImGui::EndChild();
+    ImGui::SameLine();
+    ImGui::BeginChild("##2", ImVec2(child_window_width, 0.f), true);
+    ImGuiExtras::markdown(text);
+    ImGui::EndChild();
 }
 
 } // namespace Cool
