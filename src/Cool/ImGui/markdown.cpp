@@ -31,9 +31,6 @@ void markdown(std::string_view markdown_text)
 
 static void format_emphasis(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    ImGui::MarkdownHeadingFormat fmt;
-    // default styling for emphasis uses last headingFormats - for your own styling
-    // implement EMPHASIS in your formatCallback
     if (info.level == 1)
     {
         // normal emphasis
@@ -49,58 +46,38 @@ static void format_emphasis(ImGui::MarkdownFormatInfo const& info, bool is_begin
     else
     {
         // strong emphasis
-        fmt = info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1];
+        auto const fmt = ImGui::MarkdownHeadingFormat{info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1]};
         if (is_beginning)
         {
             if (fmt.font)
-            {
                 ImGui::PushFont(fmt.font);
-            }
         }
         else
         {
             if (fmt.font)
-            {
                 ImGui::PopFont();
-            }
         }
     }
 }
 
 static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    ImGui::MarkdownHeadingFormat fmt;
-    if (info.level > ImGui::MarkdownConfig::NUMHEADINGS)
-    {
-        fmt = info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1];
-    }
-    else
-    {
-        fmt = info.config->headingFormats[info.level - 1];
-    }
+    ImGui::MarkdownHeadingFormat fmt = info.level > ImGui::MarkdownConfig::NUMHEADINGS
+                                           ? info.config->headingFormats[ImGui::MarkdownConfig::NUMHEADINGS - 1]
+                                           : info.config->headingFormats[info.level - 1]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
     if (is_beginning)
     {
         if (fmt.font)
-        {
             ImGui::PushFont(fmt.font);
-        }
         ImGui::NewLine();
     }
     else
     {
         if (fmt.separator)
-        {
             ImGui::Separator();
-            ImGui::NewLine();
-        }
-        else
-        {
-            ImGui::NewLine();
-        }
+        ImGui::NewLine();
         if (fmt.font)
-        {
             ImGui::PopFont();
-        }
     }
 }
 
