@@ -52,6 +52,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="test_markdown_formatting_window",
+            name_in_ui="Test Markdown Formatting",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="style_editor",
             name_in_ui="Style Editor",
             available_in_release=True,

@@ -422,9 +422,9 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
     return was_used;
 }
 
-void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)
+void maybe_disabled(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
 {
-    if (condition)
+    if (condition_to_disable)
     {
         ImGui::BeginGroup();
         ImGui::BeginDisabled(true);
@@ -680,13 +680,13 @@ auto toggle(const char* label, bool* v) -> bool
     const ImRect check_bb(pos, pos + ImVec2(width, height));
     ImGui::RenderNavHighlight(total_bb, id);
 
-    const float            radius     = height * 0.50f;
-    float                  t          = *v ? 1.0f : 0.0f;
+    const float radius = height * 0.50f;
+    float       t      = *v ? 1.0f : 0.0f;
     if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
     {
         static constexpr float ANIM_SPEED = 0.08f;
-        float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
-        t            = *v ? (t_anim) : (1.0f - t_anim);
+        float                  t_anim     = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+        t                                 = *v ? (t_anim) : (1.0f - t_anim);
     }
 
     ImU32 col_bg;

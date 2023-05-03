@@ -20,3 +20,5 @@ ImVec4 gradient_mark{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_hovered{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_selected{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_selected_hovered{0.f, 0.f, 0.f, 1.f};
+ImVec4 link{0.f, 0.f, 0.f, 1.f};
+ImVec4 link_hovered{0.f, 0.f, 0.f, 1.f};
