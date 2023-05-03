@@ -168,7 +168,7 @@ struct Example {
         return nullptr;
     }
 
-    Pin* FindPin(ed::PinId id)
+    auto FindPin(ed::PinId id) -> Pin*
     {
         if (!id)
             return nullptr;
@@ -754,7 +754,7 @@ struct Example {
         // ImGui::SetCursorScreenPos(cursorTopLeft);
     }
 
-    void nodes_menu(ImVec2 newNodePostion)
+    auto nodes_menu() -> Node*
     {
         Node* node = nullptr;
         if (ImGui::MenuItem("Input Action"))
@@ -770,34 +770,7 @@ struct Example {
             node = SpawnComment();
         ImGui::Separator();
 
-        if (node)
-        {
-            BuildNodes();
-
-            createNewNode = false;
-
-            ed::SetNodePosition(node->ID, newNodePostion);
-
-            if (auto startPin = newNodeLinkPin)
-            {
-                auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
-
-                for (auto& pin : pins)
-                {
-                    if (CanCreateLink(startPin, &pin))
-                    {
-                        auto endPin = &pin;
-                        if (startPin->Kind == PinKind::Input)
-                            std::swap(startPin, endPin);
-
-                        m_Links.emplace_back(Link(GetNextId(), startPin->ID, endPin->ID));
-                        m_Links.back().Color = GetIconColor(startPin->Type);
-
-                        break;
-                    }
-                }
-            }
-        }
+        return node;
     }
 
     void OnFrame()
@@ -821,7 +794,36 @@ struct Example {
 
         if (ImGui::BeginPopup("Create New Node"))
         {
-            nodes_menu(openPopupPosition);
+            Node* node = nodes_menu();
+
+            if (node)
+            {
+                BuildNode(node);
+
+                createNewNode = false;
+
+                ed::SetNodePosition(node->ID, openPopupPosition);
+
+                if (auto startPin = newNodeLinkPin)
+                {
+                    auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
+
+                    for (auto& pin : pins)
+                    {
+                        if (CanCreateLink(startPin, &pin))
+                        {
+                            auto endPin = &pin;
+                            if (startPin->Kind == PinKind::Input)
+                                std::swap(startPin, endPin);
+
+                            m_Links.emplace_back(Link(GetNextId(), startPin->ID, endPin->ID));
+                            m_Links.back().Color = GetIconColor(startPin->Type);
+
+                            break;
+                        }
+                    }
+                }
+            }
 
             ImGui::EndPopup();
         }
