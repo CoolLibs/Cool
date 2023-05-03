@@ -245,7 +245,7 @@ auto NodesEditorImpl::imgui_window(
     ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
     auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
     ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
-    blueprints_example();
+    _example.OnFrame();
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 

@@ -82,7 +82,6 @@ void run(
     for (size_t i = 1; i < windows_configs.size(); ++i)
         window_factory.make_secondary_window(windows_configs[i]);
 
-    blueprint_hack_create_instance(); // TODO HACK(JF) to create the context before applying style
     {
         Cool::StyleEditor style_autoserializer{};
 
@@ -113,7 +112,7 @@ void run(
 
         // Create and run the App
         const auto run_loop = [&](bool load_from_file) {
-            auto app = App{window_factory.window_manager()};
+            auto              app = App{window_factory.window_manager()};
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
             auto_serializer.init<App, cereal::JSONInputArchive>(

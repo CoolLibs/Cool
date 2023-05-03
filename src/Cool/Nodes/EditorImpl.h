@@ -30,6 +30,14 @@ private:
 
 class NodesEditorImpl : public INodesEditor {
 public:
+    NodesEditorImpl()
+    {
+        _example.OnStart();
+    }
+    ~NodesEditorImpl()
+    {
+        // _example.OnStop(); TODO(JF)
+    }
     auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool override;
 
     auto graph() const -> Graph const& override { return _graph; }
@@ -52,9 +60,10 @@ private:
 
 private:
     // internal::UniqueImNodeContext _context;
-    Graph                         _graph;
-    bool                          _window_is_hovered = true;
-    internal::SearchBarState      _search_bar{};
+    Example                  _example;
+    Graph                    _graph;
+    bool                     _window_is_hovered = true;
+    internal::SearchBarState _search_bar{};
 
 private:
     // Serialization

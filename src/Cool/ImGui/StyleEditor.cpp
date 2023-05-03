@@ -2,7 +2,7 @@
 #include <cereal/archives/json.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
-#include "Cool/Nodes/blueprints-example.h"
+#include "Cool/Nodes/nodes_style_editor.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/Serialization.h"
 #include "ImStyleEd/cereal_style.hpp"
