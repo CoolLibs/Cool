@@ -45,16 +45,6 @@ static void show_label(const char* label, ImColor color)
     ImGui::TextUnformatted(label);
 }
 
-static void Splitter(bool split_vertically, float min_size1, float min_size2)
-{
-    ImGuiWindow& window = *GImGui->CurrentWindow;
-    ImGuiID      id     = window.GetID("##Splitter");
-    ImRect       bb;
-    bb.Min = window.DC.CursorPos;
-    bb.Max = bb.Min;
-    ImGui::SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, nullptr, nullptr, min_size1, min_size2, 0.0f);
-}
-
 int Example::GetNextId()
 {
     return m_NextId++;
@@ -660,8 +650,8 @@ auto Example::nodes_menu() -> Node*
 void Example::OnFrame()
 {
     ed::SetCurrentEditor(m_Editor);
-
-    Splitter(true, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming) EDIT this is caused by the suspend / resume
+    // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
+    GImGui->CurrentWindow->DrawList->AddLine(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f}, ImGui::GetColorU32(ImGuiCol_SeparatorHovered)); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
 
     ed::Begin("Node editor");
     {
