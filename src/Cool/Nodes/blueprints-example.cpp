@@ -45,16 +45,14 @@ static void show_label(const char* label, ImColor color)
     ImGui::TextUnformatted(label);
 }
 
-static bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f)
+static void Splitter(bool split_vertically, float min_size1, float min_size2)
 {
-    using namespace ImGui;
-    ImGuiContext& g      = *GImGui;
-    ImGuiWindow*  window = g.CurrentWindow;
-    ImGuiID       id     = window->GetID("##Splitter");
-    ImRect        bb;
-    bb.Min = window->DC.CursorPos + (split_vertically ? ImVec2(*size1, 0.0f) : ImVec2(0.0f, *size1));
-    bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
-    return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
+    ImGuiWindow& window = *GImGui->CurrentWindow;
+    ImGuiID      id     = window.GetID("##Splitter");
+    ImRect       bb;
+    bb.Min = window.DC.CursorPos;
+    bb.Max = bb.Min;
+    ImGui::SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, nullptr, nullptr, min_size1, min_size2, 0.0f);
 }
 
 int Example::GetNextId()
@@ -318,7 +316,7 @@ void Example::DrawPinIcon(const Pin& pin, bool connected, int alpha)
         return;
     }
 
-    ax::Widgets::Icon(ImVec2(static_cast<float>(m_PinIconSize), static_cast<float>(m_PinIconSize)), iconType, connected, color, ImColor(32, 32, 32, alpha));
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), iconType, connected, color, ImColor(32, 32, 32, alpha));
 };
 
 void Example::render_blueprint_node(Node& node, util::BlueprintNodeBuilder& builder)
@@ -663,7 +661,7 @@ void Example::OnFrame()
 {
     ed::SetCurrentEditor(m_Editor);
 
-    Splitter(true, 0.0f, &leftPaneWidth, &rightPaneWidth, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming) EDIT this is caused by the suspend / resume
+    Splitter(true, 0.0f, 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming) EDIT this is caused by the suspend / resume
 
     ed::Begin("Node editor");
     {

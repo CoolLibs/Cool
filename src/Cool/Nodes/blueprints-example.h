@@ -142,8 +142,7 @@ struct Example {
 
     void OnFrame();
 
-    int               m_NextId      = 1;
-    const int         m_PinIconSize = 24;
+    int               m_NextId = 1;
     std::vector<Node> m_Nodes;
     std::vector<Link> m_Links;
 
@@ -153,7 +152,4 @@ struct Example {
     bool       createNewNode  = false;
     Pin*       newNodeLinkPin = nullptr;
     Pin*       newLinkPin     = nullptr;
-
-    float leftPaneWidth  = 000.0f;
-    float rightPaneWidth = 800.0f;
 };
