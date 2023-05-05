@@ -242,12 +242,15 @@ auto NodesEditorImpl::imgui_window(
     NodesLibrary const& library
 ) -> bool
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
     ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
     auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
     ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
     _example.OnFrame();
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
+    ImGui::PopStyleVar(2);
 
     // Cool::DebugOptions::nodes_style_editor([&]() {
     //     style_editor();
