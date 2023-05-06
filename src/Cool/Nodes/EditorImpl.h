@@ -8,9 +8,90 @@
 #include "NodesConfig.h"
 #include "NodesLibrary.h"
 #include "UniqueImNodeContext.h"
-#include "blueprints-example.h"
+#include "utilities/builders.h"
+#include "utilities/widgets.h"
 
-// #include "imnodes/imnodes_internal.h"
+namespace ed   = ax::NodeEditor;
+namespace util = ax::NodeEditor::Utilities;
+
+using namespace ax;
+
+using ax::Widgets::IconType;
+
+enum class PinType {
+    Flow,
+    Bool,
+    Int,
+    Float,
+    String,
+    Object,
+    Function,
+    Delegate,
+};
+
+enum class PinKind {
+    Output,
+    Input
+};
+
+enum class NodeType {
+    Blueprint,
+    Comment,
+};
+
+struct NodeEX;
+
+struct PinEX {
+    ed::PinId   ID;
+    ::NodeEX*   Node;
+    std::string Name;
+    PinType     Type;
+    PinKind     Kind;
+
+    PinEX(int id, const char* name, PinType type)
+        : ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input)
+    {
+    }
+};
+
+struct NodeEX {
+    ed::NodeId         ID;
+    std::string        Name;
+    std::vector<PinEX> Inputs;
+    std::vector<PinEX> Outputs;
+    ImColor            Color;
+    NodeType           Type;
+    ImVec2             Size;
+
+    std::string State;
+    std::string SavedState;
+
+    NodeEX(int id, const char* name, ImColor color = ImColor(255, 255, 255))
+        : ID(id), Name(name), Color(color), Type(NodeType::Blueprint), Size(0, 0)
+    {
+    }
+};
+
+struct LinkEX {
+    ed::LinkId ID;
+
+    ed::PinId StartPinID;
+    ed::PinId EndPinID;
+
+    ImColor Color;
+
+    LinkEX(ed::LinkId id, ed::PinId startPinId, ed::PinId endPinId)
+        : ID(id), StartPinID(startPinId), EndPinID(endPinId), Color(255, 255, 255)
+    {
+    }
+};
+
+struct NodeIdLess {
+    bool operator()(const ed::NodeId& lhs, const ed::NodeId& rhs) const
+    {
+        return lhs.AsPointer() < rhs.AsPointer();
+    }
+};
 
 namespace Cool {
 
@@ -32,11 +113,11 @@ class NodesEditorImpl : public INodesEditor {
 public:
     NodesEditorImpl()
     {
-        _example.OnStart();
+        OnStart();
     }
     ~NodesEditorImpl()
     {
-        // _example.OnStop(); TODO(JF)
+        // OnStop(); TODO(JF)
     }
     auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool override;
 
@@ -60,10 +141,78 @@ private:
 
 private:
     // internal::UniqueImNodeContext _context;
-    Example                  _example;
     Graph                    _graph;
     bool                     _window_is_hovered = true;
     internal::SearchBarState _search_bar{};
+
+    // EXAMPLE
+private:
+    int GetNextId();
+
+    ed::LinkId GetNextLinkId();
+
+    NodeEX* FindNode(ed::NodeId id);
+
+    LinkEX* FindLink(ed::LinkId id);
+
+    auto FindPin(ed::PinId id) -> PinEX*;
+
+    bool IsPinLinked(ed::PinId id);
+
+    bool CanCreateLink(PinEX* a, PinEX* b);
+
+    void BuildNode(NodeEX* node);
+
+    NodeEX* SpawnInputActionNode();
+
+    NodeEX* SpawnBranchNode();
+
+    NodeEX* SpawnDoNNode();
+
+    NodeEX* SpawnOutputActionNode();
+
+    NodeEX* SpawnPrintStringNode();
+
+    NodeEX* SpawnComment();
+
+    void BuildNodes();
+
+    void OnStart();
+
+    void OnStop();
+
+    ImColor GetIconColor(PinType type);
+
+    void DrawPinIcon(const PinEX& pin, bool connected, int alpha);
+
+    void render_blueprint_node(NodeEX& node, util::BlueprintNodeBuilder& builder);
+
+    void render_comment_node(NodeEX& node);
+
+    void render_new_link();
+
+    void render_new_node();
+
+    void handle_creations();
+
+    void handle_deletions();
+
+    void render_editor();
+
+    auto nodes_menu() -> NodeEX*;
+
+    void OnFrame();
+
+    int                 m_NextId = 1;
+    std::vector<NodeEX> m_Nodes;
+    std::vector<LinkEX> m_Links;
+
+    ed::NodeId contextNodeId  = 0;
+    ed::LinkId contextLinkId  = 0;
+    ed::PinId  contextPinId   = 0;
+    bool       createNewNode  = false;
+    PinEX*     newNodeLinkPin = nullptr;
+    PinEX*     newLinkPin     = nullptr;
 
 private:
     // Serialization

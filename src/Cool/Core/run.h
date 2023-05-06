@@ -16,7 +16,6 @@
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/ImGui/StyleEditor.h"
-#include "Cool/Nodes/blueprints-example.h" // TODO HACK(JF) to create the context before applying style
 #include "InitConfig.h"
 
 //
@@ -112,7 +111,7 @@ void run(
 
         // Create and run the App
         const auto run_loop = [&](bool load_from_file) {
-            auto              app = App{window_factory.window_manager()};
+            auto app = App{window_factory.window_manager()};
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
             auto_serializer.init<App, cereal::JSONInputArchive>(
