@@ -373,12 +373,9 @@ bool NodesEditorImpl::IsPinLinked(ed::PinId id)
     return false;
 }
 
-bool NodesEditorImpl::CanCreateLink(PinEX* a, PinEX* b)
+auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 {
-    if (!a || !b || a == b || a->Kind == b->Kind || a->Type != b->Type || a->Node == b->Node)
-        return false;
-
-    return true;
+    return &a != &b; /* && a->Kind != b->Kind && a->Type == b->Type && a->Node != b->Node */
 }
 
 void NodesEditorImpl::BuildNode(NodeEX* node)
@@ -556,13 +553,12 @@ ImColor NodesEditorImpl::GetIconColor(PinType type)
     }
 };
 
-void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, int alpha)
+void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
 {
     IconType icon_type = IconType::Flow;
-    ImColor  color     = ImColor{255, 255, 255, 255}; // GetIconColor(pin.Type);
-    color.Value.w      = alpha / 255.0f;
+    ImColor  color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
 
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(32, 32, 32, alpha));
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
 static auto as_ed_id(reg::AnyId const& id)
@@ -593,15 +589,18 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     for (auto& input_pin : node.input_pins())
     {
-        auto alpha = ImGui::GetStyle().Alpha;
-        // if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-        //     alpha = alpha * (48.0f / 255.0f);
-
         auto const pin_id = as_ed_id(input_pin.id());
+
+        auto const alpha = [&]() {
+            auto tmp_alpha = ImGui::GetStyle().Alpha;
+            if (newLinkPin && !is_allowed_connection(*newLinkPin, input_pin))
+                tmp_alpha *= 0.188f;
+            return tmp_alpha;
+        }();
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        DrawPinIcon(input_pin, IsPinLinked(pin_id), (int)(alpha * 255));
+        DrawPinIcon(input_pin, IsPinLinked(pin_id), alpha);
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -732,15 +731,15 @@ auto NodesEditorImpl::handle_link_creation() -> bool
     ed::PinId startPinId = 0, endPinId = 0;
     if (ed::QueryNewLink(&startPinId, &endPinId))
     {
-        auto startPin = FindPin(startPinId);
-        auto endPin   = FindPin(endPinId);
-
+        auto const* startPin = FindPin(startPinId);
         if (!startPin)
             return false;
+
+        auto const* endPin = FindPin(endPinId);
         if (!endPin)
             return false;
 
-        newLinkPin = startPin ? startPin : endPin;
+        // newLinkPin = startPin ? startPin : endPin;
 
         if (startPin->Kind == PinKind::Input)
         {
@@ -789,7 +788,7 @@ void NodesEditorImpl::render_new_node()
     ed::PinId pinId = 0;
     if (ed::QueryNewNode(&pinId))
     {
-        newLinkPin = FindPin(pinId);
+        // newLinkPin = FindPin(pinId);
         if (newLinkPin)
             show_label("+ Create Node", ImColor(32, 45, 32, 180));
 

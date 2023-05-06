@@ -158,7 +158,7 @@ private:
 
     bool IsPinLinked(ed::PinId id);
 
-    bool CanCreateLink(PinEX* a, PinEX* b);
+    auto is_allowed_connection(Pin const&, Pin const&) -> bool;
 
     void BuildNode(NodeEX* node);
 
@@ -182,7 +182,7 @@ private:
 
     ImColor GetIconColor(PinType type);
 
-    void DrawPinIcon(Pin const&, bool connected, int alpha);
+    void DrawPinIcon(Pin const&, bool connected, float alpha);
 
     void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, util::BlueprintNodeBuilder& builder);
 
@@ -210,7 +210,7 @@ private:
     ed::LinkId contextLinkId  = 0;
     ed::PinId  contextPinId   = 0;
     PinEX*     newNodeLinkPin = nullptr;
-    PinEX*     newLinkPin     = nullptr;
+    Pin const* newLinkPin     = nullptr;
 
 private:
     // Serialization
