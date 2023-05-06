@@ -1,5 +1,6 @@
 
 #include "Cool/Nodes/EditorImpl.h"
+#include <imgui-node-editor/imgui_node_editor.h>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/NodesLibrary.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -208,10 +209,11 @@ auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 
 void NodesEditorImpl::open_nodes_menu()
 {
-    ImGui::OpenPopup("_nodes_library");
+    _next_node_position = ImGui::GetMousePos();
     _search_bar.on_nodes_menu_open();
-
-    _next_node_position = ImGui::GetMousePosOnOpeningCurrentPopup();
+    ed::Suspend();
+    ImGui::OpenPopup("_nodes_library");
+    ed::Resume();
 }
 
 auto NodesEditorImpl::draw_nodes_library_menu_ifn(
@@ -230,11 +232,11 @@ auto NodesEditorImpl::draw_nodes_library_menu_ifn(
 
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        if (imgui_nodes_menu(nodes_cfg, library, menu_just_opened))
-        {
-            ImGui::CloseCurrentPopup();
-            b = true;
-        }
+        // if (imgui_nodes_menu(nodes_cfg, library, menu_just_opened))
+        // {
+        //     ImGui::CloseCurrentPopup();
+        //     b = true;
+        // }
         ImGui::EndPopup();
     }
 
@@ -305,19 +307,17 @@ auto NodesEditorImpl::imgui_nodes_menu(
     NodesConfig const&  nodes_cfg,
     NodesLibrary const& library,
     bool                menu_just_opened
-) -> bool
+) -> NodeId
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
     auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
     if (!maybe_node_definition_id)
-        return false;
+        return {};
 
     auto const id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
-    // ImNodes::SetNodeScreenSpacePos(id, _next_node_position);
-
-    return true;
+    return id;
 }
 
 static inline ImRect ImGui_GetItemRect()
@@ -837,9 +837,7 @@ void NodesEditorImpl::render_new_node()
             createNewNode  = true;
             newNodeLinkPin = FindPin(pinId);
             newLinkPin     = nullptr;
-            ed::Suspend();
-            ImGui::OpenPopup("Create New Node");
-            ed::Resume();
+            open_nodes_menu();
         }
     }
 }
@@ -922,44 +920,43 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
         render_editor(library);
     }
 
-    auto openPopupPosition = ImGui::GetMousePos();
-    ed::Suspend();
     if (ed::ShowBackgroundContextMenu())
     {
-        ImGui::OpenPopup("Create New Node");
+        open_nodes_menu();
         newNodeLinkPin = nullptr;
     }
 
-    if (ImGui::BeginPopup("Create New Node"))
+    ed::Suspend();
+    if (ImGui::BeginPopup("_nodes_library"))
     {
-        bool has_created_node = imgui_nodes_menu(nodes_cfg, library, false);
+        auto const new_node_id = imgui_nodes_menu(nodes_cfg, library, false);
 
-        // if (node)
-        // {
-        //     createNewNode = false;
+        if (!new_node_id.underlying_uuid().is_nil())
+        {
+            createNewNode = false;
 
-        //     ed::SetNodePosition(node->ID, openPopupPosition);
+            ed::SetNodePosition(as_ed_id(new_node_id), _next_node_position);
 
-        //     if (auto startPin = newNodeLinkPin)
-        //     {
-        //         auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
+            // if (auto startPin = newNodeLinkPin)
+            // {
+            //     auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
 
-        //         for (auto& pin : pins)
-        //         {
-        //             if (CanCreateLink(startPin, &pin))
-        //             {
-        //                 auto endPin = &pin;
-        //                 if (startPin->Kind == PinKind::Input)
-        //                     std::swap(startPin, endPin);
+            //     for (auto& pin : pins)
+            //     {
+            //         if (CanCreateLink(startPin, &pin))
+            //         {
+            //             auto endPin = &pin;
+            //             if (startPin->Kind == PinKind::Input)
+            //                 std::swap(startPin, endPin);
 
-        //                 m_Links.emplace_back(LinkEX(GetNextId(), startPin->ID, endPin->ID));
-        //                 m_Links.back().Color = GetIconColor(startPin->Type);
+            //             m_Links.emplace_back(LinkEX(GetNextId(), startPin->ID, endPin->ID));
+            //             m_Links.back().Color = GetIconColor(startPin->Type);
 
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
+            //             break;
+            //         }
+            //     }
+            // }
+        }
 
         ImGui::EndPopup();
     }

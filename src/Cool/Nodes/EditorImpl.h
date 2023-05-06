@@ -133,7 +133,8 @@ private:
 private:
     /* Nodes Library */
     auto draw_nodes_library_menu_ifn(NodesConfig const&, NodesLibrary const&) -> bool;
-    auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> bool;
+    /// Returns the id of the new node, or a null id if no node was created.
+    auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> NodeId;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
