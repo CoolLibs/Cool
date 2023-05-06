@@ -182,7 +182,7 @@ private:
 
     ImColor GetIconColor(PinType type);
 
-    void DrawPinIcon(const PinEX& pin, bool connected, int alpha);
+    void DrawPinIcon(Pin const&, bool connected, int alpha);
 
     void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, util::BlueprintNodeBuilder& builder);
 
@@ -209,7 +209,6 @@ private:
     ed::NodeId contextNodeId  = 0;
     ed::LinkId contextLinkId  = 0;
     ed::PinId  contextPinId   = 0;
-    bool       createNewNode  = false;
     PinEX*     newNodeLinkPin = nullptr;
     PinEX*     newLinkPin     = nullptr;
 

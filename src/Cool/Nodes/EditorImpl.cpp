@@ -128,21 +128,6 @@ static auto draw_node(Cool::Node& node, ImNodes::NodeId const& id, NodesConfig c
     return false;
 }
 
-auto NodesEditorImpl::handle_link_creation() -> bool
-{
-    // PinId from_pin_id;
-    // PinId to_pin_id;
-    // if (!ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
-    //     return false;
-
-    // _graph.remove_link_going_into(to_pin_id);
-    // _graph.add_link(Link{
-    //     .from_pin_id = from_pin_id,
-    //     .to_pin_id   = to_pin_id,
-    // });
-    return true;
-}
-
 auto NodesEditorImpl::handle_link_deletion() -> bool
 {
     bool has_deleted_some = false;
@@ -202,7 +187,7 @@ auto NodesEditorImpl::wants_to_delete_selection() const -> bool
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 {
     return _window_is_hovered
-           && (ImGui::IsMouseReleased(ImGuiMouseButton_Middle)
+           && (ed::ShowBackgroundContextMenu()
                || (ImGui::IsKeyReleased(ImGuiKey_A) && !ImGui::GetIO().WantTextInput)
            );
 }
@@ -571,26 +556,13 @@ ImColor NodesEditorImpl::GetIconColor(PinType type)
     }
 };
 
-void NodesEditorImpl::DrawPinIcon(const PinEX& pin, bool connected, int alpha)
+void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, int alpha)
 {
-    IconType iconType;
-    ImColor  color = GetIconColor(pin.Type);
-    color.Value.w  = alpha / 255.0f;
-    switch (pin.Type)
-    {
-    case PinType::Flow: iconType = IconType::Flow; break;
-    case PinType::Bool: iconType = IconType::Circle; break;
-    case PinType::Int: iconType = IconType::Circle; break;
-    case PinType::Float: iconType = IconType::Circle; break;
-    case PinType::String: iconType = IconType::Circle; break;
-    case PinType::Object: iconType = IconType::Circle; break;
-    case PinType::Function: iconType = IconType::Circle; break;
-    case PinType::Delegate: iconType = IconType::Square; break;
-    default:
-        return;
-    }
+    IconType icon_type = IconType::Flow;
+    ImColor  color     = ImColor{255, 255, 255, 255}; // GetIconColor(pin.Type);
+    color.Value.w      = alpha / 255.0f;
 
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), iconType, connected, color, ImColor(32, 32, 32, alpha));
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(32, 32, 32, alpha));
 };
 
 static auto as_ed_id(reg::AnyId const& id)
@@ -619,29 +591,26 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     ImGui::Spring(0);
     builder.EndHeader();
 
-    // for (auto& input : node.Inputs)
-    // {
-    //     auto alpha = ImGui::GetStyle().Alpha;
-    //     if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-    //         alpha = alpha * (48.0f / 255.0f);
+    for (auto& input_pin : node.input_pins())
+    {
+        auto alpha = ImGui::GetStyle().Alpha;
+        // if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
+        //     alpha = alpha * (48.0f / 255.0f);
 
-    //     builder.Input(input.ID);
-    //     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-    //     DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
-    //     ImGui::Spring(0);
-    //     if (!input.Name.empty())
-    //     {
-    //         ImGui::TextUnformatted(input.Name.c_str());
-    //         ImGui::Spring(0);
-    //     }
-    //     if (input.Type == PinType::Bool)
-    //     {
-    //         ImGui::Button("Hello");
-    //         ImGui::Spring(0);
-    //     }
-    //     ImGui::PopStyleVar();
-    //     builder.EndInput();
-    // }
+        auto const pin_id = as_ed_id(input_pin.id());
+
+        builder.Input(pin_id);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+        DrawPinIcon(input_pin, IsPinLinked(pin_id), (int)(alpha * 255));
+        ImGui::Spring(0);
+        if (!input_pin.name().empty())
+        {
+            ImGui::TextUnformatted(input_pin.name().c_str());
+            ImGui::Spring(0);
+        }
+        ImGui::PopStyleVar();
+        builder.EndInput();
+    }
 
     // for (auto& output : node.Outputs)
     // {
@@ -747,13 +716,29 @@ void NodesEditorImpl::render_comment_node(NodeEX& node)
     ed::EndGroupHint();
 }
 
-void NodesEditorImpl::render_new_link()
+auto NodesEditorImpl::handle_link_creation() -> bool
 {
+    // PinId from_pin_id;
+    // PinId to_pin_id;
+    // if (!ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
+    //     return false;
+
+    // _graph.remove_link_going_into(to_pin_id);
+    // _graph.add_link(Link{
+    //     .from_pin_id = from_pin_id,
+    //     .to_pin_id   = to_pin_id,
+    // });
+
     ed::PinId startPinId = 0, endPinId = 0;
     if (ed::QueryNewLink(&startPinId, &endPinId))
     {
         auto startPin = FindPin(startPinId);
         auto endPin   = FindPin(endPinId);
+
+        if (!startPin)
+            return false;
+        if (!endPin)
+            return false;
 
         newLinkPin = startPin ? startPin : endPin;
 
@@ -795,6 +780,8 @@ void NodesEditorImpl::render_new_link()
             }
         }
     }
+
+    return false;
 }
 
 void NodesEditorImpl::render_new_node()
@@ -808,7 +795,6 @@ void NodesEditorImpl::render_new_node()
 
         if (ed::AcceptNewItem())
         {
-            createNewNode  = true;
             newNodeLinkPin = FindPin(pinId);
             newLinkPin     = nullptr;
             open_nodes_menu();
@@ -820,7 +806,7 @@ void NodesEditorImpl::handle_creations()
 {
     if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
     {
-        render_new_link();
+        handle_link_creation();
         render_new_node();
     }
     else
@@ -874,11 +860,8 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library)
     for (auto& link : m_Links)
         ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
 
-    if (!createNewNode)
-    {
-        handle_creations();
-        handle_deletions();
-    }
+    handle_creations();
+    handle_deletions();
 
     // ImGui::SetCursorScreenPos(cursorTopLeft);
 }
@@ -894,7 +877,7 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
         render_editor(library);
     }
 
-    if (ed::ShowBackgroundContextMenu())
+    if (wants_to_open_nodes_menu())
     {
         open_nodes_menu();
         newNodeLinkPin = nullptr;
@@ -908,7 +891,7 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
 
         if (!new_node_id.underlying_uuid().is_nil())
         {
-            createNewNode = false;
+            ImGui::CloseCurrentPopup();
 
             ed::SetNodePosition(as_ed_id(new_node_id), _next_node_position);
 
@@ -935,8 +918,6 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
 
         ImGui::EndPopup();
     }
-    else
-        createNewNode = false;
     ed::Resume();
     ed::End();
 }
