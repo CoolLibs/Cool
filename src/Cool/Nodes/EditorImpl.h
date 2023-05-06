@@ -199,9 +199,7 @@ private:
 
     void render_editor();
 
-    auto nodes_menu() -> NodeEX*;
-
-    void OnFrame();
+    void OnFrame(NodesConfig const&, NodesLibrary const&);
 
     int                 m_NextId = 1;
     std::vector<NodeEX> m_Nodes;

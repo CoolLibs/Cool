@@ -247,12 +247,12 @@ auto NodesEditorImpl::imgui_window(
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
     ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
+    ImGui::PopStyleVar(2);
     auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
     ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
-    OnFrame();
+    OnFrame(nodes_cfg, library);
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
-    ImGui::PopStyleVar(2);
 
     // Cool::DebugOptions::nodes_style_editor([&]() {
     //     style_editor();
@@ -936,26 +936,7 @@ void NodesEditorImpl::render_editor()
     // ImGui::SetCursorScreenPos(cursorTopLeft);
 }
 
-auto NodesEditorImpl::nodes_menu() -> NodeEX*
-{
-    NodeEX* node = nullptr;
-    if (ImGui::MenuItem("Input Action"))
-        node = SpawnInputActionNode();
-    if (ImGui::MenuItem("Output Action"))
-        node = SpawnOutputActionNode();
-    if (ImGui::MenuItem("Branch"))
-        node = SpawnBranchNode();
-    if (ImGui::MenuItem("Do N"))
-        node = SpawnDoNNode();
-    ImGui::Separator();
-    if (ImGui::MenuItem("Comment"))
-        node = SpawnComment();
-    ImGui::Separator();
-
-    return node;
-}
-
-void NodesEditorImpl::OnFrame()
+void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& library)
 {
     ed::SetCurrentEditor(m_Editor);
     // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
@@ -976,34 +957,34 @@ void NodesEditorImpl::OnFrame()
 
     if (ImGui::BeginPopup("Create New Node"))
     {
-        NodeEX* node = nodes_menu();
+        bool has_created_node = imgui_nodes_menu(nodes_cfg, library, false);
 
-        if (node)
-        {
-            createNewNode = false;
+        // if (node)
+        // {
+        //     createNewNode = false;
 
-            ed::SetNodePosition(node->ID, openPopupPosition);
+        //     ed::SetNodePosition(node->ID, openPopupPosition);
 
-            if (auto startPin = newNodeLinkPin)
-            {
-                auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
+        //     if (auto startPin = newNodeLinkPin)
+        //     {
+        //         auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
 
-                for (auto& pin : pins)
-                {
-                    if (CanCreateLink(startPin, &pin))
-                    {
-                        auto endPin = &pin;
-                        if (startPin->Kind == PinKind::Input)
-                            std::swap(startPin, endPin);
+        //         for (auto& pin : pins)
+        //         {
+        //             if (CanCreateLink(startPin, &pin))
+        //             {
+        //                 auto endPin = &pin;
+        //                 if (startPin->Kind == PinKind::Input)
+        //                     std::swap(startPin, endPin);
 
-                        m_Links.emplace_back(LinkEX(GetNextId(), startPin->ID, endPin->ID));
-                        m_Links.back().Color = GetIconColor(startPin->Type);
+        //                 m_Links.emplace_back(LinkEX(GetNextId(), startPin->ID, endPin->ID));
+        //                 m_Links.back().Color = GetIconColor(startPin->Type);
 
-                        break;
-                    }
-                }
-            }
-        }
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
 
         ImGui::EndPopup();
     }
