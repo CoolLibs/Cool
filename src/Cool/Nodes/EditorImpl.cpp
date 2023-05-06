@@ -1,6 +1,7 @@
 
 #include "Cool/Nodes/EditorImpl.h"
 #include <reg/src/AnyId.hpp>
+#include "Cool/Nodes/NodesLibrary.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
@@ -630,11 +631,12 @@ static auto as_ed_id(reg::AnyId const& id)
            + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
 }
 
-void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, util::BlueprintNodeBuilder& builder)
 {
     builder.Begin(as_ed_id(id));
 
-    builder.Header(ImColor{1, 0, 1, 1} /*node.Color*/);
+    auto const color = category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f});
+    builder.Header(color.as_ImColor());
     ImGui::Spring(0);
     ImGui::TextUnformatted(node.definition_name().c_str());
     ImGui::Spring(1);
@@ -883,7 +885,7 @@ void NodesEditorImpl::handle_deletions()
     }
 }
 
-void NodesEditorImpl::render_editor()
+void NodesEditorImpl::render_editor(NodesLibrary const& library)
 {
     // auto cursorTopLeft = ImGui::GetCursorScreenPos();
 
@@ -892,7 +894,7 @@ void NodesEditorImpl::render_editor()
     for (auto& [id, node] : _graph.nodes())
     {
         // if (node.Type == NodeType::Blueprint)
-        render_blueprint_node(node, id, builder);
+        render_blueprint_node(node, id, library.get_category(node.category_name()), builder);
         // if (node.Type == NodeType::Comment)
         //     render_comment_node(node);
     }
@@ -917,7 +919,7 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
 
     ed::Begin("Node editor");
     {
-        render_editor();
+        render_editor(library);
     }
 
     auto openPopupPosition = ImGui::GetMousePos();

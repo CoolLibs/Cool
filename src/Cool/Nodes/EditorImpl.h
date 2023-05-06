@@ -185,7 +185,7 @@ private:
 
     void DrawPinIcon(const PinEX& pin, bool connected, int alpha);
 
-    void render_blueprint_node(Node& node, NodeId const& id, util::BlueprintNodeBuilder& builder);
+    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, util::BlueprintNodeBuilder& builder);
 
     void render_comment_node(NodeEX& node);
 
@@ -197,7 +197,7 @@ private:
 
     void handle_deletions();
 
-    void render_editor();
+    void render_editor(NodesLibrary const& library);
 
     void OnFrame(NodesConfig const&, NodesLibrary const&);
 
