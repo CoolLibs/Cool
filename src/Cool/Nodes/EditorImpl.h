@@ -131,8 +131,6 @@ private:
     [[nodiscard]] auto wants_to_delete_selection() const -> bool;
 
 private:
-    /* Nodes Library */
-    auto draw_nodes_library_menu_ifn(NodesConfig const&, NodesLibrary const&) -> bool;
     /// Returns the id of the new node, or a null id if no node was created.
     auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> NodeId;
     auto wants_to_open_nodes_menu() const -> bool;
@@ -201,6 +199,8 @@ private:
     void render_editor(NodesLibrary const& library);
 
     void OnFrame(NodesConfig const&, NodesLibrary const&);
+
+    bool _menu_just_opened{false};
 
     int                 m_NextId = 1;
     std::vector<NodeEX> m_Nodes;

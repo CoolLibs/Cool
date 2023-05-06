@@ -209,38 +209,12 @@ auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 
 void NodesEditorImpl::open_nodes_menu()
 {
+    _menu_just_opened   = true;
     _next_node_position = ImGui::GetMousePos();
     _search_bar.on_nodes_menu_open();
     ed::Suspend();
     ImGui::OpenPopup("_nodes_library");
     ed::Resume();
-}
-
-auto NodesEditorImpl::draw_nodes_library_menu_ifn(
-    NodesConfig const&  nodes_cfg,
-    NodesLibrary const& library
-) -> bool
-{
-    bool b = false;
-
-    bool menu_just_opened = false;
-    if (wants_to_open_nodes_menu())
-    {
-        open_nodes_menu();
-        menu_just_opened = true;
-    }
-
-    if (ImGui::BeginPopup("_nodes_library"))
-    {
-        // if (imgui_nodes_menu(nodes_cfg, library, menu_just_opened))
-        // {
-        //     ImGui::CloseCurrentPopup();
-        //     b = true;
-        // }
-        ImGui::EndPopup();
-    }
-
-    return b;
 }
 
 auto NodesEditorImpl::imgui_window(
@@ -929,7 +903,8 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
     ed::Suspend();
     if (ImGui::BeginPopup("_nodes_library"))
     {
-        auto const new_node_id = imgui_nodes_menu(nodes_cfg, library, false);
+        auto const new_node_id = imgui_nodes_menu(nodes_cfg, library, _menu_just_opened);
+        _menu_just_opened      = false;
 
         if (!new_node_id.underlying_uuid().is_nil())
         {
