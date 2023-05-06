@@ -1,5 +1,6 @@
 
 #include "Cool/Nodes/EditorImpl.h"
+#include <reg/src/AnyId.hpp>
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
@@ -617,124 +618,96 @@ void NodesEditorImpl::DrawPinIcon(const PinEX& pin, bool connected, int alpha)
     ax::Widgets::Icon(ImVec2(24.f, 24.f), iconType, connected, color, ImColor(32, 32, 32, alpha));
 };
 
-void NodesEditorImpl::render_blueprint_node(NodeEX& node, util::BlueprintNodeBuilder& builder)
+static auto as_ed_id(reg::AnyId const& id)
 {
-    bool hasOutputDelegates = false;
-    for (auto& output : node.Outputs)
-        if (output.Type == PinType::Delegate)
-            hasOutputDelegates = true;
+    return (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[0]) << 0)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[1]) << 8)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[2]) << 16)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[3]) << 24)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[4]) << 32)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[5]) << 40)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[6]) << 48)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
+}
 
-    builder.Begin(node.ID);
+void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, util::BlueprintNodeBuilder& builder)
+{
+    builder.Begin(as_ed_id(id));
 
-    builder.Header(node.Color);
+    builder.Header(ImColor{1, 0, 1, 1} /*node.Color*/);
     ImGui::Spring(0);
-    ImGui::TextUnformatted(node.Name.c_str());
+    ImGui::TextUnformatted(node.definition_name().c_str());
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
-    if (hasOutputDelegates)
-    {
-        ImGui::BeginVertical("delegates", ImVec2(0, 28));
-        ImGui::Spring(1, 0);
-        for (auto& output : node.Outputs)
-        {
-            if (output.Type != PinType::Delegate)
-                continue;
 
-            auto alpha = ImGui::GetStyle().Alpha;
-            if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-                alpha = alpha * (48.0f / 255.0f);
-
-            ed::BeginPin(output.ID, ed::PinKind::Output);
-            ed::PinPivotAlignment(ImVec2(1.0f, 0.5f));
-            ed::PinPivotSize(ImVec2(0, 0));
-            ImGui::BeginHorizontal(output.ID.AsPointer());
-            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-            if (!output.Name.empty())
-            {
-                ImGui::TextUnformatted(output.Name.c_str());
-                ImGui::Spring(0);
-            }
-            DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
-            ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.x / 2);
-            ImGui::EndHorizontal();
-            ImGui::PopStyleVar();
-            ed::EndPin();
-
-            // DrawItemRect(ImColor(255, 0, 0));
-        }
-        ImGui::Spring(1, 0);
-        ImGui::EndVertical();
-        ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.x / 2);
-    }
-    else
-        ImGui::Spring(0);
+    ImGui::Spring(0);
     builder.EndHeader();
 
-    for (auto& input : node.Inputs)
-    {
-        auto alpha = ImGui::GetStyle().Alpha;
-        if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-            alpha = alpha * (48.0f / 255.0f);
+    // for (auto& input : node.Inputs)
+    // {
+    //     auto alpha = ImGui::GetStyle().Alpha;
+    //     if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
+    //         alpha = alpha * (48.0f / 255.0f);
 
-        builder.Input(input.ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
-        ImGui::Spring(0);
-        if (!input.Name.empty())
-        {
-            ImGui::TextUnformatted(input.Name.c_str());
-            ImGui::Spring(0);
-        }
-        if (input.Type == PinType::Bool)
-        {
-            ImGui::Button("Hello");
-            ImGui::Spring(0);
-        }
-        ImGui::PopStyleVar();
-        builder.EndInput();
-    }
+    //     builder.Input(input.ID);
+    //     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+    //     DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
+    //     ImGui::Spring(0);
+    //     if (!input.Name.empty())
+    //     {
+    //         ImGui::TextUnformatted(input.Name.c_str());
+    //         ImGui::Spring(0);
+    //     }
+    //     if (input.Type == PinType::Bool)
+    //     {
+    //         ImGui::Button("Hello");
+    //         ImGui::Spring(0);
+    //     }
+    //     ImGui::PopStyleVar();
+    //     builder.EndInput();
+    // }
 
-    for (auto& output : node.Outputs)
-    {
-        if (output.Type == PinType::Delegate)
-            continue;
+    // for (auto& output : node.Outputs)
+    // {
+    //     if (output.Type == PinType::Delegate)
+    //         continue;
 
-        auto alpha = ImGui::GetStyle().Alpha;
-        if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-            alpha = alpha * (48.0f / 255.0f);
+    //     auto alpha = ImGui::GetStyle().Alpha;
+    //     if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
+    //         alpha = alpha * (48.0f / 255.0f);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        builder.Output(output.ID);
-        if (output.Type == PinType::String)
-        {
-            static char buffer[128] = "Edit Me\nMultiline!";
-            static bool wasActive   = false;
+    //     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+    //     builder.Output(output.ID);
+    //     if (output.Type == PinType::String)
+    //     {
+    //         static char buffer[128] = "Edit Me\nMultiline!";
+    //         static bool wasActive   = false;
 
-            ImGui::PushItemWidth(100.0f);
-            ImGui::InputText("##edit", buffer, 127);
-            ImGui::PopItemWidth();
-            if (ImGui::IsItemActive() && !wasActive)
-            {
-                ed::EnableShortcuts(false);
-                wasActive = true;
-            }
-            else if (!ImGui::IsItemActive() && wasActive)
-            {
-                ed::EnableShortcuts(true);
-                wasActive = false;
-            }
-            ImGui::Spring(0);
-        }
-        if (!output.Name.empty())
-        {
-            ImGui::Spring(0);
-            ImGui::TextUnformatted(output.Name.c_str());
-        }
-        ImGui::Spring(0);
-        DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
-        ImGui::PopStyleVar();
-        builder.EndOutput();
-    }
+    //         ImGui::PushItemWidth(100.0f);
+    //         ImGui::InputText("##edit", buffer, 127);
+    //         ImGui::PopItemWidth();
+    //         if (ImGui::IsItemActive() && !wasActive)
+    //         {
+    //             ed::EnableShortcuts(false);
+    //             wasActive = true;
+    //         }
+    //         else if (!ImGui::IsItemActive() && wasActive)
+    //         {
+    //             ed::EnableShortcuts(true);
+    //             wasActive = false;
+    //         }
+    //         ImGui::Spring(0);
+    //     }
+    //     if (!output.Name.empty())
+    //     {
+    //         ImGui::Spring(0);
+    //         ImGui::TextUnformatted(output.Name.c_str());
+    //     }
+    //     ImGui::Spring(0);
+    //     DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
+    //     ImGui::PopStyleVar();
+    //     builder.EndOutput();
+    // }
 
     builder.End();
 }
@@ -916,12 +889,12 @@ void NodesEditorImpl::render_editor()
 
     util::BlueprintNodeBuilder builder{};
 
-    for (auto& node : m_Nodes)
+    for (auto& [id, node] : _graph.nodes())
     {
-        if (node.Type == NodeType::Blueprint)
-            render_blueprint_node(node, builder);
-        if (node.Type == NodeType::Comment)
-            render_comment_node(node);
+        // if (node.Type == NodeType::Blueprint)
+        render_blueprint_node(node, id, builder);
+        // if (node.Type == NodeType::Comment)
+        //     render_comment_node(node);
     }
 
     for (auto& link : m_Links)
