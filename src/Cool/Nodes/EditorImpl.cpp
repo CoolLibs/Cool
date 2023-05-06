@@ -587,16 +587,17 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     ImGui::Spring(0);
     builder.EndHeader();
 
+    auto const pin_alpha = [&](Pin const& pin) {
+        auto tmp_alpha = ImGui::GetStyle().Alpha;
+        if (newLinkPin && !is_allowed_connection(*newLinkPin, pin))
+            tmp_alpha *= 0.188f;
+        return tmp_alpha;
+    };
+
     for (auto& input_pin : node.input_pins())
     {
         auto const pin_id = as_ed_id(input_pin.id());
-
-        auto const alpha = [&]() {
-            auto tmp_alpha = ImGui::GetStyle().Alpha;
-            if (newLinkPin && !is_allowed_connection(*newLinkPin, input_pin))
-                tmp_alpha *= 0.188f;
-            return tmp_alpha;
-        }();
+        auto const alpha  = pin_alpha(input_pin);
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
@@ -611,47 +612,23 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
         builder.EndInput();
     }
 
-    // for (auto& output : node.Outputs)
-    // {
-    //     if (output.Type == PinType::Delegate)
-    //         continue;
+    for (auto& output_pin : node.output_pins())
+    {
+        auto const pin_id = as_ed_id(output_pin.id());
+        auto const alpha  = pin_alpha(output_pin);
 
-    //     auto alpha = ImGui::GetStyle().Alpha;
-    //     if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-    //         alpha = alpha * (48.0f / 255.0f);
-
-    //     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-    //     builder.Output(output.ID);
-    //     if (output.Type == PinType::String)
-    //     {
-    //         static char buffer[128] = "Edit Me\nMultiline!";
-    //         static bool wasActive   = false;
-
-    //         ImGui::PushItemWidth(100.0f);
-    //         ImGui::InputText("##edit", buffer, 127);
-    //         ImGui::PopItemWidth();
-    //         if (ImGui::IsItemActive() && !wasActive)
-    //         {
-    //             ed::EnableShortcuts(false);
-    //             wasActive = true;
-    //         }
-    //         else if (!ImGui::IsItemActive() && wasActive)
-    //         {
-    //             ed::EnableShortcuts(true);
-    //             wasActive = false;
-    //         }
-    //         ImGui::Spring(0);
-    //     }
-    //     if (!output.Name.empty())
-    //     {
-    //         ImGui::Spring(0);
-    //         ImGui::TextUnformatted(output.Name.c_str());
-    //     }
-    //     ImGui::Spring(0);
-    //     DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
-    //     ImGui::PopStyleVar();
-    //     builder.EndOutput();
-    // }
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+        builder.Output(pin_id);
+        if (!output_pin.name().empty())
+        {
+            ImGui::Spring(0);
+            ImGui::TextUnformatted(output_pin.name().c_str());
+        }
+        ImGui::Spring(0);
+        DrawPinIcon(output_pin, IsPinLinked(pin_id), alpha);
+        ImGui::PopStyleVar();
+        builder.EndOutput();
+    }
 
     builder.End();
 }
