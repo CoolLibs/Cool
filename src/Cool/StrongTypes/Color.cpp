@@ -12,6 +12,12 @@ auto Color::from_srgb(glm::vec3 const& srgb) -> Color
 
 #include "Cool/ColorSpaces/generated/define_color_getters.inl"
 
+auto Color::as_ImColor() const -> ImColor
+{
+    auto const srgb = as_sRGB();
+    return ImColor{srgb.r, srgb.g, srgb.b, 1.f};
+}
+
 auto to_string(Color const& color) -> std::string
 {
     return fmt::format("{} (sRGB)", glm::to_string(color.as_sRGB()));
