@@ -30,26 +30,6 @@ enum class NodeType {
     Comment,
 };
 
-struct NodeEX;
-
-struct NodeEX {
-    ed::NodeId  ID;
-    std::string Name;
-    // std::vector<PinEX> Inputs;
-    // std::vector<PinEX> Outputs;
-    ImColor  Color;
-    NodeType Type;
-    ImVec2   Size;
-
-    std::string State;
-    std::string SavedState;
-
-    NodeEX(int id, const char* name, ImColor color = ImColor(255, 255, 255))
-        : ID(id), Name(name), Color(color), Type(NodeType::Blueprint), Size(0, 0)
-    {
-    }
-};
-
 struct NodeIdLess {
     bool operator()(const ed::NodeId& lhs, const ed::NodeId& rhs) const
     {
@@ -116,7 +96,7 @@ private:
 
     void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, util::BlueprintNodeBuilder& builder);
 
-    void render_comment_node(NodeEX& node);
+    // void render_comment_node(NodeEX& node);
 
     void render_new_link();
 
