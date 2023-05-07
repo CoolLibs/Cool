@@ -326,15 +326,6 @@ static auto as_ed_id(reg::AnyId const& id)
            + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
 }
 
-NodeEX* NodesEditorImpl::FindNode(ed::NodeId id)
-{
-    for (auto& node : m_Nodes)
-        if (node.ID == id)
-            return &node;
-
-    return nullptr;
-}
-
 auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
 {
     if (!id)
@@ -372,39 +363,10 @@ auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 void NodesEditorImpl::OnStart()
 {
     ed::Config config;
-
     config.SettingsFile = "Blueprints.json";
+    m_Editor            = ed::CreateEditor(&config);
 
-    config.UserPointer = this;
-
-    config.LoadNodeSettings = [](ed::NodeId nodeId, char* data, void* userPointer) -> size_t {
-        auto self = static_cast<NodesEditorImpl*>(userPointer);
-
-        auto node = self->FindNode(nodeId);
-        if (!node)
-            return 0;
-
-        if (data != nullptr)
-            memcpy(data, node->State.data(), node->State.size());
-        return node->State.size();
-    };
-
-    config.SaveNodeSettings = [](ed::NodeId nodeId, const char* data, size_t size, ed::SaveReasonFlags reason, void* userPointer) -> bool {
-        auto self = static_cast<NodesEditorImpl*>(userPointer);
-
-        auto node = self->FindNode(nodeId);
-        if (!node)
-            return false;
-
-        node->State.assign(data, size);
-
-        return true;
-    };
-
-    m_Editor = ed::CreateEditor(&config);
     ed::SetCurrentEditor(m_Editor);
-
-    ed::NavigateToContent();
 }
 
 void NodesEditorImpl::OnStop()
@@ -665,9 +627,9 @@ void NodesEditorImpl::handle_deletions()
     {
         if (!ed::AcceptDeletedItem())
             continue;
-        auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-        if (id != m_Nodes.end())
-            m_Nodes.erase(id);
+        // auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
+        // if (id != m_Nodes.end())
+        //     m_Nodes.erase(id);
     }
 }
 

@@ -128,8 +128,6 @@ private:
 
     // EXAMPLE
 private:
-    NodeEX* FindNode(ed::NodeId id);
-
     auto FindPin(ed::PinId const&) -> Pin const*;
 
     auto is_allowed_connection(Pin const&, Pin const&) -> bool;
@@ -163,8 +161,6 @@ private:
     void OnFrame(NodesConfig const&, NodesLibrary const&);
 
     bool _menu_just_opened{false};
-
-    std::vector<NodeEX> m_Nodes;
 
     Pin const* newNodeLinkPin = nullptr;
     Pin const* newLinkPin     = nullptr;
