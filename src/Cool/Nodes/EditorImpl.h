@@ -30,13 +30,6 @@ enum class NodeType {
     Comment,
 };
 
-struct NodeIdLess {
-    bool operator()(const ed::NodeId& lhs, const ed::NodeId& rhs) const
-    {
-        return lhs.AsPointer() < rhs.AsPointer();
-    }
-};
-
 namespace Cool {
 
 namespace internal {
