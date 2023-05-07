@@ -535,7 +535,7 @@ void NodesEditorImpl::render_new_node()
     ed::PinId pinId = 0;
     if (ed::QueryNewNode(&pinId))
     {
-        // newLinkPin = FindPin(pinId);
+        newLinkPin = FindPin(pinId);
         if (newLinkPin)
             show_label("+ Create Node", ImColor(32, 45, 32, 180));
 
