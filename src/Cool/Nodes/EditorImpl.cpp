@@ -3,6 +3,7 @@
 #include <imgui-node-editor/imgui_node_editor.h>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/NodesLibrary.h"
+#include "Cool/Path/Path.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
@@ -362,9 +363,10 @@ auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 
 void NodesEditorImpl::OnStart()
 {
-    ed::Config config;
-    config.SettingsFile = "Blueprints.json";
-    m_Editor            = ed::CreateEditor(&config);
+    ed::Config        config;
+    static auto const path = (Cool::Path::root() / "cache/nodes-editor.json").string();
+    config.SettingsFile    = path.c_str();
+    m_Editor               = ed::CreateEditor(&config);
 
     ed::SetCurrentEditor(m_Editor);
 }
