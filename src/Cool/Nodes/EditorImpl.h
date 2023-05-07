@@ -128,10 +128,6 @@ private:
 
     // EXAMPLE
 private:
-    int GetNextId();
-
-    ed::LinkId GetNextLinkId();
-
     NodeEX* FindNode(ed::NodeId id);
 
     auto FindPin(ed::PinId const&) -> Pin const*;
@@ -168,7 +164,6 @@ private:
 
     bool _menu_just_opened{false};
 
-    int                 m_NextId = 1;
     std::vector<NodeEX> m_Nodes;
 
     ed::NodeId contextNodeId  = 0;

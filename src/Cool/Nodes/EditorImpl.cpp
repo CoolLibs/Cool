@@ -314,16 +314,6 @@ static void show_label(const char* label, ImColor color)
     ImGui::TextUnformatted(label);
 }
 
-int NodesEditorImpl::GetNextId()
-{
-    return m_NextId++;
-}
-
-ed::LinkId NodesEditorImpl::GetNextLinkId()
-{
-    return ed::LinkId(GetNextId());
-}
-
 static auto as_ed_id(reg::AnyId const& id)
 {
     return (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[0]) << 0)
@@ -683,8 +673,6 @@ void NodesEditorImpl::handle_deletions()
 
 void NodesEditorImpl::render_editor(NodesLibrary const& library)
 {
-    // auto cursorTopLeft = ImGui::GetCursorScreenPos();
-
     util::BlueprintNodeBuilder builder{};
 
     for (auto& [id, node] : _graph.nodes())
@@ -700,8 +688,6 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library)
 
     handle_creations();
     handle_deletions();
-
-    // ImGui::SetCursorScreenPos(cursorTopLeft);
 }
 
 void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& library)
