@@ -345,15 +345,6 @@ NodeEX* NodesEditorImpl::FindNode(ed::NodeId id)
     return nullptr;
 }
 
-LinkEX* NodesEditorImpl::FindLink(ed::LinkId id)
-{
-    for (auto& link : m_Links)
-        if (link.ID == id)
-            return &link;
-
-    return nullptr;
-}
-
 auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
 {
     if (!id)
@@ -373,21 +364,10 @@ auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
     return nullptr;
 }
 
-bool NodesEditorImpl::IsPinLinked(ed::PinId id)
-{
-    if (!id)
-        return false;
-
-    for (auto& link : m_Links)
-        if (link.StartPinID == id || link.EndPinID == id)
-            return true;
-
-    return false;
-}
-
 auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 {
-    return &a != &b; /* && a->Kind != b->Kind && a->Type == b->Type && a->Node != b->Node */
+    return &a != &b
+           && a.kind() != b.kind(); /*&& a->Type == b->Type && a->Node != b->Node */
 }
 
 // NodeEX* NodesEditorImpl::SpawnComment()
@@ -498,7 +478,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        DrawPinIcon(input_pin, IsPinLinked(pin_id), alpha);
+        DrawPinIcon(input_pin, false /* IsPinLinked(pin_id) */, alpha);
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -522,7 +502,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        DrawPinIcon(output_pin, IsPinLinked(pin_id), alpha);
+        DrawPinIcon(output_pin, false /* IsPinLinked(pin_id) */, alpha);
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
@@ -686,9 +666,7 @@ void NodesEditorImpl::handle_deletions()
     {
         if (ed::AcceptDeletedItem())
         {
-            auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
-            if (id != m_Links.end())
-                m_Links.erase(id);
+            // _graph.remove_link(linkId);
         }
     }
 
@@ -717,8 +695,8 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library)
         //     render_comment_node(node);
     }
 
-    for (auto& link : m_Links)
-        ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
+    for (auto const& [id, link] : _graph.links())
+        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
 
     handle_creations();
     handle_deletions();

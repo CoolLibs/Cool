@@ -134,11 +134,7 @@ private:
 
     NodeEX* FindNode(ed::NodeId id);
 
-    LinkEX* FindLink(ed::LinkId id);
-
     auto FindPin(ed::PinId const&) -> Pin const*;
-
-    bool IsPinLinked(ed::PinId id);
 
     auto is_allowed_connection(Pin const&, Pin const&) -> bool;
 
@@ -174,7 +170,6 @@ private:
 
     int                 m_NextId = 1;
     std::vector<NodeEX> m_Nodes;
-    std::vector<LinkEX> m_Links;
 
     ed::NodeId contextNodeId  = 0;
     ed::LinkId contextLinkId  = 0;
