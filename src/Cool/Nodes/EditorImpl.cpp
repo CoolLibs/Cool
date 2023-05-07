@@ -564,29 +564,28 @@ void NodesEditorImpl::handle_creations()
     ed::EndCreate();
 }
 
-void NodesEditorImpl::handle_deletions()
+void NodesEditorImpl::process_deletions()
 {
     auto scope_guard = sg::make_scope_guard([] { ed::EndDelete(); });
     if (!ed::BeginDelete())
         return;
 
-    ed::LinkId linkId = 0;
-    while (ed::QueryDeletedLink(&linkId))
     {
-        if (ed::AcceptDeletedItem())
+        ed::LinkId link_id = 0;
+        while (ed::QueryDeletedLink(&link_id))
         {
-            // _graph.remove_link(linkId);
+            // if (ed::AcceptDeletedItem())
+            //     _graph.remove_link(link_id);
         }
     }
 
-    ed::NodeId nodeId = 0;
-    while (ed::QueryDeletedNode(&nodeId))
     {
-        if (!ed::AcceptDeletedItem())
-            continue;
-        // auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-        // if (id != m_Nodes.end())
-        //     m_Nodes.erase(id);
+        ed::NodeId node_id = 0;
+        while (ed::QueryDeletedNode(&node_id))
+        {
+            // if (ed::AcceptDeletedItem())
+            //     _graph.remove_node(node_id);
+        }
     }
 }
 
@@ -606,7 +605,7 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig con
         ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
 
     handle_creations();
-    handle_deletions();
+    process_deletions();
 }
 
 void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& library)

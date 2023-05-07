@@ -97,7 +97,7 @@ private:
 
     void handle_creations();
 
-    void handle_deletions();
+    void process_deletions();
 
     void render_editor(NodesLibrary const& library, NodesConfig const&);
 
