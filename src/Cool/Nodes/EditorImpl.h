@@ -87,7 +87,7 @@ private:
 
     void DrawPinIcon(Pin const&, bool connected, float alpha);
 
-    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, util::BlueprintNodeBuilder& builder);
+    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig const&, util::BlueprintNodeBuilder& builder);
 
     // void render_comment_node(NodeEX& node);
 
@@ -99,7 +99,7 @@ private:
 
     void handle_deletions();
 
-    void render_editor(NodesLibrary const& library);
+    void render_editor(NodesLibrary const& library, NodesConfig const&);
 
     void OnFrame(NodesConfig const&, NodesLibrary const&);
 

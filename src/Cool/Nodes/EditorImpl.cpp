@@ -2,6 +2,7 @@
 #include "Cool/Nodes/EditorImpl.h"
 #include <imgui-node-editor/imgui_node_editor.h>
 #include <reg/src/AnyId.hpp>
+#include "Cool/Nodes/NodesConfig.h"
 #include "Cool/Nodes/NodesLibrary.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
@@ -356,7 +357,7 @@ void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
-void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig const& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
     builder.Begin(as_ed_id(id));
 
@@ -412,6 +413,8 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
+
+    nodes_cfg.imgui_node_body(node, id);
 
     builder.End();
 }
@@ -587,14 +590,14 @@ void NodesEditorImpl::handle_deletions()
     }
 }
 
-void NodesEditorImpl::render_editor(NodesLibrary const& library)
+void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig const& nodes_cfg)
 {
     util::BlueprintNodeBuilder builder{};
 
     for (auto& [id, node] : _graph.nodes())
     {
         // if (node.Type == NodeType::Blueprint)
-        render_blueprint_node(node, id, library.get_category(node.category_name()), builder);
+        render_blueprint_node(node, id, library.get_category(node.category_name()), nodes_cfg, builder);
         // if (node.Type == NodeType::Comment)
         //     render_comment_node(node);
     }
@@ -614,7 +617,7 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
 
     ed::Begin("Node editor");
     {
-        render_editor(library);
+        render_editor(library, nodes_cfg);
     }
 
     if (wants_to_open_nodes_menu())
