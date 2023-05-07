@@ -18,21 +18,16 @@ using namespace ax;
 
 using ax::Widgets::IconType;
 
-enum class PinType {
-    Flow,
-    Bool,
-    Int,
-    Float,
-    String,
-    Object,
-    Function,
-    Delegate,
-};
-
-enum class PinKind {
-    Output,
-    Input
-};
+// enum class PinType {
+//     Flow,
+//     Bool,
+//     Int,
+//     Float,
+//     String,
+//     Object,
+//     Function,
+//     Delegate,
+// };
 
 enum class NodeType {
     Blueprint,
@@ -41,27 +36,14 @@ enum class NodeType {
 
 struct NodeEX;
 
-struct PinEX {
-    ed::PinId   ID;
-    ::NodeEX*   Node;
-    std::string Name;
-    PinType     Type;
-    PinKind     Kind;
-
-    PinEX(int id, const char* name, PinType type)
-        : ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input)
-    {
-    }
-};
-
 struct NodeEX {
-    ed::NodeId         ID;
-    std::string        Name;
-    std::vector<PinEX> Inputs;
-    std::vector<PinEX> Outputs;
-    ImColor            Color;
-    NodeType           Type;
-    ImVec2             Size;
+    ed::NodeId  ID;
+    std::string Name;
+    // std::vector<PinEX> Inputs;
+    // std::vector<PinEX> Outputs;
+    ImColor  Color;
+    NodeType Type;
+    ImVec2   Size;
 
     std::string State;
     std::string SavedState;
@@ -154,25 +136,13 @@ private:
 
     LinkEX* FindLink(ed::LinkId id);
 
-    auto FindPin(ed::PinId id) -> PinEX*;
+    auto FindPin(ed::PinId const&) -> Pin const*;
 
     bool IsPinLinked(ed::PinId id);
 
     auto is_allowed_connection(Pin const&, Pin const&) -> bool;
 
-    void BuildNode(NodeEX* node);
-
-    NodeEX* SpawnInputActionNode();
-
-    NodeEX* SpawnBranchNode();
-
-    NodeEX* SpawnDoNNode();
-
-    NodeEX* SpawnOutputActionNode();
-
-    NodeEX* SpawnPrintStringNode();
-
-    NodeEX* SpawnComment();
+    // NodeEX* SpawnComment();
 
     void BuildNodes();
 
@@ -180,7 +150,7 @@ private:
 
     void OnStop();
 
-    ImColor GetIconColor(PinType type);
+    // ImColor GetIconColor(PinType type);
 
     void DrawPinIcon(Pin const&, bool connected, float alpha);
 
@@ -209,7 +179,7 @@ private:
     ed::NodeId contextNodeId  = 0;
     ed::LinkId contextLinkId  = 0;
     ed::PinId  contextPinId   = 0;
-    PinEX*     newNodeLinkPin = nullptr;
+    Pin const* newNodeLinkPin = nullptr;
     Pin const* newLinkPin     = nullptr;
 
 private:

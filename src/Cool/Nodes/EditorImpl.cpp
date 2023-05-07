@@ -324,6 +324,18 @@ ed::LinkId NodesEditorImpl::GetNextLinkId()
     return ed::LinkId(GetNextId());
 }
 
+static auto as_ed_id(reg::AnyId const& id)
+{
+    return (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[0]) << 0)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[1]) << 8)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[2]) << 16)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[3]) << 24)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[4]) << 32)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[5]) << 40)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[6]) << 48)
+           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
+}
+
 NodeEX* NodesEditorImpl::FindNode(ed::NodeId id)
 {
     for (auto& node : m_Nodes)
@@ -342,19 +354,19 @@ LinkEX* NodesEditorImpl::FindLink(ed::LinkId id)
     return nullptr;
 }
 
-auto NodesEditorImpl::FindPin(ed::PinId id) -> PinEX*
+auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
 {
     if (!id)
         return nullptr;
 
-    for (auto& node : m_Nodes)
+    for (auto const& [_, node] : _graph.nodes())
     {
-        for (auto& pin : node.Inputs)
-            if (pin.ID == id)
+        for (auto const& pin : node.input_pins())
+            if (ed::PinId{as_ed_id(pin.id())} == id)
                 return &pin;
 
-        for (auto& pin : node.Outputs)
-            if (pin.ID == id)
+        for (auto const& pin : node.output_pins())
+            if (ed::PinId{as_ed_id(pin.id())} == id)
                 return &pin;
     }
 
@@ -378,98 +390,14 @@ auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
     return &a != &b; /* && a->Kind != b->Kind && a->Type == b->Type && a->Node != b->Node */
 }
 
-void NodesEditorImpl::BuildNode(NodeEX* node)
-{
-    for (auto& input : node->Inputs)
-    {
-        input.Node = node;
-        input.Kind = PinKind::Input;
-    }
+// NodeEX* NodesEditorImpl::SpawnComment()
+// {
+//     m_Nodes.emplace_back(GetNextId(), "Test Comment");
+//     m_Nodes.back().Type = NodeType::Comment;
+//     m_Nodes.back().Size = ImVec2(300, 200);
 
-    for (auto& output : node->Outputs)
-    {
-        output.Node = node;
-        output.Kind = PinKind::Output;
-    }
-}
-
-NodeEX* NodesEditorImpl::SpawnInputActionNode()
-{
-    m_Nodes.emplace_back(GetNextId(), "InputAction Fire", ImColor(255, 128, 128));
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Delegate);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "Pressed", PinType::Flow);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "Released", PinType::Flow);
-
-    BuildNode(&m_Nodes.back());
-
-    return &m_Nodes.back();
-}
-
-NodeEX* NodesEditorImpl::SpawnBranchNode()
-{
-    m_Nodes.emplace_back(GetNextId(), "Branch");
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Flow);
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "Condition", PinType::Bool);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "True", PinType::Flow);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "False", PinType::Flow);
-
-    BuildNode(&m_Nodes.back());
-
-    return &m_Nodes.back();
-}
-
-NodeEX* NodesEditorImpl::SpawnDoNNode()
-{
-    m_Nodes.emplace_back(GetNextId(), "Do N");
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "Enter", PinType::Flow);
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "N", PinType::Int);
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "Reset", PinType::Flow);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "Exit", PinType::Flow);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "Counter", PinType::Int);
-
-    BuildNode(&m_Nodes.back());
-
-    return &m_Nodes.back();
-}
-
-NodeEX* NodesEditorImpl::SpawnOutputActionNode()
-{
-    m_Nodes.emplace_back(GetNextId(), "OutputAction");
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "Sample", PinType::Float);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "Condition", PinType::Bool);
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "Event", PinType::Delegate);
-
-    BuildNode(&m_Nodes.back());
-
-    return &m_Nodes.back();
-}
-
-NodeEX* NodesEditorImpl::SpawnPrintStringNode()
-{
-    m_Nodes.emplace_back(GetNextId(), "Print String");
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Flow);
-    m_Nodes.back().Inputs.emplace_back(GetNextId(), "In String", PinType::String);
-    m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Flow);
-
-    BuildNode(&m_Nodes.back());
-
-    return &m_Nodes.back();
-}
-
-NodeEX* NodesEditorImpl::SpawnComment()
-{
-    m_Nodes.emplace_back(GetNextId(), "Test Comment");
-    m_Nodes.back().Type = NodeType::Comment;
-    m_Nodes.back().Size = ImVec2(300, 200);
-
-    return &m_Nodes.back();
-}
-
-void NodesEditorImpl::BuildNodes()
-{
-    for (auto& node : m_Nodes)
-        BuildNode(&node);
-}
+//     return &m_Nodes.back();
+// }
 
 void NodesEditorImpl::OnStart()
 {
@@ -506,26 +434,7 @@ void NodesEditorImpl::OnStart()
     m_Editor = ed::CreateEditor(&config);
     ed::SetCurrentEditor(m_Editor);
 
-    NodeEX* node;
-    node = SpawnInputActionNode();
-    ed::SetNodePosition(node->ID, ImVec2(-252, 220));
-    node = SpawnBranchNode();
-    ed::SetNodePosition(node->ID, ImVec2(-300, 351));
-    node = SpawnDoNNode();
-    ed::SetNodePosition(node->ID, ImVec2(-238, 504));
-    node = SpawnOutputActionNode();
-    ed::SetNodePosition(node->ID, ImVec2(71, 80));
-
-    node = SpawnComment();
-    ed::SetNodePosition(node->ID, ImVec2(112, 576));
-    ed::SetGroupSize(node->ID, ImVec2(384, 154));
-    node = SpawnComment();
-    ed::SetNodePosition(node->ID, ImVec2(800, 224));
-    ed::SetGroupSize(node->ID, ImVec2(640, 400));
-
     ed::NavigateToContent();
-
-    BuildNodes();
 }
 
 void NodesEditorImpl::OnStop()
@@ -537,21 +446,21 @@ void NodesEditorImpl::OnStop()
     }
 }
 
-ImColor NodesEditorImpl::GetIconColor(PinType type)
-{
-    switch (type)
-    {
-    default:
-    case PinType::Flow: return ImColor(255, 255, 255);
-    case PinType::Bool: return ImColor(220, 48, 48);
-    case PinType::Int: return ImColor(68, 201, 156);
-    case PinType::Float: return ImColor(147, 226, 74);
-    case PinType::String: return ImColor(124, 21, 153);
-    case PinType::Object: return ImColor(51, 150, 215);
-    case PinType::Function: return ImColor(218, 0, 183);
-    case PinType::Delegate: return ImColor(255, 48, 48);
-    }
-};
+// ImColor NodesEditorImpl::GetIconColor(PinType type)
+// {
+//     switch (type)
+//     {
+//     default:
+//     case PinType::Flow: return ImColor(255, 255, 255);
+//     case PinType::Bool: return ImColor(220, 48, 48);
+//     case PinType::Int: return ImColor(68, 201, 156);
+//     case PinType::Float: return ImColor(147, 226, 74);
+//     case PinType::String: return ImColor(124, 21, 153);
+//     case PinType::Object: return ImColor(51, 150, 215);
+//     case PinType::Function: return ImColor(218, 0, 183);
+//     case PinType::Delegate: return ImColor(255, 48, 48);
+//     }
+// };
 
 void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
 {
@@ -560,18 +469,6 @@ void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
 
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
-
-static auto as_ed_id(reg::AnyId const& id)
-{
-    return (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[0]) << 0)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[1]) << 8)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[2]) << 16)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[3]) << 24)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[4]) << 32)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[5]) << 40)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[6]) << 48)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
-}
 
 void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, util::BlueprintNodeBuilder& builder)
 {
@@ -694,70 +591,57 @@ void NodesEditorImpl::render_comment_node(NodeEX& node)
 
 auto NodesEditorImpl::handle_link_creation() -> bool
 {
-    // PinId from_pin_id;
-    // PinId to_pin_id;
-    // if (!ImNodes::IsLinkCreated(&from_pin_id, &to_pin_id))
-    //     return false;
+    ed::PinId startPinId;
+    ed::PinId endPinId;
+    if (!ed::QueryNewLink(&startPinId, &endPinId))
+        return false;
 
-    // _graph.remove_link_going_into(to_pin_id);
-    // _graph.add_link(Link{
-    //     .from_pin_id = from_pin_id,
-    //     .to_pin_id   = to_pin_id,
-    // });
+    auto const* startPin = FindPin(startPinId);
+    auto const* endPin   = FindPin(endPinId);
 
-    ed::PinId startPinId = 0, endPinId = 0;
-    if (ed::QueryNewLink(&startPinId, &endPinId))
+    newLinkPin = startPin ? startPin : endPin;
+
+    if (startPin && startPin->kind() == PinKind::Input)
     {
-        auto const* startPin = FindPin(startPinId);
-        if (!startPin)
-            return false;
-
-        auto const* endPin = FindPin(endPinId);
-        if (!endPin)
-            return false;
-
-        // newLinkPin = startPin ? startPin : endPin;
-
-        if (startPin->Kind == PinKind::Input)
-        {
-            std::swap(startPin, endPin);
-            std::swap(startPinId, endPinId);
-        }
-
-        if (startPin && endPin)
-        {
-            if (endPin == startPin)
-            {
-                ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
-            }
-            else if (endPin->Kind == startPin->Kind)
-            {
-                show_label("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
-                ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
-            }
-            // else if (endPin->Node == startPin->Node)
-            //{
-            //     show_label("x Cannot connect to self", ImColor(45, 32, 32, 180));
-            //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
-            // }
-            else if (endPin->Type != startPin->Type)
-            {
-                show_label("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
-                ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
-            }
-            else
-            {
-                show_label("+ Create Link", ImColor(32, 45, 32, 180));
-                if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
-                {
-                    m_Links.emplace_back(LinkEX(GetNextId(), startPinId, endPinId));
-                    m_Links.back().Color = GetIconColor(startPin->Type);
-                }
-            }
-        }
+        std::swap(startPin, endPin);
+        std::swap(startPinId, endPinId);
     }
 
-    return false;
+    if (endPin == startPin)
+    {
+        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+        return false;
+    }
+    if (endPin->kind() == startPin->kind())
+    {
+        show_label("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
+        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+        return false;
+    }
+    // else if (endPin->Node == startPin->Node)
+    // {
+    //     show_label("x Cannot connect to self", ImColor(45, 32, 32, 180));
+    //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
+    // return false;
+    // }
+    // else if (endPin->Type != startPin->Type)
+    // {
+    //     show_label("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
+    //     ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
+    // return false;
+    // }
+
+    show_label("+ Create Link", ImColor(32, 45, 32, 180));
+    if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
+    {
+        _graph.remove_link_going_into(endPin->id());
+        _graph.add_link(Link{
+            .from_pin_id = startPin->id(),
+            .to_pin_id   = endPin->id(),
+        });
+    }
+
+    return true;
 }
 
 void NodesEditorImpl::render_new_node()
