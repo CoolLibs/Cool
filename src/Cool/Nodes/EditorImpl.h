@@ -1,17 +1,17 @@
 #pragma once
-#include <imgui-node-editor/imgui_node_editor.h>
 #include <cereal/types/polymorphic.hpp>
+#include "Cool/Nodes/UniqueEdContext.h"
+#include "Cool/Path/Path.h"
 #include "Graph.h"
 #include "IEditor.h"
 #include "Node.h"
 #include "NodeId.h"
 #include "NodesConfig.h"
 #include "NodesLibrary.h"
-#include "UniqueImNodeContext.h"
+#include "ed.h"
 #include "utilities/builders.h"
 #include "utilities/widgets.h"
 
-namespace ed   = ax::NodeEditor;
 namespace util = ax::NodeEditor::Utilities;
 
 using namespace ax;
@@ -93,14 +93,6 @@ private:
 
 class NodesEditorImpl : public INodesEditor {
 public:
-    NodesEditorImpl()
-    {
-        OnStart();
-    }
-    ~NodesEditorImpl()
-    {
-        // OnStop(); TODO(JF)
-    }
     auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool override;
 
     auto graph() const -> Graph const& override { return _graph; }
@@ -121,10 +113,10 @@ private:
     ImVec2 _next_node_position = {0.f, 0.f};
 
 private:
-    // internal::UniqueImNodeContext _context;
-    Graph                    _graph;
-    bool                     _window_is_hovered = true;
-    internal::SearchBarState _search_bar{};
+    internal::UniqueEdContext _context{Cool::Path::root() / "cache/nodes-editor.json"};
+    Graph                     _graph;
+    bool                      _window_is_hovered = true;
+    internal::SearchBarState  _search_bar{};
 
     // EXAMPLE
 private:
@@ -135,10 +127,6 @@ private:
     // NodeEX* SpawnComment();
 
     void BuildNodes();
-
-    void OnStart();
-
-    void OnStop();
 
     // ImColor GetIconColor(PinType type);
 

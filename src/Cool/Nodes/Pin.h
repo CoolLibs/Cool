@@ -27,7 +27,6 @@ public:
 
     void set_id(PinId const& id) { _id = id; }
 
-    virtual void               show() const            = 0;
     [[nodiscard]] virtual auto kind() const -> PinKind = 0;
 
 protected:
@@ -53,7 +52,6 @@ private:
 class InputPin : public Pin {
 public:
     using Pin::Pin;
-    void               show() const override;
     [[nodiscard]] auto kind() const -> PinKind override { return PinKind::Input; }
 
     friend auto operator==(InputPin const& lhs, InputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }
@@ -73,7 +71,6 @@ private:
 class OutputPin : public Pin {
 public:
     using Pin::Pin;
-    void               show() const override;
     [[nodiscard]] auto kind() const -> PinKind override { return PinKind::Output; }
 
     friend auto operator==(OutputPin const& lhs, OutputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }

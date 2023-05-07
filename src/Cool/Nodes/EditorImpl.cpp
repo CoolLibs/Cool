@@ -3,7 +3,6 @@
 #include <imgui-node-editor/imgui_node_editor.h>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/NodesLibrary.h"
-#include "Cool/Path/Path.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
@@ -11,6 +10,7 @@
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "EditorImpl.h"
+#include "as_ed_id.h"
 
 namespace Cool {
 
@@ -41,21 +41,6 @@ auto SearchBarState::imgui_widget() -> bool
 }
 
 } // namespace internal
-
-static void draw_node_pins(Node const& node)
-{
-    ImGui::BeginGroup();
-    for (auto const& pin : node.input_pins())
-        pin.show();
-    ImGui::EndGroup();
-
-    ImGui::SameLine();
-
-    ImGui::BeginGroup();
-    for (auto const& pin : node.output_pins())
-        pin.show();
-    ImGui::EndGroup();
-}
 
 static void draw_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
 {
@@ -106,35 +91,35 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     return graph_has_changed;
 }
 
-static auto draw_node(Cool::Node& node, ImNodes::NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
-{
-    auto* drawList = ImNodes::GetNodeBackgroundDrawList(id);
-    drawList->AddRectFilled({0.f, 0.f}, {100.f, 100.f}, 0xFFFFFFFF);
-    // ImNodes::BeginNodeTitleBar();
-    // ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
-    // ImNodes::EndNodeTitleBar();
+// static auto draw_node(Cool::Node& node, ed::NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+// {
+//     auto* drawList = ed::GetNodeBackgroundDrawList(id);
+//     drawList->AddRectFilled({0.f, 0.f}, {100.f, 100.f}, 0xFFFFFFFF);
+//     // ed::BeginNodeTitleBar();
+//     // ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
+//     // ed::EndNodeTitleBar();
 
-    // if (ImGui::BeginPopupContextItem())
-    // {
-    //     nodes_cfg.widget_to_rename_node(node);
-    //     ImGui::EndPopup();
-    // }
+//     // if (ImGui::BeginPopupContextItem())
+//     // {
+//     //     nodes_cfg.widget_to_rename_node(node);
+//     //     ImGui::EndPopup();
+//     // }
 
-    // bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
+//     // bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
 
-    // draw_node_body(node, id, nodes_cfg);
-    draw_node_pins(node);
+//     // draw_node_body(node, id, nodes_cfg);
+//     draw_node_pins(node);
 
-    // return graph_has_changed;
-    return false;
-}
+//     // return graph_has_changed;
+//     return false;
+// }
 
 auto NodesEditorImpl::handle_link_deletion() -> bool
 {
     bool has_deleted_some = false;
     // {
-    //     ImNodes::ID link_id;
-    //     if (ImNodes::IsLinkDestroyed(&link_id))
+    //     ed::ID link_id;
+    //     if (ed::IsLinkDestroyed(&link_id))
     //     {
     //         has_deleted_some = true;
     //         _graph.remove_link(link_id);
@@ -142,13 +127,13 @@ auto NodesEditorImpl::handle_link_deletion() -> bool
     // }
 
     // {
-    //     int const num_selected = ImNodes::NumSelectedLinks();
+    //     int const num_selected = ed::NumSelectedLinks();
     //     if (num_selected > 0 && wants_to_delete_selection())
     //     {
     //         has_deleted_some           = true;
-    //         static auto selected_links = std::vector<ImNodes::ID>{};
+    //         static auto selected_links = std::vector<ed::ID>{};
     //         selected_links.resize(static_cast<size_t>(num_selected));
-    //         ImNodes::GetSelectedLinks(selected_links.data());
+    //         ed::GetSelectedLinks(selected_links.data());
     //         for (auto const& link_id : selected_links)
     //             _graph.remove_link(link_id);
     //     }
@@ -162,18 +147,18 @@ auto NodesEditorImpl::handle_node_deletion() -> bool
     // if (!wants_to_delete_selection())
     //     return false;
 
-    // const auto num_selected = ImNodes::NumSelectedNodes();
+    // const auto num_selected = ed::NumSelectedNodes();
     // if (num_selected == 0)
     //     return false;
 
-    // static auto selected_nodes = std::vector<ImNodes::ID>{};
+    // static auto selected_nodes = std::vector<ed::ID>{};
     // selected_nodes.resize(static_cast<size_t>(num_selected));
-    // ImNodes::GetSelectedNodes(selected_nodes.data());
+    // ed::GetSelectedNodes(selected_nodes.data());
 
     // for (auto const& node_id : selected_nodes)
     //     _graph.remove_node(node_id);
 
-    // ImNodes::ClearNodeSelection();
+    // ed::ClearNodeSelection();
     return true;
 }
 
@@ -223,8 +208,8 @@ auto NodesEditorImpl::imgui_window(
     // });
     return false;
     // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
-    // ImNodes::SetCurrentEditor(&*_context);
-    // ImNodes::Begin("My Editor", ImVec2(0.0, 0.0f));
+    // ed::SetCurrentEditor(&*_context);
+    // ed::Begin("My Editor", ImVec2(0.0, 0.0f));
     // bool graph_has_changed = false;
     // // std::unique_lock lock{_graph.nodes().mutex()};
     // int uniqueId = 1;
@@ -235,26 +220,26 @@ auto NodesEditorImpl::imgui_window(
     //     //     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
     //     // };
 
-    //     auto const imnode_id = ImNodes::NodeId{&node};
-    //     ImNodes::BeginNode(imnode_id);
-    //     ImNodes::EndNode();
+    //     auto const imnode_id = ed::NodeId{&node};
+    //     ed::BeginNode(imnode_id);
+    //     ed::EndNode();
     //     graph_has_changed |= draw_node(node, imnode_id, nodes_cfg, library, _graph);
     // }
-    // ImNodes::End();
-    // ImNodes::SetCurrentEditor(nullptr);
-    // // ImNodes::SetCurrentContext(&*_context);
+    // ed::End();
+    // ed::SetCurrentEditor(nullptr);
+    // // ed::SetCurrentContext(&*_context);
 
     // graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
-    // // ImNodes::BeginNodeEditor();
+    // // ed::BeginNodeEditor();
     // // {
     // //     std::shared_lock lock{_graph.links().mutex()};
     // //     for (auto const& [id, link] : _graph.links())
     // //     {
-    // //         ImNodes::Link(id, link.from_pin_id, link.to_pin_id);
+    // //         ed::Link(id, link.from_pin_id, link.to_pin_id);
     // //     }
     // // }
-    // // ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
-    // // ImNodes::EndNodeEditor();
+    // // ed::MiniMap(0.2f, edMiniMapLocation_BottomRight);
+    // // ed::EndNodeEditor();
     // // graph_has_changed |= handle_link_creation();
     // // graph_has_changed |= handle_link_deletion();
     // // graph_has_changed |= handle_node_deletion();
@@ -295,8 +280,6 @@ static inline ImRect ImRect_Expanded(const ImRect& rect, float x, float y)
     return result;
 }
 
-static ed::EditorContext* m_Editor = nullptr;
-
 static void show_label(const char* label, ImColor color)
 {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetTextLineHeight());
@@ -313,18 +296,6 @@ static void show_label(const char* label, ImColor color)
     auto drawList = ImGui::GetWindowDrawList();
     drawList->AddRectFilled(rectMin, rectMax, color, size.y * 0.15f);
     ImGui::TextUnformatted(label);
-}
-
-static auto as_ed_id(reg::AnyId const& id)
-{
-    return (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[0]) << 0)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[1]) << 8)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[2]) << 16)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[3]) << 24)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[4]) << 32)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[5]) << 40)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[6]) << 48)
-           + (static_cast<uint64_t>(id.underlying_uuid().as_bytes()[7]) << 56);
 }
 
 auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
@@ -360,25 +331,6 @@ auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 
 //     return &m_Nodes.back();
 // }
-
-void NodesEditorImpl::OnStart()
-{
-    ed::Config        config;
-    static auto const path = (Cool::Path::root() / "cache/nodes-editor.json").string();
-    config.SettingsFile    = path.c_str();
-    m_Editor               = ed::CreateEditor(&config);
-
-    ed::SetCurrentEditor(m_Editor);
-}
-
-void NodesEditorImpl::OnStop()
-{
-    if (m_Editor)
-    {
-        ed::DestroyEditor(m_Editor);
-        m_Editor = nullptr;
-    }
-}
 
 // ImColor NodesEditorImpl::GetIconColor(PinType type)
 // {
@@ -656,7 +608,7 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library)
 
 void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& library)
 {
-    ed::SetCurrentEditor(m_Editor);
+    ed::SetCurrentEditor(_context);
     // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
     GImGui->CurrentWindow->DrawList->AddLine(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f}, ImGui::GetColorU32(ImGuiCol_SeparatorHovered)); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
 
