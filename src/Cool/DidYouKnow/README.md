@@ -1,5 +1,5 @@
 - You can hold SHIFT to disable docking. Useful when you try to move a window around and docking gets in your way.
-- The undo-history (CTRL+Z) of your modifications is preserved even when you close and re-open CoolLab! You can control its size in "Settings > History Size"
+- The undo-history (CTRL+Z) of your modifications is preserved even when you close and re-open Coollab! You can control its size in "Settings > History Size"
 - Use F to focus on the nodes
 - Talk about TDR to avoid crashes (https://www.artstation.com/blogs/sebastianbracht/ovQg/workaround-for-the-windows-tdr-crash-issue-while-using-substance-painter, https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiV6LmO27_9AhXmcaQEHYw5AdUQFnoECBMQAQ&url=https%3A%2F%2Fsubstance3d.adobe.com%2Fdocumentation%2Fspdoc%2Fgpu-drivers-crash-with-long-computations-tdr-crash-128745489.html&usg=AOvVaw3NUHI7sPGmV__7gxQR4w4U)
 - Drag from window menu button (upper-left button) to undock an entire node (all windows).
