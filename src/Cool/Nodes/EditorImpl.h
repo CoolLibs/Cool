@@ -14,10 +14,6 @@
 
 namespace util = ax::NodeEditor::Utilities;
 
-using namespace ax;
-
-using ax::Widgets::IconType;
-
 // enum class PinType {
 //     Flow,
 //     Bool,

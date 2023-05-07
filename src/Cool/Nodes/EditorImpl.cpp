@@ -350,8 +350,8 @@ auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
 
 void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
 {
-    IconType icon_type = IconType::Flow;
-    ImColor  color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
+    ax::Widgets::IconType icon_type = ax::Widgets::IconType::Flow;
+    ImColor               color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
 
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
