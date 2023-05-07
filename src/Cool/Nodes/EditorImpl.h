@@ -166,9 +166,6 @@ private:
 
     std::vector<NodeEX> m_Nodes;
 
-    ed::NodeId contextNodeId  = 0;
-    ed::LinkId contextLinkId  = 0;
-    ed::PinId  contextPinId   = 0;
     Pin const* newNodeLinkPin = nullptr;
     Pin const* newLinkPin     = nullptr;
 
