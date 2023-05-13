@@ -236,6 +236,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 # ImGuiNodeEditor
 add_subdirectory(lib/imgui-node-editor)
 target_include_directories(ImGuiNodeEditor SYSTEM PUBLIC lib/imgui)
+target_link_libraries(ImGuiNodeEditor PUBLIC reg::reg)
 target_link_libraries(Cool-PublicProperties INTERFACE ImGuiNodeEditor::ImGuiNodeEditor)
 
 # ImStyleEd

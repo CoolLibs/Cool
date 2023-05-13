@@ -16,7 +16,7 @@ namespace ed   = ax::NodeEditor;
 namespace util = ax::NodeEditor::Utilities;
 
 util::BlueprintNodeBuilder::BlueprintNodeBuilder()
-    : CurrentNodeId(0), CurrentStage(Stage::Invalid), HasHeader(false)
+    : CurrentNodeId{}, CurrentStage(Stage::Invalid), HasHeader(false)
 {
 }
 
@@ -29,7 +29,7 @@ void util::BlueprintNodeBuilder::Begin(ed::NodeId id)
 
     ed::BeginNode(id);
 
-    ImGui::PushID(id.AsPointer());
+    ImGui::PushID(id.AsImguiID());
     CurrentNodeId = id;
 
     SetStage(Stage::Begin);
@@ -82,7 +82,7 @@ void util::BlueprintNodeBuilder::End()
         }
     }
 
-    CurrentNodeId = 0;
+    CurrentNodeId = {};
 
     ImGui::PopID();
 
@@ -116,7 +116,7 @@ void util::BlueprintNodeBuilder::Input(ed::PinId id)
 
     Pin(id, PinKind::Input);
 
-    ImGui::BeginHorizontal(id.AsPointer());
+    ImGui::BeginHorizontal(id.AsImguiID());
 }
 
 void util::BlueprintNodeBuilder::EndInput()
@@ -148,7 +148,7 @@ void util::BlueprintNodeBuilder::Output(ed::PinId id)
 
     Pin(id, PinKind::Output);
 
-    ImGui::BeginHorizontal(id.AsPointer());
+    ImGui::BeginHorizontal(id.AsImguiID());
 }
 
 void util::BlueprintNodeBuilder::EndOutput()

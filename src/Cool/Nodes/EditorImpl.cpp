@@ -307,11 +307,11 @@ auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
     for (auto const& [_, node] : _graph.nodes())
     {
         for (auto const& pin : node.input_pins())
-            if (ed::PinId{as_ed_id(pin.id())} == id)
+            if (pin.id() == id.id)
                 return &pin;
 
         for (auto const& pin : node.output_pins())
-            if (ed::PinId{as_ed_id(pin.id())} == id)
+            if (pin.id() == id.id)
                 return &pin;
     }
 
@@ -359,7 +359,7 @@ void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
 
 void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig const& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
-    builder.Begin(as_ed_id(id));
+    builder.Begin(ed::NodeId{as_ed_id(id).id});
 
     auto const color = category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f});
     builder.Header(color.as_ImColor());
@@ -380,7 +380,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     for (auto& input_pin : node.input_pins())
     {
-        auto const pin_id = as_ed_id(input_pin.id());
+        auto const pin_id = ed::PinId{as_ed_id(input_pin.id()).id};
         auto const alpha  = pin_alpha(input_pin);
 
         builder.Input(pin_id);
@@ -398,7 +398,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     for (auto& output_pin : node.output_pins())
     {
-        auto const pin_id = as_ed_id(output_pin.id());
+        auto const pin_id = ed::PinId{as_ed_id(output_pin.id()).id};
         auto const alpha  = pin_alpha(output_pin);
 
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
@@ -535,7 +535,7 @@ auto NodesEditorImpl::handle_link_creation() -> bool
 
 void NodesEditorImpl::render_new_node()
 {
-    ed::PinId pinId = 0;
+    ed::PinId pinId;
     if (ed::QueryNewNode(&pinId))
     {
         newLinkPin = FindPin(pinId);
@@ -571,7 +571,7 @@ void NodesEditorImpl::process_deletions()
         return;
 
     {
-        ed::LinkId link_id = 0;
+        ed::LinkId link_id;
         while (ed::QueryDeletedLink(&link_id))
         {
             // if (ed::AcceptDeletedItem())
@@ -580,7 +580,7 @@ void NodesEditorImpl::process_deletions()
     }
 
     {
-        ed::NodeId node_id = 0;
+        ed::NodeId node_id;
         while (ed::QueryDeletedNode(&node_id))
         {
             // if (ed::AcceptDeletedItem())
@@ -602,7 +602,12 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig con
     }
 
     for (auto const& [id, link] : _graph.links())
-        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
+        ed::Link(
+            ed::LinkId{ id},
+            ed::PinId{link.from_pin_id},
+            ed::PinId{link.to_pin_id},
+            ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f
+        );
 
     handle_creations();
     process_deletions();
@@ -635,7 +640,7 @@ void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& 
         {
             ImGui::CloseCurrentPopup();
 
-            ed::SetNodePosition(as_ed_id(new_node_id), _next_node_position);
+            ed::SetNodePosition(ed::NodeId{new_node_id}, _next_node_position);
 
             // if (auto startPin = newNodeLinkPin)
             // {
