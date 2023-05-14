@@ -55,7 +55,7 @@ public:
 
 private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
-    auto imgui_window_inspector(NodesConfig&) -> bool;
+    auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
 
     auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
@@ -68,7 +68,8 @@ private:
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
-    ImVec2 _next_node_position = {0.f, 0.f};
+    ImVec2     _next_node_position = {0.f, 0.f};
+    ed::NodeId _id_of_node_whose_context_menu_is_open{};
 
 private:
     internal::UniqueEdContext _context{Cool::Path::root() / "cache/nodes-editor.json"};

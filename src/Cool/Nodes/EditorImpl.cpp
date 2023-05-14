@@ -54,6 +54,26 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
     return max + 20.f;
 }
 
+static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& category, NodesConfig& nodes_cfg, Graph& graph)
+    -> bool
+{
+    bool graph_has_changed = false;
+
+    for (auto const& def : category.definitions())
+    {
+        ImGui::PushID(&def);
+        bool const is_selected = def.name() == node.definition_name();
+        if (ImGui::Selectable(def.name().c_str(), is_selected))
+        {
+            nodes_cfg.update_node_with_new_definition(node, def, graph);
+            graph_has_changed = true;
+        }
+        ImGui::PopID();
+    }
+
+    return graph_has_changed;
+}
+
 static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     auto const* category = library.get_category(node.category_name());
@@ -65,17 +85,7 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     ImGui::SetNextItemWidth(calc_max_text_width(category->definitions()));
     if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
     {
-        for (auto const& def : category->definitions())
-        {
-            ImGui::PushID(&def);
-            bool const is_selected = def.name() == node.definition_name();
-            if (ImGui::Selectable(def.name().c_str(), is_selected))
-            {
-                nodes_cfg.update_node_with_new_definition(node, def, graph);
-                graph_has_changed = true;
-            }
-            ImGui::PopID();
-        }
+        graph_has_changed |= imgui_all_definitions_selectables(node, *category, nodes_cfg, graph);
         ImGui::EndCombo();
     }
 
@@ -215,15 +225,16 @@ static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
     return res;
 }
 
-static void imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg)
+static void imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
 {
     ImGui::SeparatorText(node.definition_name().c_str());
     ImGui::PushID(&node);
+    dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
     nodes_cfg.imgui_node_in_inspector(node, id);
     ImGui::PopID();
 }
 
-static auto imgui_selected_nodes(NodesConfig& nodes_cfg, Graph& graph)
+static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
 {
     auto const selected_nodes_ids = get_selected_nodes_ids(graph);
 
@@ -241,16 +252,16 @@ static auto imgui_selected_nodes(NodesConfig& nodes_cfg, Graph& graph)
         auto* node = graph.nodes().get_mutable_ref(node_id);
         if (!node)
             continue;
-        imgui_node_in_inspector(*node, node_id, nodes_cfg);
+        imgui_node_in_inspector(*node, node_id, nodes_cfg, library, graph);
         ImGui::NewLine();
     }
 }
 
-auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg) -> bool
+auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
     if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
     {
-        imgui_selected_nodes(nodes_cfg, _graph);
+        imgui_selected_nodes(nodes_cfg, library, _graph);
     }
     ImGui::End();
     return false;
@@ -263,7 +274,7 @@ auto NodesEditorImpl::imgui_windows(
 {
     bool b = false;
     b |= imgui_window_workspace(nodes_cfg, library);
-    b |= imgui_window_inspector(nodes_cfg);
+    b |= imgui_window_inspector(nodes_cfg, library);
     return b;
 
     //
@@ -686,6 +697,8 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& no
 
 void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& library)
 {
+    bool graph_has_changed = false;
+
     ed::SetCurrentEditor(_context);
     // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
     GImGui->CurrentWindow->DrawList->AddLine(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f}, ImGui::GetColorU32(ImGuiCol_SeparatorHovered)); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
@@ -699,6 +712,13 @@ void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& librar
     {
         open_nodes_menu();
         newNodeLinkPin = nullptr;
+    }
+
+    if (ed::ShowNodeContextMenu(&_id_of_node_whose_context_menu_is_open))
+    {
+        ed::Suspend();
+        ImGui::OpenPopup("Node Context Menu");
+        ed::Resume();
     }
 
     ed::Suspend();
@@ -732,6 +752,19 @@ void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& librar
             //         }
             //     }
             // }
+        }
+
+        ImGui::EndPopup();
+    }
+    if (ImGui::BeginPopup("Node Context Menu"))
+    {
+        auto const id   = as_reg_id(_id_of_node_whose_context_menu_is_open, _graph);
+        auto*      node = _graph.nodes().get_mutable_ref(id);
+        if (node)
+        {
+            auto const* category = library.get_category(node->category_name());
+            if (category)
+                graph_has_changed |= imgui_all_definitions_selectables(*node, *category, nodes_cfg, _graph);
         }
 
         ImGui::EndPopup();
