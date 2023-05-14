@@ -1,18 +1,20 @@
 
 #include "Cool/Nodes/EditorImpl.h"
-#include <imgui-node-editor/imgui_node_editor.h>
-#include <reg/src/AnyId.hpp>
+#include "Cool/DebugOptions/DebugOptions.h"
+#include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Nodes/NodesConfig.h"
 #include "Cool/Nodes/NodesLibrary.h"
 #include "Cool/Nodes/as_reg_id.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include <Cool/ImGui/icon_fmt.h>
-#include <imgui.h>
-#include <imgui/imgui_internal.h>
-#include "Cool/DebugOptions/DebugOptions.h"
-#include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "EditorImpl.h"
 #include "as_ed_id.h"
+#include "imgui-node-editor/imgui_node_editor.h"
+#include "reg/src/AnyId.hpp"
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui.h>
+#include <imgui/imgui_internal.h>
 
 namespace Cool {
 
@@ -224,6 +226,16 @@ static void imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& n
 static auto imgui_selected_nodes(NodesConfig& nodes_cfg, Graph& graph)
 {
     auto const selected_nodes_ids = get_selected_nodes_ids(graph);
+
+    // Message when no node is selected
+    if (selected_nodes_ids.empty())
+    {
+        ImGui::PushFont(Font::italic());
+        ImGui::TextUnformatted("Select a node to edit its parameters here.");
+        ImGui::PopFont();
+    }
+
+    // Show all nodes
     for (auto const& node_id : selected_nodes_ids)
     {
         auto* node = graph.nodes().get_mutable_ref(node_id);
