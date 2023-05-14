@@ -15,4 +15,14 @@ inline auto as_reg_id(ed::NodeId const& ed_id, Graph const& graph) -> NodeId
     return {};
 }
 
+inline auto as_reg_id(ed::LinkId const& ed_id, Graph const& graph) -> LinkId
+{
+    for (auto const& [reg_id, _] : graph.links())
+    {
+        if (ed::LinkId{as_ed_id(reg_id)} == ed_id)
+            return reg_id;
+    }
+    return {};
+}
+
 } // namespace Cool

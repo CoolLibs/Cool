@@ -575,8 +575,8 @@ void NodesEditorImpl::process_deletions()
         ed::LinkId link_id = 0;
         while (ed::QueryDeletedLink(&link_id))
         {
-            // if (ed::AcceptDeletedItem())
-            //     _graph.remove_link(link_id);
+            if (ed::AcceptDeletedItem())
+                _graph.remove_link(as_reg_id(link_id, _graph));
         }
     }
 
