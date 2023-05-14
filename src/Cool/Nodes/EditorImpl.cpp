@@ -184,11 +184,14 @@ auto NodesEditorImpl::imgui_window_workspace(
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
-    ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
+    bool const should_render_window = ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
     ImGui::PopStyleVar(2);
     auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
     ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
-    OnFrame(nodes_cfg, library);
+
+    if (should_render_window)
+        OnFrame(nodes_cfg, library);
+
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
@@ -214,11 +217,9 @@ static void imgui_node_body(Node& node, NodeId const& id, NodesConfig const& nod
 {
     ImGui::BeginGroup();
     ImGui::PushID(&node);
-    ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
 
     nodes_cfg.imgui_node_body(node, id);
 
-    ImGui::PopItemWidth();
     ImGui::PopID();
     ImGui::EndGroup();
 }
