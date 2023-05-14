@@ -44,19 +44,6 @@ auto SearchBarState::imgui_widget() -> bool
 
 } // namespace internal
 
-static void draw_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
-{
-    ImGui::BeginGroup();
-    ImGui::PushID(&node);
-    ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
-
-    nodes_cfg.imgui_node_body(node, id);
-
-    ImGui::PopItemWidth();
-    ImGui::PopID();
-    ImGui::EndGroup();
-}
-
 static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> float
 {
     float max = 0.f;
@@ -208,10 +195,51 @@ auto NodesEditorImpl::imgui_window_workspace(
     return false;
 }
 
-auto NodesEditorImpl::imgui_window_inspector() -> bool
+static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
+{
+    // Get ed IDs
+    std::vector<ed::NodeId> nodes;
+    nodes.resize(static_cast<size_t>(ed::GetSelectedObjectCount()));
+    auto const nodes_count = ed::GetSelectedNodes(nodes.data(), static_cast<int>(nodes.size()));
+    nodes.resize(static_cast<size_t>(nodes_count));
+
+    // Convert to our IDs
+    auto res = std::vector<NodeId>{};
+    for (auto const& ed_id : nodes)
+        res.push_back(as_reg_id(ed_id, graph));
+    return res;
+}
+
+static void imgui_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
+{
+    ImGui::BeginGroup();
+    ImGui::PushID(&node);
+    ImGui::PushItemWidth(200.f); // TODO(JF) Don't use a hardcoded value
+
+    nodes_cfg.imgui_node_body(node, id);
+
+    ImGui::PopItemWidth();
+    ImGui::PopID();
+    ImGui::EndGroup();
+}
+
+static auto imgui_selected_nodes(NodesConfig const& nodes_cfg, Graph& graph)
+{
+    auto const selected_nodes_ids = get_selected_nodes_ids(graph);
+    for (auto const& node_id : selected_nodes_ids)
+    {
+        auto* node = graph.nodes().get_mutable_ref(node_id);
+        if (!node)
+            continue;
+        imgui_node_body(*node, node_id, nodes_cfg);
+    }
+}
+
+auto NodesEditorImpl::imgui_window_inspector(NodesConfig const& nodes_cfg) -> bool
 {
     if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
     {
+        imgui_selected_nodes(nodes_cfg, _graph);
     }
     ImGui::End();
     return false;
@@ -224,7 +252,7 @@ auto NodesEditorImpl::imgui_windows(
 {
     bool b = false;
     b |= imgui_window_workspace(nodes_cfg, library);
-    b |= imgui_window_inspector();
+    b |= imgui_window_inspector(nodes_cfg);
     return b;
 
     //

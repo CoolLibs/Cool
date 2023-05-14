@@ -55,7 +55,7 @@ public:
 
 private:
     auto imgui_window_workspace(NodesConfig const&, NodesLibrary const&) -> bool;
-    auto imgui_window_inspector() -> bool;
+    auto imgui_window_inspector(NodesConfig const&) -> bool;
 
     auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
