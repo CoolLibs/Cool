@@ -210,6 +210,10 @@ auto NodesEditorImpl::imgui_window_workspace(
 
 auto NodesEditorImpl::imgui_window_inspector() -> bool
 {
+    if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
+    {
+    }
+    ImGui::End();
     return false;
 }
 
