@@ -190,7 +190,7 @@ void NodesEditorImpl::open_nodes_menu()
     ed::Resume();
 }
 
-auto NodesEditorImpl::imgui_window(
+auto NodesEditorImpl::imgui_window_workspace(
     NodesConfig const&  nodes_cfg,
     NodesLibrary const& library
 ) -> bool
@@ -205,10 +205,29 @@ auto NodesEditorImpl::imgui_window(
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
+    return false;
+}
+
+auto NodesEditorImpl::imgui_window_inspector() -> bool
+{
+    return false;
+}
+
+auto NodesEditorImpl::imgui_windows(
+    NodesConfig const&  nodes_cfg,
+    NodesLibrary const& library
+) -> bool
+{
+    bool b = false;
+    b |= imgui_window_workspace(nodes_cfg, library);
+    b |= imgui_window_inspector();
+    return b;
+
+    //
+
     // Cool::DebugOptions::nodes_style_editor([&]() {
     //     style_editor();
     // });
-    return false;
     // _window_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
     // ed::SetCurrentEditor(&*_context);
     // ed::Begin("My Editor", ImVec2(0.0, 0.0f));

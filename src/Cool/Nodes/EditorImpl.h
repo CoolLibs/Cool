@@ -48,12 +48,15 @@ private:
 
 class NodesEditorImpl : public INodesEditor {
 public:
-    auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool override;
+    auto imgui_windows(NodesConfig const&, NodesLibrary const&) -> bool override;
 
     auto graph() const -> Graph const& override { return _graph; }
     auto graph() -> Graph& override { return _graph; }
 
 private:
+    auto imgui_window_workspace(NodesConfig const&, NodesLibrary const&) -> bool;
+    auto imgui_window_inspector() -> bool;
+
     auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
     auto               handle_node_deletion() -> bool;
