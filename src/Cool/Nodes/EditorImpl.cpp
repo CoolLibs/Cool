@@ -231,7 +231,7 @@ static auto imgui_selected_nodes(NodesConfig& nodes_cfg, Graph& graph)
     if (selected_nodes_ids.empty())
     {
         ImGui::PushFont(Font::italic());
-        ImGui::TextUnformatted("Select a node to edit its parameters here.");
+        ImGui::TextUnformatted("Select a node to edit its parameters.");
         ImGui::PopFont();
     }
 
