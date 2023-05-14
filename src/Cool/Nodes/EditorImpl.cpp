@@ -52,7 +52,7 @@ static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> floa
     return max + 20.f;
 }
 
-static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     auto const* category = library.get_category(node.category_name());
     if (!category)
@@ -178,7 +178,7 @@ void NodesEditorImpl::open_nodes_menu()
 }
 
 auto NodesEditorImpl::imgui_window_workspace(
-    NodesConfig const&  nodes_cfg,
+    NodesConfig&        nodes_cfg,
     NodesLibrary const& library
 ) -> bool
 {
@@ -213,15 +213,15 @@ static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
     return res;
 }
 
-static void imgui_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
+static void imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg)
 {
     ImGui::SeparatorText(node.definition_name().c_str());
     ImGui::PushID(&node);
-    nodes_cfg.imgui_node_body(node, id);
+    nodes_cfg.imgui_node_in_inspector(node, id);
     ImGui::PopID();
 }
 
-static auto imgui_selected_nodes(NodesConfig const& nodes_cfg, Graph& graph)
+static auto imgui_selected_nodes(NodesConfig& nodes_cfg, Graph& graph)
 {
     auto const selected_nodes_ids = get_selected_nodes_ids(graph);
     for (auto const& node_id : selected_nodes_ids)
@@ -229,12 +229,12 @@ static auto imgui_selected_nodes(NodesConfig const& nodes_cfg, Graph& graph)
         auto* node = graph.nodes().get_mutable_ref(node_id);
         if (!node)
             continue;
-        imgui_node_body(*node, node_id, nodes_cfg);
+        imgui_node_in_inspector(*node, node_id, nodes_cfg);
         ImGui::NewLine();
     }
 }
 
-auto NodesEditorImpl::imgui_window_inspector(NodesConfig const& nodes_cfg) -> bool
+auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg) -> bool
 {
     if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
     {
@@ -245,7 +245,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig const& nodes_cfg) -> bo
 }
 
 auto NodesEditorImpl::imgui_windows(
-    NodesConfig const&  nodes_cfg,
+    NodesConfig&        nodes_cfg,
     NodesLibrary const& library
 ) -> bool
 {
@@ -301,7 +301,7 @@ auto NodesEditorImpl::imgui_windows(
 }
 
 auto NodesEditorImpl::imgui_nodes_menu(
-    NodesConfig const&  nodes_cfg,
+    NodesConfig&        nodes_cfg,
     NodesLibrary const& library,
     bool                menu_just_opened
 ) -> NodeId
@@ -408,7 +408,7 @@ void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
-void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig const& nodes_cfg, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
     builder.Begin(as_ed_id(id));
 
@@ -421,6 +421,8 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     ImGui::Spring(0);
     builder.EndHeader();
+
+    nodes_cfg.imgui_node_above_pins(node, id);
 
     auto const pin_alpha = [&](Pin const& pin) {
         auto tmp_alpha = ImGui::GetStyle().Alpha;
@@ -465,7 +467,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
         builder.EndOutput();
     }
 
-    // nodes_cfg.imgui_node_body(node, id);
+    nodes_cfg.imgui_node_below_pins(node, id);
 
     builder.End();
 }
@@ -640,7 +642,7 @@ void NodesEditorImpl::process_deletions()
     }
 }
 
-void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig const& nodes_cfg)
+void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& nodes_cfg)
 {
     util::BlueprintNodeBuilder builder{};
 
@@ -659,7 +661,7 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig con
     process_deletions();
 }
 
-void NodesEditorImpl::OnFrame(NodesConfig const& nodes_cfg, NodesLibrary const& library)
+void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& library)
 {
     ed::SetCurrentEditor(_context);
     // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume

@@ -48,14 +48,14 @@ private:
 
 class NodesEditorImpl : public INodesEditor {
 public:
-    auto imgui_windows(NodesConfig const&, NodesLibrary const&) -> bool override;
+    auto imgui_windows(NodesConfig&, NodesLibrary const&) -> bool override;
 
     auto graph() const -> Graph const& override { return _graph; }
     auto graph() -> Graph& override { return _graph; }
 
 private:
-    auto imgui_window_workspace(NodesConfig const&, NodesLibrary const&) -> bool;
-    auto imgui_window_inspector(NodesConfig const&) -> bool;
+    auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
+    auto imgui_window_inspector(NodesConfig&) -> bool;
 
     auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
@@ -64,7 +64,7 @@ private:
 
 private:
     /// Returns the id of the new node, or a null id if no node was created.
-    auto imgui_nodes_menu(NodesConfig const&, NodesLibrary const&, bool just_opened) -> NodeId;
+    auto imgui_nodes_menu(NodesConfig&, NodesLibrary const&, bool just_opened) -> NodeId;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
@@ -90,7 +90,7 @@ private:
 
     void DrawPinIcon(Pin const&, bool connected, float alpha);
 
-    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig const&, util::BlueprintNodeBuilder& builder);
+    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
 
     // void render_comment_node(NodeEX& node);
 
@@ -102,9 +102,9 @@ private:
 
     void process_deletions();
 
-    void render_editor(NodesLibrary const& library, NodesConfig const&);
+    void render_editor(NodesLibrary const& library, NodesConfig&);
 
-    void OnFrame(NodesConfig const&, NodesLibrary const&);
+    void OnFrame(NodesConfig&, NodesLibrary const&);
 
     bool _menu_just_opened{false};
 
