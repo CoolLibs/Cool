@@ -215,13 +215,10 @@ static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
 
 static void imgui_node_body(Node& node, NodeId const& id, NodesConfig const& nodes_cfg)
 {
-    ImGui::BeginGroup();
+    ImGui::SeparatorText(node.definition_name().c_str());
     ImGui::PushID(&node);
-
     nodes_cfg.imgui_node_body(node, id);
-
     ImGui::PopID();
-    ImGui::EndGroup();
 }
 
 static auto imgui_selected_nodes(NodesConfig const& nodes_cfg, Graph& graph)
@@ -233,6 +230,7 @@ static auto imgui_selected_nodes(NodesConfig const& nodes_cfg, Graph& graph)
         if (!node)
             continue;
         imgui_node_body(*node, node_id, nodes_cfg);
+        ImGui::NewLine();
     }
 }
 
