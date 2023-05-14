@@ -430,11 +430,14 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     ImGui::TextUnformatted(node.definition_name().c_str());
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
-
     ImGui::Spring(0);
     builder.EndHeader();
 
     nodes_cfg.imgui_node_above_pins(node, id);
+
+    // Begin pins
+    ImGui::BeginHorizontal("pins");
+    ImGui::Spring(0, 0);
 
     auto const pin_alpha = [&](Pin const& pin) {
         auto tmp_alpha = ImGui::GetStyle().Alpha;
@@ -478,6 +481,14 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
+
+    // End output pins
+    ed::PopStyleVar(2);
+    ImGui::Spring(1, 0);
+    ImGui::EndVertical();
+
+    // End pins
+    ImGui::EndHorizontal();
 
     nodes_cfg.imgui_node_below_pins(node, id);
 
