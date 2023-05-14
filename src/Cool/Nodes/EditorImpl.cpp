@@ -4,6 +4,7 @@
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/NodesConfig.h"
 #include "Cool/Nodes/NodesLibrary.h"
+#include "Cool/Nodes/as_reg_id.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <Cool/ImGui/icon_fmt.h>
 #include <imgui.h>
@@ -414,7 +415,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
         builder.EndOutput();
     }
 
-    nodes_cfg.imgui_node_body(node, id);
+    // nodes_cfg.imgui_node_body(node, id);
 
     builder.End();
 }
@@ -583,8 +584,8 @@ void NodesEditorImpl::process_deletions()
         ed::NodeId node_id = 0;
         while (ed::QueryDeletedNode(&node_id))
         {
-            // if (ed::AcceptDeletedItem())
-            //     _graph.remove_node(node_id);
+            if (ed::AcceptDeletedItem())
+                _graph.remove_node(as_reg_id(node_id, _graph));
         }
     }
 }
