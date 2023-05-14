@@ -57,7 +57,6 @@ private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
 
-    auto               handle_link_creation() -> bool;
     auto               handle_link_deletion() -> bool;
     auto               handle_node_deletion() -> bool;
     [[nodiscard]] auto wants_to_delete_selection() const -> bool;
@@ -95,17 +94,15 @@ private:
 
     // void render_comment_node(NodeEX& node);
 
-    void render_new_link();
+    auto process_creations() -> bool;
+    // auto process_node_creation() -> bool;
+    auto process_link_creation() -> bool;
 
-    void render_new_node();
-
-    void handle_creations();
-
-    void process_deletions();
+    void process_link_released();
 
     void render_editor(NodesLibrary const& library, NodesConfig&);
 
-    void OnFrame(NodesConfig&, NodesLibrary const&);
+    auto imgui_workspace(NodesConfig&, NodesLibrary const&) -> bool;
 
     bool _menu_just_opened{false};
 

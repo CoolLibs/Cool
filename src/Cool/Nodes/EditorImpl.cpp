@@ -4,6 +4,7 @@
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/Nodes/Graph.h"
 #include "Cool/Nodes/NodesConfig.h"
 #include "Cool/Nodes/NodesLibrary.h"
 #include "Cool/Nodes/as_reg_id.h"
@@ -201,13 +202,14 @@ auto NodesEditorImpl::imgui_window_workspace(
     auto const prev_tesselation                  = ImGui::GetStyle().CircleTessellationMaxError;
     ImGui::GetStyle().CircleTessellationMaxError = 0.1f; // Make borders smooth even when zooming.
 
+    bool graph_has_changed = false;
     if (should_render_window)
-        OnFrame(nodes_cfg, library);
+        graph_has_changed |= imgui_workspace(nodes_cfg, library);
 
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     ImGui::End();
 
-    return false;
+    return graph_has_changed;
 }
 
 static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
@@ -225,16 +227,19 @@ static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
     return res;
 }
 
-static void imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
+static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
+    -> bool
 {
     ImGui::SeparatorText(node.definition_name().c_str());
     ImGui::PushID(&node);
-    dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
+    bool const graph_has_changed =
+        dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
     nodes_cfg.imgui_node_in_inspector(node, id);
     ImGui::PopID();
+    return graph_has_changed;
 }
 
-static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
+static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
     auto const selected_nodes_ids = get_selected_nodes_ids(graph);
 
@@ -246,25 +251,29 @@ static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& lib
         ImGui::PopFont();
     }
 
+    bool graph_has_changed = false;
     // Show all nodes
     for (auto const& node_id : selected_nodes_ids)
     {
         auto* node = graph.nodes().get_mutable_ref(node_id);
         if (!node)
             continue;
-        imgui_node_in_inspector(*node, node_id, nodes_cfg, library, graph);
+        graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, graph);
         ImGui::NewLine();
     }
+
+    return graph_has_changed;
 }
 
 auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
+    bool graph_has_changed = false;
     if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
     {
-        imgui_selected_nodes(nodes_cfg, library, _graph);
+        graph_has_changed |= imgui_selected_nodes(nodes_cfg, library, _graph);
     }
     ImGui::End();
-    return false;
+    return graph_has_changed;
 }
 
 auto NodesEditorImpl::imgui_windows(
@@ -272,10 +281,10 @@ auto NodesEditorImpl::imgui_windows(
     NodesLibrary const& library
 ) -> bool
 {
-    bool b = false;
-    b |= imgui_window_workspace(nodes_cfg, library);
-    b |= imgui_window_inspector(nodes_cfg, library);
-    return b;
+    bool graph_has_changed = false;
+    graph_has_changed |= imgui_window_workspace(nodes_cfg, library);
+    graph_has_changed |= imgui_window_inspector(nodes_cfg, library);
+    return graph_has_changed;
 
     //
 
@@ -565,7 +574,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 //     ed::EndGroupHint();
 // }
 
-auto NodesEditorImpl::handle_link_creation() -> bool
+auto NodesEditorImpl::process_link_creation() -> bool
 {
     ed::PinId startPinId;
     ed::PinId endPinId;
@@ -620,7 +629,7 @@ auto NodesEditorImpl::handle_link_creation() -> bool
     return true;
 }
 
-void NodesEditorImpl::render_new_node()
+void NodesEditorImpl::process_link_released()
 {
     ed::PinId pinId = 0;
     if (ed::QueryNewNode(&pinId))
@@ -638,31 +647,39 @@ void NodesEditorImpl::render_new_node()
     }
 }
 
-void NodesEditorImpl::handle_creations()
+auto NodesEditorImpl::process_creations() -> bool
 {
+    bool graph_has_changed = false;
+
     if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
     {
-        handle_link_creation();
-        render_new_node();
+        graph_has_changed |= process_link_creation();
+        process_link_released();
     }
     else
         newLinkPin = nullptr;
 
     ed::EndCreate();
+
+    return graph_has_changed;
 }
 
-void NodesEditorImpl::process_deletions()
+static auto process_deletions(Graph& graph) -> bool
 {
     auto scope_guard = sg::make_scope_guard([] { ed::EndDelete(); });
     if (!ed::BeginDelete())
-        return;
+        return false;
 
+    bool graph_has_changed = false;
     {
         ed::LinkId link_id = 0;
         while (ed::QueryDeletedLink(&link_id))
         {
             if (ed::AcceptDeletedItem())
-                _graph.remove_link(as_reg_id(link_id, _graph));
+            {
+                graph.remove_link(as_reg_id(link_id, graph));
+                graph_has_changed = true;
+            }
         }
     }
 
@@ -671,9 +688,14 @@ void NodesEditorImpl::process_deletions()
         while (ed::QueryDeletedNode(&node_id))
         {
             if (ed::AcceptDeletedItem())
-                _graph.remove_node(as_reg_id(node_id, _graph));
+            {
+                graph.remove_node(as_reg_id(node_id, graph));
+                graph_has_changed = true;
+            }
         }
     }
+
+    return graph_has_changed;
 }
 
 void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& nodes_cfg)
@@ -690,12 +712,9 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& no
 
     for (auto const& [id, link] : _graph.links())
         ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
-
-    handle_creations();
-    process_deletions();
 }
 
-void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& library)
+auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
     bool graph_has_changed = false;
 
@@ -704,9 +723,11 @@ void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& librar
     GImGui->CurrentWindow->DrawList->AddLine(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f}, ImGui::GetColorU32(ImGuiCol_SeparatorHovered)); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
 
     ed::Begin("Node editor");
-    {
-        render_editor(library, nodes_cfg);
-    }
+
+    render_editor(library, nodes_cfg);
+
+    graph_has_changed |= process_creations();
+    graph_has_changed |= process_deletions(_graph);
 
     if (wants_to_open_nodes_menu())
     {
@@ -771,6 +792,8 @@ void NodesEditorImpl::OnFrame(NodesConfig& nodes_cfg, NodesLibrary const& librar
     }
     ed::Resume();
     ed::End();
+
+    return graph_has_changed;
 }
 
 } // namespace Cool
