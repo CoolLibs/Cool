@@ -618,6 +618,7 @@ static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> b
             for (auto const& link_id : links_ids)
             {
                 graph.remove_link(link_id);
+                ed::DeleteLink(as_ed_id(link_id));
                 graph_has_changed = true;
             }
         }
@@ -626,6 +627,7 @@ static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> b
             for (auto const& node_id : nodes_ids)
             {
                 graph.remove_node(node_id);
+                ed::DeleteNode(as_ed_id(node_id));
                 graph_has_changed = true;
             }
         }
