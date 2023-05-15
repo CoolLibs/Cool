@@ -122,6 +122,7 @@ auto NodesEditorImpl::imgui_window_workspace(
         graph_has_changed |= imgui_workspace(nodes_cfg, library);
 
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
+    _workspace_is_hovered                        = ImGui::IsWindowHovered();
     ImGui::End();
 
     return graph_has_changed;
