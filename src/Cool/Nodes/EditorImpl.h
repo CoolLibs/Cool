@@ -36,13 +36,14 @@ namespace internal {
 struct SearchBarState {
 public:
     void               on_nodes_menu_open();
-    [[nodiscard]] auto get_nodes_filter() const -> std::string const&;
+    [[nodiscard]] auto get_nodes_filter() const -> std::string const& { return _nodes_filter; }
+
     /// Returns true iff we should select the first node.
     auto imgui_widget() -> bool;
 
 private:
-    bool        _should_be_focused = true;
-    std::string _nodes_filter{};
+    bool        _should_be_focused{};
+    std::string _nodes_filter{""};
 };
 } // namespace internal
 
@@ -57,8 +58,6 @@ private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
 
-    auto               handle_link_deletion() -> bool;
-    auto               handle_node_deletion() -> bool;
     [[nodiscard]] auto wants_to_delete_selection() const -> bool;
 
 private:

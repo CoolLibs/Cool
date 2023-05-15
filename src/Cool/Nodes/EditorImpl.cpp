@@ -27,11 +27,6 @@ void SearchBarState::on_nodes_menu_open()
     _should_be_focused = true;
 }
 
-auto SearchBarState::get_nodes_filter() const -> std::string const&
-{
-    return _nodes_filter;
-}
-
 auto SearchBarState::imgui_widget() -> bool
 {
     if (_should_be_focused)
@@ -46,14 +41,6 @@ auto SearchBarState::imgui_widget() -> bool
 }
 
 } // namespace internal
-
-static auto calc_max_text_width(std::vector<NodeDefinition> const& defs) -> float
-{
-    float max = 0.f;
-    for (auto const& def : defs)
-        max = std::max(max, ImGui::CalcTextSize(def.name().c_str()).x);
-    return max + 20.f;
-}
 
 static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& category, NodesConfig& nodes_cfg, Graph& graph)
     -> bool
@@ -83,7 +70,6 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
 
     bool graph_has_changed = false;
 
-    ImGui::SetNextItemWidth(calc_max_text_width(category->definitions()));
     if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
     {
         graph_has_changed |= imgui_all_definitions_selectables(node, *category, nodes_cfg, graph);
@@ -91,77 +77,6 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     }
 
     return graph_has_changed;
-}
-
-// static auto draw_node(Cool::Node& node, ed::NodeId const& id, NodesConfig const& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
-// {
-//     auto* drawList = ed::GetNodeBackgroundDrawList(id);
-//     drawList->AddRectFilled({0.f, 0.f}, {100.f, 100.f}, 0xFFFFFFFF);
-//     // ed::BeginNodeTitleBar();
-//     // ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
-//     // ed::EndNodeTitleBar();
-
-//     // if (ImGui::BeginPopupContextItem())
-//     // {
-//     //     nodes_cfg.widget_to_rename_node(node);
-//     //     ImGui::EndPopup();
-//     // }
-
-//     // bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
-
-//     // draw_node_body(node, id, nodes_cfg);
-//     draw_node_pins(node);
-
-//     // return graph_has_changed;
-//     return false;
-// }
-
-auto NodesEditorImpl::handle_link_deletion() -> bool
-{
-    bool has_deleted_some = false;
-    // {
-    //     ed::ID link_id;
-    //     if (ed::IsLinkDestroyed(&link_id))
-    //     {
-    //         has_deleted_some = true;
-    //         _graph.remove_link(link_id);
-    //     }
-    // }
-
-    // {
-    //     int const num_selected = ed::NumSelectedLinks();
-    //     if (num_selected > 0 && wants_to_delete_selection())
-    //     {
-    //         has_deleted_some           = true;
-    //         static auto selected_links = std::vector<ed::ID>{};
-    //         selected_links.resize(static_cast<size_t>(num_selected));
-    //         ed::GetSelectedLinks(selected_links.data());
-    //         for (auto const& link_id : selected_links)
-    //             _graph.remove_link(link_id);
-    //     }
-    // }
-
-    return has_deleted_some;
-}
-
-auto NodesEditorImpl::handle_node_deletion() -> bool
-{
-    // if (!wants_to_delete_selection())
-    //     return false;
-
-    // const auto num_selected = ed::NumSelectedNodes();
-    // if (num_selected == 0)
-    //     return false;
-
-    // static auto selected_nodes = std::vector<ed::ID>{};
-    // selected_nodes.resize(static_cast<size_t>(num_selected));
-    // ed::GetSelectedNodes(selected_nodes.data());
-
-    // for (auto const& node_id : selected_nodes)
-    //     _graph.remove_node(node_id);
-
-    // ed::ClearNodeSelection();
-    return true;
 }
 
 auto NodesEditorImpl::wants_to_delete_selection() const -> bool
