@@ -127,34 +127,22 @@ auto NodesEditorImpl::imgui_window_workspace(
     return graph_has_changed;
 }
 
-static auto get_selected_nodes_ids(Graph const& graph) -> std::vector<NodeId>
+static auto get_selected_nodes_ids() -> std::vector<ed::NodeId>
 {
-    // Get ed IDs
     std::vector<ed::NodeId> nodes;
     nodes.resize(static_cast<size_t>(ed::GetSelectedObjectCount()));
     auto const nodes_count = ed::GetSelectedNodes(nodes.data(), static_cast<int>(nodes.size()));
     nodes.resize(static_cast<size_t>(nodes_count));
-
-    // Convert to our IDs
-    auto res = std::vector<NodeId>{};
-    for (auto const& ed_id : nodes)
-        res.push_back(as_reg_id(ed_id, graph));
-    return res;
+    return nodes;
 }
 
-static auto get_selected_links_ids(Graph const& graph) -> std::vector<LinkId>
+static auto get_selected_links_ids() -> std::vector<ed::LinkId>
 {
-    // Get ed IDs
     std::vector<ed::LinkId> links;
     links.resize(static_cast<size_t>(ed::GetSelectedObjectCount()));
     auto const links_count = ed::GetSelectedLinks(links.data(), static_cast<int>(links.size()));
     links.resize(static_cast<size_t>(links_count));
-
-    // Convert to our IDs
-    auto res = std::vector<LinkId>{};
-    for (auto const& ed_id : links)
-        res.push_back(as_reg_id(ed_id, graph));
-    return res;
+    return links;
 }
 
 static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
@@ -171,7 +159,7 @@ static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& n
 
 static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
 {
-    auto const selected_nodes_ids = get_selected_nodes_ids(graph);
+    auto const selected_nodes_ids = get_selected_nodes_ids();
 
     // Message when no node is selected
     if (selected_nodes_ids.empty())
@@ -183,8 +171,10 @@ static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& lib
 
     bool graph_has_changed = false;
     // Show all nodes
-    for (auto const& node_id : selected_nodes_ids)
+    for (auto const& ed_node_id : selected_nodes_ids)
     {
+        auto const node_id = as_reg_id(ed_node_id, graph);
+
         auto* node = graph.nodes().get_mutable_ref(node_id);
         if (!node)
             continue;
@@ -614,20 +604,20 @@ static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> b
     if (wants_to_delete_selection)
     {
         {
-            auto const links_ids = get_selected_links_ids(graph);
+            auto const links_ids = get_selected_links_ids();
             for (auto const& link_id : links_ids)
             {
-                graph.remove_link(link_id);
-                ed::DeleteLink(as_ed_id(link_id));
+                graph.remove_link(as_reg_id(link_id, graph));
+                ed::DeleteLink(link_id);
                 graph_has_changed = true;
             }
         }
         {
-            auto const nodes_ids = get_selected_nodes_ids(graph);
+            auto const nodes_ids = get_selected_nodes_ids();
             for (auto const& node_id : nodes_ids)
             {
-                graph.remove_node(node_id);
-                ed::DeleteNode(as_ed_id(node_id));
+                graph.remove_node(as_reg_id(node_id, graph));
+                ed::DeleteNode(node_id);
                 graph_has_changed = true;
             }
         }
