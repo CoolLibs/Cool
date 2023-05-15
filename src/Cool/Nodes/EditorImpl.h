@@ -72,7 +72,7 @@ private:
 private:
     internal::UniqueEdContext _context{Cool::Path::root() / "cache/nodes-editor.json"};
     Graph                     _graph;
-    bool                      _window_is_hovered = true;
+    bool                      _workspace_is_hovered{true};
     internal::SearchBarState  _search_bar{};
 
     // EXAMPLE
