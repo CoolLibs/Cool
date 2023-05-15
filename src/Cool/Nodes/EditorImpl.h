@@ -58,8 +58,6 @@ private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
 
-    [[nodiscard]] auto wants_to_delete_selection() const -> bool;
-
 private:
     /// Returns the id of the new node, or a null id if no node was created.
     auto imgui_nodes_menu(NodesConfig&, NodesLibrary const&, bool just_opened) -> NodeId;
