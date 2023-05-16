@@ -280,7 +280,9 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     builder.Header(color);
     ImGui::Spring(0);
+    ImGui::PushFont(Font::bold());
     ImGui::TextUnformatted(node.definition_name().c_str());
+    ImGui::PopFont();
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
     ImGui::Spring(0);
