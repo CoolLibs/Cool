@@ -273,10 +273,12 @@ static void draw_pin_icon(Pin const&, bool connected, float alpha)
 
 void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
+    auto const color = (category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f})).as_ImColor();
+
+    ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color);
     builder.Begin(as_ed_id(id));
 
-    auto const color = category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f});
-    builder.Header(color.as_ImColor());
+    builder.Header(color);
     ImGui::Spring(0);
     ImGui::TextUnformatted(node.definition_name().c_str());
     ImGui::Spring(1);
@@ -344,6 +346,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     nodes_cfg.imgui_below_node_pins(node, id);
 
     builder.End();
+    ed::PopStyleColor();
 }
 
 // TODO(JF)
