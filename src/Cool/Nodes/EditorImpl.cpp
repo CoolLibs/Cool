@@ -209,24 +209,6 @@ auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, bool menu_ju
     return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
 }
 
-static void show_label(const char* label, ImColor color)
-{
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetTextLineHeight());
-    auto size = ImGui::CalcTextSize(label);
-
-    auto padding = ImGui::GetStyle().FramePadding;
-    auto spacing = ImGui::GetStyle().ItemSpacing;
-
-    ImGui::SetCursorPos(ImGui::GetCursorPos() + ImVec2(spacing.x, -spacing.y));
-
-    auto rectMin = ImGui::GetCursorScreenPos() - padding;
-    auto rectMax = ImGui::GetCursorScreenPos() + size + padding;
-
-    auto drawList = ImGui::GetWindowDrawList();
-    drawList->AddRectFilled(rectMin, rectMax, color, size.y * 0.15f);
-    ImGui::TextUnformatted(label);
-}
-
 auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
 {
     if (!id)
