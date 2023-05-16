@@ -79,8 +79,6 @@ private:
 private:
     // NodeEX* SpawnComment();
 
-    void BuildNodes();
-
     // ImColor GetIconColor(PinType type);
 
     void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
