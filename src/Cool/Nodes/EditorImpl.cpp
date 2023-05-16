@@ -228,10 +228,13 @@ static auto find_pin(ed::PinId const& id, Graph const& graph) -> Pin const*
     return nullptr;
 }
 
-auto NodesEditorImpl::is_allowed_connection(Pin const& a, Pin const& b) -> bool
+static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph) -> bool
 {
+    auto const node_id_a = GraphU::node_id(graph, a.id());
+    auto const node_id_b = GraphU::node_id(graph, b.id());
     return &a != &b
-           && a.kind() != b.kind(); /*&& a->Type == b->Type && a->Node != b->Node */
+           && a.kind() != b.kind()
+           && node_id_a != node_id_b; /*&& a->Type == b->Type  */
 }
 
 // NodeEX* NodesEditorImpl::SpawnComment()
@@ -288,7 +291,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     auto const pin_alpha = [&](Pin const& pin) {
         auto tmp_alpha = ImGui::GetStyle().Alpha;
-        if (newLinkPin && !is_allowed_connection(*newLinkPin, pin))
+        if (newLinkPin && !is_allowed_connection(*newLinkPin, pin, _graph))
             tmp_alpha *= 0.188f;
         return tmp_alpha;
     };

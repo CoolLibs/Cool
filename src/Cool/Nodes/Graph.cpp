@@ -94,4 +94,26 @@ auto Graph::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const
     return {};
 }
 
+namespace GraphU {
+
+auto node_id(Graph const& graph, PinId const& pin_id) -> NodeId
+{
+    for (auto const& [node_id, node] : graph.nodes())
+    {
+        for (auto const& pin : node.input_pins())
+        {
+            if (pin.id() == pin_id)
+                return node_id;
+        }
+        for (auto const& pin : node.output_pins())
+        {
+            if (pin.id() == pin_id)
+                return node_id;
+        }
+    }
+    return {};
+}
+
+} // namespace GraphU
+
 } // namespace Cool

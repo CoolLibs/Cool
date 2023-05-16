@@ -77,8 +77,6 @@ private:
 
     // EXAMPLE
 private:
-    auto is_allowed_connection(Pin const&, Pin const&) -> bool;
-
     // NodeEX* SpawnComment();
 
     void BuildNodes();

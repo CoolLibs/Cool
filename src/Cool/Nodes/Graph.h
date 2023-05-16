@@ -78,4 +78,11 @@ private:
     }
 };
 
+namespace GraphU {
+
+/// Returns the id of the node containing the pin.
+auto node_id(Graph const&, PinId const&) -> NodeId;
+
+} // namespace GraphU
+
 } // namespace Cool
