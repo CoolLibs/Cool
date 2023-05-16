@@ -292,7 +292,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
     auto const pin_alpha = [&](Pin const& pin) {
         auto tmp_alpha = ImGui::GetStyle().Alpha;
-        if (newLinkPin && !is_allowed_connection(*newLinkPin, pin, _graph))
+        if (_new_link_pin && !is_allowed_connection(*_new_link_pin, pin, _graph))
             tmp_alpha *= 0.188f;
         return tmp_alpha;
     };
@@ -413,35 +413,35 @@ auto NodesEditorImpl::process_link_creation() -> bool
     if (!ed::QueryNewLink(&begin_pin_id, &end_pin_id))
         return false;
 
-    auto const* startPin = find_pin(begin_pin_id, _graph);
-    auto const* endPin   = find_pin(end_pin_id, _graph);
+    auto const* begin_pin = find_pin(begin_pin_id, _graph);
+    auto const* end_pin   = find_pin(end_pin_id, _graph);
 
-    newLinkPin = startPin ? startPin : endPin;
+    _new_link_pin = begin_pin ? begin_pin : end_pin;
 
-    if (startPin && startPin->kind() == PinKind::Input)
+    if (begin_pin && begin_pin->kind() == PinKind::Input)
     {
-        std::swap(startPin, endPin);
-        std::swap(startPinId, end_pin_id);
+        std::swap(begin_pin, end_pin);
+        std::swap(begin_pin_id, end_pin_id);
     }
 
-    if (endPin == startPin)
+    if (end_pin == begin_pin)
     {
         ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
         return false;
     }
-    if (endPin->kind() == startPin->kind())
+    if (end_pin->kind() == begin_pin->kind())
     {
         show_label("x Incompatible Pin Kind", ImColor(45, 32, 32, 180));
         ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
         return false;
     }
-    // else if (endPin->Node == startPin->Node)
+    // else if (end_pin->Node == startPin->Node)
     // {
     //     show_label("x Cannot connect to self", ImColor(45, 32, 32, 180));
     //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
     // return false;
     // }
-    // else if (endPin->Type != startPin->Type)
+    // else if (end_pin->Type != startPin->Type)
     // {
     //     show_label("x Incompatible Pin Type", ImColor(45, 32, 32, 180));
     //     ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
@@ -451,10 +451,10 @@ auto NodesEditorImpl::process_link_creation() -> bool
     show_label("+ Create Link", ImColor(32, 45, 32, 180));
     if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
     {
-        _graph.remove_link_going_into(endPin->id());
+        _graph.remove_link_going_into(end_pin->id());
         _graph.add_link(Link{
-            .from_pin_id = startPin->id(),
-            .to_pin_id   = endPin->id(),
+            .from_pin_id = begin_pin->id(),
+            .to_pin_id   = end_pin->id(),
         });
     }
 
@@ -466,14 +466,14 @@ void NodesEditorImpl::process_link_released()
     ed::PinId pinId = 0;
     if (ed::QueryNewNode(&pinId))
     {
-        newLinkPin = find_pin(pinId, _graph);
-        if (newLinkPin)
+        _new_link_pin = find_pin(pinId, _graph);
+        if (_new_link_pin)
             show_label("+ Create Node", ImColor(32, 45, 32, 180));
 
         if (ed::AcceptNewItem())
         {
-            newNodeLinkPin = find_pin(pinId, _graph);
-            newLinkPin     = nullptr;
+            _new_node_link_pin = find_pin(pinId, _graph);
+            _new_link_pin      = nullptr;
             open_nodes_menu();
         }
     }
@@ -489,7 +489,7 @@ auto NodesEditorImpl::process_creations() -> bool
         process_link_released();
     }
     else
-        newLinkPin = nullptr;
+        _new_link_pin = nullptr;
 
     ed::EndCreate();
 
@@ -587,7 +587,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     if (wants_to_open_nodes_menu())
     {
         open_nodes_menu();
-        newNodeLinkPin = nullptr;
+        _new_node_link_pin = nullptr;
     }
 
     if (ed::ShowNodeContextMenu(&_id_of_node_whose_context_menu_is_open))

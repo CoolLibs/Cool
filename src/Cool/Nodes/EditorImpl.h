@@ -72,8 +72,8 @@ private:
     ImVec2                    _next_node_position = {0.f, 0.f};
     ed::NodeId                _id_of_node_whose_context_menu_is_open{};
     bool                      _menu_just_opened{false};
-    Pin const*                newNodeLinkPin = nullptr;
-    Pin const*                newLinkPin     = nullptr;
+    Pin const*                _new_node_link_pin = nullptr;
+    Pin const*                _new_link_pin      = nullptr;
 
     // EXAMPLE
 private:
