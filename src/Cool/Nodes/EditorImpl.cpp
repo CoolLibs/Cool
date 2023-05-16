@@ -683,7 +683,8 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
             {
                 if (ed::NodeId{as_ed_id(frame_node.id)} != _id_of_node_whose_context_menu_is_open)
                     continue;
-                ImGui::InputText("##frame_title", &frame_node.name);
+                if (ImGui::InputText("##frame_title", &frame_node.name, ImGuiInputTextFlags_EnterReturnsTrue))
+                    ImGui::CloseCurrentPopup();
             }
         }
 
