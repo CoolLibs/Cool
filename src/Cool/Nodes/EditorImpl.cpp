@@ -198,68 +198,15 @@ auto NodesEditorImpl::imgui_windows(
     graph_has_changed |= imgui_window_workspace(nodes_cfg, library);
     graph_has_changed |= imgui_window_inspector(nodes_cfg, library);
     return graph_has_changed;
-
-    //
-
-    // Cool::DebugOptions::nodes_style_editor([&]() {
-    //     style_editor();
-    // });
-    // _workspace_is_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_NoPopupHierarchy);
-    // ed::SetCurrentEditor(&*_context);
-    // ed::Begin("My Editor", ImVec2(0.0, 0.0f));
-    // bool graph_has_changed = false;
-    // // std::unique_lock lock{_graph.nodes().mutex()};
-    // int uniqueId = 1;
-    // for (auto& [id, node] : _graph.nodes())
-    // {
-    //     // auto const cat                        = library.get_category(node.category_name());
-    //     // auto const set_scoped_title_bar_color = ScopedTitleBarColor{
-    //     //     cat ? cat->config().get_color() : Color::from_srgb(glm::vec3{0.f}),
-    //     // };
-
-    //     auto const imnode_id = ed::NodeId{&node};
-    //     ed::BeginNode(imnode_id);
-    //     ed::EndNode();
-    //     graph_has_changed |= draw_node(node, imnode_id, nodes_cfg, library, _graph);
-    // }
-    // ed::End();
-    // ed::SetCurrentEditor(nullptr);
-    // // ed::SetCurrentContext(&*_context);
-
-    // graph_has_changed |= draw_nodes_library_menu_ifn(nodes_cfg, library);
-    // // ed::BeginNodeEditor();
-    // // {
-    // //     std::shared_lock lock{_graph.links().mutex()};
-    // //     for (auto const& [id, link] : _graph.links())
-    // //     {
-    // //         ed::Link(id, link.from_pin_id, link.to_pin_id);
-    // //     }
-    // // }
-    // // ed::MiniMap(0.2f, edMiniMapLocation_BottomRight);
-    // // ed::EndNodeEditor();
-    // // graph_has_changed |= handle_link_creation();
-    // // graph_has_changed |= handle_link_deletion();
-    // // graph_has_changed |= handle_node_deletion();
-    // ImGui::End();
-
-    // return graph_has_changed;
 }
 
-auto NodesEditorImpl::imgui_nodes_menu(
-    NodesConfig&        nodes_cfg,
-    NodesLibrary const& library,
-    bool                menu_just_opened
-) -> NodeId
+auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, bool menu_just_opened)
+    -> std::optional<NodeDefinitionAndCategoryName>
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
-    auto const maybe_node_definition_id = library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
-    if (!maybe_node_definition_id)
-        return {};
-
-    auto const id = _graph.add_node(nodes_cfg.make_node(*maybe_node_definition_id));
-    return id;
+    return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
 }
 
 static void show_label(const char* label, ImColor color)
@@ -666,15 +613,17 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     ed::Suspend();
     if (ImGui::BeginPopup("Nodes Library Menu"))
     {
-        auto const new_node_id = imgui_nodes_menu(nodes_cfg, library, _menu_just_opened);
-        _menu_just_opened      = false;
+        auto const new_node_def_id = imgui_nodes_menu(library, _menu_just_opened);
+        _menu_just_opened          = false;
 
-        if (!new_node_id.underlying_uuid().is_nil())
+        if (new_node_def_id)
         {
             ImGui::CloseCurrentPopup();
 
+            auto const new_node_id = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
             ed::SetNodePosition(as_ed_id(new_node_id), _next_node_position);
 
+            // TODO(JF)
             // if (auto startPin = newNodeLinkPin)
             // {
             //     auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;

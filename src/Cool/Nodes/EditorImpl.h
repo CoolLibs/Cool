@@ -59,8 +59,8 @@ private:
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
 
 private:
-    /// Returns the id of the new node, or a null id if no node was created.
-    auto imgui_nodes_menu(NodesConfig&, NodesLibrary const&, bool just_opened) -> NodeId;
+    /// Returns the id of the node definition that we should create, or std::nullopt if no node should be created.
+    auto imgui_nodes_menu(NodesLibrary const&, bool just_opened) -> std::optional<NodeDefinitionAndCategoryName>;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
