@@ -284,7 +284,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     ImGui::Spring(0);
     builder.EndHeader();
 
-    nodes_cfg.imgui_node_above_pins(node, id);
+    nodes_cfg.imgui_above_node_pins(node, id);
 
     // Begin pins
     ImGui::BeginHorizontal("pins");
@@ -341,7 +341,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     // End pins
     ImGui::EndHorizontal();
 
-    nodes_cfg.imgui_node_below_pins(node, id);
+    nodes_cfg.imgui_below_node_pins(node, id);
 
     builder.End();
 }
