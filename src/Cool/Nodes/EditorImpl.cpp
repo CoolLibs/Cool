@@ -292,7 +292,8 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory co
     builder.Header(color);
     ImGui::Spring(0);
     ImGui::PushFont(Font::bold());
-    ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
+    auto const node_name = nodes_cfg.name(node);
+    ImGui::TextUnformatted((node_name.empty() ? node.definition_name() : node_name).c_str());
     ImGui::PopFont();
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
