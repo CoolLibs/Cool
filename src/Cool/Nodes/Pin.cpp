@@ -1,6 +1,4 @@
 #include "Pin.h"
-#include "as_ed_id.h"
-#include "ed.h"
 
 namespace Cool {
 

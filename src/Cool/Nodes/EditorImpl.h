@@ -101,23 +101,11 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void save(Archive& archive) const
+    void serialize(Archive& archive)
     {
         archive(
             cereal::make_nvp("Graph", _graph)
-            // cereal::make_nvp("Editor State", std::string{ImNodes::SaveEditorStateToIniString(_context->EditorCtx)})
         );
-    }
-
-    template<class Archive>
-    void load(Archive& archive)
-    {
-        // std::string editor_state;
-        archive(
-            _graph
-            // editor_state
-        );
-        // ImNodes::LoadEditorStateFromIniString(_context->EditorCtx, editor_state.c_str(), editor_state.size());
     }
 };
 
