@@ -1,9 +1,12 @@
 
 #include "EditorImpl.h"
+#include <reg/src/internal/generate_uuid.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/Nodes/EditorImpl.h"
+#include "Cool/Nodes/as_ed_id.h"
 #include "EditorImpl.h"
 #include "Graph.h"
 #include "NodesConfig.h"
@@ -38,6 +41,12 @@ auto SearchBarState::imgui_widget() -> bool
     bool const b = ImGui::InputTextWithHint("##Filter", icon_fmt("Search for a node or category", ICOMOON_SEARCH).c_str(), &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
     ImGui::PopID();
     return b;
+}
+
+FrameNode::FrameNode()
+    : id{reg::internal::generate_uuid()}
+    , name{"Frame"}
+{
 }
 
 } // namespace internal
@@ -180,9 +189,19 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
             auto const node_id = as_reg_id(ed_node_id, _graph);
 
             auto* node = _graph.nodes().get_mutable_ref(node_id);
-            if (!node)
-                continue;
-            graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, _graph);
+            if (node)
+            {
+                graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, _graph);
+            }
+            else // Frame node
+            {
+                for (auto& frame_node : _frame_nodes)
+                {
+                    if (ed::NodeId{as_ed_id(frame_node.id)} != ed_node_id)
+                        continue;
+                    ImGui::InputText("Title", &frame_node.name);
+                }
+            }
             ImGui::NewLine();
         }
     }
@@ -238,16 +257,6 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
            && node_id_a != node_id_b; /*&& a->Type == b->Type  */
 }
 
-// TODO(JF)
-// NodeEX* NodesEditorImpl::SpawnComment()
-// {
-//     m_Nodes.emplace_back(GetNextId(), "Test Comment");
-//     m_Nodes.back().Type = NodeType::Comment;
-//     m_Nodes.back().Size = ImVec2(300, 200);
-
-//     return &m_Nodes.back();
-// }
-
 // ImColor NodesEditorImpl::GetIconColor(PinType type)
 // {
 //     switch (type)
@@ -272,7 +281,7 @@ static void draw_pin_icon(Pin const&, bool connected, float alpha)
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
-void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
     auto const color = (category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f})).as_ImColor();
 
@@ -352,65 +361,80 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     ed::PopStyleColor();
 }
 
-// TODO(JF)
-// void NodesEditorImpl::render_comment_node(NodeEX& node)
-// {
-//     const float commentAlpha = 0.75f;
+static auto ImGui_GetItemRect() -> ImRect
+{
+    return ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
+}
 
-//     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha);
-//     ed::PushStyleColor(ed::StyleColor_NodeBg, ImColor(255, 255, 255, 64));
-//     ed::PushStyleColor(ed::StyleColor_NodeBorder, ImColor(255, 255, 255, 64));
-//     ed::BeginNode(node.ID);
-//     ImGui::PushID(node.ID.AsPointer());
-//     ImGui::BeginVertical("content");
-//     ImGui::BeginHorizontal("horizontal");
-//     ImGui::Spring(1);
-//     ImGui::TextUnformatted(node.Name.c_str());
-//     ImGui::Spring(1);
-//     ImGui::EndHorizontal();
-//     ed::Group(node.Size);
-//     ImGui::EndVertical();
-//     ImGui::PopID();
-//     ed::EndNode();
-//     ed::PopStyleColor(2);
-//     ImGui::PopStyleVar();
+static auto ImRect_Expanded(const ImRect& rect, float x, float y) -> ImRect
+{
+    auto result = rect;
+    result.Min.x -= x;
+    result.Min.y -= y;
+    result.Max.x += x;
+    result.Max.y += y;
+    return result;
+}
 
-//     if (ed::BeginGroupHint(node.ID))
-//     {
-//         // auto alpha   = static_cast<int>(commentAlpha * ImGui::GetStyle().Alpha * 255);
-//         auto bgAlpha = static_cast<int>(ImGui::GetStyle().Alpha * 255);
+static void render_frame_node(internal::FrameNode const& node)
+{
+    const float commentAlpha = 0.75f;
 
-//         // ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha * ImGui::GetStyle().Alpha);
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha);
+    ed::PushStyleColor(ed::StyleColor_NodeBg, ImColor(255, 255, 255, 64));
+    ed::PushStyleColor(ed::StyleColor_NodeBorder, ImColor(255, 255, 255, 64));
+    auto const id = ed::NodeId{as_ed_id(node.id)};
+    ed::BeginNode(id);
+    ImGui::PushID(id.AsPointer());
+    ImGui::BeginVertical("content");
+    ImGui::BeginHorizontal("horizontal");
+    ImGui::Spring(1);
+    ImGui::TextUnformatted(node.name.c_str());
+    ImGui::Spring(1);
+    ImGui::EndHorizontal();
+    ed::Group({300.f, 200.f});
+    ImGui::EndVertical();
+    ImGui::PopID();
+    ed::EndNode();
+    ed::PopStyleColor(2);
+    ImGui::PopStyleVar();
 
-//         auto min = ed::GetGroupMin();
-//         // auto max = ed::GetGroupMax();
+    if (ed::BeginGroupHint(id))
+    {
+        // auto alpha   = static_cast<int>(commentAlpha * ImGui::GetStyle().Alpha * 255);
+        auto bgAlpha = static_cast<int>(ImGui::GetStyle().Alpha * 255);
 
-//         ImGui::SetCursorScreenPos(min - ImVec2(-8, ImGui::GetTextLineHeightWithSpacing() + 4));
-//         ImGui::BeginGroup();
-//         ImGui::TextUnformatted(node.Name.c_str());
-//         ImGui::EndGroup();
+        // ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha * ImGui::GetStyle().Alpha);
 
-//         auto drawList = ed::GetHintBackgroundDrawList();
+        auto min = ed::GetGroupMin();
+        // auto max = ed::GetGroupMax();
 
-//         auto hintBounds      = ImGui_GetItemRect();
-//         auto hintFrameBounds = ImRect_Expanded(hintBounds, 8, 4);
+        ImGui::SetCursorScreenPos(min - ImVec2(-8, ImGui::GetTextLineHeightWithSpacing() + 4));
+        ImGui::BeginGroup();
+        ImGui::TextUnformatted(node.name.c_str());
+        ImGui::EndGroup();
 
-//         drawList->AddRectFilled(
-//             hintFrameBounds.GetTL(),
-//             hintFrameBounds.GetBR(),
-//             IM_COL32(255, 255, 255, 64 * bgAlpha / 255), 4.0f
-//         );
+        auto drawList = ed::GetHintBackgroundDrawList();
 
-//         drawList->AddRect(
-//             hintFrameBounds.GetTL(),
-//             hintFrameBounds.GetBR(),
-//             IM_COL32(255, 255, 255, 128 * bgAlpha / 255), 4.0f
-//         );
+        auto hintBounds      = ImGui_GetItemRect();
+        auto hintFrameBounds = ImRect_Expanded(hintBounds, 8, 4);
 
-//         // ImGui::PopStyleVar();
-//     }
-//     ed::EndGroupHint();
-// }
+        drawList->AddRectFilled(
+            hintFrameBounds.GetTL(),
+            hintFrameBounds.GetBR(),
+            IM_COL32(255, 255, 255, 64 * bgAlpha / 255), 4.0f
+        );
+
+        drawList->AddRect(
+            hintFrameBounds.GetTL(),
+            hintFrameBounds.GetBR(),
+            IM_COL32(255, 255, 255, 128 * bgAlpha / 255), 4.0f
+        );
+
+        // ImGui::PopStyleVar();
+    }
+    ed::EndGroupHint();
+}
 
 auto NodesEditorImpl::process_link_creation() -> bool
 {
@@ -562,14 +586,11 @@ static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> b
 void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& nodes_cfg)
 {
     util::BlueprintNodeBuilder builder{};
-
     for (auto& [id, node] : _graph.nodes())
-    {
-        // if (node.Type == NodeType::Blueprint)
-        render_blueprint_node(node, id, library.get_category(node.category_name()), nodes_cfg, builder);
-        // if (node.Type == NodeType::Comment)
-        //     render_comment_node(node);
-    }
+        render_node(node, id, library.get_category(node.category_name()), nodes_cfg, builder);
+
+    for (auto const& frame_node : _frame_nodes)
+        render_frame_node(frame_node);
 
     for (auto const& [id, link] : _graph.links())
         ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
@@ -606,6 +627,12 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     ed::Suspend();
     if (ImGui::BeginPopup("Nodes Library Menu"))
     {
+        if (ImGui::Selectable("Frame (Comment)"))
+        {
+            auto const& frame_node = _frame_nodes.emplace_back();
+            ed::SetNodePosition(as_ed_id(frame_node.id), _next_node_position);
+        }
+
         auto const new_node_def_id = imgui_nodes_menu(library, _menu_just_opened);
         _menu_just_opened          = false;
 
@@ -649,6 +676,15 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
             auto const* category = library.get_category(node->category_name());
             if (category)
                 graph_has_changed |= imgui_all_definitions_selectables(*node, *category, nodes_cfg, _graph);
+        }
+        else // Frame node
+        {
+            for (auto& frame_node : _frame_nodes)
+            {
+                if (ed::NodeId{as_ed_id(frame_node.id)} != _id_of_node_whose_context_menu_is_open)
+                    continue;
+                ImGui::InputText("##frame_title", &frame_node.name);
+            }
         }
 
         ImGui::EndPopup();

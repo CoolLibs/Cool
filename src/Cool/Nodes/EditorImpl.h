@@ -1,7 +1,11 @@
 #pragma once
+#include <imgui-node-editor/imgui_node_editor.h>
 #include <cereal/types/polymorphic.hpp>
+#include <cereal/types/vector.hpp>
+#include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/UniqueEdContext.h"
 #include "Cool/Path/Path.h"
+#include "Cool/Serialization/ImGuiSerialization.h"
 #include "Graph.h"
 #include "IEditor.h"
 #include "Node.h"
@@ -25,14 +29,10 @@ namespace util = ax::NodeEditor::Utilities;
 //     Delegate,
 // };
 
-enum class NodeType {
-    Blueprint,
-    Comment,
-};
-
 namespace Cool {
 
 namespace internal {
+
 struct SearchBarState {
 public:
     void               on_nodes_menu_open();
@@ -45,6 +45,28 @@ private:
     bool        _should_be_focused{};
     std::string _nodes_filter{""};
 };
+
+using FrameNodeId = reg::AnyId;
+
+struct FrameNode {
+    FrameNodeId id;
+    std::string name;
+
+    FrameNode();
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("ID", id)
+        );
+    }
+};
+
 } // namespace internal
 
 class NodesEditorImpl : public INodesEditor {
@@ -65,25 +87,21 @@ private:
     void open_nodes_menu();
 
 private:
-    internal::UniqueEdContext _context{Cool::Path::root() / "cache/nodes-editor.json"};
-    Graph                     _graph;
-    bool                      _workspace_is_hovered{};
-    internal::SearchBarState  _search_bar{};
-    ImVec2                    _next_node_position = {0.f, 0.f};
-    ed::NodeId                _id_of_node_whose_context_menu_is_open{};
-    bool                      _menu_just_opened{false};
-    Pin const*                _new_node_link_pin = nullptr;
-    Pin const*                _new_link_pin      = nullptr;
+    internal::UniqueEdContext        _context{Cool::Path::root() / "cache/nodes-editor.json"};
+    Graph                            _graph;
+    std::vector<internal::FrameNode> _frame_nodes{};
+    bool                             _workspace_is_hovered{};
+    internal::SearchBarState         _search_bar{};
+    ImVec2                           _next_node_position = {0.f, 0.f};
+    ed::NodeId                       _id_of_node_whose_context_menu_is_open{};
+    bool                             _menu_just_opened{false};
+    Pin const*                       _new_node_link_pin = nullptr;
+    Pin const*                       _new_link_pin      = nullptr;
 
-    // EXAMPLE
 private:
-    // NodeEX* SpawnComment();
-
     // ImColor GetIconColor(PinType type);
 
-    void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
-
-    // void render_comment_node(NodeEX& node);
+    void render_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
 
     auto process_creations() -> bool;
     // auto process_node_creation() -> bool;
@@ -102,7 +120,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Graph", _graph)
+            cereal::make_nvp("Graph", _graph),
+            cereal::make_nvp("Frame nodes", _frame_nodes)
         );
     }
 };
