@@ -64,14 +64,16 @@ private:
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
-    ImVec2     _next_node_position = {0.f, 0.f};
-    ed::NodeId _id_of_node_whose_context_menu_is_open{};
-
 private:
     internal::UniqueEdContext _context{Cool::Path::root() / "cache/nodes-editor.json"};
     Graph                     _graph;
     bool                      _workspace_is_hovered{};
     internal::SearchBarState  _search_bar{};
+    ImVec2                    _next_node_position = {0.f, 0.f};
+    ed::NodeId                _id_of_node_whose_context_menu_is_open{};
+    bool                      _menu_just_opened{false};
+    Pin const*                newNodeLinkPin = nullptr;
+    Pin const*                newLinkPin     = nullptr;
 
     // EXAMPLE
 private:
@@ -100,11 +102,6 @@ private:
     void render_editor(NodesLibrary const& library, NodesConfig&);
 
     auto imgui_workspace(NodesConfig&, NodesLibrary const&) -> bool;
-
-    bool _menu_just_opened{false};
-
-    Pin const* newNodeLinkPin = nullptr;
-    Pin const* newLinkPin     = nullptr;
 
 private:
     // Serialization

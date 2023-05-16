@@ -1,15 +1,15 @@
 
-#include "Cool/Nodes/EditorImpl.h"
+#include "EditorImpl.h"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/icon_fmt.h"
-#include "Cool/Nodes/Graph.h"
-#include "Cool/Nodes/NodesConfig.h"
-#include "Cool/Nodes/NodesLibrary.h"
-#include "Cool/Nodes/as_reg_id.h"
 #include "EditorImpl.h"
+#include "Graph.h"
+#include "NodesConfig.h"
+#include "NodesLibrary.h"
 #include "as_ed_id.h"
+#include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
 
@@ -83,7 +83,8 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
 {
     return !ImGui::GetIO().WantTextInput
            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
-               || ImGui::IsKeyReleased(ImGuiKey_Backspace));
+               || ImGui::IsKeyReleased(ImGuiKey_Backspace)
+           );
 }
 
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
@@ -100,7 +101,7 @@ void NodesEditorImpl::open_nodes_menu()
     _next_node_position = ImGui::GetMousePos();
     _search_bar.on_nodes_menu_open();
     ed::Suspend();
-    ImGui::OpenPopup("_nodes_library");
+    ImGui::OpenPopup("Nodes Library Menu");
     ed::Resume();
 }
 
@@ -671,7 +672,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     }
 
     ed::Suspend();
-    if (ImGui::BeginPopup("_nodes_library"))
+    if (ImGui::BeginPopup("Nodes Library Menu"))
     {
         auto const new_node_id = imgui_nodes_menu(nodes_cfg, library, _menu_just_opened);
         _menu_just_opened      = false;
