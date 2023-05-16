@@ -526,8 +526,30 @@ auto NodesEditorImpl::process_creations() -> bool
     return graph_has_changed;
 }
 
-static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> bool
+static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed::NodeId id)
 {
+    frame_nodes.erase(std::remove_if(frame_nodes.begin(), frame_nodes.end(), [&](internal::FrameNode const& node) {
+                          return ed::NodeId{as_ed_id(node.id)} == id;
+                      }),
+                      frame_nodes.end());
+}
+
+static auto process_deletions(Graph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
+{
+    if (wants_to_delete_selection)
+    {
+        {
+            auto const links_ids = get_selected_links_ids();
+            for (auto const& link_id : links_ids)
+                ed::DeleteLink(link_id); // This will trigger the ed::QueryDeletedLink() below.
+        }
+        {
+            auto const nodes_ids = get_selected_nodes_ids();
+            for (auto const& node_id : nodes_ids)
+                ed::DeleteNode(node_id); // This will trigger the ed::QueryDeletedNode() below.
+        }
+    }
+
     bool graph_has_changed = false;
     {
         auto scope_guard = sg::make_scope_guard([] { ed::EndDelete(); });
@@ -551,31 +573,10 @@ static auto process_deletions(Graph& graph, bool wants_to_delete_selection) -> b
                     if (ed::AcceptDeletedItem())
                     {
                         graph.remove_node(as_reg_id(node_id, graph));
+                        remove_frame_node(frame_nodes, node_id);
                         graph_has_changed = true;
                     }
                 }
-            }
-        }
-    }
-
-    if (wants_to_delete_selection)
-    {
-        {
-            auto const links_ids = get_selected_links_ids();
-            for (auto const& link_id : links_ids)
-            {
-                graph.remove_link(as_reg_id(link_id, graph));
-                ed::DeleteLink(link_id);
-                graph_has_changed = true;
-            }
-        }
-        {
-            auto const nodes_ids = get_selected_nodes_ids();
-            for (auto const& node_id : nodes_ids)
-            {
-                graph.remove_node(as_reg_id(node_id, graph));
-                ed::DeleteNode(node_id);
-                graph_has_changed = true;
             }
         }
     }
@@ -609,7 +610,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     render_editor(library, nodes_cfg);
 
     graph_has_changed |= process_creations();
-    graph_has_changed |= process_deletions(_graph, wants_to_delete_selection());
+    graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
 
     if (wants_to_open_nodes_menu())
     {

@@ -106,11 +106,9 @@ private:
     auto process_creations() -> bool;
     // auto process_node_creation() -> bool;
     auto process_link_creation() -> bool;
-
     void process_link_released();
 
     void render_editor(NodesLibrary const& library, NodesConfig&);
-
     auto imgui_workspace(NodesConfig&, NodesLibrary const&) -> bool;
 
 private:
