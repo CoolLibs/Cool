@@ -130,7 +130,7 @@ auto NodesEditorImpl::imgui_window_workspace(
 
 static auto get_selected_nodes_ids() -> std::vector<ed::NodeId>
 {
-    std::vector<ed::NodeId> nodes;
+    auto nodes = std::vector<ed::NodeId>{};
     nodes.resize(static_cast<size_t>(ed::GetSelectedObjectCount()));
     auto const nodes_count = ed::GetSelectedNodes(nodes.data(), static_cast<int>(nodes.size()));
     nodes.resize(static_cast<size_t>(nodes_count));
@@ -139,7 +139,7 @@ static auto get_selected_nodes_ids() -> std::vector<ed::NodeId>
 
 static auto get_selected_links_ids() -> std::vector<ed::LinkId>
 {
-    std::vector<ed::LinkId> links;
+    auto links = std::vector<ed::LinkId>{};
     links.resize(static_cast<size_t>(ed::GetSelectedObjectCount()));
     auto const links_count = ed::GetSelectedLinks(links.data(), static_cast<int>(links.size()));
     links.resize(static_cast<size_t>(links_count));
@@ -158,40 +158,32 @@ static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& n
     return graph_has_changed;
 }
 
-static auto imgui_selected_nodes(NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
-{
-    auto const selected_nodes_ids = get_selected_nodes_ids();
-
-    // Message when no node is selected
-    if (selected_nodes_ids.empty())
-    {
-        ImGui::PushFont(Font::italic());
-        ImGui::TextUnformatted("Select a node to edit its parameters.");
-        ImGui::PopFont();
-    }
-
-    bool graph_has_changed = false;
-    // Show all nodes
-    for (auto const& ed_node_id : selected_nodes_ids)
-    {
-        auto const node_id = as_reg_id(ed_node_id, graph);
-
-        auto* node = graph.nodes().get_mutable_ref(node_id);
-        if (!node)
-            continue;
-        graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, graph);
-        ImGui::NewLine();
-    }
-
-    return graph_has_changed;
-}
-
 auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
     bool graph_has_changed = false;
     if (ImGui::Begin(icon_fmt("Inspector", ICOMOON_EQUALIZER).c_str()))
     {
-        graph_has_changed |= imgui_selected_nodes(nodes_cfg, library, _graph);
+        auto const selected_nodes_ids = get_selected_nodes_ids();
+
+        // Message when no node is selected
+        if (selected_nodes_ids.empty())
+        {
+            ImGui::PushFont(Font::italic());
+            ImGui::TextUnformatted("Select a node to edit its parameters.");
+            ImGui::PopFont();
+        }
+
+        // Show all nodes
+        for (auto const& ed_node_id : selected_nodes_ids)
+        {
+            auto const node_id = as_reg_id(ed_node_id, _graph);
+
+            auto* node = _graph.nodes().get_mutable_ref(node_id);
+            if (!node)
+                continue;
+            graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, _graph);
+            ImGui::NewLine();
+        }
     }
     ImGui::End();
     return graph_has_changed;
