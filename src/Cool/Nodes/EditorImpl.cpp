@@ -151,6 +151,7 @@ static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& n
 {
     ImGui::SeparatorText(node.definition_name().c_str());
     ImGui::PushID(&node);
+    nodes_cfg.widget_to_rename_node(node);
     bool const graph_has_changed =
         dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
     nodes_cfg.imgui_node_in_inspector(node, id);
@@ -281,7 +282,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     builder.Header(color);
     ImGui::Spring(0);
     ImGui::PushFont(Font::bold());
-    ImGui::TextUnformatted(node.definition_name().c_str());
+    ImGui::TextUnformatted(nodes_cfg.name(node).c_str());
     ImGui::PopFont();
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
