@@ -4,6 +4,7 @@
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Nodes/EditorImpl.h"
 #include "Cool/Nodes/as_ed_id.h"
@@ -378,11 +379,9 @@ static auto ImRect_Expanded(const ImRect& rect, float x, float y) -> ImRect
 
 static void render_frame_node(internal::FrameNode const& node)
 {
-    const float commentAlpha = 0.75f;
-
-    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha);
-    ed::PushStyleColor(ed::StyleColor_NodeBg, ImColor(255, 255, 255, 64));
-    ed::PushStyleColor(ed::StyleColor_NodeBorder, ImColor(255, 255, 255, 64));
+    // ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.75f);
+    ed::PushStyleColor(ed::StyleColor_NodeBg, ImGuiExtras::GetStyle().frame_node_color);
+    ed::PushStyleColor(ed::StyleColor_NodeBorder, ImGuiExtras::GetStyle().frame_node_color);
     auto const id = ed::NodeId{as_ed_id(node.id)};
     ed::BeginNode(id);
     ImGui::PushID(id.AsPointer());
@@ -397,7 +396,7 @@ static void render_frame_node(internal::FrameNode const& node)
     ImGui::PopID();
     ed::EndNode();
     ed::PopStyleColor(2);
-    ImGui::PopStyleVar();
+    // ImGui::PopStyleVar();
 
     if (ed::BeginGroupHint(id))
     {

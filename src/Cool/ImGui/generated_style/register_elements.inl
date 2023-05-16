@@ -130,3 +130,10 @@ config.register_element(ImStyleEd::Element{
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link_hovered = color; },
     .description = "",
 });
+
+config.register_element(ImStyleEd::Element{
+    .name        = "Frame node",
+    .get_color   = []() { return ImGuiExtras::GetStyle().frame_node_color; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().frame_node_color = color; },
+    .description = "",
+});
