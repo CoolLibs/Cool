@@ -4,6 +4,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/markdown.h"
 #include "Cool/Log/Message.h"
 #include "imgui.h"
 
@@ -287,7 +288,7 @@ void MessageConsole::imgui_show_all_messages()
                     msg.message.category.c_str()
                 );
                 ImGui::SameLine();
-                ImGui::TextUnformatted(msg.message.message.c_str());
+                ImGuiExtras::markdown(msg.message.message);
 
                 const bool close_button_is_hovered = [&] {
                     if (!is_clearable(msg))

@@ -58,6 +58,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="public_exhibition_mode",
+            name_in_ui="Public exhibition mode",
+            available_in_release=True,
+            detailed_description="Currently, simply resets the author info after sharing an image online.",
+        ),
+        DebugOption(
             name_in_code="style_editor",
             name_in_ui="Style Editor",
             available_in_release=True,
@@ -85,7 +91,7 @@ def all_debug_options():
     ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",
