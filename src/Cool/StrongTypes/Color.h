@@ -12,6 +12,8 @@ public:
 
 #include "Cool/ColorSpaces/generated/declare_color_getters.inl"
 
+    [[nodiscard]] auto as_ImColor() const -> ImColor;
+
     friend auto operator==(Color const&, Color const&) -> bool = default;
 
 private:

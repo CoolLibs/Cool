@@ -1,4 +1,5 @@
 #include "ColorThemes.h"
+#include <imgui-node-editor/imgui_node_editor.h>
 #include <imgui.h>
 #include <wants_dark_theme/wants_dark_theme.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
@@ -77,6 +78,7 @@ void ColorThemes::OsThemeChecker::update(ImStyleEd::Editor& editor)
 static void register_imgui_extras_elements(ImStyleEd::Config& config)
 {
 #include "generated_style/register_elements.inl"
+#include "generated_style_nodes/register_all_imnodes_color_elements.inl"
 }
 
 } // namespace Cool

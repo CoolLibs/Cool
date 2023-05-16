@@ -1,8 +1,8 @@
 #include "StyleEditor.h"
-#include <imgui.h>
 #include <cereal/archives/json.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/Nodes/nodes_style_editor.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/Serialization.h"
 #include "ImStyleEd/cereal_style.hpp"
@@ -71,6 +71,9 @@ void StyleEditor::imgui()
     ImGui::SliderFloat2("SeparatorTextAlign", (float*)&ImGui::GetStyle().SeparatorTextAlign, 0.0f, 1.0f, "%.2f");
     ImGui::SliderFloat2("SeparatorTextPadding", (float*)&ImGui::GetStyle().SeparatorTextPadding, 0.0f, 40.0f, "%0.f");
     ImGui::SliderFloat("LogSliderDeadzone", &ImGui::GetStyle().LogSliderDeadzone, 0.0f, 12.0f, "%.0f");
+
+    ImGui::SeparatorText("Nodes");
+    nodes_style_editor();
 
     ImGui::SeparatorText("Misc");
     ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&ImGui::GetStyle().DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
