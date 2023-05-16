@@ -237,6 +237,7 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
            && node_id_a != node_id_b; /*&& a->Type == b->Type  */
 }
 
+// TODO(JF)
 // NodeEX* NodesEditorImpl::SpawnComment()
 // {
 //     m_Nodes.emplace_back(GetNextId(), "Test Comment");
@@ -262,9 +263,9 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 //     }
 // };
 
-void NodesEditorImpl::DrawPinIcon(Pin const&, bool connected, float alpha)
+static void draw_pin_icon(Pin const&, bool connected, float alpha, bool is_main_pin)
 {
-    ax::Widgets::IconType icon_type = ax::Widgets::IconType::Flow;
+    ax::Widgets::IconType icon_type = is_main_pin ? ax::Widgets::IconType::Flow : ax::Widgets::IconType::Circle;
     ImColor               color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
 
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
@@ -303,7 +304,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        DrawPinIcon(input_pin, false /* IsPinLinked(pin_id) */, alpha);
+        draw_pin_icon(input_pin, false /* IsPinLinked(pin_id) */, alpha, true);
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -327,7 +328,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        DrawPinIcon(output_pin, false /* IsPinLinked(pin_id) */, alpha);
+        draw_pin_icon(output_pin, false /* IsPinLinked(pin_id) */, alpha, true);
         ImGui::PopStyleVar();
         builder.EndOutput();
     }

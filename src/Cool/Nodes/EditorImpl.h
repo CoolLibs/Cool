@@ -83,8 +83,6 @@ private:
 
     // ImColor GetIconColor(PinType type);
 
-    void DrawPinIcon(Pin const&, bool connected, float alpha);
-
     void render_blueprint_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
 
     // void render_comment_node(NodeEX& node);
