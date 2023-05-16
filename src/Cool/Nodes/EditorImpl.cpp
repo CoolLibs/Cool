@@ -263,9 +263,9 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 //     }
 // };
 
-static void draw_pin_icon(Pin const&, bool connected, float alpha, bool is_main_pin)
+static void draw_pin_icon(Pin const&, bool connected, float alpha)
 {
-    ax::Widgets::IconType icon_type = is_main_pin ? ax::Widgets::IconType::Flow : ax::Widgets::IconType::Circle;
+    ax::Widgets::IconType icon_type = ax::Widgets::IconType::Circle;
     ImColor               color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
 
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
@@ -304,7 +304,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        draw_pin_icon(input_pin, false /* IsPinLinked(pin_id) */, alpha, true);
+        draw_pin_icon(input_pin, false /* IsPinLinked(pin_id) */, alpha);
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -328,7 +328,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        draw_pin_icon(output_pin, false /* IsPinLinked(pin_id) */, alpha, true);
+        draw_pin_icon(output_pin, false /* IsPinLinked(pin_id) */, alpha);
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
@@ -346,6 +346,7 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
     builder.End();
 }
 
+// TODO(JF)
 // void NodesEditorImpl::render_comment_node(NodeEX& node)
 // {
 //     const float commentAlpha = 0.75f;
@@ -407,20 +408,20 @@ void NodesEditorImpl::render_blueprint_node(Node& node, NodeId const& id, NodesC
 
 auto NodesEditorImpl::process_link_creation() -> bool
 {
-    ed::PinId startPinId;
-    ed::PinId endPinId;
-    if (!ed::QueryNewLink(&startPinId, &endPinId))
+    ed::PinId begin_pin_id;
+    ed::PinId end_pin_id;
+    if (!ed::QueryNewLink(&begin_pin_id, &end_pin_id))
         return false;
 
-    auto const* startPin = find_pin(startPinId, _graph);
-    auto const* endPin   = find_pin(endPinId, _graph);
+    auto const* startPin = find_pin(begin_pin_id, _graph);
+    auto const* endPin   = find_pin(end_pin_id, _graph);
 
     newLinkPin = startPin ? startPin : endPin;
 
     if (startPin && startPin->kind() == PinKind::Input)
     {
         std::swap(startPin, endPin);
-        std::swap(startPinId, endPinId);
+        std::swap(startPinId, end_pin_id);
     }
 
     if (endPin == startPin)
