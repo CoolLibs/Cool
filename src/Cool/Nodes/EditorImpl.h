@@ -77,8 +77,6 @@ private:
 
     // EXAMPLE
 private:
-    auto FindPin(ed::PinId const&) -> Pin const*;
-
     auto is_allowed_connection(Pin const&, Pin const&) -> bool;
 
     // NodeEX* SpawnComment();

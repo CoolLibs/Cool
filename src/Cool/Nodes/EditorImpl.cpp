@@ -209,12 +209,12 @@ auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, bool menu_ju
     return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
 }
 
-auto NodesEditorImpl::FindPin(ed::PinId const& id) -> Pin const*
+static auto find_pin(ed::PinId const& id, Graph const& graph) -> Pin const*
 {
     if (!id)
         return nullptr;
 
-    for (auto const& [_, node] : _graph.nodes())
+    for (auto const& [_, node] : graph.nodes())
     {
         for (auto const& pin : node.input_pins())
             if (ed::PinId{as_ed_id(pin.id())} == id)
@@ -408,8 +408,8 @@ auto NodesEditorImpl::process_link_creation() -> bool
     if (!ed::QueryNewLink(&startPinId, &endPinId))
         return false;
 
-    auto const* startPin = FindPin(startPinId);
-    auto const* endPin   = FindPin(endPinId);
+    auto const* startPin = find_pin(startPinId, _graph);
+    auto const* endPin   = find_pin(endPinId, _graph);
 
     newLinkPin = startPin ? startPin : endPin;
 
@@ -461,13 +461,13 @@ void NodesEditorImpl::process_link_released()
     ed::PinId pinId = 0;
     if (ed::QueryNewNode(&pinId))
     {
-        newLinkPin = FindPin(pinId);
+        newLinkPin = find_pin(pinId, _graph);
         if (newLinkPin)
             show_label("+ Create Node", ImColor(32, 45, 32, 180));
 
         if (ed::AcceptNewItem())
         {
-            newNodeLinkPin = FindPin(pinId);
+            newNodeLinkPin = find_pin(pinId, _graph);
             newLinkPin     = nullptr;
             open_nodes_menu();
         }
