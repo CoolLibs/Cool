@@ -1,6 +1,8 @@
-const float TAU    = 6.283185307180;
-const float PI     = 3.141592653590;
-const float sqrt_3 = 1.73205;
+const float TAU     = 6.283185307180;
+const float PI      = 3.141592653590;
+const float sqrt_3  = 1.73205;
+const float FLT_MAX = 3.402823466e+38;
+const float FLT_MIN = 1.175494351e-38;
 
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
