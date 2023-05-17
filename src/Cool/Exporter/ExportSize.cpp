@@ -47,7 +47,7 @@ auto ExportSize::imgui() -> bool
     }
 
     ImGui::SameLine();
-    ImGuiExtras::maybe_disabled(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
+    ImGuiExtras::disabled_if(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
         b |= _aspect_ratio.imgui(150.f);
     });
     ImGui::SameLine();

@@ -36,7 +36,7 @@ void ColorThemes::imgui_theme_picker()
         }
     }
 
-    ImGuiExtras::maybe_disabled(
+    ImGuiExtras::disabled_if(
         _use_os_theme.has_value(),
         "You are using the OS color theme. Disable the option above to edit your theme freely.",
         [&]() {

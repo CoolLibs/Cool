@@ -260,7 +260,7 @@ void PresetManager::RenamerWidget::imgui(const PresetId& id, std::string_view cu
 static auto add_button(bool the_name_is_not_already_used, std::string_view name) -> bool
 {
     auto is_clicked{false};
-    Cool::ImGuiExtras::maybe_disabled(name == "", "Can't create a preset with an empty name.", [&]() {
+    Cool::ImGuiExtras::disabled_if(name == "", "Can't create a preset with an empty name.", [&]() {
         if (the_name_is_not_already_used)
         {
             is_clicked = ImGui::Button("Save Preset");

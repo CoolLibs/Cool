@@ -179,7 +179,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
-void maybe_disabled(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets);
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets);
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;

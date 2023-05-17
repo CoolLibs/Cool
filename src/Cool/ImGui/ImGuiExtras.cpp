@@ -148,7 +148,7 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    maybe_disabled(true, reason_for_disabling, [&]() {
+    disabled_if(true, reason_for_disabling, [&]() {
         ImGui::Button(label);
     });
 }
@@ -422,7 +422,7 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
     return was_used;
 }
 
-void maybe_disabled(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
 {
     if (condition_to_disable)
     {
