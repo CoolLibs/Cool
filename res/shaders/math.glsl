@@ -122,5 +122,3 @@ vec2 complex_division(vec2 n, vec2 d)
 }
 
 #define saturate(v) clamp(v, 0., 1.)
-
-#define FLT_MAX 3.402823466e+38
