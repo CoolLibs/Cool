@@ -1,4 +1,3 @@
-
 #include "EditorImpl.h"
 #include <reg/src/internal/generate_uuid.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
@@ -274,12 +273,12 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 //     }
 // };
 
-static void draw_pin_icon(Pin const&, bool connected, float alpha)
+static void draw_pin_icon(Pin const&, float alpha)
 {
     ax::Widgets::IconType icon_type = ax::Widgets::IconType::Circle;
     ImColor               color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
 
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, connected, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, true, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
 void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
@@ -320,7 +319,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory co
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        draw_pin_icon(input_pin, false /* IsPinLinked(pin_id) */, alpha);
+        draw_pin_icon(input_pin, alpha);
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -344,7 +343,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory co
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        draw_pin_icon(output_pin, false /* IsPinLinked(pin_id) */, alpha);
+        draw_pin_icon(output_pin, alpha);
         ImGui::PopStyleVar();
         builder.EndOutput();
     }

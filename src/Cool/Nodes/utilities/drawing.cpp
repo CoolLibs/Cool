@@ -6,9 +6,7 @@
 void ax::Drawing::DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& b, IconType type, bool filled, ImU32 color, ImU32 innerColor)
 {
     auto       rect           = ImRect(a, b);
-    auto       rect_y         = rect.Min.y;
     auto       rect_w         = rect.Max.x - rect.Min.x;
-    auto       rect_h         = rect.Max.y - rect.Min.y;
     auto       rect_center_x  = (rect.Min.x + rect.Max.x) * 0.5f;
     auto       rect_center_y  = (rect.Min.y + rect.Max.y) * 0.5f;
     auto       rect_center    = ImVec2(rect_center_x, rect_center_y);
@@ -240,17 +238,6 @@ void ax::Drawing::DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& 
 
                 drawList->PathStroke(color, true, 2.0f * outline_scale);
             }
-        }
-        else
-        {
-            const auto triangleTip = triangleStart + rect_w * (0.45f - 0.32f);
-
-            drawList->AddTriangleFilled(
-                ImVec2(ceilf(triangleTip), rect_y + rect_h * 0.5f),
-                ImVec2(triangleStart, rect_center_y + 0.15f * rect_h),
-                ImVec2(triangleStart, rect_center_y - 0.15f * rect_h),
-                color
-            );
         }
     }
 }
