@@ -153,6 +153,16 @@ void AppManager::imgui_render(IApp& app)
     ImGui::PushFont(Font::regular());
     window_title_height_bias -= ImGui::GetFontSize();
 
+    // Menu bar
+    if (app.wants_to_show_menu_bar())
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImGuiExtras::GetStyle().menu_bar_spacing);
+        ImGui::BeginMainMenuBar();
+        app.imgui_menus();
+        ImGui::EndMainMenuBar();
+        ImGui::PopStyleVar();
+    }
+
     // Apply normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
     window_title_height_bias += 2.f * ImGui::GetStyle().FramePadding.y;
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGuiExtras::GetStyle().frame_padding);
@@ -160,21 +170,13 @@ void AppManager::imgui_render(IApp& app)
 
     ImGui::GetCurrentContext()->window_title_height_bias = window_title_height_bias;
 
-    {
-        // Menu bar
-        if (app.wants_to_show_menu_bar())
-        {
-            ImGui::BeginMainMenuBar();
-            app.imgui_menus();
-            ImGui::EndMainMenuBar();
-        }
-        // Windows
-        app.imgui_windows();
-        imgui_windows();
-    }
+    // Windows
+    app.imgui_windows();
+    imgui_windows();
+
     ImGui::PopStyleVar();
     ImGui::PopFont();
-    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().title_bar_padding; // We need to apply the title_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
+    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().tab_bar_padding; // We need to apply the tab_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
 static void end_frame(WindowManager& window_manager)

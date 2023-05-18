@@ -29,7 +29,8 @@ void StyleEditor::imgui()
     ImGuiExtras::separator_text("Main");
     ImGui::SliderFloat2("WindowPadding", (float*)&ImGui::GetStyle().WindowPadding, 0.0f, 20.0f, "%.0f");
     ImGuiExtras::GetStyle().imgui_frame_padding();
-    ImGuiExtras::GetStyle().imgui_title_bar_padding();
+    ImGuiExtras::GetStyle().imgui_tab_bar_padding();
+    ImGuiExtras::GetStyle().imgui_menu_bar_spacing();
     ImGui::SliderFloat2("CellPadding", (float*)&ImGui::GetStyle().CellPadding, 0.0f, 20.0f, "%.0f");
     ImGui::SliderFloat2("ItemSpacing", (float*)&ImGui::GetStyle().ItemSpacing, 0.0f, 20.0f, "%.0f");
     ImGui::SliderFloat2("ItemInnerSpacing", (float*)&ImGui::GetStyle().ItemInnerSpacing, 0.0f, 20.0f, "%.0f");

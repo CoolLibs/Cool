@@ -6,4 +6,5 @@
  */
 void imgui_floating_buttons_spacing();
 void imgui_frame_padding();
-void imgui_title_bar_padding();
+void imgui_tab_bar_padding();
+void imgui_menu_bar_spacing();

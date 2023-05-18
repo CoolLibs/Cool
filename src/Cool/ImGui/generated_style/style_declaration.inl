@@ -6,4 +6,5 @@
  */
 float  floating_buttons_spacing{4.f};
 ImVec2 frame_padding{9.f, 4.f};
-ImVec2 title_bar_padding{9.f, 6.f};
+ImVec2 tab_bar_padding{9.f, 6.f};
+ImVec2 menu_bar_spacing{4.f, 4.f};
