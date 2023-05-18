@@ -267,7 +267,7 @@ static auto add_button(bool the_name_is_not_already_used, std::string_view name)
         }
         else
         {
-            is_clicked = Cool::ImGuiExtras::colored_button("Overwrite", 0.5f);
+            is_clicked = Cool::ImGuiExtras::colored_button("Overwrite", 0.11f);
         }
     });
     return is_clicked;
@@ -277,7 +277,7 @@ auto PresetManager::imgui_name_input() -> bool
 {
     name_selector();
     ImGui::SameLine(0.f, 0.f);
-    return ImGui::InputText("Name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue);
+    return ImGui::InputText("New preset name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
 static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view new_preset_name) -> bool
@@ -319,16 +319,12 @@ void PresetManager::imgui_adding_preset(Settings_ConstRef settings)
 {
     const auto preset_id = find_preset_with_given_name(_new_preset_name);
 
-    if (add_button(preset_id == PresetId{}, _new_preset_name))
+    if (imgui_name_input())
     {
         save_preset(settings, preset_id);
     }
 
-    ImGui::SameLine();
-    ImGui::Text("as");
-    ImGui::SameLine();
-
-    if (imgui_name_input())
+    if (add_button(preset_id == PresetId{}, _new_preset_name))
     {
         save_preset(settings, preset_id);
     }
