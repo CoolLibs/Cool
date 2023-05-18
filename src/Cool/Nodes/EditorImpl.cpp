@@ -161,12 +161,16 @@ static auto get_selected_links_ids() -> std::vector<ed::LinkId>
 static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
     -> bool
 {
-    ImGuiExtras::separator_text(node.definition_name().c_str());
+    ImGuiExtras::separator_text(node.definition_name());
     ImGui::PushID(&node);
+
+    nodes_cfg.imgui_in_inspector_above_node_info(node, id);
+
     nodes_cfg.widget_to_rename_node(node);
-    bool const graph_has_changed =
-        dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
-    nodes_cfg.imgui_node_in_inspector(node, id);
+    bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
+
+    nodes_cfg.imgui_in_inspector_below_node_info(node, id);
+
     ImGui::PopID();
     return graph_has_changed;
 }
