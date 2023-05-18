@@ -1,18 +1,20 @@
-#ifndef IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_DEFINE_MATH_OPERATORS
-#endif
 #include "ImGuiExtras.h"
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
+
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#endif
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 namespace Cool::ImGuiExtras {
 
@@ -764,6 +766,13 @@ auto floating_button(const char* label, int index, bool align_vertically) -> boo
 
     ImGui::SetCursorScreenPos(prev_pos);
     return b;
+}
+
+void separator_text(std::string_view text)
+{
+    ImGui::PushFont(Font::bold());
+    ImGui::SeparatorText(text.data());
+    ImGui::PopFont();
 }
 
 } // namespace Cool::ImGuiExtras

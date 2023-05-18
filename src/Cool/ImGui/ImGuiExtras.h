@@ -222,4 +222,6 @@ void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags
 /// is controlled by `align_vertically`.
 auto floating_button(const char* label, int index, bool align_vertically = true) -> bool;
 
+void separator_text(std::string_view text);
+
 } // namespace Cool::ImGuiExtras

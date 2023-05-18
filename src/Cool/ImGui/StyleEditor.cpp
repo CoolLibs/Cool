@@ -21,12 +21,12 @@ StyleEditor::~StyleEditor()
 
 void StyleEditor::imgui()
 {
-    ImGui::SeparatorText("Rendering");
+    ImGuiExtras::separator_text("Rendering");
     ImGui::SliderFloat("Disabled Alpha", &ImGui::GetStyle().DisabledAlpha, 0.f, 1.f);
     ImGui::SameLine();
     ImGuiExtras::help_marker("Additional alpha multiplier for disabled items (multiply over current value of Alpha).");
 
-    ImGui::SeparatorText("Main");
+    ImGuiExtras::separator_text("Main");
     ImGui::SliderFloat2("WindowPadding", (float*)&ImGui::GetStyle().WindowPadding, 0.0f, 20.0f, "%.0f");
     ImGuiExtras::GetStyle().imgui_frame_padding();
     ImGuiExtras::GetStyle().imgui_title_bar_padding();
@@ -39,14 +39,14 @@ void StyleEditor::imgui()
     ImGui::SliderFloat("ScrollbarSize", &ImGui::GetStyle().ScrollbarSize, 1.0f, 20.0f, "%.0f");
     ImGui::SliderFloat("GrabMinSize", &ImGui::GetStyle().GrabMinSize, 1.0f, 20.0f, "%.0f");
 
-    ImGui::SeparatorText("Borders");
+    ImGuiExtras::separator_text("Borders");
     ImGui::SliderFloat("WindowBorderSize", &ImGui::GetStyle().WindowBorderSize, 0.0f, 1.0f, "%.0f");
     ImGui::SliderFloat("ChildBorderSize", &ImGui::GetStyle().ChildBorderSize, 0.0f, 1.0f, "%.0f");
     ImGui::SliderFloat("PopupBorderSize", &ImGui::GetStyle().PopupBorderSize, 0.0f, 1.0f, "%.0f");
     ImGui::SliderFloat("FrameBorderSize", &ImGui::GetStyle().FrameBorderSize, 0.0f, 1.0f, "%.0f");
     ImGui::SliderFloat("TabBorderSize", &ImGui::GetStyle().TabBorderSize, 0.0f, 1.0f, "%.0f");
 
-    ImGui::SeparatorText("Rounding");
+    ImGuiExtras::separator_text("Rounding");
     ImGui::SliderFloat("WindowRounding", &ImGui::GetStyle().WindowRounding, 0.0f, 12.0f, "%.0f");
     ImGui::SliderFloat("ChildRounding", &ImGui::GetStyle().ChildRounding, 0.0f, 12.0f, "%.0f");
     ImGui::SliderFloat("FrameRounding", &ImGui::GetStyle().FrameRounding, 0.0f, 12.0f, "%.0f");
@@ -55,7 +55,7 @@ void StyleEditor::imgui()
     ImGui::SliderFloat("GrabRounding", &ImGui::GetStyle().GrabRounding, 0.0f, 12.0f, "%.0f");
     ImGui::SliderFloat("TabRounding", &ImGui::GetStyle().TabRounding, 0.0f, 12.0f, "%.0f");
 
-    ImGui::SeparatorText("Widgets");
+    ImGuiExtras::separator_text("Widgets");
     ImGui::SliderFloat2("WindowTitleAlign", (float*)&ImGui::GetStyle().WindowTitleAlign, 0.0f, 1.0f, "%.2f");
     int window_menu_button_position = ImGui::GetStyle().WindowMenuButtonPosition + 1;
     if (ImGui::Combo("WindowMenuButtonPosition", (int*)&window_menu_button_position, "None\0Left\0Right\0"))
@@ -72,10 +72,10 @@ void StyleEditor::imgui()
     ImGui::SliderFloat2("SeparatorTextPadding", (float*)&ImGui::GetStyle().SeparatorTextPadding, 0.0f, 40.0f, "%0.f");
     ImGui::SliderFloat("LogSliderDeadzone", &ImGui::GetStyle().LogSliderDeadzone, 0.0f, 12.0f, "%.0f");
 
-    ImGui::SeparatorText("Nodes");
+    ImGuiExtras::separator_text("Nodes");
     nodes_style_editor();
 
-    ImGui::SeparatorText("Misc");
+    ImGuiExtras::separator_text("Misc");
     ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&ImGui::GetStyle().DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
     ImGui::SameLine();
     ImGuiExtras::help_marker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");

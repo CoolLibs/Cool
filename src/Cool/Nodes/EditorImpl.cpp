@@ -161,7 +161,7 @@ static auto get_selected_links_ids() -> std::vector<ed::LinkId>
 static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
     -> bool
 {
-    ImGui::SeparatorText(node.definition_name().c_str());
+    ImGuiExtras::separator_text(node.definition_name().c_str());
     ImGui::PushID(&node);
     nodes_cfg.widget_to_rename_node(node);
     bool const graph_has_changed =
