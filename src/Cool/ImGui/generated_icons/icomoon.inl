@@ -275,6 +275,7 @@
 #define ICOMOON_PLUS                "\xee\xa8\x8a"
 #define ICOMOON_MINUS               "\xee\xa8\x8b"
 #define ICOMOON_INFO                "\xee\xa8\x8c"
+#define INFO_RANGE_ICOMOON          59916
 #define ICOMOON_CANCEL_CIRCLE       "\xee\xa8\x8d"
 #define ICOMOON_BLOCKED             "\xee\xa8\x8e"
 #define ICOMOON_CROSS               "\xee\xa8\x8f"
