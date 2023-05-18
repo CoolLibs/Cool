@@ -205,7 +205,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
                     ImGui::InputText("Title", &frame_node.name);
                 }
             }
-            ImGui::NewLine();
+            ImGui::SeparatorText("");
         }
     }
     ImGui::End();
