@@ -78,8 +78,6 @@ void ax::Drawing::DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& 
     }
     else
     {
-        auto triangleStart = rect_center_x + 0.32f * rect_w;
-
         auto rect_offset = -std::trunc(rect_w * 0.25f * 0.25f);
 
         rect.Min.x += rect_offset;
