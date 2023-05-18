@@ -1,5 +1,6 @@
 #include "VideoExportParams.h"
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <imgui.h>
 #include "internal/origin_of_frames.h"
 
 namespace Cool {
@@ -16,14 +17,16 @@ static auto frames_to_seconds(int beginning, float fps) -> float
 
 void VideoExportParams::imgui()
 {
-    ImGui::InputFloat("FPS", &fps);
+    ImGui::Text("Framerate");
+    ImGui::SameLine();
+    ImGui::InputFloat("##FPS", &fps, 0.f, 0.f, "%.0f fps");
 
     ImGui::PushItemWidth(75);
     ImGui::Text("From");
     ImGui::SameLine();
     ImGui::InputFloat("##beginning", &beginning);
     ImGui::SameLine();
-    ImGui::Text("To");
+    ImGui::Text("to");
     ImGui::SameLine();
     ImGui::InputFloat("##end", &end);
     ImGui::SameLine();
@@ -31,7 +34,6 @@ void VideoExportParams::imgui()
     ImGui::PopItemWidth();
 
     ImGui::PushItemWidth(75);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
     ImGui::Text("From");
     ImGui::SameLine();
     {
@@ -40,7 +42,7 @@ void VideoExportParams::imgui()
             beginning = frames_to_seconds(beginning_frame, fps);
     }
     ImGui::SameLine();
-    ImGui::Text("To");
+    ImGui::Text("to");
     ImGui::SameLine();
     {
         int end_frame = seconds_to_frames(end, fps);
@@ -49,7 +51,6 @@ void VideoExportParams::imgui()
     }
     ImGui::SameLine();
     ImGui::Text("frames");
-    ImGui::PopStyleColor();
     ImGui::PopItemWidth();
 }
 
