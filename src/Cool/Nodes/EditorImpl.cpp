@@ -627,14 +627,13 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     ed::Suspend();
     if (ImGui::BeginPopup("Nodes Library Menu"))
     {
+        auto const new_node_def_id = imgui_nodes_menu(library, _menu_just_opened);
+        _menu_just_opened          = false;
         if (ImGui::Selectable("Frame (Comment)"))
         {
             auto const& frame_node = _frame_nodes.emplace_back();
             ed::SetNodePosition(as_ed_id(frame_node.id), _next_node_position);
         }
-
-        auto const new_node_def_id = imgui_nodes_menu(library, _menu_just_opened);
-        _menu_just_opened          = false;
 
         if (new_node_def_id)
         {
