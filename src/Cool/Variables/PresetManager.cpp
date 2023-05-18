@@ -211,7 +211,7 @@ void PresetManager::name_selector()
     const auto id = dropdown(
         "New preset name",
         "",
-        ImGuiComboFlags_NoPreview, // Draw just the arrow of the dropdown
+        ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
         ImDrawFlags_RoundCornersRight
     );
 

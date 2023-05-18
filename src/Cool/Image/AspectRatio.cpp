@@ -88,7 +88,7 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
 
     ImGui::SameLine(0.f, 0.f);
 
-    if (ImGui::BeginCombo(label, "", ImGuiComboFlags_NoPreview, ImDrawFlags_RoundCornersRight))
+    if (ImGui::BeginCombo(label, "", ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, ImDrawFlags_RoundCornersRight))
     {
         for (auto const& ratio : ratios)
         {
