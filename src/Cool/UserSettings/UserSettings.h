@@ -7,7 +7,7 @@ struct UserSettings {
     bool  autosave_enabled{true};
     float autosave_delay_in_seconds{5.f};
 
-    bool extra_icons{false};
+    bool extra_icons{true};
 
     float camera2D_zoom_sensitivity{1.1f};
 
