@@ -17,9 +17,3 @@ void DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& b, IconType t
 
 }
 } // namespace ax::Drawing
-
-namespace Cool {
-
-void show_label(const char* label, ImColor color);
-
-}
