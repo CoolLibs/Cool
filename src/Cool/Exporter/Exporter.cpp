@@ -75,8 +75,9 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
         // File and Folders
         ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
         ImGuiExtras::folder("Folder", &_folder_path_for_image);
+
+        ImGui::SeparatorText("");
         // Warning file exists
-        ImGui::NewLine();
         if (File::exists(output_path()))
         {
             ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it?");
@@ -148,7 +149,7 @@ void Exporter::imgui_window_export_video()
             ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation
-            ImGui::NewLine();
+            ImGui::SeparatorText("");
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();
