@@ -405,7 +405,6 @@ static void render_frame_node(internal::FrameNode const& node)
     if (ed::BeginGroupHint(id))
     {
         // auto alpha   = static_cast<int>(commentAlpha * ImGui::GetStyle().Alpha * 255);
-        auto bgAlpha = static_cast<int>(ImGui::GetStyle().Alpha * 255);
 
         // ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha * ImGui::GetStyle().Alpha);
 
@@ -422,16 +421,21 @@ static void render_frame_node(internal::FrameNode const& node)
         auto hintBounds      = ImGui_GetItemRect();
         auto hintFrameBounds = ImRect_Expanded(hintBounds, 8, 4);
 
+        auto       frame_color = ImGuiExtras::GetStyle().frame_node_color;
+        auto const bg_alpha    = ImGui::GetStyle().Alpha;
+
+        frame_color.w = 64.f * bg_alpha / 255.f;
         drawList->AddRectFilled(
             hintFrameBounds.GetTL(),
             hintFrameBounds.GetBR(),
-            IM_COL32(255, 255, 255, 64 * bgAlpha / 255), 4.0f
+            ImColor{frame_color}, 4.0f
         );
 
+        frame_color.w = 128.f * bg_alpha / 255.f;
         drawList->AddRect(
             hintFrameBounds.GetTL(),
             hintFrameBounds.GetBR(),
-            IM_COL32(255, 255, 255, 128 * bgAlpha / 255), 4.0f
+            ImColor{frame_color}, 4.0f
         );
 
         // ImGui::PopStyleVar();
