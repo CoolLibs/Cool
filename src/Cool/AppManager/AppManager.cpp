@@ -84,7 +84,11 @@ void AppManager::run(std::function<void()> on_update)
 static void check_for_imgui_item_picker_request()
 {
 #if DEBUG
-    if (DebugOptions::imgui_item_picker())
+    if (DebugOptions::imgui_item_picker()
+        || (ImGui::GetIO().KeyCtrl
+            && ImGui::GetIO().KeyShift
+            && ImGui::IsKeyPressed(ImGuiKey_I)
+        ))
     {
         ImGui::DebugStartItemPicker();
     }
