@@ -645,15 +645,15 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         {
             ImGui::CloseCurrentPopup();
 
-            auto const new_node_id    = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
-            auto const new_node_id_ed = as_ed_id(new_node_id);
-            ed::SetNodePosition(new_node_id_ed, _next_node_position);
-            ed::SelectNode(new_node_id_ed);
-
-            if (auto const* begin_pin = _new_node_link_pin)
+            auto const new_node_id = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
+            auto*      new_node    = _graph.nodes().get_mutable_ref(new_node_id);
+            if (new_node)
             {
-                auto* new_node = _graph.nodes().get_mutable_ref(new_node_id);
-                if (new_node)
+                auto const new_node_id_ed = as_ed_id(new_node_id);
+                ed::SetNodePosition(new_node_id_ed, _next_node_position);
+                ed::SelectNode(new_node_id_ed);
+
+                if (auto const* begin_pin = _new_node_link_pin)
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
@@ -664,6 +664,8 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                         _graph.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
                     }
                 }
+
+                nodes_cfg.on_node_added(*new_node, new_node_id); // Must be called last, once the node has been fully set up (link created etc.).
             }
         }
 

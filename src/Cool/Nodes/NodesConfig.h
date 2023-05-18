@@ -10,6 +10,7 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, Node& node, Nod
     cfg.imgui_below_node_pins(node, id);
     cfg.imgui_in_inspector_above_node_info(node, id);
     cfg.imgui_in_inspector_below_node_info(node, id);
+    cfg.on_node_added(node, id);
     cfg.update_node_with_new_definition(node, node_def, graph);
     { const_cfg.name(node) } -> std::convertible_to<std::string>;
     cfg.widget_to_rename_node(node);
@@ -22,6 +23,7 @@ public:
     void               imgui_below_node_pins(Node& node, NodeId const& id) { _pimpl->imgui_below_node_pins(node, id); }
     void               imgui_in_inspector_above_node_info(Node& node, NodeId const& id) { _pimpl->imgui_in_inspector_above_node_info(node, id); }
     void               imgui_in_inspector_below_node_info(Node& node, NodeId const& id) { _pimpl->imgui_in_inspector_below_node_info(node, id); }
+    void               on_node_added(Node& node, NodeId const& id) { _pimpl->on_node_added(node, id); }
     void               update_node_with_new_definition(Node& node, NodeDefinition const& node_def, Graph& graph) { _pimpl->update_node_with_new_definition(node, node_def, graph); }
     [[nodiscard]] auto name(Node const& node) const -> std::string { return _pimpl->name(node); }
     void               widget_to_rename_node(Node& node) { _pimpl->widget_to_rename_node(node); }
@@ -47,6 +49,7 @@ private:
         virtual void               imgui_below_node_pins(Node&, Cool::NodeId const&)                                       = 0;
         virtual void               imgui_in_inspector_above_node_info(Node&, Cool::NodeId const&)                          = 0;
         virtual void               imgui_in_inspector_below_node_info(Node&, Cool::NodeId const&)                          = 0;
+        virtual void               on_node_added(Node&, Cool::NodeId const&)                                               = 0;
         virtual void               update_node_with_new_definition(Cool::Node&, Cool::NodeDefinition const&, Cool::Graph&) = 0;
         [[nodiscard]] virtual auto name(Node const&) const -> std::string                                                  = 0;
         virtual void               widget_to_rename_node(Node&)                                                            = 0;
@@ -74,6 +77,10 @@ private:
         void imgui_in_inspector_below_node_info(Node& node, Cool::NodeId const& id) override
         {
             _cfg.imgui_in_inspector_below_node_info(node, id);
+        }
+        void on_node_added(Node& node, Cool::NodeId const& id) override
+        {
+            _cfg.on_node_added(node, id);
         }
         void update_node_with_new_definition(Cool::Node& node, Cool::NodeDefinition const& node_def, Cool::Graph& graph) override
         {
