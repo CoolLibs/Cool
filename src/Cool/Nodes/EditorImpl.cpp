@@ -645,8 +645,10 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         {
             ImGui::CloseCurrentPopup();
 
-            auto const new_node_id = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
-            ed::SetNodePosition(as_ed_id(new_node_id), _next_node_position);
+            auto const new_node_id    = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
+            auto const new_node_id_ed = as_ed_id(new_node_id);
+            ed::SetNodePosition(new_node_id_ed, _next_node_position);
+            ed::SelectNode(new_node_id_ed);
 
             // TODO(JF)
             // if (auto startPin = newNodeLinkPin)
