@@ -507,9 +507,9 @@ void NodesEditorImpl::process_link_released()
 
         if (ed::AcceptNewItem())
         {
-            _new_node_link_pin = find_pin(pinId, _graph);
-            _new_link_pin      = nullptr;
-            open_nodes_menu();
+            _new_node_link_pin           = find_pin(pinId, _graph);
+            _new_link_pin                = nullptr;
+            _link_has_just_been_released = true;
         }
     }
 }
@@ -617,10 +617,12 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     graph_has_changed |= process_creations();
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
 
-    if (wants_to_open_nodes_menu())
+    if (wants_to_open_nodes_menu() || _link_has_just_been_released)
     {
         open_nodes_menu();
-        _new_node_link_pin = nullptr;
+        if (!_link_has_just_been_released)
+            _new_node_link_pin = nullptr;
+        _link_has_just_been_released = false;
     }
 
     if (ed::ShowNodeContextMenu(&_id_of_node_whose_context_menu_is_open))

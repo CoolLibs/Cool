@@ -97,6 +97,7 @@ private:
     bool                             _menu_just_opened{false};
     Pin const*                       _new_node_link_pin = nullptr;
     Pin const*                       _new_link_pin      = nullptr;
+    bool                             _link_has_just_been_released{false}; // HACK because we can't open the nodes menu just after a link has been released (otherwise _next_node_position is wrong). So we have to delay the opening.
 
 private:
     // ImColor GetIconColor(PinType type);
