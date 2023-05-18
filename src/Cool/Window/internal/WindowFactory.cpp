@@ -36,9 +36,9 @@ static void set_imgui_ini_filepath()
 static void imgui_load_fonts()
 {
     ImGuiIO&               io                     = ImGui::GetIO();
-    static constexpr float font_size              = 17.0f;
-    static constexpr float window_title_font_size = 19.0f;
-    static constexpr float icons_size             = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
+    static constexpr float font_size              = 18.0f;
+    static constexpr float window_title_font_size = 18.0f;
+    static constexpr float icons_size             = 14.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
 
     auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
