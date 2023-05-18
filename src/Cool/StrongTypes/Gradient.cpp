@@ -27,9 +27,9 @@ auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool should_u
             .mark_selected_hovered_color                 = ImGui::ColorConvertFloat4ToU32(ImGuiExtras::GetStyle().gradient_mark_selected_hovered),
         }
     );
-    modified |= ImGG::interpolation_mode_widget("Interpolation Mode", &gradient.value.gradient().interpolation_mode());
+    modified |= ImGG::interpolation_mode_widget("##Interpolation Mode", &gradient.value.gradient().interpolation_mode());
     ImGui::SameLine();
-    modified |= ImGG::wrap_mode_widget("Wrap Mode", &gradient.wrap_mode);
+    modified |= ImGG::wrap_mode_widget("##Wrap Mode", &gradient.wrap_mode);
     ImGui::SameLine();
     if (ImGui::Button("Spread marks evenly"))
     {
