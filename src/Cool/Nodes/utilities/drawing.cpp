@@ -166,8 +166,6 @@ void ax::Drawing::DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& 
                 tl.y += w * 2;
                 br.y += w * 2;
             }
-
-            triangleStart = br.x + w + 1.0f / 24.0f * rect_w;
         }
 
         if (type == IconType::RoundSquare)
