@@ -83,7 +83,8 @@ private:
     auto dropdown(
         std::string_view dropdown_name,
         std::string_view current_preset_name,
-        ImGuiComboFlags = ImGuiComboFlags_None
+        ImGuiComboFlags = ImGuiComboFlags_None,
+        ImDrawFlags     = 0
     ) -> PresetId;
 
     /// Arrow which opens a dropdown that will fill _new_preset_name with the name of one of the presets.

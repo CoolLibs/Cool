@@ -1,6 +1,7 @@
 #include "PresetManager.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <boxer/boxer.h>
+#include <imgui.h>
 #include <cereal/archives/json.hpp>
 #include "Cool/Variables/PresetManager.h"
 
@@ -177,7 +178,8 @@ void PresetManager::apply_first_preset_if_there_is_one(Settings_Ref settings) co
 auto PresetManager::dropdown(
     std::string_view dropdown_name,
     std::string_view current_preset_name,
-    ImGuiComboFlags  combo_flags
+    ImGuiComboFlags  combo_flags,
+    ImDrawFlags      draw_flags
 ) -> PresetId
 {
     auto selected_id = PresetId{};
@@ -185,7 +187,8 @@ auto PresetManager::dropdown(
     if (ImGui::BeginCombo(
             dropdown_name.data(),
             current_preset_name.data(),
-            combo_flags
+            combo_flags,
+            draw_flags
         ))
     {
         for (const auto& [id, preset] : _presets)
@@ -206,9 +209,10 @@ auto PresetManager::dropdown(
 void PresetManager::name_selector()
 {
     const auto id = dropdown(
-        "##465",
+        "New preset name",
         "",
-        ImGuiComboFlags_NoPreview // Draw just the arrow of the dropdown
+        ImGuiComboFlags_NoPreview, // Draw just the arrow of the dropdown
+        ImDrawFlags_RoundCornersRight
     );
 
     // Update _new_preset_name if a preset was selected in the dropdown
@@ -275,9 +279,10 @@ static auto add_button(bool the_name_is_not_already_used, std::string_view name)
 
 auto PresetManager::imgui_name_input() -> bool
 {
-    name_selector();
+    bool const wants_to_save = ImGui::InputText("##New preset name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
     ImGui::SameLine(0.f, 0.f);
-    return ImGui::InputText("New preset name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue);
+    name_selector();
+    return wants_to_save;
 }
 
 static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view new_preset_name) -> bool
