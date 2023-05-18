@@ -650,26 +650,21 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
             ed::SetNodePosition(new_node_id_ed, _next_node_position);
             ed::SelectNode(new_node_id_ed);
 
-            // TODO(JF)
-            // if (auto startPin = newNodeLinkPin)
-            // {
-            //     auto& pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
-
-            //     for (auto& pin : pins)
-            //     {
-            //         if (CanCreateLink(startPin, &pin))
-            //         {
-            //             auto endPin = &pin;
-            //             if (startPin->Kind == PinKind::Input)
-            //                 std::swap(startPin, endPin);
-
-            //             m_Links.emplace_back(LinkEX(GetNextId(), startPin->ID, endPin->ID));
-            //             m_Links.back().Color = GetIconColor(startPin->Type);
-
-            //             break;
-            //         }
-            //     }
-            // }
+            if (auto const* begin_pin = _new_node_link_pin)
+            {
+                auto* new_node = _graph.nodes().get_mutable_ref(new_node_id);
+                if (new_node)
+                {
+                    if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
+                    {
+                        _graph.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
+                    }
+                    else if (!new_node->input_pins().empty())
+                    {
+                        _graph.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
+                    }
+                }
+            }
         }
 
         ImGui::EndPopup();
