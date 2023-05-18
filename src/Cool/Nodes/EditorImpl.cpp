@@ -119,6 +119,8 @@ auto NodesEditorImpl::imgui_window_workspace(
     NodesLibrary const& library
 ) -> bool
 {
+    ed::PushStyleColor(ed::StyleColor_SelLinkBorder, ImGuiExtras::GetStyle().link_hovered);
+    ed::PushStyleColor(ed::StyleColor_HovLinkBorder, ImGuiExtras::GetStyle().link_hovered);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
     bool const should_render_window = ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
@@ -133,6 +135,7 @@ auto NodesEditorImpl::imgui_window_workspace(
     ImGui::GetStyle().CircleTessellationMaxError = prev_tesselation;
     _workspace_is_hovered                        = ImGui::IsWindowHovered();
     ImGui::End();
+    ed::PopStyleColor(2);
 
     return graph_has_changed;
 }
@@ -276,7 +279,8 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 static void draw_pin_icon(Pin const&, float alpha)
 {
     ax::Widgets::IconType icon_type = ax::Widgets::IconType::Circle;
-    ImColor               color     = ImColor{1.f, 1.f, 1.f, alpha}; // GetIconColor(pin.Type);
+    auto                  color     = ImGuiExtras::GetStyle().link;
+    color.w                         = alpha;
 
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, true, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
@@ -593,7 +597,7 @@ void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& no
         render_frame_node(frame_node);
 
     for (auto const& [id, link] : _graph.links())
-        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImColor{1.f, 1.f, 1.f, 1.f}, 2.0f);
+        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImGuiExtras::GetStyle().link, 2.0f);
 }
 
 auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
