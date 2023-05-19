@@ -643,9 +643,10 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
     ImGui::PushStyleColor(ImGuiCol_Header, glm_to_imvec4(base_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered, glm_to_imvec4(bright_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderActive, glm_to_imvec4(bright_color));
+    ImGui::PushStyleColor(ImGuiCol_Text, get_text_color(color).as_ImColor().Value);
 
     auto const b = ImGui::CollapsingHeader(name.data());
-    ImGui::PopStyleColor(3);
+    ImGui::PopStyleColor(4);
     return b;
 }
 

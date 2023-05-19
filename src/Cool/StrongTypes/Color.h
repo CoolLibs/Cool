@@ -32,4 +32,6 @@ private:
 auto to_string(Color const&) -> std::string;
 auto imgui_widget(std::string_view name, Color&, ImGuiColorEditFlags) -> bool;
 
+auto get_text_color(Color const& background_color) -> Color;
+
 } // namespace Cool

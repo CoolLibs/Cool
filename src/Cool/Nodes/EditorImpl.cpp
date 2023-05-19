@@ -7,6 +7,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Nodes/EditorImpl.h"
 #include "Cool/Nodes/as_ed_id.h"
+#include "Cool/StrongTypes/Color.h"
 #include "EditorImpl.h"
 #include "Graph.h"
 #include "NodesConfig.h"
@@ -291,16 +292,19 @@ static void draw_pin_icon(Pin const&, float alpha)
 
 void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
-    auto const color = (category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f})).as_ImColor();
+    auto const color       = category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f});
+    auto const title_color = get_text_color(color);
 
-    ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color);
+    ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color.as_ImColor());
     builder.Begin(as_ed_id(id));
 
-    builder.Header(color);
+    builder.Header(color.as_ImColor());
     ImGui::Spring(0);
     ImGui::PushFont(Font::bold());
+    ImGui::PushStyleColor(ImGuiCol_Text, title_color.as_ImColor().Value);
     auto const node_name = nodes_cfg.name(node);
     ImGui::TextUnformatted((node_name.empty() ? node.definition_name() : node_name).c_str());
+    ImGui::PopStyleColor();
     ImGui::PopFont();
     ImGui::Spring(1);
     ImGui::Dummy(ImVec2(0, 28));
