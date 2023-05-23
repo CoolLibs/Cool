@@ -15,10 +15,12 @@ void imgui_timeline(Cool::Clock& clock)
     {
         auto const button_size = ImVec2{1.1f * ImGui::GetFrameHeight(), ImGui::GetFrameHeight()};
         // Reset time
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {12.f, ImGui::GetStyle().FramePadding.y}); // HACK to force the icon to be centered.
         if (ImGui::Button(ICOMOON_PREVIOUS2, button_size, ImDrawFlags_RoundCornersLeft))
         {
             clock.set_time(0.f);
         }
+        ImGui::PopStyleVar();
         Cool::ImGuiExtras::tooltip("Reset time to 0.");
 
         ImGuiExtras::join_buttons();
