@@ -274,7 +274,7 @@ private:
                 instance().imgui_item_picker = true;
 
             ImGui::SameLine();
-            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.");
+            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\nShortcut: CTRL + SHIFT + I");
         }
 
 #endif
