@@ -492,7 +492,6 @@ auto NodesEditorImpl::process_link_creation() -> bool
 
     if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
     {
-        _graph.remove_link_going_into(end_pin->id());
         _graph.add_link(Link{
             .from_pin_id = begin_pin->id(),
             .to_pin_id   = end_pin->id(),

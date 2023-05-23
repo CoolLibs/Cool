@@ -40,6 +40,7 @@ void Graph::remove_all_nodes()
 
 auto Graph::add_link(Link link) -> LinkId
 {
+    remove_link_going_into(link.to_pin_id);
     return _links.create_raw(link);
 }
 
