@@ -52,7 +52,6 @@ auto ExportSize::imgui() -> bool
     });
     ImGui::SameLine();
     b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
-    ImGui::SameLine();
     ImGuiExtras::help_marker(
         _aspect_ratio_is_locked
             ? "Unlock the ratio to edit the width and the height independently."

@@ -8,7 +8,7 @@
 void Style::imgui_floating_buttons_spacing()
 {
     ImGui::SliderFloat("Floating buttons spacing", (float*)&floating_buttons_spacing, 0.f, 20.f, "%.0f");
-    ImGui::SameLine();
+
     ImGuiExtras::help_marker("Small buttons that overlap the View");
 }
 

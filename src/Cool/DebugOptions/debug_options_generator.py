@@ -103,7 +103,7 @@ def imgui_ui_for_all_options(debug_options: list[DebugOption]):
                         if ({passes_the_filter(debug_option)})
                         {{
                             {imgui_widget(debug_option)}
-                            {f'ImGui::SameLine(); Cool::ImGuiExtras::help_marker("{debug_option.detailed_description}");' if debug_option.detailed_description else ""}
+                            {f'Cool::ImGuiExtras::help_marker("{debug_option.detailed_description}");' if debug_option.detailed_description else ""}
                         }}
                         """,
                 debug_option,

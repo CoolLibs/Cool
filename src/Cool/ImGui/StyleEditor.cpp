@@ -23,7 +23,6 @@ void StyleEditor::imgui()
 {
     ImGuiExtras::separator_text("Rendering");
     ImGui::SliderFloat("Disabled Alpha", &ImGui::GetStyle().DisabledAlpha, 0.f, 1.f);
-    ImGui::SameLine();
     ImGuiExtras::help_marker("Additional alpha multiplier for disabled items (multiply over current value of Alpha).");
 
     ImGuiExtras::separator_text("Main");
@@ -63,10 +62,8 @@ void StyleEditor::imgui()
         ImGui::GetStyle().WindowMenuButtonPosition = window_menu_button_position - 1;
     ImGui::Combo("ColorButtonPosition", (int*)&ImGui::GetStyle().ColorButtonPosition, "Left\0Right\0");
     ImGui::SliderFloat2("ButtonTextAlign", (float*)&ImGui::GetStyle().ButtonTextAlign, 0.0f, 1.0f, "%.2f");
-    ImGui::SameLine();
     ImGuiExtras::help_marker("Alignment applies when a button is larger than its text content.");
     ImGui::SliderFloat2("SelectableTextAlign", (float*)&ImGui::GetStyle().SelectableTextAlign, 0.0f, 1.0f, "%.2f");
-    ImGui::SameLine();
     ImGuiExtras::help_marker("Alignment applies when a selectable is larger than its text content.");
     ImGui::SliderFloat("SeparatorTextBorderSize", &ImGui::GetStyle().SeparatorTextBorderSize, 0.0f, 10.0f, "%.0f");
     ImGui::SliderFloat2("SeparatorTextAlign", (float*)&ImGui::GetStyle().SeparatorTextAlign, 0.0f, 1.0f, "%.2f");
@@ -78,7 +75,6 @@ void StyleEditor::imgui()
 
     ImGuiExtras::separator_text("Misc");
     ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&ImGui::GetStyle().DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
-    ImGui::SameLine();
     ImGuiExtras::help_marker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
 }
 

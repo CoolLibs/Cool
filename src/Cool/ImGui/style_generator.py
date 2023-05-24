@@ -190,8 +190,8 @@ def style_imgui_definitions():
 void Style::imgui_{s.name_in_code}()
 {{
     {s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
-    {f"""ImGui::SameLine();
-        ImGuiExtras::help_marker("{s.description}");
+    {f"""
+    ImGuiExtras::help_marker("{s.description}");
     """ if s.description else ''
     }
 }}'''
