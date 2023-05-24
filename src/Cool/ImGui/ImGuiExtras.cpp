@@ -777,4 +777,13 @@ void separator_text(std::string_view text)
     ImGui::PopFont();
 }
 
+auto input_text_multiline(const char* label, std::string* str, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    -> bool
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetStyle().ChildRounding);
+    bool const res = ImGui::InputTextMultiline(label, str, size, flags, callback, user_data);
+    ImGui::PopStyleVar();
+    return res;
+}
+
 } // namespace Cool::ImGuiExtras
