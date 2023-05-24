@@ -297,6 +297,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory co
 
     ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color.as_ImColor());
     builder.Begin(as_ed_id(id));
+    ed::PopStyleColor();
 
     builder.Header(color.as_ImColor());
     ImGui::Spring(0);
@@ -371,7 +372,6 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory co
     nodes_cfg.imgui_below_node_pins(node, id);
 
     builder.End();
-    ed::PopStyleColor();
 }
 
 static auto ImGui_GetItemRect() -> ImRect
