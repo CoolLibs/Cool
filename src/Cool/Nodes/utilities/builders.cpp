@@ -172,14 +172,22 @@ bool util::BlueprintNodeBuilder::SetStage(Stage stage)
         break;
 
     case Stage::Header:
+    {
         ImGui::EndHorizontal();
         HeaderMin = ImGui::GetItemRectMin();
         HeaderMax = ImGui::GetItemRectMax();
+        if (ed::IsNodeSelected(CurrentNodeId))
+        {
+            // Avoid ugly gap between the header and the border:
+            HeaderMin -= ImVec2{1.f, 1.f};
+            HeaderMax += ImVec2{1.f, 0.f};
+        }
 
         // spacing between header and content
         ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.y * 2.0f);
 
         break;
+    }
 
     case Stage::Content:
         break;
