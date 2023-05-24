@@ -786,4 +786,9 @@ auto input_text_multiline(const char* label, std::string* str, const ImVec2& siz
     return res;
 }
 
+auto calc_custom_dropdown_input_width() -> float
+{
+    return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
+}
+
 } // namespace Cool::ImGuiExtras

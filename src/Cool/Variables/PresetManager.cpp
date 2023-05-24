@@ -279,6 +279,7 @@ static auto add_button(bool the_name_is_not_already_used, std::string_view name)
 
 auto PresetManager::imgui_name_input() -> bool
 {
+    ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
     bool const wants_to_save = ImGui::InputText("##New preset name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
     ImGui::SameLine(0.f, 0.f);
     name_selector();

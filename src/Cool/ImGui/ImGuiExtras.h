@@ -227,4 +227,6 @@ void separator_text(std::string_view text);
 auto input_text_multiline(const char* label, std::string* str, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr)
     -> bool;
 
+auto calc_custom_dropdown_input_width() -> float;
+
 } // namespace Cool::ImGuiExtras
