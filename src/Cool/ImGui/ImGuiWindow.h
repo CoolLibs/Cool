@@ -4,10 +4,17 @@
 
 namespace Cool {
 
+struct ImGuiWindowConfig {
+    bool is_modal   = false;
+    bool start_open = false;
+};
+
 class ImGuiWindow {
 public:
-    explicit ImGuiWindow(std::string title, bool is_open = true)
-        : _title{std::move(title)}, _is_open{is_open}
+    explicit ImGuiWindow(std::string title, ImGuiWindowConfig const& config = {})
+        : _title{std::move(title)}
+        , _is_open{config.start_open}
+        , _is_modal{config.is_modal}
     {
     }
 
@@ -34,6 +41,7 @@ public:
 private:
     std::string                _title;
     bool                       _is_open;
+    bool                       _is_modal;
     EventDispatcher<OpenEvent> _open_event_dispatcher;
 };
 
