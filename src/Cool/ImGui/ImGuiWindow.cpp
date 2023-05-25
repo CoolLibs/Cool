@@ -29,19 +29,25 @@ void ImGuiWindow::show(std::function<void()> widgets)
     }
 }
 
-void ImGuiWindow::open_close_checkbox()
+void ImGuiWindow::open()
+{
+    _is_open = true;
+    on_open().dispatch({});
+}
+void ImGuiWindow::close()
+{
+    _is_open = false;
+}
+
+void ImGuiWindow::open_close_toggle()
 {
     bool should_open = _is_open;
     if (ImGuiExtras::toggle(_title.c_str(), &should_open))
     {
         if (should_open)
-        {
             open();
-        }
         else
-        {
             close();
-        }
     }
 }
 

@@ -24,14 +24,10 @@ public:
      * @param widgets A function that renders all the desired widgets
      */
     void show(std::function<void()> widgets);
-    void open()
-    {
-        _is_open = true;
-        on_open().dispatch({});
-    }
-    void close() { _is_open = false; }
+    void open();
+    void close();
 
-    void open_close_checkbox();
+    void open_close_toggle();
 
     struct OpenEvent {
     };
