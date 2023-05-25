@@ -7,6 +7,7 @@
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
 
@@ -597,23 +598,17 @@ void highlight(std::function<void()> widget, float opacity)
     );
 }
 
-auto link(std::string_view url) -> bool
+void link(std::string_view url)
 {
-    return link(url, url);
+    link(url, url);
 }
 
-auto link(std::string_view url, std::string_view label) -> bool
+void link(std::string_view url, std::string_view label)
 {
-    const bool opened = ImGui::Selectable(label.data(), true);
-    if (opened)
-    {
-        Cool::open_link(url.data());
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    }
-    return opened;
+    auto const pos = ImGui::GetCursorPos();
+    ImGui::Dummy({ImGui::CalcTextSize(label.data())});
+    ImGui::SetCursorPos(pos);
+    ImGuiExtras::markdown(fmt::format("[{}]({})", label, url));
 }
 
 void bring_attention_if(bool should_bring_attention, std::function<void()> widget)

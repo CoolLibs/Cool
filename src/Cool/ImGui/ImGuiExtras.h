@@ -193,11 +193,11 @@ void background(std::function<void()> widget, ImVec4 color);
 void highlight(std::function<void()> widget, float opacity = 1.f);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
-auto link(std::string_view url) -> bool;
+void link(std::string_view url);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
 /// It will be rendered as `label`.
-auto link(std::string_view url, std::string_view label) -> bool;
+void link(std::string_view url, std::string_view label);
 
 /// Brings attention to the given widget (highlight, bring window to front, scroll to right position, etc.).
 /// `widget` must be a function that draws some ImGui widgets.
