@@ -14,6 +14,8 @@ auto UserSettings::imgui() -> bool
     b |= imgui_extra_icons();
     ImGuiExtras::separator_text("Camera");
     b |= imgui_camera2D_zoom_sensitivity();
+    ImGuiExtras::separator_text("Miscellaneous");
+    b |= imgui_single_click_to_input_in_drag_widgets();
 
     return b;
 }
@@ -38,6 +40,13 @@ auto UserSettings::imgui_extra_icons() -> bool
 auto UserSettings::imgui_camera2D_zoom_sensitivity() -> bool
 {
     return ImGui::SliderFloat("Camera 2D zoom sensitivity", &camera2D_zoom_sensitivity, 1.0001f, 1.2f);
+}
+
+auto UserSettings::imgui_single_click_to_input_in_drag_widgets() -> bool
+{
+    bool const b = ImGuiExtras::toggle("Single-click to input in \"Drag number\" widgets.", &single_click_to_input_in_drag_widgets);
+    ImGuiExtras::help_marker("When disabled, you need to double-click or CTRL+click on a \"Drag number\" widget to be able to write down a specific value.");
+    return b;
 }
 
 } // namespace Cool

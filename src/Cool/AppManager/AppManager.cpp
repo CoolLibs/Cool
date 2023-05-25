@@ -7,6 +7,7 @@
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/UserSettings/UserSettings.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -108,6 +109,7 @@ void AppManager::restore_imgui_ini_state_ifn()
 
 void AppManager::update()
 {
+    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
