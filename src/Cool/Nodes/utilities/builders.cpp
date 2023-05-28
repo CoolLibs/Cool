@@ -8,6 +8,7 @@
 //   Written by Michal Cichon
 //------------------------------------------------------------------------------
 #include "builders.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 
@@ -232,7 +233,7 @@ bool util::BlueprintNodeBuilder::SetStage(Stage stage)
     case Stage::Header:
         HasHeader = true;
 
-        ImGui::BeginHorizontal("header");
+        ImGui::BeginHorizontal("header", {0.f, 0.f}, Cool::ImGuiExtras::GetStyle().node_title_vertical_alignment);
         break;
 
     case Stage::Content:

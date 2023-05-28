@@ -1,4 +1,5 @@
 #include "nodes_style_editor.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 
 namespace Cool {
@@ -8,6 +9,7 @@ void nodes_style_editor()
     auto& style = ax::NodeEditor::GetStyle();
     ImGui::Spacing();
     ImGui::DragFloat4("Node Padding", &style.NodePadding.x, 0.1f, 0.0f, 40.0f);
+    ImGuiExtras::GetStyle().imgui_node_title_vertical_alignment();
     ImGui::DragFloat("Node Rounding", &style.NodeRounding, 0.1f, 0.0f, 40.0f);
     ImGui::DragFloat("Node Border Width", &style.NodeBorderWidth, 0.1f, 0.0f, 15.0f);
     ImGui::DragFloat("Hovered Node Border Width", &style.HoveredNodeBorderWidth, 0.1f, 0.0f, 15.0f);

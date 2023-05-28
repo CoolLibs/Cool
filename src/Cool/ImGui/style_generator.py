@@ -160,6 +160,15 @@ def all_style_settings():
             widget_begin="ImGui::SliderFloat2",
             widget_end=' 0.f, 20.f, "%.0f"',
         ),
+        StyleSetting(
+            name_in_code="node_title_vertical_alignment",
+            name_in_ui="Node title vertical alignment",
+            description="",
+            default_value="0.31f",
+            cpp_type="float",
+            widget_begin="ImGui::SliderFloat",
+            widget_end=" 0.f, 1.f",
+        ),
     ]
 
 

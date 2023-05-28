@@ -26,3 +26,8 @@ void Style::imgui_menu_bar_spacing()
 {
     ImGui::SliderFloat2("Menu bar spacing", (float*)&menu_bar_spacing, 0.f, 20.f, "%.0f");
 }
+
+void Style::imgui_node_title_vertical_alignment()
+{
+    ImGui::SliderFloat("Node title vertical alignment", (float*)&node_title_vertical_alignment, 0.f, 1.f);
+}
