@@ -9,6 +9,10 @@ class ColorElement:
 
 
 floating_button_description = "Small buttons that overlap the View"
+floating_button_enabled_description = (
+    floating_button_description
+    + "\\nThis is the color used when the button is used as a toggle and is currently on."
+)
 
 
 def all_color_elements():
@@ -66,8 +70,17 @@ def all_color_elements():
         ColorElement(
             name_in_code="floating_button_enabled",
             name_in_ui="FloatingButtonEnabled",
-            description=floating_button_description
-            + "\\nThis is the color used when the button is used as a toggle and is currently on.",
+            description=floating_button_enabled_description,
+        ),
+        ColorElement(
+            name_in_code="floating_button_hovered_enabled",
+            name_in_ui="FloatingButtonHoveredEnabled",
+            description=floating_button_enabled_description,
+        ),
+        ColorElement(
+            name_in_code="floating_button_active_enabled",
+            name_in_ui="FloatingButtonActiveEnabled",
+            description=floating_button_enabled_description,
         ),
         ColorElement(
             name_in_code="buttons_separator",
