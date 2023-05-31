@@ -754,9 +754,11 @@ auto floating_button(const char* label, int index, bool align_vertically, bool i
     ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+    // clang-format off
     ImGui::PushStyleColor(ImGuiCol_Button,        is_enabled ? GetStyle().floating_button_enabled         : GetStyle().floating_button);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, is_enabled ? GetStyle().floating_button_hovered_enabled : GetStyle().floating_button_hovered);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive,  is_enabled ? GetStyle().floating_button_active_enabled  : GetStyle().floating_button_active);
+    // clang-format on
     bool const b = button_with_text_icon(label);
     ImGui::PopStyleColor(3);
     ImGui::PopStyleVar();
