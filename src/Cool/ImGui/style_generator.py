@@ -64,6 +64,12 @@ def all_color_elements():
             description=floating_button_description,
         ),
         ColorElement(
+            name_in_code="floating_button_enabled",
+            name_in_ui="FloatingButtonEnabled",
+            description=floating_button_description
+            + "\\nThis is the color used when the button is used as a toggle and is currently on.",
+        ),
+        ColorElement(
             name_in_code="buttons_separator",
             name_in_ui="ButtonsSeparator",
             description="Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).",

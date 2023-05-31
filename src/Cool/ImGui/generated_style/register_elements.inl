@@ -76,6 +76,13 @@ config.register_element(ImStyleEd::Element{
 });
 
 config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonEnabled",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_enabled; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_enabled = color; },
+    .description = "Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.",
+});
+
+config.register_element(ImStyleEd::Element{
     .name        = "ButtonsSeparator",
     .get_color   = []() { return ImGuiExtras::GetStyle().buttons_separator; },
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().buttons_separator = color; },

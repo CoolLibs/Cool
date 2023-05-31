@@ -220,7 +220,8 @@ void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags
 /// Since you might want several buttons lining up, you have to specify the order in which
 /// they should be drawn with `index`. The direction in which the several buttons will go
 /// is controlled by `align_vertically`.
-auto floating_button(const char* label, int index, bool align_vertically = true) -> bool;
+/// `is_enabled` allows you to treat your buttons as toggles and have them highlighted while `is_enabled` is true.
+auto floating_button(const char* label, int index, bool align_vertically = true, bool is_enabled = false) -> bool;
 
 void separator_text(std::string_view text);
 

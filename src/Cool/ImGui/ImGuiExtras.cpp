@@ -737,7 +737,7 @@ void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
     );
 }
 
-auto floating_button(const char* label, int index, bool align_vertically) -> bool
+auto floating_button(const char* label, int index, bool align_vertically, bool is_enabled) -> bool
 {
     auto const spacing = [&]() { // Immediately-invoked lambda
         auto const size        = ImGui::GetFrameHeight();
@@ -754,7 +754,7 @@ auto floating_button(const char* label, int index, bool align_vertically) -> boo
     ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
-    ImGui::PushStyleColor(ImGuiCol_Button, GetStyle().floating_button);
+    ImGui::PushStyleColor(ImGuiCol_Button, is_enabled ? GetStyle().floating_button_enabled : GetStyle().floating_button);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GetStyle().floating_button_hovered);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, GetStyle().floating_button_active);
     bool const b = button_with_text_icon(label);
