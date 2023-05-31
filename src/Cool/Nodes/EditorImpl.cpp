@@ -510,7 +510,7 @@ void NodesEditorImpl::process_link_released()
 
         if (ed::AcceptNewItem())
         {
-            _new_node_link_pin           = find_pin(pinId, _graph);
+            _pin_to_link_to_new_node     = find_pin(pinId, _graph);
             _new_link_pin                = nullptr;
             _link_has_just_been_released = true;
         }
@@ -624,7 +624,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     {
         open_nodes_menu();
         if (!_link_has_just_been_released)
-            _new_node_link_pin = nullptr;
+            _pin_to_link_to_new_node = nullptr;
         _link_has_just_been_released = false;
     }
 
@@ -658,7 +658,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 ed::SetNodePosition(new_node_id_ed, _next_node_position);
                 ed::SelectNode(new_node_id_ed);
 
-                if (auto const* begin_pin = _new_node_link_pin)
+                if (auto const* begin_pin = _pin_to_link_to_new_node)
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
@@ -670,7 +670,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                     }
                 }
 
-                nodes_cfg.on_node_added(*new_node, new_node_id); // Must be called last, once the node has been fully set up (link created etc.).
+                nodes_cfg.on_node_added(*new_node, new_node_id, _pin_to_link_to_new_node); // Must be called last, once the node has been fully set up (link created etc.).
             }
         }
 
