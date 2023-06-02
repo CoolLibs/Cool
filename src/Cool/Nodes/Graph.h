@@ -19,7 +19,9 @@ public:
     void remove_link_going_into(PinId const&);
     void remove_link_coming_from(PinId const&);
 
-    auto input_node_id(PinId const&, OutputPin* out__output_pin = nullptr) const -> NodeId;
+    auto find_node_connected_to_input_pin(PinId const&, OutputPin* out__output_pin = nullptr) const -> NodeId;
+    auto find_node_connected_to_output_pin(PinId const&) const -> NodeId;
+    auto find_node_containing_pin(PinId const&) const -> NodeId;
 
     auto nodes() -> auto& { return _nodes; }
     auto nodes() const -> auto const& { return _nodes; }
@@ -77,12 +79,5 @@ private:
         );
     }
 };
-
-namespace GraphU {
-
-/// Returns the id of the node containing the pin.
-auto node_id(Graph const&, PinId const&) -> NodeId;
-
-} // namespace GraphU
 
 } // namespace Cool

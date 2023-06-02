@@ -258,8 +258,8 @@ static auto find_pin(ed::PinId const& id, Graph const& graph) -> Pin const*
 
 static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph) -> bool
 {
-    auto const node_id_a = GraphU::node_id(graph, a.id());
-    auto const node_id_b = GraphU::node_id(graph, b.id());
+    auto const node_id_a = graph.find_node_containing_pin(a.id());
+    auto const node_id_b = graph.find_node_containing_pin(b.id());
     return &a != &b
            && a.kind() != b.kind()
            && node_id_a != node_id_b; /*&& a->Type == b->Type  */
