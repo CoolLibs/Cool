@@ -104,9 +104,9 @@ private:
 
     void render_node(Node&, NodeId const&, NodesCategory const*, NodesConfig&, util::BlueprintNodeBuilder& builder);
 
-    auto process_creations() -> bool;
+    auto process_creations(NodesConfig&) -> bool;
     // auto process_node_creation() -> bool;
-    auto process_link_creation() -> bool;
+    auto process_link_creation(NodesConfig&) -> bool;
     void process_link_released();
 
     void render_editor(NodesLibrary const& library, NodesConfig&);

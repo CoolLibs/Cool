@@ -451,7 +451,7 @@ static void render_frame_node(internal::FrameNode const& node)
     ed::EndGroupHint();
 }
 
-auto NodesEditorImpl::process_link_creation() -> bool
+auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
 {
     ed::PinId begin_pin_id;
     ed::PinId end_pin_id;
@@ -492,10 +492,12 @@ auto NodesEditorImpl::process_link_creation() -> bool
 
     if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
     {
-        _graph.add_link(Link{
+        auto const link = Link{
             .from_pin_id = begin_pin->id(),
             .to_pin_id   = end_pin->id(),
-        });
+        };
+        auto const link_id = _graph.add_link(link);
+        nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     }
 
     return true;
@@ -517,13 +519,13 @@ void NodesEditorImpl::process_link_released()
     }
 }
 
-auto NodesEditorImpl::process_creations() -> bool
+auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
 {
     bool graph_has_changed = false;
 
     if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
     {
-        graph_has_changed |= process_link_creation();
+        graph_has_changed |= process_link_creation(nodes_cfg);
         process_link_released();
     }
     else
@@ -617,7 +619,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     render_editor(library, nodes_cfg);
 
-    graph_has_changed |= process_creations();
+    graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
@@ -670,7 +672,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                     }
                 }
 
-                nodes_cfg.on_node_added(*new_node, new_node_id, _pin_to_link_to_new_node); // Must be called last, once the node has been fully set up (link created etc.).
+                nodes_cfg.on_node_created(*new_node, new_node_id, _pin_to_link_to_new_node); // Must be called last, once the node has been fully set up (link created etc.).
             }
         }
 
