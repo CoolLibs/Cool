@@ -15,6 +15,8 @@ void ImGuiWindow::show(std::function<void()> widgets)
         if (ImGui::BeginPopupModal(_title.c_str(), &_is_open))
         {
             widgets();
+            if (!_is_open)
+                ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }
     }
