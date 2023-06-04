@@ -1,4 +1,4 @@
-#include "didYouKnowModal.hpp"
+#include "DidYouKnow.hpp"
 #include <imgui.h>
 #include <array>
 #include <chrono>
@@ -7,7 +7,7 @@
 #include "Cool/ImGui/markdown.h"
 #include "fmt/compile.h"
 
-static constexpr const char* const id_did_you_know = "Did you know?";
+static constexpr const char* id_did_you_know = "Did you know?";
 
 auto timeToWait() -> std::chrono::steady_clock::duration
 {
@@ -16,8 +16,8 @@ auto timeToWait() -> std::chrono::steady_clock::duration
 
 void Cool::DidYouKnow::open(std::span<const char* const>& all_tips)
 {
-    if (_current_tip_index >= all_tips.size())
-        _current_tip_index = 0;
+    prepare_next_tip(all_tips);
+
     _is_open = true;
     ImGui::OpenPopup(id_did_you_know);
     _timestamp_last_opening = std::chrono::steady_clock::now();
@@ -25,16 +25,13 @@ void Cool::DidYouKnow::open(std::span<const char* const>& all_tips)
 
 void Cool::DidYouKnow::open_ifn(std::span<const char* const>& all_tips)
 {
-    if (_current_tip_index >= all_tips.size())
-        _current_tip_index = 0;
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
     if (_open_of_coollab && !_is_open && difference > timeToWait())
     {
         _open_of_coollab = false;
-        _is_open         = true;
-        ImGui::OpenPopup(id_did_you_know);
-        _timestamp_last_opening = std::chrono::steady_clock::now();
+
+        open(all_tips);
     }
 }
 
@@ -47,27 +44,25 @@ void Cool::DidYouKnow::prepare_next_tip(std::span<const char* const>& all_tips)
 
 void Cool::DidYouKnow::imgui_windows(std::span<const char* const>& all_tips)
 {
-    if (ImGui::BeginPopupModal(id_did_you_know, &_is_open, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal(id_did_you_know, &_is_open, 0))
     {
         Cool::ImGuiExtras::markdown(all_tips[_current_tip_index]);
         ImGui::Separator();
 
-        if (ImGui::Button("OK", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+        if (ImGui::Button("Got it!", ImVec2(ImGui::GetContentRegionAvail().x / 4, 0)) || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
         {
             _is_open = false;
             ImGui::CloseCurrentPopup();
-            prepare_next_tip(all_tips);
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Show all tips", ImVec2(120, 0)))
+        if (ImGui::Button("Show me all the tips", ImVec2(ImGui::GetContentRegionAvail().x / 2, 0)))
         {
             _is_open = false;
             ImGui::CloseCurrentPopup();
 
             _show_all_tips = true;
-            prepare_next_tip(all_tips);
         }
 
         ImGui::EndPopup();
@@ -81,7 +76,7 @@ void Cool::DidYouKnow::imgui_windows(std::span<const char* const>& all_tips)
     }
 }
 
-void Cool::imgui_all_tips(std::span<const char* const>& all_tips)
+void Cool::imgui_all_tips(std::span<const char* const> all_tips)
 {
     for (auto const& tip : all_tips)
     {
@@ -94,7 +89,7 @@ void Cool::imgui_all_tips(std::span<const char* const>& all_tips)
     }
 }
 
-void Cool::update(Cool::DidYouKnow& _did_you_know, std::span<const char* const>& all_tips)
+void Cool::update(Cool::DidYouKnow& _did_you_know, std::span<const char* const> all_tips)
 {
     _did_you_know.open_ifn(all_tips);
 

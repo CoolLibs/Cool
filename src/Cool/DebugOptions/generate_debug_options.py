@@ -52,6 +52,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="test_did_you_know",
+            name_in_ui="Test \\\"Did you know?\\\"",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="color_themes_editor",
             name_in_ui="Color Themes: Editor",
             available_in_release=True,
@@ -69,12 +75,6 @@ def all_debug_options():
             available_in_release=False,
             kind=Kind.BUTTON,
             detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
-        ),
-        DebugOption(
-            name_in_code="test_did_you_know",
-            name_in_ui="Test \\\"Did you know?\\\"",
-            available_in_release=True,
-            kind=Kind.WINDOW,
         ),
     ]
 

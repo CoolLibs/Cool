@@ -3,14 +3,12 @@
 #include <chrono>
 #include <string>
 #include <vector>
-#include "Cool/DidYouKnow/didYouKnowModal.hpp"
+#include "Cool/DidYouKnow/DidYouKnow.hpp"
 #include "cereal/types/chrono.hpp"
 
 namespace Cool {
-/**
- * @brief A class that manages the "Did you know" modal. It is used to display tips to the user at opening of software. Also it is possible to display all the tips at once.
- *
- */
+/// A class that manages the "Did you know" modal. It is used to display tips to the user at opening of software. Also it is possible to display all the tips at once.
+
 class DidYouKnow {
 public:
     void open(std::span<const char* const>& all_tips);
@@ -42,12 +40,12 @@ private:
 
     std::chrono::steady_clock::time_point _timestamp_last_opening = std::chrono::steady_clock::now();
 
-    friend void test_did_you_know(Cool::DidYouKnow& _did_you_know, std::span<const char* const>& all_tips);
+    friend void test_did_you_know(Cool::DidYouKnow& _did_you_know, std::span<const char* const> all_tips);
 };
 
-void imgui_all_tips(std::span<const char* const>& all_tips);
+void imgui_all_tips(std::span<const char* const> all_tips);
 
-void update(Cool::DidYouKnow& _did_you_know, std::span<const char* const>& all_tips);
+void update(Cool::DidYouKnow& _did_you_know, std::span<const char* const> all_tips);
 
 } // namespace Cool
 
