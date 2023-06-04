@@ -44,6 +44,8 @@ void Cool::DidYouKnow::prepare_next_tip(std::span<const char* const>& all_tips)
 
 void Cool::DidYouKnow::imgui_windows(std::span<const char* const>& all_tips)
 {
+    open_ifn(all_tips);
+
     if (ImGui::BeginPopupModal(id_did_you_know, &_is_open, 0))
     {
         Cool::ImGuiExtras::markdown(all_tips[_current_tip_index]);
@@ -87,11 +89,4 @@ void Cool::imgui_all_tips(std::span<const char* const> all_tips)
             ImGui::Separator();
         }
     }
-}
-
-void Cool::update(Cool::DidYouKnow& _did_you_know, std::span<const char* const> all_tips)
-{
-    _did_you_know.open_ifn(all_tips);
-
-    _did_you_know.imgui_windows(all_tips);
 }

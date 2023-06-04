@@ -12,12 +12,10 @@ namespace Cool {
 class DidYouKnow {
 public:
     void open(std::span<const char* const>& all_tips);
-
-    void open_ifn(std::span<const char* const>& all_tips);
-
     void imgui_windows(std::span<const char* const>& all_tips);
 
 private:
+    void open_ifn(std::span<const char* const>& all_tips);
     void prepare_next_tip(std::span<const char* const>& all_tips);
 
     // Serialization
@@ -44,8 +42,6 @@ private:
 };
 
 void imgui_all_tips(std::span<const char* const> all_tips);
-
-void update(Cool::DidYouKnow& _did_you_know, std::span<const char* const> all_tips);
 
 } // namespace Cool
 
