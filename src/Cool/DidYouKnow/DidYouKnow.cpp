@@ -14,7 +14,7 @@ auto timeToWait() -> std::chrono::steady_clock::duration
     return 1h;
 }
 
-void Cool::DidYouKnow::open(std::span<const char* const>& all_tips)
+void Cool::DidYouKnow::open(std::span<const char* const> all_tips)
 {
     prepare_next_tip(all_tips);
 
@@ -23,7 +23,7 @@ void Cool::DidYouKnow::open(std::span<const char* const>& all_tips)
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
-void Cool::DidYouKnow::open_ifn(std::span<const char* const>& all_tips)
+void Cool::DidYouKnow::open_ifn(std::span<const char* const> all_tips)
 {
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
@@ -35,14 +35,14 @@ void Cool::DidYouKnow::open_ifn(std::span<const char* const>& all_tips)
     }
 }
 
-void Cool::DidYouKnow::prepare_next_tip(std::span<const char* const>& all_tips)
+void Cool::DidYouKnow::prepare_next_tip(std::span<const char* const> all_tips)
 {
     _current_tip_index++;
     if (_current_tip_index >= all_tips.size())
         _current_tip_index = 0;
 }
 
-void Cool::DidYouKnow::imgui_windows(std::span<const char* const>& all_tips)
+void Cool::DidYouKnow::imgui_windows(std::span<const char* const> all_tips)
 {
     open_ifn(all_tips);
 

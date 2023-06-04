@@ -11,12 +11,12 @@ namespace Cool {
 
 class DidYouKnow {
 public:
-    void open(std::span<const char* const>& all_tips);
-    void imgui_windows(std::span<const char* const>& all_tips);
+    void open(std::span<const char* const> all_tips);
+    void imgui_windows(std::span<const char* const> all_tips);
 
 private:
-    void open_ifn(std::span<const char* const>& all_tips);
-    void prepare_next_tip(std::span<const char* const>& all_tips);
+    void open_ifn(std::span<const char* const> all_tips);
+    void prepare_next_tip(std::span<const char* const> all_tips);
 
     // Serialization
     friend class cereal::access;
