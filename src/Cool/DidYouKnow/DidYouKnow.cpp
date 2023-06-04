@@ -84,7 +84,7 @@ void Cool::imgui_all_tips(std::span<const char* const> all_tips)
     {
         ImGui::TextUnformatted(tip);
 
-        if (tip != all_tips.back())
+        if (&tip != &all_tips.back())
         {
             ImGui::Separator();
         }
