@@ -290,9 +290,9 @@ static void draw_pin_icon(Pin const&, float alpha)
     ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, true, color, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
-void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesCategory const* category, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
 {
-    auto const color       = category ? category->config().get_color() : Color::from_srgb(glm::vec3{0.f});
+    auto const color       = nodes_cfg.node_color(node, id);
     auto const title_color = get_text_color(color);
 
     ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color.as_ImColor());
@@ -594,11 +594,11 @@ static auto process_deletions(Graph& graph, std::vector<internal::FrameNode>& fr
     return graph_has_changed;
 }
 
-void NodesEditorImpl::render_editor(NodesLibrary const& library, NodesConfig& nodes_cfg)
+void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg)
 {
     util::BlueprintNodeBuilder builder{};
     for (auto& [id, node] : _graph.nodes())
-        render_node(node, id, library.get_category(node.category_name()), nodes_cfg, builder);
+        render_node(node, id, nodes_cfg, builder);
 
     for (auto const& frame_node : _frame_nodes)
         render_frame_node(frame_node);
@@ -617,7 +617,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     ed::Begin("Node editor");
 
-    render_editor(library, nodes_cfg);
+    render_editor(nodes_cfg);
 
     graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
