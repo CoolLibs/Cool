@@ -1,8 +1,11 @@
 #include "Exporter.h"
 #include <Cool/File/File.h>
+#include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
+#include <imgui.h>
+#include "Cool/ImGui/icon_fmt.h"
 #include "ExporterU.h"
 
 namespace Cool {
@@ -38,13 +41,14 @@ auto Exporter::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(imgui_menu_items_Params p)
+void Exporter::imgui_menu_items(imgui_menu_items_Params p, std::optional<std::string> longest_text)
 {
     // Calculate max button width
-    const char* longuest_text = "Video";
-    float       button_width  = ImGui::CalcTextSize(longuest_text).x + 2.f * ImGui::GetStyle().FramePadding.x;
+    if (!longest_text)
+        longest_text = icon_fmt("Video", ICOMOON_FILM, true);
+    float const button_width = ImGui::CalcTextSize(longest_text->c_str()).x + 2.f * ImGui::GetStyle().FramePadding.x;
     // Draw buttons
-    if (ImGui::Button("Image", ImVec2(button_width, 0.0f)))
+    if (ImGui::Button(icon_fmt("Image", ICOMOON_IMAGE, true).c_str(), ImVec2(button_width, 0.0f)))
     {
         if (p.open_image_exporter)
             (*p.open_image_exporter)();
@@ -53,7 +57,7 @@ void Exporter::imgui_menu_items(imgui_menu_items_Params p)
             _image_export_window.open();
         }
     }
-    if (ImGui::Button("Video", ImVec2(button_width, 0.0f)))
+    if (ImGui::Button(icon_fmt("Video", ICOMOON_FILM, true).c_str(), ImVec2(button_width, 0.0f)))
     {
         if (p.open_video_exporter)
             (*p.open_video_exporter)();
@@ -69,16 +73,17 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
     _image_export_window.show([&]() {
         _export_size.imgui();
         // File and Folders
-        ImGuiExtras::file("File Name", &_file_name);
+        ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
         ImGuiExtras::folder("Folder", &_folder_path_for_image);
+
+        ImGui::SeparatorText("");
         // Warning file exists
-        ImGui::NewLine();
         if (File::exists(output_path()))
         {
             ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it?");
         }
         // Validation
-        if (ImGui::Button("Export as PNG"))
+        if (ImGui::Button(icon_fmt("Export as PNG", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
             ExporterU::export_image(_export_size, time, polaroid, output_path());
@@ -132,7 +137,9 @@ void Exporter::imgui_window_export_video()
     if (is_exporting())
     {
         ImGui::Begin("Video export in progress");
+        ImGui::PushFont(Font::monospace());
         _video_export_process->imgui();
+        ImGui::PopFont();
         ImGui::End();
     }
     else
@@ -142,7 +149,8 @@ void Exporter::imgui_window_export_video()
             ImGuiExtras::folder("Folder", &_folder_path_for_video);
             _video_export_params.imgui();
             // Validation
-            if (ImGui::Button("Start exporting"))
+            ImGui::SeparatorText("");
+            if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();
                 begin_video_export();

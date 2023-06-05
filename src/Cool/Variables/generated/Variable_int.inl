@@ -17,7 +17,7 @@ struct VariableMetadata<int> {
         .max           = 12,
         .has_min_bound = false,
         .has_max_bound = false,
-        .drag_speed    = 0.04f,
+        .drag_speed    = 0.02f,
         .use_slider    = false,
     };
 

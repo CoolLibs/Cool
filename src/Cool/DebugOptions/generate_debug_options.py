@@ -52,8 +52,26 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="test_markdown_formatting_window",
+            name_in_ui="Test Markdown Formatting",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="test_did_you_know",
             name_in_ui="Test \\\"Did you know?\\\"",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="public_exhibition_mode",
+            name_in_ui="Public exhibition mode",
+            available_in_release=True,
+            detailed_description="Currently, simply resets the author info after sharing an image online.",
+        ),
+        DebugOption(
+            name_in_code="style_editor",
+            name_in_ui="Style Editor",
             available_in_release=True,
             kind=Kind.WINDOW,
         ),
@@ -74,12 +92,12 @@ def all_debug_options():
             name_in_ui="ImGui Item Picker",
             available_in_release=False,
             kind=Kind.BUTTON,
-            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
+            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\\nShortcut: CTRL + SHIFT + I",
         ),
     ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",

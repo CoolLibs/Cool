@@ -21,7 +21,7 @@ public:
     {
         if (instance().test_message_console__window)
         {
-            ImGui::Begin("Test Message Console", &instance().test_message_console__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Test Message Console", ICOMOON_WRENCH).c_str(), &instance().test_message_console__window, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -33,7 +33,7 @@ public:
     {
         if (instance().texture_library_debug_view)
         {
-            ImGui::Begin("Texture Library", &instance().texture_library_debug_view, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Texture Library", ICOMOON_WRENCH).c_str(), &instance().texture_library_debug_view, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -49,7 +49,35 @@ public:
     {
         if (instance().test_presets__window)
         {
-            ImGui::Begin("Test Presets", &instance().test_presets__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Test Presets", ICOMOON_WRENCH).c_str(), &instance().test_presets__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
+    static void test_markdown_formatting_window(std::function<void()> callback)
+    {
+        if (instance().test_markdown_formatting_window)
+        {
+            ImGui::Begin(Cool::icon_fmt("Test Markdown Formatting", ICOMOON_WRENCH).c_str(), &instance().test_markdown_formatting_window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
+    static void test_did_you_know(std::function<void()> callback)
+    {
+        if (instance().test_did_you_know)
+        {
+            ImGui::Begin(Cool::icon_fmt("Test \"Did you know?\"", ICOMOON_WRENCH).c_str(), &instance().test_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
+    [[nodiscard]] static auto public_exhibition_mode() -> bool& { return instance().public_exhibition_mode; }
+    static void               style_editor(std::function<void()> callback)
+    {
+        if (instance().style_editor)
+        {
+            ImGui::Begin(Cool::icon_fmt("Style Editor", ICOMOON_WRENCH).c_str(), &instance().style_editor, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -58,7 +86,7 @@ public:
     {
         if (instance().color_themes_editor)
         {
-            ImGui::Begin("Color Themes: Editor", &instance().color_themes_editor, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Color Themes: Editor", ICOMOON_WRENCH).c_str(), &instance().color_themes_editor, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -67,7 +95,7 @@ public:
     {
         if (instance().color_themes_advanced_config_window)
         {
-            ImGui::Begin("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Color Themes: Advanced Config", ICOMOON_WRENCH).c_str(), &instance().color_themes_advanced_config_window, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -78,15 +106,6 @@ public:
         return instance().imgui_item_picker;
     }
 #endif
-    static void test_did_you_know(std::function<void()> callback)
-    {
-        if (instance().test_did_you_know)
-        {
-            ImGui::Begin("Test \"Did you know?\"", &instance().test_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
-            callback();
-            ImGui::End();
-        }
-    }
 
 private:
     struct Instance {
@@ -100,12 +119,15 @@ private:
         bool log_opengl_info{false};
 #endif
         bool test_presets__window{false};
+        bool test_markdown_formatting_window{false};
+        bool test_did_you_know{false};
+        bool public_exhibition_mode{false};
+        bool style_editor{false};
         bool color_themes_editor{false};
         bool color_themes_advanced_config_window{false};
 #if DEBUG
         bool imgui_item_picker{false};
 #endif
-        bool test_did_you_know{false};
 
     private:
         // Serialization
@@ -123,9 +145,12 @@ private:
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know),
+                cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
+                cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
-                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know)
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #else
                 cereal::make_nvp("Test Message Console", test_message_console__window),
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
@@ -134,9 +159,12 @@ private:
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Test Presets", test_presets__window),
+                cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know),
+                cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
+                cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
-                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
-                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know)
+                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #endif
 
             );
@@ -155,9 +183,12 @@ private:
         instance().log_opengl_info = false;
 #endif
         instance().test_presets__window                = false;
+        instance().test_markdown_formatting_window     = false;
+        instance().test_did_you_know                   = false;
+        instance().public_exhibition_mode              = false;
+        instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
         instance().color_themes_advanced_config_window = false;
-        instance().test_did_you_know                   = false;
     }
 
     static void save_to_file();
@@ -218,6 +249,27 @@ private:
             Cool::ImGuiExtras::toggle("Test Presets", &instance().test_presets__window);
         }
 
+        if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Test Markdown Formatting", &instance().test_markdown_formatting_window);
+        }
+
+        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Test \"Did you know?\"", &instance().test_did_you_know);
+        }
+
+        if (wafl::similarity_match({filter, "Public exhibition mode"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Public exhibition mode", &instance().public_exhibition_mode);
+            Cool::ImGuiExtras::help_marker("Currently, simply resets the author info after sharing an image online.");
+        }
+
+        if (wafl::similarity_match({filter, "Style Editor"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Style Editor", &instance().style_editor);
+        }
+
         if (wafl::similarity_match({filter, "Color Themes: Editor"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Color Themes: Editor", &instance().color_themes_editor);
@@ -238,16 +290,10 @@ private:
             if (ImGui::IsItemClicked())
                 instance().imgui_item_picker = true;
 
-            ImGui::SameLine();
-            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.");
+            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\nShortcut: CTRL + SHIFT + I");
         }
 
 #endif
-
-        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
-        {
-            Cool::ImGuiExtras::toggle("Test \"Did you know?\"", &instance().test_did_you_know);
-        }
     }
 
     static void toggle_first_option(std::string_view filter)
@@ -304,6 +350,30 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
+        if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_markdown_formatting_window = !instance().test_markdown_formatting_window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
+        {
+            instance().test_did_you_know = !instance().test_did_you_know;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Public exhibition mode"}) >= wafl::Matches::Strongly)
+        {
+            instance().public_exhibition_mode = !instance().public_exhibition_mode;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Style Editor"}) >= wafl::Matches::Strongly)
+        {
+            instance().style_editor = !instance().style_editor;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
         if (wafl::similarity_match({filter, "Color Themes: Editor"}) >= wafl::Matches::Strongly)
         {
             instance().color_themes_editor = !instance().color_themes_editor;
@@ -325,12 +395,6 @@ private:
         }
 
 #endif
-
-        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
-        {
-            instance().test_did_you_know = !instance().test_did_you_know;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
-        }
     }
 };
 

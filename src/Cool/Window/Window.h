@@ -13,7 +13,9 @@ public:
     /// Returns true iff something has changed
     auto check_for_fullscreen_toggles(int key, int scancode, int action, int mods) -> bool;
     void toggle_fullscreen();
+    void set_fullscreen(bool is_fullscreen);
     void escape_fullscreen();
+    void turn_on_fullscreen();
 
     [[nodiscard]] auto is_visible() const -> bool { return _is_visible; }
     void               set_visibility(bool is_visible);

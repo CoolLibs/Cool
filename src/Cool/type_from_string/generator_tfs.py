@@ -28,8 +28,7 @@ def list_all_types():
     ret = ""
     for _, values in tfs_global_type_to_string_associations.items():
         if len(values) == 0:
-            raise Exception(
-                "At least one string must be specified for each type.")
+            raise Exception("At least one string must be specified for each type.")
         ret += "- " + values[0]
         if len(values) > 1:
             ret += f" (aka {', aka '.join(values[1:])})"
@@ -44,11 +43,14 @@ def evaluate_function_template():
     is_first = True
     for key, values in tfs_global_type_to_string_associations.items():
         for value in values:
-            out += f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return function_template<{key}>arguments;' + "\\\n"
+            out += (
+                f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return function_template<{key}>arguments;'
+                + "\\\n"
+            )
             is_first = False
 
     out += f'else {{ throw std::runtime_error{{"Unknown type \\"" + std::string{{type_as_string}} + "\\". The possible types are:\\n{list_all_types()}"}};  }} \\\n}})()'
-    out += f'\n'
+    out += f"\n"
     return out
 
 
@@ -58,9 +60,11 @@ def main(all_type_to_string_associations, all_includes):
     import os
     import sys
     from pathlib import Path
-    sys.path.append(os.path.join(
-        Path(os.path.abspath(__file__)).parent.parent.parent.parent,
-        "tooling")
+
+    sys.path.append(
+        os.path.join(
+            Path(os.path.abspath(__file__)).parent.parent.parent.parent, "tooling"
+        )
     )
     # End of HACK
     import generate_files
@@ -70,8 +74,7 @@ def main(all_type_to_string_associations, all_includes):
     tfs_global_includes = all_includes
 
     generate_files.generate(
-        folder=os.path.join(
-            Path(os.path.abspath(__file__)).parent, "generated"),
+        folder=os.path.join(Path(os.path.abspath(__file__)).parent, "generated"),
         files=[
             string_to_type_associations,
             includes,
@@ -81,18 +84,19 @@ def main(all_type_to_string_associations, all_includes):
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # HACK: Python doesn't allow us to import from a parent folder
     # So we need to add the path manually to sys.path
     import os
     import sys
     from pathlib import Path
-    sys.path.append(os.path.join(
-        Path(os.path.abspath(__file__)).parent.parent,
-        "Variables")
+
+    sys.path.append(
+        os.path.join(Path(os.path.abspath(__file__)).parent.parent, "Variables")
     )
     # End of HACK
     import generator_variables
+
     main(
         generator_variables.all_types_representations_as_strings(),
         generator_variables.all_types_includes(),

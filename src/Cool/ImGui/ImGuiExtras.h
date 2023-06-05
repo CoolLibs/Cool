@@ -67,6 +67,12 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color = ImVec4(1, 1
  */
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling = "Currently disabled", float button_width = 18.f, float button_height = 18.f, std::optional<float> frame_padding = 1.f);
 
+///
+auto button_with_text_icon(const char* icon, ImDrawFlags = 0) -> bool;
+
+/// A checkbox with the appearance of a button with a given icon.
+auto checkbox_button(const char* icon, bool* v) -> bool;
+
 /// Draws a clickable red cross.
 auto close_button() -> bool;
 
@@ -170,10 +176,10 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 /// A checkbox that, when ticked, displays a menu on the side.
 /// `submenu` is a function that calls the imgui widgets that should appear in the submenu, and returns true iff one of these widgets returned true.
 /// returns true iff the checkbox or a widget in the submenu was used this frame.
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu);
+bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
-void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets);
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
@@ -187,11 +193,11 @@ void background(std::function<void()> widget, ImVec4 color);
 void highlight(std::function<void()> widget, float opacity = 1.f);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
-auto link(std::string_view url) -> bool;
+void link(std::string_view url);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
 /// It will be rendered as `label`.
-auto link(std::string_view url, std::string_view label) -> bool;
+void link(std::string_view url, std::string_view label);
 
 /// Brings attention to the given widget (highlight, bring window to front, scroll to right position, etc.).
 /// `widget` must be a function that draws some ImGui widgets.
@@ -203,5 +209,25 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
 
 ///
 auto toggle(const char* label, bool* v) -> bool;
+
+/// Draws a vertical separator between two buttons, and puts them on the same line.
+void join_buttons();
+
+/// Just like ImGui::Begin() but the window will take the whole available space.
+void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags flags = 0);
+
+/// Creates a button that is always in the bottom left corner of the current window.
+/// Since you might want several buttons lining up, you have to specify the order in which
+/// they should be drawn with `index`. The direction in which the several buttons will go
+/// is controlled by `align_vertically`.
+/// `is_enabled` allows you to treat your buttons as toggles and have them highlighted while `is_enabled` is true.
+auto floating_button(const char* label, int index, bool align_vertically = true, bool is_enabled = false) -> bool;
+
+void separator_text(std::string_view text);
+
+auto input_text_multiline(const char* label, std::string* str, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr)
+    -> bool;
+
+auto calc_custom_dropdown_input_width() -> float;
 
 } // namespace Cool::ImGuiExtras

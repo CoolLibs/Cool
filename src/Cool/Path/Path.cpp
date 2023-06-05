@@ -1,15 +1,18 @@
 #include "Path.h"
+#include <utility>
 
 namespace Cool {
 
 std::filesystem::path Path::_root;
 std::filesystem::path Path::_cool_res;
+std::filesystem::path Path::_default_texture;
 #if DEBUG
-bool Path::_root_is_initialized     = false;
-bool Path::_cool_res_is_initialized = false;
+bool Path::_root_is_initialized            = false;
+bool Path::_cool_res_is_initialized        = false;
+bool Path::_default_texture_is_initialized = false;
 #endif
 
-const std::filesystem::path& Path::root()
+auto Path::root() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
     assert(_root_is_initialized);
@@ -23,10 +26,10 @@ void Path::initialize_root(std::filesystem::path path)
     assert(!_root_is_initialized);
     _root_is_initialized = true;
 #endif
-    _root = path;
+    _root = std::move(path);
 }
 
-const std::filesystem::path& Path::cool_res()
+auto Path::cool_res() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
     assert(_cool_res_is_initialized);
@@ -40,7 +43,24 @@ void Path::initialize_cool_res(std::filesystem::path path)
     assert(!_cool_res_is_initialized);
     _cool_res_is_initialized = true;
 #endif
-    _cool_res = path;
+    _cool_res = std::move(path);
+}
+
+auto Path::default_texture() -> std::filesystem::path const&
+{
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
+    assert(_default_texture_is_initialized);
+#endif
+    return _default_texture;
+}
+
+void Path::initialize_default_texture(std::filesystem::path path)
+{
+#if DEBUG
+    assert(!_default_texture_is_initialized);
+    _default_texture_is_initialized = true;
+#endif
+    _default_texture = std::move(path);
 }
 
 } // namespace Cool

@@ -28,6 +28,26 @@ private:
     std::chrono::steady_clock::time_point _current_time;
     std::chrono::steady_clock::time_point _time_when_paused;
     float                                 _offset_with_std_time = 0.f; // Allows us to set_time as we wish
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void save(Archive& archive) const
+    {
+        archive(
+            cereal::make_nvp("Time", time())
+        );
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        float saved_time; // NOLINT(cppcoreguidelines-init-variables)
+        archive(
+            saved_time
+        );
+        set_time(saved_time);
+    }
 };
 
 } // namespace Cool

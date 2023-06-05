@@ -4,6 +4,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/markdown.h"
 #include "Cool/Log/Message.h"
 #include "imgui.h"
 
@@ -176,7 +177,7 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         if (ImGui::BeginPopupContextItem(to_string(severity).c_str()))
         {
-            ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), reason_for_disabling_clear_button, [&] {
+            ImGuiExtras::disabled_if(!there_are_clearable_messages(severity), reason_for_disabling_clear_button, [&] {
                 if (ImGui::Button("Clear"))
                     clear(severity);
             });
@@ -196,7 +197,7 @@ void MessageConsole::imgui_window()
         {
             ImGui::SetNextWindowToFront();
         }
-        ImGui::Begin(_name, nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+        ImGui::Begin(_name.c_str(), nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
 
         // Menu bar
         ImGuiExtras::background(
@@ -210,7 +211,7 @@ void MessageConsole::imgui_window()
             "##Messages", ImVec2(0.f, 0.f), false,
             ImGuiWindowFlags_AlwaysUseWindowPadding
         );
-        ImGui::PushFont(Font::console());
+        ImGui::PushFont(Font::monospace());
         imgui_show_all_messages();
         ImGui::PopFont();
         ImGui::EndChild();
@@ -241,7 +242,7 @@ auto MessageConsole::there_are_clearable_messages(MessageSeverity severity) cons
 
 void MessageConsole::imgui_menu_bar()
 {
-    ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), reason_for_disabling_clear_button, [&] {
+    ImGuiExtras::disabled_if(!there_are_clearable_messages(), reason_for_disabling_clear_button, [&] {
         if (ImGui::Button("Clear"))
             clear();
     });
@@ -287,7 +288,7 @@ void MessageConsole::imgui_show_all_messages()
                     msg.message.category.c_str()
                 );
                 ImGui::SameLine();
-                ImGui::TextUnformatted(msg.message.message.c_str());
+                ImGuiExtras::markdown(msg.message.message);
 
                 const bool close_button_is_hovered = [&] {
                     if (!is_clearable(msg))

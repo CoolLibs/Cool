@@ -17,9 +17,10 @@ auto name_matches_filter(std::string const& _name, std::string const& filter) ->
 
 class NodesCategory {
 public:
-    NodesCategory(std::string name, std::filesystem::path const& path)
+    NodesCategory(std::string name, std::filesystem::path const& path, int order)
         : _config{path}
         , _name{std::move(name)}
+        , _order{order}
     {}
 
     auto definitions() const -> auto const& { return _definitions; }
@@ -27,16 +28,19 @@ public:
     auto config() const -> auto const& { return _config; }
     auto config() -> auto& { return _config; }
     auto name() const -> auto const& { return _name; }
+    auto order() const -> int { return _order; }
     void sort()
     {
-        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2)
-                  { return d1.name() < d2.name(); });
+        std::sort(_definitions.begin(), _definitions.end(), [](NodeDefinition const& d1, NodeDefinition const& d2) {
+            return d1.name() < d2.name();
+        });
     }
 
 private:
     std::vector<NodeDefinition> _definitions{};
     NodesCategoryConfig         _config;
     std::string                 _name{};
+    int                         _order{};
 };
 
 struct NodeDefinitionAndCategoryName {
@@ -54,7 +58,7 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>;
 
-    void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder);
+    void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder, int category_order);
 
     void remove_definition(NodeDefinitionIdentifier const& identifier);
 
@@ -67,8 +71,9 @@ private:
             if (category.name() != id_names.category_name)
                 continue;
 
-            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def)
-                                         { return def.name() == id_names.definition_name; });
+            auto const it = std::find_if(category.definitions().begin(), category.definitions().end(), [&](NodeDefinition const& def) {
+                return def.name() == id_names.definition_name;
+            });
 
             if (it != category.definitions().end())
                 return &*it;

@@ -10,7 +10,7 @@ class ImageSizeConstraint {
 public:
     void take_control_of_aspect_ratio(float aspect_ratio)
     {
-        _aspect_ratio = aspect_ratio;
+        _aspect_ratio.set(aspect_ratio);
         should_control_aspect_ratio(true);
     }
     void take_control_of_nb_pixels(uint32_t nb_pixels)

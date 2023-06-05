@@ -1,11 +1,12 @@
 #pragma once
 #include <compare>
+#include "Cool/Path/Path.h"
 #include "TextureSamplerInfo.h"
 
 namespace Cool {
 
 struct TextureInfo {
-    std::filesystem::path absolute_path{};
+    std::filesystem::path absolute_path{Cool::Path::default_texture()};
     TextureSamplerInfo    sampler{};
 
     auto        imgui_widget() -> bool;

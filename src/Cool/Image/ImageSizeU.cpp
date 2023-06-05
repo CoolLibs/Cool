@@ -9,7 +9,7 @@ auto imgui(img::Size& size) -> WH
     ImGui::Text("Resolution: ");
     ImGui::SameLine();
     {
-        ImGui::PushItemWidth(50);
+        ImGui::PushItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
         auto restore_item_width = sg::make_scope_guard([]() { ImGui::PopItemWidth(); });
 
         auto w = size.width();

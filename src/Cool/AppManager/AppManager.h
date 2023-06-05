@@ -3,6 +3,7 @@
 #include <Cool/Window/Window.h>
 #include <Cool/Window/WindowManager.h>
 #include "AppManagerConfig.h"
+#include "Cool/ImGui/StyleEditor.h"
 #include "IApp.h"
 
 namespace Cool {
@@ -26,6 +27,9 @@ public:
 
 private:
     void update();
+    void restore_imgui_ini_state_ifn();
+    void imgui_render(IApp&);
+    void imgui_windows();
 
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -38,6 +42,8 @@ private:
     WindowManager&   _window_manager;
     IApp&            _app;
     AppManagerConfig _config;
+
+    Cool::StyleEditor _style_editor{};
 };
 
 } // namespace Cool

@@ -1,11 +1,34 @@
 #include "NodesDefinitionUpdater.h"
+#include "Cool/String/String.h"
 
 namespace Cool {
 
 static auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string
 {
-    std::string const category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+    std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+    auto const  pos           = category_name.find_first_not_of("0123456789");
+    if (pos != std::string::npos)
+    {
+        auto const pos2 = category_name.find_first_not_of(' ', pos);
+        category_name   = Cool::String::substring(category_name, pos2, category_name.size());
+    }
     return category_name.empty() ? "Unnamed Category" : category_name;
+}
+
+static auto get_category_order(std::filesystem::path const& path, std::filesystem::path const& root) -> int
+{
+    std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+    auto const  pos           = category_name.find_first_not_of("0123456789");
+    if (pos != std::string::npos)
+        category_name = Cool::String::substring(category_name, 0, pos);
+    try
+    {
+        return stoi(category_name);
+    }
+    catch (...)
+    {
+        return 9999;
+    }
 }
 
 void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, std::filesystem::path const& root)
@@ -27,7 +50,7 @@ void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, s
     auto const category_name = get_category_name(path, root);
 
     auto const category_folder = File::without_file_name(path).string();
-    _library.add_definition(*definition, category_name, category_folder);
+    _library.add_definition(*definition, category_name, category_folder, get_category_order(path, root));
 
     {
         // Update all nodes that use that definition

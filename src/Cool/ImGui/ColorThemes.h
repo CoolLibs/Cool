@@ -6,11 +6,15 @@ namespace Cool {
 
 class ColorThemes {
 public:
+    ColorThemes();
+
     void imgui_theme_picker();
     void imgui_basic_theme_editor();
     void imgui_advanced_config();
 
     void update();
+
+    auto editor() const -> auto const& { return _editor; }
 
 private:
     class OsThemeChecker {
@@ -29,10 +33,7 @@ private:
     };
 
 private:
-    ImStyleEd::Editor _editor{{
-        .themes_path = Cool::Path::root() / "color_themes.json",
-        .config_path = Cool::Path::root() / "color_config.json",
-    }};
+    ImStyleEd::Editor _editor;
 
     std::optional<OsThemeChecker> _use_os_theme{OsThemeChecker{}};
 

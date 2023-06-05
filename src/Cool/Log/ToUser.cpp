@@ -1,4 +1,5 @@
 #include "ToUser.h"
+#include <Cool/ImGui/icon_fmt.h>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 
 namespace Cool::Log::ToUser {
@@ -35,7 +36,7 @@ void error(std::string const& category, std::string const& message, std::optiona
 
 auto console() -> MessageConsole&
 {
-    static auto the_console = MessageConsole{ICOMOON_INFO " Console"};
+    static auto the_console = MessageConsole{icon_fmt("Console", ICOMOON_INFO)};
     return the_console;
 }
 

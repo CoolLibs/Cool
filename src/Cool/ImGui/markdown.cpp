@@ -1,68 +1,97 @@
 #include "markdown.h"
 #include <imgui_markdown/imgui_markdown.h>
 #include <open_link/open_link.hpp>
+#include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Fonts.h"
 #include "imgui.h"
 
 namespace Cool::ImGuiExtras {
 
-static void link_callback(ImGui::MarkdownLinkCallbackData data)
+static void link_clicked_callback(ImGui::MarkdownLinkCallbackData data)
 {
     if (data.isImage)
         return;
-    auto const url = std::string{data.link, static_cast<size_t>(data.linkLength)};
-    open_link(url.c_str());
+    open_link(std::string{data.link, static_cast<size_t>(data.linkLength)}.c_str()); // `link` is not a zero-terminated string, so we must construct a string from the pointer and the length.
 }
 
-static void ExampleMarkdownFormatCallback(const ImGui::MarkdownFormatInfo& markdownFormatInfo_, bool start_)
-{
-    // Call the default first so any settings can be overwritten by our implementation.
-    // Alternatively could be called or not called in a switch statement on a case by case basis.
-    // See defaultMarkdownFormatCallback definition for furhter examples of how to use it.
-    ImGui::defaultMarkdownFormatCallback(markdownFormatInfo_, start_);
-
-    switch (markdownFormatInfo_.type)
-    {
-    // example: change the colour of heading level 2
-    case ImGui::MarkdownFormatType::HEADING:
-    {
-        if (markdownFormatInfo_.level == 2)
-        {
-            if (start_)
-            {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-            }
-            else
-            {
-                ImGui::PopStyleColor();
-            }
-        }
-        break;
-    }
-    case ImGui::MarkdownFormatType::LINK:
-    {
-        if (ImGui::IsItemHovered())
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    }
-    default:
-    {
-        break;
-    }
-    }
-}
+static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_beginning);
 
 void markdown(std::string_view markdown_text)
 {
     static auto const config = ImGui::MarkdownConfig{
-        .linkCallback = &link_callback,
-        // .tooltipCallback   = NULL;
-        .formatCallback = ExampleMarkdownFormatCallback,
+        .linkCallback   = &link_clicked_callback,
+        .formatCallback = &format_callback,
     };
-    // mdConfig.imageCallback     = ImageCallback;
-    // mdConfig.headingFormats[0] = {H1, true};
-    // mdConfig.headingFormats[1] = {H2, true};
-    // mdConfig.headingFormats[2] = {H3, false};
-    // mdConfig.userData          = NULL;
     ImGui::Markdown(markdown_text.data(), markdown_text.length(), config);
+}
+
+static void format_emphasis(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
+{
+    auto const is_italic = info.level == 1;
+    if (is_beginning)
+        ImGui::PushFont(is_italic ? Font::italic() : Font::bold());
+    else
+        ImGui::PopFont();
+}
+
+static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
+{
+    auto* const font = info.level == 1
+                           ? Font::heading_1()
+                       : info.level == 2
+                           ? Font::heading_2()
+                       : info.level == 3
+                           ? Font::heading_3()
+                           : Font::bold();
+    if (is_beginning)
+    {
+        ImGui::PushFont(font);
+    }
+    else
+    {
+        ImGui::PopFont();
+        if (info.level <= 2)
+            ImGui::Separator();
+    }
+}
+
+static void format_link(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
+{
+    auto const color = info.itemHovered ? ImGuiExtras::GetStyle().link_hovered : ImGuiExtras::GetStyle().link;
+    if (is_beginning)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, color);
+    }
+    else
+    {
+        ImGui::PopStyleColor();
+        ImGui::UnderLine(color);
+        if (info.itemHovered)
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        }
+    }
+}
+
+static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
+{
+    switch (info.type)
+    {
+    case ImGui::MarkdownFormatType::NORMAL_TEXT:
+        break;
+    case ImGui::MarkdownFormatType::EMPHASIS:
+        format_emphasis(info, is_beginning);
+        break;
+    case ImGui::MarkdownFormatType::HEADING:
+        format_heading(info, is_beginning);
+        break;
+    case ImGui::MarkdownFormatType::UNORDERED_LIST:
+        break;
+    case ImGui::MarkdownFormatType::LINK:
+        format_link(info, is_beginning);
+        break;
+    }
 }
 
 } // namespace Cool::ImGuiExtras

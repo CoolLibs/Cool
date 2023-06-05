@@ -55,9 +55,10 @@ class Angle
     , public op::Subtractable<Angle>
     , public op::Negatable<Angle> {
 public:
-    constexpr Angle() = default; // Constructors are not implicitly created by the compiler because we inherit from some stuff
-    constexpr explicit Angle(Radians radians)
-        : value{radians} {}
+    constexpr Angle() = default;     // Constructors are not implicitly created by the compiler because we inherit from some stuff
+    constexpr Angle(Radians radians) // NOLINT(*explicit-constructor, *explicit-conversions)
+        : value{radians}
+    {}
 
     auto as_turns() const -> float { return radians_to_turns(value); }
     auto as_radians() const -> float { return value.value; }
