@@ -31,9 +31,9 @@ auto imgui_widget(std::string_view name, Cool::Gradient& gradient, bool should_u
     ImGui::SameLine();
     modified |= ImGG::wrap_mode_widget("##Wrap Mode", &gradient.wrap_mode);
     ImGui::SameLine();
-    if (ImGui::Button("Spread marks evenly"))
+    if (ImGui::Button("Equalize"))
     {
-        gradient.value.gradient().spread_marks_evenly();
+        gradient.value.gradient().distribute_marks_evenly();
         modified = true;
     }
     return modified;
