@@ -4,10 +4,15 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "fmt/compile.h"
 
-static constexpr const char* id_did_you_know = "Did you know?";
+static auto did_you_know_window_title() -> const char*
+{
+    static std::string const title = Cool::icon_fmt("Did you know?", ICOMOON_BUBBLE);
+    return title.c_str();
+}
 
 auto timeToWait() -> std::chrono::steady_clock::duration
 {
@@ -19,7 +24,7 @@ void Cool::DidYouKnow::open(std::span<const char* const> all_tips)
     prepare_next_tip(all_tips);
 
     _is_open = true;
-    ImGui::OpenPopup(id_did_you_know);
+    ImGui::OpenPopup(did_you_know_window_title());
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
@@ -46,7 +51,7 @@ void Cool::DidYouKnow::imgui_windows(std::span<const char* const> all_tips)
 {
     open_ifn(all_tips);
 
-    if (ImGui::BeginPopupModal(id_did_you_know, &_is_open, 0))
+    if (ImGui::BeginPopupModal(did_you_know_window_title(), &_is_open, 0))
     {
         Cool::ImGuiExtras::markdown(all_tips[_current_tip_index]);
         ImGui::Separator();
@@ -72,7 +77,7 @@ void Cool::DidYouKnow::imgui_windows(std::span<const char* const> all_tips)
 
     if (_show_all_tips)
     {
-        ImGui::Begin("All tips", &_show_all_tips);
+        ImGui::Begin(Cool::icon_fmt("All tips", ICOMOON_BUBBLE).c_str(), &_show_all_tips);
         Cool::imgui_all_tips(all_tips);
         ImGui::End();
     }
