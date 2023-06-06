@@ -24,6 +24,8 @@ public:
     template<typename... ShaderModules>
     explicit Shader(ShaderModules&&... shader_modules);
 
+    auto id() const -> GLuint { return _shader.id(); }
+
     void bind() const;
     void set_uniform(std::string_view uniform_name, int) const;
     void set_uniform(std::string_view uniform_name, unsigned int) const;
@@ -49,8 +51,6 @@ public:
     void set_uniform(std::string_view uniform_name, Point2D) const;
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
     void set_uniform(std::string_view uniform_name, TextureInfo const&) const;
-
-    auto id() const -> GLuint;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;
