@@ -1,4 +1,5 @@
 #include "ColorPalette.h"
+#include <Cool/ImGui/IcoMoonCodepoints.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <imgui/imgui_internal.h>
 
@@ -58,7 +59,7 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
     }
     ImGui::EndGroup();
     ImGui::SameLine();
-    if (ImGui::Button("+", ImVec2(button_size(), button_size())))
+    if (ImGuiExtras::button_with_text_icon(ICOMOON_PLUS))
     {
         palette.add_color();
         ImGui::OpenPopup("picker");

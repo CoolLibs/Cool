@@ -1,23 +1,28 @@
 #include "ImGuiExtras.h"
+#include <Cool/Constants/Constants.h>
+#include <Cool/File/File.h>
+#include <Cool/Icons/Icons.h>
+#include <open_link/open_link.hpp>
+#include <ostream>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/markdown.h"
+#include "Cool/Math/constants.h"
+#include "ImGuiExtrasStyle.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include <Cool/Constants/Constants.h>
-#include <Cool/File/File.h>
-#include <Cool/Icons/Icons.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
-#include <open_link/open_link.hpp>
-#include <ostream>
-#include "Cool/Math/constants.h"
 
 namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
-    ImGui::TextDisabled(ICOMOON_INFO);
+    ImGui::SameLine();
+    ImGui::TextDisabled(" " ICOMOON_INFO);
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -147,7 +152,7 @@ void tooltip(const char* text)
 
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    maybe_disabled(true, reason_for_disabling, [&]() {
+    disabled_if(true, reason_for_disabling, [&]() {
         ImGui::Button(label);
     });
 }
@@ -172,6 +177,41 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
     tooltip(reason_for_disabling);
+}
+
+auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
+{
+    auto const size = ImGui::GetFrameHeight();
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.f);
+    bool const b = ImGui::Button(icon, {size, size}, flags);
+    ImGui::PopStyleVar();
+    return b;
+}
+
+auto checkbox_button(const char* icon, bool* v) -> bool
+{
+    if (*v)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImGuiExtras::GetStyle().checkbox_button);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGuiExtras::GetStyle().checkbox_button_hovered);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImGuiExtras::GetStyle().checkbox_button_active);
+    }
+    else
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.f);
+    }
+    bool const b = button_with_text_icon(icon);
+    if (*v)
+    {
+        ImGui::PopStyleColor(3);
+    }
+    else
+    {
+        ImGui::PopStyleVar();
+    }
+    if (b)
+        *v = !*v;
+    return b;
 }
 
 auto close_button() -> bool
@@ -259,7 +299,7 @@ auto folder_dialog_button(
     std::filesystem::path  initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -277,7 +317,7 @@ auto file_dialog_button(
     std::filesystem::path               initial_folder
 ) -> bool
 {
-    if (!ImGui::Button(ICOMOON_FOLDER_OPEN))
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
     NFD::UniquePath outPath;
@@ -351,34 +391,44 @@ auto file_and_folder(
 
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
 {
+    auto const prev_pos = ImGui::GetCursorScreenPos();
+
     ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
     ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
+
+    ImGui::SetCursorScreenPos(prev_pos);
 }
 
-auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> submenu) -> bool
+auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
 {
+    bool was_used = false;
     ImGui::PushID(label);
-    bool was_used = ImGuiExtras::toggle("##checkbox", bool_p);
-    ImGui::PopID();
-    ImGui::SameLine();
-    if (*bool_p)
+    bool const menu_open = *bool_p;
+
     {
-        if (ImGui::BeginMenu(label))
+        auto const toggle_label = std::string{menu_open ? "" : label} + "###checkbox"; // We use the ### to make sure the id of the widget won't depend on the part of the label before the ###. This allows us to keep the same id when switching between "" and `label`. This is required for the animation of the toggle to play properly.
+        was_used |= ImGuiExtras::toggle(toggle_label.c_str(), bool_p);
+    }
+
+    if (menu_open)
+    {
+        ImGui::SameLine();
+        if (ImGui::BeginMenu(label, true, ImGui::GetStyle().FramePadding.y))
         {
+            if (ImGui::IsItemClicked())
+                *bool_p = !bool_p;
             was_used |= submenu();
             ImGui::EndMenu();
         }
     }
-    else
-    {
-        ImGui::TextUnformatted(label);
-    }
+
+    ImGui::PopID();
     return was_used;
 }
 
-void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
 {
-    if (condition)
+    if (condition_to_disable)
     {
         ImGui::BeginGroup();
         ImGui::BeginDisabled(true);
@@ -513,7 +563,7 @@ static auto ImU32_from_ImVec4(ImVec4 color) -> ImU32
 
 static auto highlight_color(float opacity) -> ImVec4
 {
-    auto col = ImGui::GetStyleColorVec4(ImGuiCol_NavHighlight);
+    auto col = GetStyle().highlight_items;
     col.w    = opacity;
     return col;
 }
@@ -548,23 +598,17 @@ void highlight(std::function<void()> widget, float opacity)
     );
 }
 
-auto link(std::string_view url) -> bool
+void link(std::string_view url)
 {
-    return link(url, url);
+    link(url, url);
 }
 
-auto link(std::string_view url, std::string_view label) -> bool
+void link(std::string_view url, std::string_view label)
 {
-    const bool opened = ImGui::Selectable(label.data(), true);
-    if (opened)
-    {
-        Cool::open_link(url.data());
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    }
-    return opened;
+    auto const pos = ImGui::GetCursorPos();
+    ImGui::Dummy({ImGui::CalcTextSize(label.data())});
+    ImGui::SetCursorPos(pos);
+    ImGuiExtras::markdown(fmt::format("[{}]({})", label, url));
 }
 
 void bring_attention_if(bool should_bring_attention, std::function<void()> widget)
@@ -595,9 +639,10 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
     ImGui::PushStyleColor(ImGuiCol_Header, glm_to_imvec4(base_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered, glm_to_imvec4(bright_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderActive, glm_to_imvec4(bright_color));
+    ImGui::PushStyleColor(ImGuiCol_Text, get_text_color(color).as_ImColor().Value);
 
     auto const b = ImGui::CollapsingHeader(name.data());
-    ImGui::PopStyleColor(3);
+    ImGui::PopStyleColor(4);
     return b;
 }
 
@@ -634,31 +679,113 @@ auto toggle(const char* label, bool* v) -> bool
     const ImRect check_bb(pos, pos + ImVec2(width, height));
     ImGui::RenderNavHighlight(total_bb, id);
 
-    const float            radius     = height * 0.50f;
-    float                  t          = *v ? 1.0f : 0.0f;
+    const float radius = height * 0.50f;
+    float       t      = *v ? 1.0f : 0.0f;
     if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
     {
         static constexpr float ANIM_SPEED = 0.08f;
-        float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
-        t            = *v ? (t_anim) : (1.0f - t_anim);
+        float                  t_anim     = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+        t                                 = *v ? (t_anim) : (1.0f - t_anim);
     }
 
     ImU32 col_bg;
     if (ImGui::IsItemHovered())
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_Button), ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive), t));
+        col_bg = ImGui::GetColorU32(ImLerp(GetStyle().toggle_bg_hovered, GetStyle().toggle_hovered, t));
     else
-        col_bg = ImGui::GetColorU32(ImLerp(ImGui::GetStyleColorVec4(ImGuiCol_FrameBg), ImVec4(ImGui::GetStyleColorVec4(ImGuiCol_SliderGrab)), t));
+        col_bg = ImGui::GetColorU32(ImLerp(GetStyle().toggle_bg, GetStyle().toggle, t));
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_ButtonActive : ImGuiCol_SliderGrab]));
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(ImGui::GetStyle().Colors[hovered ? ImGuiCol_Button : ImGuiCol_FrameBg]));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(hovered ? GetStyle().toggle_hovered : GetStyle().toggle));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(hovered ? GetStyle().toggle_bg_hovered : GetStyle().toggle_bg));
 
     ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (label_size.x > 0.0f)
         ImGui::RenderText(label_pos, label);
 
     return pressed;
+}
+
+void join_buttons()
+{
+    ImGui::SameLine();
+    ImGui::PushStyleColor(ImGuiCol_Separator, ImGuiExtras::GetStyle().buttons_separator);
+    ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
+    ImGui::PopStyleColor();
+    ImGui::SameLine();
+}
+
+void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
+{
+#ifdef IMGUI_HAS_VIEWPORT
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+#else
+    ImGui::SetNextWindowPos({0.0f, 0.0f});
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+#endif
+    ImGui::Begin(
+        name,
+        p_open,
+        flags
+            | ImGuiWindowFlags_NoDecoration
+            | ImGuiWindowFlags_NoResize
+            | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoBringToFrontOnFocus
+    );
+}
+
+auto floating_button(const char* label, int index, bool align_vertically, bool is_enabled) -> bool
+{
+    auto const spacing = [&]() { // Immediately-invoked lambda
+        auto const size        = ImGui::GetFrameHeight();
+        auto       spacing_tmp = ImGui::GetStyle().WindowPadding + ImVec2{size, size};
+        auto const offset      = static_cast<float>(index) * (size + GetStyle().floating_buttons_spacing);
+        if (align_vertically)
+            spacing_tmp.y += offset;
+        else
+            spacing_tmp.x += offset;
+        return spacing_tmp;
+    }();
+
+    auto const prev_pos = ImGui::GetCursorScreenPos();
+    ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+    // clang-format off
+    ImGui::PushStyleColor(ImGuiCol_Button,        is_enabled ? GetStyle().floating_button_enabled         : GetStyle().floating_button);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, is_enabled ? GetStyle().floating_button_hovered_enabled : GetStyle().floating_button_hovered);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  is_enabled ? GetStyle().floating_button_active_enabled  : GetStyle().floating_button_active);
+    // clang-format on
+    bool const b = button_with_text_icon(label);
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar();
+
+    ImGui::SetCursorScreenPos(prev_pos);
+    return b;
+}
+
+void separator_text(std::string_view text)
+{
+    ImGui::PushFont(Font::bold());
+    ImGui::SeparatorText(text.data());
+    ImGui::PopFont();
+}
+
+auto input_text_multiline(const char* label, std::string* str, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    -> bool
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetStyle().ChildRounding);
+    bool const res = ImGui::InputTextMultiline(label, str, size, flags, callback, user_data);
+    ImGui::PopStyleVar();
+    return res;
+}
+
+auto calc_custom_dropdown_input_width() -> float
+{
+    return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
 }
 
 } // namespace Cool::ImGuiExtras

@@ -3,6 +3,7 @@
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
+#include <img/src/SizeU.h>
 #include "Cool/Log/Debug.h"
 
 namespace Cool {
@@ -48,7 +49,7 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
+void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, ViewWindowParams const& params)
 {
     if (!_is_open)
     {
@@ -58,15 +59,29 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
-    ImGui::Begin(_name.c_str(), _is_closable ? &_is_open : nullptr, ImGuiWindowFlags_NoScrollbar);
-    store_window_size();
-    store_window_position();
-    _window_is_hovered = ImGui::IsWindowHovered();
-    display_image(image_texture_id, image_size_inside_view);
-    ImGui::End();
-    ImGui::PopStyleColor();
+    { // Begin window, maybe in fullscreen
+        bool* const            p_open = _is_closable ? &_is_open : nullptr;
+        ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+        if (params.fullscreen)
+            ImGuiExtras::begin_fullscreen(_name.c_str(), p_open, flags);
+        else
+            ImGui::Begin(_name.c_str(), p_open, flags);
+    }
     ImGui::PopStyleVar();
+    ImGui::PushStyleColor(ImGuiCol_NavHighlight, {0.f, 0.f, 0.f, 0.f});             // Hack because when escaping view's fullscreen with the ESCAPE key it gets nav-highlighted.
+    ImGui::BeginChild("##ChildWindow", {0.f, 0.f}, false, ImGuiWindowFlags_NoMove); // Hack to emulate `ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;` for this window only. Since we can drag a camera in a View we don't want the window to move at the same time.
+    {
+        store_window_size();
+        store_window_position();
+        _window_is_hovered = ImGui::IsWindowHovered();
+
+        display_image(image_texture_id, image_size_inside_view);
+
+        params.extra_widgets();
+    }
+    ImGui::EndChild();
+    ImGui::PopStyleColor();
+    ImGui::End();
 }
 
 void View::imgui_open_close_checkbox()
@@ -219,6 +234,7 @@ void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image
         return;
 
     auto const size = image_size_inside_view.fit_into(*_size);
+    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 

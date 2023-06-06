@@ -70,9 +70,6 @@
 [submodule "lib/expected"]
 	path = lib/expected
 	url = https://github.com/TartanLlama/expected
-[submodule "lib/imnodes"]
-	path = lib/imnodes
-	url = https://github.com/CoolLibs/imnodes
 [submodule "lib/folder_watcher"]
 	path = lib/folder_watcher
 	url = https://github.com/CoolLibs/folder_watcher.git
@@ -97,3 +94,6 @@
 [submodule "lib/GSL"]
 	path = lib/GSL
 	url = https://github.com/microsoft/GSL
+[submodule "lib/imgui-node-editor"]
+	path = lib/imgui-node-editor
+	url = https://github.com/CoolLibs/imgui-node-editor

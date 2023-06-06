@@ -40,6 +40,7 @@ void Graph::remove_all_nodes()
 
 auto Graph::add_link(Link link) -> LinkId
 {
+    remove_link_going_into(link.to_pin_id);
     return _links.create_raw(link);
 }
 
@@ -64,7 +65,7 @@ void Graph::remove_link_coming_from(PinId const& pin_id)
     });
 }
 
-auto Graph::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
+auto Graph::find_node_connected_to_input_pin(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};
     std::shared_lock links_lock{links().mutex()};
@@ -91,6 +92,52 @@ auto Graph::input_node_id(PinId const& pin_id, OutputPin* out__output_pin) const
         }
     }
 
+    return {};
+}
+
+auto Graph::find_node_connected_to_output_pin(PinId const& pin_id) const -> NodeId
+{
+    std::shared_lock nodes_lock{nodes().mutex()};
+    std::shared_lock links_lock{links().mutex()};
+
+    for (auto const& pair : links())
+    {
+        auto const& link = pair.second;
+        // Check that `link` is connected to `pin_id`
+        if (link.from_pin_id != pin_id)
+            continue;
+
+        // Find the other node connected to that link
+        for (auto const& [other_node_id, other_node] : nodes())
+        {
+            for (InputPin const& input_pin : other_node.input_pins())
+            {
+                if (input_pin.id() == link.to_pin_id)
+                {
+                    return other_node_id;
+                }
+            }
+        }
+    }
+
+    return {};
+}
+
+auto Graph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
+{
+    for (auto const& [node_id, node] : nodes())
+    {
+        for (auto const& pin : node.input_pins())
+        {
+            if (pin.id() == pin_id)
+                return node_id;
+        }
+        for (auto const& pin : node.output_pins())
+        {
+            if (pin.id() == pin_id)
+                return node_id;
+        }
+    }
     return {};
 }
 

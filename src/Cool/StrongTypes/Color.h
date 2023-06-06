@@ -12,6 +12,8 @@ public:
 
 #include "Cool/ColorSpaces/generated/declare_color_getters.inl"
 
+    [[nodiscard]] auto as_ImColor() const -> ImColor;
+
     friend auto operator==(Color const&, Color const&) -> bool = default;
 
 private:
@@ -29,5 +31,7 @@ private:
 
 auto to_string(Color const&) -> std::string;
 auto imgui_widget(std::string_view name, Color&, ImGuiColorEditFlags) -> bool;
+
+auto get_text_color(Color const& background_color) -> Color;
 
 } // namespace Cool

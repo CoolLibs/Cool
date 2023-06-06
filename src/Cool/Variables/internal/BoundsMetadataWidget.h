@@ -209,7 +209,7 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
         }
         else
         {
-            ImGuiExtras::maybe_disabled(true, "Toggle the checkbox on the left to set a min value.", [&]() {
+            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a min value.", [&]() {
                 b |= imgui_drag("##3", &meta.min, 0.01f, "-infinity");
             });
         }
@@ -227,7 +227,7 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
         }
         else
         {
-            ImGuiExtras::maybe_disabled(true, "Toggle the checkbox on the left to set a max value.", [&]() {
+            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a max value.", [&]() {
                 b |= imgui_drag("##6", &meta.max, 0.01f, "+infinity");
             });
         }

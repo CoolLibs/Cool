@@ -1,5 +1,6 @@
 #include "Color.h"
 #include "Cool/ColorSpaces/conversions.h"
+#include "Cool/UserSettings/UserSettings.h"
 
 namespace Cool {
 
@@ -11,6 +12,12 @@ auto Color::from_srgb(glm::vec3 const& srgb) -> Color
 }
 
 #include "Cool/ColorSpaces/generated/define_color_getters.inl"
+
+auto Color::as_ImColor() const -> ImColor
+{
+    auto const srgb = as_sRGB();
+    return ImColor{srgb.r, srgb.g, srgb.b, 1.f};
+}
 
 auto to_string(Color const& color) -> std::string
 {
@@ -35,6 +42,13 @@ auto imgui_widget(std::string_view name, Color& color, ImGuiColorEditFlags flags
 auto Color::brighter() const -> Color
 {
     return Color::from_srgb(as_sRGB() * 1.3f);
+}
+
+auto get_text_color(Color const& background_color) -> Color
+{
+    bool const color_is_bright = background_color.as_CIELAB().x > 0.7f;
+    auto const color           = user_settings().color_themes.editor().get_color_from_theme_if_any(color_is_bright ? "Light" : "Dark", "Text");
+    return Color::from_srgb({color.r, color.g, color.b});
 }
 
 } // namespace Cool

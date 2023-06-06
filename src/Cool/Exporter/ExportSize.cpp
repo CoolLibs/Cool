@@ -47,16 +47,11 @@ auto ExportSize::imgui() -> bool
     }
 
     ImGui::SameLine();
-    ImGuiExtras::maybe_disabled(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
+    ImGuiExtras::disabled_if(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
         b |= _aspect_ratio.imgui(150.f);
     });
     ImGui::SameLine();
-    if (ImGui::Button(_aspect_ratio_is_locked ? ICOMOON_LOCK : ICOMOON_UNLOCKED))
-    {
-        b                       = true;
-        _aspect_ratio_is_locked = !_aspect_ratio_is_locked;
-    }
-    ImGui::SameLine();
+    b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
     ImGuiExtras::help_marker(
         _aspect_ratio_is_locked
             ? "Unlock the ratio to edit the width and the height independently."

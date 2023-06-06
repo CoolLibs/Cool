@@ -6,7 +6,7 @@ namespace Cool {
 class NodesCategoryConfig {
 public:
     explicit NodesCategoryConfig(std::filesystem::path const& category_folder_path)
-        : _path_to_json{category_folder_path / "category_config.json"}
+        : _path_to_json{category_folder_path / "_category_config.json"}
     {
         load_from_json();
     }

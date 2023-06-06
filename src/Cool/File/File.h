@@ -26,7 +26,7 @@ public:
     static auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
 
     /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.
-    static auto to_string(std::filesystem::path const& file_path) -> tl::expected<std::string, std::string>;
+    static auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode = std::ios_base::in) -> tl::expected<std::string, std::string>;
 
     /// Recursively creates all the folders so that at the end `folder_path` is a valid folder path.
     /// /!\ There shouldn't be any file name at the end of folder_path; it there is, then use `create_folders_for_file_if_they_dont_exist()` instead.

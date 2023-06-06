@@ -4,7 +4,7 @@
 #
 # Then add your function to the call to `generate()` at the end of the file.
 #
-# You can use `all_variable_types()` to get all the variable types we use in CoolLab.
+# You can use `all_variable_types()` to get all the variable types we use in Coollab.
 # ------------
 
 from dataclasses import dataclass, field
@@ -16,9 +16,9 @@ if True:
     import os
     import sys
     from pathlib import Path
-    sys.path.append(os.path.join(
-        Path(os.path.abspath(__file__)).parent.parent,
-        "ColorSpaces")
+
+    sys.path.append(
+        os.path.join(Path(os.path.abspath(__file__)).parent.parent, "ColorSpaces")
     )
     # End of HACK
     import generator_colors
@@ -38,8 +38,7 @@ class VariableDescription:
     cpp_type: str  # Type used in C++ to store the type
     glsl_type: str  # Raw glsl used to store the type
     include: str = ""  # File containing the C++ type
-    metadatas: list[VariableMetadata] = field(
-        default_factory=lambda: [])
+    metadatas: list[VariableMetadata] = field(default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
     # For example a Gradient variable can't be sent as a simple uniform to a shader; that's why we generate some to inject it into the shader.
     requires_shader_code_generation: bool = False
@@ -96,7 +95,6 @@ def hdr_metadata():
 
 
 def all_variable_descriptions():
-
     return [
         VariableDescription(
             input_type=["bool"],
@@ -119,7 +117,7 @@ def all_variable_descriptions():
                         .max = 12,
                         .has_min_bound = false,
                         .has_max_bound = false,
-                        .drag_speed = 0.04f,
+                        .drag_speed = 0.02f,
                         .use_slider = false,
                     """,
                 ),
@@ -173,8 +171,9 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type=list(map(lambda x: x.name_in_code,
-                                generator_colors.color_spaces())),
+            input_type=list(
+                map(lambda x: x.name_in_code, generator_colors.color_spaces())
+            ),
             cpp_type="Cool::Color",
             glsl_type="vec3",
             include="<Cool/StrongTypes/Color.h>",
@@ -258,7 +257,8 @@ def all_variable_descriptions():
                     pretty_name="Randomize new marks' colors",
                     type="bool",
                     default_value="true",
-                ), ],
+                ),
+            ],
             requires_shader_code_generation=True,
         ),
         VariableDescription(
@@ -305,30 +305,34 @@ def all_variable_descriptions():
 
 
 def all_variable_types():
-    return map(lambda desc: desc.cpp_type,
-               all_variable_descriptions())
+    return map(lambda desc: desc.cpp_type, all_variable_descriptions())
 
 
 def all_types_representations_as_strings():
-    return {desc.cpp_type: desc.input_type
-            for desc in all_variable_descriptions()}
+    return {desc.cpp_type: desc.input_type for desc in all_variable_descriptions()}
 
 
 def strip_namespace(variable_type):
-    return variable_type[variable_type.rfind(":")+1:]
+    return variable_type[variable_type.rfind(":") + 1 :]
 
 
 def all_variable_types_without_namespaces():
-    return map(lambda variable_type: strip_namespace(variable_type),
-               all_variable_types())
+    return map(
+        lambda variable_type: strip_namespace(variable_type), all_variable_types()
+    )
 
 
 def all_variable_descriptions_without_namespaces():
     def strip_namespace_on_variable_type(desc):
         desc.type = strip_namespace(desc.type)
         return desc
-    return map(lambda variable_type_and_metadatas: strip_namespace_on_variable_type(variable_type_and_metadatas),
-               all_variable_descriptions())
+
+    return map(
+        lambda variable_type_and_metadatas: strip_namespace_on_variable_type(
+            variable_type_and_metadatas
+        ),
+        all_variable_descriptions(),
+    )
 
 
 def all_variable_includes():
@@ -339,20 +343,15 @@ def all_variable_includes():
 
 
 def all_includes():
-    return map(lambda var_desc: var_desc.include,
-               all_variable_descriptions())
+    return map(lambda var_desc: var_desc.include, all_variable_descriptions())
 
 
 def all_non_empty_includes():
-    return filter(lambda include: include != "",
-                  all_includes())
+    return filter(lambda include: include != "", all_includes())
 
 
 def all_types_includes():
-    return "\n".join(map(
-        lambda path: f"#include {path}",
-        all_non_empty_includes()
-    ))
+    return "\n".join(map(lambda path: f"#include {path}", all_non_empty_includes()))
 
 
 # def register_set_variable_commands():
@@ -375,33 +374,76 @@ def all_types_includes():
 
 
 def VariableRegistries():
-    return "\n" + "using VariableRegistries = reg::Registries<\n" + ",\n".join(
-        map(lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using VariableRegistries = reg::Registries<\n"
+        + ",\n".join(
+            map(
+                lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>",
+                all_variable_types(),
+            )
+        )
+        + "\n>;"
+    )
 
 
 def AnyInput():
-    return "\n" + "using AnyInput = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"Input<{var_type}>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using AnyInput = std::variant<\n"
+        + ",\n".join(map(lambda var_type: f"Input<{var_type}>", all_variable_types()))
+        + "\n>;"
+    )
 
 
 def AnyInputDefinition():
-    return "\n" + "using AnyInputDefinition = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using AnyInputDefinition = std::variant<\n"
+        + ",\n".join(
+            map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())
+        )
+        + "\n>;"
+    )
 
 
 def AnyVariable():
-    return "\n" + "using AnyVariable = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"Variable<{var_type}>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using AnyVariable = std::variant<\n"
+        + ",\n".join(
+            map(lambda var_type: f"Variable<{var_type}>", all_variable_types())
+        )
+        + "\n>;"
+    )
 
 
 def AnyInputRef():
-    return "\n" + "using AnyInputRef = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"std::reference_wrapper<Input<{var_type}>>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using AnyInputRef = std::variant<\n"
+        + ",\n".join(
+            map(
+                lambda var_type: f"std::reference_wrapper<Input<{var_type}>>",
+                all_variable_types(),
+            )
+        )
+        + "\n>;"
+    )
 
 
 def AnyInputRefToConst():
-    return "\n" + "using AnyInputRefToConst = std::variant<\n" + ",\n".join(
-        map(lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>", all_variable_types())) + "\n>;"
+    return (
+        "\n"
+        + "using AnyInputRefToConst = std::variant<\n"
+        + ",\n".join(
+            map(
+                lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>",
+                all_variable_types(),
+            )
+        )
+        + "\n>;"
+    )
 
 
 def variables_includes():
@@ -413,39 +455,48 @@ def variables_includes():
 
 def glsl_type():
     return "\n\n".join(
-        map(lambda desc: f'''
+        map(
+            lambda desc: f"""
             template<>
             auto glsl_type<{desc.cpp_type}>() -> std::string {{ 
                 return "{desc.glsl_type}";
             }}
-            ''', all_variable_descriptions()))
+            """,
+            all_variable_descriptions(),
+        )
+    )
 
 
 def cereal_make_nvp(metadatas: List[VariableMetadata]):
-    return ",\n".join(map(lambda meta:
-                          f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})', metadatas)
-                      )
+    return ",\n".join(
+        map(
+            lambda meta: f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})',
+            metadatas,
+        )
+    )
 
 
 def cereal_serialize_body(metadatas: List[VariableMetadata]):
-    return f'''
+    return f"""
         archive(
 {cereal_make_nvp(metadatas)}
         );
-'''
+"""
 
 
 def metadatas_definitions(metadatas: List[VariableMetadata]):
-    return "\n".join(map(
-        lambda metadata:
-            f"{metadata.type} {metadata.field_name}{{{metadata.default_value}}};",
-            metadatas))
+    return "\n".join(
+        map(
+            lambda metadata: f"{metadata.type} {metadata.field_name}{{{metadata.default_value}}};",
+            metadatas,
+        )
+    )
 
 
 def variable_definition_factory(variable_type_and_metadatas):
     def variable_definition():
         has_metadatas = len(variable_type_and_metadatas.metadatas) > 0
-        return f'''
+        return f"""
             {f'#include {variable_type_and_metadatas.include}' if variable_type_and_metadatas.include else ""}
             #include <Cool/Variables/Variable.h>
             #include <Cool/Variables/internal/BoundsMetadata.h>
@@ -471,16 +522,21 @@ def variable_definition_factory(variable_type_and_metadatas):
             auto imgui_widget(VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) -> bool;
 
             }} // namespace Cool
-        '''
+        """
+
     return variable_definition
 
 
 def requires_shader_code_generation():
     return "\n\n".join(
-        map(lambda desc: f'''
+        map(
+            lambda desc: f"""
             if constexpr (std::is_same_v<T, {desc.cpp_type}>)
                 return {"true" if desc.requires_shader_code_generation else "false"};
-            ''', all_variable_descriptions()))
+            """,
+            all_variable_descriptions(),
+        )
+    )
 
 
 def files():
@@ -499,9 +555,10 @@ def files():
         requires_shader_code_generation,
     ]
     for variable_types_and_metadatas in all_variable_descriptions():
-        variable_definition = variable_definition_factory(
-            variable_types_and_metadatas)
-        variable_definition.__name__ = f"Variable_{strip_namespace(variable_types_and_metadatas.cpp_type)}"
+        variable_definition = variable_definition_factory(variable_types_and_metadatas)
+        variable_definition.__name__ = (
+            f"Variable_{strip_namespace(variable_types_and_metadatas.cpp_type)}"
+        )
         res.append(variable_definition)
     return res
 
@@ -512,13 +569,16 @@ def main():
     import os
     import sys
     from pathlib import Path
-    sys.path.append(os.path.join(
-        Path(os.path.abspath(__file__)).parent.parent.parent.parent,
-        "tooling")
+
+    sys.path.append(
+        os.path.join(
+            Path(os.path.abspath(__file__)).parent.parent.parent.parent, "tooling"
+        )
     )
     # End of HACK
 
     import generate_files
+
     generate_files.generate(
         folder="generated",
         files=files(),
@@ -529,9 +589,14 @@ def main():
     from os import path
     from pathlib import Path
     from importlib.machinery import SourceFileLoader
+
     tfs = SourceFileLoader(
         "tfs",
-        path.join(Path(path.abspath(__file__)).parent.parent, "type_from_string/generator_tfs.py")).load_module()
+        path.join(
+            Path(path.abspath(__file__)).parent.parent,
+            "type_from_string/generator_tfs.py",
+        ),
+    ).load_module()
     # End of HACK
     tfs.main(
         all_types_representations_as_strings(),
@@ -539,5 +604,5 @@ def main():
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -35,32 +35,59 @@ static void set_imgui_ini_filepath()
 
 static void imgui_load_fonts()
 {
-    ImGuiIO&               io        = ImGui::GetIO();
-    static constexpr float font_size = 16.0f; // Our icons font renders best at a multiple of 16px
+    ImGuiIO&               io                     = ImGui::GetIO();
+    static constexpr float font_size              = 18.0f;
+    static constexpr float window_title_font_size = 18.0f;
+    static constexpr float icons_size             = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
+    static constexpr float info_icon_size         = 14.0f;
 
-    { // Main font
-        auto path = Cool::Path::cool_res() / "fonts/main_font.ttf";
-        if (!std::filesystem::exists(path))
-            path = Cool::Path::cool_res() / "fonts/main_font.otf";
-        if (!std::filesystem::exists(path))
-            io.Fonts->AddFontDefault();
-        else
-            io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
-    }
-    { // Merge icons into default font
+    auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
-        config.MergeMode                   = true;
-        config.PixelSnapH                  = true;
+        config.MergeMode   = true;
+        config.PixelSnapH  = true;
+        config.GlyphOffset = ImVec2{-4.f, +1.f};
         // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
-        static const ImWchar icon_ranges[] = {ICOMOON_RANGE_BEGIN, ICOMOON_RANGE_END, 0}; // NOLINT(*-avoid-c-arrays)
+        static const ImWchar icon_ranges[]          = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0};     // NOLINT(*-avoid-c-arrays)
+        static const ImWchar icon_ranges_for_info[] = {INFO_RANGE_ICOMOON, INFO_RANGE_ICOMOON + 1, 0}; // NOLINT(*-avoid-c-arrays)
+
         io.Fonts->AddFontFromFileTTF(
             (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
-            font_size, &config, icon_ranges
+            info_icon_size, &config, icon_ranges_for_info
         );
-    }
+        io.Fonts->AddFontFromFileTTF(
+            (Cool::Path::cool_res() / "fonts/IcoMoon-Free/IcoMoon-Free.ttf").string().c_str(),
+            icons_size, &config, icon_ranges
+        );
+    };
 
-    // Console font
-    Font::console() = io.Fonts->AddFontFromFileTTF((Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf").string().c_str(), font_size);
+    { // Window title font // Must be first so that it is the default font. This is mandatory because window titles can only use the default font.
+
+        auto const path      = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
+        Font::window_title() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), window_title_font_size);
+        merge_icons_into_current_font();
+    }
+    { // Bold font
+        auto const path   = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
+        Font::bold()      = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        Font::heading_1() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.6f);
+        Font::heading_2() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.3f);
+        Font::heading_3() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size * 1.1f);
+        // merge_icons_into_current_font(); // Not needed for now
+    }
+    { // Italic font
+        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Italic.otf";
+        Font::italic()  = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        // merge_icons_into_current_font(); // Not needed for now
+    }
+    { // Regular font
+        auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Regular.otf";
+        Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        merge_icons_into_current_font();
+    }
+    { // Monospace font
+        auto const path   = Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-Regular.ttf";
+        Font::monospace() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+    }
 
     io.Fonts->Build();
 }
@@ -73,10 +100,9 @@ static void initialize_imgui()
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigDockingAlwaysTabBar  = true;
-    io.ConfigDragClickToInputText = true;
+    io.ConfigDockingAlwaysTabBar               = true;
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)          // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD) // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
     imgui_load_fonts();

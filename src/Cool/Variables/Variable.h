@@ -106,11 +106,11 @@ template<typename Value>
 auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks const& callbacks = {}) -> bool
 {
     bool b = false;
-    ImGuiExtras::maybe_disabled(var.value() == var.default_value(), "Disabled because it is already equal to the default value", [&]() {
+    ImGuiExtras::disabled_if(var.value() == var.default_value(), "Disabled because it is already equal to the default value", [&]() {
         if (ImGui::Button(("Reset to default value (" + stringify(var.default_value()) + ")").c_str()))
         {
             var.value() = var.default_value();
-            b         = true;
+            b           = true;
             callbacks.on_value_changed();
             callbacks.on_value_editing_finished();
         }
