@@ -32,6 +32,9 @@ public:
     void set_uniform(std::string_view uniform_name, const glm::vec2&) const;
     void set_uniform(std::string_view uniform_name, const glm::vec3&) const;
     void set_uniform(std::string_view uniform_name, const glm::vec4&) const;
+    void set_uniform(std::string_view uniform_name, const glm::uvec2&) const;
+    void set_uniform(std::string_view uniform_name, const glm::uvec3&) const;
+    void set_uniform(std::string_view uniform_name, const glm::uvec4&) const;
     void set_uniform(std::string_view uniform_name, const glm::mat2&) const;
     void set_uniform(std::string_view uniform_name, const glm::mat3&) const;
     void set_uniform(std::string_view uniform_name, const glm::mat4&) const;
@@ -47,15 +50,14 @@ public:
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
     void set_uniform(std::string_view uniform_name, TextureInfo const&) const;
 
+    auto id() const -> GLuint;
+
 private:
     GLint uniform_location(std::string_view uniform_name) const;
 
 private:
     UniqueShader                                   _shader;
     mutable std::unordered_map<std::string, GLint> _uniform_locations;
-
-    template<unsigned int, unsigned int, unsigned int>
-    friend class ComputeShader;
 };
 
 } // namespace Cool::OpenGL
