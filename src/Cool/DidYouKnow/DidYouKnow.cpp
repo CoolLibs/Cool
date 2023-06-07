@@ -15,31 +15,29 @@ static auto did_you_know_window_title() -> const char*
     return title.c_str();
 }
 
-void DidYouKnow::open_popup(Tips all_tips)
+void DidYouKnow::open_popup()
 {
-    prepare_next_tip(all_tips);
+    prepare_next_tip();
 
     _is_open = true;
     ImGui::OpenPopup(did_you_know_window_title());
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
-void DidYouKnow::open_ifn(Tips all_tips)
+void DidYouKnow::open_ifn()
 {
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
     if (_app_has_just_been_opened && !_is_open && difference > time_to_wait())
     {
-        _app_has_just_been_opened = false; // TODO(JF) do it after the if
-        open_popup(all_tips);
+        open_popup();
     }
+    _app_has_just_been_opened = false;
 }
 
-void DidYouKnow::prepare_next_tip(Tips all_tips)
+void DidYouKnow::prepare_next_tip()
 {
     _current_tip_index++;
-    if (_current_tip_index >= all_tips.size())
-        _current_tip_index = 0;
 }
 
 static void imgui_all_tips(Tips all_tips)
@@ -52,16 +50,24 @@ static void imgui_all_tips(Tips all_tips)
     }
 }
 
+auto DidYouKnow::get_current_tip(Tips all_tips) -> const char*
+{
+    _current_tip_index = _current_tip_index % all_tips.size();
+    return all_tips[_current_tip_index];
+}
+
 void DidYouKnow::imgui_windows(Tips all_tips)
 {
-    open_ifn(all_tips);
+    open_ifn();
 
     if (ImGui::BeginPopupModal(did_you_know_window_title(), &_is_open))
     {
-        ImGuiExtras::markdown(all_tips[_current_tip_index]);
+        ImGuiExtras::markdown(get_current_tip(all_tips));
         ImGui::SeparatorText("");
 
-        if (ImGui::Button("Got it!", {ImGui::GetContentRegionAvail().x / 4.f, 0.f})
+        auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
+
+        if (ImGui::Button("Got it!", {button_width, 0.f})
             || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
         {
             _is_open = false;
@@ -70,7 +76,7 @@ void DidYouKnow::imgui_windows(Tips all_tips)
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Show me all the tips", {ImGui::GetContentRegionAvail().x / 2.f, 0.f}))
+        if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
         {
             _is_open = false;
             ImGui::CloseCurrentPopup();
