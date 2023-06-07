@@ -15,7 +15,8 @@ using Tips = std::span<const char* const>;
 /// Also it is possible to display all the tips at once.
 class TipsManager {
 public:
-    void open_popup();
+    void open_one_tip_window();
+    void open_all_tips_window();
     void imgui_windows(Tips);
 
 private:

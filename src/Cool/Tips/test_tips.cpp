@@ -7,7 +7,7 @@
 void Cool::test_tips(Cool::TipsManager& tips_manager)
 {
     if (ImGui::Button("Open a tip"))
-        tips_manager.open_popup();
+        tips_manager.open_one_tip_window();
 
     // imgui text with next time of opening
     auto next_opening = (tips_manager._timestamp_last_opening + time_to_wait()).time_since_epoch();

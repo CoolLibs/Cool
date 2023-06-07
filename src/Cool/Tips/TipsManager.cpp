@@ -8,11 +8,16 @@
 
 namespace Cool {
 
-void TipsManager::open_popup()
+void TipsManager::open_one_tip_window()
 {
     prepare_next_tip();
     _window.open();
     _timestamp_last_opening = std::chrono::steady_clock::now();
+}
+
+void TipsManager::open_all_tips_window()
+{
+    _show_all_tips = true;
 }
 
 void TipsManager::open_ifn()
@@ -20,7 +25,7 @@ void TipsManager::open_ifn()
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
     if (_app_has_just_been_opened && difference > time_to_wait())
-        open_popup();
+        open_one_tip_window();
     _app_has_just_been_opened = false;
 }
 
@@ -64,7 +69,7 @@ void TipsManager::imgui_windows(Tips all_tips)
         if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
         {
             _window.close();
-            _show_all_tips = true;
+            open_all_tips_window();
         }
     });
 
