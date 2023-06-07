@@ -1,3 +1,4 @@
+#pragma once
 #include <filesystem>
 #include "Cool/StrongTypes/Color.h"
 
@@ -11,7 +12,8 @@ public:
         load_from_json();
     }
 
-    [[nodiscard]] auto get_color() const -> Color { return _color; }
+    [[nodiscard]] auto color() const -> Color { return _color; }
+    [[nodiscard]] auto number_of_main_input_pins() const -> size_t { return static_cast<size_t>(_number_of_main_input_pins); }
 
     auto imgui_popup() -> bool;
 
@@ -21,6 +23,7 @@ private:
 
 private:
     Color                 _color{};
+    int                   _number_of_main_input_pins{};
     std::filesystem::path _path_to_json{};
 
 private:
@@ -30,7 +33,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Color", _color)
+            cereal::make_nvp("Color", _color),
+            cereal::make_nvp("Number of main input pins", _number_of_main_input_pins)
         );
     }
 };

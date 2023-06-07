@@ -1,6 +1,7 @@
 #include "NodesCategoryConfig.h"
 #include <cereal/archives/json.hpp>
 #include <filesystem>
+#include <smart/smart.hpp>
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/Serialization.h"
 #include "Cool/Variables/internal/color_utils.h"
@@ -32,14 +33,14 @@ auto NodesCategoryConfig::imgui_popup() -> bool
 
     if (ImGui::BeginPopupContextItem())
     {
-        if (imgui_widget("Color", _color, internal::color_imgui_flags(false)))
-        {
-            b = true;
-            save_to_json();
-        }
+        b |= imgui_widget("Color", _color, internal::color_imgui_flags(false));
+        b |= ImGui::InputInt("Number of main input pins", &_number_of_main_input_pins);
+        _number_of_main_input_pins = smart::keep_above(0, _number_of_main_input_pins);
         ImGui::EndPopup();
     }
 
+    if (b)
+        save_to_json();
     return b;
 }
 
