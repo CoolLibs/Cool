@@ -2,9 +2,9 @@
 #include <chrono>
 #include <string>
 #include <vector>
-#include "Cool/DidYouKnow/DidYouKnow.h"
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/Tips/TipsManager.h"
 #include "cereal/types/chrono.hpp"
 
 namespace Cool {
@@ -13,7 +13,7 @@ using Tips = std::span<const char* const>;
 
 /// A class that manages the "Did you know" modal. It is used to display tips to the user at the opening of the software.
 /// Also it is possible to display all the tips at once.
-class DidYouKnow {
+class TipsManager {
 public:
     void open_popup();
     void imgui_windows(Tips);
@@ -32,7 +32,7 @@ private:
 
     std::chrono::steady_clock::time_point _timestamp_last_opening{}; // TODO(JF) Instead, use the timestamp when the app was last closed
 
-    friend void test_did_you_know(Cool::DidYouKnow&); // To display the internal values like remaining time before opening.
+    friend void test_tips(Cool::TipsManager&); // To display the internal values like remaining time before opening.
 
 private:
     // Serialization

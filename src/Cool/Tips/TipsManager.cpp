@@ -1,4 +1,4 @@
-#include "DidYouKnow.h"
+#include "TipsManager.h"
 #include <imgui.h>
 #include <chrono>
 #include <string>
@@ -8,14 +8,14 @@
 
 namespace Cool {
 
-void DidYouKnow::open_popup()
+void TipsManager::open_popup()
 {
     prepare_next_tip();
     _window.open();
     _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
-void DidYouKnow::open_ifn()
+void TipsManager::open_ifn()
 {
     auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
 
@@ -24,7 +24,7 @@ void DidYouKnow::open_ifn()
     _app_has_just_been_opened = false;
 }
 
-void DidYouKnow::prepare_next_tip()
+void TipsManager::prepare_next_tip()
 {
     _current_tip_index++;
 }
@@ -39,13 +39,13 @@ static void imgui_all_tips(Tips all_tips)
     }
 }
 
-auto DidYouKnow::get_current_tip(Tips all_tips) -> const char*
+auto TipsManager::get_current_tip(Tips all_tips) -> const char*
 {
     _current_tip_index = _current_tip_index % all_tips.size();
     return all_tips[_current_tip_index];
 }
 
-void DidYouKnow::imgui_windows(Tips all_tips)
+void TipsManager::imgui_windows(Tips all_tips)
 {
     open_ifn();
 

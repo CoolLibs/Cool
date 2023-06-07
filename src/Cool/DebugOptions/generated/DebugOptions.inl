@@ -63,11 +63,11 @@ public:
             ImGui::End();
         }
     }
-    static void test_did_you_know(std::function<void()> callback)
+    static void test_tips(std::function<void()> callback)
     {
-        if (instance().test_did_you_know)
+        if (instance().test_tips)
         {
-            ImGui::Begin(Cool::icon_fmt("Test \"Did you know?\"", ICOMOON_WRENCH).c_str(), &instance().test_did_you_know, ImGuiWindowFlags_NoFocusOnAppearing);
+            ImGui::Begin(Cool::icon_fmt("Test tips", ICOMOON_WRENCH).c_str(), &instance().test_tips, ImGuiWindowFlags_NoFocusOnAppearing);
             callback();
             ImGui::End();
         }
@@ -120,7 +120,7 @@ private:
 #endif
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
-        bool test_did_you_know{false};
+        bool test_tips{false};
         bool public_exhibition_mode{false};
         bool style_editor{false};
         bool color_themes_editor{false};
@@ -146,7 +146,7 @@ private:
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
-                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know),
+                cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -160,7 +160,7 @@ private:
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
-                cereal::make_nvp("Test \"Did you know?\"", test_did_you_know),
+                cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -184,7 +184,7 @@ private:
 #endif
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
-        instance().test_did_you_know                   = false;
+        instance().test_tips                           = false;
         instance().public_exhibition_mode              = false;
         instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
@@ -254,9 +254,9 @@ private:
             Cool::ImGuiExtras::toggle("Test Markdown Formatting", &instance().test_markdown_formatting_window);
         }
 
-        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
         {
-            Cool::ImGuiExtras::toggle("Test \"Did you know?\"", &instance().test_did_you_know);
+            Cool::ImGuiExtras::toggle("Test tips", &instance().test_tips);
         }
 
         if (wafl::similarity_match({filter, "Public exhibition mode"}) >= wafl::Matches::Strongly)
@@ -356,9 +356,9 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
-        if (wafl::similarity_match({filter, "Test \"Did you know?\""}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
         {
-            instance().test_did_you_know = !instance().test_did_you_know;
+            instance().test_tips = !instance().test_tips;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
