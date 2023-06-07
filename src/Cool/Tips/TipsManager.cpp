@@ -8,11 +8,15 @@
 
 namespace Cool {
 
+void TipsManager::on_app_shutdown()
+{
+    _time_when_app_was_last_closed = std::chrono::steady_clock::now();
+}
+
 void TipsManager::open_one_tip_window()
 {
     prepare_next_tip();
     _window.open();
-    _timestamp_last_opening = std::chrono::steady_clock::now();
 }
 
 void TipsManager::open_all_tips_window()
@@ -22,11 +26,13 @@ void TipsManager::open_all_tips_window()
 
 void TipsManager::open_ifn()
 {
-    auto const difference = std::chrono::steady_clock::now() - _timestamp_last_opening;
-
-    if (_app_has_just_been_opened && difference > time_to_wait())
-        open_one_tip_window();
+    if (!_app_has_just_been_opened)
+        return;
     _app_has_just_been_opened = false;
+
+    auto const difference = std::chrono::steady_clock::now() - _time_when_app_was_last_closed;
+    if (difference > time_to_wait())
+        open_one_tip_window();
 }
 
 void TipsManager::prepare_next_tip()

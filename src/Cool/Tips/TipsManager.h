@@ -19,6 +19,8 @@ public:
     void open_all_tips_window();
     void imgui_windows(Tips);
 
+    void on_app_shutdown();
+
 private:
     void open_ifn();
     void prepare_next_tip();
@@ -31,7 +33,7 @@ private:
 
     size_t _current_tip_index{static_cast<size_t>(-1)}; // Start at -1 so that the first tip will be at index 0 (because we increment before opening the popup).
 
-    std::chrono::steady_clock::time_point _timestamp_last_opening{}; // TODO(JF) Instead, use the timestamp when the app was last closed
+    std::chrono::steady_clock::time_point _time_when_app_was_last_closed{};
 
     friend void test_tips(Cool::TipsManager&); // To display the internal values like remaining time before opening.
 
@@ -43,7 +45,7 @@ private:
     {
         archive(
             cereal::make_nvp("Current tip", _current_tip_index),
-            cereal::make_nvp("Last opened", _timestamp_last_opening)
+            cereal::make_nvp("Time when app was last closed", _time_when_app_was_last_closed)
         );
     }
 };
