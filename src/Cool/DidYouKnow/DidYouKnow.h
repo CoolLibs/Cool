@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include "Cool/DidYouKnow/DidYouKnow.h"
+#include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "cereal/types/chrono.hpp"
 
 namespace Cool {
@@ -22,9 +24,9 @@ private:
     auto get_current_tip(Tips all_tips) -> const char*;
 
 private:
-    bool _app_has_just_been_opened = true;
-    bool _is_open                  = false;
-    bool _show_all_tips            = false;
+    bool        _app_has_just_been_opened = true;
+    bool        _show_all_tips            = false;
+    ImGuiWindow _window{Cool::icon_fmt("Did you know?", ICOMOON_BUBBLE), {.is_modal = true}};
 
     size_t _current_tip_index{static_cast<size_t>(-1)}; // Start at -1 so that the first tip will be at index 0 (because we increment before opening the popup).
 
