@@ -281,11 +281,10 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 //     }
 // };
 
-static void draw_pin_icon(Pin const&, float alpha, Cool::Color color)
+static void render_pin_icon(Pin const& pin, float alpha, Cool::Color color)
 {
-    ax::Widgets::IconType icon_type = ax::Widgets::IconType::Circle;
-    auto                  col       = color.as_sRGB();
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon_type, true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
+    auto const col = color.as_sRGB();
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), pin.icon(), true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
 void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
@@ -331,7 +330,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        draw_pin_icon(input_pin, alpha, nodes_cfg.pin_color(input_pin, idx, node, id));
+        render_pin_icon(input_pin, alpha, nodes_cfg.pin_color(input_pin, idx, node, id));
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -356,7 +355,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        draw_pin_icon(output_pin, alpha, nodes_cfg.pin_color(output_pin, idx, node, id));
+        render_pin_icon(output_pin, alpha, nodes_cfg.pin_color(output_pin, idx, node, id));
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
