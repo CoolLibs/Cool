@@ -63,6 +63,15 @@ public:
             ImGui::End();
         }
     }
+    static void test_tips(std::function<void()> callback)
+    {
+        if (instance().test_tips)
+        {
+            ImGui::Begin(Cool::icon_fmt("Test tips", ICOMOON_WRENCH).c_str(), &instance().test_tips, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
     [[nodiscard]] static auto public_exhibition_mode() -> bool& { return instance().public_exhibition_mode; }
     static void               style_editor(std::function<void()> callback)
     {
@@ -111,6 +120,7 @@ private:
 #endif
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
+        bool test_tips{false};
         bool public_exhibition_mode{false};
         bool style_editor{false};
         bool color_themes_editor{false};
@@ -136,6 +146,7 @@ private:
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -149,6 +160,7 @@ private:
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -172,6 +184,7 @@ private:
 #endif
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
+        instance().test_tips                           = false;
         instance().public_exhibition_mode              = false;
         instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
@@ -239,6 +252,11 @@ private:
         if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test Markdown Formatting", &instance().test_markdown_formatting_window);
+        }
+
+        if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Test tips", &instance().test_tips);
         }
 
         if (wafl::similarity_match({filter, "Public exhibition mode"}) >= wafl::Matches::Strongly)
@@ -335,6 +353,12 @@ private:
         if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
         {
             instance().test_markdown_formatting_window = !instance().test_markdown_formatting_window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_tips = !instance().test_tips;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

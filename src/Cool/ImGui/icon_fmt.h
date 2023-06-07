@@ -1,4 +1,5 @@
 #pragma once
+#include "IcoMoonCodepoints.h" // This will be useful to anyone including this file
 
 namespace Cool {
 

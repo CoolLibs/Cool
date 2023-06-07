@@ -69,6 +69,9 @@ public:
      */
     virtual void on_mouse_move(const MouseMoveEvent<WindowCoordinates>& event) = 0;
 
+    /// This is called before everything is saved by the serialization (unlike the IApp's destructor, which is called afterward, and might also be called at startup if loading the serialization fails.).
+    virtual void on_shutdown() = 0;
+
     // /!\ This has no effect if a state has already been saved and not been restored yet.
     void save_windows_state();
     void restore_windows_state();
