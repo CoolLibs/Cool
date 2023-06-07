@@ -67,15 +67,15 @@ public:              // Must be public in order for Cereal to register the polym
             : _nodes_category_config{std::move(concrete)}
         {}
 
-        [[nodiscard]] auto color() const -> Color
+        [[nodiscard]] auto color() const -> Color override
         {
             return _nodes_category_config.color();
         }
-        [[nodiscard]] auto number_of_main_input_pins() const -> size_t
+        [[nodiscard]] auto number_of_main_input_pins() const -> size_t override
         {
             return _nodes_category_config.number_of_main_input_pins();
         }
-        auto imgui_popup() -> bool
+        auto imgui_popup() -> bool override
         {
             return _nodes_category_config.imgui_popup();
         }
