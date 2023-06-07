@@ -47,8 +47,6 @@ auto TipsManager::get_current_tip(Tips all_tips) -> const char*
 
 void TipsManager::imgui_windows(Tips all_tips)
 {
-    open_ifn();
-
     _window.show([&]() {
         ImGuiExtras::markdown(get_current_tip(all_tips));
         ImGui::SeparatorText("");
@@ -76,6 +74,8 @@ void TipsManager::imgui_windows(Tips all_tips)
         imgui_all_tips(all_tips);
         ImGui::End();
     }
+
+    open_ifn();
 }
 
 } // namespace Cool
