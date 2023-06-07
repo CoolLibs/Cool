@@ -2,6 +2,8 @@
 
 #include <reg/cereal.hpp>
 #include <reg/reg.hpp>
+#include "Cool/Nodes/utilities/drawing.h"
+#include "utilities/drawing.h"
 
 namespace Cool {
 
@@ -15,7 +17,7 @@ enum class PinKind {
 class Pin {
 public:
     Pin() = default;
-    explicit Pin(std::string_view name);
+    explicit Pin(std::string_view name, ax::Drawing::IconType = ax::Drawing::IconType::Circle);
     Pin(Pin const&)                    = default;
     Pin(Pin&&)                         = default;
     auto operator=(Pin const&) -> Pin& = default;
@@ -23,9 +25,11 @@ public:
     virtual ~Pin()                     = default;
 
     [[nodiscard]] auto name() const -> std::string const& { return _name; }
+    [[nodiscard]] auto icon() const -> ax::Drawing::IconType { return _icon; }
     [[nodiscard]] auto id() const -> PinId const& { return _id; }
 
     void set_id(PinId const& id) { _id = id; }
+    void set_icon(ax::Drawing::IconType icon) { _icon = icon; }
 
     [[nodiscard]] virtual auto kind() const -> PinKind = 0;
 
@@ -33,8 +37,9 @@ protected:
     void show_impl() const;
 
 private:
-    std::string _name;
-    PinId       _id;
+    std::string           _name{};
+    ax::Drawing::IconType _icon{ax::Drawing::IconType::Circle};
+    PinId                 _id{};
 
 private:
     // Serialization

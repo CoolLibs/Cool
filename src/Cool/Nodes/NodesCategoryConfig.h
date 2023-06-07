@@ -1,27 +1,106 @@
+#pragma once
 #include <filesystem>
 #include "Cool/StrongTypes/Color.h"
 
 namespace Cool {
 
+template<typename T>
+concept NodesCategoryConfig_Concept = requires(T const config_const, T config) { // clang-format off
+    { config_const.color() } -> std::convertible_to<Color>;
+    { config_const.number_of_main_input_pins() } -> std::convertible_to<size_t>;
+    { config.imgui_popup() } -> std::convertible_to<bool>;
+}; // clang-format on
+
 class NodesCategoryConfig {
 public:
-    explicit NodesCategoryConfig(std::filesystem::path const& category_folder_path)
-        : _path_to_json{category_folder_path / "_category_config.json"}
+    [[nodiscard]] auto color() const -> Color { return _pimpl->color(); }
+    [[nodiscard]] auto number_of_main_input_pins() const -> size_t { return _pimpl->number_of_main_input_pins(); }
+    auto               imgui_popup() -> bool { return _pimpl->imgui_popup(); }
+
+    template<NodesCategoryConfig_Concept NodesCategoryConfigT>
+    [[nodiscard]] auto downcast() -> NodesCategoryConfigT&
     {
-        load_from_json();
+        return static_cast<Model<NodesCategoryConfigT>&>(*_pimpl)._nodes_category_config;
+    }
+    template<NodesCategoryConfig_Concept NodesCategoryConfigT>
+    [[nodiscard]] auto downcast() const -> NodesCategoryConfigT const&
+    {
+        return static_cast<Model<NodesCategoryConfigT> const&>(*_pimpl)._nodes_category_config;
     }
 
-    [[nodiscard]] auto get_color() const -> Color { return _color; }
+public: // Type-erasure implementation details
+    NodesCategoryConfig() = default;
 
-    auto imgui_popup() -> bool;
+    template<NodesCategoryConfig_Concept NodesCategoryConfigT>
+    NodesCategoryConfig(NodesCategoryConfigT node) // NOLINT(*-explicit-constructor, *-explicit-conversions) A type-erased object should be implicitly created from objects matching its requirements.
+        : _pimpl{std::make_unique<Model<NodesCategoryConfigT>>(std::move(node))}
+    {}
+
+    NodesCategoryConfig(NodesCategoryConfig const& other)
+        : _pimpl{other._pimpl->clone()}
+    {}
+    auto operator=(NodesCategoryConfig const& other) -> NodesCategoryConfig&
+    {
+        auto tmp = NodesCategoryConfig{other};
+        std::swap(_pimpl, tmp._pimpl);
+        return *this;
+    }
+    NodesCategoryConfig(NodesCategoryConfig&&) noexcept                    = default;
+    auto operator=(NodesCategoryConfig&&) noexcept -> NodesCategoryConfig& = default;
+    ~NodesCategoryConfig()                                                 = default;
+
+public:              // Must be public in order for Cereal to register the polymorphic types
+    struct Concept { // NOLINT(*-special-member-functions)
+        virtual ~Concept() = default;
+
+        [[nodiscard]] virtual auto color() const -> Color                      = 0;
+        [[nodiscard]] virtual auto number_of_main_input_pins() const -> size_t = 0;
+        virtual auto               imgui_popup() -> bool                       = 0;
+
+        [[nodiscard]] virtual auto clone() const -> std::unique_ptr<Concept> = 0;
+    };
+
+    template<NodesCategoryConfig_Concept NodesCategoryConfigT>
+    struct Model : public Concept {
+        Model() = default;
+        explicit Model(NodesCategoryConfigT concrete)
+            : _nodes_category_config{std::move(concrete)}
+        {}
+
+        [[nodiscard]] auto color() const -> Color override
+        {
+            return _nodes_category_config.color();
+        }
+        [[nodiscard]] auto number_of_main_input_pins() const -> size_t override
+        {
+            return _nodes_category_config.number_of_main_input_pins();
+        }
+        auto imgui_popup() -> bool override
+        {
+            return _nodes_category_config.imgui_popup();
+        }
+
+        [[nodiscard]] auto clone() const -> std::unique_ptr<Concept> override
+        {
+            return std::make_unique<Model>(*this);
+        }
+
+        NodesCategoryConfigT _nodes_category_config;
+
+    private:
+        // Serialization
+        friend class cereal::access;
+        template<class Archive>
+        void serialize(Archive& archive)
+        {
+            archive(
+                cereal::make_nvp("NodesCategoryConfigT", _nodes_category_config)
+            );
+        }
+    };
 
 private:
-    void save_to_json() const;
-    void load_from_json();
-
-private:
-    Color                 _color{};
-    std::filesystem::path _path_to_json{};
+    std::unique_ptr<Concept> _pimpl;
 
 private:
     // Serialization
@@ -30,7 +109,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Color", _color)
+            cereal::make_nvp("pimpl", _pimpl)
         );
     }
 };

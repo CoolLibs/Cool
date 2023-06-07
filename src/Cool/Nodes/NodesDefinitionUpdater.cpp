@@ -1,4 +1,5 @@
 #include "NodesDefinitionUpdater.h"
+#include "Cool/Nodes/NodesCategoryConfig.h"
 #include "Cool/String/String.h"
 
 namespace Cool {
@@ -31,7 +32,10 @@ static auto get_category_order(std::filesystem::path const& path, std::filesyste
     }
 }
 
-void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, std::filesystem::path const& root)
+void NodesDefinitionUpdater::add_definition(
+    std::filesystem::path const& path, std::filesystem::path const& root,
+    std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
+)
 {
     auto const content = File::to_string(path);
     if (!content)
@@ -49,8 +53,10 @@ void NodesDefinitionUpdater::add_definition(std::filesystem::path const& path, s
 
     auto const category_name = get_category_name(path, root);
 
-    auto const category_folder = File::without_file_name(path).string();
-    _library.add_definition(*definition, category_name, category_folder, get_category_order(path, root));
+    {
+        auto const category_folder = File::without_file_name(path).string();
+        _library.add_definition(*definition, category_name, make_category_config(category_folder), get_category_order(path, root));
+    }
 
     {
         // Update all nodes that use that definition

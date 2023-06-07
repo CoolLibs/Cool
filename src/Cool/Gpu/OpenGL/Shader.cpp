@@ -54,7 +54,8 @@ void Shader::set_uniform(std::string_view uniform_name, int v) const
 }
 void Shader::set_uniform(std::string_view uniform_name, unsigned int v) const
 {
-    set_uniform(uniform_name, static_cast<int>(v));
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform1ui(uniform_location(uniform_name), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, bool v) const
 {
@@ -79,6 +80,21 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) cons
 {
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec2& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform2ui(uniform_location(uniform_name), v.x, v.y));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec3& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform3ui(uniform_location(uniform_name), v.x, v.y, v.z));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec4& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform4ui(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) const
 {
@@ -169,7 +185,7 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
 
     tex.attach_to_slot(current_slot);
     GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
-    set_uniform(fmt::format("{}.tex", uniform_name), current_slot);
+    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(current_slot));
     set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
 
     current_slot = (current_slot + 1) % max_slots;

@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/Nodes/NodesCategoryConfig.h"
 #include "NodeDefinition.h"
 #include "NodeDefinitionIdentifier.h"
 #include "NodesCategoryConfig.h"
@@ -17,8 +18,8 @@ auto name_matches_filter(std::string const& _name, std::string const& filter) ->
 
 class NodesCategory {
 public:
-    NodesCategory(std::string name, std::filesystem::path const& path, int order)
-        : _config{path}
+    NodesCategory(std::string name, NodesCategoryConfig config, int order)
+        : _config{std::move(config)}
         , _name{std::move(name)}
         , _order{order}
     {}
@@ -58,9 +59,9 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>;
 
-    void add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder, int category_order);
+    void add_definition(NodeDefinition const&, std::string category_name, NodesCategoryConfig const&, int category_order);
 
-    void remove_definition(NodeDefinitionIdentifier const& identifier);
+    void remove_definition(NodeDefinitionIdentifier const&);
 
 private:
     template<typename T>
