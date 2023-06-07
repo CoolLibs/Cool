@@ -27,15 +27,12 @@ private:
     auto get_current_tip(Tips all_tips) -> const char*;
 
 private:
-    bool        _app_has_just_been_opened = true;
-    bool        _show_all_tips            = false;
+    size_t      _current_tip_index{static_cast<size_t>(-1)}; // Start at -1 so that the first tip will be at index 0 (because we increment before opening the popup).
+    bool        _show_all_tips{false};
     ImGuiWindow _window{Cool::icon_fmt("Did you know?", ICOMOON_BUBBLE), {.is_modal = true}};
 
-    size_t _current_tip_index{static_cast<size_t>(-1)}; // Start at -1 so that the first tip will be at index 0 (because we increment before opening the popup).
-
+    bool                                  _app_has_just_been_opened{true};
     std::chrono::steady_clock::time_point _time_when_app_was_last_closed{};
-
-    friend void test_tips(Cool::TipsManager&); // To display the internal values like remaining time before opening.
 
 private:
     // Serialization
@@ -48,6 +45,8 @@ private:
             cereal::make_nvp("Time when app was last closed", _time_when_app_was_last_closed)
         );
     }
+
+    friend void test_tips(Cool::TipsManager&); // To display the internal values like remaining time before opening.
 };
 
 } // namespace Cool
