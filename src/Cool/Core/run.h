@@ -137,6 +137,7 @@ void run(
             // Run the app
             auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
             app_manager.run(create_autosaver(auto_serializer));
+            app.on_shutdown();
 #if defined(COOL_VULKAN)
             vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
