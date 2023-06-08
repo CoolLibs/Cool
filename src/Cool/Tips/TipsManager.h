@@ -42,6 +42,7 @@ private:
     {
         archive(
             cereal::make_nvp("Current tip", _current_tip_index),
+            cereal::make_nvp("Wants to show all tips", _show_all_tips),
             cereal::make_nvp("Time when app was last closed", _time_when_app_was_last_closed)
         );
     }
