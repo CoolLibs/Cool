@@ -86,7 +86,7 @@ void TipsManager::imgui_windows(Tips all_tips)
         ImGui::End();
     }
 
-    open_ifn();
+    open_ifn(); // Must be after the window, otherwise ImGui crashes when this is called the first frame.
 }
 
 } // namespace Cool
