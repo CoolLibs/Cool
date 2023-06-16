@@ -59,7 +59,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
-    { // Begin window, maybe in fullscreen
+    {                                                             // Begin window, maybe in fullscreen
         bool* const            p_open = _is_closable ? &_is_open : nullptr;
         ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         if (params.fullscreen)
@@ -101,6 +101,13 @@ static auto window_to_screen(WindowCoordinates position, GLFWwindow* window) -> 
     }
 }
 
+static auto view_to_screen(ViewCoordinates position, ScreenCoordinates window_position, float height) -> ScreenCoordinates
+{
+    position.y     = height - position.y;
+    auto const pos = ScreenCoordinates{position + window_position};
+    return pos;
+}
+
 static auto screen_to_view(ScreenCoordinates position, ScreenCoordinates window_position, float height) -> ViewCoordinates
 {
     const auto pos = ViewCoordinates{position - window_position};
@@ -108,6 +115,9 @@ static auto screen_to_view(ScreenCoordinates position, ScreenCoordinates window_
         pos.x,
         height - pos.y}; // Make y-axis point up
 }
+
+auto view_to_screen(ViewCoordinates position, GLFWwindow* window) const -> ScreenCoordinates;
+auto screen_to_view(ScreenCoordinates position, GLFWwindow* window) const -> ViewCoordinates;
 
 auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> ViewCoordinates
 {
@@ -233,7 +243,7 @@ void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image
     if (!_size.has_value())
         return;
 
-    auto const size = image_size_inside_view.fit_into(*_size);
+    auto const size       = image_size_inside_view.fit_into(*_size);
     _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);

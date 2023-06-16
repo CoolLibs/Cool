@@ -23,6 +23,9 @@ public:
     void                     imgui_open_close_checkbox();
     std::optional<img::Size> size() const { return _size; }
 
+    auto view_to_screen(ViewCoordinates position, GLFWwindow* window) const -> ScreenCoordinates;
+    auto screen_to_view(ScreenCoordinates position, GLFWwindow* window) const -> ViewCoordinates;
+
     void dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event);
     void dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event);
     void dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event);
