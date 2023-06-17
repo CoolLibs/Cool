@@ -5,19 +5,23 @@
 
 namespace Cool {
 
-struct RenderableView {
-    RenderableView(std::string_view name)
-        : view{name}, render_target{}
-    {
-    }
+/// A View that uses a RenderTarget as its image.
+/// You can render on that render target however you want.
+class RenderableView : public View {
+public:
+    using View::View;
 
-    View         view;
-    RenderTarget render_target;
+    void update_size(ImageSizeConstraint const&);
 
-    void update_size(ImageSizeConstraint constraint);
-    void imgui_window(ViewWindowParams const& = {});
+    auto render_target() -> RenderTarget& { return _render_target; }
+    auto render_target() const -> RenderTarget const& { return _render_target; }
 
-    auto has_vertical_margins() const -> bool { return view.has_vertical_margins(); }
+private:
+    auto get_image_texture_id() const -> ImTextureID override;
+    auto get_image_size_inside_view() const -> ImageSizeInsideView override;
+
+private:
+    RenderTarget _render_target;
 };
 
 } // namespace Cool

@@ -49,11 +49,11 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, ViewWindowParams const& params)
+void View::imgui_window(ViewWindowParams const& params)
 {
     if (!_is_open)
     {
-        _size.reset();
+        _window_size.reset();
         _window_is_hovered = false;
         return;
     }
@@ -75,7 +75,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
         store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
 
-        display_image(image_texture_id, image_size_inside_view);
+        display_image(get_image_texture_id(), get_image_size_inside_view());
 
         params.extra_widgets();
     }
@@ -84,7 +84,7 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
     ImGui::End();
 }
 
-void View::imgui_open_close_checkbox()
+void View::imgui_open_close_toggle()
 {
     ImGuiExtras::toggle(_name.c_str(), &_is_open);
 }
@@ -116,15 +116,15 @@ static auto screen_to_view(ScreenCoordinates position, ScreenCoordinates window_
         height - pos.y}; // Make y-axis point up
 }
 
-auto view_to_screen(ViewCoordinates position, GLFWwindow* window) const -> ScreenCoordinates;
-auto screen_to_view(ScreenCoordinates position, GLFWwindow* window) const -> ViewCoordinates;
+// auto View::view_to_screen(ViewCoordinates position, GLFWwindow* window) const -> ScreenCoordinates;
+// auto View::screen_to_view(ScreenCoordinates position, GLFWwindow* window) const -> ViewCoordinates;
 
 auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> ViewCoordinates
 {
     return screen_to_view(
         window_to_screen(position, window),
         _position,
-        _size ? static_cast<float>(_size->height()) : 0.f
+        _window_size ? static_cast<float>(_window_size->height()) : 0.f
     );
 }
 
@@ -136,14 +136,14 @@ auto View::contains(ViewCoordinates pos, ImageSizeInsideView image_size) -> bool
         return false;
     }
 
-    if (!_size)
+    if (!_window_size)
         return false;
 
-    const auto img_size = image_size.fit_into(*_size);
+    const auto img_size = image_size.fit_into(*_window_size);
 
     const auto pos_in_img = pos + glm::vec2{
-                                (img_size.width() - static_cast<float>(_size->width())) * 0.5f,
-                                (img_size.height() - static_cast<float>(_size->height())) * 0.5f,
+                                (img_size.width() - static_cast<float>(_window_size->width())) * 0.5f,
+                                (img_size.height() - static_cast<float>(_window_size->height())) * 0.5f,
                             };
     return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width()
            && pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
@@ -198,16 +198,16 @@ void View::store_window_size()
             static_cast<img::Size::DataType>(size.y),
         });
 
-        const bool has_changed = new_size != _size;
-        _size                  = new_size;
-        if (has_changed)
-        {
-            resize_event().dispatch({});
-        }
+        const bool has_changed = new_size != _window_size;
+        _window_size           = new_size;
+        // if (has_changed)
+        // {
+        //     resize_event().dispatch({});
+        // }
     }
     else
     {
-        _size.reset();
+        _window_size.reset();
     }
 }
 
@@ -240,11 +240,11 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
 
 void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
 {
-    if (!_size.has_value())
+    if (!_window_size.has_value())
         return;
 
-    auto const size       = image_size_inside_view.fit_into(*_size);
-    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_size);
+    auto const size       = image_size_inside_view.fit_into(*_window_size);
+    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_window_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 
