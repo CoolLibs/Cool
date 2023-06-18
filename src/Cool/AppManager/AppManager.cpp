@@ -24,8 +24,9 @@ static void imgui_dockspace();
 static void imgui_new_frame();
 static void end_frame(WindowManager& window_manager);
 
-AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
+AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
+    , _views{views}
     , _app{app}
     , _config{config}
 {

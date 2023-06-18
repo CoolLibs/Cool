@@ -73,8 +73,8 @@ public:
     virtual void on_shutdown() = 0;
 
     // /!\ This has no effect if a state has already been saved and not been restored yet.
-    void save_windows_state();
-    void restore_windows_state();
+    void save_imgui_windows_state();
+    void restore_imgui_windows_state();
 
 private:
     friend class AppManager;

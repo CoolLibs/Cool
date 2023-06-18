@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cool/Path/Path.h"
+#include "Cool/View/ViewsManager.h"
 #if defined(COOL_VULKAN)
 #include <Cool/Gpu/Vulkan/Context.h>
 #endif
@@ -111,7 +112,8 @@ void run(
 
         // Create and run the App
         const auto run_loop = [&](bool load_from_file) {
-            auto app = App{window_factory.window_manager()};
+            auto views = ViewsManager{};
+            auto app   = App{window_factory.window_manager(), views};
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
             auto_serializer.init<App, cereal::JSONInputArchive>(
@@ -135,7 +137,7 @@ void run(
                 load_from_file
             );
             // Run the app
-            auto app_manager = Cool::AppManager{window_factory.window_manager(), app, app_manager_config};
+            auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, app_manager_config};
             app_manager.run(create_autosaver(auto_serializer));
             app.on_shutdown();
 #if defined(COOL_VULKAN)
