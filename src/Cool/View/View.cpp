@@ -119,6 +119,7 @@ auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordina
 
     auto const img_size = img::SizeU::fit_into(*_window_size, get_image_size());
     res /= img_size.height() / 2.f;
+    res.y *= -1.f;
 
     return ViewCoordinates{res};
 }
