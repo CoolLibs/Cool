@@ -36,6 +36,15 @@ private:
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
+    template<typename Event>
+    Cool::ViewEvent<Event> view_event(const Event& event, Cool::View const& view)
+    {
+        return {
+            event,
+            _window_manager.main_window().glfw(),
+            {view.get_image_size_inside_view()}};
+    }
+
 private:
     WindowManager&   _window_manager;
     ViewsManager&    _views;

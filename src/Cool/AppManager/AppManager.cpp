@@ -296,39 +296,46 @@ void AppManager::mouse_button_callback(GLFWwindow* window, int button, int actio
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_mouse_button({
-            .position = mouse_position(window),
-            .button   = button,
-            .action   = action,
-            .mods     = ModifierKeys{mods},
-        });
-    }
+    if (!app_manager._app.inputs_are_allowed())
+        return;
+
+    auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
+        .position = mouse_position(window),
+        .button   = button,
+        .action   = action,
+        .mods     = ModifierKeys{mods},
+    };
+    for (auto& view : app_manager._views)
+        view->dispatch_mouse_button_event(app_manager.view_event(event, *view));
 }
 
 void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_mouse_scroll({
-            .position = mouse_position(window),
-            .dx       = static_cast<float>(xoffset),
-            .dy       = static_cast<float>(yoffset),
-        });
-    }
+    if (!app_manager._app.inputs_are_allowed())
+        return;
+
+    auto const event = Cool::MouseScrollEvent<Cool::WindowCoordinates>{
+        .position = mouse_position(window),
+        .dx       = static_cast<float>(xoffset),
+        .dy       = static_cast<float>(yoffset),
+    };
+
+    for (auto& view : app_manager._views)
+        view->dispatch_mouse_scroll_event(app_manager.view_event(event, *view));
 }
 
 void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
-    }
+    if (!app_manager._app.inputs_are_allowed())
+        return;
+
+    auto const event = Cool::MouseMoveEvent<Cool::WindowCoordinates>{.position = WindowCoordinates{xpos, ypos}};
+    for (auto& view : app_manager._views)
+        view->dispatch_mouse_move_event(app_manager.view_event(event, *view));
 }
 
 void AppManager::imgui_windows()
