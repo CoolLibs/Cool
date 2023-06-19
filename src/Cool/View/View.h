@@ -2,6 +2,7 @@
 #include <Cool/Gpu/RenderTarget.h>
 #include <Cool/Input/MouseEventDispatcher.h>
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Log/MessageId.h"
 
 namespace Cool {
 
@@ -74,6 +75,8 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
+
+    MessageId _log_position_message_id{};
 
     bool _has_vertical_margins{false};
 };

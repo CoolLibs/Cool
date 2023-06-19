@@ -6,6 +6,8 @@
 #include <img/src/SizeU.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/Debug.h"
+#include "Cool/Log/Message.h"
+#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -126,6 +128,18 @@ void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& eve
     auto const pos = to_view_coordinates(event.position);
     _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
     _mouse_event_dispatcher.move_event().dispatch({pos});
+
+    if (DebugOptions::log_mouse_position_in_view())
+    {
+        Log::ToUser::console().send(
+            _log_position_message_id,
+            Message{
+                .category = _name,
+                .message  = fmt::format("Mouse at ({:.2f}, {:.2f})", pos.x, pos.y),
+                .severity = MessageSeverity::Info,
+            }
+        );
+    }
 }
 
 void View::dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const& event)
