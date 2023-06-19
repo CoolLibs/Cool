@@ -18,7 +18,7 @@ public:
 
 private:
     auto get_image_texture_id() const -> ImTextureID override;
-    auto get_image_size_inside_view() const -> ImageSizeInsideView override;
+    auto get_image_size() const -> img::Size override;
 
 private:
     RenderTarget _render_target;

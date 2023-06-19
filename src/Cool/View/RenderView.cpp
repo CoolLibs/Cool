@@ -13,7 +13,7 @@ auto RenderView::get_image_texture_id() const -> ImTextureID
 {
     return _render_target.imgui_texture_id();
 }
-auto RenderView::get_image_size_inside_view() const -> ImageSizeInsideView
+auto RenderView::get_image_size() const -> img::Size
 {
     return _render_target.current_size();
 }

@@ -301,12 +301,12 @@ void AppManager::dispatch_mouse_movement()
     if (delta_x == 0.f && delta_y == 0.f)
         return;
 
-    auto const event = Cool::MouseMoveEvent<Cool::WindowCoordinates>{
-        .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+    auto const event = MouseMoveEvent<ImGuiCoordinates>{
+        .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
         // TODO(JF) Also pass the delta?
     };
     for (auto& view : _views)
-        view->dispatch_mouse_move_event(view_event(event, *view));
+        view->dispatch_mouse_move_event(event);
 }
 
 void AppManager::dispatch_mouse_click()
@@ -315,23 +315,23 @@ void AppManager::dispatch_mouse_click()
     {
         if (ImGui::IsMouseClicked(button))
         {
-            auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
-                .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+            auto const event = MouseButtonEvent<ImGuiCoordinates>{
+                .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
                 .button   = button,
                 .action   = ButtonAction::Pressed,
             };
             for (auto& view : _views)
-                view->dispatch_mouse_button_event(view_event(event, *view));
+                view->dispatch_mouse_button_event(event);
         }
         if (ImGui::IsMouseReleased(button))
         {
-            auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
-                .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+            auto const event = MouseButtonEvent<ImGuiCoordinates>{
+                .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
                 .button   = button,
                 .action   = ButtonAction::Released,
             };
             for (auto& view : _views)
-                view->dispatch_mouse_button_event(view_event(event, *view));
+                view->dispatch_mouse_button_event(event);
         }
     }
 }
@@ -343,14 +343,14 @@ void AppManager::dispatch_mouse_scroll()
     if (scroll_x == 0.f && scroll_y == 0.f)
         return;
 
-    auto const event = Cool::MouseScrollEvent<Cool::WindowCoordinates>{
-        .position = Cool::WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+    auto const event = MouseScrollEvent<ImGuiCoordinates>{
+        .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
         .dx       = scroll_x,
         .dy       = scroll_y,
     };
 
     for (auto& view : _views)
-        view->dispatch_mouse_scroll_event(view_event(event, *view));
+        view->dispatch_mouse_scroll_event(event);
 }
 
 void AppManager::imgui_windows()
