@@ -47,7 +47,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     glfwSetKeyCallback        (_window_manager.main_window().glfw(), AppManager::key_callback);
     glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), AppManager::mouse_button_callback);
     glfwSetScrollCallback     (_window_manager.main_window().glfw(), ImGui_ImplGlfw_ScrollCallback);
-    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), AppManager::cursor_position_callback);
+    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
     glfwSetCharCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
     glfwSetWindowFocusCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
     glfwSetCursorEnterCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
@@ -312,10 +312,26 @@ void AppManager::dispatch_all_events()
 {
     if (!_app.inputs_are_allowed())
         return;
-    dispatch_scroll();
+    dispatch_mouse_movement();
+    dispatch_mouse_scroll();
 }
 
-void AppManager::dispatch_scroll()
+void AppManager::dispatch_mouse_movement()
+{
+    float const delta_x = ImGui::GetIO().MouseDelta.x;
+    float const delta_y = ImGui::GetIO().MouseDelta.y;
+    if (delta_x == 0.f && delta_y == 0.f)
+        return;
+
+    auto const event = Cool::MouseMoveEvent<Cool::WindowCoordinates>{
+        .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+        // TODO(JF) Also pass the delta?
+    };
+    for (auto& view : _views)
+        view->dispatch_mouse_move_event(view_event(event, *view));
+}
+
+void AppManager::dispatch_mouse_scroll()
 {
     float const scroll_x = ImGui::GetIO().MouseWheelH;
     float const scroll_y = ImGui::GetIO().MouseWheel;
@@ -330,18 +346,6 @@ void AppManager::dispatch_scroll()
 
     for (auto& view : _views)
         view->dispatch_mouse_scroll_event(view_event(event, *view));
-}
-
-void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-    auto& app_manager = get_app_manager(window);
-    if (!app_manager._app.inputs_are_allowed())
-        return;
-
-    auto const event = Cool::MouseMoveEvent<Cool::WindowCoordinates>{.position = WindowCoordinates{xpos, ypos}};
-    for (auto& view : app_manager._views)
-        view->dispatch_mouse_move_event(app_manager.view_event(event, *view));
 }
 
 void AppManager::imgui_windows()
