@@ -1,5 +1,4 @@
 #pragma once
-#include "ModifierKeys.h"
 #include "MouseCoordinates.h"
 
 namespace Cool {

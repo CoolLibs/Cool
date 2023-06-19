@@ -1,5 +1,4 @@
 #pragma once
-#include <Cool/Input/ModifierKeys.h>
 
 namespace Cool {
 
