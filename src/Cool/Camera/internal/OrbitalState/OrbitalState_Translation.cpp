@@ -1,16 +1,17 @@
 #include "OrbitalState_Translation.h"
 #include "../../Camera.h"
 #include "../../ViewController_Orbital.h"
+#include "Cool/Input/MouseCoordinates.h"
 #include "OrbitalState_Idle.h"
 
 namespace Cool {
 
-auto OrbitalState_Translation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta) -> bool
+auto OrbitalState_Translation::on_drag(ViewController_Orbital& controller, Camera& camera, ImGuiCoordinates const& delta) -> bool
 {
     camera.translate(
         controller._translation_speed
         * (-delta.x * camera.right_axis()
-           + -delta.y * camera.up_axis())
+           + delta.y * camera.up_axis())
     );
     return true;
 }

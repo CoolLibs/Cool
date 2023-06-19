@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Cool/Input/MouseCoordinates.h"
 #include "internal/OrbitalState/OrbitalState.h"
 
 namespace Cool {
@@ -28,13 +28,13 @@ public:
 
     // clang-format off
     /// Returns true iff the camera values have changed
-    inline auto on_drag        (Camera& camera, glm::vec2 const& delta) -> bool{ return std::visit([&](auto&& state) { return state.on_drag         (*this, camera, delta); }, _state); }
+    inline auto on_drag        (Camera& camera, ImGuiCoordinates const& delta) -> bool{ return std::visit([&](auto&& state) { return state.on_drag         (*this, camera, delta); }, _state); }
 	/// Returns true iff the camera values have changed
-    inline auto on_drag_start  (Camera& camera)                         -> bool{ return std::visit([&](auto&& state) { return state.on_drag_start   (*this, camera);  }, _state); }
+    inline auto on_drag_start  (Camera& camera)                                -> bool{ return std::visit([&](auto&& state) { return state.on_drag_start   (*this, camera);  }, _state); }
 	/// Returns true iff the camera values have changed
-    inline auto on_drag_stop   (Camera& camera)                         -> bool{ return std::visit([&](auto&& state) { return state.on_drag_stop    (*this, camera);        }, _state); }
+    inline auto on_drag_stop   (Camera& camera)                                -> bool{ return std::visit([&](auto&& state) { return state.on_drag_stop    (*this, camera);        }, _state); }
 	/// Returns true iff the camera values have changed
-    inline auto on_wheel_scroll(Camera& camera, float dl)               -> bool{ return std::visit([&](auto&& state) { return state.on_wheel_scroll (*this, camera, dl);    }, _state); }
+    inline auto on_wheel_scroll(Camera& camera, float dl)                      -> bool{ return std::visit([&](auto&& state) { return state.on_wheel_scroll (*this, camera, dl);    }, _state); }
     // clang-format on
 
 private:

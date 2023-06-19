@@ -37,7 +37,7 @@ public:
         {
             update().dispatch({
                 event.position,
-                event.position - _last_mouse_position,
+                Coords{event.position - _last_mouse_position},
             });
             _last_mouse_position = event.position;
         }
