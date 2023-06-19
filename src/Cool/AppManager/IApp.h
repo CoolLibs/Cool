@@ -41,13 +41,6 @@ public:
      */
     virtual void imgui_menus() = 0;
 
-    /**
-     * @brief This is where you receive and handle keyboard events.
-     *
-     * @param event
-     */
-    virtual void on_keyboard_event(const KeyboardEvent&){};
-
     /// This is called before everything is saved by the serialization (unlike the IApp's destructor, which is called afterward, and might also be called at startup if loading the serialization fails.).
     virtual void on_shutdown() = 0;
 
