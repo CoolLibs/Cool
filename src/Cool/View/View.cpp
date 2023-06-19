@@ -80,7 +80,7 @@ void View::imgui_window(ViewWindowParams const& params)
 
         display_image(get_image_texture_id(), get_image_size());
 
-        params.extra_widgets();
+        _accepts_mouse_events = !params.extra_widgets(); // When widgets are used, don't dispatch events on the View.
     }
     ImGui::EndChild();
     ImGui::PopStyleColor();
@@ -126,6 +126,8 @@ auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordina
 
 void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& event)
 {
+    if (!_accepts_mouse_events)
+        return;
     auto const pos = to_view_coordinates(event.position);
     _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
     _mouse_event_dispatcher.move_event().dispatch({pos});
@@ -145,6 +147,8 @@ void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& eve
 
 void View::dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const& event)
 {
+    if (!_accepts_mouse_events)
+        return;
     auto const pos = to_view_coordinates(event.position);
     if (!contains(pos))
         return;
@@ -158,6 +162,8 @@ void View::dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const&
 
 void View::dispatch_mouse_button_event(MouseButtonEvent<ImGuiCoordinates> const& event)
 {
+    if (!_accepts_mouse_events)
+        return;
     auto const pos          = to_view_coordinates(event.position);
     bool const contains_pos = contains(pos);
     auto const new_event    = MouseButtonEvent<ViewCoordinates>{

@@ -7,8 +7,10 @@
 namespace Cool {
 
 struct ViewWindowParams {
-    bool                  fullscreen    = false;
-    std::function<void()> extra_widgets = []() { // TODO(JF) If the widgets return true, don't dispatch events to the view
+    bool fullscreen = false;
+    /// When this returns true, mouse events won't be forwarded to the View.
+    std::function<bool()> extra_widgets = []() {
+        return false;
     };
 };
 
@@ -75,6 +77,7 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
+    bool                                  _accepts_mouse_events{true};
 
     MessageId _log_position_message_id{};
 

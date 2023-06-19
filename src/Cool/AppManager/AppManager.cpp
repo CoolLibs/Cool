@@ -121,11 +121,11 @@ void AppManager::update()
     if (TextureLibrary::instance().update())
         _app.trigger_rerender();
     _app.update();
-    restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
+    restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
-    dispatch_all_events();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
+    dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
     end_frame(_window_manager);
 }
 
