@@ -280,11 +280,6 @@ void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_wi
     }
 }
 
-static auto as_glm(ImVec2 v) -> glm::vec2
-{
-    return {v.x, v.y};
-}
-
 void AppManager::dispatch_all_events()
 {
     if (!_app.inputs_are_allowed())
