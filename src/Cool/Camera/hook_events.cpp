@@ -12,8 +12,8 @@ void hook_events(MouseEventDispatcher<ViewCoordinates>& dispatcher, ViewControll
     dispatcher
         .drag()
         .start()
-        .subscribe([&](const auto& event) {
-            controller.on_drag_start(camera, event.mods);
+        .subscribe([&](const auto&) {
+            controller.on_drag_start(camera);
         });
     dispatcher
         .drag()

@@ -8,6 +8,7 @@
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "GLFW/glfw3.h"
@@ -45,7 +46,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     }
     // clang-format off
     glfwSetKeyCallback        (_window_manager.main_window().glfw(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), AppManager::mouse_button_callback);
+    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
     glfwSetScrollCallback     (_window_manager.main_window().glfw(), ImGui_ImplGlfw_ScrollCallback);
     glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
     glfwSetCharCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
@@ -246,13 +247,6 @@ static void imgui_dockspace()
     }
 }
 
-static WindowCoordinates mouse_position(GLFWwindow* window)
-{
-    double x, y; // NOLINT
-    glfwGetCursorPos(window, &x, &y);
-    return WindowCoordinates{x, y};
-}
-
 static AppManager& get_app_manager(GLFWwindow* window)
 {
     return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
@@ -286,23 +280,6 @@ void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_wi
     }
 }
 
-void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    auto& app_manager = get_app_manager(window);
-    if (!app_manager._app.inputs_are_allowed())
-        return;
-
-    auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
-        .position = mouse_position(window),
-        .button   = button,
-        .action   = action,
-        .mods     = ModifierKeys{mods},
-    };
-    for (auto& view : app_manager._views)
-        view->dispatch_mouse_button_event(app_manager.view_event(event, *view));
-}
-
 static auto as_glm(ImVec2 v) -> glm::vec2
 {
     return {v.x, v.y};
@@ -313,6 +290,7 @@ void AppManager::dispatch_all_events()
     if (!_app.inputs_are_allowed())
         return;
     dispatch_mouse_movement();
+    dispatch_mouse_click();
     dispatch_mouse_scroll();
 }
 
@@ -329,6 +307,33 @@ void AppManager::dispatch_mouse_movement()
     };
     for (auto& view : _views)
         view->dispatch_mouse_move_event(view_event(event, *view));
+}
+
+void AppManager::dispatch_mouse_click()
+{
+    for (int button = 0; button < IM_ARRAYSIZE(ImGui::GetIO().MouseClicked); button++)
+    {
+        if (ImGui::IsMouseClicked(button))
+        {
+            auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
+                .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+                .button   = button,
+                .action   = ButtonAction::Pressed,
+            };
+            for (auto& view : _views)
+                view->dispatch_mouse_button_event(view_event(event, *view));
+        }
+        if (ImGui::IsMouseReleased(button))
+        {
+            auto const event = Cool::MouseButtonEvent<Cool::WindowCoordinates>{
+                .position = WindowCoordinates{as_glm(ImGui::GetIO().MousePos)},
+                .button   = button,
+                .action   = ButtonAction::Released,
+            };
+            for (auto& view : _views)
+                view->dispatch_mouse_button_event(view_event(event, *view));
+        }
+    }
 }
 
 void AppManager::dispatch_mouse_scroll()

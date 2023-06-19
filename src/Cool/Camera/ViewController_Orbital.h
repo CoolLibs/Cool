@@ -30,7 +30,7 @@ public:
     /// Returns true iff the camera values have changed
     inline auto on_drag        (Camera& camera, glm::vec2 const& delta) -> bool{ return std::visit([&](auto&& state) { return state.on_drag         (*this, camera, delta); }, _state); }
 	/// Returns true iff the camera values have changed
-    inline auto on_drag_start  (Camera& camera, ModifierKeys mods)      -> bool{ return std::visit([&](auto&& state) { return state.on_drag_start   (*this, camera, mods);  }, _state); }
+    inline auto on_drag_start  (Camera& camera)                         -> bool{ return std::visit([&](auto&& state) { return state.on_drag_start   (*this, camera);  }, _state); }
 	/// Returns true iff the camera values have changed
     inline auto on_drag_stop   (Camera& camera)                         -> bool{ return std::visit([&](auto&& state) { return state.on_drag_stop    (*this, camera);        }, _state); }
 	/// Returns true iff the camera values have changed

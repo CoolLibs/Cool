@@ -1,4 +1,5 @@
 #include "OrbitalState_Idle.h"
+#include <imgui.h>
 #include "../../Camera.h"
 #include "../../ViewController_Orbital.h"
 #include "OrbitalState_Rotation.h"
@@ -6,9 +7,9 @@
 
 namespace Cool {
 
-auto OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera, ModifierKeys mods) -> bool
+auto OrbitalState_Idle::on_drag_start(ViewController_Orbital& controller, Camera& camera) -> bool
 {
-    if (mods.shift())
+    if (ImGui::GetIO().KeyShift)
     {
         controller.set_state(OrbitalState_Translation{});
     }

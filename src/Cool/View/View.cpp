@@ -180,7 +180,7 @@ void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCo
            .position = pos,
            .button   = event.event.button,
            .action   = event.event.action,
-           .mods     = event.event.mods};
+    };
     _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos)
     {
