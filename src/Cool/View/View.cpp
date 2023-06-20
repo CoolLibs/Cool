@@ -112,16 +112,29 @@ auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordina
     if (!_window_size)
         return ViewCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
-
-    auto res = glm::vec2{pos};
+    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto       res         = glm::vec2{pos};
 
     res -= _window_position + window_size / 2.f;
-
-    auto const img_size = img::SizeU::fit_into(*_window_size, get_image_size());
     res /= img_size.height() / 2.f;
     res.y *= -1.f;
 
     return ViewCoordinates{res};
+}
+
+auto View::to_imgui_coordinates(ViewCoordinates pos) const -> ImGuiCoordinates
+{
+    if (!_window_size)
+        return ImGuiCoordinates{};
+    auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
+    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto       res         = glm::vec2{pos};
+
+    res.y *= -1.f;
+    res *= img_size.height() / 2.f;
+    res += _window_position + window_size / 2.f;
+
+    return ImGuiCoordinates{res};
 }
 
 void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& event)

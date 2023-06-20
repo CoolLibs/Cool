@@ -1,9 +1,10 @@
 #pragma once
+#include "Cool/Input/MouseCoordinates.h"
 
 namespace Cool {
 
 struct Gizmo_Point2D {
-    glm::vec2 position; // TODO(JF) Use strong type for the coordinates
+    ViewCoordinates position;
 };
 
 } // namespace Cool
