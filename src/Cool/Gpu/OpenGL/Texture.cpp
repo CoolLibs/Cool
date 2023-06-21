@@ -46,6 +46,9 @@ void Texture::set_size(img::Size const& size)
 {
     _aspect_ratio = img::SizeU::aspect_ratio(size);
     _tex.resize(img_to_glpp_size(size));
+#if DEBUG
+    _data_has_been_uploaded = true;
+#endif
 }
 
 void Texture::set_image(img::Image const& img)
