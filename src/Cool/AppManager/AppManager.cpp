@@ -297,7 +297,7 @@ void AppManager::dispatch_mouse_movement()
         return;
 
     auto const event = MouseMoveEvent<ImGuiCoordinates>{
-        .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
+        .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
         // TODO(JF) Also pass the delta?
     };
     for (auto& view : _views)
@@ -311,7 +311,7 @@ void AppManager::dispatch_mouse_click()
         if (ImGui::IsMouseClicked(button))
         {
             auto const event = MouseButtonEvent<ImGuiCoordinates>{
-                .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
+                .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
                 .button   = button,
                 .action   = ButtonAction::Pressed,
             };
@@ -321,7 +321,7 @@ void AppManager::dispatch_mouse_click()
         if (ImGui::IsMouseReleased(button))
         {
             auto const event = MouseButtonEvent<ImGuiCoordinates>{
-                .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
+                .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
                 .button   = button,
                 .action   = ButtonAction::Released,
             };
@@ -339,7 +339,7 @@ void AppManager::dispatch_mouse_scroll()
         return;
 
     auto const event = MouseScrollEvent<ImGuiCoordinates>{
-        .position = ImGuiCoordinates{as_glm(ImGui::GetIO().MousePos)},
+        .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
         .dx       = scroll_x,
         .dy       = scroll_y,
     };
