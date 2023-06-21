@@ -1,5 +1,7 @@
 #pragma once
 #include <Cool/EventDispatcher/EventDispatcher.h>
+#include <imgui.h>
+#include "Cool/Input/MouseButtonEvent.h"
 #include "MouseDragStartEvent.h"
 #include "MouseDragStopEvent.h"
 #include "MouseDragUpdateEvent.h"
@@ -16,16 +18,16 @@ public:
 
     void dispatch_mouse_button_event(const MouseButtonEvent<Coords>& event, bool is_inside_view)
     {
-        if (event.action == GLFW_PRESS && is_inside_view && !_dragged_button.has_value())
+        if (event.action == ButtonAction::Pressed && is_inside_view && !_dragged_button.has_value())
         {
             _dragged_button.emplace(event.button);
             _last_mouse_position = event.position;
-            start().dispatch({event.position, event.mods});
+            start().dispatch({event.position});
         }
-        if (event.action == GLFW_RELEASE && _dragged_button.has_value() && *_dragged_button == event.button)
+        if (event.action == ButtonAction::Released && _dragged_button.has_value() && *_dragged_button == event.button)
         {
             _dragged_button.reset();
-            stop().dispatch({event.position, event.mods});
+            stop().dispatch({event.position});
         }
     }
 
@@ -35,14 +37,14 @@ public:
         {
             update().dispatch({
                 event.position,
-                event.position - _last_mouse_position,
+                Coords{event.position - _last_mouse_position},
             });
             _last_mouse_position = event.position;
         }
     }
 
 private:
-    std::optional<int>                            _dragged_button{};
+    std::optional<ImGuiMouseButton>               _dragged_button{};
     Coords                                        _last_mouse_position;
     EventDispatcher<MouseDragStartEvent<Coords>>  _drag_start_dispatcher;
     EventDispatcher<MouseDragUpdateEvent<Coords>> _drag_update_dispatcher;

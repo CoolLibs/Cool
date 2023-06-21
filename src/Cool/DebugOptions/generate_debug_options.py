@@ -46,6 +46,11 @@ def all_debug_options():
             available_in_release=False,
         ),
         DebugOption(
+            name_in_code="log_mouse_position_in_view",
+            name_in_ui="Log mouse position in View",
+            available_in_release=True,
+        ),
+        DebugOption(
             name_in_code="test_presets__window",
             name_in_ui="Test Presets",
             available_in_release=True,
@@ -59,7 +64,7 @@ def all_debug_options():
         ),
         DebugOption(
             name_in_code="test_tips",
-            name_in_ui='Test tips',
+            name_in_ui="Test tips",
             available_in_release=True,
             kind=Kind.WINDOW,
         ),

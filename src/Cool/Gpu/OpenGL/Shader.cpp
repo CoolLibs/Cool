@@ -21,11 +21,6 @@ static void assert_shader_is_bound(GLuint id)
 #endif
 }
 
-static auto as_glm(ImVec4 const& v) -> glm::vec4
-{
-    return {v.x, v.y, v.z, v.w};
-}
-
 void Shader::bind() const
 {
     GLDebug(glUseProgram(_shader.id()));

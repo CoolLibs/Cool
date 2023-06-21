@@ -1,41 +1,31 @@
 #pragma once
-#include <GLFW/glfw3.h>
-#include <concepts>
 
 namespace Cool {
 
 template<typename T>
 concept MouseCoordinates = requires(T coords) {
-                               // clang-format off
+    // clang-format off
     { coords } -> std::convertible_to<glm::vec2>;
-                               // clang-format on
-                           };
-
-class ScreenCoordinates : public glm::vec2 {
-public:
-    template<typename... Args>
-    explicit ScreenCoordinates(Args... args)
-        : glm::vec2{std::forward<Args>(args)...}
-    {
-    }
+    // clang-format on
 };
 
-class WindowCoordinates : public glm::vec2 {
+/// The coordinate system used by Dear ImGui (aka the one used by ImGui::GetMousePos(), etc.)
+class ImGuiCoordinates : public glm::vec2 {
 public:
     template<typename... Args>
-    explicit WindowCoordinates(Args... args)
+    explicit ImGuiCoordinates(Args... args)
         : glm::vec2{std::forward<Args>(args)...}
     {
     }
 
-    ScreenCoordinates as_screen_coordinates(GLFWwindow* window) const
-    {
-        int xx, yy;
-        glfwGetWindowPos(window, &xx, &yy);
-        return ScreenCoordinates{*this + glm::vec2{xx, yy}};
-    }
+    explicit ImGuiCoordinates(ImVec2 v)
+        : glm::vec2{v.x, v.y}
+    {}
 };
 
+/// Coordinates relative to a specific View (more precisely: to the image inside that view).
+/// x-axis goes from -image_aspect_ratio to +image_aspect_ratio (-image_aspect_ratio on the left of the image inside the View)
+/// y-axis goes from -1 to +1 (-1 at the bottom of the image inside the View)
 class ViewCoordinates : public glm::vec2 {
 public:
     template<typename... Args>

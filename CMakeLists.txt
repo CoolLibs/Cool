@@ -90,6 +90,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <gsl/gsl>
     <tl/expected.hpp>
     <Cool/Log/Debug.h>
+    <Cool/Geometry/imvec_glm_conversions.h>
     <Cool/Serialization/filesystem.h>
     <Cool/Serialization/img.h>
     <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it
@@ -180,7 +181,7 @@ add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
 # serv
-### Disabled for now, we will reintroduce it when we will use it
+# ## Disabled for now, we will reintroduce it when we will use it
 # add_subdirectory(lib/serv)
 # target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 

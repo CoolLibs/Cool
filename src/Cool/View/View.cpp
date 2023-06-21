@@ -4,7 +4,10 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <img/src/SizeU.h>
+#include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/Debug.h"
+#include "Cool/Log/Message.h"
+#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -49,17 +52,17 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
-void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view, ViewWindowParams const& params)
+void View::imgui_window(ViewWindowParams const& params)
 {
     if (!_is_open)
     {
-        _size.reset();
+        _window_size.reset();
         _window_is_hovered = false;
         return;
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
-    { // Begin window, maybe in fullscreen
+    {                                                             // Begin window, maybe in fullscreen
         bool* const            p_open = _is_closable ? &_is_open : nullptr;
         ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         if (params.fullscreen)
@@ -75,102 +78,112 @@ void View::imgui_window(ImTextureID image_texture_id, ImageSizeInsideView image_
         store_window_position();
         _window_is_hovered = ImGui::IsWindowHovered();
 
-        display_image(image_texture_id, image_size_inside_view);
+        display_image(get_image_texture_id(), get_image_size());
 
-        params.extra_widgets();
+        _accepts_mouse_events = !params.extra_widgets(); // When widgets are used, don't dispatch events on the View.
     }
     ImGui::EndChild();
     ImGui::PopStyleColor();
     ImGui::End();
 }
 
-void View::imgui_open_close_checkbox()
+void View::imgui_open_close_toggle()
 {
     ImGuiExtras::toggle(_name.c_str(), &_is_open);
 }
 
-static auto window_to_screen(WindowCoordinates position, GLFWwindow* window) -> ScreenCoordinates
-{
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        return position.as_screen_coordinates(window);
-    }
-    else
-    {
-        return ScreenCoordinates{position}; // We trick ImGui because if viewports are disabled, ImGui functions that pretend to return screen coordinates actually return window coordinates (this is a temporary measure because I know that ImGui plans on fixing this)
-    }
-}
-
-static auto screen_to_view(ScreenCoordinates position, ScreenCoordinates window_position, float height) -> ViewCoordinates
-{
-    const auto pos = ViewCoordinates{position - window_position};
-    return ViewCoordinates{
-        pos.x,
-        height - pos.y}; // Make y-axis point up
-}
-
-auto View::to_view_space(WindowCoordinates position, GLFWwindow* window) -> ViewCoordinates
-{
-    return screen_to_view(
-        window_to_screen(position, window),
-        _position,
-        _size ? static_cast<float>(_size->height()) : 0.f
-    );
-}
-
-auto View::contains(ViewCoordinates pos, ImageSizeInsideView image_size) -> bool
+auto View::contains(ViewCoordinates pos) const -> bool
 {
     if (!_window_is_hovered
-        || ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow) // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
+        || !_window_size
+        || ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
+    )
     {
         return false;
     }
 
-    if (!_size)
-        return false;
-
-    const auto img_size = image_size.fit_into(*_size);
-
-    const auto pos_in_img = pos + glm::vec2{
-                                (img_size.width() - static_cast<float>(_size->width())) * 0.5f,
-                                (img_size.height() - static_cast<float>(_size->height())) * 0.5f,
-                            };
-    return pos_in_img.x >= 0.f && pos_in_img.x <= img_size.width()
-           && pos_in_img.y >= 0.f && pos_in_img.y <= img_size.height();
+    auto const aspect_ratio = img::SizeU::aspect_ratio(get_image_size());
+    return -1.f < pos.y && pos.y < 1.f
+           && -aspect_ratio < pos.x && pos.x < aspect_ratio;
 }
 
-void View::dispatch_mouse_move_event(const ViewEvent<MouseMoveEvent<WindowCoordinates>>& event)
+auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordinates
 {
-    const auto pos = to_view_space(event.event.position, event.window);
+    if (!_window_size)
+        return ViewCoordinates{};
+    auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
+    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto       res         = glm::vec2{pos};
+
+    res -= _window_position + window_size / 2.f;
+    res /= img_size.height() / 2.f;
+    res.y *= -1.f;
+
+    return ViewCoordinates{res};
+}
+
+auto View::to_imgui_coordinates(ViewCoordinates pos) const -> ImGuiCoordinates
+{
+    if (!_window_size)
+        return ImGuiCoordinates{};
+    auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
+    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto       res         = glm::vec2{pos};
+
+    res.y *= -1.f;
+    res *= img_size.height() / 2.f;
+    res += _window_position + window_size / 2.f;
+
+    return ImGuiCoordinates{res};
+}
+
+void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& event)
+{
+    if (!_accepts_mouse_events)
+        return;
+    auto const pos = to_view_coordinates(event.position);
     _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
-    if (contains(pos, event.image_size))
+    _mouse_event_dispatcher.move_event().dispatch({pos});
+
+    if (DebugOptions::log_mouse_position_in_view())
     {
-        _mouse_event_dispatcher.move_event().dispatch({pos});
+        Log::ToUser::console().send(
+            _log_position_message_id,
+            Message{
+                .category = _name,
+                .message  = fmt::format("Mouse at ({:.2f}, {:.2f})", pos.x, pos.y),
+                .severity = MessageSeverity::Info,
+            }
+        );
     }
 }
 
-void View::dispatch_mouse_scroll_event(const ViewEvent<MouseScrollEvent<WindowCoordinates>>& event)
+void View::dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const& event)
 {
-    const auto pos = to_view_space(event.event.position, event.window);
-    if (contains(pos, event.image_size))
-    {
-        _mouse_event_dispatcher.scroll_event().dispatch({
-            .position = pos,
-            .dx       = event.event.dx,
-            .dy       = event.event.dy,
-        });
-    }
+    if (!_accepts_mouse_events)
+        return;
+    auto const pos = to_view_coordinates(event.position);
+    if (!contains(pos))
+        return;
+
+    _mouse_event_dispatcher.scroll_event().dispatch({
+        .position = pos,
+        .dx       = event.dx,
+        .dy       = event.dy,
+    });
 }
 
-void View::dispatch_mouse_button_event(const ViewEvent<MouseButtonEvent<WindowCoordinates>>& event)
+void View::dispatch_mouse_button_event(MouseButtonEvent<ImGuiCoordinates> const& event)
 {
-    const auto pos          = to_view_space(event.event.position, event.window);
-    const bool contains_pos = contains(pos, event.image_size);
-    const auto new_event    = MouseButtonEvent<ViewCoordinates>{
+    if (!_accepts_mouse_events)
+        return;
+    auto const pos          = to_view_coordinates(event.position);
+    bool const contains_pos = contains(pos);
+    auto const new_event    = MouseButtonEvent<ViewCoordinates>{
            .position = pos,
-           .button   = event.event.button,
-           .action   = event.event.action,
-           .mods     = event.event.mods};
+           .button   = event.button,
+           .action   = event.action,
+    };
     _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
     if (contains_pos)
     {
@@ -188,23 +201,17 @@ void View::store_window_size()
             static_cast<img::Size::DataType>(size.y),
         });
 
-        const bool has_changed = new_size != _size;
-        _size                  = new_size;
-        if (has_changed)
-        {
-            resize_event().dispatch({});
-        }
+        _window_size = new_size;
     }
     else
     {
-        _size.reset();
+        _window_size.reset();
     }
 }
 
 void View::store_window_position()
 {
-    const auto pos = ImGui::GetCursorScreenPos();
-    _position      = ScreenCoordinates{pos.x, pos.y};
+    _window_position = ImGuiCoordinates{ImGui::GetCursorScreenPos()};
 }
 
 static auto as_imvec2(img::SizeT<float> size) -> ImVec2
@@ -228,13 +235,13 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
         Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
 }
 
-void View::display_image(ImTextureID image_texture_id, ImageSizeInsideView image_size_inside_view)
+void View::display_image(ImTextureID image_texture_id, img::Size image_size)
 {
-    if (!_size.has_value())
+    if (!_window_size.has_value())
         return;
 
-    auto const size = image_size_inside_view.fit_into(*_size);
-    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_size);
+    auto const size       = img::SizeU::fit_into(*_window_size, image_size);
+    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_window_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 

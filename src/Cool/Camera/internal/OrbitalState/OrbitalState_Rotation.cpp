@@ -12,7 +12,7 @@ OrbitalState_Rotation::OrbitalState_Rotation(const Camera& camera)
 {
 }
 
-auto OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, glm::vec2 const& delta) -> bool
+auto OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& camera, ImGuiCoordinates const& delta) -> bool
 {
     const auto orbit_center = controller.get_orbit_center(camera);
     const auto up_axis      = [&]() {
@@ -33,7 +33,7 @@ auto OrbitalState_Rotation::on_drag(ViewController_Orbital& controller, Camera& 
     }();
     camera.translate(-orbit_center);
     camera.rotate(-controller._rotation_speed * delta.x, up_axis);
-    camera.rotate(+controller._rotation_speed * delta.y, camera.right_axis());
+    camera.rotate(-controller._rotation_speed * delta.y, camera.right_axis());
     camera.translate(+orbit_center);
     return true;
 }

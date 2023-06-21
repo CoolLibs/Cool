@@ -5,8 +5,7 @@ namespace Cool {
 
 template<MouseCoordinates Coords>
 struct MouseDragStopEvent {
-    Coords       position;
-    ModifierKeys mods;
+    Coords position;
 };
 
 } // namespace Cool
