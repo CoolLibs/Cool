@@ -201,12 +201,7 @@ void View::store_window_size()
             static_cast<img::Size::DataType>(size.y),
         });
 
-        const bool has_changed = new_size != _window_size;
-        _window_size           = new_size;
-        // if (has_changed)
-        // {
-        //     resize_event().dispatch({});
-        // }
+        _window_size = new_size;
     }
     else
     {

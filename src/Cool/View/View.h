@@ -14,12 +14,9 @@ struct ViewWindowParams {
     };
 };
 
-struct ViewResizeEvent {};
-
 /// A view is a window displaying an image.
-/// You can subscribe to events
+/// You can subscribe to events.
 /// You can use one of the various subclasses to decide where your image will come from.
-///
 class View {
 public:
     explicit View(std::string_view name, bool is_closable = false)
@@ -75,7 +72,6 @@ private:
     std::optional<img::Size>              _window_size       = std::nullopt; // Can be nullopt when the window is closed
     ImGuiCoordinates                      _window_position{};
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
-    EventDispatcher<ViewResizeEvent>      _resize_event_dispatcher;
     RenderTarget                          _render_target;
     bool                                  _accepts_mouse_events{true};
 
