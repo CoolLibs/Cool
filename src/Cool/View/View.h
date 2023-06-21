@@ -3,6 +3,7 @@
 #include <Cool/Input/MouseEventDispatcher.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/MessageId.h"
+#include "GizmoManager.h"
 
 namespace Cool {
 
@@ -22,7 +23,11 @@ public:
     explicit View(std::string_view name, bool is_closable = false)
         : _name{name}
         , _is_closable{is_closable}
-    {}
+    {
+        _mouse_event_dispatcher.drag().start().subscribe([&](auto&& event) { _gizmos.on_drag_start(event); });
+        _mouse_event_dispatcher.drag().update().subscribe([&](auto&& event) { _gizmos.on_drag_update(event); });
+        _mouse_event_dispatcher.drag().stop().subscribe([&](auto&& event) { _gizmos.on_drag_stop(event); });
+    }
 
     virtual ~View()                      = default;
     View(View const&)                    = delete;
@@ -42,7 +47,9 @@ public:
     auto to_imgui_coordinates(ViewCoordinates) const -> ImGuiCoordinates;
 
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
-    // auto resize_event() -> auto& { return _resize_event_dispatcher; } // Probably not interesting. We might want to know when the actual image is resized, rather than the window.
+
+    /// Needs to be pushed every frame when you want it to appear. Must be called before `imgui_window()`.
+    void push_gizmo(Gizmo_Point2D gizmo) { _gizmos.push(gizmo); }
 
     auto has_vertical_margins() const -> bool { return _window_size ? _has_vertical_margins : false; }
 
@@ -55,6 +62,8 @@ private:
     void dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& event);
     void dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const& event);
     void dispatch_mouse_button_event(MouseButtonEvent<ImGuiCoordinates> const& event);
+
+    void on_frame_end() { _gizmos.on_frame_end(); }
 
 private:
     void store_window_size();
@@ -74,6 +83,7 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     RenderTarget                          _render_target;
     bool                                  _accepts_mouse_events{true};
+    GizmoManager                          _gizmos{};
 
     MessageId _log_position_message_id{};
 

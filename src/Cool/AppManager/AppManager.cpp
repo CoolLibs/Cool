@@ -126,6 +126,8 @@ void AppManager::update()
     check_for_imgui_item_picker_request();
     imgui_render(_app);
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
+    for (auto& view : _views)
+        view->on_frame_end();
     end_frame(_window_manager);
 }
 

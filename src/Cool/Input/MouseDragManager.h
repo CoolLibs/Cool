@@ -2,9 +2,7 @@
 #include <Cool/EventDispatcher/EventDispatcher.h>
 #include <imgui.h>
 #include "Cool/Input/MouseButtonEvent.h"
-#include "MouseDragStartEvent.h"
-#include "MouseDragStopEvent.h"
-#include "MouseDragUpdateEvent.h"
+#include "MouseDragEvents.h"
 #include "MouseMoveEvent.h"
 
 namespace Cool {

@@ -21,6 +21,10 @@ public:
     explicit ImGuiCoordinates(ImVec2 v)
         : glm::vec2{v.x, v.y}
     {}
+
+    ImGuiCoordinates()
+        : glm::vec2{0.f}
+    {}
 };
 
 /// Coordinates relative to a specific View (more precisely: to the image inside that view).
@@ -33,6 +37,10 @@ public:
         : glm::vec2{std::forward<Args>(args)...}
     {
     }
+
+    ViewCoordinates()
+        : glm::vec2{0.f}
+    {}
 };
 
 } // namespace Cool

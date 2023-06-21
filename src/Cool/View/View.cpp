@@ -80,6 +80,7 @@ void View::imgui_window(ViewWindowParams const& params)
 
         display_image(get_image_texture_id(), get_image_size());
 
+        _gizmos.render(*this);
         _accepts_mouse_events = !params.extra_widgets(); // When widgets are used, don't dispatch events on the View.
     }
     ImGui::EndChild();
