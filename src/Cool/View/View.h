@@ -24,9 +24,12 @@ public:
         : _name{name}
         , _is_closable{is_closable}
     {
-        _mouse_event_dispatcher.drag().start().subscribe([&](auto&& event) { _gizmos.on_drag_start(event); });
-        _mouse_event_dispatcher.drag().update().subscribe([&](auto&& event) { _gizmos.on_drag_update(event); });
-        _mouse_event_dispatcher.drag().stop().subscribe([&](auto&& event) { _gizmos.on_drag_stop(event); });
+        _mouse_event_dispatcher.drag()
+            .subscribe({
+                .on_start  = [&](auto&& event) { _gizmos.on_drag_start(event); return false; },
+                .on_update = [&](auto&& event) { _gizmos.on_drag_update(event); },
+                .on_stop   = [&](auto&& event) { _gizmos.on_drag_stop(event); },
+            });
     }
 
     virtual ~View()                      = default;
