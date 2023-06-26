@@ -3,6 +3,7 @@
 #include <Cool/Input/MouseEventDispatcher.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/MessageId.h"
+#include "Cool/View/GizmoManager.h"
 #include "GizmoManager.h"
 
 namespace Cool {
@@ -51,8 +52,9 @@ public:
 
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
 
-    /// Needs to be pushed every frame when you want it to appear. Must be called before `imgui_window()`.
-    void push_gizmo(Gizmo_Point2D gizmo) { _gizmos.push(gizmo); }
+    /// You need to push your gizmos every frame when you want them to appear.
+    /// Must be pushed before `imgui_window()`.
+    auto gizmos_manager() -> GizmoManager& { return _gizmos; }
 
     auto has_vertical_margins() const -> bool { return _window_size ? _has_vertical_margins : false; }
 
