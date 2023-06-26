@@ -14,7 +14,7 @@ public:
     void               on_frame_end();
     void               render(View const&);
     [[nodiscard]] auto is_dragging_gizmo() const -> bool;
-    void               on_drag_start(MouseDragStartEvent<ViewCoordinates> const&);
+    auto               on_drag_start(MouseDragStartEvent<ViewCoordinates> const&) -> bool;
     void               on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const&);
     void               on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&);
 

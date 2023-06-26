@@ -26,7 +26,7 @@ public:
     {
         _mouse_event_dispatcher.drag()
             .subscribe({
-                .on_start  = [&](auto&& event) { _gizmos.on_drag_start(event); return false; },
+                .on_start  = [&](auto&& event) { return _gizmos.on_drag_start(event); },
                 .on_update = [&](auto&& event) { _gizmos.on_drag_update(event); },
                 .on_stop   = [&](auto&& event) { _gizmos.on_drag_stop(event); },
             });

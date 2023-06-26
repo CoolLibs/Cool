@@ -20,7 +20,7 @@ void GizmoManager::render(View const& view)
 {
     for (auto const& gizmo : _gizmos)
     {
-        ImGui::GetCurrentWindow()->DrawList->AddCircleFilled(as_imvec(view.to_imgui_coordinates(gizmo.position)), 10.f, ImColor{1.f, 1.f, 1.f, 1.f});
+        ImGui::GetCurrentWindow()->DrawList->AddCircleFilled(as_imvec(view.to_imgui_coordinates(gizmo.get_position())), 10.f, ImColor{1.f, 1.f, 1.f, 1.f});
     }
 }
 
@@ -29,19 +29,20 @@ auto GizmoManager::is_dragging_gizmo() const -> bool
     return !_dragged_gizmo_id.underlying_uuid().is_nil();
 }
 
-void GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& event)
+auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& event) -> bool
 {
-    for (auto const& gizmo : _gizmos)
+    for (auto const& gizmo : _gizmos) // NOLINT(*readability-use-anyofallof)
     {
-        if (glm::length(gizmo.position - event.position) < 0.1f)
+        if (glm::length(gizmo.get_position() - event.position) < 0.1f)
         {
             _dragged_gizmo_id = gizmo.id();
-            return;
+            return true;
         }
     }
+    return false;
 }
 
-void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const&)
+void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& event)
 {
     if (!is_dragging_gizmo())
         return;
@@ -50,6 +51,7 @@ void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const&)
     {
         if (gizmo.id() != _dragged_gizmo_id)
             continue;
+        gizmo.set_position(ViewCoordinates{gizmo.get_position() + event.delta});
     }
 }
 

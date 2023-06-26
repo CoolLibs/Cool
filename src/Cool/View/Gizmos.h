@@ -5,8 +5,9 @@
 namespace Cool {
 
 struct Gizmo_Point2D {
-    ViewCoordinates position;
-    reg::AnyId      _id;
+    std::function<ViewCoordinates()>     get_position;
+    std::function<void(ViewCoordinates)> set_position;
+    reg::AnyId                           _id;
 
     [[nodiscard]] auto id() const -> reg::AnyId { return _id; }
 };
