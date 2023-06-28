@@ -20,6 +20,11 @@ void GizmoManager::on_frame_end()
 
 void GizmoManager::render(View const& view)
 {
+    if (is_dragging_gizmo()
+        || hovered_gizmo(view.to_view_coordinates(ImGui::GetMousePos())))
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+    }
     for (auto const& gizmo : _gizmos)
     {
         auto const radius    = 10.f;
@@ -51,7 +56,7 @@ auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& eve
     assert(!is_dragging_gizmo());
     auto const* gizmo = hovered_gizmo(event.position);
     if (!gizmo)
-    return false;
+        return false;
     _dragged_gizmo_id = gizmo->id();
     return true;
 }

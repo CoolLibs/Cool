@@ -96,9 +96,7 @@ void View::imgui_open_close_toggle()
 auto View::contains(ViewCoordinates pos) const -> bool
 {
     if (!_window_is_hovered
-        || !_window_size
-        || ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
-    )
+        || !_window_size)
     {
         return false;
     }
