@@ -76,6 +76,8 @@ public:
     auto graph() const -> Graph const& override { return _graph; }
     auto graph() -> Graph& override { return _graph; }
 
+    void for_each_selected_node(std::function<void(Node const&)> const&) const override;
+
 private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
