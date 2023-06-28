@@ -212,7 +212,7 @@ void View::store_window_size()
 
 void View::store_window_position()
 {
-    _window_position = ImGuiCoordinates{ImGui::GetCursorScreenPos()};
+    _window_position = ImGui::GetCursorScreenPos();
 }
 
 static auto as_imvec2(img::SizeT<float> size) -> ImVec2

@@ -16,7 +16,7 @@ void hook_events(MouseEventDispatcher<ViewCoordinates>& dispatcher, ViewControll
         .subscribe({
             .on_start  = [&](auto const&) { controller.on_drag_start(camera); return true; },
             .on_update = [&](auto const&) {
-                controller.on_drag(camera, ImGuiCoordinates{ImGui::GetIO().MouseDelta}); // NB: we don't use event.delta as it is in relative coordinates, and we want a delta in pixels to keep the drag speed the same no matter the size of the View.
+                controller.on_drag(camera, ImGui::GetIO().MouseDelta); // NB: we don't use event.delta as it is in relative coordinates, and we want a delta in pixels to keep the drag speed the same no matter the size of the View.
             },
             .on_stop = [&](auto const&) { controller.on_drag_stop(camera); },
         });
