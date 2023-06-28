@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include "Cool/Geometry/imvec_glm_conversions.h"
+#include "Cool/Input/MouseCoordinates.h"
 #include "Cool/View/Gizmos.h"
 #include "View.h"
 
@@ -48,15 +49,11 @@ auto GizmoManager::is_dragging_gizmo() const -> bool
 auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& event) -> bool
 {
     assert(!is_dragging_gizmo());
-    for (auto const& gizmo : _gizmos) // NOLINT(*readability-use-anyofallof)
-    {
-        if (glm::length(gizmo.get_position() - event.position) < 0.1f)
-        {
-            _dragged_gizmo_id = gizmo.id();
-            return true;
-        }
-    }
+    auto const* gizmo = hovered_gizmo(event.position);
+    if (!gizmo)
     return false;
+    _dragged_gizmo_id = gizmo->id();
+    return true;
 }
 
 void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& event)
@@ -85,6 +82,18 @@ void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const&
             continue;
         callback(gizmo);
     }
+}
+
+auto GizmoManager::hovered_gizmo(ViewCoordinates mouse_position) const -> Gizmo_Point2D const*
+{
+    for (auto const& gizmo : _gizmos)
+    {
+        if (glm::length(gizmo.get_position() - mouse_position) < 0.1f)
+        {
+            return &gizmo;
+        }
+    }
+    return nullptr;
 }
 
 } // namespace Cool
