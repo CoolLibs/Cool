@@ -18,16 +18,19 @@ void GizmoManager::on_frame_end()
     _gizmos.clear();
 }
 
+static constexpr auto point2D_gizmo_radius = 10.f; // In ImGui coordinates
+
 void GizmoManager::render(View const& view)
 {
     if (is_dragging_gizmo()
-        || hovered_gizmo(view.to_view_coordinates(ImGui::GetMousePos())))
+        || hovered_gizmo(view))
     {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
     }
+
     for (auto const& gizmo : _gizmos)
     {
-        auto const radius    = 10.f;
+        auto const radius    = point2D_gizmo_radius;
         auto const thickness = 4.f;
         ImGui::GetCurrentWindow()->DrawList->AddCircle(
             as_imvec(view.to_imgui_coordinates(gizmo.get_position())),
@@ -51,10 +54,10 @@ auto GizmoManager::is_dragging_gizmo() const -> bool
     return !_dragged_gizmo_id.underlying_uuid().is_nil();
 }
 
-auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& event) -> bool
+auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const&, View const& view) -> bool
 {
     assert(!is_dragging_gizmo());
-    auto const* gizmo = hovered_gizmo(event.position);
+    auto const* gizmo = hovered_gizmo(view);
     if (!gizmo)
         return false;
     _dragged_gizmo_id = gizmo->id();
@@ -89,11 +92,12 @@ void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const&
     }
 }
 
-auto GizmoManager::hovered_gizmo(ViewCoordinates mouse_position) const -> Gizmo_Point2D const*
+auto GizmoManager::hovered_gizmo(View const& view) const -> Gizmo_Point2D const*
 {
+    auto const radius = 7.5f + point2D_gizmo_radius;
     for (auto const& gizmo : _gizmos)
     {
-        if (glm::length(gizmo.get_position() - mouse_position) < 0.1f)
+        if (glm::length(view.to_imgui_coordinates(gizmo.get_position()) - as_glm(ImGui::GetMousePos())) < radius)
         {
             return &gizmo;
         }
