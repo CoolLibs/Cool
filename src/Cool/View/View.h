@@ -75,8 +75,7 @@ private:
     void store_window_position();
     void display_image(ImTextureID image_texture_id, img::Size image_size);
 
-    /// Returns true iff the position is inside the image fitted in the view.
-    auto contains(ViewCoordinates) const -> bool;
+    auto mouse_is_in_view() const -> bool;
 
 private:
     std::string                           _name;
