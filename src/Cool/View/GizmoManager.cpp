@@ -21,10 +21,21 @@ void GizmoManager::render(View const& view)
 {
     for (auto const& gizmo : _gizmos)
     {
-        ImGui::GetCurrentWindow()->DrawList->AddCircleFilled(
+        auto const radius    = 10.f;
+        auto const thickness = 4.f;
+        ImGui::GetCurrentWindow()->DrawList->AddCircle(
             as_imvec(view.to_imgui_coordinates(gizmo.get_position())),
-            10.f,
-            ImColor{1.f, 1.f, 1.f, 1.f}
+            radius - thickness / 4.f,
+            ImColor{1.f, 1.f, 1.f, 1.f},
+            0,
+            thickness / 2.f
+        );
+        ImGui::GetCurrentWindow()->DrawList->AddCircle(
+            as_imvec(view.to_imgui_coordinates(gizmo.get_position())),
+            radius - thickness * 3 / 4.f,
+            ImColor{0.f, 0.f, 0.f, 1.f},
+            0,
+            thickness / 2.f
         );
     }
 }
