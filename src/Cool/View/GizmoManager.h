@@ -2,6 +2,7 @@
 #include <reg/src/AnyId.hpp>
 #include <reg/src/Id.hpp>
 #include "Cool/Input/MouseDragEvents.h"
+#include "Cool/View/Gizmos.h"
 #include "Gizmos.h"
 
 namespace Cool {
@@ -17,6 +18,10 @@ public:
     auto               on_drag_start(MouseDragStartEvent<ViewCoordinates> const&) -> bool;
     void               on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const&);
     void               on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&);
+
+private:
+    /// Calls the given callback on the dragged gizmo. Does nothing if no gizmo is being dragged.
+    void with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const&);
 
 private:
     std::vector<Gizmo_Point2D> _gizmos{};
