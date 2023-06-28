@@ -57,6 +57,12 @@ void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& e
 
 void GizmoManager::on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&)
 {
+    for (auto& gizmo : _gizmos)
+    {
+        if (gizmo.id() != _dragged_gizmo_id)
+            continue;
+        gizmo.on_drag_stop();
+    }
     _dragged_gizmo_id = {};
 }
 
