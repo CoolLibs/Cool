@@ -21,7 +21,7 @@ public:
 
 private:
     /// Calls the given callback on the dragged gizmo. Does nothing if no gizmo is being dragged.
-    void               with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const&);
+    void               with_dragged_gizmo(std::function<void(Gizmo_Point2D const&)> const&);
     [[nodiscard]] auto hovered_gizmo(View const& view) const -> Gizmo_Point2D const*;
 
 private:

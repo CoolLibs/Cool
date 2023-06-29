@@ -66,25 +66,25 @@ auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const&, Vi
 
 void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& event)
 {
-    with_dragged_gizmo([&](Gizmo_Point2D& gizmo) {
+    with_dragged_gizmo([&](Gizmo_Point2D const& gizmo) {
         gizmo.set_position(ViewCoordinates{gizmo.get_position() + event.delta});
     });
 }
 
 void GizmoManager::on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&)
 {
-    with_dragged_gizmo([](Gizmo_Point2D& gizmo) {
+    with_dragged_gizmo([](Gizmo_Point2D const& gizmo) {
         gizmo.on_drag_stop();
     });
     _dragged_gizmo_id = {};
 }
 
-void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const& callback)
+void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D const&)> const& callback)
 {
     if (!is_dragging_gizmo())
         return;
 
-    for (auto& gizmo : _gizmos)
+    for (auto const& gizmo : _gizmos)
     {
         if (gizmo.id != _dragged_gizmo_id)
             continue;
