@@ -12,6 +12,15 @@ static auto saturate(glm::vec3 const& v) -> glm::vec3
     };
 }
 
+static auto keep_above_0(glm::vec3 const& v) -> glm::vec3
+{
+    return {
+        std::max(v.x, 0.f),
+        std::max(v.y, 0.f),
+        std::max(v.z, 0.f),
+    };
+}
+
 // Start of [Block1]
 // From https://entropymine.com/imageworsener/srgbformula/
 
@@ -31,7 +40,7 @@ static auto sRGB_from_LinearRGB_impl(float x) -> float
 
 auto LinearRGB_from_sRGB(glm::vec3 srgb) -> glm::vec3
 {
-    srgb = saturate(srgb);
+    srgb = keep_above_0(srgb);
     return {
         LinearRGB_from_sRGB_impl(srgb.x),
         LinearRGB_from_sRGB_impl(srgb.y),
@@ -41,7 +50,7 @@ auto LinearRGB_from_sRGB(glm::vec3 srgb) -> glm::vec3
 
 auto sRGB_from_LinearRGB(glm::vec3 rgb) -> glm::vec3
 {
-    rgb = saturate(rgb);
+    rgb = keep_above_0(rgb);
     return {
         sRGB_from_LinearRGB_impl(rgb.x),
         sRGB_from_LinearRGB_impl(rgb.y),
@@ -170,7 +179,7 @@ struct Bounds {
 
 static void get_bounds(float l, Bounds bounds[6])
 {
-    float  tl   = l + 16.0f;
+    float tl   = l + 16.0f;
     float sub1 = (tl * tl * tl) / 1560896.0f;
     float sub2 = (sub1 > epsilon ? sub1 : (l / kappa));
     int   channel;
@@ -184,7 +193,7 @@ static void get_bounds(float l, Bounds bounds[6])
 
         for (t = 0; t < 2; t++)
         {
-            float top1   = (284517.f * m1 - 94839.f * m3) * sub2;
+            float      top1   = (284517.f * m1 - 94839.f * m3) * sub2;
             auto const tt     = static_cast<float>(t);
             float      top2   = (838422.f * m3 + 769860.f * m2 + 731718.f * m1) * l * sub2 - 769860.f * tt * l;
             float      bottom = (632260.f * m3 - 126452.f * m2) * sub2 + 126452.f * tt;
