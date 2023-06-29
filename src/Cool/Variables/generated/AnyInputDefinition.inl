@@ -23,6 +23,7 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::ColorPalette>,
     InputDefinition<Cool::Gradient>,
     InputDefinition<Cool::TextureInfo>,
+    InputDefinition<Cool::WebcamInfo>,
     InputDefinition<Cool::MathExpression>,
     InputDefinition<glm::mat2>,
     InputDefinition<glm::mat3>,

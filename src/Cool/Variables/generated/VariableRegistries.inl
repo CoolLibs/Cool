@@ -23,6 +23,7 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<Cool::ColorPalette>>,
     reg::Registry<Cool::Variable<Cool::Gradient>>,
     reg::Registry<Cool::Variable<Cool::TextureInfo>>,
+    reg::Registry<Cool::Variable<Cool::WebcamInfo>>,
     reg::Registry<Cool::Variable<Cool::MathExpression>>,
     reg::Registry<Cool::Variable<glm::mat2>>,
     reg::Registry<Cool::Variable<glm::mat3>>,

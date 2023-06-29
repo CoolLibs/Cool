@@ -23,6 +23,7 @@ using AnyInputRef = std::variant<
     std::reference_wrapper<Input<Cool::ColorPalette>>,
     std::reference_wrapper<Input<Cool::Gradient>>,
     std::reference_wrapper<Input<Cool::TextureInfo>>,
+    std::reference_wrapper<Input<Cool::WebcamInfo>>,
     std::reference_wrapper<Input<Cool::MathExpression>>,
     std::reference_wrapper<Input<glm::mat2>>,
     std::reference_wrapper<Input<glm::mat3>>,

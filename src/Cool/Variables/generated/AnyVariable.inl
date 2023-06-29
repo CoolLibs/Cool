@@ -23,6 +23,7 @@ using AnyVariable = std::variant<
     Variable<Cool::ColorPalette>,
     Variable<Cool::Gradient>,
     Variable<Cool::TextureInfo>,
+    Variable<Cool::WebcamInfo>,
     Variable<Cool::MathExpression>,
     Variable<glm::mat2>,
     Variable<glm::mat3>,

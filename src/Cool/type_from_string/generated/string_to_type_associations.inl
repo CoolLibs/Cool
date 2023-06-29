@@ -146,6 +146,11 @@ struct from_impl<"Texture"> {
 };
 
 template<>
+struct from_impl<"Webcam"> {
+    using type = Cool::WebcamInfo;
+};
+
+template<>
 struct from_impl<"MathExpression"> {
     using type = Cool::MathExpression;
 };

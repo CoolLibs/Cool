@@ -270,6 +270,14 @@ def all_variable_descriptions():
             requires_shader_code_generation=False,
         ),
         VariableDescription(
+            input_type=["Webcam"],
+            cpp_type="Cool::WebcamInfo",
+            glsl_type="TextureInfo",
+            include="<Cool/WebCam/WebcamInfo.h>", # TODO
+            metadatas=[],
+            requires_shader_code_generation=False,
+        ),
+        VariableDescription(
             input_type=["MathExpression"],
             cpp_type="Cool::MathExpression",
             glsl_type="NO TYPE THIS IS A FUNCTION",

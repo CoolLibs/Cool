@@ -108,6 +108,12 @@ auto glsl_type<Cool::TextureInfo>() -> std::string
 }
 
 template<>
+auto glsl_type<Cool::WebcamInfo>() -> std::string
+{
+    return "TextureInfo";
+}
+
+template<>
 auto glsl_type<Cool::MathExpression>() -> std::string
 {
     return "NO TYPE THIS IS A FUNCTION";
