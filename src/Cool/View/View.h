@@ -49,6 +49,7 @@ public:
 
     auto to_view_coordinates(ImGuiCoordinates) const -> ViewCoordinates;
     auto to_imgui_coordinates(ViewCoordinates) const -> ImGuiCoordinates;
+    auto mouse_is_in_view() const -> bool;
 
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
 
@@ -74,8 +75,6 @@ private:
     void store_window_size();
     void store_window_position();
     void display_image(ImTextureID image_texture_id, img::Size image_size);
-
-    auto mouse_is_in_view() const -> bool;
 
 private:
     std::string                           _name;

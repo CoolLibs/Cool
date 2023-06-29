@@ -23,7 +23,7 @@ static constexpr auto point2D_gizmo_radius = 10.f; // In ImGui coordinates
 void GizmoManager::render(View const& view)
 {
     if (is_dragging_gizmo()
-        || hovered_gizmo(view))
+        || (view.mouse_is_in_view() && hovered_gizmo(view)))
     {
         ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
     }
