@@ -3,6 +3,8 @@
 #include <Cool/Input/MouseEventDispatcher.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/MessageId.h"
+#include "Cool/View/GizmoManager.h"
+#include "GizmoManager.h"
 
 namespace Cool {
 
@@ -22,7 +24,14 @@ public:
     explicit View(std::string_view name, bool is_closable = false)
         : _name{name}
         , _is_closable{is_closable}
-    {}
+    {
+        _mouse_event_dispatcher.drag()
+            .subscribe({
+                .on_start  = [&](auto&& event) { return _gizmos.on_drag_start(event, *this); },
+                .on_update = [&](auto&& event) { _gizmos.on_drag_update(event); },
+                .on_stop   = [&](auto&& event) { _gizmos.on_drag_stop(event); },
+            });
+    }
 
     virtual ~View()                      = default;
     View(View const&)                    = delete;
@@ -40,9 +49,13 @@ public:
 
     auto to_view_coordinates(ImGuiCoordinates) const -> ViewCoordinates;
     auto to_imgui_coordinates(ViewCoordinates) const -> ImGuiCoordinates;
+    auto mouse_is_in_view() const -> bool;
 
     auto mouse_events() -> auto& { return _mouse_event_dispatcher; }
-    // auto resize_event() -> auto& { return _resize_event_dispatcher; } // Probably not interesting. We might want to know when the actual image is resized, rather than the window.
+
+    /// You need to push your gizmos every frame when you want them to appear.
+    /// Must be pushed before `imgui_window()`.
+    auto gizmos_manager() -> GizmoManager& { return _gizmos; }
 
     auto has_vertical_margins() const -> bool { return _window_size ? _has_vertical_margins : false; }
 
@@ -56,13 +69,12 @@ private:
     void dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const& event);
     void dispatch_mouse_button_event(MouseButtonEvent<ImGuiCoordinates> const& event);
 
+    void on_frame_end() { _gizmos.on_frame_end(); }
+
 private:
     void store_window_size();
     void store_window_position();
     void display_image(ImTextureID image_texture_id, img::Size image_size);
-
-    /// Returns true iff the position is inside the image fitted in the view.
-    auto contains(ViewCoordinates) const -> bool;
 
 private:
     std::string                           _name;
@@ -74,6 +86,7 @@ private:
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     RenderTarget                          _render_target;
     bool                                  _accepts_mouse_events{true};
+    GizmoManager                          _gizmos{};
 
     MessageId _log_position_message_id{};
 

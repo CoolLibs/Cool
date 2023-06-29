@@ -16,6 +16,8 @@ public:
 
     virtual auto imgui_windows(NodesConfig&, NodesLibrary const&) -> bool = 0;
 
+    virtual void for_each_selected_node(std::function<void(Node const&)> const&) const = 0;
+
     [[nodiscard]] virtual auto graph() const -> Graph const& = 0;
     [[nodiscard]] virtual auto graph() -> Graph&             = 0;
 };

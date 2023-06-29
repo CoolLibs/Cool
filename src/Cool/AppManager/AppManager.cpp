@@ -126,6 +126,8 @@ void AppManager::update()
     check_for_imgui_item_picker_request();
     imgui_render(_app);
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
+    for (auto& view : _views)
+        view->on_frame_end();
     end_frame(_window_manager);
 }
 
@@ -297,7 +299,7 @@ void AppManager::dispatch_mouse_movement()
         return;
 
     auto const event = MouseMoveEvent<ImGuiCoordinates>{
-        .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
+        .position = ImGui::GetIO().MousePos,
         // TODO(JF) Also pass the delta?
     };
     for (auto& view : _views)
@@ -311,7 +313,7 @@ void AppManager::dispatch_mouse_click()
         if (ImGui::IsMouseClicked(button))
         {
             auto const event = MouseButtonEvent<ImGuiCoordinates>{
-                .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
+                .position = ImGui::GetIO().MousePos,
                 .button   = button,
                 .action   = ButtonAction::Pressed,
             };
@@ -321,7 +323,7 @@ void AppManager::dispatch_mouse_click()
         if (ImGui::IsMouseReleased(button))
         {
             auto const event = MouseButtonEvent<ImGuiCoordinates>{
-                .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
+                .position = ImGui::GetIO().MousePos,
                 .button   = button,
                 .action   = ButtonAction::Released,
             };
@@ -339,7 +341,7 @@ void AppManager::dispatch_mouse_scroll()
         return;
 
     auto const event = MouseScrollEvent<ImGuiCoordinates>{
-        .position = ImGuiCoordinates{ImGui::GetIO().MousePos},
+        .position = ImGui::GetIO().MousePos,
         .dx       = scroll_x,
         .dy       = scroll_y,
     };

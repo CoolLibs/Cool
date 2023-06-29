@@ -706,4 +706,23 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     return graph_has_changed;
 }
 
+void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> const& callback) const
+{
+    ed::SetCurrentEditor(_context);
+    auto const selected_nodes_ids = get_selected_nodes_ids();
+    for (auto const& ed_node_id : selected_nodes_ids)
+    {
+        auto const node_id = as_reg_id(ed_node_id, _graph);
+
+        auto const* node = _graph.nodes().get_ref(node_id);
+        if (node)
+        {
+            callback(*node);
+        }
+        else // Frame node
+        {
+        }
+    }
+}
+
 } // namespace Cool

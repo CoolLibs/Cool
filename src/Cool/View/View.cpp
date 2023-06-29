@@ -80,6 +80,7 @@ void View::imgui_window(ViewWindowParams const& params)
 
         display_image(get_image_texture_id(), get_image_size());
 
+        _gizmos.render(*this);
         _accepts_mouse_events = !params.extra_widgets(); // When widgets are used, don't dispatch events on the View.
     }
     ImGui::EndChild();
@@ -92,19 +93,9 @@ void View::imgui_open_close_toggle()
     ImGuiExtras::toggle(_name.c_str(), &_is_open);
 }
 
-auto View::contains(ViewCoordinates pos) const -> bool
+auto View::mouse_is_in_view() const -> bool
 {
-    if (!_window_is_hovered
-        || !_window_size
-        || ImGui::GetMouseCursor() != ImGuiMouseCursor_Arrow // HACK: We don't dispatch events if the cursor is over the border of the window and click+drag would start resizing the window
-    )
-    {
-        return false;
-    }
-
-    auto const aspect_ratio = img::SizeU::aspect_ratio(get_image_size());
-    return -1.f < pos.y && pos.y < 1.f
-           && -aspect_ratio < pos.x && pos.x < aspect_ratio;
+    return _window_is_hovered && _window_size;
 }
 
 auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordinates
@@ -162,12 +153,11 @@ void View::dispatch_mouse_scroll_event(MouseScrollEvent<ImGuiCoordinates> const&
 {
     if (!_accepts_mouse_events)
         return;
-    auto const pos = to_view_coordinates(event.position);
-    if (!contains(pos))
+    if (!mouse_is_in_view())
         return;
 
     _mouse_event_dispatcher.scroll_event().dispatch({
-        .position = pos,
+        .position = to_view_coordinates(event.position),
         .dx       = event.dx,
         .dy       = event.dy,
     });
@@ -177,15 +167,14 @@ void View::dispatch_mouse_button_event(MouseButtonEvent<ImGuiCoordinates> const&
 {
     if (!_accepts_mouse_events)
         return;
-    auto const pos          = to_view_coordinates(event.position);
-    bool const contains_pos = contains(pos);
-    auto const new_event    = MouseButtonEvent<ViewCoordinates>{
-           .position = pos,
-           .button   = event.button,
-           .action   = event.action,
+    auto const pos       = to_view_coordinates(event.position);
+    auto const new_event = MouseButtonEvent<ViewCoordinates>{
+        .position = pos,
+        .button   = event.button,
+        .action   = event.action,
     };
-    _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, contains_pos);
-    if (contains_pos)
+    _mouse_event_dispatcher.drag().dispatch_mouse_button_event(new_event, mouse_is_in_view());
+    if (mouse_is_in_view())
     {
         _mouse_event_dispatcher.button_event().dispatch(new_event);
     }
@@ -211,7 +200,7 @@ void View::store_window_size()
 
 void View::store_window_position()
 {
-    _window_position = ImGuiCoordinates{ImGui::GetCursorScreenPos()};
+    _window_position = ImGui::GetCursorScreenPos();
 }
 
 static auto as_imvec2(img::SizeT<float> size) -> ImVec2

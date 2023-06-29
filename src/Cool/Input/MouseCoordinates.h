@@ -18,7 +18,7 @@ public:
     {
     }
 
-    explicit ImGuiCoordinates(ImVec2 v)
+    ImGuiCoordinates(ImVec2 v) // NOLINT(*explicit-constructor, *explicit-conversions)
         : glm::vec2{v.x, v.y}
     {}
 
