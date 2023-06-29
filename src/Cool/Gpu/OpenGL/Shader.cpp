@@ -1,7 +1,11 @@
+#include "Cool/Gpu/OpenGL/Shader.h"
+#include <string_view>
+#include "Cool/Gpu/OpenGL/Texture.h"
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/Webcam/WebcamInfo.h"
 #include "imgui.h"
 #if defined(COOL_OPENGL)
 
@@ -189,6 +193,13 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
     set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
 
     current_slot = (current_slot + 1) % max_slots;
+}
+
+void Shader::set_uniform(std::string_view uniform_name, WebcamInfo const& webcam_info) const
+{
+    static GLuint       current_slot = 0;
+    static GLuint const max_slots    = max_number_of_texture_slots();
+    // Texture const&      tex          = webcam_info.sampler;
 }
 
 } // namespace Cool::OpenGL

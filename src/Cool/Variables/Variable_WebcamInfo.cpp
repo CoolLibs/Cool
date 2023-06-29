@@ -4,7 +4,7 @@ namespace Cool {
 
 auto imgui_widget(Variable<WebcamInfo>& var) -> bool
 {
-    return var.value().imgui_widget();
+    return var.value().imgui_widget(2);
 }
 
 auto imgui_widget(VariableMetadata<WebcamInfo>&) -> bool
