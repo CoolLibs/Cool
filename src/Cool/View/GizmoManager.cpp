@@ -60,7 +60,7 @@ auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const&, Vi
     auto const* gizmo = hovered_gizmo(view);
     if (!gizmo)
         return false;
-    _dragged_gizmo_id = gizmo->id();
+    _dragged_gizmo_id = gizmo->id;
     return true;
 }
 
@@ -86,7 +86,7 @@ void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D&)> const&
 
     for (auto& gizmo : _gizmos)
     {
-        if (gizmo.id() != _dragged_gizmo_id)
+        if (gizmo.id != _dragged_gizmo_id)
             continue;
         callback(gizmo);
     }
