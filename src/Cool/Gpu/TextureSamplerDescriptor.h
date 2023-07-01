@@ -10,11 +10,11 @@ enum class TextureRepeatMode {
     Clamp
 };
 
-struct TextureSampler {
+struct TextureSamplerDescriptor {
     TextureRepeatMode   repeat_mode{TextureRepeatMode::None};
     glpp::Interpolation interpolation_mode{glpp::Interpolation::Linear};
 
-    friend auto operator<=>(TextureSampler const&, TextureSampler const&) = default;
+    friend auto operator<=>(TextureSamplerDescriptor const&, TextureSamplerDescriptor const&) = default;
 };
 
 } // namespace Cool

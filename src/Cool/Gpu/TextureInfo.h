@@ -1,13 +1,13 @@
 #pragma once
 #include <compare>
 #include "Cool/Path/Path.h"
-#include "TextureSampler.h"
+#include "TextureSamplerDescriptor.h"
 
 namespace Cool {
 
 struct TextureInfo {
-    std::filesystem::path absolute_path{Cool::Path::default_texture()};
-    TextureSampler        sampler{};
+    std::filesystem::path    absolute_path{Cool::Path::default_texture()};
+    TextureSamplerDescriptor sampler{};
 
     auto        imgui_widget() -> bool;
     friend auto operator==(TextureInfo const& a, TextureInfo const& b) -> bool = default;
