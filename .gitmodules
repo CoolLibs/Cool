@@ -97,6 +97,3 @@
 [submodule "lib/imgui-node-editor"]
 	path = lib/imgui-node-editor
 	url = https://github.com/CoolLibs/imgui-node-editor
-[submodule "libeasy_opencv"]
-	path = libeasy_opencv
-	url = https://github.com/CoolLibs/easy_opencv.git
