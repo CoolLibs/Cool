@@ -4,7 +4,8 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
+#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/UserSettings/UserSettings.h"
@@ -114,7 +115,8 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-    if (TextureLibrary::instance().update())
+    TextureLibrary_FromWebcam::instance().update(); // TODO(TD) Handle the rerendering of the app here ? return true iff a webcam has been requested to the library
+    if (TextureLibrary_FromFile::instance().update())
         _app.trigger_rerender();
     _app.update();
     restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))

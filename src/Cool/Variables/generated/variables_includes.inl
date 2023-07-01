@@ -16,8 +16,8 @@
 #include <Cool/Variables/Variable_Hue.h>
 #include <Cool/Variables/Variable_MathExpression.h>
 #include <Cool/Variables/Variable_Point2D.h>
-#include <Cool/Variables/Variable_TextureInfo.h>
-#include <Cool/Variables/Variable_WebcamInfo.h>
+#include <Cool/Variables/Variable_TextureDescriptor_FromFile.h>
+#include <Cool/Variables/Variable_TextureDescriptor_FromWebcam.h>
 #include <Cool/Variables/Variable_bool.h>
 #include <Cool/Variables/Variable_float.h>
 #include <Cool/Variables/Variable_int.h>

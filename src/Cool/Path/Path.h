@@ -12,7 +12,7 @@ public:
     /// Directory where "Cool/res" is located, or where the Cool resources have been copied. This path will always be valid to refer to "Cool/res"
     [[nodiscard]] static auto cool_res() -> std::filesystem::path const&;
 
-    /// Path to the default texture used by TextureInfo.
+    /// Path to the default texture used by TextureSource_FromFile.
     [[nodiscard]] static auto default_texture() -> std::filesystem::path const&;
 
     /// Initializes root. This must be called once, at the start of your application

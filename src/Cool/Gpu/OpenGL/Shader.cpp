@@ -1,11 +1,11 @@
 #include "Cool/Gpu/OpenGL/Shader.h"
 #include <string_view>
 #include "Cool/Gpu/OpenGL/Texture.h"
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
+#include "Cool/Gpu/TextureSource.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "Cool/Webcam/WebcamInfo.h"
 #include "imgui.h"
 #if defined(COOL_OPENGL)
 
@@ -180,12 +180,12 @@ static auto max_number_of_texture_slots() -> GLuint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return static_cast<GLuint>(res);
 }
-void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& texture_info) const
+void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
 {
     static GLuint       current_slot = 0;
     static GLuint const max_slots    = max_number_of_texture_slots();
 
-    Texture const& tex = TextureLibrary::instance().get(texture_info.absolute_path);
+    Texture const& tex = get_texture(texture_info.source);
 
     tex.attach_to_slot(current_slot);
     GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
@@ -194,14 +194,6 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
 
     current_slot = (current_slot + 1) % max_slots;
 }
-
-void Shader::set_uniform(std::string_view uniform_name, WebcamInfo const& webcam_info) const
-{
-    static GLuint       current_slot = 0;
-    static GLuint const max_slots    = max_number_of_texture_slots();
-    // Texture const&      tex          = webcam_info.sampler;
-}
-
 } // namespace Cool::OpenGL
 
 #endif

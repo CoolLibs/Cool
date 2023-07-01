@@ -263,17 +263,17 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             input_type=["Texture"],
-            cpp_type="Cool::TextureInfo",
+            cpp_type="Cool::TextureDescriptor_FromFile",
             glsl_type="Cool_Texture",
-            include="<Cool/Gpu/TextureInfo.h>",
+            include="<Cool/Gpu/TextureDescriptor.h>",
             metadatas=[],
             requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Webcam"],
-            cpp_type="Cool::WebcamInfo",
+            cpp_type="Cool::TextureDescriptor_FromWebcam",
             glsl_type="Cool_Texture",
-            include="<Cool/Webcam/WebcamInfo.h>", # TODO
+            include="<Cool/Gpu/TextureDescriptor.h>",
             metadatas=[],
             requires_shader_code_generation=False,
         ),

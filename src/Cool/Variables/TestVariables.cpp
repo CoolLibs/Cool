@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 #include <vector>
 #include "Cool/Camera/Camera.h"
+#include "Cool/Gpu/TextureDescriptor.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "Cool/StrongTypes/MathExpression.h"
 #include "Cool/StrongTypes/Point2D.h"
@@ -80,8 +81,12 @@ void test_variables()
         Cool::imgui(math_expression);
     }
     {
-        static Cool::Variable<Cool::TextureInfo> tex{{"Texture", {}}};
+        static Cool::Variable<Cool::TextureDescriptor_FromFile> tex{{"Texture", {}}};
         Cool::imgui(tex);
+    }
+    {
+        static Cool::Variable<Cool::TextureDescriptor_FromWebcam> webcam{{"Webcam", {}}};
+        Cool::imgui(webcam);
     }
 }
 
