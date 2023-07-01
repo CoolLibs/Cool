@@ -264,7 +264,7 @@ def all_variable_descriptions():
         VariableDescription(
             input_type=["Texture"],
             cpp_type="Cool::TextureInfo",
-            glsl_type="TextureInfo",
+            glsl_type="Cool_Texture",
             include="<Cool/Gpu/TextureInfo.h>",
             metadatas=[],
             requires_shader_code_generation=False,
@@ -272,7 +272,7 @@ def all_variable_descriptions():
         VariableDescription(
             input_type=["Webcam"],
             cpp_type="Cool::WebcamInfo",
-            glsl_type="TextureInfo",
+            glsl_type="Cool_Texture",
             include="<Cool/WebCam/WebcamInfo.h>", # TODO
             metadatas=[],
             requires_shader_code_generation=False,

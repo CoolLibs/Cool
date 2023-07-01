@@ -104,13 +104,13 @@ auto glsl_type<Cool::Gradient>() -> std::string
 template<>
 auto glsl_type<Cool::TextureInfo>() -> std::string
 {
-    return "TextureInfo";
+    return "Cool_Texture";
 }
 
 template<>
 auto glsl_type<Cool::WebcamInfo>() -> std::string
 {
-    return "TextureInfo";
+    return "Cool_Texture";
 }
 
 template<>
