@@ -40,7 +40,7 @@ static void apply_repeat_mode(GLuint sampler, TextureRepeatMode mode)
     }
 }
 
-auto TextureSamplerLibrary::get(TextureSamplerInfo const& info) -> glpp::UniqueTextureSampler const&
+auto TextureSamplerLibrary::get(TextureSampler const& info) -> glpp::UniqueTextureSampler const&
 {
     // Try to find an existing sampler with the same info
     auto const it = _samplers.find(info);

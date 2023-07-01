@@ -1,14 +1,14 @@
 #pragma once
 #include <compare>
-#include "Cool/Gpu/TextureSamplerInfo.h"
+#include "Cool/Gpu/TextureSampler.h"
 #include "Cool/Path/Path.h"
 
 namespace Cool {
 
 struct WebcamInfo {
     // std::filesystem::path absolute_path{Cool::Path::default_texture()};
-    int                webcam_index{};
-    TextureSamplerInfo sampler{};
+    int            webcam_index{};
+    TextureSampler sampler{};
 
     auto        imgui_widget(const int number_of_webcam) -> bool;
     friend auto operator==(WebcamInfo const& a, WebcamInfo const& b) -> bool = default;

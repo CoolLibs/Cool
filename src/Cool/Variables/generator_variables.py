@@ -273,7 +273,7 @@ def all_variable_descriptions():
             input_type=["Webcam"],
             cpp_type="Cool::WebcamInfo",
             glsl_type="Cool_Texture",
-            include="<Cool/WebCam/WebcamInfo.h>", # TODO
+            include="<Cool/Webcam/WebcamInfo.h>", # TODO
             metadatas=[],
             requires_shader_code_generation=False,
         ),

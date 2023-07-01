@@ -16,5 +16,5 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/MathExpression.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/WebCam/WebcamInfo.h>
+#include <Cool/Webcam/WebcamInfo.h>
 #include <glm/glm.hpp>
