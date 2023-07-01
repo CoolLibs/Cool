@@ -219,6 +219,11 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
+
+# Include OpenCV # TODO(TD) faire en sorte que cela soit optionnel
+add_subdirectory(lib/easy_opencv)
+target_link_opencv_to_lib(Cool-PublicProperties INTERFACE)
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
@@ -243,6 +248,7 @@ add_subdirectory(lib/ImGui_StyleEditor)
 target_include_directories(ImStyleEd SYSTEM PRIVATE lib)
 target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 
+
 # ----------------
 # ---Copy files---
 # ----------------
@@ -253,6 +259,8 @@ Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # Th
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
+    target_link_opencv_to_exe(${TARGET_NAME} PUBLIC)
+
     Cool__target_copy_file(${TARGET_NAME} imgui.ini)
     Cool__target_copy_file(${TARGET_NAME} color_config.json)
     Cool__target_copy_file(${TARGET_NAME} color_themes.json)
@@ -293,4 +301,5 @@ target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 add_subdirectory(lib/doctest)
+target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
