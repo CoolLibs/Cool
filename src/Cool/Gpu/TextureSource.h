@@ -34,7 +34,7 @@ inline auto get_error(const TextureSource& source) -> std::optional<std::string>
 {
     return std::visit(
         [](auto const& source) -> std::optional<std::string> {
-            source.get_error();
+            return source.get_error();
         },
         source
     );

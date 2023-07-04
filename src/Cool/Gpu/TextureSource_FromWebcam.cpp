@@ -27,7 +27,7 @@ auto TextureSource_FromWebcam::get_error() const -> std::optional<std::string>
 {
     auto const err = Cool::TextureLibrary_FromWebcam::instance().error_from(webcam_index);
 
-    if (!err->empty())
+    if (err)
     {
         Cool::Log::ToUser::console()
             .send(
