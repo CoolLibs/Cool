@@ -115,7 +115,9 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-    TextureLibrary_FromWebcam::instance().update(); // TODO(TD) Handle the rerendering of the app here ? return true iff a webcam has been requested to the library
+    TextureLibrary_FromWebcam::instance().on_frame_begin();
+    if (TextureLibrary_FromWebcam::instance().has_active_webcam()) // TODO(TD) Handle the rerendering of the app here ? return true iff at least one texture is not nullopt
+        _app.trigger_rerender();
     if (TextureLibrary_FromFile::instance().update())
         _app.trigger_rerender();
     _app.update();
@@ -123,6 +125,7 @@ void AppManager::update()
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
+    TextureLibrary_FromWebcam::instance().on_frame_end();
     end_frame(_window_manager);
 }
 

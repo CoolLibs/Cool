@@ -10,14 +10,15 @@
 
 namespace Cool {
 
-struct Webcam {
-    std::shared_ptr<Cool::Texture> _texture{};
-    cv::VideoCapture               _capture{};
-    std::string                    _name{};
-    bool                           _is_active{};
+struct WebcamCapture {
+    std::optional<Cool::Texture> _texture{};
+    cv::VideoCapture             _capture{};
+    std::string                  _name{};
+    bool                         is_dirty = true;
+    // TODO(TD) check si la capture a été request / si non => détruire la texture
 };
 
-void update_webcam(Webcam& webcam);
+void update_webcam(WebcamCapture& webcam);
 
 class TextureLibrary_FromWebcam {
 public:
@@ -27,29 +28,22 @@ public:
         return inst;
     }
 
-    auto get_webcam_texture(size_t index)
-    {
-        if (index >= _list_webcam.size())
-            return _list_webcam[0]._texture;
-        return _list_webcam[index]._texture;
-    }
-
-    void update();
-
-    auto is_webcam_used() const -> bool { return _number_of_webcam == 0; };
+    auto get_webcam_texture(size_t index) -> Texture const&;
+    void on_frame_begin(); // TODO(TD) remet tous les is_dirty à true
+    void on_frame_end();   // TODO(TD) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
     auto imgui_widget_webcam_index(int& webcam_index) -> bool;
 
 private:
     TextureLibrary_FromWebcam(); // This is a singleton. Get the global instance with `instance()` instead.
 
-    auto compute_number_of_camera() -> int;
+    auto compute_number_of_camera() -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
     void add_webcam();
     void update_webcams();
 
 private:
-    int                 _number_of_webcam{};
-    std::vector<Webcam> _list_webcam{};
+    int                        _number_of_webcam{};
+    std::vector<WebcamCapture> _list_webcam{};
 };
 
 } // namespace Cool

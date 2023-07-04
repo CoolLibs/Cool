@@ -13,7 +13,7 @@
 
 namespace Cool {
 
-static auto gen_dummy_texture() -> Texture
+static auto gen_dummy_texture() -> Texture // TODO(TD) mettre en commun avec la librarie de webcam
 {
     return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
 }
