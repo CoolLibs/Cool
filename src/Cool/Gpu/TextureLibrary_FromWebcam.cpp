@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Log/MessageConsole.h"
@@ -33,18 +34,11 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> Texture cons
     if (index >= _list_webcam.size())
     {
         static auto const dummy_texture = gen_dummy_texture();
-        Cool::Log::ToUser::console().send(
-            Message{
-                .category = "Nodes",
-                .message  = fmt::format("Failed to read node from Camera {}:\n", index),
-                .severity = MessageSeverity::Warning,
-            }
-        );
-        return dummy_texture; // TODO(TD) return the dummy texture and send an error message (cf what TextureLibrary_FromFile does)
+        return dummy_texture; // TODO(TD)(à test) return the dummy texture and send an error message (cf what TextureLibrary_FromFile does)
     }
 
     if (_list_webcam[index].is_dirty)
-        update_webcam(_list_webcam[index]); // TODO(TD) check si elle a été déjà update
+        update_webcam(_list_webcam[index]); // TODO(TD)(à test) check si elle a été déjà update
     return _list_webcam[index]._texture.value();
 }
 
@@ -106,7 +100,7 @@ void TextureLibrary_FromWebcam::on_frame_begin()
         webcam_capture.is_dirty = true;
 }
 
-void TextureLibrary_FromWebcam::on_frame_end()
+void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has not been updated during the frame
 {
     for (auto& webcam_capture : _list_webcam)
         if (webcam_capture.is_dirty == true)
@@ -126,6 +120,20 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> 
 
     b |= ImGui::Combo("Camera Displayed", &webcam_index, text.c_str());
     return b;
+}
+
+auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
+{
+    return std::ranges::any_of(_list_webcam.begin(), _list_webcam.end(), [](const WebcamCapture& webcam) { return !webcam.is_dirty; });
+}
+
+auto TextureLibrary_FromWebcam::error_from(const size_t index) const -> std::optional<std::string>
+{
+    if (index > _list_webcam.size()) // TODO(TD) un test mieux ?
+    {
+        return fmt::format("Failed to read node from Camera {}:\n", index);
+    }
+    return std::nullopt;
 }
 
 } // namespace Cool

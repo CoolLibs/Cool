@@ -9,6 +9,7 @@ struct TextureSource_FromFile {
 
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> Texture const&;
+    auto               get_error() const -> std::optional<std::string>;
 
     friend auto operator==(TextureSource_FromFile const&, TextureSource_FromFile const&) -> bool = default;
 

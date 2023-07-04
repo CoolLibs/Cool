@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "TextureDescriptor.h"
 
+
 namespace Cool {
 
 /// Compared to the Icons class, this one does not assume that the

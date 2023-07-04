@@ -15,7 +15,6 @@ struct WebcamCapture {
     cv::VideoCapture             _capture{};
     std::string                  _name{};
     bool                         is_dirty = true;
-    // TODO(TD) check si la capture a été request / si non => détruire la texture
 };
 
 void update_webcam(WebcamCapture& webcam);
@@ -29,10 +28,13 @@ public:
     }
 
     auto get_webcam_texture(size_t index) -> Texture const&;
-    void on_frame_begin(); // TODO(TD) remet tous les is_dirty à true
-    void on_frame_end();   // TODO(TD) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
+    void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
+    void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
     auto imgui_widget_webcam_index(int& webcam_index) -> bool;
+
+    auto has_active_webcam() const -> bool;
+    auto error_from(const size_t index) const -> std::optional<std::string>;
 
 private:
     TextureLibrary_FromWebcam(); // This is a singleton. Get the global instance with `instance()` instead.

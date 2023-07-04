@@ -22,4 +22,9 @@ auto TextureSource_FromFile::imgui_widget() -> bool
 
 } // TODO(TD) à remettre
 
+auto TextureSource_FromFile::get_error() const -> std::optional<std::string>
+{
+    return TextureLibrary_FromFile::instance().error_from(absolute_path);
+}
+
 } // namespace Cool

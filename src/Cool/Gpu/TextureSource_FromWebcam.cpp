@@ -1,8 +1,11 @@
 #pragma once
 #include "TextureSource_FromWebcam.h"
+#include <optional>
 #include <string>
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Gpu/TextureSource_FromWebcam.h"
+#include "Cool/Log/MessageConsole.h"
+#include "Cool/Log/ToUser.h"
 #include "TextureLibrary_FromWebcam.h"
 
 namespace Cool {
@@ -18,6 +21,25 @@ auto TextureSource_FromWebcam::imgui_widget() -> bool
 [[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> Texture const&
 {
     return TextureLibrary_FromWebcam::instance().get_webcam_texture(webcam_index); // TODO(TD) avoir un shared pointer ???? meh :/
+}
+
+auto TextureSource_FromWebcam::get_error() const -> std::optional<std::string>
+{
+    auto const err = Cool::TextureLibrary_FromWebcam::instance().error_from(webcam_index);
+
+    if (!err->empty())
+    {
+        Cool::Log::ToUser::console()
+            .send(
+                Message{
+                    .category = "Nodes",
+                    .message  = fmt::format("Failed to read node from Camera {}:\n", webcam_index),
+                    .severity = MessageSeverity::Warning,
+                }
+            );
+        return err; // no need
+    }
+    return std::nullopt;
 }
 
 } // namespace Cool

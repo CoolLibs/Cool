@@ -1,5 +1,7 @@
 #pragma once
 #include <compare>
+#include <optional>
+#include <string>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Path/Path.h"
 namespace Cool {
@@ -9,6 +11,7 @@ struct TextureSource_FromWebcam {
 
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> Texture const&;
+    auto               get_error() const -> std::optional<std::string>;
 
     friend auto operator==(TextureSource_FromWebcam const&, TextureSource_FromWebcam const&) -> bool = default;
 
