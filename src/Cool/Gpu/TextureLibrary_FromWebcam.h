@@ -27,7 +27,7 @@ public:
         return inst;
     }
 
-    auto get_webcam_texture(size_t index) -> Texture const&;
+    auto get_webcam_texture(size_t index) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 

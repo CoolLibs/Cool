@@ -6,6 +6,11 @@
 
 namespace Cool {
 
+static auto gen_dummy_texture() -> Texture // TODO(TD) mettre en commun avec la librarie de webcam
+{
+    return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
+}
+
 using TextureSource = std::variant<
     TextureSource_FromFile,
     TextureSource_FromWebcam>;
@@ -14,7 +19,11 @@ inline auto get_texture(TextureSource const& source) -> Texture const&
 {
     return std::visit(
         [](auto const& source) -> Texture const& {
-            return source.get_texture();
+            static auto const dummy_tex = gen_dummy_texture();
+            if (source.get_texture())
+                return source.get_texture().value();
+
+            return dummy_tex;
         },
         source
     );

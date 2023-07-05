@@ -10,7 +10,7 @@ struct TextureSource_FromWebcam {
     int webcam_index{};
 
     auto               imgui_widget() -> bool;
-    [[nodiscard]] auto get_texture() const -> Texture const&;
+    [[nodiscard]] auto get_texture() const -> std::optional<Texture> const&;
     auto               get_error() const -> std::optional<std::string>;
 
     friend auto operator==(TextureSource_FromWebcam const&, TextureSource_FromWebcam const&) -> bool = default;

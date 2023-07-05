@@ -13,11 +13,6 @@
 
 namespace Cool {
 
-static auto gen_dummy_texture() -> Texture // TODO(TD) mettre en commun avec la librarie de webcam
-{
-    return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
-}
-
 static constexpr auto time_to_live = 5min;
 
 static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_of_last_request) -> bool
@@ -25,7 +20,7 @@ static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_
     return std::chrono::steady_clock::now() - date_of_last_request > time_to_live;
 }
 
-auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture const&
+auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> std::optional<Texture> const&
 {
     auto const it = _textures.find(path);
     // If this path is not known to the library, add it and try again.
@@ -46,12 +41,12 @@ auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture 
     if (!maybe_tex && !it->second.error_message) // Texture ise nullopt simply because it hasn't been used in a while. Reload the texture.
         reload_texture(path);
 
-    if (!maybe_tex)
-    {
-        static auto const dummy_texture = gen_dummy_texture();
-        return dummy_texture;
-    }
-    return *maybe_tex;
+    // if (!maybe_tex)
+    // {
+    //     static auto const dummy_texture = gen_dummy_texture(); // will be handle by the TextureSource
+    //     return dummy_texture;
+    // }
+    return maybe_tex;
 }
 
 void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)

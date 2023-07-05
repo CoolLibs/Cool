@@ -18,7 +18,7 @@ auto TextureSource_FromWebcam::imgui_widget() -> bool
     return b;
 }
 
-[[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> Texture const&
+[[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> std::optional<Texture> const&
 {
     return TextureLibrary_FromWebcam::instance().get_webcam_texture(webcam_index); // TODO(TD) avoir un shared pointer ???? meh :/
 }

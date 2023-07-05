@@ -31,17 +31,19 @@ TextureLibrary_FromWebcam::TextureLibrary_FromWebcam()
     add_webcam();
 }
 
-auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> Texture const&
+auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optional<Texture> const&
 {
     if (index >= _list_webcam.size()) //  || !_list_webcam[index]._texture) TODO(TD) need it ?
     {
-        static auto const dummy_texture = gen_dummy_texture();
-        return dummy_texture; // TODO(TD)(à test) return the dummy texture and send an error message (cf what TextureLibrary_FromFile does)
+        // static auto const dummy_texture = gen_dummy_texture();
+        // return dummy_texture; // TODO(TD)(à test) return the dummy texture and send an error message (cf what TextureLibrary_FromFile does)
+        return std::nullopt;
     }
 
     if (_list_webcam[index].is_dirty)
         update_webcam(_list_webcam[index]); // TODO(TD)(à test) check si elle a été déjà update
-    return _list_webcam[index]._texture.value();
+
+    return _list_webcam[index]._texture;
 }
 
 auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79

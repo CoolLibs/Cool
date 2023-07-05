@@ -16,7 +16,7 @@ auto TextureSource_FromFile::imgui_widget() -> bool
     return b;
 }
 
-[[nodiscard]] auto TextureSource_FromFile::get_texture() const -> Texture const&
+[[nodiscard]] auto TextureSource_FromFile::get_texture() const -> std::optional<Texture> const&
 {
     return TextureLibrary_FromFile::instance().get(absolute_path);
 

@@ -6,7 +6,6 @@
 #include "Texture.h"
 #include "TextureDescriptor.h"
 
-
 namespace Cool {
 
 /// Compared to the Icons class, this one does not assume that the
@@ -21,7 +20,7 @@ public:
         return inst;
     }
 
-    [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const&;
+    [[nodiscard]] auto get(std::filesystem::path const&) -> std::optional<Texture> const&;
 
     void clear() { _textures.clear(); }
     /// Returns true iff at least one of the textures in the library has changed.
