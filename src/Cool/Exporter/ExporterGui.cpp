@@ -1,4 +1,4 @@
-#include "Exporter.h"
+#include "ExporterGui.h"
 #include <Cool/File/File.h>
 #include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
@@ -10,7 +10,7 @@
 
 namespace Cool {
 
-Exporter::Exporter()
+ExporterGui::ExporterGui()
     : _folder_path_for_image{Path::root() / "out"}
     , _folder_path_for_video{Path::root() / "exports"}
 {
@@ -19,29 +19,29 @@ Exporter::Exporter()
     });
 }
 
-void Exporter::set_aspect_ratio(AspectRatio aspect_ratio)
+void ExporterGui::set_aspect_ratio(AspectRatio const& aspect_ratio)
 {
     _export_size.set_aspect_ratio(aspect_ratio);
 }
 
-void Exporter::maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio)
+void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspect_ratio)
 {
     if (aspect_ratio)
         set_aspect_ratio(*aspect_ratio);
 }
 
-void Exporter::imgui_windows(Polaroid polaroid, float time)
+void ExporterGui::imgui_windows(Polaroid const& polaroid, float time, std::optional<VideoExportProcess>& video_export_process)
 {
     imgui_window_export_image(polaroid, time);
-    imgui_window_export_video();
+    imgui_window_export_video(video_export_process);
 }
 
-auto Exporter::output_path() -> std::filesystem::path
+auto ExporterGui::output_path() -> std::filesystem::path
 {
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void Exporter::imgui_menu_items(imgui_menu_items_Params p, std::optional<std::string> longest_text)
+void ExporterGui::imgui_menu_items(imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
 {
     // Calculate max button width
     if (!longest_text)
@@ -68,7 +68,7 @@ void Exporter::imgui_menu_items(imgui_menu_items_Params p, std::optional<std::st
     }
 }
 
-void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time)
 {
     _image_export_window.show([&]() {
         _export_size.imgui();
@@ -91,7 +91,7 @@ void Exporter::imgui_window_export_image(Polaroid polaroid, float time)
     });
 }
 
-auto Exporter::clear_export_folder() const -> bool
+auto ExporterGui::clear_export_folder() const -> bool
 {
     if (!File::exists(_folder_path_for_video)
         || std::filesystem::is_empty(_folder_path_for_video))
@@ -105,40 +105,38 @@ auto Exporter::clear_export_folder() const -> bool
     return true;
 }
 
-void Exporter::begin_video_export()
+void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process)
 {
     if (!clear_export_folder())
         return;
 
     if (File::create_folders_if_they_dont_exist(_folder_path_for_video))
-        _video_export_process.emplace(_video_export_params, _folder_path_for_video, _export_size);
+        video_export_process.emplace(_video_export_params, _folder_path_for_video, _export_size);
     else
-        Log::ToUser::warning("Exporter::begin_video_export", "Couldn't start exporting because folder creation failed!");
+        Log::ToUser::warning("ExporterGui::begin_video_export", "Couldn't start exporting because folder creation failed!");
 }
 
-void Exporter::update(Polaroid polaroid)
+void ExporterGui::update(Polaroid const& polaroid, std::optional<VideoExportProcess>& video_export_process)
 {
-    if (_video_export_process.has_value())
-    {
-        if (_video_export_process->update(polaroid))
-        {
-            end_video_export();
-        }
-    }
+    if (!video_export_process.has_value())
+        return;
+
+    if (video_export_process->update(polaroid))
+        end_video_export(video_export_process);
 }
 
-void Exporter::end_video_export()
+void ExporterGui::end_video_export(std::optional<VideoExportProcess>& video_export_process)
 {
-    _video_export_process.reset();
+    video_export_process.reset();
 }
 
-void Exporter::imgui_window_export_video()
+void ExporterGui::imgui_window_export_video(std::optional<VideoExportProcess>& video_export_process)
 {
-    if (is_exporting())
+    if (is_exporting(video_export_process))
     {
         ImGui::Begin("Video export in progress");
         ImGui::PushFont(Font::monospace());
-        _video_export_process->imgui();
+        video_export_process->imgui();
         ImGui::PopFont();
         ImGui::End();
     }
@@ -153,7 +151,7 @@ void Exporter::imgui_window_export_video()
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();
-                begin_video_export();
+                begin_video_export(video_export_process);
             }
         });
     }
