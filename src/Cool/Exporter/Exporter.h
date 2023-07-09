@@ -6,6 +6,14 @@ namespace Cool {
 
 class Exporter {
 public:
+    Exporter()  = default;
+    ~Exporter() = default;
+    Exporter(Exporter&&) noexcept;
+    auto operator=(Exporter&&) noexcept -> Exporter&;
+
+    Exporter(const Exporter&)                    = delete; // I don't expect anyone will need this
+    auto operator=(const Exporter&) -> Exporter& = delete; // But if so, we could implement it.
+
     [[nodiscard]] auto is_exporting() const -> bool { return Cool::ExporterGui::is_exporting(_video_export_process); }
 
     auto image_export_window() -> ImGuiWindow& { return _gui.image_export_window(); }
