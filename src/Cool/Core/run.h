@@ -106,6 +106,7 @@ void run(
                 Serialization::save<UserSettings, cereal::JSONOutputArchive>(user_settings(), path, "User Settings");
             }
         );
+        user_settings().apply_multi_viewport_setting();
 
         // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
         Icons::close_button();

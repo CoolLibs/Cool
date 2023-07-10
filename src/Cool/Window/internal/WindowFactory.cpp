@@ -102,8 +102,8 @@ static void initialize_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigDockingAlwaysTabBar               = true;
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD) // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)        // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Must be done here at creation of the App, otherwise we can't toggle it at runtime.
 #endif
     imgui_load_fonts();
 }
