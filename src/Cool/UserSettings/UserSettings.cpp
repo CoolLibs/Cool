@@ -75,4 +75,35 @@ void UserSettings::apply_multi_viewport_setting() const
         ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 }
 
+auto should_enable_multi_viewport_by_default() -> bool
+{
+#if !defined(__linux__)
+    return true;
+#else
+    // On Linux this can conflict with tiling WM and make our context menus behave weirdly.
+    // https://cdn.discordapp.com/attachments/848704719987671070/1127711921651597332/ui-linux.mp4
+    // https://github.com/ocornut/imgui/issues/2117
+    // For example i3 has issues with it.
+    // The desktops listed here should be okay though: https://wiki.archlinux.org/title/Xdg-utils#Environment_variables
+    char const* var = std::getenv("XDG_CURRENT_DESKTOP");
+    if (!var)
+        return false;
+    auto const vari = std::string{var};
+    return vari == "Cinnamon"
+           || vari == "X-Cinnamon"
+           || vari == "Deepin"
+           || vari == "DEEPIN"
+           || vari == "deepin"
+           || vari == "ENLIGHTENMENT"
+           || vari == "GNOME"
+           || vari == "GNOME-Flashback"
+           || vari == "GNOME-Flashback:GNOME"
+           || vari == "KDE"
+           || vari == "LXDE"
+           || vari == "LXQt"
+           || vari == "MATE"
+           || vari == "XFCE";
+#endif
+}
+
 } // namespace Cool
