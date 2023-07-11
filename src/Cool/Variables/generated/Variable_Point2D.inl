@@ -5,31 +5,33 @@
  * -----------------------------------------------------------------------------
  */
 
-#include <Cool/StrongTypes/Point2D.h>
-#include <Cool/Variables/Variable.h>
-#include <Cool/Variables/internal/BoundsMetadata.h>
+            #include <Cool/StrongTypes/Point2D.h>
+            #include <Cool/Variables/Variable.h>
+            #include <Cool/Variables/internal/BoundsMetadata.h>
 
-namespace Cool {
+            namespace Cool {
 
-template<>
-struct VariableMetadata<Cool::Point2D> {
-    float drag_speed{0.0001f};
+            template<>
+            struct VariableMetadata<Cool::Point2D> {
+                float drag_speed{0.0001f};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Point2D>&, const VariableMetadata<Cool::Point2D>&) = default;
+                friend auto operator<=>(const VariableMetadata<Cool::Point2D>&, const VariableMetadata<Cool::Point2D>&) = default;
 
-private:
-    // Serialisation
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
+            private:
+                // Serialisation
+                friend class cereal::access;
+                template<class Archive>
+                void serialize(Archive& archive)
+                {
         archive(
-            cereal::make_nvp("Drag speed", drag_speed)
+cereal::make_nvp("Drag speed", drag_speed)
         );
-    }
-};
 
-auto imgui_widget(Variable<Cool::Point2D>&) -> bool;
-auto imgui_widget(VariableMetadata<Cool::Point2D>&) -> bool;
+                }
+            };
 
-} // namespace Cool
+            auto imgui_widget(Variable<Cool::Point2D>&) -> bool;
+            auto imgui_widget(VariableMetadata<Cool::Point2D>&) -> bool;
+
+            } // namespace Cool
+        

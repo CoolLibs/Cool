@@ -185,6 +185,10 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
 
     current_slot = (current_slot + 1) % max_slots;
 }
+void Shader::set_uniform(std::string_view uniform_name, MidiCc const& midi) const
+{
+    set_uniform(uniform_name, 0.f); // TODO(Midi) JF
+}
 
 } // namespace Cool::OpenGL
 

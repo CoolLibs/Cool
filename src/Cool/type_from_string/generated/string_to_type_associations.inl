@@ -5,6 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 
+
 template<>
 struct from_impl<"bool"> {
     using type = bool;
@@ -163,4 +164,9 @@ struct from_impl<"mat3"> {
 template<>
 struct from_impl<"mat4"> {
     using type = glm::mat4;
+};
+
+template<>
+struct from_impl<"Midi"> {
+    using type = Cool::MidiCc;
 };

@@ -301,6 +301,14 @@ def all_variable_descriptions():
             metadatas=float_metadatas(),
             requires_shader_code_generation=False,
         ),
+        VariableDescription(
+            input_type=["Midi"],
+            cpp_type="Cool::MidiCc",
+            glsl_type="float",
+            include="<Cool/Midi/MidiCc.h>",
+            metadatas=[],
+            requires_shader_code_generation=False,
+        ),
     ]
 
 

@@ -83,6 +83,11 @@ void test_variables()
         static Cool::Variable<Cool::TextureInfo> tex{{"Texture", {}}};
         Cool::imgui(tex);
     }
+    {
+        static Cool::Variable<Cool::MidiCc> midi_cc{{"Midi", {}}};
+        Cool::imgui(midi_cc);
+        // TODO(Midi) cout les valeurs du cc sélectionné: midi_manager().get_value(midi_cc.value.index)
+    }
 }
 
 } // namespace Cool

@@ -9,6 +9,7 @@
 #include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
+#include <Cool/Midi/MidiCc.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include "ShaderModule.h"
@@ -51,6 +52,7 @@ public:
     void set_uniform(std::string_view uniform_name, Point2D) const;
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
     void set_uniform(std::string_view uniform_name, TextureInfo const&) const;
+    void set_uniform(std::string_view uniform_name, MidiCc const&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;
