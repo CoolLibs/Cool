@@ -295,42 +295,34 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 }
 
 auto folder_dialog_button(
-    std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder
+    std::filesystem::path*   out_path,
+    File::folder_dialog_args args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::PickFolder(outPath, std::filesystem::absolute(initial_folder).string().c_str());
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::folder_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters,
-    std::filesystem::path               initial_folder
+    std::filesystem::path* out_path,
+    File::file_dialog_args args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::OpenDialog(
-        outPath,
-        file_filters.data(),
-        static_cast<nfdfiltersize_t>(file_filters.size()),
-        std::filesystem::absolute(initial_folder).string().c_str()
-    );
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::file_opening_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
@@ -359,14 +351,14 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
 auto folder(const char* label, std::filesystem::path* folder_path, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, folder_path, show_dialog_button, [&]() {
-        return ImGuiExtras::folder_dialog_button(folder_path, *folder_path);
+        return ImGuiExtras::folder_dialog_button(folder_path, {.initial_folder = *folder_path});
     });
 }
 
 auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, file_path, show_dialog_button, [&]() {
-        return ImGuiExtras::file_dialog_button(file_path, file_filters, !initial_folder.empty() ? initial_folder : *file_path);
+        return ImGuiExtras::file_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
     });
 }
 

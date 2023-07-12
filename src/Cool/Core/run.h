@@ -94,7 +94,7 @@ void run(
                 error.send_error_if_any(
                     [&](std::string const& message) {
                         return Cool::Message{
-                            .category = "Loading Project",
+                            .category = "Loading User Settings",
                             .message  = message,
                             .severity = Cool::MessageSeverity::Warning,
                         };
@@ -122,7 +122,7 @@ void run(
                     error.send_error_if_any(
                         [&](std::string const& message) {
                             return Cool::Message{
-                                .category = "Loading Project",
+                                .category = "Loading App",
                                 .message  = message,
                                 .severity = Cool::MessageSeverity::Warning,
                             };

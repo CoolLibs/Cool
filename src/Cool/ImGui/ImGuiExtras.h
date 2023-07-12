@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
 
 namespace Cool::ImGuiExtras {
@@ -127,21 +128,17 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
 void invisible_wrapper_around_previous_line(const char* str_id);
 
 /// Adds a button that opens a folder dialog.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto folder_dialog_button(
     std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder = ""
+    File::folder_dialog_args = {}
 ) -> bool;
 
 /// Adds a button that opens a file dialog.
-/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters   = {},
-    std::filesystem::path               initial_folder = ""
+    std::filesystem::path* out_path,
+    File::file_dialog_args = {}
 ) -> bool;
 
 /// UI for a folder path. Creates a text input and a button to open a folder explorer.
