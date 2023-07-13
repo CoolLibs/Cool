@@ -104,14 +104,14 @@ private:
 private:
     // ImColor GetIconColor(PinType type);
 
-    void render_node(Node&, NodeId const&, NodesConfig&, util::BlueprintNodeBuilder& builder);
+    void render_node(Node&, NodeId const&, NodesConfig&, NodesLibrary const&, util::BlueprintNodeBuilder& builder);
 
     auto process_creations(NodesConfig&) -> bool;
     // auto process_node_creation() -> bool;
     auto process_link_creation(NodesConfig&) -> bool;
     void process_link_released();
 
-    void render_editor(NodesConfig&);
+    void render_editor(NodesConfig&, NodesLibrary const&);
     auto imgui_workspace(NodesConfig&, NodesLibrary const&) -> bool;
 
 private:
