@@ -302,7 +302,7 @@ static auto output_pin_icon(size_t pin_index)
                : ax::Drawing::IconType::Circle;
 }
 
-void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, util::BlueprintNodeBuilder& builder)
+void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder)
 {
     auto const  color       = nodes_cfg.node_color(node, id);
     auto const* category    = library.get_category(node.category_name());
@@ -611,7 +611,7 @@ static auto process_deletions(Graph& graph, std::vector<internal::FrameNode>& fr
 
 void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& library)
 {
-    util::BlueprintNodeBuilder builder{};
+    ax::NodeEditor::Utilities::BlueprintNodeBuilder builder{};
     for (auto& [id, node] : _graph.nodes())
         render_node(node, id, nodes_cfg, library, builder);
 
