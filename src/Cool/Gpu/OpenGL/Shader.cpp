@@ -1,12 +1,12 @@
+#if defined(COOL_OPENGL)
+#include "Shader.h"
 #include "Cool/Gpu/TextureLibrary.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
+#include "Cool/Midi/MidiManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "imgui.h"
-#if defined(COOL_OPENGL)
-
-#include "Shader.h"
 #include "ShaderModule.h"
+#include "imgui.h"
 
 namespace Cool::OpenGL {
 
@@ -187,7 +187,7 @@ void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& textu
 }
 void Shader::set_uniform(std::string_view uniform_name, MidiCc const& midi) const
 {
-    set_uniform(uniform_name, 0.f); // TODO(Midi) JF
+    set_uniform(uniform_name, midi_manager().get_value(midi));
 }
 
 } // namespace Cool::OpenGL
