@@ -5,29 +5,26 @@
  * -----------------------------------------------------------------------------
  */
 
-            #include <Cool/Gpu/TextureInfo.h>
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Gpu/TextureInfo.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<Cool::TextureInfo> {
-                
+template<>
+struct VariableMetadata<Cool::TextureInfo> {
+    friend auto operator<=>(const VariableMetadata<Cool::TextureInfo>&, const VariableMetadata<Cool::TextureInfo>&) = default;
 
-                friend auto operator<=>(const VariableMetadata<Cool::TextureInfo>&, const VariableMetadata<Cool::TextureInfo>&) = default;
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive&)
+    {
+    }
+};
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive&)
-                {
-                }
-            };
+auto imgui_widget(Variable<Cool::TextureInfo>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::TextureInfo>&) -> bool;
 
-            auto imgui_widget(Variable<Cool::TextureInfo>&) -> bool;
-            auto imgui_widget(VariableMetadata<Cool::TextureInfo>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool

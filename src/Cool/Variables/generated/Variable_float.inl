@@ -5,40 +5,37 @@
  * -----------------------------------------------------------------------------
  */
 
-            
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<float> {
-                internal::BoundsMetadata<float> bounds{
-                .min = 0.f,
-                .max = 1.f,
-                .has_min_bound = false,
-                .has_max_bound = false,
-                .drag_speed = 0.01f,
-                .use_slider = false,
-            };
+template<>
+struct VariableMetadata<float> {
+    internal::BoundsMetadata<float> bounds{
+        .min           = 0.f,
+        .max           = 1.f,
+        .has_min_bound = false,
+        .has_max_bound = false,
+        .drag_speed    = 0.01f,
+        .use_slider    = false,
+    };
 
-                friend auto operator<=>(const VariableMetadata<float>&, const VariableMetadata<float>&) = default;
+    friend auto operator<=>(const VariableMetadata<float>&, const VariableMetadata<float>&) = default;
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive& archive)
-                {
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
         archive(
-cereal::make_nvp("Bounds", bounds)
+            cereal::make_nvp("Bounds", bounds)
         );
+    }
+};
 
-                }
-            };
+auto imgui_widget(Variable<float>&) -> bool;
+auto imgui_widget(VariableMetadata<float>&) -> bool;
 
-            auto imgui_widget(Variable<float>&) -> bool;
-            auto imgui_widget(VariableMetadata<float>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool

@@ -63,9 +63,9 @@ void Window::turn_on_fullscreen()
     glfwGetWindowSize(*_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
     glfwSetWindowMonitor(*_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 #if defined(COOL_OPENGL)
-        cap_framerate_if(framerate_is_capped()); // Turning fullscreen disables VSync so we have to reenable it
+    cap_framerate_if(framerate_is_capped()); // Turning fullscreen disables VSync so we have to reenable it
 #endif
-        _is_fullscreen = true;
+    _is_fullscreen = true;
 }
 
 void Window::set_visibility(bool is_visible)

@@ -4,10 +4,10 @@ namespace Cool {
 
 template<typename T>
 concept MouseCoordinates = requires(T coords) {
-    // clang-format off
+                               // clang-format off
     { coords } -> std::convertible_to<glm::vec2>;
-    // clang-format on
-};
+                               // clang-format on
+                           };
 
 /// The coordinate system used by Dear ImGui (aka the one used by ImGui::GetMousePos(), etc.)
 class ImGuiCoordinates : public glm::vec2 {

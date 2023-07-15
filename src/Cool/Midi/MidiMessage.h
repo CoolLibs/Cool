@@ -1,5 +1,5 @@
 /*
-MidiBlock for Cinder developed by Bruce Lane, Martin Blasko. 
+MidiBlock for Cinder developed by Bruce Lane, Martin Blasko.
 Original code by Hector Sanchez-Pajares(http://www.aerstudio.com).
 MidiOut written by Tim Murray-Browne (http://timmb.com)
 Midi parsing taken from openFrameworks addon ofxMidi by Theo Watson & Dan Wilcox
@@ -25,29 +25,26 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #pragma once
-
 
 namespace cinder { namespace midi {
 
-	class Message {
-	public:
+class Message {
+public:
+    Message();
 
-		Message();
+    int      port;
+    int      channel;
+    int      status;
+    int      byteOne;
+    int      byteTwo;
+    double   timeStamp;
+    int      pitch;    //< 0 - 127
+    int      velocity; //< 0 - 127
+    int      control;  //< 0 - 127
+    int      value;    //< depends on message status type
+    Message& copy(const Message& other);
+};
 
-		int port;
-		int channel;
-		int status;
-		int byteOne;
-		int byteTwo;
-		double timeStamp;
-		int pitch;			//< 0 - 127
-		int velocity;		//< 0 - 127
-		int control;		//< 0 - 127
-		int value;			//< depends on message status type
-		Message& copy(const Message& other);
-	};
-
-} // namespace midi
-} // namespace cinder
+}
+} // namespace cinder::midi

@@ -59,8 +59,8 @@ void TextureLibrary::reload_texture(std::filesystem::path const& path)
     try
     {
         _textures[path].error_message = std::nullopt;
-        _textures[path].texture = std::nullopt;
-        _textures[path].texture = Texture{img::load(path)};
+        _textures[path].texture       = std::nullopt;
+        _textures[path].texture       = Texture{img::load(path)};
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary", fmt::format("Generated texture from {}", path));
     }

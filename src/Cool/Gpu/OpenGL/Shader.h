@@ -2,6 +2,7 @@
 #if COOL_OPENGL
 
 #include <Cool/Gpu/TextureInfo.h>
+#include <Cool/Midi/MidiCc.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Camera2D.h>
 #include <Cool/StrongTypes/Color.h>
@@ -9,7 +10,6 @@
 #include <Cool/StrongTypes/ColorPalette.h>
 #include <Cool/StrongTypes/Direction2D.h>
 #include <Cool/StrongTypes/Gradient.h>
-#include <Cool/Midi/MidiCc.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include "ShaderModule.h"

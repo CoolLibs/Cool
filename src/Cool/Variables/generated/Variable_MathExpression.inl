@@ -5,29 +5,26 @@
  * -----------------------------------------------------------------------------
  */
 
-            #include <Cool/StrongTypes/MathExpression.h>
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/StrongTypes/MathExpression.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<Cool::MathExpression> {
-                
+template<>
+struct VariableMetadata<Cool::MathExpression> {
+    friend auto operator<=>(const VariableMetadata<Cool::MathExpression>&, const VariableMetadata<Cool::MathExpression>&) = default;
 
-                friend auto operator<=>(const VariableMetadata<Cool::MathExpression>&, const VariableMetadata<Cool::MathExpression>&) = default;
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive&)
+    {
+    }
+};
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive&)
-                {
-                }
-            };
+auto imgui_widget(Variable<Cool::MathExpression>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::MathExpression>&) -> bool;
 
-            auto imgui_widget(Variable<Cool::MathExpression>&) -> bool;
-            auto imgui_widget(VariableMetadata<Cool::MathExpression>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool

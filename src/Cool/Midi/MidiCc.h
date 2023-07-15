@@ -2,12 +2,11 @@
 
 namespace Cool {
 
-    struct MidiCc{
+struct MidiCc {
     // TODO(Midi) int index du slider / button
-    int index{};
+    int         index{};
     friend auto operator==(MidiCc const& a, MidiCc const& b) -> bool = default;
 
-    
 private:
     // Serialization
     friend class cereal::access;
@@ -16,6 +15,6 @@ private:
     {
         archive(cereal::make_nvp("Index", index));
     }
-    };
+};
 
-}
+} // namespace Cool

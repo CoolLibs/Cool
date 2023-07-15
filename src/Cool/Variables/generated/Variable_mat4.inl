@@ -5,40 +5,38 @@
  * -----------------------------------------------------------------------------
  */
 
-            #include <glm/glm.hpp>
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
+#include <glm/glm.hpp>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<glm::mat4> {
-                internal::BoundsMetadata<float> bounds{
-                .min = 0.f,
-                .max = 1.f,
-                .has_min_bound = false,
-                .has_max_bound = false,
-                .drag_speed = 0.01f,
-                .use_slider = false,
-            };
+template<>
+struct VariableMetadata<glm::mat4> {
+    internal::BoundsMetadata<float> bounds{
+        .min           = 0.f,
+        .max           = 1.f,
+        .has_min_bound = false,
+        .has_max_bound = false,
+        .drag_speed    = 0.01f,
+        .use_slider    = false,
+    };
 
-                friend auto operator<=>(const VariableMetadata<glm::mat4>&, const VariableMetadata<glm::mat4>&) = default;
+    friend auto operator<=>(const VariableMetadata<glm::mat4>&, const VariableMetadata<glm::mat4>&) = default;
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive& archive)
-                {
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
         archive(
-cereal::make_nvp("Bounds", bounds)
+            cereal::make_nvp("Bounds", bounds)
         );
+    }
+};
 
-                }
-            };
+auto imgui_widget(Variable<glm::mat4>&) -> bool;
+auto imgui_widget(VariableMetadata<glm::mat4>&) -> bool;
 
-            auto imgui_widget(Variable<glm::mat4>&) -> bool;
-            auto imgui_widget(VariableMetadata<glm::mat4>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool

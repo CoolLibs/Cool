@@ -31,8 +31,8 @@ ivec2 Cool_hex_id(vec2 uv, float grid_size)
     vec2 center2 = internal_Cool_id2_to_center(id2);
 
     ivec2 id = length_squared(uv - center1) < length_squared(uv - center2)
-                  ? id1.x * ivec2(1, 0) + id1.y * ivec2(1, 2) + ivec2(0, 1)
-                  : id2.x * ivec2(1, 0) + id2.y * ivec2(1, 2) + ivec2(1, 2);
+                   ? id1.x * ivec2(1, 0) + id1.y * ivec2(1, 2) + ivec2(0, 1)
+                   : id2.x * ivec2(1, 0) + id2.y * ivec2(1, 2) + ivec2(1, 2);
     return id;
 }
 
@@ -53,5 +53,5 @@ vec2 Cool_hex_uv(vec2 uv, float grid_size)
 
 vec2 Cool_hex_center_from_hex_id(ivec2 id, float grid_size)
 {
-    return ((id.x + 1) * vec2(1,0) + id.y * vec2(-0.5,sqrt_3/2)) / grid_size;
+    return ((id.x + 1) * vec2(1, 0) + id.y * vec2(-0.5, sqrt_3 / 2)) / grid_size;
 }

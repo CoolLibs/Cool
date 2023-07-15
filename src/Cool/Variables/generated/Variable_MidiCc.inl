@@ -5,29 +5,26 @@
  * -----------------------------------------------------------------------------
  */
 
-            #include <Cool/Midi/MidiCc.h>
-            #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Midi/MidiCc.h>
+#include <Cool/Variables/Variable.h>
+#include <Cool/Variables/internal/BoundsMetadata.h>
 
-            namespace Cool {
+namespace Cool {
 
-            template<>
-            struct VariableMetadata<Cool::MidiCc> {
-                
+template<>
+struct VariableMetadata<Cool::MidiCc> {
+    friend auto operator<=>(const VariableMetadata<Cool::MidiCc>&, const VariableMetadata<Cool::MidiCc>&) = default;
 
-                friend auto operator<=>(const VariableMetadata<Cool::MidiCc>&, const VariableMetadata<Cool::MidiCc>&) = default;
+private:
+    // Serialisation
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive&)
+    {
+    }
+};
 
-            private:
-                // Serialisation
-                friend class cereal::access;
-                template<class Archive>
-                void serialize(Archive&)
-                {
-                }
-            };
+auto imgui_widget(Variable<Cool::MidiCc>&) -> bool;
+auto imgui_widget(VariableMetadata<Cool::MidiCc>&) -> bool;
 
-            auto imgui_widget(Variable<Cool::MidiCc>&) -> bool;
-            auto imgui_widget(VariableMetadata<Cool::MidiCc>&) -> bool;
-
-            } // namespace Cool
-        
+} // namespace Cool
