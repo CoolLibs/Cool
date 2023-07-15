@@ -221,9 +221,13 @@ add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
 # Include OpenCV # TODO(TD) faire en sorte que cela soit optionnel
-include(opencv_build_options.cmake)
+include("lib/opencv_build_options.cmake")
 add_subdirectory(lib/easy_opencv)
 target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/easy_opencv/opencv/include)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)

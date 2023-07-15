@@ -1,12 +1,10 @@
 #pragma once
 #include <vcruntime.h>
 #include <memory>
-#include <opencv2/core/mat.hpp>
+#include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
-#include "opencv2/core.hpp"
-#include "opencv2/videoio.hpp"
 
 namespace Cool {
 
