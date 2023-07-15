@@ -12,6 +12,8 @@ public:
     [[nodiscard]] auto graph() const -> Graph const& { return _pimpl->graph(); }
     [[nodiscard]] auto graph() -> Graph& { return _pimpl->graph(); }
 
+    void for_each_selected_node(std::function<void(Node const&)> const& callback) const { _pimpl->for_each_selected_node(callback); }
+
 private:
     std::unique_ptr<INodesEditor> _pimpl; // We use the pimpl idiom to speed up compilation
 

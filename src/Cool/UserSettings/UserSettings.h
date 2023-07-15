@@ -3,6 +3,8 @@
 
 namespace Cool {
 
+auto should_enable_multi_viewport_by_default() -> bool;
+
 struct UserSettings {
     bool  autosave_enabled{true};
     float autosave_delay_in_seconds{5.f};
@@ -15,11 +17,15 @@ struct UserSettings {
 
     bool single_click_to_input_in_drag_widgets{false};
 
+    bool enable_multi_viewport{should_enable_multi_viewport_by_default()};
+    void apply_multi_viewport_setting() const;
+
     auto imgui() -> bool;
     auto imgui_autosave() -> bool;
     auto imgui_extra_icons() -> bool;
     auto imgui_camera2D_zoom_sensitivity() -> bool;
     auto imgui_single_click_to_input_in_drag_widgets() -> bool;
+    auto imgui_enable_multi_viewport() -> bool;
 
 private:
     // Serialization
@@ -33,7 +39,8 @@ private:
             cereal::make_nvp("Extra icons", extra_icons),
             cereal::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
             cereal::make_nvp("Use OS color theme", color_themes),
-            cereal::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets)
+            cereal::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets),
+            cereal::make_nvp("Enable multi-viewport", enable_multi_viewport)
         );
     }
 };

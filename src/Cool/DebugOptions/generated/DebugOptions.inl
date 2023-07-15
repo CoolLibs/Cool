@@ -45,6 +45,10 @@ public:
         return instance().log_opengl_info;
     }
 #endif
+    [[nodiscard]] static auto log_mouse_position_in_view() -> bool&
+    {
+        return instance().log_mouse_position_in_view;
+    }
     static void test_presets__window(std::function<void()> callback)
     {
         if (instance().test_presets__window)
@@ -118,6 +122,7 @@ private:
 #if DEBUG
         bool log_opengl_info{false};
 #endif
+        bool log_mouse_position_in_view{false};
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
         bool test_tips{false};
@@ -144,6 +149,7 @@ private:
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
+                cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
                 cereal::make_nvp("Test tips", test_tips),
@@ -158,6 +164,7 @@ private:
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
                 cereal::make_nvp("Test tips", test_tips),
@@ -182,6 +189,7 @@ private:
 #if DEBUG
         instance().log_opengl_info = false;
 #endif
+        instance().log_mouse_position_in_view          = false;
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
         instance().test_tips                           = false;
@@ -243,6 +251,11 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Log mouse position in View"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Log mouse position in View", &instance().log_mouse_position_in_view);
+        }
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
@@ -343,6 +356,12 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Log mouse position in View"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_mouse_position_in_view = !instance().log_mouse_position_in_view;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
 
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {

@@ -90,6 +90,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <gsl/gsl>
     <tl/expected.hpp>
     <Cool/Log/Debug.h>
+    <Cool/Geometry/imvec_glm_conversions.h>
     <Cool/Serialization/filesystem.h>
     <Cool/Serialization/img.h>
     <Cool/Serialization/GlmSerialization.h> # must be included after <glm/glm.hpp> because it depends on it

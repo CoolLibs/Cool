@@ -1,4 +1,6 @@
 #include "hook_events.h"
+#include <imgui.h>
+#include "Cool/Input/MouseCoordinates.h"
 
 namespace Cool::CameraU {
 
@@ -6,26 +8,17 @@ void hook_events(MouseEventDispatcher<ViewCoordinates>& dispatcher, ViewControll
 {
     dispatcher
         .scroll_event()
-        .subscribe([&](const auto& event) {
+        .subscribe([&](auto const& event) {
             controller.on_wheel_scroll(camera, event.dy);
         });
     dispatcher
         .drag()
-        .start()
-        .subscribe([&](const auto& event) {
-            controller.on_drag_start(camera, event.mods);
-        });
-    dispatcher
-        .drag()
-        .update()
-        .subscribe([&](const auto& event) {
-            controller.on_drag(camera, event.delta);
-        });
-    dispatcher
-        .drag()
-        .stop()
-        .subscribe([&](const auto&) {
-            controller.on_drag_stop(camera);
+        .subscribe({
+            .on_start  = [&](auto const&) { controller.on_drag_start(camera); return true; },
+            .on_update = [&](auto const&) {
+                controller.on_drag(camera, ImGui::GetIO().MouseDelta); // NB: we don't use event.delta as it is in relative coordinates, and we want a delta in pixels to keep the drag speed the same no matter the size of the View.
+            },
+            .on_stop = [&](auto const&) { controller.on_drag_stop(camera); },
         });
 }
 
