@@ -18,7 +18,10 @@ void MidiManager::midiCallback(double deltatime, std::vector<unsigned char>* mes
     MidiManager* midiManager = static_cast<MidiManager*>(userData);
     unsigned int nBytes      = message->size();
     if (nBytes > 2)
+    {
         midiManager->mIndexToValue[message->at(1)] = message->at(2) / 127.f;
+        midiManager->_extra_midi_callback();
+    }
 }
 void MidiManager::connect()
 {

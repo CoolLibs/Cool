@@ -15,6 +15,9 @@ public:
     void connect();
     void disconnect();
     void imgui();
+    /// Sets a callback that is called whenever the value of a Midi Cc changes.
+    void set_additional_midi_callback(std::function<void()> callback) { _extra_midi_callback = std::move(callback); }
+
     void imgui_emulate_midi_keyboard();
 
 private:
@@ -28,6 +31,8 @@ private:
     char buf[64];
     // TODO(Midi) map index vers float
     std::unordered_map<int, float> mIndexToValue;
+    std::function<void()>          _extra_midi_callback{[] {
+    }};
 };
 
 inline auto midi_manager() -> MidiManager&
