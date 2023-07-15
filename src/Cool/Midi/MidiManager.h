@@ -20,7 +20,7 @@ private:
 	unsigned int    mNumPorts;
 	unsigned int    mPort;
 	std::string     mName;
-    //void mycallback( double deltatime, std::vector< unsigned char > *message, void *userData );
+    // void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData );
     RtMidi::Api chooseMidiApi();
 
 // TODO(Midi) map index vers float
@@ -28,9 +28,7 @@ private:
 
 inline auto midi_manager() -> MidiManager&
 {
-    std::cout << "midi_manager" << std::endl;
     static auto instance = MidiManager{};
-    instance.connect();
     return instance;
 }
 

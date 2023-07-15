@@ -24,14 +24,14 @@ RtMidi::Api MidiManager::chooseMidiApi()
 
   return RtMidi::Api::WINDOWS_MM;// static_cast< RtMidi::Api >( 0 ); //i );
 }
-/*void MidiManager::mycallback( double deltatime, std::vector< unsigned char > *message, void * )
+void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData )
 {
   unsigned int nBytes = message->size();
   for ( unsigned int i=0; i<nBytes; i++ )
     std::cout << "Byte " << i << " = " << (int)message->at(i) << ", ";
   if ( nBytes > 0 )
     std::cout << "stamp = " << deltatime << std::endl;
-}*/
+}
 void MidiManager::connect()
 {
     // TODO(Midi) connect to midi device
@@ -55,7 +55,7 @@ void MidiManager::connect()
   char input;
   std::cin.get(input);*/
     mMidiIn = new RtMidiIn(chooseMidiApi());
-    // TODO mMidiIn->setCallback(&MidiInCallback, this);
+    mMidiIn->setCallback(&midiCallback, this);
     mNumPorts = mMidiIn->getPortCount();
  auto const sd =   mMidiIn->getCurrentApi();
 
@@ -74,7 +74,7 @@ void MidiManager::connect()
 		std::cout << "Opening MIDI port 0" << std::endl;
 		//mMidiIn.midiSignal.connect(std::bind(&Midi2WebsocketApp::midiListener, this, std::placeholders::_1));
 	    //mMidiIn->setCallback(&MidiInCallback, this);
-	    //mMidiIn->ignoreTypes(false, false, false);
+	    mMidiIn->ignoreTypes(true, true, true);
 	}
 	else {
 		std::cout << "No MIDI Ports found!" << std::endl;
