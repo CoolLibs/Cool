@@ -20,7 +20,7 @@ void  MidiManager::midiCallback( double deltatime, std::vector< unsigned char > 
 }
 void MidiManager::connect()
 {
-    // TODO(Midi) connect to midi device
+
     mPort = 0;
     
     /*RtMidiIn *midiin = new RtMidiIn(chooseMidiApi());
@@ -43,14 +43,14 @@ void MidiManager::connect()
     mMidiIn = new RtMidiIn(chooseMidiApi());
     mMidiIn->setCallback(&midiCallback, this);
     mNumPorts = mMidiIn->getPortCount();
- auto const sd =   mMidiIn->getCurrentApi();
+    auto const sd =   mMidiIn->getCurrentApi();
 
 
     std::cout << "MidiIn: " << mNumPorts << " available." << std::endl;
     for (size_t i = 0; i < mNumPorts; ++i){
         std::cout << i << ": " << mMidiIn->getPortName(i).c_str() << std::endl;
         std::string name( mMidiIn->getPortName( i ).c_str() ); // strip null chars introduced by rtmidi
-        
+        sprintf(buf, " %s##s%d", mMidiIn->getPortName( i ).c_str(), i);
     }
 
     // mMidiIn->getCurrentApi();
@@ -76,7 +76,16 @@ void MidiManager::disconnect()
 void MidiManager::imgui()
 {
     ImGui::Text("%f", get_value(MidiCc{1}));
-   
+   ImGui::Begin(buf);
+			{
+				ImGui::PushItemWidth(80);
+				
+				ImGui::TextColored(ImColor(155, 50, 255), "%s-", buf);
+				
+				
+				ImGui::PopItemWidth();
+			}
+			ImGui::End();
     // if (ImGui::Button("Connect"))
     // {
     //     connect();

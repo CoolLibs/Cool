@@ -22,7 +22,8 @@ private:
 	std::string     mName;
      static  void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData );
     RtMidi::Api chooseMidiApi();
-
+// imgui
+		char						buf[64];
 // TODO(Midi) map index vers float
 std::unordered_map<int, float> mIndexToValue;
     };
