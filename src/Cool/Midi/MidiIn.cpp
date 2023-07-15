@@ -1,137 +1,129 @@
 /*
- *  MidiIn.cpp
- *  glitches
- *
- *  Created by hec on 5/20/10.
- *  Copyright 2010 aer studio. All rights reserved.
- *
- */
+*  MidiIn.cpp
+*  glitches
+*
+*  Created by hec on 5/20/10.
+*  Copyright 2010 aer studio. All rights reserved.
+*
+*/
 
 #include "MidiIn.h"
 
 namespace cinder { namespace midi {
 
-void MidiInCallback(double deltatime, std::vector<unsigned char>* message, void* userData)
-{
-    ((Input*)userData)->processMessage(deltatime, message);
-}
+	void MidiInCallback(double deltatime, std::vector<unsigned char> *message, void *userData){
+		((Input*)userData)->processMessage(deltatime, message);
+	}
 
-Input::Input()
-{
-    mMidiIn   = new RtMidiIn();
-    mNumPorts = mMidiIn->getPortCount();
-    mMidiIn->getCurrentApi();
-}
 
-Input::~Input()
-{
-    closePort();
-}
+	Input::Input(){
+		mMidiIn = new RtMidiIn();
+		mNumPorts = mMidiIn->getPortCount();
+		mMidiIn->getCurrentApi();
+	}
 
-void Input::listPorts()
-{
-    std::cout << "MidiIn: " << mNumPorts << " available." << std::endl;
-    for (size_t i = 0; i < mNumPorts; ++i)
-    {
-        std::cout << i << ": " << mMidiIn->getPortName(i).c_str() << std::endl;
-        std::string name(mMidiIn->getPortName(i).c_str()); // strip null chars introduced by rtmidi
-        mPortNames.push_back(name);
-    }
-}
+	Input::~Input(){
+		closePort();
+	}
 
-void Input::ignoreTypes(bool sysex, bool time, bool midisense)
-{
-    mMidiIn->ignoreTypes(sysex, time, midisense);
-}
+	void Input::listPorts(){
+		std::cout << "MidiIn: " << mNumPorts << " available." << std::endl;
+		for (size_t i = 0; i < mNumPorts; ++i){
+			std::cout << i << ": " << mMidiIn->getPortName(i).c_str() << std::endl;
+			std::string name( mMidiIn->getPortName( i ).c_str() ); // strip null chars introduced by rtmidi
+			mPortNames.push_back( name );
+		}
+	}
 
-std::string Input::getPortName(int number)
-{
-    return mPortNames.at(number);
-}
+	void Input::ignoreTypes(bool sysex, bool time, bool midisense){
+		mMidiIn->ignoreTypes(sysex, time, midisense);
 
-void Input::openPort(unsigned int port)
-{
-    if (mNumPorts == 0)
-    {
-        throw MidiExcNoPortsAvailable();
-    }
+	}
 
-    if (port + 1 > mNumPorts)
-    {
-        throw MidiExcPortNotAvailable();
-    }
+	std::string Input::getPortName(int number){
 
-    mPort = port;
-    mName = mMidiIn->getPortName(port);
+		return mPortNames.at(number);
+	}
 
-    mMidiIn->openPort(mPort);
+	void Input::openPort(unsigned int port){
+		if (mNumPorts == 0){
+			throw MidiExcNoPortsAvailable();
+		}
 
-    mMidiIn->setCallback(&MidiInCallback, this);
+		if (port + 1 > mNumPorts){
+			throw MidiExcPortNotAvailable();
+		}
 
-    mMidiIn->ignoreTypes(false, false, false);
-}
+		mPort = port;
+		mName = mMidiIn->getPortName(port);
 
-void Input::closePort()
-{
-    mMidiIn->closePort();
-    mMidiIn->cancelCallback();
-}
+		mMidiIn->openPort(mPort);
 
-void Input::processMessage(double deltatime, std::vector<unsigned char>* message)
-{
-    unsigned int numBytes = message->size();
+		mMidiIn->setCallback(&MidiInCallback, this);
 
-    Message msg;
-    msg.port = mPort;
-    if ((message->at(0)) >= MIDI_SYSEX)
-    {
-        msg.status  = (MidiStatus)(message->at(0) & 0xFF);
-        msg.channel = 0;
-    }
-    else
-    {
-        msg.status  = (MidiStatus)(message->at(0) & 0xF0);
-        msg.channel = (int)(message->at(0) & 0x0F) + 1;
-    }
+		mMidiIn->ignoreTypes(false, false, false);
+	}
 
-    msg.port = mPort;
+	void Input::closePort(){
+		mMidiIn->closePort();
+		mMidiIn->cancelCallback();
+	}
 
-    switch (msg.status)
-    {
-    case MIDI_NOTE_ON:
-    case MIDI_NOTE_OFF:
-        msg.pitch    = (int)message->at(1);
-        msg.velocity = (int)message->at(2);
-        break;
-    case MIDI_CONTROL_CHANGE:
-        msg.control = (int)message->at(1);
-        msg.value   = (int)message->at(2);
-        break;
-    case MIDI_PROGRAM_CHANGE:
-    case MIDI_AFTERTOUCH:
-        msg.value = (int)message->at(1);
-        break;
-    case MIDI_PITCH_BEND:
-        msg.value = (int)(message->at(2) << 7) + (int)message->at(1); // msb + lsb
-        break;
-    case MIDI_POLY_AFTERTOUCH:
-        msg.pitch = (int)message->at(1);
-        msg.value = (int)message->at(2);
-        break;
-    default:
-        break;
-    }
+	void Input::processMessage(double deltatime, std::vector<unsigned char> *message){
+		unsigned int numBytes = message->size();
 
-    // midiThreadSignal.emit( msg );
+			Message msg;
+			msg.port = mPort;
+			if((message->at(0)) >= MIDI_SYSEX) {
+				msg.status = (MidiStatus)(message->at(0) & 0xFF);
+				msg.channel = 0;
+			} else {
+				msg.status = (MidiStatus) (message->at(0) & 0xF0);
+				msg.channel = (int) (message->at(0) & 0x0F)+1;
+			}
 
-    // if (mDispatchToMainThread)
-    //     ci::app::App::get()->dispatchAsync( [this, msg](){ midiSignal.emit( msg ); });
-}
 
-unsigned int Input::getPort() const
-{
-    return mPort;
-}
+			msg.port = mPort;
 
-}
-} // namespace cinder::midi
+			switch(msg.status) {
+			case MIDI_NOTE_ON :
+			case MIDI_NOTE_OFF:
+				msg.pitch = (int) message->at(1);
+				msg.velocity = (int) message->at(2);
+				break;
+			case MIDI_CONTROL_CHANGE:
+				msg.control = (int) message->at(1);
+				msg.value = (int) message->at(2);
+				break;
+			case MIDI_PROGRAM_CHANGE:
+			case MIDI_AFTERTOUCH:
+				msg.value = (int) message->at(1);
+				break;
+			case MIDI_PITCH_BEND:
+				msg.value = (int) (message->at(2) << 7) +
+					(int) message->at(1); // msb + lsb
+				break;
+			case MIDI_POLY_AFTERTOUCH:
+				msg.pitch = (int) message->at(1);
+				msg.value = (int) message->at(2);
+				break;
+			default:
+				break;
+			}
+        
+            //midiThreadSignal.emit( msg );
+        
+            //if (mDispatchToMainThread)
+           //     ci::app::App::get()->dispatchAsync( [this, msg](){ midiSignal.emit( msg ); });
+		}
+
+		
+
+		unsigned int Input::getPort()const{
+			return mPort;
+
+		}
+
+
+	} 
+} 
