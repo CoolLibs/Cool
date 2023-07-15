@@ -1,9 +1,11 @@
 #pragma once
+#define __RTMIDI_DEBUG__
 #include "MidiCc.h"
 #include <vector>
 #include <string>
 #include <iostream>
-#include "MidiHeaders.h"
+#include "RtMidi.h"
+//#include "MidiHeaders.h"
 
 namespace Cool {
 
@@ -18,6 +20,9 @@ private:
 	unsigned int    mNumPorts;
 	unsigned int    mPort;
 	std::string     mName;
+    //void mycallback( double deltatime, std::vector< unsigned char > *message, void *userData );
+    RtMidi::Api chooseMidiApi();
+
 // TODO(Midi) map index vers float
     };
 

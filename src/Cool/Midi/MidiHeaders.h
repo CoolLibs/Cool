@@ -29,7 +29,6 @@ Midi parsing taken from openFrameworks addon ofxMidi by Theo Watson & Dan Wilcox
 
 #include <string>
 #include <exception>
-#define __WINDOWS_MM__
 #define __RTMIDI_DEBUG__
 #include "MidiConstants.h"
 #include "MidiExceptions.h"

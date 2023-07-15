@@ -35,6 +35,8 @@ if(WARNINGS_AS_ERRORS_FOR_COOL)
     endif()
 endif()
 
+target_compile_definitions(Cool-PrivateProperties INTERFACE "__WINDOWS_MM__")
+
 # Set COOL_PATH as the path to Cool, relative to the main project's CMakeLists.txt. It will look like "third-party/Cool"
 cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE COOL_PATH)
 set(COOL_PATH_INTERNAL ${COOL_PATH} CACHE INTERNAL "") # Make a global variable so that `cool_setup()` will be able to use it when it is called outside of this CMake file
