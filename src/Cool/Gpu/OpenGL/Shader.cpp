@@ -180,20 +180,23 @@ static auto max_number_of_texture_slots() -> GLuint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return static_cast<GLuint>(res);
 }
-void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
+void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, TextureSamplerDescriptor const& sampler) const
 {
     static GLuint       current_slot = 0;
     static GLuint const max_slots    = max_number_of_texture_slots();
 
-    Texture const& tex = get_texture(texture_info.source);
-
-    tex.attach_to_slot(current_slot);
-    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
+    texture.attach_to_slot(current_slot);
+    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(sampler)));
     set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(current_slot));
-    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
+    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
 
     current_slot = (current_slot + 1) % max_slots;
 }
+void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
+{
+    set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
+}
+
 } // namespace Cool::OpenGL
 
 #endif

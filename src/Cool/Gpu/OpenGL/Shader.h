@@ -51,6 +51,7 @@ public:
     void set_uniform(std::string_view uniform_name, Point2D) const;
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
     void set_uniform(std::string_view uniform_name, TextureDescriptor const&) const;
+    void set_uniform(std::string_view uniform_name, Texture const&, TextureSamplerDescriptor const& = {}) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;
