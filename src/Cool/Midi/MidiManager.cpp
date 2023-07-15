@@ -1,4 +1,5 @@
 #include "MidiManager.h"
+#include <imgui.h>
 #include "RtMidi.h"
 
 namespace Cool {
@@ -76,7 +77,7 @@ void MidiManager::disconnect()
 void MidiManager::imgui()
 {
     ImGui::Text("%f", get_value(MidiCc{1}));
-   ImGui::Begin(buf);
+//    ImGui::Begin(buf);
 			{
 				ImGui::PushItemWidth(80);
 				
@@ -85,12 +86,25 @@ void MidiManager::imgui()
 				
 				ImGui::PopItemWidth();
 			}
-			ImGui::End();
+			// ImGui::End();
     // if (ImGui::Button("Connect"))
     // {
     //     connect();
     // }
    
+}
+
+void MidiManager::imgui_emulate_midi_keyboard()
+{
+    static auto values = std::vector<float>(6);
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+        if(ImGui::SliderFloat(fmt::format("Index {}", i).c_str(), &values[i], 0.f, 1.f))
+        {
+            std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[i] * 127)};
+            midiCallback(0.f, &message, this);
+        }
+    }
 }
 
 }

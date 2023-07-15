@@ -63,6 +63,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="emulate_midi_keyboard",
+            name_in_ui="Emulate midi keyboard",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="test_tips",
             name_in_ui="Test tips",
             available_in_release=True,

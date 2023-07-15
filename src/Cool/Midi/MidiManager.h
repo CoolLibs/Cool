@@ -15,6 +15,8 @@ public:
     void connect();
     void disconnect();
     void imgui();
+    void imgui_emulate_midi_keyboard();
+    
 private:
     RtMidiIn*       mMidiIn;
 	unsigned int    mNumPorts;
