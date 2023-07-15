@@ -5,32 +5,18 @@ namespace Cool {
 
 RtMidi::Api MidiManager::chooseMidiApi()
 {
-  /*std::vector< RtMidi::Api > apis;
-  RtMidi::getCompiledApi( apis );
-
-  if (apis.size() <= 1)
-      return RtMidi::Api::UNSPECIFIED;
-
-  std::cout << "\nAPIs\n  API #0: unspecified / default\n";
-  for (size_t n = 0; n < apis.size(); n++)
-      std::cout << "  API #" << apis[n] << ": " << RtMidi::getApiDisplayName(apis[n]) << "\n";
-
-  std::cout << "\nChoose an API number: ";
-  unsigned int i;
-  std::cin >> i;
-
-  std::string dummy;
-  std::getline( std::cin, dummy ); */ // used to clear out stdin
-
-  return RtMidi::Api::WINDOWS_MM;// static_cast< RtMidi::Api >( 0 ); //i );
+  return  static_cast< RtMidi::Api >( 0 ); //i );
+  //ok return RtMidi::Api::WINDOWS_MM;
 }
-void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData )
+auto MidiManager::get_value(MidiCc const& midiCc) -> float
 {
-  unsigned int nBytes = message->size();
-  for ( unsigned int i=0; i<nBytes; i++ )
-    std::cout << "Byte " << i << " = " << (int)message->at(i) << ", ";
-  if ( nBytes > 0 )
-    std::cout << "stamp = " << deltatime << std::endl;
+    return mIndexToValue[midiCc.index];
+}
+void  MidiManager::midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData )
+{
+    MidiManager* midiManager = static_cast<MidiManager*>(userData);
+    unsigned int nBytes = message->size();
+    if ( nBytes > 2 ) midiManager->mIndexToValue[message->at(1)] = message->at(2) / 127.f;
 }
 void MidiManager::connect()
 {
@@ -89,12 +75,12 @@ void MidiManager::disconnect()
 
 void MidiManager::imgui()
 {
-    
+    ImGui::Text("%f", get_value(MidiCc{1}));
    
-    if (ImGui::Button("Connect"))
-    {
-        connect();
-    }
+    // if (ImGui::Button("Connect"))
+    // {
+    //     connect();
+    // }
    
 }
 

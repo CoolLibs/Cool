@@ -20,10 +20,11 @@ private:
 	unsigned int    mNumPorts;
 	unsigned int    mPort;
 	std::string     mName;
-    // void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData );
+     static  void midiCallback( double deltatime, std::vector< unsigned char > *message, void *userData );
     RtMidi::Api chooseMidiApi();
 
 // TODO(Midi) map index vers float
+std::unordered_map<int, float> mIndexToValue;
     };
 
 inline auto midi_manager() -> MidiManager&
