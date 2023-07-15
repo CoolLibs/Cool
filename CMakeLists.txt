@@ -180,7 +180,7 @@ add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
 # serv
-### Disabled for now, we will reintroduce it when we will use it
+# ## Disabled for now, we will reintroduce it when we will use it
 # add_subdirectory(lib/serv)
 # target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 
@@ -219,10 +219,14 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
-
 # Include OpenCV # TODO(TD) faire en sorte que cela soit optionnel
+include("lib/opencv_build_options.cmake")
 add_subdirectory(lib/easy_opencv)
-target_link_opencv_to_lib(Cool-PublicProperties INTERFACE)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/easy_opencv/opencv/include)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
@@ -248,7 +252,6 @@ add_subdirectory(lib/ImGui_StyleEditor)
 target_include_directories(ImStyleEd SYSTEM PRIVATE lib)
 target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 
-
 # ----------------
 # ---Copy files---
 # ----------------
@@ -259,8 +262,6 @@ Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # Th
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
-    target_link_opencv_to_exe(${TARGET_NAME} PUBLIC)
-
     Cool__target_copy_file(${TARGET_NAME} imgui.ini)
     Cool__target_copy_file(${TARGET_NAME} color_config.json)
     Cool__target_copy_file(${TARGET_NAME} color_themes.json)

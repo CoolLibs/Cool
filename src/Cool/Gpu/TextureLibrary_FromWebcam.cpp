@@ -1,6 +1,7 @@
 #include "TextureLibrary_FromWebcam.h"
 #include <algorithm>
 #include <memory>
+#include <opencv2/opencv.hpp>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -8,11 +9,7 @@
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
-#include "opencv2/core/mat.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/opencv.hpp"
-#include "opencv2/videoio.hpp"
+
 
 namespace Cool {
 
