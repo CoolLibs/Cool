@@ -175,18 +175,35 @@ static auto max_number_of_texture_slots() -> GLuint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return static_cast<GLuint>(res);
 }
-void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, TextureSamplerDescriptor const& sampler) const
+
+static auto get_next_texture_slot() -> GLuint
 {
     static GLuint       current_slot = 0;
     static GLuint const max_slots    = max_number_of_texture_slots();
 
-    texture.attach_to_slot(current_slot);
-    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(sampler)));
-    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(current_slot));
-    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
-
     current_slot = (current_slot + 1) % max_slots;
+    return current_slot;
 }
+
+void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    texture.attach_to_slot(slot);
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(slot));
+    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
+}
+
+void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+    GLDebug(glBindTexture(GL_TEXTURE_2D, texture_id));
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(uniform_name, static_cast<int>(slot));
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // Don't know why, but this is necessary, otherwise textures get mixed up (very visible with the Feedback node)
+}
+
 void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
 {
     set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
