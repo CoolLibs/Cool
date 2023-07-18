@@ -2,17 +2,50 @@
 #include <vcruntime.h>
 #include <memory>
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 #include <string>
+#include <thread>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 
 namespace Cool {
+
+struct WebcamCaptureThread {
+    int          _capture_id{};
+    std::jthread _thread{&WebcamCaptureThread::thread_webcam_work, this};
+    // std::jthread     _thread{};
+
+    void thread_webcam_work()
+    {
+        cv::VideoCapture capture{0};
+        cv::Mat          _mat_texture{};
+        int              vallll = 0;
+
+        while (true)
+        {
+            capture >> _mat_texture;
+            vallll++;
+
+            // const auto width  = static_cast<unsigned int>(mat.cols);
+            // const auto height = static_cast<unsigned int>(mat.rows);
+
+            // _thread_texture.bind();
+            // _thread_texture.set_image(
+            //     {width, height},
+            //     3, reinterpret_cast<uint8_t*>(mat.ptr())
+            // );
+            // Cool::Texture::unbind();
+        }
+    }
+};
 
 struct WebcamCapture {
     std::optional<Cool::Texture> _texture{};
     cv::VideoCapture             _capture{};
     std::string                  _name{};
     bool                         is_dirty = true;
+    WebcamCaptureThread          _webcam_thread{};
 };
 
 void update_webcam(WebcamCapture& webcam);

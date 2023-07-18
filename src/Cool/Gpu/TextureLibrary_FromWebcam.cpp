@@ -2,11 +2,14 @@
 #include <algorithm>
 #include <memory>
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 #include <optional>
 #include <ranges>
 #include <string>
+#include <thread>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 
@@ -30,8 +33,9 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optiona
     }
 
     if (_list_webcam[index].is_dirty)
+    {
         update_webcam(_list_webcam[index]); // TODO(TD)(à test) check si elle a été déjà update
-
+    }
     return _list_webcam[index]._texture;
 }
 
@@ -54,20 +58,24 @@ auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from s
 
 void TextureLibrary_FromWebcam::add_webcam()
 {
-    int size = _list_webcam.size();
-    int id   = std::min(size, 0); // TODO(TD) id must correspond to the texture index
+    std::jthread tread;
+    int          size = _list_webcam.size();
+    int          id   = std::min(size, 0); // TODO(TD) id must correspond to the texture index
     _list_webcam.emplace_back(WebcamCapture{
-        ._texture = Texture{},
-        ._capture = cv::VideoCapture{id},
-        ._name    = "Unknown TODO(TD)" + std::to_string(id)});
+        ._texture       = Texture{},
+        ._capture       = cv::VideoCapture{id},
+        ._name          = "Unknown TODO(TD)" + std::to_string(id),
+        ._webcam_thread = WebcamCaptureThread{
+            ._capture_id = id}});
 
     // update_webcam(_list_webcam.back());
 }
 
-void TextureLibrary_FromWebcam::update_webcams()
+void TextureLibrary_FromWebcam::update_webcams() // TODO(TD) ne sert plus à rien ?
 {
     for (WebcamCapture& webcam : _list_webcam)
-        update_webcam(webcam);
+    {}
+    // update_webcam(webcam);
 }
 
 void update_webcam(WebcamCapture& webcam)
@@ -77,7 +85,6 @@ void update_webcam(WebcamCapture& webcam)
 
     cv::Mat mat;
     webcam._capture >> mat;
-
     const auto width  = static_cast<unsigned int>(mat.cols);
     const auto height = static_cast<unsigned int>(mat.rows);
 
@@ -86,10 +93,12 @@ void update_webcam(WebcamCapture& webcam)
 
     else
     {
+        webcam._texture->bind();
         webcam._texture->set_image(
             {width, height},
             3, reinterpret_cast<uint8_t*>(mat.ptr())
         );
+        Cool::Texture::unbind();
     }
     webcam.is_dirty = false; // the webcam is now up to date
 }
