@@ -10,13 +10,7 @@
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 
-
 namespace Cool {
-
-static auto gen_dummy_texture() -> Texture // TODO(TD) mettre en commun avec la librarie de webcam
-{
-    return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
-}
 
 TextureLibrary_FromWebcam::TextureLibrary_FromWebcam()
     : _number_of_webcam(compute_number_of_camera())
@@ -32,8 +26,6 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optiona
 {
     if (index >= _list_webcam.size()) //  || !_list_webcam[index]._texture) TODO(TD) need it ?
     {
-        // static auto const dummy_texture = gen_dummy_texture();
-        // return dummy_texture; // TODO(TD)(à test) return the dummy texture and send an error message (cf what TextureLibrary_FromFile does)
         return std::nullopt;
     }
 
