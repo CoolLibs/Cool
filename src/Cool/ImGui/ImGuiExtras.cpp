@@ -295,8 +295,8 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 }
 
 auto folder_dialog_button(
-    std::filesystem::path*   out_path,
-    File::folder_dialog_args args
+    std::filesystem::path*          out_path,
+    File::folder_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
@@ -311,8 +311,8 @@ auto folder_dialog_button(
 }
 
 auto file_dialog_button(
-    std::filesystem::path* out_path,
-    File::file_dialog_args args
+    std::filesystem::path*        out_path,
+    File::file_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))

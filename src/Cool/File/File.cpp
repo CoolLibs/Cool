@@ -134,7 +134,7 @@ void set_content(std::filesystem::path const& file_path, std::string_view conten
     file << content;
 }
 
-auto folder_dialog(folder_dialog_args args) -> std::optional<std::filesystem::path>
+auto folder_dialog(folder_dialog_args const& args) -> std::optional<std::filesystem::path>
 {
     auto        path   = NFD::UniquePath{};
     nfdresult_t result = NFD::PickFolder(path, std::filesystem::absolute(args.initial_folder).string().c_str());
@@ -143,7 +143,7 @@ auto folder_dialog(folder_dialog_args args) -> std::optional<std::filesystem::pa
     return std::filesystem::path{path.get()};
 }
 
-auto file_opening_dialog(file_dialog_args args) -> std::optional<std::filesystem::path>
+auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
 {
     auto        path   = NFD::UniquePath{};
     nfdresult_t result = NFD::OpenDialog(
@@ -157,7 +157,7 @@ auto file_opening_dialog(file_dialog_args args) -> std::optional<std::filesystem
     return std::filesystem::path{path.get()};
 }
 
-auto file_saving_dialog(file_dialog_args args) -> std::optional<std::filesystem::path>
+auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
 {
     auto        path   = NFD::UniquePath{};
     nfdresult_t result = NFD::SaveDialog(

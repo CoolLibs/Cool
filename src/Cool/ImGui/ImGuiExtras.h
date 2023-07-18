@@ -131,14 +131,14 @@ void invisible_wrapper_around_previous_line(const char* str_id);
 /// Returns true iff out_path was modified.
 auto folder_dialog_button(
     std::filesystem::path* out_path,
-    File::folder_dialog_args = {}
+    File::folder_dialog_args const& = {}
 ) -> bool;
 
 /// Adds a button that opens a file dialog.
 /// Returns true iff out_path was modified.
 auto file_dialog_button(
     std::filesystem::path* out_path,
-    File::file_dialog_args = {}
+    File::file_dialog_args const& = {}
 ) -> bool;
 
 /// UI for a folder path. Creates a text input and a button to open a folder explorer.
