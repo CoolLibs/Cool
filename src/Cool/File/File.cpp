@@ -87,6 +87,17 @@ auto create_folders_for_file_if_they_dont_exist(std::filesystem::path const& fil
     return create_folders_if_they_dont_exist(without_file_name(file_path));
 }
 
+auto create_file_if_it_doesnt_exist(std::filesystem::path const& file_path) -> bool
+{
+    if (File::exists(file_path))
+        return true;
+    if (!create_folders_for_file_if_they_dont_exist(file_path))
+        return false;
+
+    auto file = std::ofstream{file_path};
+    return file.is_open();
+}
+
 auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
 {
     std::string const name = Cool::File::without_extension(file_name).string();
