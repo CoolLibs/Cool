@@ -62,7 +62,7 @@ void TipsManager::imgui_windows(Tips all_tips)
         ImGuiExtras::markdown(get_current_tip(all_tips));
         ImGui::SeparatorText("");
 
-        auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
+        auto const button_width = ImGui::GetContentRegionAvail().x / 3.f - ImGui::GetStyle().ItemSpacing.x / 3.f;
 
         if (ImGui::Button("Got it!", {button_width, 0.f})
             || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
@@ -76,6 +76,13 @@ void TipsManager::imgui_windows(Tips all_tips)
         {
             _window.close();
             open_all_tips_window();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Next tip", {button_width, 0.f}))
+        {
+            prepare_next_tip();
         }
     });
 
