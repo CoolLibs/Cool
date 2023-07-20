@@ -1,8 +1,14 @@
 #pragma once
 #include <vcruntime.h>
+#include <array>
+#include <functional>
 #include <memory>
+#include <mutex>
+#include <opencv2/core.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
+#include <optional>
 #include <string>
 #include <thread>
 #include <vector>
@@ -11,10 +17,16 @@
 
 namespace Cool {
 
-struct WebcamCaptureThread {
-    int          _capture_id{};
-    std::jthread _thread{&WebcamCaptureThread::thread_webcam_work, this};
-    // std::jthread     _thread{};
+struct WebcamCapture {
+    std::optional<Cool::Texture> _texture{};
+    cv::VideoCapture             _capture{};
+    std::string                  _name{};
+    bool                         is_dirty = true;
+
+    int                         _webcam_id{};
+    cv::Mat                     _mat{};
+    std::unique_ptr<std::mutex> _mutex_ptr;
+    std::jthread                _thread{&WebcamCapture::thread_webcam_work, this};
 
     void thread_webcam_work()
     {
@@ -22,30 +34,21 @@ struct WebcamCaptureThread {
         cv::Mat          _mat_texture{};
         int              vallll = 0;
 
-        while (true)
+        while (vallll < 100)
         {
-            capture >> _mat_texture;
-            vallll++;
-
-            // const auto width  = static_cast<unsigned int>(mat.cols);
-            // const auto height = static_cast<unsigned int>(mat.rows);
-
-            // _thread_texture.bind();
-            // _thread_texture.set_image(
-            //     {width, height},
-            //     3, reinterpret_cast<uint8_t*>(mat.ptr())
-            // );
-            // Cool::Texture::unbind();
+            {
+                if (_mutex_ptr == nullptr)
+                {
+                    std::cout << "il est vide \n\n";
+                    return;
+                }
+                std::scoped_lock<std::mutex> lock(*_mutex_ptr);
+                capture >> _mat_texture;
+                vallll++;
+            }
+            cv::swap(_mat, _mat_texture);
         }
     }
-};
-
-struct WebcamCapture {
-    std::optional<Cool::Texture> _texture{};
-    cv::VideoCapture             _capture{};
-    std::string                  _name{};
-    bool                         is_dirty = true;
-    WebcamCaptureThread          _webcam_thread{};
 };
 
 void update_webcam(WebcamCapture& webcam);

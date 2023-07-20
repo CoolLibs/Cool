@@ -1,6 +1,7 @@
 #include "TextureLibrary_FromWebcam.h"
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
 #include <optional>
@@ -58,15 +59,15 @@ auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from s
 
 void TextureLibrary_FromWebcam::add_webcam()
 {
-    std::jthread tread;
-    int          size = _list_webcam.size();
-    int          id   = std::min(size, 0); // TODO(TD) id must correspond to the texture index
+    int size = _list_webcam.size();
+    int id   = std::min(size, 0); // TODO(TD) id must correspond to the texture index
     _list_webcam.emplace_back(WebcamCapture{
-        ._texture       = Texture{},
-        ._capture       = cv::VideoCapture{id},
-        ._name          = "Unknown TODO(TD)" + std::to_string(id),
-        ._webcam_thread = WebcamCaptureThread{
-            ._capture_id = id}});
+        ._texture   = Texture{},
+        ._capture   = cv::VideoCapture{id},
+        ._name      = "Unknown TODO(TD)" + std::to_string(id),
+        ._webcam_id = id,
+        ._mutex_ptr = std::make_unique<std::mutex>(),
+    });
 
     // update_webcam(_list_webcam.back());
 }
