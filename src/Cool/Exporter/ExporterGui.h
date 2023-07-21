@@ -31,7 +31,7 @@ public:
     void maybe_set_aspect_ratio(std::optional<AspectRatio> const&);
 
     /// Displays all the currently active windows.
-    void imgui_windows(Polaroid const&, float time, std::optional<VideoExportProcess>&);
+    void imgui_windows(Polaroid const&, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported, std::optional<VideoExportProcess>&);
 
     /// The buttons to open the different exporter windows.
     void imgui_menu_items(imgui_menu_items_Params const& = {}, std::optional<std::string> longest_text = {});
@@ -45,7 +45,7 @@ private:
     /// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export.
     static void        end_video_export(std::optional<VideoExportProcess>&);
     auto               output_path() -> std::filesystem::path;
-    void               imgui_window_export_image(Polaroid polaroid, float time);
+    void               imgui_window_export_image(Polaroid polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported);
     void               imgui_window_export_video(std::optional<VideoExportProcess>&);
     [[nodiscard]] auto clear_export_folder() const -> bool;
 

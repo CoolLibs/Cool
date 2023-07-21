@@ -30,9 +30,9 @@ void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspec
         set_aspect_ratio(*aspect_ratio);
 }
 
-void ExporterGui::imgui_windows(Polaroid const& polaroid, float time, std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_windows(Polaroid const& polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported, std::optional<VideoExportProcess>& video_export_process)
 {
-    imgui_window_export_image(polaroid, time);
+    imgui_window_export_image(polaroid, time, on_image_exported);
     imgui_window_export_video(video_export_process);
 }
 
@@ -68,7 +68,7 @@ void ExporterGui::imgui_menu_items(imgui_menu_items_Params const& p, std::option
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
 {
     _image_export_window.show([&]() {
         _export_size.imgui();
@@ -87,6 +87,7 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time)
         {
             _image_export_window.close();
             ExporterU::export_image(_export_size, time, polaroid, output_path());
+            on_image_exported(output_path());
         }
     });
 }
