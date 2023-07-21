@@ -220,6 +220,15 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 
+# Include OpenCV # TODO(TD) faire en sorte que cela soit optionnel
+include("lib/opencv_build_options.cmake")
+add_subdirectory(lib/easy_opencv)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+
+# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/easy_opencv/opencv/include)
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
@@ -294,4 +303,5 @@ target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 add_subdirectory(lib/doctest)
+target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
