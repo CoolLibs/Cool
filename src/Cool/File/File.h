@@ -51,7 +51,7 @@ void set_content(std::filesystem::path const& file_path, std::string_view conten
 
 struct folder_dialog_args {
     /// Folder that the dialog window should open at. Leave blank for default (platform-specific) behaviour.
-    std::filesystem::path initial_folder = ""; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+    std::filesystem::path initial_folder = "";
 };
 /// Opens a folder dialog UI, and returns the selected path, or nullopt if the dialog is cancelled / closed by the user.
 auto folder_dialog(folder_dialog_args const& = {}) -> std::optional<std::filesystem::path>;
@@ -59,9 +59,9 @@ auto folder_dialog(folder_dialog_args const& = {}) -> std::optional<std::filesys
 struct file_dialog_args {
     /// A set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }.
     /// You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
-    std::vector<nfdfilteritem_t> file_filters = {}; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+    std::vector<nfdfilteritem_t> file_filters = {};
     /// Folder that the dialog window should open at. Leave blank for default (platform-specific) behaviour.
-    std::filesystem::path initial_folder = ""; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+    std::filesystem::path initial_folder = "";
 };
 /// Opens a file dialog UI, and returns the selected path, or nullopt if the dialog is cancelled / closed by the user.
 auto file_opening_dialog(file_dialog_args const& = {}) -> std::optional<std::filesystem::path>;
