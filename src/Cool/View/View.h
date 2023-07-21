@@ -21,6 +21,7 @@ struct ViewWindowParams {
 /// You can use one of the various subclasses to decide where your image will come from.
 class View {
 public:
+    friend class ViewView;
     explicit View(std::string_view name, bool is_closable = false)
         : _name{name}
         , _is_closable{is_closable}
@@ -58,6 +59,7 @@ public:
     auto gizmos_manager() -> GizmoManager& { return _gizmos; }
 
     auto has_vertical_margins() const -> bool { return _window_size ? _has_vertical_margins : false; }
+    auto is_open() const -> bool { return _is_open; }
 
 private: /// Child classes need to implement these functions in order for us to display their image in the View.
     virtual auto get_image_texture_id() const -> ImTextureID = 0;
