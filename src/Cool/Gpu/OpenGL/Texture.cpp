@@ -1,6 +1,6 @@
+#include <glpp-extended/src/TextureLayout.h>
 #if defined(COOL_OPENGL)
 
-#include "glpp/Functions/Texture.h"
 #include <img/img.hpp>
 #include "../Texture.h"
 #include "glpp-extended/src/ImageSize.h"
@@ -8,6 +8,7 @@
 #include "glpp/Enums/InternalFormat.h"
 #include "glpp/Enums/TexelDataType.h"
 #include "glpp/Enums/TextureKind.h"
+#include "glpp/Functions/Texture.h"
 #include "img/src/Size.h"
 #include "img/src/SizeU.h"
 
@@ -59,16 +60,24 @@ void Texture::set_image(img::Image const& img)
 void Texture::set_image(img::Size const& size, int channels_count, uint8_t const* data)
 {
     assert(channels_count == 3 || channels_count == 4);
-
-    _aspect_ratio = img::SizeU::aspect_ratio(size);
-    _tex.upload_data(
-        img_to_glpp_size(size),
+    set_image(
+        size,
         data,
         {
             .internal_format = channels_count == 3 ? glpp::InternalFormat::RGB : glpp::InternalFormat::RGBA,
             .channels        = channels_count == 3 ? glpp::Channels::RGB : glpp::Channels::RGBA,
             .texel_data_type = glpp::TexelDataType::UnsignedByte,
         }
+    );
+}
+
+void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout)
+{
+    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _tex.upload_data(
+        img_to_glpp_size(size),
+        data,
+        layout
     );
 #if DEBUG
     _data_has_been_uploaded = true;

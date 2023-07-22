@@ -30,6 +30,7 @@ public:
     void set_image(img::Image const&);
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
     void set_image(img::Size const&, int channels_count, uint8_t const* data);
+    void set_image(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout);
     void set_interpolation_mode(glpp::Interpolation interpolation_mode);
     void set_wrap_mode(glpp::Wrap wrap_mode);
 

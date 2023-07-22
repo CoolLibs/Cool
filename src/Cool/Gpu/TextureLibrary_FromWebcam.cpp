@@ -88,7 +88,12 @@ void update_webcam(WebcamCapture& webcam)
     {
         webcam._texture->set_image(
             {width, height},
-            3, reinterpret_cast<uint8_t*>(mat.ptr())
+            reinterpret_cast<uint8_t*>(mat.ptr()),
+            {
+                .internal_format = glpp::InternalFormat::RGBA,
+                .channels        = glpp::Channels::RGB,
+                .texel_data_type = glpp::TexelDataType::UnsignedByte,
+            }
         );
     }
     webcam.is_dirty = false; // the webcam is now up to date
