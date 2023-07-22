@@ -25,6 +25,7 @@ struct WebcamCapture {
     WebcamCapture(int id)
         : _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
         , _name{"Unknown TODO(TD) " + std::to_string(id)}
+        , _webcam_id(id)
     {
     }
     std::optional<Cool::Texture> _texture{};
@@ -46,6 +47,7 @@ struct WebcamCapture {
             while (!stop_token.stop_requested())
             {
                 capture >> wip_image;
+                std::cout << capture.isOpened() << "\n";
                 {
                     std::scoped_lock lock(This._mutex);
                     cv::swap(This._available_image, wip_image);
@@ -78,15 +80,14 @@ public:
     auto error_from(const size_t index) const -> std::optional<std::string>;
 
 private:
-    TextureLibrary_FromWebcam(); // This is a singleton. Get the global instance with `instance()` instead.
+    TextureLibrary_FromWebcam() = default;
+    ; // This is a singleton. Get the global instance with `instance()` instead.
 
-    auto compute_number_of_camera() -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
+    auto find_next_webcam_index(const int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
     void add_webcam(int id);
     void update_webcams();
 
 private:
-    int _number_of_webcam{};
-    // std::unordered_map<int, WebcamCapture> _webcams{};
     std::list<WebcamCapture> _webcams;
 };
 

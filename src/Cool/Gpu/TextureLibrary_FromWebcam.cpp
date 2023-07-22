@@ -1,4 +1,5 @@
 #include "TextureLibrary_FromWebcam.h"
+#include <imgui.h>
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -17,11 +18,6 @@
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
-
-TextureLibrary_FromWebcam::TextureLibrary_FromWebcam()
-    : _number_of_webcam(compute_number_of_camera())
-{
-}
 
 auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*
 {
@@ -49,21 +45,47 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optiona
     return cap->_texture;
 }
 
-auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
+auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
 {
-    int              maxTested = 10;
+    int              maxTested = 3;
     cv::VideoCapture temp_camera;
 
     for (int i = 0; i < maxTested; i++)
     {
-        temp_camera.open(i);
-        if (!temp_camera.isOpened())
+        int index = (i + start_index + 1) % maxTested;
+
+        auto it = std::find_if(_webcams.begin(), _webcams.end(), [index](WebcamCapture const& webcam) { return (webcam._webcam_id == index); });
+
+        if (it != _webcams.end())
         {
-            return i;
+            return index;
+        }
+
+        temp_camera.open(index);
+        if (temp_camera.isOpened())
+        {
+            if (index == start_index)
+            {
+                Cool::Log::ToUser::console()
+                    .send(
+                        Message{
+                            .category = "Nodes",
+                            .message  = fmt::format("There is only one webcam"),
+                            .severity = MessageSeverity::Warning,
+                        }
+                    );
+            }
+            return index;
         }
     }
-    temp_camera.release();
-    return maxTested;
+    Cool::Log::ToUser::console()
+        .send(
+            Message{
+                .category = "Nodes",
+                .message  = fmt::format("No Webcam found"),
+                .severity = MessageSeverity::Warning,
+            }
+        );
 }
 
 void TextureLibrary_FromWebcam::add_webcam(const int id)
@@ -124,21 +146,17 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> bool
 {
-    bool        b = false;
-    std::string text;
-    for (int i = 0; i < _number_of_webcam; i++)
+    bool b = false;
+    if (ImGui::Button("Switch to next webcam"))
     {
-        text.append(std::to_string(i));
-        text.push_back('\0');
+        webcam_index = find_next_webcam_index(webcam_index);
     }
-    text.push_back('\0');
-
-    b |= ImGui::Combo("Camera Displayed", &webcam_index, text.c_str());
     return b;
 }
 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
 {
+    return true; // TODO(TD)
     return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](auto const& webcam) { return webcam._texture.has_value(); });
 }
 
