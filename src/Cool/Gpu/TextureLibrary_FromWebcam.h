@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
@@ -19,34 +20,25 @@ namespace Cool {
 
 struct WebcamCapture {
     std::optional<Cool::Texture> _texture{};
-    cv::VideoCapture             _capture{};
     std::string                  _name{};
     bool                         is_dirty = true;
 
-    int                         _webcam_id{};
-    cv::Mat                     _mat{};
-    std::unique_ptr<std::mutex> _mutex_ptr;
-    std::jthread                _thread{&WebcamCapture::thread_webcam_work, this};
+    int          _webcam_id{};
+    cv::Mat      _available_image{};
+    std::mutex   _mutex;
+    std::jthread _thread{&WebcamCapture::thread_webcam_work, this};
 
     void thread_webcam_work()
     {
-        cv::VideoCapture capture{0};
-        cv::Mat          _mat_texture{};
-        int              vallll = 0;
-
-        while (vallll < 100)
+        cv::VideoCapture capture{_webcam_id};
+        cv::Mat          wip_image{};
+        while (true)
         {
+            capture >> wip_image;
             {
-                if (_mutex_ptr == nullptr)
-                {
-                    std::cout << "il est vide \n\n";
-                    return;
-                }
-                std::scoped_lock<std::mutex> lock(*_mutex_ptr);
-                capture >> _mat_texture;
-                vallll++;
+                std::scoped_lock lock(_mutex);
+                cv::swap(_available_image, wip_image);
             }
-            cv::swap(_mat, _mat_texture);
         }
     }
 };
@@ -78,8 +70,8 @@ private:
     void update_webcams();
 
 private:
-    int                        _number_of_webcam{};
-    std::vector<WebcamCapture> _list_webcam{};
+    int                                    _number_of_webcam{};
+    std::unordered_map<int, WebcamCapture> _webcams{};
 };
 
 } // namespace Cool

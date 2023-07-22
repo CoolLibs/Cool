@@ -6,6 +6,7 @@
 #include <opencv2/videoio.hpp>
 #include <optional>
 #include <ranges>
+#include <shared_mutex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -28,16 +29,16 @@ TextureLibrary_FromWebcam::TextureLibrary_FromWebcam()
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optional<Texture> const&
 {
-    if (index >= _list_webcam.size()) //  || !_list_webcam[index]._texture) TODO(TD) need it ?
+    if (index >= _webcams.size()) //  || !_list_webcam[index]._texture) TODO(TD) need it ?
     {
         return std::nullopt;
     }
 
-    if (_list_webcam[index].is_dirty)
+    if (_webcams[index].is_dirty)
     {
-        update_webcam(_list_webcam[index]); // TODO(TD)(à test) check si elle a été déjà update
+        update_webcam(_webcams[index]); // TODO(TD)(à test) check si elle a été déjà update
     }
-    return _list_webcam[index]._texture;
+    return _webcams[index]._texture;
 }
 
 auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
@@ -59,62 +60,60 @@ auto TextureLibrary_FromWebcam::compute_number_of_camera() -> int // code from s
 
 void TextureLibrary_FromWebcam::add_webcam()
 {
-    int size = _list_webcam.size();
+    int size = _webcams.size();
     int id   = std::min(size, 0); // TODO(TD) id must correspond to the texture index
-    _list_webcam.emplace_back(WebcamCapture{
-        ._texture   = Texture{},
-        ._capture   = cv::VideoCapture{id},
-        ._name      = "Unknown TODO(TD)" + std::to_string(id),
-        ._webcam_id = id,
-        ._mutex_ptr = std::make_unique<std::mutex>(),
-    });
 
+    auto& capture    = _webcams[id];
+    capture._texture = Texture{};
+    // capture._capture   = cv::VideoCapture{id};
+    capture._name      = "Unknown TODO(TD)" + std::to_string(id);
+    capture._webcam_id = id;
     // update_webcam(_list_webcam.back());
 }
 
 void TextureLibrary_FromWebcam::update_webcams() // TODO(TD) ne sert plus à rien ?
 {
-    for (WebcamCapture& webcam : _list_webcam)
-    {}
-    // update_webcam(webcam);
+    for (auto& [_, webcam] : _webcams)
+    {
+        update_webcam(webcam);
+    }
 }
 
 void update_webcam(WebcamCapture& webcam)
 {
-    // if (!webcam._texture.has_value())
-    //     return;
-
-    cv::Mat mat;
-    webcam._capture >> mat;
-    const auto width  = static_cast<unsigned int>(mat.cols);
-    const auto height = static_cast<unsigned int>(mat.rows);
-
-    if (!webcam._texture)
-        webcam._texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(mat.ptr())};
-
-    else
     {
-        webcam._texture->bind();
-        webcam._texture->set_image(
-            {width, height},
-            3, reinterpret_cast<uint8_t*>(mat.ptr())
-        );
-        Cool::Texture::unbind();
+        std::scoped_lock lock(webcam._mutex);
+
+        const auto width  = static_cast<unsigned int>(webcam._available_image.cols);
+        const auto height = static_cast<unsigned int>(webcam._available_image.rows);
+
+        if (!webcam._texture)
+            webcam._texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam._available_image.ptr())};
+
+        else
+        {
+            webcam._texture->bind();
+            webcam._texture->set_image(
+                {width, height},
+                3, reinterpret_cast<uint8_t*>(webcam._available_image.ptr())
+            );
+            Cool::Texture::unbind();
+        }
     }
     webcam.is_dirty = false; // the webcam is now up to date
 }
 
 void TextureLibrary_FromWebcam::on_frame_begin()
 {
-    for (auto& webcam_capture : _list_webcam)
-        webcam_capture.is_dirty = true;
+    for (auto& [_, webcam] : _webcams)
+        webcam.is_dirty = true;
 }
 
 void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has not been updated during the frame
 {
-    for (auto& webcam_capture : _list_webcam)
-        if (webcam_capture.is_dirty == true)
-            webcam_capture._texture.reset();
+    for (auto& [_, webcam] : _webcams)
+        if (webcam.is_dirty == true)
+            webcam._texture.reset();
 }
 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> bool
@@ -134,12 +133,12 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> 
 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
 {
-    return std::ranges::any_of(_list_webcam.begin(), _list_webcam.end(), [](const WebcamCapture& webcam) { return webcam._texture.has_value(); });
+    return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](auto const& pair) { return pair.second._texture.has_value(); });
 }
 
 auto TextureLibrary_FromWebcam::error_from(const size_t index) const -> std::optional<std::string>
 {
-    if (index > _list_webcam.size()) // TODO(TD) un test mieux ?
+    if (index > _webcams.size()) // TODO(TD) un test mieux ?
     {
         return fmt::format("Failed to read node from Camera {}:\n", index);
     }
