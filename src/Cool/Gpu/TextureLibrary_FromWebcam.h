@@ -1,18 +1,53 @@
 #pragma once
 #include <vcruntime.h>
+#include <array>
+#include <functional>
+#include <list>
 #include <memory>
+#include <mutex>
+#include <opencv2/core.hpp>
+#include <opencv2/core/mat.hpp>
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
+#include <optional>
 #include <string>
+#include <thread>
+#include <unordered_map>
 #include <vector>
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 
 namespace Cool {
 
 struct WebcamCapture {
+    WebcamCapture() = default;
+    WebcamCapture(int id)
+        : _thread{&WebcamCapture::thread_webcam_work, this, id}
+        , _name{"Unknown TODO(TD) " + std::to_string(id)}
+    {
+    }
     std::optional<Cool::Texture> _texture{};
-    cv::VideoCapture             _capture{};
     std::string                  _name{};
     bool                         is_dirty = true;
+
+    int          _webcam_id{};
+    cv::Mat      _available_image{};
+    std::mutex   _mutex;
+    std::jthread _thread;
+
+    void thread_webcam_work(int webcam_id)
+    {
+        cv::VideoCapture capture{webcam_id};
+        cv::Mat          wip_image{};
+        while (true)
+        {
+            capture >> wip_image;
+            {
+                std::scoped_lock lock(_mutex);
+                cv::swap(_available_image, wip_image);
+            }
+        }
+    }
 };
 
 void update_webcam(WebcamCapture& webcam);
@@ -24,7 +59,7 @@ public:
         static auto inst = TextureLibrary_FromWebcam{};
         return inst;
     }
-
+    auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*;
     auto get_webcam_texture(size_t index) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
@@ -42,8 +77,9 @@ private:
     void update_webcams();
 
 private:
-    int                        _number_of_webcam{};
-    std::vector<WebcamCapture> _list_webcam{};
+    int _number_of_webcam{};
+    // std::unordered_map<int, WebcamCapture> _webcams{};
+    std::list<WebcamCapture> _webcams;
 };
 
 } // namespace Cool
