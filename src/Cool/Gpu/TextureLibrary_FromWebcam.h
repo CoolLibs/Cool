@@ -10,6 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
 #include <optional>
+#include <stop_token>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -22,35 +23,42 @@ namespace Cool {
 struct WebcamCapture {
     WebcamCapture() = default;
     WebcamCapture(int id)
-        : _thread{&WebcamCapture::thread_webcam_work, this, id}
+        : _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
         , _name{"Unknown TODO(TD) " + std::to_string(id)}
     {
     }
     std::optional<Cool::Texture> _texture{};
     std::string                  _name{};
-    bool                         is_dirty = true;
+    bool                         is_dirty                      = true;
+    bool                         has_been_requested_this_frame = true;
 
     int          _webcam_id{};
     cv::Mat      _available_image{};
     std::mutex   _mutex;
     std::jthread _thread;
 
-    void thread_webcam_work(int webcam_id)
+    static void thread_webcam_work(std::stop_token stop_token, WebcamCapture& This, int webcam_id)
     {
-        cv::VideoCapture capture{webcam_id};
-        cv::Mat          wip_image{};
-        while (true)
+        try
         {
-            capture >> wip_image;
+            cv::VideoCapture capture{webcam_id};
+            cv::Mat          wip_image{};
+            while (!stop_token.stop_requested())
             {
-                std::scoped_lock lock(_mutex);
-                cv::swap(_available_image, wip_image);
+                capture >> wip_image;
+                {
+                    std::scoped_lock lock(This._mutex);
+                    cv::swap(This._available_image, wip_image);
+                    This.is_dirty = true;
+                }
             }
         }
+        catch (...)
+        {}
     }
 };
 
-void update_webcam(WebcamCapture& webcam);
+void update_webcam_ifn(WebcamCapture& webcam);
 
 class TextureLibrary_FromWebcam {
 public:
@@ -73,7 +81,7 @@ private:
     TextureLibrary_FromWebcam(); // This is a singleton. Get the global instance with `instance()` instead.
 
     auto compute_number_of_camera() -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
-    void add_webcam();
+    void add_webcam(int id);
     void update_webcams();
 
 private:
