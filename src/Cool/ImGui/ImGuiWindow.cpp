@@ -10,7 +10,8 @@ void ImGuiWindow::show(std::function<void()> widgets)
         bool const is_really_open = ImGui::IsPopupOpen(_title.c_str());
         if (!is_really_open && _is_open)
             ImGui::OpenPopup(_title.c_str());
-        _is_open = ImGui::IsPopupOpen(_title.c_str()); // If the popup has been closed, _is_open must reflect that.
+        if (_is_open)
+            _is_open = ImGui::IsPopupOpen(_title.c_str()); // If the popup has been closed, _is_open must reflect that.
 
         if (ImGui::BeginPopupModal(_title.c_str(), &_is_open))
         {
