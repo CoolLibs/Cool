@@ -23,6 +23,7 @@ public:
     auto begin() { return _container.begin(); }
     auto begin() const { return _container.begin(); }
     auto end() { return _container.end(); }
+    auto end() const { return _container.end(); }
 
     [[nodiscard]] auto is_empty() const -> bool { return _container.empty(); }
 
