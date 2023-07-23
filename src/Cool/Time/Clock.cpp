@@ -4,14 +4,20 @@ namespace Cool {
 
 void Clock::play()
 {
-    assert(!_is_playing);
     _is_playing = true;
 }
 
 void Clock::pause()
 {
-    assert(_is_playing);
     _is_playing = false;
+}
+
+void Clock::set_playing(bool wants_to_play)
+{
+    if (wants_to_play)
+        play();
+    else
+        pause();
 }
 
 void Clock::toggle_play_pause()
