@@ -19,6 +19,17 @@ auto TextureSource_FromWebcam::imgui_widget() -> bool
 
 [[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> std::optional<Texture> const&
 {
+    // if (!TextureLibrary_FromWebcam::instance().get_webcam_texture(webcam_index).has_value())
+    // {
+    //     Cool::Log::ToUser::console()
+    //         .send(
+    //             Message{
+    //                 .category = "Nodes",
+    //                 .message  = fmt::format("Cannot open Webcam {}", webcam_index),
+    //                 .severity = MessageSeverity::Warning,
+    //             }
+    //         );
+    // }
     return TextureLibrary_FromWebcam::instance().get_webcam_texture(webcam_index);
 }
 

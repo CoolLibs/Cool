@@ -4,6 +4,7 @@
 #include <cmath>
 #include <memory>
 #include <mutex>
+#include <opencv2/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
 #include <optional>
@@ -26,7 +27,7 @@ auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*
         if (webcam._webcam_id == i)
             return &webcam;
     }
-    return nullptr;
+    return nullptr; // TODO(TD) pb le display toujours une première fois
 }
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(const int index) -> std::optional<Texture> const&
@@ -50,6 +51,20 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
     int              maxTested = 3;
     cv::VideoCapture temp_camera;
 
+    auto log_message_if_is_the_same_camera = [](const int index, const int start_index) {
+        if (index == start_index)
+        {
+            Cool::Log::ToUser::console()
+                .send(
+                    Message{
+                        .category = "Nodes",
+                        .message  = fmt::format("There is only one webcam"),
+                        .severity = MessageSeverity::Warning,
+                    }
+                );
+        }
+    };
+
     for (int i = 0; i < maxTested; i++)
     {
         int index = (i + start_index + 1) % maxTested;
@@ -58,23 +73,14 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
 
         if (it != _webcams.end())
         {
+            log_message_if_is_the_same_camera(index, start_index);
             return index;
         }
 
         temp_camera.open(index);
         if (temp_camera.isOpened())
         {
-            if (index == start_index)
-            {
-                Cool::Log::ToUser::console()
-                    .send(
-                        Message{
-                            .category = "Nodes",
-                            .message  = fmt::format("There is only one webcam"),
-                            .severity = MessageSeverity::Warning,
-                        }
-                    );
-            }
+            log_message_if_is_the_same_camera(index, start_index);
             return index;
         }
     }
@@ -86,6 +92,7 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
                 .severity = MessageSeverity::Warning,
             }
         );
+    return 0;
 }
 
 void TextureLibrary_FromWebcam::add_webcam(const int id)
@@ -94,8 +101,17 @@ void TextureLibrary_FromWebcam::add_webcam(const int id)
     {
         _webcams.emplace_back(id);
     }
-    catch (...) // TODO(TD) trouver les bonnes exceptions renvoyées par opencv
-    {}
+    catch (cv::Exception& err) // TODO(TD) trouver les bonnes exceptions renvoyées par opencv
+    {
+        Cool::Log::ToUser::console()
+            .send(
+                Message{
+                    .category = "Nodes",
+                    .message  = err.what(),
+                    .severity = MessageSeverity::Warning,
+                }
+            );
+    }
 }
 
 void update_webcam_ifn(WebcamCapture& webcam)
@@ -157,7 +173,6 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
 {
     return !_webcams.empty(); // TODO(TD) not the best
-    // return true; // TODO(TD)
     // return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](WebcamCapture const& webcam) { return webcam.has_been_requested_this_frame; });
 }
 
