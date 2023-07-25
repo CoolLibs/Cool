@@ -7,16 +7,17 @@ public:
     Clock()          = default;
     virtual ~Clock() = default;
 
-    virtual float delta_time() const = 0;
-    virtual float time() const       = 0;
+    [[nodiscard]] virtual auto delta_time() const -> float = 0;
+    [[nodiscard]] virtual auto time() const -> float       = 0;
 
     virtual void set_time(float new_time) = 0;
     virtual void update()                 = 0;
 
-    virtual void play();
-    virtual void pause();
-    void         toggle_play_pause();
-    inline bool  is_playing() const { return _is_playing; }
+    virtual void       play();
+    virtual void       pause();
+    void               set_playing(bool wants_to_play);
+    void               toggle_play_pause();
+    [[nodiscard]] auto is_playing() const -> bool { return _is_playing; }
 
 private:
     bool _is_playing = true;
