@@ -150,6 +150,7 @@ add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 
 # GLFW
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 
@@ -293,5 +294,7 @@ add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
 target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+
+set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
