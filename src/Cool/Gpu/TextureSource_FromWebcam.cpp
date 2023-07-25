@@ -1,4 +1,3 @@
-#pragma once
 #include "TextureSource_FromWebcam.h"
 #include <optional>
 #include <string>

@@ -22,10 +22,10 @@ namespace Cool {
 
 struct WebcamCapture {
     WebcamCapture() = default;
-    WebcamCapture(int id)
-        : _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
-        , _name{"Unknown TODO(TD) " + std::to_string(id)}
+    explicit WebcamCapture(int id)
+        : _name{"Unknown TODO(TD) " + std::to_string(id)}
         , _webcam_id(id)
+        , _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
     {
     }
     std::optional<Cool::Texture> _texture{};
@@ -44,6 +44,12 @@ struct WebcamCapture {
         {
             cv::VideoCapture capture{webcam_id};
             cv::Mat          wip_image{};
+
+            int width  = 1920;
+            int height = 1080;
+            capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
+            capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+
             while (!stop_token.stop_requested())
             {
                 capture >> wip_image;
@@ -69,21 +75,21 @@ public:
         static auto inst = TextureLibrary_FromWebcam{};
         return inst;
     }
-    auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*;
-    auto get_webcam_texture(size_t index) -> std::optional<Texture> const&;
+    auto get_webcam(int i) -> WebcamCapture*;
+    auto get_webcam_texture(int index) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
     auto imgui_widget_webcam_index(int& webcam_index) -> bool;
 
-    auto has_active_webcam() const -> bool;
-    auto error_from(const size_t index) const -> std::optional<std::string>;
+    [[nodiscard]] auto has_active_webcam() const -> bool;
+    [[nodiscard]] auto error_from(int index) const -> std::optional<std::string>;
 
 private:
     TextureLibrary_FromWebcam() = default;
     ; // This is a singleton. Get the global instance with `instance()` instead.
 
-    auto find_next_webcam_index(const int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
+    auto find_next_webcam_index(int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
     void add_webcam(int id);
     void update_webcams();
 

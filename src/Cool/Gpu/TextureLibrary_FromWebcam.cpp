@@ -29,7 +29,7 @@ auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*
     return nullptr;
 }
 
-auto TextureLibrary_FromWebcam::get_webcam_texture(size_t index) -> std::optional<Texture> const&
+auto TextureLibrary_FromWebcam::get_webcam_texture(const int index) -> std::optional<Texture> const&
 {
     WebcamCapture* cap = get_webcam(index);
     if (cap == nullptr)
@@ -156,11 +156,12 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> 
 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
 {
-    return true; // TODO(TD)
-    return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](auto const& webcam) { return webcam._texture.has_value(); });
+    return !_webcams.empty(); // TODO(TD) not the best
+    // return true; // TODO(TD)
+    // return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](WebcamCapture const& webcam) { return webcam.has_been_requested_this_frame; });
 }
 
-auto TextureLibrary_FromWebcam::error_from(const size_t index) const -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::optional<std::string>
 {
     if (index > _webcams.size()) // TODO(TD) un test mieux ?
     {
