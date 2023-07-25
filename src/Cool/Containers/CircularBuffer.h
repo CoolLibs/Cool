@@ -28,7 +28,7 @@ public:
     [[nodiscard]] auto is_empty() const -> bool { return _container.empty(); }
 
     auto underlying_container() -> std::list<T>& { return _container; }
-    auto underlying_container() const -> const std::list<T>& { return _container; }
+    auto underlying_container() const -> std::list<T> const& { return _container; }
 
 private:
     template<typename Tref>
