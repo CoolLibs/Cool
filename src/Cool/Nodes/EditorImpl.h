@@ -64,6 +64,8 @@ public:
 
     void for_each_selected_node(std::function<void(Node const&)> const&) const override;
 
+    [[nodiscard]] auto is_empty() const -> bool override;
+
 private:
     auto imgui_window_workspace(NodesConfig&, NodesLibrary const&) -> bool;
     auto imgui_window_inspector(NodesConfig&, NodesLibrary const&) -> bool;
