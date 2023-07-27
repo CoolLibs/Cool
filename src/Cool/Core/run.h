@@ -80,8 +80,7 @@ inline void copy_default_user_data_ifn()
 
             try
             {
-                if (Cool::File::create_folders_for_file_if_they_dont_exist(path))
-                    std::filesystem::copy_file(default_path, path);
+                Cool::File::copy_file(default_path, path);
             }
             catch (std::exception const& e)
             {
