@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <filesystem>
+#include "Cool/File/File.h"
 #include "Cool/Path/Path.h"
 #include "Cool/View/ViewsManager.h"
 #if defined(COOL_VULKAN)
@@ -79,7 +80,8 @@ inline void copy_default_user_data_ifn()
 
             try
             {
-                std::filesystem::copy_file(default_path, path);
+                if (Cool::File::create_folders_for_file_if_they_dont_exist(path))
+                    std::filesystem::copy_file(default_path, path);
             }
             catch (std::exception const& e)
             {
