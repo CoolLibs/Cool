@@ -4,10 +4,12 @@
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
+#include <exception>
 #include <filesystem>
 #include <stdexcept>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -29,8 +31,22 @@ static void initialize_glfw()
 
 static void set_imgui_ini_filepath()
 {
-    static std::string const path = (Cool::Path::root() / "imgui.ini").string(); // Needs to be static to keep the char* passed to `IniFilename` alive
-    ImGui::GetIO().IniFilename    = path.c_str();
+    auto const path = Cool::Path::user_data() / "imgui.ini";
+    if (!std::filesystem::exists(path))
+    {
+        auto const default_path = Cool::Path::default_user_data() / "imgui.ini";
+        try
+        {
+            std::filesystem::copy_file(default_path, path);
+        }
+        catch (std::exception const& e)
+        {
+            Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default imgui.ini from {} to {}:\n{}", std::filesystem::weakly_canonical(default_path), std::filesystem::weakly_canonical(path), e.what()));
+        }
+    }
+
+    static std::string const path_cache = path.string(); // Needs to be static to keep the char* passed to `IniFilename` alive
+    ImGui::GetIO().IniFilename          = path_cache.c_str();
 }
 
 static void imgui_load_fonts()

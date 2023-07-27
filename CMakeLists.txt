@@ -249,7 +249,6 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 # ---Copy files---
 # ----------------
 include("CMakeUtils/files_and_folders.cmake")
-Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_config.json) # This prevents the following copy command from failing
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # This prevents the following copy command from failing
 Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
@@ -260,7 +259,6 @@ function(cool_internal_copy_file TARGET_NAME FILE_NAME)
 endfunction()
 
 function(cool_setup TARGET_NAME)
-    cool_internal_copy_file(${TARGET_NAME} imgui.ini)
     cool_internal_copy_file(${TARGET_NAME} color_config.json)
     cool_internal_copy_file(${TARGET_NAME} color_themes.json)
     cool_internal_copy_file(${TARGET_NAME} style.json)
