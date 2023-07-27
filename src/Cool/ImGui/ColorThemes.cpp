@@ -12,7 +12,7 @@ static void register_imgui_extras_elements(ImStyleEd::Config& config);
 ColorThemes::ColorThemes()
     : _editor{
         ImStyleEd::SerializationPaths{
-            .current_theme = Cool::Path::root() / "current_color_theme.json",
+            .current_theme = Cool::Path::user_data() / "current_color_theme.json",
             .themes        = Cool::Path::root() / "color_themes.json",
             .config        = Cool::Path::root() / "color_config.json",
         },
