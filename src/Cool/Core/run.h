@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+#include <filesystem>
 #include "Cool/Path/Path.h"
 #include "Cool/View/ViewsManager.h"
 #if defined(COOL_VULKAN)
@@ -61,12 +63,44 @@ inline auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std
     };
 }
 
+inline void copy_default_user_data_ifn()
+{
+    try
+    {
+        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
+        {
+            auto const& default_path = entry.path();
+            if (!std::filesystem::is_regular_file(default_path))
+                continue;
+
+            auto const path = Cool::Path::user_data() / std::filesystem::relative(default_path, Cool::Path::default_user_data());
+            if (std::filesystem::exists(path))
+                continue;
+
+            try
+            {
+                std::filesystem::copy_file(default_path, path);
+            }
+            catch (std::exception const& e)
+            {
+                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", std::filesystem::weakly_canonical(default_path), std::filesystem::weakly_canonical(path), e.what()));
+            }
+        }
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default user data:\n{}", e.what()));
+    }
+}
+
 template<typename App>
 void run(
     std::vector<WindowConfig> const& windows_configs,
     AppManagerConfig                 app_manager_config = {}
 )
 {
+    // Make sure user_data() folder is populated with all the default_user_data() files.
+    copy_default_user_data_ifn();
     // Create window.s
     assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};

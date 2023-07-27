@@ -11,8 +11,8 @@
 namespace Cool {
 
 ExporterGui::ExporterGui()
-    : _folder_path_for_image{Path::root() / "out"}
-    , _folder_path_for_video{Path::root() / "exports"}
+    : _folder_path_for_image{Path::user_data() / "out"}
+    , _folder_path_for_video{Path::user_data() / "exports"}
 {
     _image_export_window.on_open().subscribe([&](auto) {
         _file_name = File::find_available_name(_folder_path_for_image, _file_name, ".png");

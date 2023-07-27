@@ -13,8 +13,8 @@ ColorThemes::ColorThemes()
     : _editor{
         ImStyleEd::SerializationPaths{
             .current_theme = Cool::Path::user_data() / "current_color_theme.json",
-            .themes        = Cool::Path::root() / "color_themes.json",
-            .config        = Cool::Path::root() / "color_config.json",
+            .themes        = Cool::Path::user_data() / "color_themes.json",
+            .config        = Cool::Path::user_data() / "color_config.json",
         },
         [](ImStyleEd::Config& config) {
             ImStyleEd::register_all_imgui_color_elements(config);
