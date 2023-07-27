@@ -1,8 +1,15 @@
 #include "PathsConfig.h"
+#include "Cool/Path/Path.h"
+#include "Cool/Path/PathsConfig.h"
 #include "Path.h"
 #include "exe_path/exe_path.h"
 
 namespace Cool {
+
+PathsConfig::PathsConfig(std::string app_name)
+    : _app_name{std::move(app_name)}
+{
+}
 
 auto PathsConfig::root() const -> std::filesystem::path
 {
@@ -27,11 +34,17 @@ auto PathsConfig::cool_res() const -> std::filesystem::path
 
 auto PathsConfig::user_data() const -> std::filesystem::path
 {
-#if DEBUG
-    return Cool::Path::root() / "User Data";
+    return exe_path::user_data() /
+#if DEBUG // Make sure you don't mess up your installed app while developing.
+           fmt::format("{} Debug", _app_name);
 #else
-    return exe_path::user_data() / "MyApp";
+           _app_name;
 #endif
+}
+
+auto PathsConfig::default_user_data() const -> std::filesystem::path
+{
+    return Cool::Path::root() / "Default user data";
 }
 
 auto PathsConfig::default_texture() const -> std::filesystem::path

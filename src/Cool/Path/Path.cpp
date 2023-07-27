@@ -32,6 +32,15 @@ auto Path::user_data() -> std::filesystem::path const&
     return path;
 }
 
+auto Path::default_user_data() -> std::filesystem::path const&
+{
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
+#endif
+    static auto const path = _paths_config->default_user_data();
+    return path;
+}
+
 auto Path::default_texture() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
