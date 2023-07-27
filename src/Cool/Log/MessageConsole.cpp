@@ -353,8 +353,8 @@ void MessageConsole::imgui_show_all_messages()
             };
 
             // Draw highlight of recent messages
-            const auto dt = std::chrono::duration<float>{
-                std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+            auto const dt = std::chrono::duration<float>{std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+
             static constexpr float highlight_duration = 0.5f;
             if (dt.count() < highlight_duration)
             {
