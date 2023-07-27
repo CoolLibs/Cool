@@ -10,7 +10,7 @@ public:
     void imgui();
 
 private:
-    Cool::PresetManager _manager{Cool::Path::root() / "test-presets-manager.json"};
+    Cool::PresetManager _manager{Cool::Path::user_data() / "test-presets-manager.json"};
 
     Cool::Settings _current_settings{
         Cool::Variable<int>{{.name = "First", .value = 3}},
