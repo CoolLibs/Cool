@@ -103,6 +103,8 @@ private:
     void add_webcam(int id);
     void update_webcams();
 
+    void get_number_and_name_of_webcam();
+
 private:
     std::list<WebcamCapture> _webcams;
 };

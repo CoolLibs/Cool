@@ -18,6 +18,11 @@
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 
+// windows media fondation
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
+
 namespace Cool {
 
 auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*
@@ -97,6 +102,8 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
 
 void TextureLibrary_FromWebcam::add_webcam(const int id)
 {
+    get_number_and_name_of_webcam();
+
     try
     {
         _webcams.emplace_back(id);
@@ -183,6 +190,52 @@ auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::option
         return fmt::format("Failed to read node from Camera {}:\n", index);
     }
     return std::nullopt;
+}
+
+void TextureLibrary_FromWebcam::get_number_and_name_of_webcam()
+{
+    static HRESULT hr = MFStartup(MF_VERSION);
+    if (FAILED(hr))
+    {
+        std::cerr << "Erreur lors de l'initialisation de Media Foundation." << std::endl;
+        return;
+    }
+
+    IMFAttributes* pAttributes = nullptr;
+    hr                         = MFCreateAttributes(&pAttributes, 1);
+    if (SUCCEEDED(hr))
+    {
+        IMFActivate** ppDevices = nullptr;
+        UINT32        count     = 0;
+        hr                      = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
+        if (SUCCEEDED(hr) && count > 0)
+        {
+            std::cout << "Nombre de webcams disponibles : " << count << std::endl;
+
+            // Parcourir et afficher les noms de toutes les webcams
+            for (UINT32 i = 0; i < count; ++i)
+            {
+                WCHAR* pFriendlyName = nullptr;
+                UINT32 length        = 0;
+                hr                   = ppDevices[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &pFriendlyName, &length);
+                if (SUCCEEDED(hr))
+                {
+                    std::wcout << "Webcam " << i + 1 << " : " << pFriendlyName << std::endl;
+                    CoTaskMemFree(pFriendlyName);
+                }
+
+                // Libérer la mémoire allouée
+                ppDevices[i]->Release();
+            }
+
+            // Libérer la mémoire allouée
+            CoTaskMemFree(ppDevices);
+        }
+        else
+        {
+            std::cerr << "Aucune webcam trouvée." << std::endl;
+        }
+    }
 }
 
 } // namespace Cool
