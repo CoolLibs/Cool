@@ -22,6 +22,7 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <mfreadwrite.h>
+#include <winerror.h>
 
 namespace Cool {
 
@@ -102,7 +103,7 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
 
 void TextureLibrary_FromWebcam::add_webcam(const int id)
 {
-    get_number_and_name_of_webcam();
+    get_number_webcam_win();
 
     try
     {
@@ -192,50 +193,58 @@ auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::option
     return std::nullopt;
 }
 
-void TextureLibrary_FromWebcam::get_number_and_name_of_webcam()
+void TextureLibrary_FromWebcam::get_number_webcam_win()
 {
-    static HRESULT hr = MFStartup(MF_VERSION);
-    if (FAILED(hr))
-    {
-        std::cerr << "Erreur lors de l'initialisation de Media Foundation." << std::endl;
-        return;
-    }
+    UINT32 count = 0;
 
-    IMFAttributes* pAttributes = nullptr;
-    hr                         = MFCreateAttributes(&pAttributes, 1);
+    IMFAttributes* pConfig   = NULL;
+    IMFActivate**  ppDevices = NULL;
+    HRESULT        hr        = MFCreateAttributes(&pConfig, 1);
+
+    // Request video capture devices.
     if (SUCCEEDED(hr))
     {
-        IMFActivate** ppDevices = nullptr;
-        UINT32        count     = 0;
-        hr                      = MFEnumDeviceSources(pAttributes, &ppDevices, &count);
-        if (SUCCEEDED(hr) && count > 0)
-        {
-            std::cout << "Nombre de webcams disponibles : " << count << std::endl;
-
-            // Parcourir et afficher les noms de toutes les webcams
-            for (UINT32 i = 0; i < count; ++i)
-            {
-                WCHAR* pFriendlyName = nullptr;
-                UINT32 length        = 0;
-                hr                   = ppDevices[i]->GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME, &pFriendlyName, &length);
-                if (SUCCEEDED(hr))
-                {
-                    std::wcout << "Webcam " << i + 1 << " : " << pFriendlyName << std::endl;
-                    CoTaskMemFree(pFriendlyName);
-                }
-
-                // Libérer la mémoire allouée
-                ppDevices[i]->Release();
-            }
-
-            // Libérer la mémoire allouée
-            CoTaskMemFree(ppDevices);
-        }
-        else
-        {
-            std::cerr << "Aucune webcam trouvée." << std::endl;
-        }
+        hr = pConfig->SetGUID(
+            MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+            MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
+        );
     }
+
+    // Enumerate the devices,
+    if (SUCCEEDED(hr))
+    {
+        hr = MFEnumDeviceSources(pConfig, &ppDevices, &count);
+    }
+    if (SUCCEEDED(hr))
+    {
+        Cool::Log::ToUser::console()
+            .send(
+                Message{
+                    .category = "webcam",
+                    .message  = fmt::format("number of webcam : {}", count),
+                    .severity = MessageSeverity::Info,
+                }
+            );
+    }
+
+    WCHAR* szFriendlyName = NULL;
+
+    // Try to get the display name.
+    UINT32 cchName;
+    hr = ppDevices[0]->GetAllocatedString(
+        MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+        &szFriendlyName, &cchName
+    );
+
+    // if (SUCCEEDED(hr)) // TODO(TD) get the name
+    //     Cool::Log::ToUser::console()
+    //         .send(
+    //             Message{
+    //                 .category = "webcam",
+    //                 .message  = fmt::format("name of webcam : {}", static_cast<std::string>(szFriendlyName)),
+    //                 .severity = MessageSeverity::Info,
+    //             }
+    //         );
 }
 
 } // namespace Cool
