@@ -21,7 +21,7 @@ target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 if(MSVC)
     target_compile_options(Cool-PrivateProperties INTERFACE /W4)
 else()
-    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
+    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion -Wimplicit-fallthrough)
 endif()
 
 # Maybe enable warnings as errors
