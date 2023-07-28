@@ -80,7 +80,8 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version(COOL_OPENGL_VERSION));
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version(COOL_OPENGL_VERSION));
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_AUTO_ICONIFY, config.auto_iconify);
 #if DEBUG
     if constexpr (COOL_OPENGL_VERSION >= 430)
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);

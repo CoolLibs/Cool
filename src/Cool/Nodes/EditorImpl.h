@@ -4,7 +4,6 @@
 #include <cereal/types/vector.hpp>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/UniqueEdContext.h"
-#include "Cool/Path/Path.h"
 #include "Cool/Serialization/ImGuiSerialization.h"
 #include "Graph.h"
 #include "IEditor.h"
@@ -15,19 +14,6 @@
 #include "ed.h"
 #include "utilities/builders.h"
 #include "utilities/widgets.h"
-
-namespace util = ax::NodeEditor::Utilities;
-
-// enum class PinType {
-//     Flow,
-//     Bool,
-//     Int,
-//     Float,
-//     String,
-//     Object,
-//     Function,
-//     Delegate,
-// };
 
 namespace Cool {
 
@@ -89,7 +75,7 @@ private:
     void open_nodes_menu();
 
 private:
-    internal::UniqueEdContext        _context{Cool::Path::root() / "cache/nodes-editor.json"};
+    internal::UniqueEdContext        _context{};
     Graph                            _graph;
     std::vector<internal::FrameNode> _frame_nodes{};
     bool                             _workspace_is_hovered{};
@@ -104,14 +90,14 @@ private:
 private:
     // ImColor GetIconColor(PinType type);
 
-    void render_node(Node&, NodeId const&, NodesConfig&, util::BlueprintNodeBuilder& builder);
+    void render_node(Node&, NodeId const&, NodesConfig&, NodesLibrary const&, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder);
 
     auto process_creations(NodesConfig&) -> bool;
     // auto process_node_creation() -> bool;
     auto process_link_creation(NodesConfig&) -> bool;
     void process_link_released();
 
-    void render_editor(NodesConfig&);
+    void render_editor(NodesConfig&, NodesLibrary const&);
     auto imgui_workspace(NodesConfig&, NodesLibrary const&) -> bool;
 
 private:
@@ -122,7 +108,8 @@ private:
     {
         archive(
             cereal::make_nvp("Graph", _graph),
-            cereal::make_nvp("Frame nodes", _frame_nodes)
+            cereal::make_nvp("Frame nodes", _frame_nodes),
+            cereal::make_nvp("Context", _context)
         );
     }
 };

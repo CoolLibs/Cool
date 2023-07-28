@@ -41,10 +41,24 @@ void MessageConsole::send(const Message& message)
     on_message_sent(id);
 }
 
+static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
+{
+    return msg.forced_to_be_clearable
+           || msg.message.severity != MessageSeverity::Error;
+}
+
 void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
+    if (_messages.underlying_container().underlying_container().size() > 99) // If there are too many messages the console starts to cause lag.
+    {
+        auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
+            return is_clearable(pair.second);
+        });
+        if (it != _messages.end())
+            _messages.underlying_container().underlying_container().erase(it);
+    }
 }
 
 void MessageConsole::remove(const MessageId& id)
@@ -75,12 +89,6 @@ void MessageConsole::clear()
 void MessageConsole::clear(MessageSeverity severity)
 {
     clear([&](auto&& message) { return message.severity == severity; });
-}
-
-static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
-{
-    return msg.forced_to_be_clearable
-           || msg.message.severity != MessageSeverity::Error;
 }
 
 auto MessageConsole::should_show(const internal::MessageWithMetadata& msg) const -> bool
@@ -345,8 +353,8 @@ void MessageConsole::imgui_show_all_messages()
             };
 
             // Draw highlight of recent messages
-            const auto dt = std::chrono::duration<float>{
-                std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+            auto const dt = std::chrono::duration<float>{std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+
             static constexpr float highlight_duration = 0.5f;
             if (dt.count() < highlight_duration)
             {

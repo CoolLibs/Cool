@@ -2,9 +2,8 @@
 
 namespace Cool {
 
-Pin::Pin(std::string_view name, ax::Drawing::IconType icon)
+Pin::Pin(std::string_view name)
     : _name{name}
-    , _icon{icon}
     , _id{reg::internal::generate_uuid()}
 {
 }

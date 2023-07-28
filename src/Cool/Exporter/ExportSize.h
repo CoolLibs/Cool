@@ -10,7 +10,7 @@ public:
     operator img::Size() const { return _size; }
 
     auto imgui() -> bool;
-    void set_aspect_ratio(AspectRatio aspect_ratio);
+    void set_aspect_ratio(AspectRatio const&);
 
 private:
     void apply_aspect_ratio();

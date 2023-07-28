@@ -45,20 +45,25 @@ auto load(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessa
  * @param data The data to save
  * @param file_path The path to the JSON file. It will be created if it doesn't exist already.
  * @param field_name An optional name that will be given to data inside the JSON file (for readability purposes).
+ * return true iff the save was successful.
  */
 template<typename T, typename OutputArchive>
-void save(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0")
+auto save(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0") -> bool
 {
-    if (File::create_folders_for_file_if_they_dont_exist(file_path))
+    if (!File::create_folders_for_file_if_they_dont_exist(file_path))
+        return false;
+
+    auto os = std::ofstream{file_path};
+    if (!os.is_open())
+        return false;
+
     {
-        std::ofstream os(file_path);
-        {
-            auto archive = OutputArchive{os};
-            archive(
-                cereal::make_nvp(field_name.data(), data)
-            );
-        }
+        auto archive = OutputArchive{os};
+        archive(
+            cereal::make_nvp(field_name.data(), data)
+        );
     }
+    return true;
 }
 
 } // namespace Cool::Serialization
