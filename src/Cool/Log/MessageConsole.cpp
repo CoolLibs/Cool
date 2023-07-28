@@ -51,7 +51,7 @@ void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
-    if (_messages.underlying_container().underlying_container().size() > 99) // If there are too many messages the console starts to cause lag.
+    if (_messages.underlying_container().underlying_container().size() > 999) // If there are too many messages the console starts to cause lag.
     {
         auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
             return is_clearable(pair.second);
