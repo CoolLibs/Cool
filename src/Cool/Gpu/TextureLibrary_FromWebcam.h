@@ -17,6 +17,7 @@
 #include <vector>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
+#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
