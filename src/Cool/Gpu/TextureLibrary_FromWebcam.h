@@ -61,8 +61,17 @@ struct WebcamCapture {
                 }
             }
         }
-        catch (...)
-        {}
+        catch (cv::Exception& e)
+        {
+            Cool::Log::ToUser::console()
+                .send(
+                    Message{
+                        .category = "Nodes",
+                        .message  = fmt::format("OpenCV error : {}", e.what()),
+                        .severity = MessageSeverity::Warning,
+                    }
+                );
+        }
     }
 };
 
