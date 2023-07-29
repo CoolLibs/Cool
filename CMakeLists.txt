@@ -121,6 +121,7 @@ if(COOL_USE_VULKAN)
     target_link_libraries(Cool-PublicProperties INTERFACE Vulkan::Vulkan)
     add_subdirectory(lib/Vookoo/include)
     target_link_libraries(Cool-PublicProperties INTERFACE Vookoo::Vookoo)
+    install(FILES "lib/Vookoo/LICENSE" DESTINATION "license/Vookoo")
     add_subdirectory(lib/easy-shaderc)
     target_link_libraries(Cool-PublicProperties INTERFACE easy_shaderc::shaderc)
 elseif(COOL_USE_OPENGL)
@@ -149,29 +150,43 @@ target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_grad
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 
+# scope_guard
+install(FILES "lib/scope_guard/LICENSE" DESTINATION "license/scope_guard")
+
 # GLFW
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
+install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
+
+# glm
+install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
 
 # cereal
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
+install(FILES "lib/cereal/LICENSE" DESTINATION "license/cereal")
 
 # smart
 add_subdirectory(lib/smart)
 target_link_libraries(Cool-PublicProperties INTERFACE smart::smart)
 
+# IconFontCppHeaders
+install(FILES "lib/IconFontCppHeaders/licence.txt" DESTINATION "license/IconFontCppHeaders")
+
 # Boxer
 add_subdirectory(lib/Boxer)
 target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
+install(FILES "lib/Boxer/LICENSE" DESTINATION "license/Boxer")
 
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
+install(FILES "lib/nativefiledialog-extended/LICENSE" DESTINATION "license/nativefiledialog-extended")
 
 # GSL
 add_subdirectory(lib/GSL)
 target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
+install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 
 # img
 add_subdirectory(lib/img)
@@ -220,6 +235,7 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 # Dear ImGui
 add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
@@ -239,6 +255,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 add_subdirectory(lib/imgui-node-editor)
 target_include_directories(ImGuiNodeEditor SYSTEM PUBLIC lib/imgui)
 target_link_libraries(Cool-PublicProperties INTERFACE ImGuiNodeEditor::ImGuiNodeEditor)
+install(FILES "lib/imgui-node-editor/LICENSE" DESTINATION "license/imgui-node-editor")
+
+# imgui_markdown
+install(FILES "lib/imgui_markdown/License.txt" DESTINATION "license/imgui_markdown")
 
 # ImStyleEd
 add_subdirectory(lib/ImGui_StyleEditor)
@@ -291,3 +311,4 @@ target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
+install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")
