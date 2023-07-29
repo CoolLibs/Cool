@@ -224,10 +224,8 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 include("lib/opencv_build_options.cmake")
 add_subdirectory(lib/easy_opencv)
 target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
-
-if(WIN32)
-    target_link_libraries(Cool-PublicProperties INTERFACE mf mfplat mfreadwrite)
-endif()
+add_subdirectory(lib/webcam_info)
+target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
 
 # target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 

@@ -100,3 +100,6 @@
 [submodule "lib/easy_opencv"]
 	path = lib/easy_opencv
 	url = https://github.com/CoolLibs/easy_opencv.git
+[submodule "lib/webcam_info"]
+	path = lib/webcam_info
+	url = https://github.com/CoolLibs/webcam_info.git
