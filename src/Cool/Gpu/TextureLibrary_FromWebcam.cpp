@@ -13,6 +13,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Log/MessageConsole.h"
@@ -103,8 +104,6 @@ auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) ->
 
 void TextureLibrary_FromWebcam::add_webcam(const int id)
 {
-    get_number_webcam_win();
-
     try
     {
         _webcams.emplace_back(id);
@@ -170,11 +169,22 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> bool
 {
-    bool b = false;
-    if (ImGui::Button("Switch to next webcam"))
+    bool b                = false;
+    auto list_webcam_info = webcam_info::get_all_webcams();
+
+    std::string combo_string{};
+    for (auto const& info : list_webcam_info)
     {
-        webcam_index = find_next_webcam_index(webcam_index);
+        combo_string.append(info.name + '\0');
     }
+
+    b |= ImGui::Combo("Webcams", &webcam_index, (combo_string + '\0').c_str());
+
+    // bool b = false;
+    // if (ImGui::Button("Switch to next webcam"))
+    // {
+    //     webcam_index = find_next_webcam_index(webcam_index);
+    // }
     return b;
 }
 
@@ -185,10 +195,10 @@ auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at 
 
 auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::optional<std::string>
 {
-    if (index > _webcams.size()) // TODO(TD) un test mieux ?
-    {
-        return fmt::format("Failed to read node from Camera {}:\n", index);
-    }
+    // if (index > _webcams.size()) // TODO(TD) un test mieux ?
+    // {
+    //     return fmt::format("Failed to read node from Camera {}:\n", index);
+    // }
     return std::nullopt;
 }
 
