@@ -7,7 +7,7 @@
 namespace Cool {
 
 struct TextureSource_FromWebcam {
-    int webcam_index{};
+    std::string webcam_name{};
 
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> std::optional<Texture> const&;
@@ -22,7 +22,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Webcam Index", webcam_index)
+            cereal::make_nvp("Webcam Name", webcam_name)
         );
     }
 };

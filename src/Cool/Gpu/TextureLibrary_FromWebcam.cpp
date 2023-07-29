@@ -27,22 +27,41 @@
 
 namespace Cool {
 
-auto TextureLibrary_FromWebcam::get_webcam(const int i) -> WebcamCapture*
+auto TextureLibrary_FromWebcam::get_webcam(const std::string name) -> WebcamCapture*
 {
     for (auto& webcam : _webcams)
     {
-        if (webcam._webcam_id == i)
+        if (webcam._webcam_id < _webcams_infos.size() && _webcams_infos[webcam._webcam_id].name == name)
             return &webcam;
     }
     return nullptr; // TODO(TD) pb le display toujours une première fois
 }
 
-auto TextureLibrary_FromWebcam::get_webcam_texture(const int index) -> std::optional<Texture> const&
+auto TextureLibrary_FromWebcam::get_id_from_name(const std::string name) -> std::optional<int>
 {
-    WebcamCapture* cap = get_webcam(index);
+    for (int i = 0; i < _webcams_infos.size(); i++)
+    {
+        if (_webcams_infos[i].name == name)
+            return i;
+    }
+    return std::nullopt;
+}
+
+auto TextureLibrary_FromWebcam::get_name_from_id(int id) -> std::optional<std::string>
+{
+    if (id >= _webcams_infos.size())
+        return std::nullopt;
+    return _webcams_infos[id].name;
+}
+
+auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&
+{
+    WebcamCapture* cap = get_webcam(name);
+    auto           id  = get_id_from_name(name);
     if (cap == nullptr)
     {
-        add_webcam(index);
+        if (id.has_value())
+            add_webcam(*id);
         return std::nullopt;
     }
 
@@ -167,24 +186,34 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
     _webcams.remove_if([](WebcamCapture const& webcam) { return !webcam.has_been_requested_this_frame; });
 }
 
-auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> bool
+auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_name) -> bool
 {
-    bool b                = false;
-    auto list_webcam_info = webcam_info::get_all_webcams();
+    bool b         = false;
+    _webcams_infos = webcam_info::get_all_webcams();
+
+    auto id = get_id_from_name(webcam_name);
 
     std::string combo_string{};
-    for (auto const& info : list_webcam_info)
+    for (auto const& info : _webcams_infos)
     {
         combo_string.append(info.name + '\0');
     }
 
-    b |= ImGui::Combo("Webcams", &webcam_index, (combo_string + '\0').c_str());
+    if (!id.has_value())
+    {
+        id = -1;
+    }
+    b |= ImGui::Combo("Webcams", &*id, (combo_string + '\0').c_str());
 
     // bool b = false;
     // if (ImGui::Button("Switch to next webcam"))
     // {
     //     webcam_index = find_next_webcam_index(webcam_index);
     // }
+    auto possible_next_webcam_name = get_name_from_id(*id);
+
+    if (possible_next_webcam_name.has_value())
+        webcam_name = *possible_next_webcam_name;
     return b;
 }
 
@@ -193,7 +222,7 @@ auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at 
     return !_webcams.empty();
 }
 
-auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::error_from(const std::string webcam_name) const -> std::optional<std::string>
 {
     // if (index > _webcams.size()) // TODO(TD) un test mieux ?
     // {

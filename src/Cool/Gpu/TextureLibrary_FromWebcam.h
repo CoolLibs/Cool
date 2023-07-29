@@ -15,6 +15,7 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Log/MessageId.h"
@@ -111,15 +112,17 @@ public:
         static auto inst = TextureLibrary_FromWebcam{};
         return inst;
     }
-    auto get_webcam(int i) -> WebcamCapture*;
-    auto get_webcam_texture(int index) -> std::optional<Texture> const&;
+    auto get_webcam(std::string name) -> WebcamCapture*;
+    auto get_id_from_name(std::string name) -> std::optional<int>;
+    auto get_name_from_id(int id) -> std::optional<std::string>;
+    auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
-    auto imgui_widget_webcam_index(int& webcam_index) -> bool;
+    auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
 
     [[nodiscard]] auto has_active_webcam() const -> bool;
-    [[nodiscard]] auto error_from(int index) const -> std::optional<std::string>;
+    [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
 
 private:
     TextureLibrary_FromWebcam() = default;
@@ -132,7 +135,8 @@ private:
     void get_number_webcam_win();
 
 private:
-    std::list<WebcamCapture> _webcams;
+    std::list<WebcamCapture>       _webcams;
+    std::vector<webcam_info::info> _webcams_infos;
 };
 
 } // namespace Cool
