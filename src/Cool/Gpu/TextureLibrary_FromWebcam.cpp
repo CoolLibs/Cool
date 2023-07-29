@@ -180,8 +180,7 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_index(int& webcam_index) -> 
 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
 {
-    return !_webcams.empty(); // TODO(TD) not the best
-    // return std::ranges::any_of(_webcams.begin(), _webcams.end(), [](WebcamCapture const& webcam) { return webcam.has_been_requested_this_frame; });
+    return !_webcams.empty();
 }
 
 auto TextureLibrary_FromWebcam::error_from(const int index) const -> std::optional<std::string>

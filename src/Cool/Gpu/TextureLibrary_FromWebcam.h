@@ -17,12 +17,15 @@
 #include <vector>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
+#include "Cool/Log/MessageId.h"
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
 struct WebcamCapture {
     WebcamCapture() = default;
+    Cool::MessageId _iderrorme_is_not_open;
+    Cool::MessageId _iderrorme_opencv;
     explicit WebcamCapture(int id)
         : _name{"Unknown TODO(TD) " + std::to_string(id)}
         , _webcam_id(id)
@@ -41,37 +44,60 @@ struct WebcamCapture {
 
     static void thread_webcam_work(std::stop_token stop_token, WebcamCapture& This, int webcam_id)
     {
-        try
-        {
-            cv::VideoCapture capture{webcam_id};
-            cv::Mat          wip_image{};
+        cv::VideoCapture capture{webcam_id};
+        capture.setExceptionMode(true);
+        cv::Mat wip_image{};
 
-            int width  = 1920;
-            int height = 1080;
+        int width  = 1920;
+        int height = 1080;
+        if (capture.isOpened())
+        {
             capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
             capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+        }
 
-            while (!stop_token.stop_requested())
+        while (!stop_token.stop_requested())
+        {
+            try
             {
-                capture >> wip_image;
                 std::cout << capture.isOpened() << "\n";
+                if (!capture.isOpened())
                 {
+                    Cool::Log::ToUser::console()
+                        .send(
+                            This._iderrorme_is_not_open,
+                            Message{
+                                .category = "Nodes",
+                                .message  = fmt::format("Camera {} is not opened", webcam_id),
+                                .severity = MessageSeverity::Warning,
+                            }
+                        );
+                    std::this_thread::sleep_for(1s);
+                    capture = cv::VideoCapture{webcam_id};
+                }
+                else
+                {
+                    capture >> wip_image;
                     std::scoped_lock lock(This._mutex);
                     cv::swap(This._available_image, wip_image);
                     This.is_dirty = true;
                 }
             }
-        }
-        catch (cv::Exception& e)
-        {
-            Cool::Log::ToUser::console()
-                .send(
-                    Message{
-                        .category = "Nodes",
-                        .message  = fmt::format("OpenCV error : {}", e.what()),
-                        .severity = MessageSeverity::Warning,
-                    }
-                );
+
+            catch (cv::Exception& e)
+            {
+                Cool::Log::ToUser::console()
+                    .send(
+                        This._iderrorme_opencv,
+                        Message{
+                            .category = "Nodes",
+                            .message  = fmt::format("OpenCV error : {}", e.what()),
+                            .severity = MessageSeverity::Warning,
+                        }
+                    );
+                capture = cv::VideoCapture{webcam_id};
+                capture.setExceptionMode(true);
+            }
         }
     }
 };
