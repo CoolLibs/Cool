@@ -142,7 +142,7 @@ void Exporter::imgui_window_export_video(TipsManager& tips_manager, Tips all_tip
         ImGui::PopFont();
 
         ImGui::NewLine();
-        ImGui::SeparatorText("");
+        ImGui::SeparatorText(Cool::icon_fmt("Did you know?", ICOMOON_BUBBLE).c_str());
 
         tips_manager.imgui_content(all_tips);
 
