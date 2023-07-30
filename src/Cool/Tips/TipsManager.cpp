@@ -56,34 +56,36 @@ auto TipsManager::get_current_tip(Tips all_tips) -> const char*
     return all_tips[_current_tip_index];
 }
 
+void TipsManager::imgui_content(Tips all_tips)
+{
+    ImGuiExtras::markdown(get_current_tip(all_tips));
+    ImGui::SeparatorText("");
+
+    auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
+
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+    {
+        _window.close();
+    }
+
+    if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
+    {
+        _window.close();
+        open_all_tips_window();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Next tip", {button_width, 0.f}))
+    {
+        prepare_next_tip();
+    }
+}
+
 void TipsManager::imgui_windows(Tips all_tips)
 {
     _window.show([&]() {
-        ImGuiExtras::markdown(get_current_tip(all_tips));
-        ImGui::SeparatorText("");
-
-        auto const button_width = ImGui::GetContentRegionAvail().x / 3.f - ImGui::GetStyle().ItemSpacing.x / 3.f;
-
-        if (ImGui::Button("Got it!", {button_width, 0.f})
-            || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
-        {
-            _window.close();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
-        {
-            _window.close();
-            open_all_tips_window();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Next tip", {button_width, 0.f}))
-        {
-            prepare_next_tip();
-        }
+        imgui_content(all_tips);
     });
 
     if (_show_all_tips)

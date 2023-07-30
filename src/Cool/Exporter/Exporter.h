@@ -31,7 +31,7 @@ public:
     void maybe_set_aspect_ratio(std::optional<AspectRatio>);
 
     /// Displays all the currently active windows
-    void imgui_windows(Polaroid polaroid, float time, TipsManager& tips_manager);
+    void imgui_windows(Polaroid polaroid, float time, TipsManager& tips_manager, Tips all_tips);
 
     /// The buttons to open the different exporter windows.
     void imgui_menu_items(imgui_menu_items_Params = {}, std::optional<std::string> longest_text = {});
@@ -48,7 +48,7 @@ public:
 private:
     auto output_path() -> std::filesystem::path;
     void imgui_window_export_image(Polaroid polaroid, float time);
-    void imgui_window_export_video(TipsManager& tips_manager);
+    void imgui_window_export_video(TipsManager& tips_manager, Tips all_tips);
     auto clear_export_folder() const -> bool;
 
 private:

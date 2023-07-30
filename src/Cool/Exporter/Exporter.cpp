@@ -30,10 +30,10 @@ void Exporter::maybe_set_aspect_ratio(std::optional<AspectRatio> aspect_ratio)
         set_aspect_ratio(*aspect_ratio);
 }
 
-void Exporter::imgui_windows(Polaroid polaroid, float time, TipsManager& tips_manager)
+void Exporter::imgui_windows(Polaroid polaroid, float time, TipsManager& tips_manager, Tips all_tips)
 {
     imgui_window_export_image(polaroid, time);
-    imgui_window_export_video(tips_manager);
+    imgui_window_export_video(tips_manager, all_tips);
 }
 
 auto Exporter::output_path() -> std::filesystem::path
@@ -132,7 +132,7 @@ void Exporter::end_video_export()
     _video_export_process.reset();
 }
 
-void Exporter::imgui_window_export_video(TipsManager& tips_manager)
+void Exporter::imgui_window_export_video(TipsManager& tips_manager, Tips all_tips)
 {
     if (is_exporting())
     {
@@ -140,6 +140,12 @@ void Exporter::imgui_window_export_video(TipsManager& tips_manager)
         ImGui::PushFont(Font::monospace());
         _video_export_process->imgui();
         ImGui::PopFont();
+
+        ImGui::NewLine();
+        ImGui::SeparatorText("");
+
+        tips_manager.imgui_content(all_tips);
+
         ImGui::End();
     }
     else
@@ -152,7 +158,6 @@ void Exporter::imgui_window_export_video(TipsManager& tips_manager)
             ImGui::SeparatorText("");
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
-                tips_manager.open_one_tip_window();
                 _video_export_window.close();
                 begin_video_export();
             }

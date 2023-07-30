@@ -17,6 +17,7 @@ class TipsManager {
 public:
     void open_one_tip_window();
     void open_all_tips_window();
+    void imgui_content(Tips);
     void imgui_windows(Tips);
 
     void on_app_shutdown();
