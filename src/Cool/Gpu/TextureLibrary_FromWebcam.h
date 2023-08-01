@@ -154,6 +154,9 @@ private:
 
     std::jthread _thread_webcam_infos;
     std::mutex   _mutex_webcam_info;
+
+public:
+    Cool::MessageId _iderror_cannot_find_webcam;
 };
 
 } // namespace Cool

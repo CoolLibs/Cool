@@ -18,6 +18,7 @@
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
+#include "fmt/core.h"
 
 // windows media fondation
 #include <mfapi.h>
@@ -64,7 +65,20 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
     if (cap == nullptr)
     {
         if (id.has_value())
+        {
+            Cool::Log::ToUser::console().remove(_iderror_cannot_find_webcam);
             add_webcam(*id);
+        }
+        else
+            Cool::Log::ToUser::console()
+                .send(
+                    _iderror_cannot_find_webcam,
+                    Message{
+                        .category = "Nodes",
+                        .message  = fmt::format("cannot find webcam {}", name),
+                        .severity = MessageSeverity::Error,
+                    }
+                );
         return std::nullopt;
     }
 
@@ -130,14 +144,14 @@ void TextureLibrary_FromWebcam::add_webcam(const int id)
     {
         _webcams.emplace_back(id);
     }
-    catch (cv::Exception& err) // TODO(TD) trouver les bonnes exceptions renvoyées par opencv
+    catch (cv::Exception& err)
     {
         Cool::Log::ToUser::console()
             .send(
                 Message{
                     .category = "Nodes",
                     .message  = err.what(),
-                    .severity = MessageSeverity::Warning,
+                    .severity = MessageSeverity::Error,
                 }
             );
     }
@@ -212,7 +226,6 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_nam
             if (ImGui::Selectable(name.c_str(), is_selected))
                 item_current_name = name;
 
-            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
             if (is_selected)
                 ImGui::SetItemDefaultFocus();
         }
