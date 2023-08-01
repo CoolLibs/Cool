@@ -190,32 +190,36 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_name) -> bool
 {
     bool b = false;
-    // _webcams_infos = webcam_info::get_all_webcams();
 
-    auto id = get_id_from_name(webcam_name);
-
-    std::string combo_string{};
-
-    for (auto const& info : _webcams_infos)
+    std::vector<std::string> list_name{};
+    list_name.reserve(_webcams_infos.size());
     {
-        combo_string.append(info.name + '\0');
+        std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
+        for (auto const& infos : _webcams_infos)
+        {
+            list_name.push_back(infos.name);
+        }
     }
 
-    if (!id.has_value())
+    static std::string item_current_name  = webcam_name;
+    std::string        combo_preview_name = webcam_name;
+
+    if (ImGui::BeginCombo("Webcam", combo_preview_name.c_str(), 0))
     {
-        id = -1;
+        for (auto& name : list_name)
+        {
+            const bool is_selected = (item_current_name == name);
+            if (ImGui::Selectable(name.c_str(), is_selected))
+                item_current_name = name;
+
+            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+            if (is_selected)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
     }
-    b |= ImGui::Combo("Webcams", &*id, (combo_string + '\0').c_str());
 
-    // bool b = false;
-    // if (ImGui::Button("Switch to next webcam"))
-    // {
-    //     webcam_index = find_next_webcam_index(webcam_index);
-    // }
-    auto possible_next_webcam_name = get_name_from_id(*id);
-
-    if (possible_next_webcam_name.has_value())
-        webcam_name = *possible_next_webcam_name;
+    webcam_name = item_current_name;
     return b;
 }
 
