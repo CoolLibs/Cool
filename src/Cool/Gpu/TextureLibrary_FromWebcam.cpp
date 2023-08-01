@@ -29,6 +29,7 @@ namespace Cool {
 
 auto TextureLibrary_FromWebcam::get_webcam(const std::string name) -> WebcamCapture*
 {
+    std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     for (auto& webcam : _webcams)
     {
         if (webcam._webcam_id < _webcams_infos.size() && _webcams_infos[webcam._webcam_id].name == name)
@@ -39,6 +40,7 @@ auto TextureLibrary_FromWebcam::get_webcam(const std::string name) -> WebcamCapt
 
 auto TextureLibrary_FromWebcam::get_id_from_name(const std::string name) -> std::optional<int>
 {
+    std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     for (int i = 0; i < _webcams_infos.size(); i++)
     {
         if (_webcams_infos[i].name == name)
@@ -49,6 +51,7 @@ auto TextureLibrary_FromWebcam::get_id_from_name(const std::string name) -> std:
 
 auto TextureLibrary_FromWebcam::get_name_from_id(int id) -> std::optional<std::string>
 {
+    std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     if (id >= _webcams_infos.size())
         return std::nullopt;
     return _webcams_infos[id].name;
@@ -142,35 +145,33 @@ void TextureLibrary_FromWebcam::add_webcam(const int id)
 
 void update_webcam_ifn(WebcamCapture& webcam)
 {
+    std::scoped_lock lock(webcam._mutex);
+    if (!webcam.is_dirty)
     {
-        std::scoped_lock lock(webcam._mutex);
-        if (!webcam.is_dirty)
-        {
-            return;
-        }
-
-        const auto width  = static_cast<unsigned int>(webcam._available_image.cols);
-        const auto height = static_cast<unsigned int>(webcam._available_image.rows);
-
-        if (!webcam._texture)
-            webcam._texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam._available_image.ptr())};
-
-        else
-        {
-            webcam._texture->bind();
-            webcam._texture->set_image(
-                {width, height},
-                reinterpret_cast<uint8_t*>(webcam._available_image.ptr()),
-                {
-                    .internal_format = glpp::InternalFormat::RGBA,
-                    .channels        = glpp::Channels::RGB,
-                    .texel_data_type = glpp::TexelDataType::UnsignedByte,
-                }
-            );
-            Cool::Texture::unbind();
-        }
-        webcam.is_dirty = false; // the webcam is now up to date
+        return;
     }
+
+    const auto width  = static_cast<unsigned int>(webcam._available_image.cols);
+    const auto height = static_cast<unsigned int>(webcam._available_image.rows);
+
+    if (!webcam._texture)
+        webcam._texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam._available_image.ptr())};
+
+    else
+    {
+        webcam._texture->bind();
+        webcam._texture->set_image(
+            {width, height},
+            reinterpret_cast<uint8_t*>(webcam._available_image.ptr()),
+            {
+                .internal_format = glpp::InternalFormat::RGBA,
+                .channels        = glpp::Channels::RGB,
+                .texel_data_type = glpp::TexelDataType::UnsignedByte,
+            }
+        );
+        Cool::Texture::unbind();
+    }
+    webcam.is_dirty = false; // the webcam is now up to date
 }
 
 void TextureLibrary_FromWebcam::on_frame_begin()
@@ -188,12 +189,13 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_name) -> bool
 {
-    bool b         = false;
-    _webcams_infos = webcam_info::get_all_webcams();
+    bool b = false;
+    // _webcams_infos = webcam_info::get_all_webcams();
 
     auto id = get_id_from_name(webcam_name);
 
     std::string combo_string{};
+
     for (auto const& info : _webcams_infos)
     {
         combo_string.append(info.name + '\0');

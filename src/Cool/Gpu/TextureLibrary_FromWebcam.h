@@ -43,7 +43,7 @@ struct WebcamCapture {
     std::mutex   _mutex;
     std::jthread _thread;
 
-    static void thread_webcam_work(std::stop_token stop_token, WebcamCapture& This, int webcam_id)
+    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_id)
     {
         cv::VideoCapture capture{webcam_id};
         capture.setExceptionMode(true);
@@ -109,7 +109,7 @@ class TextureLibrary_FromWebcam {
 public:
     [[nodiscard]] static auto instance() -> TextureLibrary_FromWebcam&
     {
-        static auto inst = TextureLibrary_FromWebcam{};
+        static auto inst = TextureLibrary_FromWebcam();
         return inst;
     }
     auto get_webcam(std::string name) -> WebcamCapture*;
@@ -125,18 +125,35 @@ public:
     [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
 
 private:
-    TextureLibrary_FromWebcam() = default;
-    ; // This is a singleton. Get the global instance with `instance()` instead.
+    TextureLibrary_FromWebcam()
+        : _thread_webcam_infos(&TextureLibrary_FromWebcam::thread_webcams_infos_works, std::ref(*this)){};
+    // : _thread_webcam_infos{} {}; // This is a singleton. Get the global instance with `instance()` instead.
 
     auto find_next_webcam_index(int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
     void add_webcam(int id);
     void update_webcams();
 
-    void get_number_webcam_win();
+    void        get_number_webcam_win();
+    static void thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This)
+    {
+        std::vector<webcam_info::info> wip_webcams_infos{};
+        while (!stop_token.stop_requested())
+        {
+            wip_webcams_infos = webcam_info::get_all_webcams();
+            {
+                std::scoped_lock<std::mutex> lock(This._mutex_webcam_info);
+                std::swap(wip_webcams_infos, This._webcams_infos);
+            }
+        }
+
+    } // namespace Cool
 
 private:
     std::list<WebcamCapture>       _webcams;
     std::vector<webcam_info::info> _webcams_infos;
+
+    std::jthread _thread_webcam_infos;
+    std::mutex   _mutex_webcam_info;
 };
 
 } // namespace Cool
