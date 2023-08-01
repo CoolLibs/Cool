@@ -3,11 +3,12 @@
 #include <optional>
 #include <string>
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/Path/Path.h"
 namespace Cool {
 
 struct TextureSource_FromWebcam {
-    std::string webcam_name{};
+    std::string webcam_name{Cool::TextureLibrary_FromWebcam::instance().get_default_webcam_name()};
 
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> std::optional<Texture> const&;

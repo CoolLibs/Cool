@@ -25,23 +25,20 @@ namespace Cool {
 
 struct WebcamCapture {
     WebcamCapture() = default;
-    Cool::MessageId _iderrorme_is_not_open;
-    Cool::MessageId _iderrorme_opencv;
+
     explicit WebcamCapture(int id)
-        : _name{"Unknown TODO(TD) " + std::to_string(id)}
-        , _webcam_id(id)
-        , _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
+        : _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
     {
     }
-    std::optional<Cool::Texture> _texture{};
-    std::string                  _name{};
-    bool                         is_dirty                      = true;
-    bool                         has_been_requested_this_frame = true;
 
-    int          _webcam_id{};
-    cv::Mat      _available_image{};
-    std::mutex   _mutex;
-    std::jthread _thread;
+    Cool::MessageId _iderrorme_opencv;
+    Cool::MessageId _iderrorme_is_not_open;
+
+    bool                         is_dirty = true;
+    std::optional<Cool::Texture> _texture{};
+    std::mutex                   _mutex;
+    std::jthread                 _thread;
+    cv::Mat                      _available_image{};
 
     static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_id)
     {
@@ -51,10 +48,16 @@ struct WebcamCapture {
 
         int width  = 1920;
         int height = 1080;
-        if (capture.isOpened())
+        try
         {
-            capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
-            capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+            if (capture.isOpened())
+            {
+                capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
+                capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+            }
+        }
+        catch (cv::Exception& e)
+        {
         }
 
         while (!stop_token.stop_requested())
@@ -103,6 +106,30 @@ struct WebcamCapture {
     }
 };
 
+struct WebcamRequest {
+    WebcamRequest(const WebcamRequest&)            = default;
+    WebcamRequest(WebcamRequest&&)                 = default;
+    WebcamRequest& operator=(const WebcamRequest&) = default;
+    WebcamRequest& operator=(WebcamRequest&&)      = default;
+    explicit WebcamRequest(std::optional<int> const& id, std::string name)
+        : _webcam_id(id), _name(name)
+    {
+        if (id.has_value())
+            create_capture(*id);
+    }
+    ~WebcamRequest()
+    {
+    }
+
+    void create_capture(int id);
+
+    std::optional<int>             _webcam_id;
+    std::string                    _name;
+    bool                           has_been_requested_this_frame = true;
+    Cool::MessageId                _iderror_cannot_find_webcam;
+    std::unique_ptr<WebcamCapture> _capture;
+};
+
 void update_webcam_ifn(WebcamCapture& webcam);
 
 class TextureLibrary_FromWebcam {
@@ -112,7 +139,7 @@ public:
         static auto inst = TextureLibrary_FromWebcam();
         return inst;
     }
-    auto get_webcam(std::string name) -> WebcamCapture*;
+    auto get_request(std::string name) -> WebcamRequest*;
     auto get_id_from_name(std::string name) -> std::optional<int>;
     auto get_name_from_id(int id) -> std::optional<std::string>;
     auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
@@ -124,13 +151,15 @@ public:
     [[nodiscard]] auto has_active_webcam() const -> bool;
     [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
 
+    [[nodiscard]] auto get_default_webcam_name() -> std::string;
+
 private:
     TextureLibrary_FromWebcam()
         : _thread_webcam_infos(&TextureLibrary_FromWebcam::thread_webcams_infos_works, std::ref(*this)){};
     // : _thread_webcam_infos{} {}; // This is a singleton. Get the global instance with `instance()` instead.
 
-    auto find_next_webcam_index(int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
-    void add_webcam(int id);
+    // auto find_next_webcam_index(int start_index) -> int; // TODO(TD) autre thread en boucle ; dès qu'on détecte que le nb webcam a changé, on supprime toutes celles existantes et on recrée tout
+    // void add_webcam(int id, std::string name);
     void update_webcams();
 
     void        get_number_webcam_win();
@@ -149,14 +178,11 @@ private:
     } // namespace Cool
 
 private:
-    std::list<WebcamCapture>       _webcams;
+    std::vector<WebcamRequest>     _requests;
     std::vector<webcam_info::info> _webcams_infos;
 
     std::jthread _thread_webcam_infos;
     std::mutex   _mutex_webcam_info;
-
-public:
-    Cool::MessageId _iderror_cannot_find_webcam;
 };
 
 } // namespace Cool
