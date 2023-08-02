@@ -26,24 +26,24 @@ namespace Cool {
 struct WebcamCapture {
     WebcamCapture() = default;
 
-    explicit WebcamCapture(int id)
-        : _webcam_id(id), _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
+    explicit WebcamCapture(int index)
+        : _webcam_index(index), _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), index}
     {
     }
 
     Cool::MessageId _iderrorme_opencv;
     Cool::MessageId _iderrorme_is_not_open;
 
-    std::optional<int>           _webcam_id;
+    std::optional<int>           _webcam_index;
     bool                         is_dirty = true;
     std::optional<Cool::Texture> _texture{};
     std::mutex                   _mutex;
     std::jthread                 _thread;
     cv::Mat                      _available_image{};
 
-    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_id)
+    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
     {
-        cv::VideoCapture capture{webcam_id};
+        cv::VideoCapture capture{webcam_index};
         capture.setExceptionMode(true);
         cv::Mat wip_image{};
 
@@ -73,12 +73,12 @@ struct WebcamCapture {
                             This._iderrorme_is_not_open,
                             Message{
                                 .category = "Nodes",
-                                .message  = fmt::format("Camera {} is not opened", webcam_id),
+                                .message  = fmt::format("Camera {} is not opened", webcam_index),
                                 .severity = MessageSeverity::Warning,
                             }
                         );
                     std::this_thread::sleep_for(1s);
-                    capture = cv::VideoCapture{webcam_id};
+                    capture = cv::VideoCapture{webcam_index};
                 }
                 else
                 {
@@ -100,7 +100,7 @@ struct WebcamCapture {
                             .severity = MessageSeverity::Warning,
                         }
                     );
-                capture = cv::VideoCapture{webcam_id};
+                capture = cv::VideoCapture{webcam_index};
                 capture.setExceptionMode(true);
             }
         }
@@ -108,21 +108,14 @@ struct WebcamCapture {
 };
 
 struct WebcamRequest {
-    WebcamRequest(const WebcamRequest&)            = default;
-    WebcamRequest(WebcamRequest&&)                 = default;
-    WebcamRequest& operator=(const WebcamRequest&) = default;
-    WebcamRequest& operator=(WebcamRequest&&)      = default;
-    explicit WebcamRequest(std::optional<int> const& id, std::string name)
+    explicit WebcamRequest(std::optional<int> const& index, std::string name)
         : _name(name)
     {
-        if (id.has_value())
-            create_capture(*id);
-    }
-    ~WebcamRequest()
-    {
+        if (index.has_value())
+            create_capture(*index);
     }
 
-    void create_capture(int id);
+    void create_capture(int index);
 
     std::string                    _name;
     bool                           has_been_requested_this_frame = true;
@@ -140,8 +133,8 @@ public:
         return inst;
     }
     auto get_request(std::string name) -> WebcamRequest*;
-    auto get_id_from_name(std::string name) -> std::optional<int>;
-    auto get_name_from_id(int id) -> std::optional<std::string>;
+    auto get_index_from_name(std::string name) -> std::optional<int>;
+    auto get_name_from_index(int index) -> std::optional<std::string>;
     auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)

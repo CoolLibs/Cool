@@ -39,7 +39,7 @@ auto TextureLibrary_FromWebcam::get_request(const std::string name) -> WebcamReq
     return nullptr;
 }
 
-auto TextureLibrary_FromWebcam::get_id_from_name(const std::string name) -> std::optional<int>
+auto TextureLibrary_FromWebcam::get_index_from_name(const std::string name) -> std::optional<int>
 {
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     for (int i = 0; i < _webcams_infos.size(); i++)
@@ -50,27 +50,27 @@ auto TextureLibrary_FromWebcam::get_id_from_name(const std::string name) -> std:
     return std::nullopt;
 }
 
-auto TextureLibrary_FromWebcam::get_name_from_id(int id) -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<std::string>
 {
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
-    if (id >= _webcams_infos.size())
+    if (index >= _webcams_infos.size())
         return std::nullopt;
-    return _webcams_infos[id].name;
+    return _webcams_infos[index].name;
 }
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&
 {
     WebcamRequest* request = get_request(name);
-    auto           id      = get_id_from_name(name);
+    auto           index   = get_index_from_name(name);
     if (request == nullptr)
     {
-        _requests.emplace_back(id, name);
+        _requests.emplace_back(index, name);
         request = &_requests.back();
     }
 
     request->has_been_requested_this_frame = true;
 
-    if (!id.has_value())
+    if (!index.has_value())
     {
         Cool::Log::ToUser::console()
             .send(
@@ -86,9 +86,9 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
     }
     Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
 
-    if (!request->_capture || request->_capture->_webcam_id != *id)
+    if (!request->_capture || request->_capture->_webcam_index != *index)
     {
-        request->create_capture(*id);
+        request->create_capture(*index);
     }
 
     update_webcam_ifn(*request->_capture);
@@ -118,7 +118,7 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
 //     {
 //         int index = (i + start_index + 1) % maxTested;
 
-//         auto it = std::find_if(_requests.begin(), _requests.end(), [index](WebcamCapture const& webcam) { return (webcam._webcam_id == index); });
+//         auto it = std::find_if(_requests.begin(), _requests.end(), [index](WebcamCapture const& webcam) { return (webcam._webcam_index == index); });
 
 //         if (it != _requests.end())
 //         {
@@ -144,11 +144,11 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
 //     return 0;
 // }
 
-// void TextureLibrary_FromWebcam::add_webcam(const int id, const std::string name)
+// void TextureLibrary_FromWebcam::add_webcam(const int index, const std::string name)
 // {
 //     try
 //     {
-//         _requests.emplace_back(id, name);
+//         _requests.emplace_back(index, name);
 //     }
 //     catch (cv::Exception& err)
 //     {
@@ -263,9 +263,9 @@ auto TextureLibrary_FromWebcam::get_default_webcam_name() -> std::string
     return _webcams_infos.empty() ? "" : _webcams_infos[0].name;
 }
 
-void WebcamRequest::create_capture(const int id)
+void WebcamRequest::create_capture(const int index)
 {
-    _capture = std::make_unique<WebcamCapture>(id);
+    _capture = std::make_unique<WebcamCapture>(index);
 }
 
 } // namespace Cool
