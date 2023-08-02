@@ -12,6 +12,7 @@
 #include <shared_mutex>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
@@ -27,6 +28,79 @@
 #include <winerror.h>
 
 namespace Cool {
+
+void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
+{
+    cv::VideoCapture capture{webcam_index};
+    capture.setExceptionMode(true);
+    cv::Mat wip_image{};
+
+    int  width{330};
+    int  height{100};
+    auto resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index);
+    if (resolution.has_value())
+    {
+        width  = resolution->first - 1;
+        height = resolution->second;
+    }
+
+    try
+    {
+        if (capture.isOpened())
+        {
+            capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
+            capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+            capture.set(cv::CAP_PROP_FPS, 30);
+        }
+    }
+    catch (cv::Exception& e)
+    {
+    }
+
+    while (!stop_token.stop_requested())
+    {
+        try
+        {
+            std::cout << capture.isOpened() << "\n";
+            if (!capture.isOpened())
+            {
+                Cool::Log::ToUser::console()
+                    .send(
+                        This._iderrorme_is_not_open,
+                        Message{
+                            .category = "Nodes",
+                            .message  = fmt::format("Camera {} is not opened", webcam_index),
+                            .severity = MessageSeverity::Warning,
+                        }
+                    );
+                std::this_thread::sleep_for(1s);
+                capture = cv::VideoCapture{webcam_index};
+            }
+            else
+            {
+                capture >> wip_image;
+                std::scoped_lock lock(This._mutex);
+                cv::swap(This._available_image, wip_image);
+                This.is_dirty = true;
+            }
+        }
+
+        catch (cv::Exception& e)
+        {
+            Cool::Log::ToUser::console()
+                .send(
+                    This._iderrorme_opencv,
+                    Message{
+                        .category = "Nodes",
+                        .message  = fmt::format("OpenCV error : {}", e.what()),
+                        .severity = MessageSeverity::Warning,
+                    }
+                );
+            capture = cv::VideoCapture{webcam_index};
+            capture.setExceptionMode(true);
+        }
+    }
+}
 
 auto TextureLibrary_FromWebcam::get_request(const std::string name) -> WebcamRequest*
 {
@@ -56,6 +130,14 @@ auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<
     if (index >= _webcams_infos.size())
         return std::nullopt;
     return _webcams_infos[index].name;
+}
+
+auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::optional<std::pair<int, int>>
+{
+    std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
+    if (index >= _webcams_infos.size())
+        return std::nullopt;
+    return std::make_pair(_webcams_infos[index].width, _webcams_infos[index].height);
 }
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&

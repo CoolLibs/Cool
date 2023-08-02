@@ -41,70 +41,7 @@ struct WebcamCapture {
     std::jthread                 _thread;
     cv::Mat                      _available_image{};
 
-    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
-    {
-        cv::VideoCapture capture{webcam_index};
-        capture.setExceptionMode(true);
-        cv::Mat wip_image{};
-
-        int width  = 1920;
-        int height = 1080;
-        try
-        {
-            if (capture.isOpened())
-            {
-                capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
-                capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
-            }
-        }
-        catch (cv::Exception& e)
-        {
-        }
-
-        while (!stop_token.stop_requested())
-        {
-            try
-            {
-                std::cout << capture.isOpened() << "\n";
-                if (!capture.isOpened())
-                {
-                    Cool::Log::ToUser::console()
-                        .send(
-                            This._iderrorme_is_not_open,
-                            Message{
-                                .category = "Nodes",
-                                .message  = fmt::format("Camera {} is not opened", webcam_index),
-                                .severity = MessageSeverity::Warning,
-                            }
-                        );
-                    std::this_thread::sleep_for(1s);
-                    capture = cv::VideoCapture{webcam_index};
-                }
-                else
-                {
-                    capture >> wip_image;
-                    std::scoped_lock lock(This._mutex);
-                    cv::swap(This._available_image, wip_image);
-                    This.is_dirty = true;
-                }
-            }
-
-            catch (cv::Exception& e)
-            {
-                Cool::Log::ToUser::console()
-                    .send(
-                        This._iderrorme_opencv,
-                        Message{
-                            .category = "Nodes",
-                            .message  = fmt::format("OpenCV error : {}", e.what()),
-                            .severity = MessageSeverity::Warning,
-                        }
-                    );
-                capture = cv::VideoCapture{webcam_index};
-                capture.setExceptionMode(true);
-            }
-        }
-    }
+    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index);
 };
 
 struct WebcamRequest {
@@ -135,6 +72,7 @@ public:
     auto get_request(std::string name) -> WebcamRequest*;
     auto get_index_from_name(std::string name) -> std::optional<int>;
     auto get_name_from_index(int index) -> std::optional<std::string>;
+    auto get_resolution_from_index(int index) -> std::optional<std::pair<int, int>>;
     auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
