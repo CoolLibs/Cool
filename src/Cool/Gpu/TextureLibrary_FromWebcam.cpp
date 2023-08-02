@@ -86,7 +86,7 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
     }
     Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
 
-    if (!request->_capture || request->_webcam_id != *id)
+    if (!request->_capture || request->_capture->_webcam_id != *id)
     {
         request->create_capture(*id);
     }

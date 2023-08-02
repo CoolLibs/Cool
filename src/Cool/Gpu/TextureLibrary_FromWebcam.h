@@ -27,13 +27,14 @@ struct WebcamCapture {
     WebcamCapture() = default;
 
     explicit WebcamCapture(int id)
-        : _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
+        : _webcam_id(id), _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), id}
     {
     }
 
     Cool::MessageId _iderrorme_opencv;
     Cool::MessageId _iderrorme_is_not_open;
 
+    std::optional<int>           _webcam_id;
     bool                         is_dirty = true;
     std::optional<Cool::Texture> _texture{};
     std::mutex                   _mutex;
@@ -112,7 +113,7 @@ struct WebcamRequest {
     WebcamRequest& operator=(const WebcamRequest&) = default;
     WebcamRequest& operator=(WebcamRequest&&)      = default;
     explicit WebcamRequest(std::optional<int> const& id, std::string name)
-        : _webcam_id(id), _name(name)
+        : _name(name)
     {
         if (id.has_value())
             create_capture(*id);
@@ -123,7 +124,6 @@ struct WebcamRequest {
 
     void create_capture(int id);
 
-    std::optional<int>             _webcam_id;
     std::string                    _name;
     bool                           has_been_requested_this_frame = true;
     Cool::MessageId                _iderror_cannot_find_webcam;
