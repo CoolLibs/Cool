@@ -291,7 +291,7 @@ void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has 
 
 auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_name) -> bool
 {
-    if (webcam_name.empty())
+    if (webcam_name.empty()) // HACK to make sure a newly created webcam variable has a valid webcam name.
         webcam_name = get_default_webcam_name();
     bool b = false;
 
