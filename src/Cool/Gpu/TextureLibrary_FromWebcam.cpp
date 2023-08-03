@@ -22,10 +22,6 @@
 #include "fmt/core.h"
 
 // windows media fondation
-#include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
-#include <winerror.h>
 
 namespace Cool {
 
