@@ -1,5 +1,4 @@
 #pragma once
-#include <vcruntime.h>
 #include <array>
 #include <functional>
 #include <list>
