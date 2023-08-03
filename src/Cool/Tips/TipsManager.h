@@ -1,4 +1,5 @@
 #pragma once
+#include <vcruntime.h>
 #include <chrono>
 #include <string>
 #include <vector>
@@ -24,7 +25,9 @@ public:
 
 private:
     void open_ifn();
+    void prepare_tip(int difference);
     void prepare_next_tip();
+    void prepare_previous_tip();
     auto get_current_tip(Tips all_tips) -> const char*;
 
 private:

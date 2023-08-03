@@ -35,9 +35,19 @@ void TipsManager::open_ifn()
         open_one_tip_window();
 }
 
+void TipsManager::prepare_tip(int difference)
+{
+    _current_tip_index += difference;
+}
+
 void TipsManager::prepare_next_tip()
 {
-    _current_tip_index++;
+    prepare_tip(1);
+}
+
+void TipsManager::prepare_previous_tip()
+{
+    prepare_tip(-1);
 }
 
 static void imgui_all_tips(Tips all_tips)
@@ -68,10 +78,9 @@ void TipsManager::imgui_content(Tips all_tips)
         _window.close();
     }
 
-    if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
+    if (ImGui::Button("Previous tip", {button_width, 0.f}))
     {
-        _window.close();
-        open_all_tips_window();
+        prepare_previous_tip();
     }
 
     ImGui::SameLine();
