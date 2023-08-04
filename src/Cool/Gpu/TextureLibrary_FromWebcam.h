@@ -1,4 +1,5 @@
 #pragma once
+#include <Cool/ImGui/IcoMoonCodepoints.h>
 #include <array>
 #include <functional>
 #include <list>
@@ -18,6 +19,8 @@
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
+#include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Log/ToUser.h"
 
@@ -80,11 +83,14 @@ public:
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
     auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
+    void open_webcams_config_window();
 
     [[nodiscard]] auto has_active_webcam() const -> bool;
     [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
 
     [[nodiscard]] auto get_default_webcam_name() -> std::string;
+
+    void imgui_windows();
 
 private:
     TextureLibrary_FromWebcam()
@@ -116,6 +122,8 @@ private:
 
     std::jthread _thread_webcam_infos;
     std::mutex   _mutex_webcam_info;
+
+    ImGuiWindow _webcam_config_window{icon_fmt("Webcams Config", ICOMOON_COG)};
 };
 
 } // namespace Cool

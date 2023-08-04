@@ -17,6 +17,7 @@
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 #include "fmt/core.h"
@@ -308,6 +309,13 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_nam
         }
     }
 
+    if (ImGuiExtras::button_with_text_icon(ICOMOON_COG))
+    {
+        _webcam_config_window.open();
+    }
+    ImGuiExtras::tooltip("Open Webcams Config to choose the resolutions");
+    // ImGui::SameLine();
+
     std::string combo_preview_name = webcam_name;
 
     if (ImGui::BeginCombo("Webcam", combo_preview_name.c_str(), 0))
@@ -325,6 +333,18 @@ auto TextureLibrary_FromWebcam::imgui_widget_webcam_name(std::string& webcam_nam
     }
 
     return b;
+}
+
+void TextureLibrary_FromWebcam::open_webcams_config_window()
+{
+    _webcam_config_window.open();
+}
+
+void TextureLibrary_FromWebcam::imgui_windows()
+{
+    _webcam_config_window.show([]() {
+
+    });
 }
 
 auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
