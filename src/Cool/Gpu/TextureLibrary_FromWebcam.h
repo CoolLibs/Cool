@@ -9,6 +9,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
 #include <optional>
+#include <ostream>
 #include <stop_token>
 #include <string>
 #include <thread>
@@ -39,6 +40,8 @@ struct WebcamCapture {
     std::mutex                   _mutex;
     std::jthread                 _thread;
     cv::Mat                      _available_image{};
+
+    std::optional<std::string> error{};
 
     static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index);
 };

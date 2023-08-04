@@ -27,30 +27,35 @@ namespace Cool {
 
 void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
 {
-    cv::VideoCapture capture{webcam_index};
-    capture.setExceptionMode(true);
-    cv::Mat wip_image{};
-
-    int  width{330};
-    int  height{100};
-    auto resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index);
-    if (resolution.has_value())
-    {
-        width  = resolution->first - 1;
-        height = resolution->second;
-    }
-
-    try
-    {
+    auto set_capture_parameters = [&](int width, int height, cv::VideoCapture& capture) {
+        capture.setExceptionMode(true);
         if (capture.isOpened())
         {
             capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
             capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
             capture.set(cv::CAP_PROP_FPS, 30);
         }
+    };
+
+    cv::VideoCapture capture{webcam_index};
+    cv::Mat          wip_image{};
+
+    int  width{330};
+    int  height{100};
+    auto resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index);
+    if (resolution.has_value())
+    {
+        width  = resolution->first;
+        height = resolution->second;
+    }
+
+    try
+    {
+        set_capture_parameters(width, height, capture);
     }
     catch (cv::Exception& e)
     {
+        // TODO
     }
 
     while (!stop_token.stop_requested())
@@ -59,17 +64,10 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
         {
             if (!capture.isOpened())
             {
-                Cool::Log::ToUser::console()
-                    .send(
-                        This._iderrorme_is_not_open,
-                        Message{
-                            .category = "Nodes",
-                            .message  = fmt::format("Camera {} is not opened", webcam_index),
-                            .severity = MessageSeverity::Warning,
-                        }
-                    );
+                This.error = "Failed to open Webcam";
+                capture    = cv::VideoCapture{webcam_index};
                 std::this_thread::sleep_for(1s);
-                capture = cv::VideoCapture{webcam_index};
+                return;
             }
             else
             {
@@ -78,21 +76,15 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
                 cv::swap(This._available_image, wip_image);
                 This.is_dirty = true;
             }
+
+            This.error.reset();
         }
 
         catch (cv::Exception& e)
         {
-            Cool::Log::ToUser::console()
-                .send(
-                    This._iderrorme_opencv,
-                    Message{
-                        .category = "Nodes",
-                        .message  = fmt::format("OpenCV error : {}", e.what()),
-                        .severity = MessageSeverity::Warning,
-                    }
-                );
-            capture = cv::VideoCapture{webcam_index};
-            capture.setExceptionMode(true);
+            This.error = "Failed to open Webcam";
+            capture    = cv::VideoCapture{webcam_index};
+            set_capture_parameters(width, height, capture);
         }
     }
 }
@@ -161,14 +153,30 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
         request->_capture.reset();
         return std::nullopt;
     }
-    Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
 
     if (!request->_capture || request->_capture->_webcam_index != *index)
     {
         request->create_capture(*index);
     }
 
+    if (request->_capture->error)
+    {
+        Cool::Log::ToUser::console()
+            .send(
+                request->_iderror_cannot_find_webcam,
+                Message{
+                    .category = "Nodes",
+                    .message  = fmt::format("{} {}, Maybe it is used in an other sofware", *request->_capture->error, request->_name),
+                    .severity = MessageSeverity::Error,
+                }
+            );
+        request->_capture.reset();
+        return std::nullopt;
+    }
+
     update_webcam_ifn(*request->_capture);
+    Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
+
     return request->_capture->_texture;
 }
 
