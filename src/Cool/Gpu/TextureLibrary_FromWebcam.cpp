@@ -57,7 +57,6 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
     {
         try
         {
-            std::cout << capture.isOpened() << "\n";
             if (!capture.isOpened())
             {
                 Cool::Log::ToUser::console()
