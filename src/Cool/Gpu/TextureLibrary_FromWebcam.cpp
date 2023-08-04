@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 #include <webcam_info/webcam_info.hpp>
+#include <xmemory>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/ImGui/ImGuiExtras.h"
@@ -25,6 +26,40 @@
 // windows media fondation
 
 namespace Cool {
+
+static auto get_all_webcams() -> std::vector<webcam_info::info>
+{
+    auto list_webcams_infos = webcam_info::get_all_webcams();
+    for (auto& webcam_info : list_webcams_infos)
+    {
+        std::sort(webcam_info.list_resolution.begin(), webcam_info.list_resolution.end(), [](webcam_info::resolution& res_a, webcam_info::resolution& res_b) {
+            return res_a.width < res_b.width && res_a.height < res_b.height;
+        });
+
+        webcam_info.list_resolution.erase(
+            std::unique(
+                webcam_info.list_resolution.begin(),
+                webcam_info.list_resolution.end()
+            ),
+            webcam_info.list_resolution.end()
+        );
+    }
+    return list_webcams_infos;
+}
+
+void TextureLibrary_FromWebcam::thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This)
+{
+    std::vector<webcam_info::info> wip_webcams_infos{};
+    while (!stop_token.stop_requested())
+    {
+        wip_webcams_infos = get_all_webcams();
+        {
+            std::scoped_lock<std::mutex> lock(This._mutex_webcam_info);
+            std::swap(wip_webcams_infos, This._webcams_infos);
+        }
+    }
+
+} // namespace Cool
 
 void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
 {
@@ -125,7 +160,11 @@ auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::opt
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     if (index >= _webcams_infos.size())
         return std::nullopt;
-    return _webcams_infos[index].resolution;
+
+    if (_webcams_infos[index].list_resolution.empty())
+        return std::nullopt;
+
+    return _webcams_infos[index].list_resolution[0];
 }
 auto TextureLibrary_FromWebcam::get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>
 {
@@ -133,7 +172,9 @@ auto TextureLibrary_FromWebcam::get_default_resolution_from_name(const std::stri
     {
         if (infos.name == name)
         {
-            return infos.resolution; // TODO(TD)
+            if (infos.list_resolution.empty())
+                return std::nullopt;
+            return infos.list_resolution[0];
         }
     }
     return std::nullopt;
@@ -378,9 +419,7 @@ void TextureLibrary_FromWebcam::imgui_windows()
 
             if (ImGui::BeginCombo(infos.name.c_str(), combo_preview_value.c_str(), 0))
             {
-                std::vector<webcam_info::resolution> list_resolutions{{1920, 1080}, {1280, 720}}; // will be get from the webcams infos
-
-                for (auto& resolution : list_resolutions)
+                for (auto& resolution : infos.list_resolution)
                 {
                     const bool  is_selected     = (config.resolution == resolution);
                     std::string resolution_name = fmt::format("{} x {}", resolution.width, resolution.height);

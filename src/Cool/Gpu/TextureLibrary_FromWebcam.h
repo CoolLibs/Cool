@@ -28,7 +28,7 @@
 namespace Cool {
 
 struct WebcamConfig {
-    webcam_info::resolution resolution;
+    webcam_info::resolution resolution; // TODO(TD) à sérialiser
 };
 
 using WebcamsConfigsList = std::map<std::string, WebcamConfig>;
@@ -113,19 +113,7 @@ private:
     void update_webcams();
 
     void        get_number_webcam_win();
-    static void thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This)
-    {
-        std::vector<webcam_info::info> wip_webcams_infos{};
-        while (!stop_token.stop_requested())
-        {
-            wip_webcams_infos = webcam_info::get_all_webcams();
-            {
-                std::scoped_lock<std::mutex> lock(This._mutex_webcam_info);
-                std::swap(wip_webcams_infos, This._webcams_infos);
-            }
-        }
-
-    } // namespace Cool
+    static void thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This);
 
 private:
     std::vector<WebcamRequest>     _requests;
