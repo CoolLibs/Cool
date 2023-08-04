@@ -3,6 +3,7 @@
 #include <array>
 #include <functional>
 #include <list>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <opencv2/core.hpp>
@@ -25,6 +26,12 @@
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
+
+struct WebcamConfig {
+    webcam_info::resolution resolution;
+};
+
+using WebcamsConfigsList = std::map<std::string, WebcamConfig>;
 
 struct WebcamCapture {
     WebcamCapture() = default;
@@ -77,13 +84,17 @@ public:
     auto get_request(std::string name) -> WebcamRequest*;
     auto get_index_from_name(std::string name) -> std::optional<int>;
     auto get_name_from_index(int index) -> std::optional<std::string>;
-    auto get_resolution_from_index(int index) -> std::optional<std::pair<int, int>>;
+    auto get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>;
+    auto get_resolution_from_name(const std::string& name) -> webcam_info::resolution;
+    auto get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>;
     auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 
     auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
     void open_webcams_config_window();
+
+    auto get_config_from_name(const std::string& name) -> WebcamConfig&;
 
     [[nodiscard]] auto has_active_webcam() const -> bool;
     [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
@@ -119,6 +130,7 @@ private:
 private:
     std::vector<WebcamRequest>     _requests;
     std::vector<webcam_info::info> _webcams_infos;
+    WebcamsConfigsList             _list_webcam_configs{};
 
     std::jthread _thread_webcam_infos;
     std::mutex   _mutex_webcam_info;

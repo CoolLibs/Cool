@@ -46,8 +46,8 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
     auto resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index);
     if (resolution.has_value())
     {
-        width  = resolution->first;
-        height = resolution->second;
+        width  = resolution->width;
+        height = resolution->height;
     }
 
     try
@@ -120,12 +120,38 @@ auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<
     return _webcams_infos[index].name;
 }
 
-auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::optional<std::pair<int, int>>
+auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>
 {
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     if (index >= _webcams_infos.size())
         return std::nullopt;
-    return std::make_pair(_webcams_infos[index].width, _webcams_infos[index].height);
+    return _webcams_infos[index].resolution;
+}
+auto TextureLibrary_FromWebcam::get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>
+{
+    for (auto& infos : _webcams_infos)
+    {
+        if (infos.name == name)
+        {
+            return infos.resolution; // TODO(TD)
+        }
+    }
+    return std::nullopt;
+}
+
+// auto TextureLibrary_FromWebcam::get_resolution_from_name(const std::string& name) -> webcam_info::resolution
+// {
+//     return _list_webcam_configs.find(name)->second.resolution;
+// }
+
+auto TextureLibrary_FromWebcam::get_config_from_name(const std::string& name) -> WebcamConfig&
+{
+    auto config = _list_webcam_configs.find(name);
+    if (config == _list_webcam_configs.end())
+    {
+        return _list_webcam_configs.emplace(name, WebcamConfig{get_default_resolution_from_name(name).value_or(webcam_info::resolution{})}).first->second;
+    }
+    return config->second;
 }
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&
@@ -342,8 +368,37 @@ void TextureLibrary_FromWebcam::open_webcams_config_window()
 
 void TextureLibrary_FromWebcam::imgui_windows()
 {
-    _webcam_config_window.show([]() {
+    _webcam_config_window.show([this]() {
+        std::scoped_lock<std::mutex> lock(this->_mutex_webcam_info);
+        for (auto& infos : this->_webcams_infos)
+        {
+            auto& config = get_config_from_name(infos.name);
+            // auto        webcam_resolution   = std::make_pair(infos.resolution.width, infos.height);
+            std::string combo_preview_value = fmt::format("{} x {}", config.resolution.width, config.resolution.height);
 
+            if (ImGui::BeginCombo(infos.name.c_str(), combo_preview_value.c_str(), 0))
+            {
+                std::vector<webcam_info::resolution> list_resolutions{{1920, 1080}, {1280, 720}}; // will be get from the webcams infos
+
+                for (auto& resolution : list_resolutions)
+                {
+                    const bool  is_selected     = (config.resolution == resolution);
+                    std::string resolution_name = fmt::format("{} x {}", resolution.width, resolution.height);
+
+                    if (ImGui::Selectable(resolution_name.c_str(), is_selected))
+                    {
+                        config.resolution = resolution;
+                        // Trouver la requete correspodnante si elle existe, et si oui détruire sa capture car elle n'est plus valide
+                    }
+
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+                // ImGui::SameLine();
+                // ImGui::Text("{}\n", infos.name.c_str());
+            }
+        }
     });
 }
 
