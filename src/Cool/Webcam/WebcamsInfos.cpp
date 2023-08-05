@@ -50,7 +50,7 @@ auto WebcamsInfos::imgui_widget_webcam_name(std::string& webcam_name) -> bool
         webcam_name = default_webcam_name();
 
     if (ImGuiExtras::button_with_text_icon(ICOMOON_COG))
-        WebcamsConfigs::instance().open_webcams_config_window();
+        WebcamsConfigs::instance().open_imgui_window();
     ImGuiExtras::tooltip("Open Webcams Config to choose the resolutions");
 
     bool       b                  = false;

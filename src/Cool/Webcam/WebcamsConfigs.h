@@ -13,19 +13,20 @@ class WebcamsConfigs {
 public:
     [[nodiscard]] static auto instance() -> WebcamsConfigs&;
 
-    auto get_resolution_from_index(size_t index) -> std::optional<webcam_info::Resolution>;
-    auto get_resolution_from_name(const std::string& name) -> webcam_info::Resolution;
-    void open_webcams_config_window();
-    void imgui_windows();
-    auto get_config_from_name(const std::string& name) -> WebcamConfig&;
+    [[nodiscard]] auto selected_resolution(std::string const& webcam_name) -> webcam_info::Resolution;
+
+    void open_imgui_window();
+    void imgui_window();
 
 private:
     WebcamsConfigs() = default; // This is a singleton. Get the global instance with `instance()` instead.
     static auto gen_instance() -> WebcamsConfigs&;
 
+    [[nodiscard]] auto get_config(std::string const& webcam_name) -> WebcamConfig&;
+
 private:
-    ImGuiWindow              _webcam_config_window{icon_fmt("Webcams Config", ICOMOON_COG)};
-    WebcamsConfigsList       _list_webcam_configs{};
+    ImGuiWindow              _window{icon_fmt("Webcams Configs", ICOMOON_COG)};
+    WebcamsConfigsList       _configs{};
     Cool::SerializerOnDemand _serializer{Cool::Path::user_data() / "webcams-configs.json", "Configs"};
 };
 

@@ -4,6 +4,7 @@
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
+#include "Cool/Webcam/WebcamsConfigs.h"
 #include "Cool/Webcam/WebcamsInfos.h"
 
 namespace Cool {
@@ -59,7 +60,10 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
 
     if (!request->_capture || request->_capture->webcam_index() != *index)
     {
-        request->create_capture(*index);
+        request->_capture = std::make_unique<WebcamCapture>(
+            *index,
+            WebcamsConfigs::instance().selected_resolution(name)
+        );
     }
 
     if (request->_capture->has_stopped())

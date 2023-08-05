@@ -4,15 +4,15 @@
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/vector.hpp>
 #include <webcam_info/webcam_info.hpp>
-#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
-#include "Cool/Webcam/WebcamsInfos.h"
+#include "TextureLibrary_FromWebcam.h"
+#include "WebcamsInfos.h"
 
 namespace Cool {
 
 auto WebcamsConfigs::gen_instance() -> WebcamsConfigs&
 {
     static auto inst      = WebcamsConfigs{};
-    auto const  maybe_err = inst._serializer.load<WebcamsConfigsList, cereal::JSONInputArchive>(inst._list_webcam_configs);
+    auto const  maybe_err = inst._serializer.load<WebcamsConfigsList, cereal::JSONInputArchive>(inst._configs);
     std::ignore           = maybe_err; // Ignore errors when file not found
     return inst;
 }
@@ -23,34 +23,31 @@ auto WebcamsConfigs::instance() -> WebcamsConfigs&
     return inst;
 }
 
-auto WebcamsConfigs::get_resolution_from_index(size_t index) -> std::optional<webcam_info::Resolution>
+auto WebcamsConfigs::selected_resolution(std::string const& webcam_name) -> webcam_info::Resolution
 {
-    auto possible_name = WebcamsInfos::instance().name(index);
-    if (!possible_name.has_value())
-        return std::nullopt;
-    return get_config_from_name(*possible_name).resolution;
+    return get_config(webcam_name).resolution;
 }
 
-auto WebcamsConfigs::get_config_from_name(const std::string& name) -> WebcamConfig&
+auto WebcamsConfigs::get_config(std::string const& webcam_name) -> WebcamConfig&
 {
-    auto config = _list_webcam_configs.find(name);
-    if (config == _list_webcam_configs.end())
+    auto config = _configs.find(webcam_name);
+    if (config == _configs.end())
     {
-        return _list_webcam_configs.emplace(name, WebcamConfig{WebcamsInfos::instance().default_resolution(name)}).first->second;
+        return _configs.emplace(webcam_name, WebcamConfig{WebcamsInfos::instance().default_resolution(webcam_name)}).first->second;
     }
     return config->second;
 }
 
-void WebcamsConfigs::open_webcams_config_window()
+void WebcamsConfigs::open_imgui_window()
 {
-    _webcam_config_window.open();
+    _window.open();
 }
 
-void WebcamsConfigs::imgui_windows()
+void WebcamsConfigs::imgui_window()
 {
-    _webcam_config_window.show([&]() {
+    _window.show([&]() {
         WebcamsInfos::instance().for_each_webcam_info([&](webcam_info::Info const& info) {
-            auto& config = get_config_from_name(info.name);
+            auto& config = get_config(info.name);
             // auto        webcam_resolution   = std::make_pair(info.resolution.width, info.height);
             std::string combo_preview_value = fmt::format("{} x {}", config.resolution.width, config.resolution.height);
 
@@ -67,7 +64,7 @@ void WebcamsConfigs::imgui_windows()
 
                         TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy request so that a new one will be created with the new requested resolution.
 
-                        _serializer.save<WebcamsConfigsList, cereal::JSONOutputArchive>(_list_webcam_configs);
+                        _serializer.save<WebcamsConfigsList, cereal::JSONOutputArchive>(_configs);
 
                         // Trouver la requete correspodnante si elle existe, et si oui détruire sa capture car elle n'est plus valide
                     }
