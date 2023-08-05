@@ -98,6 +98,15 @@ auto create_file_if_it_doesnt_exist(std::filesystem::path const& file_path) -> b
     return file.is_open();
 }
 
+auto copy_file(std::filesystem::path const& from, std::filesystem::path const& to) -> bool
+{
+    if (!create_folders_for_file_if_they_dont_exist(to))
+        return false;
+
+    std::filesystem::copy_file(from, to);
+    return true;
+}
+
 auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
 {
     std::string const name = Cool::File::without_extension(file_name).string();

@@ -51,14 +51,6 @@ void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
     _message_just_sent = id;
-    if (_messages.underlying_container().underlying_container().size() > 99) // If there are too many messages the console starts to cause lag.
-    {
-        auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
-            return is_clearable(pair.second);
-        });
-        if (it != _messages.end())
-            _messages.underlying_container().underlying_container().erase(it);
-    }
 }
 
 void MessageConsole::remove(const MessageId& id)
@@ -195,8 +187,24 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
     }
 }
 
+void MessageConsole::remove_messages_to_keep_size_below(size_t max_number_of_messages)
+{
+    while (_messages.underlying_container().underlying_container().size() > max_number_of_messages)
+    {
+        auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
+            return is_clearable(pair.second);
+        });
+        if (it != _messages.end())
+            _messages.underlying_container().underlying_container().erase(it);
+        else
+            break;
+    }
+}
+
 void MessageConsole::imgui_window()
 {
+    remove_messages_to_keep_size_below(999); // If there are too many messages the console starts to cause lag.
+
     if (_is_open)
     {
         refresh_counts_per_severity();

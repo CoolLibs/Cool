@@ -39,6 +39,9 @@ auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode m
 /// Returns true iff the file now exists.
 auto create_file_if_it_doesnt_exist(std::filesystem::path const& file_path) -> bool;
 
+/// Returns true iff the copy succeeded.
+auto copy_file(std::filesystem::path const& from, std::filesystem::path const& to) -> bool;
+
 /// Returns a file name that isn't in use yet; it will be file_name, eventually postfixed with a number in parenthesis
 /// folder_path: The folder where you want the file to be created
 /// file_name: The name you would like to give to the file

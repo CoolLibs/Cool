@@ -741,4 +741,9 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
     }
 }
 
+auto NodesEditorImpl::is_empty() const -> bool
+{
+    return _graph.nodes().is_empty() && _frame_nodes.empty();
+}
+
 } // namespace Cool
