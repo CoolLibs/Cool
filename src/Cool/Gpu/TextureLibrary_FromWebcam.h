@@ -41,25 +41,26 @@ using WebcamsConfigsList = std::unordered_map<std::string, WebcamConfig>;
 class WebcamCapture {
 public:
     explicit WebcamCapture(size_t index)
-        : webcam_index{index}
-        , thread{&WebcamCapture::thread_job_webcam_image, std::ref(*this)}
-    {
-    }
+        : _webcam_index{index}
+        , _thread{&WebcamCapture::thread_job_webcam_image, std::ref(*this)}
+    {}
+
+    [[nodiscard]] auto has_stopped() const -> bool { return _has_stopped; }
+    auto               texture() -> Cool::Texture const*;
+    [[nodiscard]] auto webcam_index() const ->size_t{return _webcam_index;}  
 
 private:
     static void thread_job_webcam_image(std::stop_token const& stop_token, WebcamCapture& This);
-
-public:
-    std::mutex                   mutex{};
-    std::optional<Cool::Texture> texture{};
-    bool                         needs_to_create_texture_from_available_image{false};
-    cv::Mat                      available_image{};
-    bool                         has_stopped{false};
-
-    size_t webcam_index;
+    void        update_webcam_ifn();
 
 private:
-    std::jthread thread{};
+    std::mutex                   _mutex{};
+    std::optional<Cool::Texture> _texture{};
+    bool                         _needs_to_create_texture_from_available_image{false};
+    cv::Mat                      _available_image{};
+    bool                         _has_stopped{false};
+    size_t                       _webcam_index;
+    std::jthread                 _thread{};
 };
 
 struct WebcamRequest {
@@ -77,8 +78,6 @@ struct WebcamRequest {
     Cool::MessageId                _iderror_cannot_find_webcam;
     std::unique_ptr<WebcamCapture> _capture;
 };
-
-void update_webcam_ifn(WebcamCapture& webcam);
 
 class TextureLibrary_FromWebcam {
 public:

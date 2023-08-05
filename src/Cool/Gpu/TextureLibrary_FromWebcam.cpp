@@ -94,22 +94,61 @@ void WebcamCapture::thread_job_webcam_image(std::stop_token const& stop_token, W
 {
     try
     {
-        cv::VideoCapture capture = create_opencv_capture(This.webcam_index);
+        cv::VideoCapture capture = create_opencv_capture(This.webcam_index());
         cv::Mat          wip_image{};
 
         while (!stop_token.stop_requested() && capture.isOpened())
         {
             capture >> wip_image;
 
-            std::scoped_lock lock(This.mutex);
-            cv::swap(This.available_image, wip_image);
-            This.needs_to_create_texture_from_available_image = true;
+            std::scoped_lock lock(This._mutex);
+            cv::swap(This._available_image, wip_image);
+            This._needs_to_create_texture_from_available_image = true;
         }
     }
     catch (...)
     {
     }
-    This.has_stopped = true;
+    This._has_stopped = true;
+}
+
+auto WebcamCapture::texture() -> Cool::Texture const*
+{
+    update_webcam_ifn();
+    if (!_texture)
+        return nullptr;
+    return &*_texture;
+}
+
+void WebcamCapture::update_webcam_ifn()
+{
+    std::scoped_lock lock(_mutex);
+    if (!_needs_to_create_texture_from_available_image)
+    {
+        return;
+    }
+
+    const auto width  = static_cast<unsigned int>(_available_image.cols);
+    const auto height = static_cast<unsigned int>(_available_image.rows);
+
+    if (!_texture)
+        _texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(_available_image.ptr())};
+
+    else
+    {
+        _texture->bind();
+        _texture->set_image(
+            {width, height},
+            reinterpret_cast<uint8_t*>(_available_image.ptr()),
+            {
+                .internal_format = glpp::InternalFormat::RGBA,
+                .channels        = glpp::Channels::RGB,
+                .texel_data_type = glpp::TexelDataType::UnsignedByte,
+            }
+        );
+        Cool::Texture::unbind();
+    }
+    _needs_to_create_texture_from_available_image = false;
 }
 
 auto TextureLibrary_FromWebcam::get_request(const std::string name) -> WebcamRequest*
@@ -215,12 +254,12 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
         return nullptr;
     }
 
-    if (!request->_capture || request->_capture->webcam_index != *index)
+    if (!request->_capture || request->_capture->webcam_index() != *index)
     {
         request->create_capture(*index);
     }
 
-    if (request->_capture->has_stopped)
+    if (request->_capture->has_stopped())
     {
         Cool::Log::ToUser::console()
             .send(
@@ -235,13 +274,14 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
         return nullptr;
     }
 
-    update_webcam_ifn(*request->_capture);
+    // update_webcam_ifn(*request->_capture);
+    auto capture_texture = request->_capture->texture();
 
-    if (!request->_capture->texture)
+    if (!capture_texture)
         return nullptr;
 
     Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
-    return &*request->_capture->texture;
+    return &*capture_texture;
 }
 
 // auto TextureLibrary_FromWebcam::find_nextwebcam_index(const int start_index) -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
@@ -311,37 +351,6 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
 //             );
 //     }
 // }
-
-void update_webcam_ifn(WebcamCapture& webcam)
-{
-    std::scoped_lock lock(webcam.mutex);
-    if (!webcam.needs_to_create_texture_from_available_image)
-    {
-        return;
-    }
-
-    const auto width  = static_cast<unsigned int>(webcam.available_image.cols);
-    const auto height = static_cast<unsigned int>(webcam.available_image.rows);
-
-    if (!webcam.texture)
-        webcam.texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam.available_image.ptr())};
-
-    else
-    {
-        webcam.texture->bind();
-        webcam.texture->set_image(
-            {width, height},
-            reinterpret_cast<uint8_t*>(webcam.available_image.ptr()),
-            {
-                .internal_format = glpp::InternalFormat::RGBA,
-                .channels        = glpp::Channels::RGB,
-                .texel_data_type = glpp::TexelDataType::UnsignedByte,
-            }
-        );
-        Cool::Texture::unbind();
-    }
-    webcam.needs_to_create_texture_from_available_image = false; // the webcam is now up to date
-}
 
 void TextureLibrary_FromWebcam::on_frame_begin()
 {
