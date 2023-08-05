@@ -1,4 +1,5 @@
 #pragma once
+#include <webcam_info/webcam_info.hpp>
 
 namespace Cool {
 

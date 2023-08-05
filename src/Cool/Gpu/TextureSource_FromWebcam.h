@@ -2,12 +2,12 @@
 #include <optional>
 #include <string>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
+#include "Cool/Webcam/WebcamsInfos.h"
 
 namespace Cool {
 
 struct TextureSource_FromWebcam {
-    std::string webcam_name{Cool::TextureLibrary_FromWebcam::instance().get_default_webcam_name()}; // NB: most of the time a Source is created too early for this to have any effect (the thread that finds the webcam's names hasn't had time to do its job yet). This is why we have a HACK in TextureLibrary_FromWebcam::imgui_widget_webcam_name to still init with a proper webcam name.
+    std::string webcam_name{Cool::WebcamsInfos::instance().get_default_webcam_name()}; // NB: most of the time a Source is created too early for this to have any effect (the thread that finds the webcam's names hasn't had time to do its job yet). This is why we have a HACK in TextureLibrary_FromWebcam::imgui_widget_webcam_name to still init with a proper webcam name.
 
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> Texture const*;

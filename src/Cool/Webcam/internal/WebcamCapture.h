@@ -1,4 +1,6 @@
 #pragma once
+#include <Cool/Gpu/Texture.h>
+#include <opencv2/core.hpp>
 
 namespace Cool {
 
