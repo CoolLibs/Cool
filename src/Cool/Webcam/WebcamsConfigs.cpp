@@ -25,7 +25,7 @@ auto WebcamsConfigs::instance() -> WebcamsConfigs&
 
 auto WebcamsConfigs::get_resolution_from_index(size_t index) -> std::optional<webcam_info::Resolution>
 {
-    auto possible_name = WebcamsInfos::instance().get_name_from_index(index);
+    auto possible_name = WebcamsInfos::instance().name(index);
     if (!possible_name.has_value())
         return std::nullopt;
     return get_config_from_name(*possible_name).resolution;
@@ -36,7 +36,7 @@ auto WebcamsConfigs::get_config_from_name(const std::string& name) -> WebcamConf
     auto config = _list_webcam_configs.find(name);
     if (config == _list_webcam_configs.end())
     {
-        return _list_webcam_configs.emplace(name, WebcamConfig{WebcamsInfos::instance().get_default_resolution_from_name(name).value_or(webcam_info::Resolution{})}).first->second;
+        return _list_webcam_configs.emplace(name, WebcamConfig{WebcamsInfos::instance().default_resolution(name)}).first->second;
     }
     return config->second;
 }

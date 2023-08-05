@@ -33,7 +33,7 @@ auto TextureLibrary_FromWebcam::get_request(std::string const& webcam_name) -> W
 auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Texture const*
 {
     WebcamRequest* request = get_request(name);
-    auto           index   = WebcamsInfos::instance().get_index_from_name(name);
+    auto           index   = WebcamsInfos::instance().index(name);
     if (request == nullptr)
     {
         _requests.emplace_back(index, name);
