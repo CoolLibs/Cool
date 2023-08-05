@@ -1,4 +1,3 @@
-#pragma once
 #include "TextureSource_FromFile.h"
 #include <compare>
 #include "Cool/Gpu/Texture.h"
@@ -16,7 +15,7 @@ auto TextureSource_FromFile::imgui_widget() -> bool
     return b;
 }
 
-[[nodiscard]] auto TextureSource_FromFile::get_texture() const -> std::optional<Texture> const&
+[[nodiscard]] auto TextureSource_FromFile::get_texture() const -> Texture const*
 {
     return TextureLibrary_FromFile::instance().get(absolute_path);
 }

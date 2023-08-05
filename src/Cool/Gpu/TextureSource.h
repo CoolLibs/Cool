@@ -21,7 +21,7 @@ inline auto get_texture(TextureSource const& source) -> Texture const&
         [](auto const& source) -> Texture const& {
             static auto const dummy_tex = gen_dummy_texture();
             if (source.get_texture())
-                return source.get_texture().value();
+                return *source.get_texture();
 
             return dummy_tex;
         },

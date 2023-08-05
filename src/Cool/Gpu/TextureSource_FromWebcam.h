@@ -11,7 +11,7 @@ struct TextureSource_FromWebcam {
     std::string webcam_name{Cool::TextureLibrary_FromWebcam::instance().get_default_webcam_name()};
 
     auto               imgui_widget() -> bool;
-    [[nodiscard]] auto get_texture() const -> std::optional<Texture> const&;
+    [[nodiscard]] auto get_texture() const -> Texture const*;
     auto               get_error() const -> std::optional<std::string>;
 
     friend auto operator==(TextureSource_FromWebcam const&, TextureSource_FromWebcam const&) -> bool = default;

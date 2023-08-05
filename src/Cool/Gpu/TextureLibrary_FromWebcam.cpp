@@ -201,7 +201,7 @@ auto TextureLibrary_FromWebcam::get_request_from_name(const std::string& name) -
     return nullptr;
 }
 
-auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&
+auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Texture const*
 {
     WebcamRequest* request = get_request(name);
     auto           index   = get_index_from_name(name);
@@ -225,7 +225,7 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
                 }
             );
         request->_capture.reset();
-        return std::nullopt;
+        return nullptr;
     }
 
     if (!request->_capture || request->_capture->_webcam_index != *index)
@@ -245,13 +245,15 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> st
                 }
             );
         request->_capture.reset();
-        return std::nullopt;
+        return nullptr;
     }
 
     update_webcam_ifn(*request->_capture);
     Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
 
-    return request->_capture->_texture;
+    if (!request->_capture->_texture)
+        return nullptr;
+    return &*request->_capture->_texture;
 }
 
 // auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79

@@ -20,7 +20,7 @@ static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_
     return std::chrono::steady_clock::now() - date_of_last_request > time_to_live;
 }
 
-auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> std::optional<Texture> const&
+auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture const*
 {
     auto const it = _textures.find(path);
     // If this path is not known to the library, add it and try again.
@@ -38,15 +38,12 @@ auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> std::opt
     it->second.date_of_last_request = clock::now();
 
     auto const& maybe_tex = it->second.texture;
-    if (!maybe_tex && !it->second.error_message) // Texture ise nullopt simply because it hasn't been used in a while. Reload the texture.
+    if (!maybe_tex && !it->second.error_message) // Texture is nullopt simply because it hasn't been used in a while. Reload the texture.
         reload_texture(path);
 
-    // if (!maybe_tex)
-    // {
-    //     static auto const dummy_texture = gen_dummy_texture(); // will be handle by the TextureSource
-    //     return dummy_texture;
-    // }
-    return maybe_tex;
+    if (!maybe_tex)
+        return nullptr;
+    return &*maybe_tex;
 }
 
 void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)

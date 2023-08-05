@@ -17,7 +17,7 @@ auto TextureSource_FromWebcam::imgui_widget() -> bool
     return b;
 }
 
-[[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> std::optional<Texture> const&
+[[nodiscard]] auto TextureSource_FromWebcam::get_texture() const -> Texture const*
 {
     // if (!TextureLibrary_FromWebcam::instance().get_webcam_texture(webcam_name).has_value())
     // {

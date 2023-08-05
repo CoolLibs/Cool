@@ -87,7 +87,7 @@ public:
     auto get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>;
     auto get_resolution_from_name(const std::string& name) -> webcam_info::resolution;
     auto get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>;
-    auto get_webcam_texture(std::string name) -> std::optional<Texture> const&;
+    auto get_webcam_texture(std::string name) -> Texture const*;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
 

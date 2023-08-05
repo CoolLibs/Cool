@@ -20,7 +20,7 @@ public:
         return inst;
     }
 
-    [[nodiscard]] auto get(std::filesystem::path const&) -> std::optional<Texture> const&;
+    [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const*;
 
     void clear() { _textures.clear(); }
     /// Returns true iff at least one of the textures in the library has changed.

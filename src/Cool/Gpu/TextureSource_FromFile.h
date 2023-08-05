@@ -8,7 +8,7 @@ struct TextureSource_FromFile {
     std::filesystem::path absolute_path{Cool::Path::default_texture()};
 
     auto               imgui_widget() -> bool;
-    [[nodiscard]] auto get_texture() const -> std::optional<Texture> const&;
+    [[nodiscard]] auto get_texture() const -> Texture const*;
     auto               get_error() const -> std::optional<std::string>;
 
     friend auto operator==(TextureSource_FromFile const&, TextureSource_FromFile const&) -> bool = default;
