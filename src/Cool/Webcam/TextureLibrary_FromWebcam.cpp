@@ -21,10 +21,10 @@
 #include <webcam_info/webcam_info.hpp>
 #include <xmemory>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "fmt/core.h"
 
 namespace Cool {

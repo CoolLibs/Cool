@@ -1,5 +1,5 @@
 #include "TextureSource_FromWebcam.h"
-#include "TextureLibrary_FromWebcam.h"
+#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 
 namespace Cool {
 

@@ -1,83 +1,17 @@
 #pragma once
 #include <Cool/ImGui/IcoMoonCodepoints.h>
 #include <Cool/Path/Path.h>
-#include <functional>
-#include <list>
-#include <memory>
-#include <mutex>
 #include <opencv2/opencv.hpp>
-#include <optional>
-#include <string>
-#include <thread>
-#include <unordered_map>
-#include <vector>
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Serialization/SerializerOnDemand.h"
+#include "internal/WebcamConfig.h"
+#include "internal/WebcamRequest.h"
 
 namespace Cool {
-
-struct WebcamConfig {
-    webcam_info::Resolution resolution;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(
-            cereal::make_nvp("Width", resolution.width),
-            cereal::make_nvp("Height", resolution.height)
-        );
-    }
-};
-
-using WebcamsConfigsList = std::unordered_map<std::string, WebcamConfig>;
-
-class WebcamCapture {
-public:
-    explicit WebcamCapture(size_t index)
-        : _webcam_index{index}
-        , _thread{&WebcamCapture::thread_job_webcam_image, std::ref(*this)}
-    {}
-
-    [[nodiscard]] auto has_stopped() const -> bool { return _has_stopped; }
-    auto               texture() -> Cool::Texture const*;
-    [[nodiscard]] auto webcam_index() const ->size_t{return _webcam_index;}  
-
-private:
-    static void thread_job_webcam_image(std::stop_token const& stop_token, WebcamCapture& This);
-    void        update_webcam_ifn();
-
-private:
-    std::mutex                   _mutex{};
-    std::optional<Cool::Texture> _texture{};
-    bool                         _needs_to_create_texture_from_available_image{false};
-    cv::Mat                      _available_image{};
-    bool                         _has_stopped{false};
-    size_t                       _webcam_index;
-    std::jthread                 _thread{};
-};
-
-struct WebcamRequest {
-    explicit WebcamRequest(std::optional<size_t> const& index, std::string name)
-        : _name(name)
-    {
-        if (index.has_value())
-            create_capture(*index);
-    }
-
-    void create_capture(size_t index);
-
-    std::string                    _name;
-    bool                           has_been_requested_this_frame = true;
-    Cool::MessageId                _iderror_cannot_find_webcam;
-    std::unique_ptr<WebcamCapture> _capture;
-};
 
 class TextureLibrary_FromWebcam {
 public:

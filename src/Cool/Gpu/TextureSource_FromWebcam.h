@@ -2,7 +2,7 @@
 #include <optional>
 #include <string>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
+#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 
 namespace Cool {
 
