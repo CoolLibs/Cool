@@ -32,16 +32,9 @@ static auto get_all_webcams() -> std::vector<webcam_info::info>
     auto list_webcams_infos = webcam_info::get_all_webcams();
     for (auto& webcam_info : list_webcams_infos)
     {
-        // webcam_info.list_resolution.erase(
-        //     std::unique(
-        //         webcam_info.list_resolution.begin(),
-        //         webcam_info.list_resolution.end()
-        //     ),
-        //     webcam_info.list_resolution.end()
-        // );
         std::sort(webcam_info.list_resolution.begin(), webcam_info.list_resolution.end(), [](webcam_info::resolution& res_a, webcam_info::resolution& res_b) {
-            return (res_a.width >= res_b.width && res_a.height > res_b.height)
-                   || (res_a.width > res_b.width && res_a.height >= res_b.height);
+            return (res_a.width > res_b.width && res_a.height >= res_b.height)
+                   || (res_a.width >= res_b.width && res_a.height > res_b.height);
         });
         webcam_info.list_resolution.erase(
             std::unique(
@@ -50,7 +43,6 @@ static auto get_all_webcams() -> std::vector<webcam_info::info>
             ),
             webcam_info.list_resolution.end()
         );
-        int a = 0;
     }
     return list_webcams_infos;
 }
