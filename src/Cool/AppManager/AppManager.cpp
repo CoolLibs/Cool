@@ -14,7 +14,6 @@
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
-
 #if defined(COOL_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(COOL_OPENGL)
@@ -120,7 +119,7 @@ void AppManager::update()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     TextureLibrary_FromWebcam::instance().on_frame_begin();
-    if (TextureLibrary_FromWebcam::instance().has_active_webcam())
+    if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();
     if (TextureLibrary_FromFile::instance().update())
         _app.trigger_rerender();

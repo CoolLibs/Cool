@@ -3,14 +3,14 @@
 
 namespace Cool {
 
-WebcamRequest::WebcamRequest(std::optional<size_t> index, std::string const& name)
-    : _name(name)
+WebcamRequest::WebcamRequest(std::optional<size_t> index, std::string const& webcam_name)
+    : webcam_name{webcam_name}
 {
     if (index.has_value())
     {
-        _capture = std::make_unique<WebcamCapture>(
+        capture = std::make_unique<WebcamCapture>(
             *index,
-            WebcamsConfigs::instance().selected_resolution(name)
+            WebcamsConfigs::instance().selected_resolution(webcam_name)
         );
     }
 }

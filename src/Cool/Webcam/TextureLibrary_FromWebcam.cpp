@@ -1,11 +1,8 @@
 #include "TextureLibrary_FromWebcam.h"
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Log/MessageConsole.h"
-#include "Cool/Log/ToUser.h"
-#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
-#include "Cool/Webcam/WebcamsConfigs.h"
-#include "Cool/Webcam/WebcamsInfos.h"
+#include "WebcamsConfigs.h"
+#include "WebcamsInfos.h"
 
 namespace Cool {
 
@@ -17,99 +14,89 @@ auto TextureLibrary_FromWebcam::instance() -> TextureLibrary_FromWebcam&
 
 auto TextureLibrary_FromWebcam::get_request(std::string const& webcam_name) -> WebcamRequest*
 {
-    // std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
-    for (auto& webcam_request : _requests)
+    for (auto& request : _requests)
     {
-        if (webcam_request._name == webcam_name)
-            return &webcam_request;
+        if (request.webcam_name == webcam_name)
+            return &request;
     }
     return nullptr;
 }
 
-// auto TextureLibrary_FromWebcam::get_resolution_from_name(const std::string& name) -> webcam_info::Resolution
-// {
-//     return _list_webcam_configs.find(name)->second.resolution;
-// }
-
-auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Texture const*
+auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> Texture const*
 {
-    WebcamRequest* request = get_request(name);
-    auto           index   = WebcamsInfos::instance().index(name);
+    auto*      request      = get_request(webcam_name);
+    auto const webcam_index = WebcamsInfos::instance().index(webcam_name);
+
     if (request == nullptr)
     {
-        _requests.emplace_back(index, name);
+        _requests.emplace_back(webcam_index, webcam_name);
         request = &_requests.back();
     }
 
     request->has_been_requested_this_frame = true;
 
-    if (!index.has_value())
+    if (!webcam_index.has_value())
     {
-        Cool::Log::ToUser::console()
-            .send(
-                request->_iderror_cannot_find_webcam,
-                Message{
-                    .category = "Webcam",
-                    .message  = fmt::format("cannot find webcam {}", name),
-                    .severity = MessageSeverity::Error,
-                }
-            );
-        request->_capture.reset();
+        // Cool::Log::ToUser::console()
+        //     .send(
+        //         request->_iderror_cannot_find_webcam,
+        //         Message{
+        //             .category = "Webcam",
+        //             .message  = fmt::format("cannot find webcam {}", name),
+        //             .severity = MessageSeverity::Error,
+        //         }
+        //     );
+        request->capture.reset();
         return nullptr;
     }
 
-    if (!request->_capture || request->_capture->webcam_index() != *index)
+    if (!request->capture || request->capture->webcam_index() != *webcam_index)
     {
-        request->_capture = std::make_unique<WebcamCapture>(
-            *index,
-            WebcamsConfigs::instance().selected_resolution(name)
+        request->capture = std::make_unique<WebcamCapture>(
+            *webcam_index,
+            WebcamsConfigs::instance().selected_resolution(webcam_name)
         );
     }
 
-    if (request->_capture->has_stopped())
+    if (request->capture->has_stopped())
     {
-        Cool::Log::ToUser::console()
-            .send(
-                request->_iderror_cannot_find_webcam,
-                Message{
-                    .category = "Webcam",
-                    .message  = fmt::format("Failed to capture \"{}\". It might be because it is used in another sofware", request->_name),
-                    .severity = MessageSeverity::Error,
-                }
-            );
-        request->_capture.reset();
+        // Cool::Log::ToUser::console()
+        //     .send(
+        //         request->_iderror_cannot_find_webcam,
+        //         Message{
+        //             .category = "Webcam",
+        //             .message  = fmt::format("Failed to capture \"{}\". It might be because it is used in another software", request->name),
+        //             .severity = MessageSeverity::Error,
+        //         }
+        //     );
+        request->capture.reset();
         return nullptr;
     }
 
-    // update_webcam_ifn(*request->_capture);
-    auto capture_texture = request->_capture->texture();
-
-    if (!capture_texture)
+    auto const* texture = request->capture->texture();
+    if (!texture)
         return nullptr;
-
-    Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
-    return &*capture_texture;
+    // Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
+    return &*texture;
 }
 
 void TextureLibrary_FromWebcam::on_frame_begin()
 {
-    for (auto& webcam : _requests)
-    {
-        webcam.has_been_requested_this_frame = false;
-    }
+    for (auto& request : _requests)
+        request.has_been_requested_this_frame = false;
 }
 
-void TextureLibrary_FromWebcam::on_frame_end() // destroy the texture if it has not been updated during the frame
+void TextureLibrary_FromWebcam::on_frame_end()
 {
     std::erase_if(_requests, [](WebcamRequest const& request) { return !request.has_been_requested_this_frame; });
 }
 
-auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at least one Texture has been updated
+auto TextureLibrary_FromWebcam::has_active_webcams() const -> bool
 {
     return !_requests.empty();
 }
 
-auto TextureLibrary_FromWebcam::error_from(const std::string /*webcam_name*/) const -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::error_from(std::string const& /*webcam_name*/) const -> std::optional<std::string>
 {
     // if (index > _requests.size()) // TODO(TD) un test mieux ?
     // {
@@ -119,11 +106,11 @@ auto TextureLibrary_FromWebcam::error_from(const std::string /*webcam_name*/) co
     return std::nullopt;
 }
 
-void TextureLibrary_FromWebcam::invalidate_request(std::string const& request_name)
+void TextureLibrary_FromWebcam::invalidate_request(std::string const& webcam_name)
 {
-    auto* request = get_request(request_name);
+    auto* request = get_request(webcam_name);
     if (request)
-        request->_capture = nullptr;
+        request->capture = nullptr;
 }
 
 } // namespace Cool

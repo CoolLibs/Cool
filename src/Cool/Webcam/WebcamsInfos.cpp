@@ -51,7 +51,7 @@ auto WebcamsInfos::imgui_widget_webcam_name(std::string& webcam_name) -> bool
 
     if (ImGuiExtras::button_with_text_icon(ICOMOON_COG))
         WebcamsConfigs::instance().open_imgui_window();
-    ImGuiExtras::tooltip("Open Webcams Config to choose the resolutions");
+    ImGuiExtras::tooltip("Open webcam config to choose its resolution. This can help if the refresh rate of your webcam is too slow.");
 
     bool       b                  = false;
     auto const combo_preview_name = webcam_name;

@@ -4,12 +4,11 @@
 namespace Cool {
 
 struct WebcamRequest {
-    WebcamRequest(std::optional<size_t> index, std::string const& name);
+    WebcamRequest(std::optional<size_t> index, std::string const& webcam_name);
 
-    std::string                    _name;
-    bool                           has_been_requested_this_frame = true;
-    Cool::MessageId                _iderror_cannot_find_webcam;
-    std::unique_ptr<WebcamCapture> _capture;
+    std::string                    webcam_name;
+    bool                           has_been_requested_this_frame{true};
+    std::unique_ptr<WebcamCapture> capture; // Optional capture. If the webcam doesn't exist it will be nullptr.
 };
 
 } // namespace Cool
