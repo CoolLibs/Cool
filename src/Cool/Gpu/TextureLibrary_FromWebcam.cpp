@@ -63,7 +63,7 @@ static auto get_all_webcams() -> std::vector<webcam_info::Info>
     return list_webcams_infos;
 }
 
-void TextureLibrary_FromWebcam::thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This)
+void TextureLibrary_FromWebcam::thread_webcams_infos_works(std::stop_token const& stop_token, TextureLibrary_FromWebcam& This)
 {
     std::vector<webcam_info::Info> wip_webcams_infos{};
     while (!stop_token.stop_requested())
@@ -77,69 +77,39 @@ void TextureLibrary_FromWebcam::thread_webcams_infos_works(const std::stop_token
 
 } // namespace Cool
 
-void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, size_t webcam_index)
+static auto create_opencv_capture(size_t webcam_index) -> cv::VideoCapture
 {
-    auto set_capture_parameters = [&](int width, int height, cv::VideoCapture& capture) {
-        capture.setExceptionMode(true);
-        if (capture.isOpened())
-        {
-            capture.set(cv::CAP_PROP_FRAME_WIDTH, width);
-            capture.set(cv::CAP_PROP_FRAME_HEIGHT, height);
-            capture.set(cv::CAP_PROP_FPS, 30);
-        }
-    };
-
-    cv::VideoCapture capture{static_cast<int>(webcam_index)};
-    cv::Mat          wip_image{};
-
-    int  width{330};
-    int  height{100};
-    auto resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index);
-    if (resolution.has_value())
+    auto capture = cv::VideoCapture{static_cast<int>(webcam_index)};
+    if (capture.isOpened())
     {
-        width  = resolution->width;
-        height = resolution->height;
+        capture.setExceptionMode(true);
+        auto const resolution = TextureLibrary_FromWebcam::instance().get_resolution_from_index(webcam_index).value_or(webcam_info::Resolution{1, 1});
+        capture.set(cv::CAP_PROP_FRAME_WIDTH, resolution.width);
+        capture.set(cv::CAP_PROP_FRAME_HEIGHT, resolution.height);
     }
+    return capture;
+}
 
+void WebcamCapture::thread_job_webcam_image(std::stop_token const& stop_token, WebcamCapture& This)
+{
     try
     {
-        set_capture_parameters(width, height, capture);
-    }
-    catch (cv::Exception& e)
-    {
-        // TODO
-    }
+        cv::VideoCapture capture = create_opencv_capture(This.webcam_index);
+        cv::Mat          wip_image{};
 
-    while (!stop_token.stop_requested())
-    {
-        try
+        while (!stop_token.stop_requested() && capture.isOpened())
         {
-            if (!capture.isOpened())
-            {
-                This.error = "Failed to open Webcam";
-                capture    = cv::VideoCapture{static_cast<int>(webcam_index)};
-                // set_capture_parameters(); TODO() Do this
-                std::this_thread::sleep_for(1s);
-                return;
-            }
-            else
-            {
-                capture >> wip_image;
-                std::scoped_lock lock(This._mutex);
-                cv::swap(This._available_image, wip_image);
-                This.is_dirty = true;
-            }
+            capture >> wip_image;
 
-            This.error.reset();
-        }
-
-        catch (cv::Exception& e)
-        {
-            This.error = "Failed to open Webcam";
-            capture    = cv::VideoCapture{static_cast<int>(webcam_index)};
-            set_capture_parameters(width, height, capture);
+            std::scoped_lock lock(This.mutex);
+            cv::swap(This.available_image, wip_image);
+            This.needs_to_create_texture_from_available_image = true;
         }
     }
+    catch (...)
+    {
+    }
+    This.has_stopped = true;
 }
 
 auto TextureLibrary_FromWebcam::get_request(const std::string name) -> WebcamRequest*
@@ -236,7 +206,7 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
             .send(
                 request->_iderror_cannot_find_webcam,
                 Message{
-                    .category = "Nodes",
+                    .category = "Webcam",
                     .message  = fmt::format("cannot find webcam {}", name),
                     .severity = MessageSeverity::Error,
                 }
@@ -245,19 +215,19 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
         return nullptr;
     }
 
-    if (!request->_capture || request->_capture->_webcam_index != *index)
+    if (!request->_capture || request->_capture->webcam_index != *index)
     {
         request->create_capture(*index);
     }
 
-    if (request->_capture->error)
+    if (request->_capture->has_stopped)
     {
         Cool::Log::ToUser::console()
             .send(
                 request->_iderror_cannot_find_webcam,
                 Message{
-                    .category = "Nodes",
-                    .message  = fmt::format("{} {}, Maybe it is used in an other sofware", *request->_capture->error, request->_name),
+                    .category = "Webcam",
+                    .message  = fmt::format("Failed to capture \"{}\". It might be because it is used in another sofware", request->_name),
                     .severity = MessageSeverity::Error,
                 }
             );
@@ -266,14 +236,15 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
     }
 
     update_webcam_ifn(*request->_capture);
-    Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
 
-    if (!request->_capture->_texture)
+    if (!request->_capture->texture)
         return nullptr;
-    return &*request->_capture->_texture;
+
+    Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
+    return &*request->_capture->texture;
 }
 
-// auto TextureLibrary_FromWebcam::find_next_webcam_index(const int start_index) -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
+// auto TextureLibrary_FromWebcam::find_nextwebcam_index(const int start_index) -> int // code from se0kjun : https://gist.github.com/se0kjun/f4b0fdf395181b495f79
 // {
 //     int              maxTested = 3;
 //     cv::VideoCapture temp_camera;
@@ -296,7 +267,7 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
 //     {
 //         int index = (i + start_index + 1) % maxTested;
 
-//         auto it = std::find_if(_requests.begin(), _requests.end(), [index](WebcamCapture const& webcam) { return (webcam._webcam_index == index); });
+//         auto it = std::find_if(_requests.begin(), _requests.end(), [index](WebcamCapture const& webcam) { return (webcam.webcam_index == index); });
 
 //         if (it != _requests.end())
 //         {
@@ -343,24 +314,24 @@ auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> Te
 
 void update_webcam_ifn(WebcamCapture& webcam)
 {
-    std::scoped_lock lock(webcam._mutex);
-    if (!webcam.is_dirty)
+    std::scoped_lock lock(webcam.mutex);
+    if (!webcam.needs_to_create_texture_from_available_image)
     {
         return;
     }
 
-    const auto width  = static_cast<unsigned int>(webcam._available_image.cols);
-    const auto height = static_cast<unsigned int>(webcam._available_image.rows);
+    const auto width  = static_cast<unsigned int>(webcam.available_image.cols);
+    const auto height = static_cast<unsigned int>(webcam.available_image.rows);
 
-    if (!webcam._texture)
-        webcam._texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam._available_image.ptr())};
+    if (!webcam.texture)
+        webcam.texture = Texture{{width, height}, 3, reinterpret_cast<uint8_t*>(webcam.available_image.ptr())};
 
     else
     {
-        webcam._texture->bind();
-        webcam._texture->set_image(
+        webcam.texture->bind();
+        webcam.texture->set_image(
             {width, height},
-            reinterpret_cast<uint8_t*>(webcam._available_image.ptr()),
+            reinterpret_cast<uint8_t*>(webcam.available_image.ptr()),
             {
                 .internal_format = glpp::InternalFormat::RGBA,
                 .channels        = glpp::Channels::RGB,
@@ -369,7 +340,7 @@ void update_webcam_ifn(WebcamCapture& webcam)
         );
         Cool::Texture::unbind();
     }
-    webcam.is_dirty = false; // the webcam is now up to date
+    webcam.needs_to_create_texture_from_available_image = false; // the webcam is now up to date
 }
 
 void TextureLibrary_FromWebcam::on_frame_begin()

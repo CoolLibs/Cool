@@ -38,27 +38,28 @@ private:
 
 using WebcamsConfigsList = std::unordered_map<std::string, WebcamConfig>;
 
-struct WebcamCapture {
-    WebcamCapture() = default;
-
+class WebcamCapture {
+public:
     explicit WebcamCapture(size_t index)
-        : _webcam_index(index), _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), index}
+        : webcam_index{index}
+        , thread{&WebcamCapture::thread_job_webcam_image, std::ref(*this)}
     {
     }
 
-    Cool::MessageId _iderrorme_opencv;
-    Cool::MessageId _iderrorme_is_not_open;
+private:
+    static void thread_job_webcam_image(std::stop_token const& stop_token, WebcamCapture& This);
 
-    std::optional<size_t>        _webcam_index;
-    bool                         is_dirty = true;
-    std::optional<Cool::Texture> _texture{};
-    std::mutex                   _mutex;
-    std::jthread                 _thread;
-    cv::Mat                      _available_image{};
+public:
+    std::mutex                   mutex{};
+    std::optional<Cool::Texture> texture{};
+    bool                         needs_to_create_texture_from_available_image{false};
+    cv::Mat                      available_image{};
+    bool                         has_stopped{false};
 
-    std::optional<std::string> error{};
+    size_t webcam_index;
 
-    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, size_t webcam_index);
+private:
+    std::jthread thread{};
 };
 
 struct WebcamRequest {
