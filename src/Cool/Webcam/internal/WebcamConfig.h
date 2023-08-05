@@ -19,6 +19,4 @@ private:
     }
 };
 
-using WebcamsConfigsList = std::unordered_map<std::string, WebcamConfig>;
-
 } // namespace Cool

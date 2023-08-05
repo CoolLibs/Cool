@@ -12,7 +12,7 @@ namespace Cool {
 auto WebcamsConfigs::gen_instance() -> WebcamsConfigs&
 {
     static auto inst      = WebcamsConfigs{};
-    auto const  maybe_err = inst._serializer.load<WebcamsConfigsList, cereal::JSONInputArchive>(inst._configs);
+    auto const  maybe_err = inst._serializer.load<WebcamsConfigsMap, cereal::JSONInputArchive>(inst._configs);
     std::ignore           = maybe_err; // Ignore errors when file not found
     return inst;
 }
@@ -67,7 +67,7 @@ void WebcamsConfigs::imgui_window()
                     {
                         config.resolution = resolution;
                         TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy the current request so that a new one will be created with the new requested resolution.
-                        _serializer.save<WebcamsConfigsList, cereal::JSONOutputArchive>(_configs);
+                        _serializer.save<WebcamsConfigsMap, cereal::JSONOutputArchive>(_configs);
                     }
 
                     if (is_selected)
