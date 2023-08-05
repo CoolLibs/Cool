@@ -23,7 +23,8 @@ private:
 
 private:
     TextureLibrary_FromWebcam() = default; // This is a singleton. Get the global instance with `instance()` instead.
-    auto get_request(std::string const& webcam_name) -> WebcamRequest*;
+    [[nodiscard]] auto get_request(std::string const& webcam_name) -> WebcamRequest*;
+    [[nodiscard]] auto get_request(std::string const& webcam_name) const -> WebcamRequest const*;
 
 private:
     std::vector<WebcamRequest> _requests;

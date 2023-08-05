@@ -22,6 +22,16 @@ auto TextureLibrary_FromWebcam::get_request(std::string const& webcam_name) -> W
     return nullptr;
 }
 
+auto TextureLibrary_FromWebcam::get_request(std::string const& webcam_name) const -> WebcamRequest const*
+{
+    for (auto const& request : _requests)
+    {
+        if (request.webcam_name == webcam_name)
+            return &request;
+    }
+    return nullptr;
+}
+
 auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> Texture const*
 {
     auto*      request      = get_request(webcam_name);
@@ -37,15 +47,7 @@ auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> T
 
     if (!webcam_index.has_value())
     {
-        // Cool::Log::ToUser::console()
-        //     .send(
-        //         request->_iderror_cannot_find_webcam,
-        //         Message{
-        //             .category = "Webcam",
-        //             .message  = fmt::format("cannot find webcam {}", name),
-        //             .severity = MessageSeverity::Error,
-        //         }
-        //     );
+        request->error_message = fmt::format("Cannot find webcam \"{}\". It might be unplugged.", webcam_name);
         request->capture.reset();
         return nullptr;
     }
@@ -60,15 +62,10 @@ auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> T
 
     if (request->capture->has_stopped())
     {
-        // Cool::Log::ToUser::console()
-        //     .send(
-        //         request->_iderror_cannot_find_webcam,
-        //         Message{
-        //             .category = "Webcam",
-        //             .message  = fmt::format("Failed to capture \"{}\". It might be because it is used in another software", request->name),
-        //             .severity = MessageSeverity::Error,
-        //         }
-        //     );
+        request->error_message = fmt::format(
+            "Failed to capture webcam \"{}\". It might be used in another software",
+            webcam_name
+        );
         request->capture.reset();
         return nullptr;
     }
@@ -76,7 +73,7 @@ auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> T
     auto const* texture = request->capture->texture();
     if (!texture)
         return nullptr;
-    // Cool::Log::ToUser::console().remove(request->_iderror_cannot_find_webcam);
+    request->error_message.reset();
     return &*texture;
 }
 
@@ -96,14 +93,12 @@ auto TextureLibrary_FromWebcam::has_active_webcams() const -> bool
     return !_requests.empty();
 }
 
-auto TextureLibrary_FromWebcam::error_from(std::string const& /*webcam_name*/) const -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::error_from(std::string const& webcam_name) const -> std::optional<std::string>
 {
-    // if (index > _requests.size()) // TODO(TD) un test mieux ?
-    // {
-    //     return fmt::format("Failed to read node from Camera {}:\n", index);
-    // }
-    // TODO il faut return les erreurs ici, plutôt que de gérer nous même un error_id
-    return std::nullopt;
+    auto const* request = get_request(webcam_name);
+    if (!request)
+        return std::nullopt;
+    return request->error_message;
 }
 
 void TextureLibrary_FromWebcam::invalidate_request(std::string const& webcam_name)
