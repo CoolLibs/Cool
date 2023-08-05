@@ -38,6 +38,12 @@ Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data,
     set_image(size, channels_count, data);
 }
 
+Texture::Texture(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout, TextureConfig config)
+    : Texture{config}
+{
+    set_image(size, data, layout);
+}
+
 static auto img_to_glpp_size(img::Size const& size) -> glpp::ImageSize
 {
     return {static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())};
