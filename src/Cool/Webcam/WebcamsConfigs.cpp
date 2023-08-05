@@ -28,7 +28,7 @@ auto WebcamsConfigs::selected_resolution(std::string const& webcam_name) -> webc
     return get_config(webcam_name).resolution;
 }
 
-auto WebcamsConfigs::get_config(std::string const& webcam_name) -> WebcamConfig&
+auto WebcamsConfigs::get_config(std::string const& webcam_name, bool do_lock) -> WebcamConfig&
 {
     auto const it = _configs.find(webcam_name);
     if (it != _configs.end())
@@ -37,7 +37,7 @@ auto WebcamsConfigs::get_config(std::string const& webcam_name) -> WebcamConfig&
     // If none already exists, create a config with the default resolution for that webcam.
     return _configs.emplace(
                        webcam_name,
-                       WebcamConfig{WebcamsInfos::instance().default_resolution(webcam_name)}
+                       WebcamConfig{WebcamsInfos::instance().default_resolution(webcam_name, do_lock)}
     )
         .first->second;
 }
@@ -55,7 +55,7 @@ void WebcamsConfigs::imgui_window()
 
     _window.show([&]() {
         WebcamsInfos::instance().for_each_webcam_info([&](webcam_info::Info const& info) {
-            auto&      config        = get_config(info.name);
+            auto&      config        = get_config(info.name, /*do_lock=*/false /*for_each_webcam_info already locks*/);
             auto const combo_preview = format_resolution(config.resolution);
 
             if (ImGui::BeginCombo(info.name.c_str(), combo_preview.c_str()))

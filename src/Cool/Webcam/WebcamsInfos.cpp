@@ -19,7 +19,7 @@ void WebcamsInfos::thread_job(std::stop_token const& stop_token, WebcamsInfos& T
     {
         wip_webcams_infos = webcam_info::grab_all_webcams_infos();
         {
-            std::scoped_lock<std::mutex> lock(This._mutex);
+            std::scoped_lock lock{This._mutex};
             std::swap(wip_webcams_infos, This._webcams_infos);
         }
     }
@@ -27,7 +27,7 @@ void WebcamsInfos::thread_job(std::stop_token const& stop_token, WebcamsInfos& T
 
 auto WebcamsInfos::index(std::string const& webcam_name) -> std::optional<size_t>
 {
-    std::scoped_lock<std::mutex> lock(_mutex);
+    std::scoped_lock lock{_mutex};
     for (size_t i = 0; i < _webcams_infos.size(); i++)
     {
         if (_webcams_infos[i].name == webcam_name)
@@ -38,7 +38,7 @@ auto WebcamsInfos::index(std::string const& webcam_name) -> std::optional<size_t
 
 auto WebcamsInfos::name(size_t index) -> std::optional<std::string>
 {
-    std::scoped_lock<std::mutex> lock(_mutex);
+    std::scoped_lock lock{_mutex};
     if (index >= _webcams_infos.size())
         return std::nullopt;
     return _webcams_infos[index].name;
@@ -57,7 +57,7 @@ auto WebcamsInfos::imgui_widget_webcam_name(std::string& webcam_name) -> bool
     auto const combo_preview_name = webcam_name;
     if (ImGui::BeginCombo("Webcam", combo_preview_name.c_str()))
     {
-        std::scoped_lock<std::mutex> lock(_mutex);
+        std::scoped_lock lock{_mutex};
         for (auto const& info : _webcams_infos)
         {
             bool const is_selected = webcam_name == info.name;
@@ -76,10 +76,19 @@ auto WebcamsInfos::imgui_widget_webcam_name(std::string& webcam_name) -> bool
     return b;
 }
 
-auto WebcamsInfos::default_resolution(std::string const& webcam_name) -> webcam_info::Resolution
+auto WebcamsInfos::default_resolution(std::string const& webcam_name, bool do_lock) -> webcam_info::Resolution
 {
-    std::scoped_lock<std::mutex> lock(_mutex);
+    return do_lock ? default_resolution_locking(webcam_name) : default_resolution_non_locking(webcam_name);
+}
 
+auto WebcamsInfos::default_resolution_locking(std::string const& webcam_name) -> webcam_info::Resolution
+{
+    std::scoped_lock lock{_mutex};
+    return default_resolution_non_locking(webcam_name);
+}
+
+auto WebcamsInfos::default_resolution_non_locking(std::string const& webcam_name) -> webcam_info::Resolution
+{
     for (auto const& infos : _webcams_infos)
     {
         if (infos.name != webcam_name)
@@ -95,14 +104,14 @@ auto WebcamsInfos::default_resolution(std::string const& webcam_name) -> webcam_
 
 auto WebcamsInfos::default_webcam_name() -> std::string
 {
-    std::scoped_lock<std::mutex> lock(_mutex);
+    std::scoped_lock lock{_mutex};
 
     return _webcams_infos.empty() ? "" : _webcams_infos[0].name;
 }
 
 void WebcamsInfos::for_each_webcam_info(std::function<void(webcam_info::Info const&)> const& callback)
 {
-    std::scoped_lock<std::mutex> lock(_mutex);
+    std::scoped_lock lock{_mutex};
     for (auto const& info : _webcams_infos)
         callback(info);
 }

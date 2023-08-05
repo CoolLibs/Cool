@@ -22,7 +22,7 @@ private:
     WebcamsConfigs() = default; // This is a singleton. Get the global instance with `instance()` instead.
     static auto gen_instance() -> WebcamsConfigs&;
 
-    [[nodiscard]] auto get_config(std::string const& webcam_name) -> WebcamConfig&;
+    [[nodiscard]] auto get_config(std::string const& webcam_name, bool do_lock = true) -> WebcamConfig&;
 
 private:
     ImGuiWindow              _window{icon_fmt("Webcams Configs", ICOMOON_COG)};

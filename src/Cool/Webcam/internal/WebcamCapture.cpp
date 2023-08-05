@@ -27,7 +27,7 @@ void WebcamCapture::thread_job_webcam_image(std::stop_token const& stop_token, W
         {
             capture >> wip_image;
 
-            std::scoped_lock lock(This._mutex);
+            std::scoped_lock lock{This._mutex};
             cv::swap(This._available_image, wip_image);
             This._needs_to_create_texture_from_available_image = true;
         }
@@ -48,7 +48,7 @@ auto WebcamCapture::texture() -> Cool::Texture const*
 
 void WebcamCapture::update_webcam_ifn()
 {
-    std::scoped_lock lock(_mutex);
+    std::scoped_lock lock{_mutex};
     if (!_needs_to_create_texture_from_available_image)
     {
         return;
