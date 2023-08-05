@@ -1,37 +1,42 @@
 #pragma once
 #include <Cool/ImGui/IcoMoonCodepoints.h>
-#include <array>
+#include <Cool/Path/Path.h>
 #include <functional>
 #include <list>
-#include <map>
 #include <memory>
 #include <mutex>
-#include <opencv2/core.hpp>
-#include <opencv2/core/mat.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/videoio.hpp>
 #include <optional>
-#include <ostream>
-#include <stop_token>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
-#include "Cool/Log/ToUser.h"
+#include "Cool/Serialization/SerializerOnDemand.h"
 
 namespace Cool {
 
 struct WebcamConfig {
-    webcam_info::resolution resolution; // TODO(TD) à sérialiser
+    webcam_info::Resolution resolution;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Width", resolution.width),
+            cereal::make_nvp("Height", resolution.height)
+        );
+    }
 };
 
-using WebcamsConfigsList = std::map<std::string, WebcamConfig>;
+using WebcamsConfigsList = std::unordered_map<std::string, WebcamConfig>;
 
 struct WebcamCapture {
     WebcamCapture() = default;
@@ -76,17 +81,14 @@ void update_webcam_ifn(WebcamCapture& webcam);
 
 class TextureLibrary_FromWebcam {
 public:
-    [[nodiscard]] static auto instance() -> TextureLibrary_FromWebcam&
-    {
-        static auto inst = TextureLibrary_FromWebcam();
-        return inst;
-    }
+    [[nodiscard]] static auto instance() -> TextureLibrary_FromWebcam&;
+
     auto get_request(std::string name) -> WebcamRequest*;
     auto get_index_from_name(std::string name) -> std::optional<size_t>;
     auto get_name_from_index(size_t index) -> std::optional<std::string>;
-    auto get_resolution_from_index(size_t index) -> std::optional<webcam_info::resolution>;
-    auto get_resolution_from_name(const std::string& name) -> webcam_info::resolution;
-    auto get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>;
+    auto get_resolution_from_index(size_t index) -> std::optional<webcam_info::Resolution>;
+    auto get_resolution_from_name(const std::string& name) -> webcam_info::Resolution;
+    auto get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::Resolution>;
     auto get_webcam_texture(std::string name) -> Texture const*;
     void on_frame_begin(); // TODO(TD)(à test) remet tous les is_dirty à true
     void on_frame_end();   // TODO(TD)(à test) supprime toutes les texture qui sont dirty (car elles n'ont pas été utilisées à cette frame)
@@ -116,15 +118,18 @@ private:
     void        get_number_webcam_win();
     static void thread_webcams_infos_works(const std::stop_token& stop_token, TextureLibrary_FromWebcam& This);
 
+    static auto gen_instance() -> TextureLibrary_FromWebcam&;
+
 private:
     std::vector<WebcamRequest>     _requests;
-    std::vector<webcam_info::info> _webcams_infos;
+    std::vector<webcam_info::Info> _webcams_infos;
     WebcamsConfigsList             _list_webcam_configs{};
 
     std::jthread _thread_webcam_infos;
     std::mutex   _mutex_webcam_info;
 
-    ImGuiWindow _webcam_config_window{icon_fmt("Webcams Config", ICOMOON_COG)};
+    ImGuiWindow              _webcam_config_window{icon_fmt("Webcams Config", ICOMOON_COG)};
+    Cool::SerializerOnDemand _serializer{Cool::Path::user_data() / "webcams-configs.json", "Configs"};
 };
 
 } // namespace Cool
