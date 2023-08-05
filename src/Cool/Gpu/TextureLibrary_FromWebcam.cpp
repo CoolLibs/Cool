@@ -466,6 +466,7 @@ auto TextureLibrary_FromWebcam::error_from(const std::string /*webcam_name*/) co
     // {
     //     return fmt::format("Failed to read node from Camera {}:\n", index);
     // }
+    // TODO il faut return les erreurs ici, plutôt que de gérer nous même un error_id
     return std::nullopt;
 }
 
