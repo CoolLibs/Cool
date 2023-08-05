@@ -36,7 +36,7 @@ using WebcamsConfigsList = std::map<std::string, WebcamConfig>;
 struct WebcamCapture {
     WebcamCapture() = default;
 
-    explicit WebcamCapture(int index)
+    explicit WebcamCapture(size_t index)
         : _webcam_index(index), _thread{&WebcamCapture::thread_webcam_work, std::ref(*this), index}
     {
     }
@@ -44,7 +44,7 @@ struct WebcamCapture {
     Cool::MessageId _iderrorme_opencv;
     Cool::MessageId _iderrorme_is_not_open;
 
-    std::optional<int>           _webcam_index;
+    std::optional<size_t>        _webcam_index;
     bool                         is_dirty = true;
     std::optional<Cool::Texture> _texture{};
     std::mutex                   _mutex;
@@ -53,18 +53,18 @@ struct WebcamCapture {
 
     std::optional<std::string> error{};
 
-    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index);
+    static void thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, size_t webcam_index);
 };
 
 struct WebcamRequest {
-    explicit WebcamRequest(std::optional<int> const& index, std::string name)
+    explicit WebcamRequest(std::optional<size_t> const& index, std::string name)
         : _name(name)
     {
         if (index.has_value())
             create_capture(*index);
     }
 
-    void create_capture(int index);
+    void create_capture(size_t index);
 
     std::string                    _name;
     bool                           has_been_requested_this_frame = true;
@@ -82,9 +82,9 @@ public:
         return inst;
     }
     auto get_request(std::string name) -> WebcamRequest*;
-    auto get_index_from_name(std::string name) -> std::optional<int>;
-    auto get_name_from_index(int index) -> std::optional<std::string>;
-    auto get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>;
+    auto get_index_from_name(std::string name) -> std::optional<size_t>;
+    auto get_name_from_index(size_t index) -> std::optional<std::string>;
+    auto get_resolution_from_index(size_t index) -> std::optional<webcam_info::resolution>;
     auto get_resolution_from_name(const std::string& name) -> webcam_info::resolution;
     auto get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>;
     auto get_webcam_texture(std::string name) -> Texture const*;

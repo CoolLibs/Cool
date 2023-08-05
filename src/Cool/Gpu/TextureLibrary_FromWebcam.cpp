@@ -61,7 +61,7 @@ void TextureLibrary_FromWebcam::thread_webcams_infos_works(const std::stop_token
 
 } // namespace Cool
 
-void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, int webcam_index)
+void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, WebcamCapture& This, size_t webcam_index)
 {
     auto set_capture_parameters = [&](int width, int height, cv::VideoCapture& capture) {
         capture.setExceptionMode(true);
@@ -73,7 +73,7 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
         }
     };
 
-    cv::VideoCapture capture{webcam_index};
+    cv::VideoCapture capture{static_cast<int>(webcam_index)};
     cv::Mat          wip_image{};
 
     int  width{330};
@@ -101,7 +101,8 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
             if (!capture.isOpened())
             {
                 This.error = "Failed to open Webcam";
-                capture    = cv::VideoCapture{webcam_index};
+                capture    = cv::VideoCapture{static_cast<int>(webcam_index)};
+                // set_capture_parameters(); TODO() Do this
                 std::this_thread::sleep_for(1s);
                 return;
             }
@@ -119,7 +120,7 @@ void WebcamCapture::thread_webcam_work(const std::stop_token& stop_token, Webcam
         catch (cv::Exception& e)
         {
             This.error = "Failed to open Webcam";
-            capture    = cv::VideoCapture{webcam_index};
+            capture    = cv::VideoCapture{static_cast<int>(webcam_index)};
             set_capture_parameters(width, height, capture);
         }
     }
@@ -136,10 +137,10 @@ auto TextureLibrary_FromWebcam::get_request(const std::string name) -> WebcamReq
     return nullptr;
 }
 
-auto TextureLibrary_FromWebcam::get_index_from_name(const std::string name) -> std::optional<int>
+auto TextureLibrary_FromWebcam::get_index_from_name(const std::string name) -> std::optional<size_t>
 {
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
-    for (int i = 0; i < _webcams_infos.size(); i++)
+    for (size_t i = 0; i < _webcams_infos.size(); i++)
     {
         if (_webcams_infos[i].name == name)
             return i;
@@ -147,7 +148,7 @@ auto TextureLibrary_FromWebcam::get_index_from_name(const std::string name) -> s
     return std::nullopt;
 }
 
-auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::get_name_from_index(size_t index) -> std::optional<std::string>
 {
     std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
     if (index >= _webcams_infos.size())
@@ -155,7 +156,7 @@ auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<
     return _webcams_infos[index].name;
 }
 
-auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>
+auto TextureLibrary_FromWebcam::get_resolution_from_index(size_t index) -> std::optional<webcam_info::resolution>
 {
     auto possible_name = get_name_from_index(index);
     if (!possible_name.has_value())
@@ -459,7 +460,7 @@ auto TextureLibrary_FromWebcam::has_active_webcam() const -> bool // true if at 
     return !_requests.empty();
 }
 
-auto TextureLibrary_FromWebcam::error_from(const std::string webcam_name) const -> std::optional<std::string>
+auto TextureLibrary_FromWebcam::error_from(const std::string /*webcam_name*/) const -> std::optional<std::string>
 {
     // if (index > _requests.size()) // TODO(TD) un test mieux ?
     // {
@@ -475,7 +476,7 @@ auto TextureLibrary_FromWebcam::get_default_webcam_name() -> std::string
     return _webcams_infos.empty() ? "" : _webcams_infos[0].name;
 }
 
-void WebcamRequest::create_capture(const int index)
+void WebcamRequest::create_capture(const size_t index)
 {
     _capture = std::make_unique<WebcamCapture>(index);
 }
