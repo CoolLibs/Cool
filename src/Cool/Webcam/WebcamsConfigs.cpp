@@ -30,12 +30,16 @@ auto WebcamsConfigs::selected_resolution(std::string const& webcam_name) -> webc
 
 auto WebcamsConfigs::get_config(std::string const& webcam_name) -> WebcamConfig&
 {
-    auto config = _configs.find(webcam_name);
-    if (config == _configs.end())
-    {
-        return _configs.emplace(webcam_name, WebcamConfig{WebcamsInfos::instance().default_resolution(webcam_name)}).first->second;
-    }
-    return config->second;
+    auto const it = _configs.find(webcam_name);
+    if (it != _configs.end())
+        return it->second;
+
+    // If none already exists, create a config with the default resolution for that webcam.
+    return _configs.emplace(
+                       webcam_name,
+                       WebcamConfig{WebcamsInfos::instance().default_resolution(webcam_name)}
+    )
+        .first->second;
 }
 
 void WebcamsConfigs::open_imgui_window()
@@ -45,36 +49,31 @@ void WebcamsConfigs::open_imgui_window()
 
 void WebcamsConfigs::imgui_window()
 {
+    auto const format_resolution = [](webcam_info::Resolution resolution) {
+        return fmt::format("{} x {}", resolution.width, resolution.height);
+    };
+
     _window.show([&]() {
         WebcamsInfos::instance().for_each_webcam_info([&](webcam_info::Info const& info) {
-            auto& config = get_config(info.name);
-            // auto        webcam_resolution   = std::make_pair(info.resolution.width, info.height);
-            std::string combo_preview_value = fmt::format("{} x {}", config.resolution.width, config.resolution.height);
+            auto&      config        = get_config(info.name);
+            auto const combo_preview = format_resolution(config.resolution);
 
-            if (ImGui::BeginCombo(info.name.c_str(), combo_preview_value.c_str(), 0))
+            if (ImGui::BeginCombo(info.name.c_str(), combo_preview.c_str()))
             {
-                for (auto& resolution : info.available_resolutions)
+                for (auto const& resolution : info.available_resolutions)
                 {
-                    const bool  is_selected     = (config.resolution == resolution);
-                    std::string resolution_name = fmt::format("{} x {}", resolution.width, resolution.height);
-
-                    if (ImGui::Selectable(resolution_name.c_str(), is_selected))
+                    bool const is_selected = config.resolution == resolution;
+                    if (ImGui::Selectable(format_resolution(resolution).c_str(), is_selected))
                     {
                         config.resolution = resolution;
-
-                        TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy request so that a new one will be created with the new requested resolution.
-
+                        TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy the current request so that a new one will be created with the new requested resolution.
                         _serializer.save<WebcamsConfigsList, cereal::JSONOutputArchive>(_configs);
-
-                        // Trouver la requete correspodnante si elle existe, et si oui détruire sa capture car elle n'est plus valide
                     }
 
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();
-                // ImGui::SameLine();
-                // ImGui::Text("{}\n", infos.name.c_str());
             }
         });
     });
