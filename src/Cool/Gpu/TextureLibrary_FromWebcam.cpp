@@ -43,7 +43,6 @@ static auto get_all_webcams() -> std::vector<webcam_info::info>
             ),
             webcam_info.list_resolution.end()
         );
-        int a = 0;
     }
     return list_webcams_infos;
 }
@@ -158,14 +157,10 @@ auto TextureLibrary_FromWebcam::get_name_from_index(int index) -> std::optional<
 
 auto TextureLibrary_FromWebcam::get_resolution_from_index(int index) -> std::optional<webcam_info::resolution>
 {
-    std::scoped_lock<std::mutex> lock(_mutex_webcam_info);
-    if (index >= _webcams_infos.size())
+    auto possible_name = get_name_from_index(index);
+    if (!possible_name.has_value())
         return std::nullopt;
-
-    if (_webcams_infos[index].list_resolution.empty())
-        return std::nullopt;
-
-    return _webcams_infos[index].list_resolution[0];
+    return get_config_from_name(*possible_name).resolution;
 }
 auto TextureLibrary_FromWebcam::get_default_resolution_from_name(const std::string& name) -> std::optional<webcam_info::resolution>
 {
@@ -194,6 +189,16 @@ auto TextureLibrary_FromWebcam::get_config_from_name(const std::string& name) ->
         return _list_webcam_configs.emplace(name, WebcamConfig{get_default_resolution_from_name(name).value_or(webcam_info::resolution{})}).first->second;
     }
     return config->second;
+}
+
+auto TextureLibrary_FromWebcam::get_request_from_name(const std::string& name) -> WebcamRequest*
+{
+    for (auto& request : _requests)
+    {
+        if (request._name == name)
+            return &request;
+    }
+    return nullptr;
 }
 
 auto TextureLibrary_FromWebcam::get_webcam_texture(const std::string name) -> std::optional<Texture> const&
@@ -428,6 +433,11 @@ void TextureLibrary_FromWebcam::imgui_windows()
                     if (ImGui::Selectable(resolution_name.c_str(), is_selected))
                     {
                         config.resolution = resolution;
+
+                        auto* request = get_request_from_name(infos.name);
+                        if (request)
+                            request->_capture = nullptr;
+
                         // Trouver la requete correspodnante si elle existe, et si oui détruire sa capture car elle n'est plus valide
                     }
 

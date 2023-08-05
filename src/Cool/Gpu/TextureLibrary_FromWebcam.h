@@ -95,6 +95,7 @@ public:
     void open_webcams_config_window();
 
     auto get_config_from_name(const std::string& name) -> WebcamConfig&;
+    auto get_request_from_name(const std::string& name) -> WebcamRequest*;
 
     [[nodiscard]] auto has_active_webcam() const -> bool;
     [[nodiscard]] auto error_from(std::string webcam_name) const -> std::optional<std::string>;
