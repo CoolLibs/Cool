@@ -27,7 +27,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}}.exe
+        run: ${{github.workspace}}\build\bin\Debug\${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Windows_MSVC_Release:
@@ -45,7 +45,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\tests\build\Cool\Release\${{env.TARGET}}.exe
+        run: ${{github.workspace}}\build\bin\Release\${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Windows_Clang_Debug:
@@ -63,7 +63,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\tests\build\Cool\Debug\${{env.TARGET}}.exe
+        run: ${{github.workspace}}\build\bin\Debug\${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Windows_Clang_Release:
@@ -81,7 +81,7 @@ jobs:
         run: cmake --build ${{github.workspace}}\build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}\tests\build\Cool\Release\${{env.TARGET}}.exe
+        run: ${{github.workspace}}\build\bin\Release\${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Linux_GCC_Debug:
@@ -105,7 +105,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Linux_GCC_Release:
@@ -129,7 +129,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
@@ -153,7 +153,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Release:
@@ -177,7 +177,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Debug:
@@ -195,7 +195,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Debug --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
 
   #-----------------------------------------------------------------------------------------------
   MacOS_Clang_Release:
@@ -213,4 +213,4 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config Release --target ${{env.TARGET}}
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.TARGET}}
+        run: ${{github.workspace}}/build/bin/${{env.TARGET}}
