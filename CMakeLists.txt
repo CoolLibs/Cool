@@ -292,7 +292,7 @@ endfunction()
 # To do so you will need both a .png and .ico files containing your logo.
 #
 # The .ico will only be used at compile time. For more info about .ico, see https://docs.fileformat.com/image/ico/.
-# It needs to be in the same folder as a .rc file # containing "IDI_ICON1 ICON DISCARDABLE "your_icon.ico""
+# It needs to be in the same folder as a .rc file containing "IDI_ICON1 ICON DISCARDABLE "your_icon.ico""
 # where your_icon.ico is the name of your .ico file.
 # `RC_FILE` is the path to that .rc file.
 #
@@ -302,11 +302,19 @@ endfunction()
 # It MUST be relative to the root of your project (a.k.a. to `Cool::Path::root()`).
 function(Cool__set_app_icon
     TARGET
-    RC_FILE
     IMAGE_FILE
+    RC_FILE
+    ICNS_FILE
 )
-    target_sources(${TARGET} PRIVATE ${RC_FILE})
     target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_APP_ICON_FILE=\"${IMAGE_FILE}\")
+
+    if(WIN32)
+        target_sources(${TARGET} PRIVATE ${RC_FILE})
+    elseif(APPLE)
+        set_target_properties(${TARGET} PROPERTIES
+            MACOSX_BUNDLE TRUE
+            MACOSX_BUNDLE_ICON_FILE "${ICNS_FILE}")
+    endif()
 endfunction()
 
 # ---------------------
