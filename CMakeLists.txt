@@ -237,6 +237,15 @@ add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
+# OpenCV
+include("lib/opencv_build_options.cmake")
+add_subdirectory(lib/easy_opencv)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+
+# webcam_info
+add_subdirectory(lib/webcam_info)
+target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)

@@ -17,7 +17,7 @@
 #include <Cool/Serialization/Serialization.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/ImGui/StyleEditor.h"
 //
@@ -39,7 +39,7 @@ inline void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Icons::shut_down();
-    TextureLibrary::instance().clear();
+    TextureLibrary_FromFile::instance().clear();
     TextureSamplerLibrary::instance().clear();
     FullscreenPipeline::shut_down();
 }

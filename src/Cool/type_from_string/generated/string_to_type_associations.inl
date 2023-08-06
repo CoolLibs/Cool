@@ -142,7 +142,12 @@ struct from_impl<"Gradient"> {
 
 template<>
 struct from_impl<"Texture"> {
-    using type = Cool::TextureInfo;
+    using type = Cool::TextureDescriptor_FromFile;
+};
+
+template<>
+struct from_impl<"Webcam"> {
+    using type = Cool::TextureDescriptor_FromWebcam;
 };
 
 template<>

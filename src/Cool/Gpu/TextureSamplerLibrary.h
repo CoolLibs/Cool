@@ -1,13 +1,13 @@
 #pragma once
 #include <map>
-#include "Cool/Gpu/TextureSamplerInfo.h"
+#include "Cool/Gpu/TextureSamplerDescriptor.h"
 #include "glpp/UniqueHandles/UniqueTextureSampler.h"
 
 namespace Cool {
 
 class TextureSamplerLibrary {
 public:
-    [[nodiscard]] auto get(TextureSamplerInfo const&) -> glpp::UniqueTextureSampler const&;
+    [[nodiscard]] auto get(TextureSamplerDescriptor const&) -> glpp::UniqueTextureSampler const&;
 
     void clear() { _samplers.clear(); }
 
@@ -18,7 +18,7 @@ public:
     }
 
 private:
-    std::map<TextureSamplerInfo, glpp::UniqueTextureSampler> _samplers{};
+    std::map<TextureSamplerDescriptor, glpp::UniqueTextureSampler> _samplers{};
 };
 
 } // namespace Cool

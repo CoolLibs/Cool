@@ -1,22 +1,17 @@
-#include "TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include <chrono>
 #include <filesystem>
 #include <optional>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureInfo.h"
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureDescriptor.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "TextureLibrary_FromFile.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
 
 namespace Cool {
-
-static auto gen_dummy_texture() -> Texture
-{
-    return Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
-}
 
 static constexpr auto time_to_live = 5min;
 
@@ -25,7 +20,7 @@ static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_
     return std::chrono::steady_clock::now() - date_of_last_request > time_to_live;
 }
 
-auto TextureLibrary::get(std::filesystem::path const& path) -> Texture const&
+auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture const*
 {
     auto const it = _textures.find(path);
     // If this path is not known to the library, add it and try again.
@@ -43,26 +38,23 @@ auto TextureLibrary::get(std::filesystem::path const& path) -> Texture const&
     it->second.date_of_last_request = clock::now();
 
     auto const& maybe_tex = it->second.texture;
-    if (!maybe_tex && !it->second.error_message) // Texture ise nullopt simply because it hasn't been used in a while. Reload the texture.
+    if (!maybe_tex && !it->second.error_message) // Texture is nullopt simply because it hasn't been used in a while. Reload the texture.
         reload_texture(path);
 
     if (!maybe_tex)
-    {
-        static auto const dummy_texture = gen_dummy_texture();
-        return dummy_texture;
-    }
-    return *maybe_tex;
+        return nullptr;
+    return &*maybe_tex;
 }
 
-void TextureLibrary::reload_texture(std::filesystem::path const& path)
+void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
 {
     try
     {
         _textures[path].error_message = std::nullopt;
-        _textures[path].texture = std::nullopt;
-        _textures[path].texture = Texture{img::load(path)};
+        _textures[path].texture       = std::nullopt;
+        _textures[path].texture       = Texture{img::load(path)};
         if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("TextureLibrary", fmt::format("Generated texture from {}", path));
+            Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
     }
     catch (std::exception const& e)
     {
@@ -70,7 +62,7 @@ void TextureLibrary::reload_texture(std::filesystem::path const& path)
     }
 }
 
-auto TextureLibrary::update() -> bool
+auto TextureLibrary_FromFile::update() -> bool
 {
     bool       has_changed = false;
     auto const reload_tex  = [&](std::filesystem::path const& path) {
@@ -87,12 +79,12 @@ auto TextureLibrary::update() -> bool
     return has_changed;
 }
 
-auto TextureLibrary::error_from(std::filesystem::path const& path) -> std::optional<std::string>
+auto TextureLibrary_FromFile::error_from(std::filesystem::path const& path) -> std::optional<std::string>
 {
     return _textures[path].error_message;
 }
 
-void TextureLibrary::imgui_debug_view() const
+void TextureLibrary_FromFile::imgui_debug_view() const
 {
     static constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame
                                              | ImGuiTableFlags_Resizable

@@ -1,4 +1,5 @@
 #include "TextureSamplerLibrary.h"
+#include "Cool/Gpu/TextureSamplerDescriptor.h"
 #include "glpp/UniqueHandles/UniqueTextureSampler.h"
 
 namespace Cool {
@@ -40,7 +41,7 @@ static void apply_repeat_mode(GLuint sampler, TextureRepeatMode mode)
     }
 }
 
-auto TextureSamplerLibrary::get(TextureSamplerInfo const& info) -> glpp::UniqueTextureSampler const&
+auto TextureSamplerLibrary::get(TextureSamplerDescriptor const& info) -> glpp::UniqueTextureSampler const&
 {
     // Try to find an existing sampler with the same info
     auto const it = _samplers.find(info);
