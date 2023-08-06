@@ -6,16 +6,22 @@
 
 namespace Cool {
 
+WebcamsInfos::~WebcamsInfos()
+{
+    _wants_to_stop_thread.store(true);
+    _thread.join();
+}
+
 auto WebcamsInfos::instance() -> WebcamsInfos&
 {
     static auto inst = WebcamsInfos{};
     return inst;
 }
 
-void WebcamsInfos::thread_job(std::stop_token const& stop_token, WebcamsInfos& This)
+void WebcamsInfos::thread_job(WebcamsInfos& This)
 {
     std::vector<webcam_info::Info> wip_webcams_infos{};
-    while (!stop_token.stop_requested())
+    while (!This._wants_to_stop_thread.load())
     {
         wip_webcams_infos = webcam_info::grab_all_webcams_infos();
         {

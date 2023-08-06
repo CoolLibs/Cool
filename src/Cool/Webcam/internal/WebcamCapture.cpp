@@ -5,6 +5,12 @@
 
 namespace Cool {
 
+WebcamCapture::~WebcamCapture()
+{
+    _wants_to_stop_thread.store(true);
+    _thread.join();
+}
+
 static auto create_opencv_capture(size_t webcam_index, webcam_info::Resolution resolution) -> cv::VideoCapture
 {
     auto capture = cv::VideoCapture{static_cast<int>(webcam_index)};
@@ -17,13 +23,13 @@ static auto create_opencv_capture(size_t webcam_index, webcam_info::Resolution r
     return capture;
 }
 
-void WebcamCapture::thread_job(std::stop_token const& stop_token, WebcamCapture& This, webcam_info::Resolution resolution)
+void WebcamCapture::thread_job(WebcamCapture& This, webcam_info::Resolution resolution)
 {
     try
     {
         cv::VideoCapture capture = create_opencv_capture(This.webcam_index(), resolution);
         cv::Mat          wip_image{};
-        while (!stop_token.stop_requested() && capture.isOpened())
+        while (!This._wants_to_stop_thread.load() && capture.isOpened())
         {
             capture >> wip_image;
 
