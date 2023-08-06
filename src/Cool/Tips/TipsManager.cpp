@@ -35,9 +35,19 @@ void TipsManager::open_ifn()
         open_one_tip_window();
 }
 
+void TipsManager::prepare_tip(int difference)
+{
+    _current_tip_index += difference;
+}
+
 void TipsManager::prepare_next_tip()
 {
-    _current_tip_index++;
+    prepare_tip(1);
+}
+
+void TipsManager::prepare_previous_tip()
+{
+    prepare_tip(-1);
 }
 
 static void imgui_all_tips(Tips all_tips)
@@ -52,31 +62,29 @@ static void imgui_all_tips(Tips all_tips)
 
 auto TipsManager::get_current_tip(Tips all_tips) -> const char*
 {
-    _current_tip_index = _current_tip_index % all_tips.size();
-    return all_tips[_current_tip_index];
+    _current_tip_index = _current_tip_index % static_cast<int>(all_tips.size());
+    if (_current_tip_index < 0)
+        _current_tip_index += static_cast<int>(all_tips.size());
+    return all_tips[static_cast<size_t>(_current_tip_index)];
+}
+
+void TipsManager::imgui_show_one_tip(Tips all_tips)
+{
+    ImGuiExtras::markdown(get_current_tip(all_tips));
+
+    auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
+
+    if (ImGui::Button("Previous tip", {button_width, 0.f}))
+        prepare_previous_tip();
+    ImGui::SameLine();
+    if (ImGui::Button("Next tip", {button_width, 0.f}))
+        prepare_next_tip();
 }
 
 void TipsManager::imgui_windows(Tips all_tips)
 {
     _window.show([&]() {
-        ImGuiExtras::markdown(get_current_tip(all_tips));
-        ImGui::SeparatorText("");
-
-        auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
-
-        if (ImGui::Button("Got it!", {button_width, 0.f})
-            || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
-        {
-            _window.close();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Show me all the tips", {button_width, 0.f}))
-        {
-            _window.close();
-            open_all_tips_window();
-        }
+        imgui_show_one_tip(all_tips);
     });
 
     if (_show_all_tips)

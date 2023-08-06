@@ -1,4 +1,5 @@
 #include "VideoExportProcess.h"
+#include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/String/String.h>
 #include "internal/origin_of_frames.h"
@@ -60,7 +61,7 @@ auto VideoExportProcess::estimated_remaining_time() -> float
            + 1.f;
 }
 
-void VideoExportProcess::imgui()
+void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 {
     const int frame_count = _nb_frames_which_finished_exporting.load();
 
@@ -68,6 +69,7 @@ void VideoExportProcess::imgui()
     const float progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
     ImGui::ProgressBar(progress, ImVec2(-1.f, 0.f));
 
+    ImGui::PushFont(Font::monospace());
     // Frames count
     ImGui::TextUnformatted(
         fmt::format(
@@ -82,12 +84,15 @@ void VideoExportProcess::imgui()
     ImGuiExtras::time_formated_hms(estimated_remaining_time());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
+    ImGui::PopFont();
 
     // Stop exporting
     if (ImGui::Button("Stop exporting"))
     {
         _should_stop_asap = true;
     }
+
+    extra_widgets();
 }
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path file_path)

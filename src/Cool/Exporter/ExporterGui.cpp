@@ -1,6 +1,5 @@
 #include "ExporterGui.h"
 #include <Cool/File/File.h>
-#include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
@@ -30,10 +29,10 @@ void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspec
         set_aspect_ratio(*aspect_ratio);
 }
 
-void ExporterGui::imgui_windows(Polaroid const& polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported, std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
-    imgui_window_export_image(polaroid, time, on_image_exported);
-    imgui_window_export_video(video_export_process);
+    imgui_window_export_image(p.polaroid, p.time, p.on_image_exported);
+    imgui_window_export_video(p.widgets_in_window_video_export_in_progress, video_export_process);
 }
 
 auto ExporterGui::output_path() -> std::filesystem::path
@@ -41,7 +40,7 @@ auto ExporterGui::output_path() -> std::filesystem::path
     return _folder_path_for_image / _file_name.replace_extension("png");
 }
 
-void ExporterGui::imgui_menu_items(imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
+void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
 {
     // Calculate max button width
     if (!longest_text)
@@ -131,14 +130,12 @@ void ExporterGui::end_video_export(std::optional<VideoExportProcess>& video_expo
     video_export_process.reset();
 }
 
-void ExporterGui::imgui_window_export_video(std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::optional<VideoExportProcess>& video_export_process)
 {
     if (is_exporting(video_export_process))
     {
         ImGui::Begin("Video export in progress");
-        ImGui::PushFont(Font::monospace());
-        video_export_process->imgui();
-        ImGui::PopFont();
+        video_export_process->imgui(widgets_in_window_video_export_in_progress);
         ImGui::End();
     }
     else
