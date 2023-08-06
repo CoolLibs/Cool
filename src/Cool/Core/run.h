@@ -20,6 +20,8 @@
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/ImGui/StyleEditor.h"
+#include "hide_console_in_release.h"
+
 //
 #include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
