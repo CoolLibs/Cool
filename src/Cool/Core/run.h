@@ -1,5 +1,8 @@
 #pragma once
 
+#include <exception>
+#include <filesystem>
+#include "Cool/File/File.h"
 #include "Cool/Path/Path.h"
 #include "Cool/View/ViewsManager.h"
 #if defined(COOL_VULKAN)
@@ -14,11 +17,9 @@
 #include <Cool/Serialization/Serialization.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/ImGui/StyleEditor.h"
-#include "InitConfig.h"
-
 //
 #include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
@@ -38,7 +39,7 @@ inline void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Icons::shut_down();
-    TextureLibrary::instance().clear();
+    TextureLibrary_FromFile::instance().clear();
     TextureSamplerLibrary::instance().clear();
     FullscreenPipeline::shut_down();
 }
@@ -63,18 +64,44 @@ inline auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std
     };
 }
 
+inline void copy_default_user_data_ifn()
+{
+    try
+    {
+        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
+        {
+            auto const& default_path = entry.path();
+            if (!std::filesystem::is_regular_file(default_path))
+                continue;
+
+            auto const path = Cool::Path::user_data() / std::filesystem::relative(default_path, Cool::Path::default_user_data());
+            if (std::filesystem::exists(path))
+                continue;
+
+            try
+            {
+                Cool::File::copy_file(default_path, path);
+            }
+            catch (std::exception const& e)
+            {
+                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", std::filesystem::weakly_canonical(default_path), std::filesystem::weakly_canonical(path), e.what()));
+            }
+        }
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default user data:\n{}", e.what()));
+    }
+}
+
 template<typename App>
 void run(
     std::vector<WindowConfig> const& windows_configs,
-    InitConfig const&                init_config        = {},
     AppManagerConfig                 app_manager_config = {}
 )
 {
-    // Init paths
-    Cool::Path::initialize_root(init_config.root_path);
-    Cool::Path::initialize_cool_res(init_config.cool_res_path);
-    Cool::Path::initialize_default_texture(init_config.default_texture_path);
-
+    // Make sure user_data() folder is populated with all the default_user_data() files.
+    copy_default_user_data_ifn();
     // Create window.s
     assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
@@ -88,13 +115,13 @@ void run(
         // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
         auto auto_serializer_user_settings = Cool::AutoSerializer{};
         auto_serializer_user_settings.init<UserSettings, cereal::JSONInputArchive>(
-            Cool::Path::root() / "cache/user-settings.json",
+            Cool::Path::user_data() / "user-settings.json",
             user_settings(),
             [](OptionalErrorMessage const& error) {
                 error.send_error_if_any(
                     [&](std::string const& message) {
                         return Cool::Message{
-                            .category = "Loading Project",
+                            .category = "Loading User Settings",
                             .message  = message,
                             .severity = Cool::MessageSeverity::Warning,
                         };
@@ -118,12 +145,12 @@ void run(
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
             auto_serializer.init<App, cereal::JSONInputArchive>(
-                Cool::Path::root() / "cache/last-session.json", app,
+                Cool::Path::user_data() / "last-session.json", app,
                 [](OptionalErrorMessage const& error) {
                     error.send_error_if_any(
                         [&](std::string const& message) {
                             return Cool::Message{
-                                .category = "Loading Project",
+                                .category = "Loading App",
                                 .message  = message,
                                 .severity = Cool::MessageSeverity::Warning,
                             };

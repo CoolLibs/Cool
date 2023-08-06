@@ -249,7 +249,7 @@ void DebugOptions::save_to_file()
 {{
     Cool::Serialization::save<DebugOptions::Instance, cereal::JSONOutputArchive>(
         instance(),
-        Cool::Path::root() / "{cache_file_name}.json",
+        Cool::Path::user_data() / "{cache_file_name}.json",
         "Debug Options"
     );
 }}
@@ -257,7 +257,7 @@ void DebugOptions::save_to_file()
 auto DebugOptions::load_debug_options() -> Instance
 {{
     auto the_instance = Instance{{}};
-    Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::root() / "{cache_file_name}.json")
+    Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json")
         .send_error_if_any([](const std::string& message) {{
             return Cool::Message{{
                 .category         = "Loading Debug Options",

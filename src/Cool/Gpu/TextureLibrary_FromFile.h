@@ -4,7 +4,7 @@
 #include <optional>
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Texture.h"
-#include "TextureInfo.h"
+#include "TextureDescriptor.h"
 
 namespace Cool {
 
@@ -12,24 +12,25 @@ namespace Cool {
 /// images will be found nor that they will stay the same forever.
 /// This is why it adds checks to see if the texture exists, and
 /// re-loads it if the source file changes.
-class TextureLibrary {
+class TextureLibrary_FromFile {
 public:
-    [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const&;
+    [[nodiscard]] static auto instance() -> TextureLibrary_FromFile&
+    {
+        static auto inst = TextureLibrary_FromFile{};
+        return inst;
+    }
+
+    [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const*;
 
     void clear() { _textures.clear(); }
     /// Returns true iff at least one of the textures in the library has changed.
     auto update() -> bool;
     auto error_from(std::filesystem::path const&) -> std::optional<std::string>;
 
-    [[nodiscard]] static auto instance() -> TextureLibrary&
-    {
-        static auto inst = TextureLibrary{};
-        return inst;
-    }
-
     void imgui_debug_view() const;
 
 private:
+    TextureLibrary_FromFile() = default; // This is a singleton. Get the global instance with `instance()` instead.
     void reload_texture(std::filesystem::path const& path);
 
 private:

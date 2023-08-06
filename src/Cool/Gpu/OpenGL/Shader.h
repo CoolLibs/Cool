@@ -1,7 +1,7 @@
 #pragma once
 #if COOL_OPENGL
 
-#include <Cool/Gpu/TextureInfo.h>
+#include <Cool/Gpu/TextureDescriptor.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Camera2D.h>
 #include <Cool/StrongTypes/Color.h>
@@ -50,7 +50,9 @@ public:
     void set_uniform(std::string_view uniform_name, const Gradient&) const;
     void set_uniform(std::string_view uniform_name, Point2D) const;
     void set_uniform(std::string_view uniform_name, Camera2D const&) const;
-    void set_uniform(std::string_view uniform_name, TextureInfo const&) const;
+    void set_uniform(std::string_view uniform_name, TextureDescriptor const&) const;
+    void set_uniform(std::string_view uniform_name, Texture const&, TextureSamplerDescriptor const& = {}) const;
+    void set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& = {}) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

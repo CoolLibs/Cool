@@ -9,7 +9,7 @@ namespace Cool {
 class ViewsManager {
 public:
     template<typename ViewT, typename... Args>
-    auto make_view(Args... args) -> ViewT&
+    auto make_view(Args&&... args) -> ViewT&
     {
         return static_cast<ViewT&>(*_views.emplace_back(std::make_unique<ViewT>(std::forward<Args>(args)...)));
     }

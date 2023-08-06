@@ -69,7 +69,7 @@ auto TipsManager::get_current_tip(Tips all_tips) -> const char*
 void TipsManager::imgui_content(Tips all_tips)
 {
     ImGuiExtras::markdown(get_current_tip(all_tips));
-    ImGui::SeparatorText("");
+    // ImGui::SeparatorText("");
 
     auto const button_width = ImGui::GetContentRegionAvail().x / 2.f - ImGui::GetStyle().ItemSpacing.x / 2.f;
 

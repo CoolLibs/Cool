@@ -11,12 +11,12 @@ namespace Cool {
 
 StyleEditor::StyleEditor()
 {
-    std::ignore = Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(*this, Cool::Path::root() / "style.json");
+    std::ignore = Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(*this, Cool::Path::user_data() / "style.json");
 }
 
 StyleEditor::~StyleEditor()
 {
-    Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(*this, Cool::Path::root() / "style.json");
+    Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(*this, Cool::Path::user_data() / "style.json");
 }
 
 void StyleEditor::imgui()

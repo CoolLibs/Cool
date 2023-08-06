@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-void ExportSize::set_aspect_ratio(AspectRatio aspect_ratio)
+void ExportSize::set_aspect_ratio(AspectRatio const& aspect_ratio)
 {
     _aspect_ratio_is_locked = true;
     _aspect_ratio           = aspect_ratio;

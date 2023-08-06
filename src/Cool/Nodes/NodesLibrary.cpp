@@ -24,7 +24,7 @@ auto NodesLibrary::get_category(std::string const& category_name) const -> Nodes
 
 auto NodesLibrary::get_category(std::string const& category_name) -> NodesCategory*
 {
-    auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory const& cat) {
+    auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory const& cat) {
         return cat.name() == category_name;
     });
 

@@ -2,38 +2,40 @@
 #include <Cool/Log/ToUser.h>
 #include <Cool/String/String.h>
 #include <sys/stat.h>
+#include <filesystem>
 #include <fstream>
 #include <streambuf>
 #include "Cool/File/File.h"
+#include "nfd.hpp"
 
-namespace Cool {
+namespace Cool::File {
 
-auto File::exists(std::filesystem::path const& file_path) -> bool
+auto exists(std::filesystem::path const& file_path) -> bool
 {
     return std::filesystem::exists(file_path);
 }
 
-auto File::file_name(std::filesystem::path const& file_path) -> std::filesystem::path
+auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.filename();
 }
 
-auto File::file_name_without_extension(std::filesystem::path const& file_path) -> std::filesystem::path
+auto file_name_without_extension(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.stem();
 }
 
-auto File::extension(std::filesystem::path const& file_path) -> std::filesystem::path
+auto extension(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.extension();
 }
 
-auto File::without_extension(std::filesystem::path file_path) -> std::filesystem::path
+auto without_extension(std::filesystem::path file_path) -> std::filesystem::path
 {
     return file_path.replace_extension();
 }
 
-auto File::without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path
+auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     if (!file_path.has_filename())
         return file_path;
@@ -41,7 +43,7 @@ auto File::without_file_name(std::filesystem::path const& file_path) -> std::fil
         return file_path.parent_path();
 }
 
-auto File::to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode) -> tl::expected<std::string, std::string>
+auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode) -> tl::expected<std::string, std::string>
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
     std::ifstream stream(file_path, mode);
@@ -62,9 +64,9 @@ auto File::to_string(std::filesystem::path const& file_path, std::ios_base::open
     return str;
 }
 
-auto File::create_folders_if_they_dont_exist(std::filesystem::path const& folder_path) -> bool
+auto create_folders_if_they_dont_exist(std::filesystem::path const& folder_path) -> bool
 {
-    if (!exists(folder_path))
+    if (!File::exists(folder_path))
     {
         try
         {
@@ -80,12 +82,32 @@ auto File::create_folders_if_they_dont_exist(std::filesystem::path const& folder
     return true;
 }
 
-auto File::create_folders_for_file_if_they_dont_exist(std::filesystem::path const& file_path) -> bool
+auto create_folders_for_file_if_they_dont_exist(std::filesystem::path const& file_path) -> bool
 {
     return create_folders_if_they_dont_exist(without_file_name(file_path));
 }
 
-auto File::find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
+auto create_file_if_it_doesnt_exist(std::filesystem::path const& file_path) -> bool
+{
+    if (File::exists(file_path))
+        return true;
+    if (!create_folders_for_file_if_they_dont_exist(file_path))
+        return false;
+
+    auto file = std::ofstream{file_path};
+    return file.is_open();
+}
+
+auto copy_file(std::filesystem::path const& from, std::filesystem::path const& to) -> bool
+{
+    if (!create_folders_for_file_if_they_dont_exist(to))
+        return false;
+
+    std::filesystem::copy_file(from, to);
+    return true;
+}
+
+auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
 {
     std::string const name = Cool::File::without_extension(file_name).string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
@@ -120,7 +142,7 @@ auto File::find_available_name(std::filesystem::path const& folder_path, std::fi
     return out_name;
 }
 
-void File::set_content(std::filesystem::path const& file_path, std::string_view content)
+void set_content(std::filesystem::path const& file_path, std::string_view content)
 {
     if (!create_folders_for_file_if_they_dont_exist(file_path))
         return;
@@ -132,4 +154,41 @@ void File::set_content(std::filesystem::path const& file_path, std::string_view 
     file << content;
 }
 
-} // namespace Cool
+auto folder_dialog(folder_dialog_args const& args) -> std::optional<std::filesystem::path>
+{
+    auto        path   = NFD::UniquePath{};
+    nfdresult_t result = NFD::PickFolder(path, std::filesystem::absolute(args.initial_folder).string().c_str());
+    if (result != NFD_OKAY)
+        return std::nullopt;
+    return std::filesystem::path{path.get()};
+}
+
+auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
+{
+    auto        path   = NFD::UniquePath{};
+    nfdresult_t result = NFD::OpenDialog(
+        path,
+        args.file_filters.data(),
+        static_cast<nfdfiltersize_t>(args.file_filters.size()),
+        std::filesystem::absolute(args.initial_folder).string().c_str()
+    );
+    if (result != NFD_OKAY)
+        return std::nullopt;
+    return std::filesystem::path{path.get()};
+}
+
+auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
+{
+    auto        path   = NFD::UniquePath{};
+    nfdresult_t result = NFD::SaveDialog(
+        path,
+        args.file_filters.data(),
+        static_cast<nfdfiltersize_t>(args.file_filters.size()),
+        std::filesystem::absolute(args.initial_folder).string().c_str()
+    );
+    if (result != NFD_OKAY)
+        return std::nullopt;
+    return std::filesystem::path{path.get()};
+}
+
+} // namespace Cool::File
