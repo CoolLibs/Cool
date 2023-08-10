@@ -257,15 +257,8 @@ void DebugOptions::save_to_file()
 auto DebugOptions::load_debug_options() -> Instance
 {{
     auto the_instance = Instance{{}};
-    Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json")
-        .send_error_if_any([](const std::string& message) {{
-            return Cool::Message{{
-                .category         = "Loading Debug Options",
-                .message = message,
-                .severity         = Cool::MessageSeverity::Warning,
-            }};
-        }},
-                            Cool::Log::ToUser::console());
+    auto const err = Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json");
+    std::ignore = err; // We don't care about preserving the backward compatibility of debug options. If we break it, we can ignore it.
     return the_instance;
 }}
 
