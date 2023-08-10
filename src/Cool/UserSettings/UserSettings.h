@@ -17,7 +17,6 @@ struct UserSettings {
     Cool::ColorThemes color_themes{};
 
     bool single_click_to_input_in_drag_widgets{false};
-    bool open_most_recent_project_when_opening_coollab{is_building_as(BuildMode::Debug)};
 
     bool enable_multi_viewport{should_enable_multi_viewport_by_default()};
     void apply_multi_viewport_setting() const;
@@ -27,7 +26,6 @@ struct UserSettings {
     auto imgui_extra_icons() -> bool;
     auto imgui_camera2D_zoom_sensitivity() -> bool;
     auto imgui_single_click_to_input_in_drag_widgets() -> bool;
-    auto imgui_open_most_recent_project_when_opening_coollab() -> bool;
     auto imgui_enable_multi_viewport() -> bool;
 
 private:

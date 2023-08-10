@@ -16,7 +16,6 @@ auto UserSettings::imgui() -> bool
     b |= imgui_camera2D_zoom_sensitivity();
     ImGuiExtras::separator_text("Miscellaneous");
     b |= imgui_single_click_to_input_in_drag_widgets();
-    b |= imgui_open_most_recent_project_when_opening_coollab();
     b |= imgui_enable_multi_viewport();
 
     return b;
@@ -48,13 +47,6 @@ auto UserSettings::imgui_single_click_to_input_in_drag_widgets() -> bool
 {
     bool const b = ImGuiExtras::toggle("Single-click to input in \"Drag number\" widgets.", &single_click_to_input_in_drag_widgets);
     ImGuiExtras::help_marker("When disabled, you need to double-click or CTRL+click on a \"Drag number\" widget to be able to write down a specific value.");
-    return b;
-}
-
-auto UserSettings::imgui_open_most_recent_project_when_opening_coollab() -> bool
-{
-    bool const b = ImGuiExtras::toggle("Open most recent project when opening Coollab.", &open_most_recent_project_when_opening_coollab);
-    ImGuiExtras::help_marker("When disabled, a new project will be opened when you open Coollab.");
     return b;
 }
 
