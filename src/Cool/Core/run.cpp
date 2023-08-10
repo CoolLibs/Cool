@@ -6,6 +6,7 @@
 #include <Cool/UserSettings/UserSettings.h>
 #include <exception>
 #include <filesystem>
+#include <fstream>
 #include "Cool/File/File.h"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
@@ -45,8 +46,42 @@ auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::funct
     };
 }
 
+static void erase_imgui_ini_if_old_version()
+{
+    try
+    {
+        static constexpr int current_version = 0;
+
+        auto const version_path = Cool::Path::user_data() / "imgui_ini_version.txt";
+        auto const ini_path     = Cool::Path::user_data() / "imgui.ini";
+
+        {
+            auto input_file = std::ifstream{version_path};
+            if (!input_file.is_open())
+            {
+                std::filesystem::remove(ini_path);
+            }
+            else
+            {
+                int user_version{-1};
+                input_file >> user_version;
+                if (user_version < current_version)
+                    std::filesystem::remove(ini_path);
+            }
+        }
+
+        std::filesystem::remove(version_path);
+        auto output_file = std::ofstream{version_path};
+        output_file << current_version;
+    }
+    catch (...)
+    {
+    }
+}
+
 void copy_default_user_data_ifn()
 {
+    erase_imgui_ini_if_old_version();
     try
     {
         for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
