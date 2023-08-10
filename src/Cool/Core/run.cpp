@@ -46,12 +46,10 @@ auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::funct
     };
 }
 
-static void erase_imgui_ini_if_old_version()
+static void erase_imgui_ini_if_old_version(int imgui_ini_version)
 {
     try
     {
-        static constexpr int current_version = 0;
-
         auto const version_path = Cool::Path::user_data() / "imgui_ini_version.txt";
         auto const ini_path     = Cool::Path::user_data() / "imgui.ini";
 
@@ -65,23 +63,23 @@ static void erase_imgui_ini_if_old_version()
             {
                 int user_version{-1};
                 input_file >> user_version;
-                if (user_version < current_version)
+                if (user_version < imgui_ini_version)
                     std::filesystem::remove(ini_path);
             }
         }
 
         std::filesystem::remove(version_path);
         auto output_file = std::ofstream{version_path};
-        output_file << current_version;
+        output_file << imgui_ini_version;
     }
     catch (...)
     {
     }
 }
 
-void copy_default_user_data_ifn()
+void copy_default_user_data_ifn(int imgui_ini_version)
 {
-    erase_imgui_ini_if_old_version();
+    erase_imgui_ini_if_old_version(imgui_ini_version); // When new imgui windows are added, we need to erase the user's imgui.ini so that they will get the new one that is in user_data_default().
     try
     {
         for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))

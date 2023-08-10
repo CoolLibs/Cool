@@ -20,24 +20,27 @@ namespace internal {
 class PreviousSessionLoadingFailed_Exception : public std::exception {};
 void shut_down();
 auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>;
-void copy_default_user_data_ifn();
+void copy_default_user_data_ifn(int imgui_ini_version);
 } // namespace internal
 
+struct RunConfig {
+    std::vector<WindowConfig> windows_configs{};
+    AppManagerConfig          app_manager_config{};
+    int                       imgui_ini_version{};
+};
+
 template<typename App>
-void run(
-    std::vector<WindowConfig> const& windows_configs,
-    AppManagerConfig                 app_manager_config = {}
-)
+void run(RunConfig const& config)
 {
     bool const ignore_invalid_user_data_file = !std::filesystem::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
     // Make sure user_data() folder is populated with all the default_user_data() files.
-    internal::copy_default_user_data_ifn();
+    internal::copy_default_user_data_ifn(config.imgui_ini_version);
     // Create window.s
-    assert(!windows_configs.empty());
+    assert(!config.windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
-    window_factory.make_main_window(windows_configs[0]);
-    for (size_t i = 1; i < windows_configs.size(); ++i)
-        window_factory.make_secondary_window(windows_configs[i]);
+    window_factory.make_main_window(config.windows_configs[0]);
+    for (size_t i = 1; i < config.windows_configs.size(); ++i)
+        window_factory.make_secondary_window(config.windows_configs[i]);
 
     {
         Cool::StyleEditor style_autoserializer{};
@@ -99,7 +102,7 @@ void run(
                 load_from_file
             );
             // Run the app
-            auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, app_manager_config};
+            auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, config.app_manager_config};
             app_manager.run(internal::create_autosaver(auto_serializer));
             app.on_shutdown();
 #if defined(COOL_VULKAN)
