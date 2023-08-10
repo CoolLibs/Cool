@@ -1,26 +1,15 @@
 #pragma once
+#include <Cool/AppManager/AppManager.h>
+#include <Cool/Icons/Icons.h>
+#include <Cool/Serialization/AutoSerializer.h>
+#include <Cool/UserSettings/UserSettings.h>
+#include <Cool/Window/internal/WindowFactory.h>
+#include "Cool/ImGui/StyleEditor.h"
+#include "hide_console_in_release.h"
 
-#include <exception>
-#include <filesystem>
-#include "Cool/File/File.h"
-#include "Cool/Path/Path.h"
-#include "Cool/View/ViewsManager.h"
 #if defined(COOL_VULKAN)
 #include <Cool/Gpu/Vulkan/Context.h>
 #endif
-
-#include <Cool/AppManager/AppManager.h>
-#include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/FullscreenPipeline.h>
-#include <Cool/Icons/Icons.h>
-#include <Cool/Serialization/AutoSerializer.h>
-#include <Cool/Serialization/Serialization.h>
-#include <Cool/UserSettings/UserSettings.h>
-#include <Cool/Window/internal/WindowFactory.h>
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
-#include "Cool/Gpu/TextureSamplerLibrary.h"
-#include "Cool/ImGui/StyleEditor.h"
-#include "hide_console_in_release.h"
 
 //
 #include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
@@ -29,72 +18,10 @@ namespace Cool {
 
 namespace internal {
 class PreviousSessionLoadingFailed_Exception : public std::exception {};
+void shut_down();
+auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>;
+void copy_default_user_data_ifn();
 } // namespace internal
-
-/**
- * @brief Shuts down all the Cool systems
- *
- */
-inline void shut_down()
-{
-#if defined(COOL_VULKAN)
-    vkDeviceWaitIdle(Vulkan::context().g_Device);
-#endif
-    Icons::shut_down();
-    TextureLibrary_FromFile::instance().clear();
-    TextureSamplerLibrary::instance().clear();
-    FullscreenPipeline::shut_down();
-}
-
-inline auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>
-{
-    return [&auto_serializer]() {
-        if (!user_settings().autosave_enabled)
-            return;
-
-        static auto last_time = std::chrono::steady_clock::now();
-        const auto  now       = std::chrono::steady_clock::now();
-        if (now - last_time > std::chrono::duration<float>{user_settings().autosave_delay_in_seconds})
-        {
-            auto_serializer.save();
-            last_time = now;
-            if (DebugOptions::log_when_autosaving())
-            {
-                Log::ToUser::info("Autosave", "The application was just saved.");
-            }
-        }
-    };
-}
-
-inline void copy_default_user_data_ifn()
-{
-    try
-    {
-        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
-        {
-            auto const& default_path = entry.path();
-            if (!std::filesystem::is_regular_file(default_path))
-                continue;
-
-            auto const path = Cool::Path::user_data() / std::filesystem::relative(default_path, Cool::Path::default_user_data());
-            if (std::filesystem::exists(path))
-                continue;
-
-            try
-            {
-                Cool::File::copy_file(default_path, path);
-            }
-            catch (std::exception const& e)
-            {
-                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", std::filesystem::weakly_canonical(default_path), std::filesystem::weakly_canonical(path), e.what()));
-            }
-        }
-    }
-    catch (std::exception const& e)
-    {
-        Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default user data:\n{}", e.what()));
-    }
-}
 
 template<typename App>
 void run(
@@ -104,7 +31,7 @@ void run(
 {
     bool const ignore_invalid_user_data_file = !std::filesystem::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
     // Make sure user_data() folder is populated with all the default_user_data() files.
-    copy_default_user_data_ifn();
+    internal::copy_default_user_data_ifn();
     // Create window.s
     assert(!windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
@@ -173,7 +100,7 @@ void run(
             );
             // Run the app
             auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, app_manager_config};
-            app_manager.run(create_autosaver(auto_serializer));
+            app_manager.run(internal::create_autosaver(auto_serializer));
             app.on_shutdown();
 #if defined(COOL_VULKAN)
             vkDeviceWaitIdle(Vulkan::context().g_Device);
@@ -188,7 +115,7 @@ void run(
             run_loop(false);
         }
     }
-    Cool::shut_down();
+    Cool::internal::shut_down();
 }
 
 } // namespace Cool
