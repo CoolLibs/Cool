@@ -304,16 +304,11 @@ function(Cool__set_app_icon
     TARGET
     IMAGE_FILE
     RC_FILE
-    ICNS_FILE
 )
     target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_APP_ICON_FILE=\"${IMAGE_FILE}\")
 
     if(WIN32)
         target_sources(${TARGET} PRIVATE ${RC_FILE})
-    elseif(APPLE)
-        set_target_properties(${TARGET} PROPERTIES
-            MACOSX_BUNDLE TRUE
-            MACOSX_BUNDLE_ICON_FILE "${ICNS_FILE}")
     endif()
 endfunction()
 
