@@ -1,5 +1,6 @@
 #pragma once
 #include <filesystem>
+#include <optional>
 #include "Cool/Path/PathsConfig.h"
 
 namespace Cool {
@@ -21,6 +22,8 @@ public:
     /// Path to the default texture used by TextureInfo.
     [[nodiscard]] static auto default_texture() -> std::filesystem::path const&;
 
+    [[nodiscard]] static auto project_folder() -> std::optional<std::filesystem::path>& { return _project_folder; }
+
     /// Initializes the paths. This must be called once, at the start of your application.
     template<typename PathsConfigT>
     static void initialize()
@@ -29,7 +32,8 @@ public:
     }
 
 private:
-    static std::unique_ptr<PathsConfig> _paths_config;
+    static std::unique_ptr<PathsConfig>         _paths_config;
+    static std::optional<std::filesystem::path> _project_folder;
 };
 
 } // namespace Cool

@@ -3,7 +3,8 @@
 
 namespace Cool {
 
-std::unique_ptr<PathsConfig> Path::_paths_config{nullptr};
+std::unique_ptr<PathsConfig>         Path::_paths_config{nullptr};
+std::optional<std::filesystem::path> Path::_project_folder{};
 
 auto Path::root() -> std::filesystem::path const&
 {

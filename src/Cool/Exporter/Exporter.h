@@ -33,7 +33,7 @@ public:
     void update(Polaroid const& polaroid) { _gui->update(polaroid, _video_export_process); }
 
 private:
-    std::unique_ptr<ExporterGui>      _gui{std::make_unique<ExporterGui>()}; // Pointer so that the adress doesn't change when we move the Exporter (important because we have events that store references to things in the gui)
+    std::unique_ptr<ExporterGui>      _gui{std::make_unique<ExporterGui>()}; // Pointer so that the address doesn't change when we move the Exporter (important because we have events that store references to things in the gui)
     std::optional<VideoExportProcess> _video_export_process;
 
 private:

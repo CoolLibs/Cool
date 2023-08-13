@@ -60,15 +60,19 @@ private:
     void               imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::optional<VideoExportProcess>&);
     [[nodiscard]] auto clear_export_folder() const -> bool;
 
-private:
-    ExportSize            _export_size;
-    std::filesystem::path _folder_path_for_image;
-    std::filesystem::path _file_name{"img(0)"};
-    ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
+    [[nodiscard]] auto folder_path_for_image() const -> std::filesystem::path;
+    [[nodiscard]] auto folder_path_for_video() const -> std::filesystem::path;
+    void               set_file_name_to_an_unused_name();
 
-    std::filesystem::path _folder_path_for_video;
-    ImGuiWindow           _video_export_window{icon_fmt("Export a Video", ICOMOON_FILM), ImGuiWindowConfig{.is_modal = true}};
-    VideoExportParams     _video_export_params;
+private:
+    ExportSize                           _export_size;
+    std::optional<std::filesystem::path> _folder_path_for_image;
+    std::filesystem::path                _file_name{"img(0)"};
+    ImGuiWindow                          _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
+
+    std::optional<std::filesystem::path> _folder_path_for_video;
+    ImGuiWindow                          _video_export_window{icon_fmt("Export a Video", ICOMOON_FILM), ImGuiWindowConfig{.is_modal = true}};
+    VideoExportParams                    _video_export_params;
 
 private:
     // Serialization
