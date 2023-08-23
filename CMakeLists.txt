@@ -143,7 +143,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE folder_watcher::folder_wat
 
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
-target_include_directories(imgui_gradient SYSTEM PRIVATE lib) # imgui_gradient needs acces to imgui
+target_include_directories(imgui_gradient SYSTEM PRIVATE lib/imgui) # imgui_gradient needs acces to imgui
 target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 
 # algorithms
