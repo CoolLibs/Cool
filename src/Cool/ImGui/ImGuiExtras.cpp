@@ -2,6 +2,8 @@
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
 #include "Cool/ImGui/Fonts.h"
@@ -10,8 +12,6 @@
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
 
 namespace Cool::ImGuiExtras {
 
@@ -19,7 +19,7 @@ void help_marker(const char* text)
 {
     ImGui::SameLine();
     ImGui::TextDisabled(" " ICOMOON_INFO);
-    if (ImGui::IsItemHovered())
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip))
     {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
@@ -136,16 +136,6 @@ void time_formated_hms(float time_in_sec, float total_duration)
     }
 }
 
-void tooltip(const char* text)
-{
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::TextUnformatted(text);
-        ImGui::EndTooltip();
-    }
-}
-
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
     disabled_if(true, reason_for_disabling, [&]() {
@@ -172,7 +162,7 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
-    tooltip(reason_for_disabling);
+    ImGui::SetItemTooltip("%s", reason_for_disabling);
 }
 
 auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
@@ -425,7 +415,7 @@ void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGuiExtras::tooltip(reason_to_disable);
+        ImGui::SetItemTooltip("%s", reason_to_disable);
     }
     else
     {

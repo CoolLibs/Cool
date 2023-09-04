@@ -315,7 +315,7 @@ void MessageConsole::imgui_show_all_messages()
                     {
                         msg_to_clear = id;
                     }
-                    ImGuiExtras::tooltip(("Close this " + to_string(msg.message.severity)).c_str());
+                    ImGui::SetItemTooltip("%s", ("Close this " + to_string(msg.message.severity)).c_str());
                     return ImGui::IsItemHovered();
                 }();
 
