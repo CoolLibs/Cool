@@ -19,9 +19,8 @@ void help_marker(const char* text)
 {
     ImGui::SameLine();
     ImGui::TextDisabled(" " ICOMOON_INFO);
-    if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip))
+    if (ImGui::BeginItemTooltip())
     {
-        ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
         ImGui::TextUnformatted(text);
         ImGui::PopTextWrapPos();
