@@ -17,8 +17,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 
