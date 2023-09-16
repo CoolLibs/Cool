@@ -384,7 +384,7 @@ vec2 Cool_apply_premultiplied_alpha_to_greyscale_and_alpha(vec2 greyscale, float
 // Start of [Block5]
 vec3 Cool_CIELAB_from_Float(float x)
 {
-    return vec3(x, 0., 0.);
+    return vec3(saturate(x), 0., 0.);
 }
 float Cool_Float_from_CIELAB(vec3 lab)
 {
