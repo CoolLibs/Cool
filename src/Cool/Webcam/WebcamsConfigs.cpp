@@ -4,6 +4,7 @@
 #include <cereal/types/unordered_map.hpp>
 #include <cereal/types/vector.hpp>
 #include <webcam_info/webcam_info.hpp>
+#include "Cool/Image/AspectRatio.h"
 #include "TextureLibrary_FromWebcam.h"
 #include "WebcamsInfos.h"
 
@@ -50,7 +51,12 @@ void WebcamsConfigs::open_imgui_window()
 void WebcamsConfigs::imgui_window()
 {
     auto const format_resolution = [](webcam_info::Resolution resolution) {
-        return fmt::format("{} x {}", resolution.width, resolution.height);
+        return fmt::format(
+            "{} x {} ({})",
+            resolution.width,
+            resolution.height,
+            string_from_ratio(static_cast<float>(resolution.width) / static_cast<float>(resolution.height))
+        );
     };
 
     _window.show([&]() {
