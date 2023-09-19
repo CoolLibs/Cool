@@ -1,4 +1,4 @@
-# Choose which libraries to link into OpenCV
+# Choose which external libraries to link into OpenCV
 set(WITH_1394 OFF CACHE BOOL "" FORCE)
 set(WITH_ADE OFF CACHE BOOL "" FORCE)
 set(WITH_ARITH_DEC OFF CACHE BOOL "" FORCE)
@@ -21,13 +21,7 @@ set(WITH_FREETYPE OFF CACHE BOOL "" FORCE)
 set(WITH_GDAL OFF CACHE BOOL "" FORCE)
 set(WITH_GDCM OFF CACHE BOOL "" FORCE)
 set(WITH_GSTREAMER OFF CACHE BOOL "" FORCE)
-
-if(LINUX)
-    set(WITH_GTK ON CACHE BOOL "" FORCE)
-else()
-    set(WITH_GTK OFF CACHE BOOL "" FORCE)
-endif()
-
+set(WITH_GTK OFF CACHE BOOL "" FORCE)
 set(WITH_GTK_2_X OFF CACHE BOOL "" FORCE)
 set(WITH_HALIDE OFF CACHE BOOL "" FORCE)
 set(WITH_HPX OFF CACHE BOOL "" FORCE)
@@ -79,13 +73,14 @@ set(WITH_WIN32UI OFF CACHE BOOL "" FORCE)
 set(WITH_XIMEA OFF CACHE BOOL "" FORCE)
 
 # Choose which parts of OpenCV to build
+set(BUILD_JAVA OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_apps OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_calib3d OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_dnn OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_features2d OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_flann OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_gapi OFF CACHE BOOL "" FORCE)
-set(BUILD_opencv_highgui ON CACHE BOOL "" FORCE)
+set(BUILD_opencv_highgui OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_imgcodecs ON CACHE BOOL "" FORCE)
 set(BUILD_opencv_imgproc ON CACHE BOOL "" FORCE)
 set(BUILD_opencv_java_bindings_generator OFF CACHE BOOL "" FORCE)
@@ -101,3 +96,6 @@ set(BUILD_opencv_stitching OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_ts OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_video OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_videoio ON CACHE BOOL "" FORCE)
+
+# Choose if we want to skip Python support
+set(OPENCV_PYTHON_SKIP_DETECTION ON CACHE BOOL "" FORCE)

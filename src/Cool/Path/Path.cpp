@@ -3,64 +3,52 @@
 
 namespace Cool {
 
-std::filesystem::path Path::_root;
-std::filesystem::path Path::_cool_res;
-std::filesystem::path Path::_default_texture;
-#if DEBUG
-bool Path::_root_is_initialized            = false;
-bool Path::_cool_res_is_initialized        = false;
-bool Path::_default_texture_is_initialized = false;
-#endif
+std::unique_ptr<PathsConfig>         Path::_paths_config{nullptr};
+std::optional<std::filesystem::path> Path::_project_folder{};
 
 auto Path::root() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
-    assert(_root_is_initialized);
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
 #endif
-    return _root;
-}
-
-void Path::initialize_root(std::filesystem::path path)
-{
-#if DEBUG
-    assert(!_root_is_initialized);
-    _root_is_initialized = true;
-#endif
-    _root = std::move(path);
+    static auto const path = _paths_config->root();
+    return path;
 }
 
 auto Path::cool_res() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
-    assert(_cool_res_is_initialized);
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
 #endif
-    return _cool_res;
+    static auto const path = _paths_config->cool_res();
+    return path;
 }
 
-void Path::initialize_cool_res(std::filesystem::path path)
+auto Path::user_data() -> std::filesystem::path const&
 {
-#if DEBUG
-    assert(!_cool_res_is_initialized);
-    _cool_res_is_initialized = true;
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
 #endif
-    _cool_res = std::move(path);
+    static auto const path = _paths_config->user_data();
+    return path;
+}
+
+auto Path::default_user_data() -> std::filesystem::path const&
+{
+#if DEBUG // On some compilers asserts are compiled even when not in DEBUG
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
+#endif
+    static auto const path = _paths_config->default_user_data();
+    return path;
 }
 
 auto Path::default_texture() -> std::filesystem::path const&
 {
 #if DEBUG // On some compilers asserts are compiled even when not in DEBUG
-    assert(_default_texture_is_initialized);
+    assert(_paths_config != nullptr && "Path::initialize() has not been called yet!");
 #endif
-    return _default_texture;
-}
-
-void Path::initialize_default_texture(std::filesystem::path path)
-{
-#if DEBUG
-    assert(!_default_texture_is_initialized);
-    _default_texture_is_initialized = true;
-#endif
-    _default_texture = std::move(path);
+    static auto const path = _paths_config->default_texture();
+    return path;
 }
 
 } // namespace Cool

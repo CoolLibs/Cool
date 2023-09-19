@@ -4,10 +4,10 @@
 #include <GLFW/glfw3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui.h>
-#include <filesystem>
 #include <stdexcept>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -29,7 +29,7 @@ static void initialize_glfw()
 
 static void set_imgui_ini_filepath()
 {
-    static std::string const path = (Cool::Path::root() / "imgui.ini").string(); // Needs to be static to keep the char* passed to `IniFilename` alive
+    static std::string const path = (Cool::Path::user_data() / "imgui.ini").string(); // Needs to be static to keep the char* passed to `IniFilename` alive
     ImGui::GetIO().IniFilename    = path.c_str();
 }
 

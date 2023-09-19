@@ -24,12 +24,14 @@ public:
     explicit Texture(img::Image const&, TextureConfig = {});
     /// Create a texture containing a copy of data.
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
-    explicit Texture(img::Size const&, int channels_count, uint8_t const* data, TextureConfig = {});
+    Texture(img::Size const&, int channels_count, uint8_t const* data, TextureConfig = {});
+    Texture(img::Size const&, uint8_t const* data, glpp::TextureLayout const&, TextureConfig = {});
 
     void set_size(img::Size const&);
     void set_image(img::Image const&);
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
     void set_image(img::Size const&, int channels_count, uint8_t const* data);
+    void set_image(img::Size const&, uint8_t const* data, glpp::TextureLayout const&);
     void set_interpolation_mode(glpp::Interpolation interpolation_mode);
     void set_wrap_mode(glpp::Wrap wrap_mode);
 

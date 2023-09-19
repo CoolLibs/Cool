@@ -45,17 +45,18 @@ public:
     void imgui_window();
 
 private:
-    void remove(const internal::RawMessageId&);
-    void close_window_if_empty();
-    void close_window();
-    void on_message_sent(const internal::RawMessageId&);
-    void show_number_of_messages_of_given_severity(MessageSeverity);
-    void refresh_counts_per_severity();
-    void imgui_menu_bar();
-    void imgui_show_all_messages();
-    auto there_are_clearable_messages() const -> bool;
-    auto there_are_clearable_messages(MessageSeverity) const -> bool;
-    auto should_show(const internal::MessageWithMetadata&) const -> bool;
+    void               remove(const internal::RawMessageId&);
+    void               close_window_if_empty();
+    void               close_window();
+    void               on_message_sent(const internal::RawMessageId&);
+    void               show_number_of_messages_of_given_severity(MessageSeverity);
+    void               refresh_counts_per_severity();
+    void               imgui_menu_bar();
+    void               imgui_show_all_messages();
+    [[nodiscard]] auto there_are_clearable_messages() const -> bool;
+    [[nodiscard]] auto there_are_clearable_messages(MessageSeverity) const -> bool;
+    [[nodiscard]] auto should_show(const internal::MessageWithMetadata&) const -> bool;
+    void               remove_messages_to_keep_size_below(size_t max_number_of_messages);
 
     class MessagesCountPerSeverity {
     public:

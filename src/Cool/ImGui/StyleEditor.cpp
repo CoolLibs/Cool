@@ -1,4 +1,5 @@
 #include "StyleEditor.h"
+#include <imgui.h>
 #include <cereal/archives/json.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -11,12 +12,12 @@ namespace Cool {
 
 StyleEditor::StyleEditor()
 {
-    std::ignore = Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(*this, Cool::Path::root() / "style.json");
+    std::ignore = Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(*this, Cool::Path::user_data() / "style.json");
 }
 
 StyleEditor::~StyleEditor()
 {
-    Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(*this, Cool::Path::root() / "style.json");
+    Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(*this, Cool::Path::user_data() / "style.json");
 }
 
 void StyleEditor::imgui()
@@ -69,6 +70,24 @@ void StyleEditor::imgui()
     ImGui::SliderFloat2("SeparatorTextAlign", (float*)&ImGui::GetStyle().SeparatorTextAlign, 0.0f, 1.0f, "%.2f");
     ImGui::SliderFloat2("SeparatorTextPadding", (float*)&ImGui::GetStyle().SeparatorTextPadding, 0.0f, 40.0f, "%0.f");
     ImGui::SliderFloat("LogSliderDeadzone", &ImGui::GetStyle().LogSliderDeadzone, 0.0f, 12.0f, "%.0f");
+
+    ImGui::SeparatorText("Tooltips");
+    for (int n = 0; n < 2; n++)
+    {
+        if (ImGui::TreeNodeEx(n == 0 ? "HoverFlagsForTooltipMouse" : "HoverFlagsForTooltipNav"))
+        {
+            ImGuiHoveredFlags* p = (n == 0) ? &ImGui::GetStyle().HoverFlagsForTooltipMouse : &ImGui::GetStyle().HoverFlagsForTooltipNav;
+            ImGui::CheckboxFlags("ImGuiHoveredFlags_DelayNone", p, ImGuiHoveredFlags_DelayNone);
+            ImGui::CheckboxFlags("ImGuiHoveredFlags_DelayShort", p, ImGuiHoveredFlags_DelayShort);
+            ImGui::CheckboxFlags("ImGuiHoveredFlags_DelayNormal", p, ImGuiHoveredFlags_DelayNormal);
+            ImGui::CheckboxFlags("ImGuiHoveredFlags_Stationary", p, ImGuiHoveredFlags_Stationary);
+            ImGui::CheckboxFlags("ImGuiHoveredFlags_NoSharedDelay", p, ImGuiHoveredFlags_NoSharedDelay);
+            ImGui::TreePop();
+        }
+    }
+    ImGui::InputFloat("Hover delay short", &ImGui::GetStyle().HoverDelayShort);
+    ImGui::InputFloat("Hover delay normal", &ImGui::GetStyle().HoverDelayNormal);
+    ImGui::InputFloat("Hover stationary delay", &ImGui::GetStyle().HoverStationaryDelay);
 
     ImGuiExtras::separator_text("Nodes");
     nodes_style_editor();

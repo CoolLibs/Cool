@@ -1,4 +1,5 @@
 #pragma once
+#include "Cool/Core/BuildMode.h"
 #include "Cool/ImGui/ColorThemes.h"
 
 namespace Cool {
@@ -15,7 +16,7 @@ struct UserSettings {
 
     Cool::ColorThemes color_themes{};
 
-    bool single_click_to_input_in_drag_widgets{false};
+    bool single_click_to_input_in_drag_widgets{true};
 
     bool enable_multi_viewport{should_enable_multi_viewport_by_default()};
     void apply_multi_viewport_setting() const;

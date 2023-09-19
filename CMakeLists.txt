@@ -21,7 +21,7 @@ target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 if(MSVC)
     target_compile_options(Cool-PrivateProperties INTERFACE /W4)
 else()
-    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion)
+    target_compile_options(Cool-PrivateProperties INTERFACE -Wall -Wextra -Wpedantic -pedantic-errors -Wconversion -Wsign-conversion -Wimplicit-fallthrough)
 endif()
 
 # Maybe enable warnings as errors
@@ -43,6 +43,7 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     $<$<CONFIG:Debug>:DEBUG> # Define DEBUG in debug mode
     COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
+    IMGUI_DEFINE_MATH_OPERATORS
 )
 
 # ----------------------
@@ -121,6 +122,7 @@ if(COOL_USE_VULKAN)
     target_link_libraries(Cool-PublicProperties INTERFACE Vulkan::Vulkan)
     add_subdirectory(lib/Vookoo/include)
     target_link_libraries(Cool-PublicProperties INTERFACE Vookoo::Vookoo)
+    install(FILES "lib/Vookoo/LICENSE" DESTINATION "license/Vookoo")
     add_subdirectory(lib/easy-shaderc)
     target_link_libraries(Cool-PublicProperties INTERFACE easy_shaderc::shaderc)
 elseif(COOL_USE_OPENGL)
@@ -142,35 +144,50 @@ target_link_libraries(Cool-PublicProperties INTERFACE folder_watcher::folder_wat
 
 # imgui_gradient
 add_subdirectory(lib/imgui_gradient)
-target_include_directories(imgui_gradient SYSTEM PRIVATE lib) # imgui_gradient needs acces to imgui
+target_include_directories(imgui_gradient SYSTEM PRIVATE lib/imgui) # imgui_gradient needs acces to imgui
 target_link_libraries(Cool-PublicProperties INTERFACE imgui_gradient::imgui_gradient)
 
 # algorithms
 add_subdirectory(lib/algorithms)
 target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 
+# scope_guard
+install(FILES "lib/scope_guard/LICENSE" DESTINATION "license/scope_guard")
+
 # GLFW
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
+install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
+
+# glm
+install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
 
 # cereal
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
+install(FILES "lib/cereal/LICENSE" DESTINATION "license/cereal")
 
 # smart
 add_subdirectory(lib/smart)
 target_link_libraries(Cool-PublicProperties INTERFACE smart::smart)
 
+# IconFontCppHeaders
+install(FILES "lib/IconFontCppHeaders/licence.txt" DESTINATION "license/IconFontCppHeaders")
+
 # Boxer
 add_subdirectory(lib/Boxer)
 target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
+install(FILES "lib/Boxer/LICENSE" DESTINATION "license/Boxer")
 
 # Native File Dialog
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
+install(FILES "lib/nativefiledialog-extended/LICENSE" DESTINATION "license/nativefiledialog-extended")
 
 # GSL
 add_subdirectory(lib/GSL)
 target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
+install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 
 # img
 add_subdirectory(lib/img)
@@ -219,15 +236,16 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 # Dear ImGui
 add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
-# Include OpenCV # TODO(TD) faire en sorte que cela soit optionnel
+# OpenCV
 include("lib/opencv_build_options.cmake")
 add_subdirectory(lib/easy_opencv)
 target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
 
-# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
-
-# target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/easy_opencv/opencv/include)
+# webcam_info
+add_subdirectory(lib/webcam_info)
+target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
@@ -247,6 +265,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 add_subdirectory(lib/imgui-node-editor)
 target_include_directories(ImGuiNodeEditor SYSTEM PUBLIC lib/imgui)
 target_link_libraries(Cool-PublicProperties INTERFACE ImGuiNodeEditor::ImGuiNodeEditor)
+install(FILES "lib/imgui-node-editor/LICENSE" DESTINATION "license/imgui-node-editor")
+
+# imgui_markdown
+install(FILES "lib/imgui_markdown/License.txt" DESTINATION "license/imgui_markdown")
 
 # ImStyleEd
 add_subdirectory(lib/ImGui_StyleEditor)
@@ -257,17 +279,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 # ---Copy files---
 # ----------------
 include("CMakeUtils/files_and_folders.cmake")
-Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/imgui.ini) # This prevents the following copy command from failing
-Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_config.json) # This prevents the following copy command from failing
-Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/color_themes.json) # This prevents the following copy command from failing
-Cool__create_file_if_it_doesnt_exist(${CMAKE_SOURCE_DIR}/style.json) # This prevents the following copy command from failing
 
 function(cool_setup TARGET_NAME)
-    Cool__target_copy_file(${TARGET_NAME} imgui.ini)
-    Cool__target_copy_file(${TARGET_NAME} color_config.json)
-    Cool__target_copy_file(${TARGET_NAME} color_themes.json)
-    Cool__target_copy_file(${TARGET_NAME} style.json)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
+    install(DIRECTORY ${COOL_PATH_INTERNAL}/res DESTINATION bin/${COOL_PATH_INTERNAL})
 endfunction()
 
 # ------------------
@@ -278,7 +293,7 @@ endfunction()
 # To do so you will need both a .png and .ico files containing your logo.
 #
 # The .ico will only be used at compile time. For more info about .ico, see https://docs.fileformat.com/image/ico/.
-# It needs to be in the same folder as a .rc file # containing "IDI_ICON1 ICON DISCARDABLE "your_icon.ico""
+# It needs to be in the same folder as a .rc file containing "IDI_ICON1 ICON DISCARDABLE "your_icon.ico""
 # where your_icon.ico is the name of your .ico file.
 # `RC_FILE` is the path to that .rc file.
 #
@@ -288,11 +303,14 @@ endfunction()
 # It MUST be relative to the root of your project (a.k.a. to `Cool::Path::root()`).
 function(Cool__set_app_icon
     TARGET
-    RC_FILE
     IMAGE_FILE
+    RC_FILE
 )
-    target_sources(${TARGET} PRIVATE ${RC_FILE})
     target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_APP_ICON_FILE=\"${IMAGE_FILE}\")
+
+    if(WIN32)
+        target_sources(${TARGET} PRIVATE ${RC_FILE})
+    endif()
 endfunction()
 
 # ---------------------
@@ -302,6 +320,8 @@ add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
 target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+
+set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
-target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
+install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")

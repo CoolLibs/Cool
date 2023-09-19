@@ -1,6 +1,5 @@
 #include "ExporterGui.h"
 #include <Cool/File/File.h>
-#include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
@@ -11,12 +10,24 @@
 namespace Cool {
 
 ExporterGui::ExporterGui()
-    : _folder_path_for_image{Path::root() / "out"}
-    , _folder_path_for_video{Path::root() / "exports"}
 {
-    _image_export_window.on_open().subscribe([&](auto) {
-        _file_name = File::find_available_name(_folder_path_for_image, _file_name, ".png");
+    _image_export_window.on_open().subscribe([&](auto&&) {
+        set_file_name_to_an_unused_name();
     });
+}
+
+void ExporterGui::set_file_name_to_an_unused_name()
+{
+    _file_name = File::find_available_name(folder_path_for_image(), _file_name, ".png");
+}
+
+auto ExporterGui::folder_path_for_image() const -> std::filesystem::path
+{
+    return std::filesystem::weakly_canonical(_folder_path_for_image.value_or(Path::project_folder().value_or(Path::user_data()) / "images"));
+}
+auto ExporterGui::folder_path_for_video() const -> std::filesystem::path
+{
+    return std::filesystem::weakly_canonical(_folder_path_for_video.value_or(Path::project_folder().value_or(Path::user_data()) / "video frames"));
 }
 
 void ExporterGui::set_aspect_ratio(AspectRatio const& aspect_ratio)
@@ -30,18 +41,18 @@ void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspec
         set_aspect_ratio(*aspect_ratio);
 }
 
-void ExporterGui::imgui_windows(Polaroid const& polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported, std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
-    imgui_window_export_image(polaroid, time, on_image_exported);
-    imgui_window_export_video(video_export_process);
+    imgui_window_export_image(p.polaroid, p.time, p.on_image_exported);
+    imgui_window_export_video(p.widgets_in_window_video_export_in_progress, video_export_process);
 }
 
 auto ExporterGui::output_path() -> std::filesystem::path
 {
-    return _folder_path_for_image / _file_name.replace_extension("png");
+    return folder_path_for_image() / _file_name.replace_extension("png");
 }
 
-void ExporterGui::imgui_menu_items(imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
+void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
 {
     // Calculate max button width
     if (!longest_text)
@@ -74,7 +85,14 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, std::
         _export_size.imgui();
         // File and Folders
         ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
-        ImGuiExtras::folder("Folder", &_folder_path_for_image);
+        {
+            auto path = folder_path_for_image();
+            if (ImGuiExtras::folder("Folder", &path))
+            {
+                _folder_path_for_image = path;
+                set_file_name_to_an_unused_name();
+            }
+        }
 
         ImGui::SeparatorText("");
         // Warning file exists
@@ -94,15 +112,15 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, std::
 
 auto ExporterGui::clear_export_folder() const -> bool
 {
-    if (!File::exists(_folder_path_for_video)
-        || std::filesystem::is_empty(_folder_path_for_video))
+    if (!File::exists(folder_path_for_video())
+        || std::filesystem::is_empty(folder_path_for_video()))
         return true; // Nothing to do, there was no previous content
 
-    if (boxer::show(fmt::format("You are about the delete all the previous content of {}.\nAre you sure?", _folder_path_for_video).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
+    if (boxer::show(fmt::format("You are about the delete all the previous content of {}.\nAre you sure?", folder_path_for_video()).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
         != boxer::Selection::OK)
         return false; // User doesn't want to delete the previous content of the export folder
 
-    std::filesystem::remove_all(_folder_path_for_video);
+    std::filesystem::remove_all(folder_path_for_video());
     return true;
 }
 
@@ -111,8 +129,8 @@ void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_ex
     if (!clear_export_folder())
         return;
 
-    if (File::create_folders_if_they_dont_exist(_folder_path_for_video))
-        video_export_process.emplace(_video_export_params, _folder_path_for_video, _export_size);
+    if (File::create_folders_if_they_dont_exist(folder_path_for_video()))
+        video_export_process.emplace(_video_export_params, folder_path_for_video(), _export_size);
     else
         Log::ToUser::warning("ExporterGui::begin_video_export", "Couldn't start exporting because folder creation failed!");
 }
@@ -131,21 +149,23 @@ void ExporterGui::end_video_export(std::optional<VideoExportProcess>& video_expo
     video_export_process.reset();
 }
 
-void ExporterGui::imgui_window_export_video(std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::optional<VideoExportProcess>& video_export_process)
 {
     if (is_exporting(video_export_process))
     {
         ImGui::Begin("Video export in progress");
-        ImGui::PushFont(Font::monospace());
-        video_export_process->imgui();
-        ImGui::PopFont();
+        video_export_process->imgui(widgets_in_window_video_export_in_progress);
         ImGui::End();
     }
     else
     {
         _video_export_window.show([&]() {
             _export_size.imgui();
-            ImGuiExtras::folder("Folder", &_folder_path_for_video);
+            {
+                auto path = folder_path_for_video();
+                if (ImGuiExtras::folder("Folder", &path))
+                    _folder_path_for_video = path;
+            }
             _video_export_params.imgui();
             // Validation
             ImGui::SeparatorText("");

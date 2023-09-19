@@ -1,4 +1,3 @@
-#pragma once
 #include "TextureSamplerDescriptor.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"

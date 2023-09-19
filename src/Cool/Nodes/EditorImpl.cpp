@@ -17,8 +17,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -739,6 +737,11 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
         {
         }
     }
+}
+
+auto NodesEditorImpl::is_empty() const -> bool
+{
+    return _graph.nodes().is_empty() && _frame_nodes.empty();
 }
 
 } // namespace Cool

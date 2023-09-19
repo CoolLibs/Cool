@@ -5,12 +5,12 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
-#include "Cool/Gpu/TextureLibrary_FromWebcam.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/UserSettings/UserSettings.h"
+#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -119,7 +119,7 @@ void AppManager::update()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     TextureLibrary_FromWebcam::instance().on_frame_begin();
-    if (TextureLibrary_FromWebcam::instance().has_active_webcam())
+    if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();
     if (TextureLibrary_FromFile::instance().update())
         _app.trigger_rerender();

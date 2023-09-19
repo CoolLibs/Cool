@@ -24,21 +24,16 @@ public:
     void maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspect_ratio) { _gui->maybe_set_aspect_ratio(aspect_ratio); }
 
     /// Displays all the currently active windows.
-    void imgui_windows(
-        Polaroid const& polaroid, float time, std::function<void(std::filesystem::path const&)> const& on_image_exported = [](std::filesystem::path const&) {}
-    )
-    {
-        _gui->imgui_windows(polaroid, time, on_image_exported, _video_export_process);
-    }
+    void imgui_windows(exporter_imgui_windows_Params const& p) { _gui->imgui_windows(p, _video_export_process); }
 
     /// The buttons to open the different exporter windows.
-    void imgui_menu_items(imgui_menu_items_Params const& params = {}, std::optional<std::string> const& longest_text = {}) { _gui->imgui_menu_items(params, longest_text); }
+    void imgui_menu_items(exporter_imgui_menu_items_Params const& params = {}, std::optional<std::string> const& longest_text = {}) { _gui->imgui_menu_items(params, longest_text); }
 
     /// Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue.
     void update(Polaroid const& polaroid) { _gui->update(polaroid, _video_export_process); }
 
 private:
-    std::unique_ptr<ExporterGui>      _gui{std::make_unique<ExporterGui>()}; // Pointer so that the adress doesn't change when we move the Exporter (important because we have events that store references to things in the gui)
+    std::unique_ptr<ExporterGui>      _gui{std::make_unique<ExporterGui>()}; // Pointer so that the address doesn't change when we move the Exporter (important because we have events that store references to things in the gui)
     std::optional<VideoExportProcess> _video_export_process;
 
 private:

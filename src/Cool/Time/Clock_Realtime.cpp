@@ -42,6 +42,8 @@ void Clock_Realtime::update()
 
 void Clock_Realtime::play()
 {
+    if (is_playing())
+        return;
     Clock::play();
     std::chrono::duration<float> delta = std_time() - _time_when_paused;
     _offset_with_std_time += delta.count();
@@ -50,6 +52,8 @@ void Clock_Realtime::play()
 
 void Clock_Realtime::pause()
 {
+    if (!is_playing())
+        return;
     Clock::pause();
     _time_when_paused = std_time();
 }

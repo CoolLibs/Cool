@@ -21,7 +21,7 @@ void imgui_timeline(Cool::Clock& clock)
             clock.set_time(0.f);
         }
         ImGui::PopStyleVar();
-        Cool::ImGuiExtras::tooltip("Reset time to 0.");
+        ImGui::SetItemTooltip("%s", "Reset time to 0.");
 
         ImGuiExtras::join_buttons();
 

@@ -27,13 +27,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2);
 void time_formated_hms(float time_in_sec, float total_duration = 0.f);
 
 /**
- * @brief Displays some text on hover for the previously declared widget.
- *
- * @param text
- */
-void tooltip(const char* text);
-
-/**
  * @brief A greyed out button that you can't click on.
  *
  * @param label The text inside the button
