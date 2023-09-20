@@ -4,6 +4,7 @@
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 #include <imgui.h>
+#include <exception>
 #include "Cool/ImGui/icon_fmt.h"
 #include "ExporterU.h"
 
@@ -120,8 +121,16 @@ auto ExporterGui::clear_export_folder() const -> bool
         != boxer::Selection::OK)
         return false; // User doesn't want to delete the previous content of the export folder
 
-    std::filesystem::remove_all(folder_path_for_video());
-    return true;
+    try
+    {
+        std::filesystem::remove_all(folder_path_for_video());
+        return true;
+    }
+    catch (std::exception& e)
+    {
+        Cool::Log::ToUser::warning("Export failed", fmt::format("{} is already used in another software. You need to close it before exporting.\n{}", folder_path_for_video(), e.what()));
+        return false;
+    }
 }
 
 void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process)
