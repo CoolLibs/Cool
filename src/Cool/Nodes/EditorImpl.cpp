@@ -1,4 +1,6 @@
 #include "EditorImpl.h"
+#include <imgui.h>
+#include <imgui/imgui_internal.h>
 #include <reg/src/internal/generate_uuid.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
@@ -17,8 +19,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-#include <imgui.h>
-#include <imgui/imgui_internal.h>
 
 namespace Cool {
 
@@ -387,6 +387,92 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
     builder.End();
 }
 
+static void render_node_test(NodeId const& id, std::string name, std::vector<std::string> inputs_names, std::vector<int> ids, std::string output_name, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder)
+{
+    auto const color       = Cool::Color::from_srgb({0.3019607961177826f, 0.4470588266849518f, 0.8901960849761963f});
+    auto const title_color = get_text_color(color);
+
+    ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color.as_ImColor());
+    builder.Begin(as_ed_id(id));
+    ed::PopStyleColor();
+
+    builder.Header(color.as_ImColor());
+    ImGui::Spring(0);
+    ImGui::PushFont(Font::bold());
+    ImGui::PushStyleColor(ImGuiCol_Text, title_color.as_ImColor().Value);
+    auto const node_name = name;
+    ImGui::TextUnformatted(node_name.c_str());
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    ImGui::Spring(1);
+    ImGui::Dummy(ImVec2(0, 28));
+    ImGui::Spring(0);
+    builder.EndHeader();
+
+    // nodes_cfg.imgui_above_node_pins(node, id);
+
+    // Begin pins
+    ImGui::BeginHorizontal("pins");
+    ImGui::Spring(0, 0);
+
+    auto const pin_alpha = [&]() {
+        auto tmp_alpha = ImGui::GetStyle().Alpha;
+        // if (_new_link_pin && !is_allowed_connection(*_new_link_pin, pin, _graph))
+        //     tmp_alpha *= 0.188f;
+        return tmp_alpha;
+    };
+
+    for (size_t idx = 0; idx < inputs_names.size(); ++idx)
+    {
+        auto const& name_pin = inputs_names[idx];
+        auto const  pin_id   = ids[idx];
+        auto const  alpha    = pin_alpha();
+
+        builder.Input(pin_id);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+        render_pin_icon(ax::Drawing::IconType::Flow, alpha, color);
+        ImGui::Spring(0);
+        // if (!input_pin.name().empty())
+        {
+            ImGui::TextUnformatted(name_pin.c_str());
+            ImGui::Spring(0);
+        }
+        ImGui::PopStyleVar();
+        builder.EndInput();
+    }
+
+    // for (size_t idx = 0; idx < node.output_pins().size(); ++idx)
+    {
+        // auto&      output_pin = node.output_pins()[idx];
+        auto const pin_id = id;
+        auto const alpha  = pin_alpha();
+
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+        builder.Output(as_ed_id(pin_id));
+        // if (!output_pin.name().empty())
+        {
+            ImGui::Spring(0);
+            ImGui::TextUnformatted(output_name.c_str());
+        }
+        ImGui::Spring(0);
+        render_pin_icon(ax::Drawing::IconType::Flow, alpha, color);
+        ImGui::PopStyleVar();
+        builder.EndOutput();
+    }
+
+    // End output pins
+    ed::PopStyleVar(2);
+    ImGui::Spring(1, 0);
+    ImGui::EndVertical();
+
+    // End pins
+    ImGui::EndHorizontal();
+
+    // nodes_cfg.imgui_below_node_pins(node, id);
+
+    builder.End();
+}
+
 static auto ImGui_GetItemRect() -> ImRect
 {
     return ImRect{ImGui::GetItemRectMin(), ImGui::GetItemRectMax()};
@@ -612,6 +698,21 @@ void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& 
     ax::NodeEditor::Utilities::BlueprintNodeBuilder builder{};
     for (auto& [id, node] : _graph.nodes())
         render_node(node, id, nodes_cfg, library, builder);
+
+    static auto id1 = reg::internal::generate_uuid();
+    static auto id2 = reg::internal::generate_uuid();
+    static auto id3 = reg::internal::generate_uuid();
+    static auto id4 = reg::internal::generate_uuid();
+    static auto id5 = reg::internal::generate_uuid();
+    render_node_test(id1, "Get UV", {}, {}, "UV", builder);
+    render_node_test(id2, "Grid", {"UV"}, {0}, "UV", builder);
+    render_node_test(id3, "Disk", {"UV"}, {1}, "Color", builder);
+    ed::Link(10, as_ed_id(id1), 0, ImGuiExtras::GetStyle().link, 2.0f);
+    ed::Link(11, as_ed_id(id2), 1, ImGuiExtras::GetStyle().link, 2.0f);
+
+    render_node_test(id4, "Disk", {}, {}, "Image", builder);
+    render_node_test(id5, "Grid", {"Image"}, {5}, "Image", builder);
+    ed::Link(12, as_ed_id(id4), 5, ImGuiExtras::GetStyle().link, 2.0f);
 
     for (auto const& frame_node : _frame_nodes)
         render_frame_node(frame_node);
