@@ -14,6 +14,16 @@ struct ViewWindowParams {
     std::function<bool()> extra_widgets = []() {
         return false;
     };
+    std::function<void()> on_open{[] {
+    }};
+    std::function<void()> on_close{[] {
+    }};
+};
+
+struct ViewCreationParams {
+    std::string_view name{};
+    bool             is_closable{false};
+    bool             start_open{true};
 };
 
 /// A view is a window displaying an image.
@@ -21,10 +31,10 @@ struct ViewWindowParams {
 /// You can use one of the various subclasses to decide where your image will come from.
 class View {
 public:
-    friend class ViewView;
-    explicit View(std::string_view name, bool is_closable = false)
-        : _name{name}
-        , _is_closable{is_closable}
+    explicit View(ViewCreationParams const& p)
+        : _name{p.name}
+        , _is_closable{p.is_closable}
+        , _is_open{p.start_open}
     {
         _mouse_event_dispatcher.drag()
             .subscribe({
@@ -44,6 +54,9 @@ public:
     void imgui_window(ViewWindowParams const& = {});
     void imgui_open_close_toggle();
 
+    void open();
+    void close();
+
     /// Returns the size of the window.
     /// /!\ This is not the size of the image in the View, this is the size of the full window, including the potential margins around the image.
     auto window_size() const -> std::optional<img::Size> { return _window_size; }
@@ -62,6 +75,7 @@ public:
     auto is_open() const -> bool { return _is_open; }
 
 private: /// Child classes need to implement these functions in order for us to display their image in the View.
+    friend class ForwardingOrRenderView;
     virtual auto get_image_texture_id() const -> ImTextureID = 0;
     virtual auto get_image_size() const -> img::Size         = 0;
 
@@ -81,9 +95,10 @@ private:
 private:
     std::string                           _name;
     bool                                  _is_closable;
-    bool                                  _is_open           = true;
-    bool                                  _window_is_hovered = false;
-    std::optional<img::Size>              _window_size       = std::nullopt; // Can be nullopt when the window is closed
+    bool                                  _is_open;
+    bool                                  _was_open_last_frame{false};
+    bool                                  _window_is_hovered{false};
+    std::optional<img::Size>              _window_size{std::nullopt}; // Can be nullopt when the window is closed
     ImGuiCoordinates                      _window_position{};
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
     RenderTarget                          _render_target;
