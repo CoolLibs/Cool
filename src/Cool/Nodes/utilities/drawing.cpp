@@ -1,6 +1,6 @@
 #include "drawing.h"
-#include <cmath>
 #include <imgui_internal.h>
+#include <cmath>
 
 void ax::Drawing::DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& b, IconType type, bool filled, ImU32 color, ImU32 innerColor)
 {
