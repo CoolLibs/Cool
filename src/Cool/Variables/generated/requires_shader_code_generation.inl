@@ -71,5 +71,5 @@ if constexpr (std::is_same_v<T, glm::mat3>)
 if constexpr (std::is_same_v<T, glm::mat4>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::MidiCc>)
+if constexpr (std::is_same_v<T, Cool::MidiChannel>)
     return false;

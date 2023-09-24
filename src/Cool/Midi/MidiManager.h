@@ -1,11 +1,6 @@
 #pragma once
-#define __RTMIDI_DEBUG__
-#include <iostream>
-#include <string>
-#include <vector>
-#include "MidiCc.h"
+#include "MidiChannel.h"
 #include "RtMidi.h"
-// #include "MidiHeaders.h"
 
 namespace Cool {
 
@@ -15,11 +10,11 @@ public:
 
     /// Returns a number between 0 and 1 representing the current state of the controller.
     /// /!\ Note that if a knob hasn't been used yet we won't know it's current state and return 0 instead.
-    [[nodiscard]] auto get_value(MidiCc const&) const -> float;
+    [[nodiscard]] auto get_value(MidiChannel const&) const -> float;
 
     /// You can use this if you want to emulate a midi keyboard.
     /// `value` must be between 0 and 1.
-    void set_value(MidiCc const&, float value);
+    void set_value(MidiChannel const&, float value);
 
     void connect();
     void disconnect();
@@ -31,17 +26,17 @@ public:
     void imgui_visualize_channels();
 
 private:
-    MidiManager() = default; // Use `mini_manager()` to get the unique instance of MidiManager.
+    MidiManager(); // Use `mini_manager()` to get the unique instance of MidiManager.
 
     [[nodiscard]] auto max_index() const -> int;
 
+    static void midi_callback(double deltatime, std::vector<unsigned char>* message, void* userData);
+
 private:
-    RtMidiIn*    mMidiIn;
+    RtMidiIn     _midi_in_instance;
     unsigned int mNumPorts;
     unsigned int mPort;
     std::string  mName;
-    static void  midiCallback(double deltatime, std::vector<unsigned char>* message, void* userData);
-    RtMidi::Api  chooseMidiApi();
     // imgui
     char                           buf[64];
     std::unordered_map<int, float> mIndexToValue;

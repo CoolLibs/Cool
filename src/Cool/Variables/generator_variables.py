@@ -311,9 +311,9 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             input_type=["Midi"],
-            cpp_type="Cool::MidiCc",
+            cpp_type="Cool::MidiChannel",
             glsl_type="float",
-            include="<Cool/Midi/MidiCc.h>",
+            include="<Cool/Midi/MidiChannel.h>",
             metadatas=[],
             requires_shader_code_generation=False,
         ),

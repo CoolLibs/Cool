@@ -1,29 +1,30 @@
 #include "MidiManager.h"
 #include <imgui.h>
+#include "Cool/Midi/RtMidi.h"
 #include "RtMidi.h"
 
 namespace Cool {
 
-RtMidi::Api MidiManager::chooseMidiApi()
+MidiManager::MidiManager()
+    : _midi_in_instance{RtMidi::Api::UNSPECIFIED}
 {
-    return static_cast<RtMidi::Api>(0); // i );
-    // ok return RtMidi::Api::WINDOWS_MM;
+    _midi_in_instance.setCallback(&midi_callback, this);
 }
 
-auto MidiManager::get_value(MidiCc const& midiCc) const -> float
+auto MidiManager::get_value(MidiChannel const& channel) const -> float
 {
-    auto const it = mIndexToValue.find(midiCc.index);
+    auto const it = mIndexToValue.find(channel.index);
     if (it == mIndexToValue.end())
         return 0.f;
     return it->second;
 }
 
-void MidiManager::set_value(MidiCc const& cc, float value)
+void MidiManager::set_value(MidiChannel const& channel, float value)
 {
-    mIndexToValue[cc.index] = value;
+    mIndexToValue[channel.index] = value;
 }
 
-void MidiManager::midiCallback(double /* delta_time */, std::vector<unsigned char>* message, void* user_data)
+void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned char>* message, void* user_data)
 {
     MidiManager* midiManager = static_cast<MidiManager*>(user_data);
     unsigned int nBytes      = message->size();
@@ -37,60 +38,38 @@ void MidiManager::connect()
 {
     mPort = 0;
 
-    /*RtMidiIn *midiin = new RtMidiIn(chooseMidiApi());
-  // Check available ports.
-  unsigned int nPorts = midiin->getPortCount();
-  if ( nPorts == 0 ) {
-    std::cout << "No ports available!\n";
-
-  }
-  midiin->openPort( 0 );
-  // Set our callback function.  This should be done immediately after
-  // opening the port to avoid having incoming messages written to the
-  // queue.
-  //midiin->setCallback( &mycallback );
-  // ignore sysex, timing, or active sensing messages.
-  midiin->ignoreTypes( true, true, true );
-  std::cout << "\nReading MIDI input ... press <enter> to quit.\n";
-  char input;
-  std::cin.get(input);*/
-    mMidiIn = new RtMidiIn(chooseMidiApi());
-    mMidiIn->setCallback(&midiCallback, this);
-    mNumPorts     = mMidiIn->getPortCount();
-    auto const sd = mMidiIn->getCurrentApi();
+    mNumPorts     = _midi_in_instance.getPortCount();
+    auto const sd = _midi_in_instance.getCurrentApi();
 
     std::cout << "MidiIn: " << mNumPorts << " available." << std::endl;
     for (size_t i = 0; i < mNumPorts; ++i)
     {
-        std::cout << i << ": " << mMidiIn->getPortName(i).c_str() << std::endl;
-        std::string name(mMidiIn->getPortName(i).c_str()); // strip null chars introduced by rtmidi
-        sprintf(buf, " %s##s%d", mMidiIn->getPortName(i).c_str(), i);
+        std::cout << i << ": " << _midi_in_instance.getPortName(i).c_str() << std::endl;
+        std::string name(_midi_in_instance.getPortName(i).c_str()); // strip null chars introduced by rtmidi
+        sprintf(buf, " %s##s%d", _midi_in_instance.getPortName(i).c_str(), i);
     }
 
-    // mMidiIn->getCurrentApi();
+    // _midi_in_instance.getCurrentApi();
     if (mNumPorts > 0)
     {
-        mName = mMidiIn->getPortName(mPort);
-        mMidiIn->openPort(mPort);
-        std::cout << "Opening MIDI port 0" << std::endl;
-        // mMidiIn.midiSignal.connect(std::bind(&Midi2WebsocketApp::midiListener, this, std::placeholders::_1));
-        // mMidiIn->setCallback(&MidiInCallback, this);
-        mMidiIn->ignoreTypes(true, true, true);
+        mName = _midi_in_instance.getPortName(mPort);
+        _midi_in_instance.openPort(mPort);
+        // _midi_in_instance.midiSignal.connect(std::bind(&Midi2WebsocketApp::midiListener, this, std::placeholders::_1));
+        // _midi_in_instance.setCallback(&MidiInCallback, this);
+        _midi_in_instance.ignoreTypes(true, true, true); // ignore sysex, timing, or active sensing messages.
     }
-    else
-    {
-        std::cout << "No MIDI Ports found!" << std::endl;
-    }
+    std::cout << "No MIDI Ports found!" << std::endl;
 }
+
 void MidiManager::disconnect()
 {
-    mMidiIn->closePort();
-    mMidiIn->cancelCallback();
+    _midi_in_instance.closePort();
+    _midi_in_instance.cancelCallback();
 }
 
 void MidiManager::imgui()
 {
-    ImGui::Text("%f", get_value(MidiCc{1}));
+    ImGui::Text("%f", get_value(MidiChannel{1}));
     //    ImGui::Begin(buf);
     {
         ImGui::PushItemWidth(80);
@@ -126,7 +105,7 @@ void MidiManager::imgui_emulate_midi_keyboard()
         if (ImGui::VSliderFloat("", ImVec2(30, 160), &values[i], 0.f, 1.f, ""))
         {
             std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[i] * 127)};
-            midiCallback(0.f, &message, this);
+            midi_callback(0.f, &message, this);
         }
         ImGui::SetItemTooltip("%i", i);
         if (i != static_cast<int>(values.size()) - 1)

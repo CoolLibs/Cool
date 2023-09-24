@@ -2,10 +2,10 @@
 
 namespace Cool {
 
-struct MidiCc {
-    // TODO(Midi) int index du slider / button
-    int         index{};
-    friend auto operator==(MidiCc const& a, MidiCc const& b) -> bool = default;
+struct MidiChannel {
+    int index{};
+
+    friend auto operator==(MidiChannel const&, MidiChannel const&) -> bool = default;
 
 private:
     // Serialization

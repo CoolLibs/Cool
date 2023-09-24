@@ -28,4 +28,4 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<glm::mat2>>,
     reg::Registry<Cool::Variable<glm::mat3>>,
     reg::Registry<Cool::Variable<glm::mat4>>,
-    reg::Registry<Cool::Variable<Cool::MidiCc>>>;
+    reg::Registry<Cool::Variable<Cool::MidiChannel>>>;

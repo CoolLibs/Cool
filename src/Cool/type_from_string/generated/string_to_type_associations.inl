@@ -172,5 +172,5 @@ struct from_impl<"mat4"> {
 
 template<>
 struct from_impl<"Midi"> {
-    using type = Cool::MidiCc;
+    using type = Cool::MidiChannel;
 };

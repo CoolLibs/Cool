@@ -211,9 +211,9 @@ void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const&
 {
     set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
 }
-void Shader::set_uniform(std::string_view uniform_name, MidiCc const& midi) const
+void Shader::set_uniform(std::string_view uniform_name, MidiChannel const& channel) const
 {
-    set_uniform(uniform_name, midi_manager().get_value(midi));
+    set_uniform(uniform_name, midi_manager().get_value(channel));
 }
 
 } // namespace Cool::OpenGL
