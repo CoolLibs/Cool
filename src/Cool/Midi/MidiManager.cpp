@@ -26,39 +26,31 @@ void MidiManager::set_value(MidiChannel const& channel, float value)
 
 void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned char>* message, void* user_data)
 {
-    MidiManager* midiManager = static_cast<MidiManager*>(user_data);
-    unsigned int nBytes      = message->size();
-    if (nBytes > 2)
-    {
-        midiManager->mIndexToValue[message->at(1)] = message->at(2) / 127.f;
-        midiManager->_extra_midi_callback();
-    }
+    if (message->size() < 3)
+        return;
+
+    auto* This                          = static_cast<MidiManager*>(user_data);
+    This->mIndexToValue[message->at(1)] = static_cast<float>(message->at(2)) / 127.f;
+    This->_extra_midi_callback();
 }
+
 void MidiManager::connect()
 {
-    mPort = 0;
+    // mNumPorts = _midi_in_instance.getPortCount();
 
-    mNumPorts     = _midi_in_instance.getPortCount();
-    auto const sd = _midi_in_instance.getCurrentApi();
+    // for (size_t i = 0; i < mNumPorts; ++i)
+    // {
+    //     std::cout << i << ": " << _midi_in_instance.getPortName(i).c_str() << std::endl;
+    //     std::string name(_midi_in_instance.getPortName(i).c_str()); // strip null chars introduced by rtmidi
+    // }
 
-    std::cout << "MidiIn: " << mNumPorts << " available." << std::endl;
-    for (size_t i = 0; i < mNumPorts; ++i)
-    {
-        std::cout << i << ": " << _midi_in_instance.getPortName(i).c_str() << std::endl;
-        std::string name(_midi_in_instance.getPortName(i).c_str()); // strip null chars introduced by rtmidi
-        sprintf(buf, " %s##s%d", _midi_in_instance.getPortName(i).c_str(), i);
-    }
-
-    // _midi_in_instance.getCurrentApi();
-    if (mNumPorts > 0)
-    {
-        mName = _midi_in_instance.getPortName(mPort);
-        _midi_in_instance.openPort(mPort);
-        // _midi_in_instance.midiSignal.connect(std::bind(&Midi2WebsocketApp::midiListener, this, std::placeholders::_1));
-        // _midi_in_instance.setCallback(&MidiInCallback, this);
-        _midi_in_instance.ignoreTypes(true, true, true); // ignore sysex, timing, or active sensing messages.
-    }
-    std::cout << "No MIDI Ports found!" << std::endl;
+    // // _midi_in_instance.getCurrentApi();
+    // if (mNumPorts > 0)
+    // {
+    //     mName = _midi_in_instance.getPortName(mPort);
+    //     _midi_in_instance.openPort(mPort);
+    //     _midi_in_instance.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
+    // }
 }
 
 void MidiManager::disconnect()
@@ -74,7 +66,7 @@ void MidiManager::imgui()
     {
         ImGui::PushItemWidth(80);
 
-        ImGui::TextColored(ImColor(155, 50, 255), "%s-", buf);
+        ImGui::TextColored(ImColor(155, 50, 255), "%s-", "bob");
 
         ImGui::PopItemWidth();
     }
@@ -116,7 +108,7 @@ void MidiManager::imgui_emulate_midi_keyboard()
 
 void MidiManager::imgui_visualize_channels()
 {
-    ImGui::Text(buf);
+    // ImGui::Text(buf);
     auto values = std::vector<float>(max_index() + 1);
     for (int i = 0; i < static_cast<int>(values.size()); ++i)
         values[i] = get_value({i});

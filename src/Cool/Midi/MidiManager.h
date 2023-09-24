@@ -33,12 +33,7 @@ private:
     static void midi_callback(double deltatime, std::vector<unsigned char>* message, void* userData);
 
 private:
-    RtMidiIn     _midi_in_instance;
-    unsigned int mNumPorts;
-    unsigned int mPort;
-    std::string  mName;
-    // imgui
-    char                           buf[64];
+    RtMidiIn                       _midi_in_instance;
     std::unordered_map<int, float> mIndexToValue;
     std::function<void()>          _extra_midi_callback{[] {
     }};
