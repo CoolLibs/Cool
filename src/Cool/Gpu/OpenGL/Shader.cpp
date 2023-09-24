@@ -1,7 +1,11 @@
 #if defined(COOL_OPENGL)
-#include "Shader.h"
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/OpenGL/Shader.h"
+#include <string>
+#include <string_view>
+#include "Cool/Gpu/OpenGL/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
+#include "Cool/Gpu/TextureSource.h"
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
@@ -171,19 +175,41 @@ static auto max_number_of_texture_slots() -> GLuint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return static_cast<GLuint>(res);
 }
-void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& texture_info) const
+
+static auto get_next_texture_slot() -> GLuint
 {
     static GLuint       current_slot = 0;
     static GLuint const max_slots    = max_number_of_texture_slots();
 
-    Texture const& tex = TextureLibrary::instance().get(texture_info.absolute_path);
-
-    tex.attach_to_slot(current_slot);
-    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
-    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(current_slot));
-    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
-
     current_slot = (current_slot + 1) % max_slots;
+    if (current_slot == 0) // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+        current_slot = 1;
+    return current_slot;
+}
+
+void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    texture.attach_to_slot(slot);
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(slot));
+    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+}
+
+void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+    GLDebug(glBindTexture(GL_TEXTURE_2D, texture_id));
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(uniform_name, static_cast<int>(slot));
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+}
+
+void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
+{
+    set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
 }
 void Shader::set_uniform(std::string_view uniform_name, MidiCc const& midi) const
 {

@@ -73,8 +73,8 @@ auto imgui_widget(std::string_view name, Cool::ColorPalette& palette, ImGuiColor
         palette.value[palette.value.size() - 1] = Color::from_srgb(srgb);
         ImGui::EndPopup();
     }
-    Cool::ImGuiExtras::tooltip("Add a color");
-    Cool::ImGuiExtras::tooltip("Remove a color by middle click on it");
+    ImGui::SetItemTooltip("%s", "Add a color");
+    ImGui::SetItemTooltip("%s", "Remove a color by middle click on it");
 
     return value_has_changed;
 }

@@ -54,6 +54,14 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
 
 void View::imgui_window(ViewWindowParams const& params)
 {
+    if (_is_open != _was_open_last_frame)
+    {
+        if (_is_open)
+            params.on_open();
+        else
+            params.on_close();
+        _was_open_last_frame = _is_open;
+    }
     if (!_is_open)
     {
         _window_size.reset();
@@ -91,6 +99,16 @@ void View::imgui_window(ViewWindowParams const& params)
 void View::imgui_open_close_toggle()
 {
     ImGuiExtras::toggle(_name.c_str(), &_is_open);
+}
+
+void View::open()
+{
+    _is_open = true;
+}
+
+void View::close()
+{
+    _is_open = false;
 }
 
 auto View::mouse_is_in_view() const -> bool

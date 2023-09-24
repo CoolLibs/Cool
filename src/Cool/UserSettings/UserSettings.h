@@ -1,7 +1,10 @@
 #pragma once
+#include "Cool/Core/BuildMode.h"
 #include "Cool/ImGui/ColorThemes.h"
 
 namespace Cool {
+
+auto should_enable_multi_viewport_by_default() -> bool;
 
 struct UserSettings {
     bool  autosave_enabled{true};
@@ -13,18 +16,9 @@ struct UserSettings {
 
     Cool::ColorThemes color_themes{};
 
-    bool single_click_to_input_in_drag_widgets{false};
+    bool single_click_to_input_in_drag_widgets{true};
 
-    bool enable_multi_viewport
-    {
-#if defined(__linux__)
-        false // On Linux this can conflict with tiling WM and make our context menus behave weirdly.
-              // https://cdn.discordapp.com/attachments/848704719987671070/1127711921651597332/ui-linux.mp4
-              // https://github.com/ocornut/imgui/issues/2117
-#else
-        true
-#endif
-    };
+    bool enable_multi_viewport{should_enable_multi_viewport_by_default()};
     void apply_multi_viewport_setting() const;
 
     auto imgui() -> bool;

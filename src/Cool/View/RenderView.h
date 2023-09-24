@@ -16,7 +16,7 @@ public:
     auto render_target() -> RenderTarget& { return _render_target; }
     auto render_target() const -> RenderTarget const& { return _render_target; }
 
-private:
+protected:
     auto get_image_texture_id() const -> ImTextureID override;
     auto get_image_size() const -> img::Size override;
 

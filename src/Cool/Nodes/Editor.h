@@ -14,6 +14,8 @@ public:
 
     void for_each_selected_node(std::function<void(Node const&)> const& callback) const { _pimpl->for_each_selected_node(callback); }
 
+    [[nodiscard]] auto is_empty() const -> bool { return _pimpl->is_empty(); }
+
 private:
     std::unique_ptr<INodesEditor> _pimpl; // We use the pimpl idiom to speed up compilation
 

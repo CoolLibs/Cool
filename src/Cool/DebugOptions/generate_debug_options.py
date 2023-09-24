@@ -112,6 +112,6 @@ if __name__ == "__main__":
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",
-        cache_file_name="cache/debug-options-cool",
+        cache_file_name="debug-options-cool",
         debug_options=all_debug_options(),
     )

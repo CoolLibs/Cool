@@ -20,6 +20,8 @@ public:
 
     [[nodiscard]] virtual auto graph() const -> Graph const& = 0;
     [[nodiscard]] virtual auto graph() -> Graph&             = 0;
+
+    [[nodiscard]] virtual auto is_empty() const -> bool = 0;
 };
 
 } // namespace Cool

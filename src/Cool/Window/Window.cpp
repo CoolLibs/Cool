@@ -57,8 +57,10 @@ void Window::turn_on_fullscreen()
     if (_is_fullscreen)
         return;
 
-    GLFWmonitor*       monitor = current_monitor();
-    GLFWvidmode const* mode    = glfwGetVideoMode(monitor);
+    GLFWmonitor* monitor = current_monitor();
+    if (!monitor) // This can happen
+        return;
+    GLFWvidmode const* mode = glfwGetVideoMode(monitor);
     glfwGetWindowPos(*_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
     glfwGetWindowSize(*_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
     glfwSetWindowMonitor(*_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);

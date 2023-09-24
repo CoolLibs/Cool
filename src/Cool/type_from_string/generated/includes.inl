@@ -5,7 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 #include <Cool/Camera/Camera.h>
-#include <Cool/Gpu/TextureInfo.h>
+#include <Cool/Gpu/TextureDescriptor.h>
 #include <Cool/Midi/MidiCc.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Camera2D.h>

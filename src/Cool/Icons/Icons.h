@@ -11,34 +11,6 @@ public:
     /**
      * @brief
      *
-     * @return The texture ID of the "play" icon
-     */
-    static const Texture& play() { return get(Path::cool_res() / "icons/play.png"); }
-
-    /**
-     * @brief
-     *
-     * @return The texture ID of the "pause" icon
-     */
-    static const Texture& pause() { return get(Path::cool_res() / "icons/pause.png"); }
-
-    /**
-     * @brief
-     *
-     * @return The texture ID of the "reset" icon
-     */
-    static const Texture& reset() { return get(Path::cool_res() / "icons/reset.png"); }
-
-    /**
-     * @brief
-     *
-     * @return The texture ID of the "folder" icon
-     */
-    static const Texture& folder() { return get(Path::cool_res() / "icons/folder.png"); }
-
-    /**
-     * @brief
-     *
      * @return The texture ID of the "close_button" icon
      */
     static const Texture& close_button() { return get(Path::cool_res() / "icons/close_button.png"); }

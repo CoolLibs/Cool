@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
 
 namespace Cool::ImGuiExtras {
@@ -24,13 +25,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2);
  * @param total_duration Optionnal : the total length of the time interval that time_in_sec is part of, expressed in seconds. (for example time_in_sec might be a timestamp in a video, and total_duration would be the duration of the video). It allows the formating to know whether it should write hours and minutes or not, in order for the display to be consistent accross the wole duration of total_duration. Leave as 0.f if you don't want or need this behaviour.
  */
 void time_formated_hms(float time_in_sec, float total_duration = 0.f);
-
-/**
- * @brief Displays some text on hover for the previously declared widget.
- *
- * @param text
- */
-void tooltip(const char* text);
 
 /**
  * @brief A greyed out button that you can't click on.
@@ -127,21 +121,17 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
 void invisible_wrapper_around_previous_line(const char* str_id);
 
 /// Adds a button that opens a folder dialog.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto folder_dialog_button(
     std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder = ""
+    File::folder_dialog_args const& = {}
 ) -> bool;
 
 /// Adds a button that opens a file dialog.
-/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters   = {},
-    std::filesystem::path               initial_folder = ""
+    std::filesystem::path* out_path,
+    File::file_dialog_args const& = {}
 ) -> bool;
 
 /// UI for a folder path. Creates a text input and a button to open a folder explorer.

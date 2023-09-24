@@ -7,6 +7,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Nodes/EditorImpl.h"
 #include "Cool/Nodes/as_ed_id.h"
+#include "Cool/Nodes/utilities/drawing.h"
 #include "Cool/StrongTypes/Color.h"
 #include "EditorImpl.h"
 #include "Graph.h"
@@ -16,8 +17,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -281,16 +280,31 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph
 //     }
 // };
 
-static void render_pin_icon(Pin const& pin, float alpha, Cool::Color color)
+static void render_pin_icon(ax::Drawing::IconType icon, float alpha, Cool::Color color)
 {
     auto const col = color.as_sRGB();
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), pin.icon(), true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
+    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon, true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
-void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, util::BlueprintNodeBuilder& builder)
+static auto input_pin_icon(size_t pin_index, Cool::NodesCategory const* category) -> ax::Drawing::IconType
 {
-    auto const color       = nodes_cfg.node_color(node, id);
-    auto const title_color = get_text_color(color);
+    return category && pin_index < category->config().number_of_main_input_pins()
+               ? ax::Drawing::IconType::Flow
+               : ax::Drawing::IconType::Circle;
+}
+
+static auto output_pin_icon(size_t pin_index)
+{
+    return pin_index == 0
+               ? ax::Drawing::IconType::Flow
+               : ax::Drawing::IconType::Circle;
+}
+
+void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder)
+{
+    auto const  color       = nodes_cfg.node_color(node, id);
+    auto const* category    = library.get_category(node.category_name());
+    auto const  title_color = get_text_color(color);
 
     ed::PushStyleColor(ed::StyleColor_SelNodeBorder, color.as_ImColor());
     builder.Begin(as_ed_id(id));
@@ -330,7 +344,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
 
         builder.Input(pin_id);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-        render_pin_icon(input_pin, alpha, nodes_cfg.pin_color(input_pin, idx, node, id));
+        render_pin_icon(input_pin_icon(idx, category), alpha, nodes_cfg.pin_color(input_pin, idx, node, id));
         ImGui::Spring(0);
         if (!input_pin.name().empty())
         {
@@ -355,7 +369,7 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
             ImGui::TextUnformatted(output_pin.name().c_str());
         }
         ImGui::Spring(0);
-        render_pin_icon(output_pin, alpha, nodes_cfg.pin_color(output_pin, idx, node, id));
+        render_pin_icon(output_pin_icon(idx), alpha, nodes_cfg.pin_color(output_pin, idx, node, id));
         ImGui::PopStyleVar();
         builder.EndOutput();
     }
@@ -593,11 +607,11 @@ static auto process_deletions(Graph& graph, std::vector<internal::FrameNode>& fr
     return graph_has_changed;
 }
 
-void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg)
+void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& library)
 {
-    util::BlueprintNodeBuilder builder{};
+    ax::NodeEditor::Utilities::BlueprintNodeBuilder builder{};
     for (auto& [id, node] : _graph.nodes())
-        render_node(node, id, nodes_cfg, builder);
+        render_node(node, id, nodes_cfg, library, builder);
 
     for (auto const& frame_node : _frame_nodes)
         render_frame_node(frame_node);
@@ -616,7 +630,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     ed::Begin("Node editor");
 
-    render_editor(nodes_cfg);
+    render_editor(nodes_cfg, library);
 
     graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
@@ -723,6 +737,11 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
         {
         }
     }
+}
+
+auto NodesEditorImpl::is_empty() const -> bool
+{
+    return _graph.nodes().is_empty() && _frame_nodes.empty();
 }
 
 } // namespace Cool

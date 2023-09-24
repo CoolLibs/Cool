@@ -2,6 +2,8 @@
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
 #include "Cool/ImGui/Fonts.h"
@@ -11,21 +13,14 @@
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
 
-#ifndef IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_DEFINE_MATH_OPERATORS
-#endif
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-
 namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
     ImGui::SameLine();
     ImGui::TextDisabled(" " ICOMOON_INFO);
-    if (ImGui::IsItemHovered())
+    if (ImGui::BeginItemTooltip())
     {
-        ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
         ImGui::TextUnformatted(text);
         ImGui::PopTextWrapPos();
@@ -140,16 +135,6 @@ void time_formated_hms(float time_in_sec, float total_duration)
     }
 }
 
-void tooltip(const char* text)
-{
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::TextUnformatted(text);
-        ImGui::EndTooltip();
-    }
-}
-
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
     disabled_if(true, reason_for_disabling, [&]() {
@@ -176,7 +161,7 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
-    tooltip(reason_for_disabling);
+    ImGui::SetItemTooltip("%s", reason_for_disabling);
 }
 
 auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
@@ -295,42 +280,34 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 }
 
 auto folder_dialog_button(
-    std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder
+    std::filesystem::path*          out_path,
+    File::folder_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::PickFolder(outPath, std::filesystem::absolute(initial_folder).string().c_str());
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::folder_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters,
-    std::filesystem::path               initial_folder
+    std::filesystem::path*        out_path,
+    File::file_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::OpenDialog(
-        outPath,
-        file_filters.data(),
-        static_cast<nfdfiltersize_t>(file_filters.size()),
-        std::filesystem::absolute(initial_folder).string().c_str()
-    );
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::file_opening_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
@@ -359,14 +336,14 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
 auto folder(const char* label, std::filesystem::path* folder_path, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, folder_path, show_dialog_button, [&]() {
-        return ImGuiExtras::folder_dialog_button(folder_path, *folder_path);
+        return ImGuiExtras::folder_dialog_button(folder_path, {.initial_folder = *folder_path});
     });
 }
 
 auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, file_path, show_dialog_button, [&]() {
-        return ImGuiExtras::file_dialog_button(file_path, file_filters, !initial_folder.empty() ? initial_folder : *file_path);
+        return ImGuiExtras::file_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
     });
 }
 
@@ -437,7 +414,7 @@ void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGuiExtras::tooltip(reason_to_disable);
+        ImGui::SetItemTooltip("%s", reason_to_disable);
     }
     else
     {
@@ -532,7 +509,7 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     draw_list.AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
     draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
     draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
-    draw_list.AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
+    draw_list.AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), label);
 
     ImGui::EndGroup();
 
@@ -710,7 +687,6 @@ void join_buttons()
 {
     ImGui::SameLine();
     ImGui::PushStyleColor(ImGuiCol_Separator, ImGuiExtras::GetStyle().buttons_separator);
-    ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
     ImGui::PopStyleColor();
     ImGui::SameLine();
 }
