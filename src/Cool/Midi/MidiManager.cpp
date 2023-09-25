@@ -1,7 +1,4 @@
 #include "MidiManager.h"
-#include <imgui.h>
-#include "Cool/Midi/RtMidi.h"
-#include "RtMidi.h"
 
 namespace Cool {
 

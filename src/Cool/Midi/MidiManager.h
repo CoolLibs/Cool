@@ -1,6 +1,6 @@
 #pragma once
 #include "MidiChannel.h"
-#include "RtMidi.h"
+#include "RtMidiW/RtMidiW.hpp"
 
 namespace Cool {
 
