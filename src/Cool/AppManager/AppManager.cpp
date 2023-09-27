@@ -9,6 +9,7 @@
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Midi/MidiManager.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
@@ -118,6 +119,7 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+    midi_manager().check_for_devices();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();

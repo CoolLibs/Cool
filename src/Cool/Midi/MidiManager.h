@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <unordered_map>
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
 
@@ -16,9 +18,8 @@ public:
     /// `value` must be between 0 and 1.
     void set_value(MidiChannel const&, float value);
 
-    void connect();
-    void disconnect();
-    void imgui();
+    void check_for_devices();
+
     /// Sets a callback that is called whenever the value of a Midi Cc changes.
     void set_additional_midi_callback(std::function<void()> callback) { _extra_midi_callback = std::move(callback); }
 
@@ -31,11 +32,13 @@ private:
     [[nodiscard]] auto max_index() const -> int;
 
     static void midi_callback(double deltatime, std::vector<unsigned char>* message, void* userData);
+    static void midi_error_callback(RtMidiError::Type type, const std::string& errorText, void* userData);
 
 private:
-    RtMidiIn                       _midi_in_instance;
-    std::unordered_map<int, float> mIndexToValue;
-    std::function<void()>          _extra_midi_callback{[] {
+    RtMidiIn                                  _midi_in_checker{};
+    std::unordered_map<std::string, RtMidiIn> _midi_inputs{};
+    std::unordered_map<int, float>            mIndexToValue;
+    std::function<void()>                     _extra_midi_callback{[] {
     }};
 };
 

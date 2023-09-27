@@ -1,11 +1,14 @@
 #include "MidiManager.h"
+#include <RtMidiWrapper/rtmidi/RtMidi.h>
+#include <imgui.h>
+#include "Cool/Log/ToUser.h"
+#include "Cool/Midi/MidiManager.h"
 
 namespace Cool {
 
 MidiManager::MidiManager()
-    : _midi_in_instance{RtMidi::Api::UNSPECIFIED}
 {
-    _midi_in_instance.setCallback(&midi_callback, this);
+    _midi_in_checker.setErrorCallback(&midi_error_callback);
 }
 
 auto MidiManager::get_value(MidiChannel const& channel) const -> float
@@ -21,6 +24,35 @@ void MidiManager::set_value(MidiChannel const& channel, float value)
     mIndexToValue[channel.index] = value;
 }
 
+void MidiManager::check_for_devices()
+{
+    { // Remove all ports that have closed
+        auto to_remove = std::vector<std::string>{};
+        for (auto& pair : _midi_inputs)
+        {
+            if (!pair.second.isPortOpen())
+                to_remove.push_back(pair.first);
+        }
+        for (auto const& port_name : to_remove)
+            _midi_inputs.erase(port_name);
+    }
+
+    // Add all new ports
+    for (unsigned int i = 0; i < _midi_in_checker.getPortCount(); ++i)
+    {
+        auto const name = _midi_in_checker.getPortName(i);
+        auto const it   = _midi_inputs.find(name);
+        if (it != _midi_inputs.end())
+            continue;
+
+        auto const key_value = _midi_inputs.insert(std::make_pair(name, RtMidiIn{})).first;
+        key_value->second.setErrorCallback(&midi_error_callback);
+        key_value->second.setCallback(&midi_callback, this);
+        key_value->second.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
+        key_value->second.openPort(0);
+    }
+}
+
 void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned char>* message, void* user_data)
 {
     if (message->size() < 3)
@@ -31,48 +63,35 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
     This->_extra_midi_callback();
 }
 
-void MidiManager::connect()
+void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::string& errorText, void* /* userData */)
 {
-    // mNumPorts = _midi_in_instance.getPortCount();
-
-    // for (size_t i = 0; i < mNumPorts; ++i)
-    // {
-    //     std::cout << i << ": " << _midi_in_instance.getPortName(i).c_str() << std::endl;
-    //     std::string name(_midi_in_instance.getPortName(i).c_str()); // strip null chars introduced by rtmidi
-    // }
-
-    // // _midi_in_instance.getCurrentApi();
-    // if (mNumPorts > 0)
-    // {
-    //     mName = _midi_in_instance.getPortName(mPort);
-    //     _midi_in_instance.openPort(mPort);
-    //     _midi_in_instance.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
-    // }
+    Cool::Log::ToUser::warning("MIDI", errorText);
 }
 
-void MidiManager::disconnect()
-{
-    _midi_in_instance.closePort();
-    _midi_in_instance.cancelCallback();
-}
+// void MidiManager::connect()
+// {
+//     // mNumPorts = _midi_in_checker.getPortCount();
 
-void MidiManager::imgui()
-{
-    ImGui::Text("%f", get_value(MidiChannel{1}));
-    //    ImGui::Begin(buf);
-    {
-        ImGui::PushItemWidth(80);
+//     // for (size_t i = 0; i < mNumPorts; ++i)
+//     // {
+//     //     std::cout << i << ": " << _midi_in_checker.getPortName(i).c_str() << std::endl;
+//     //     std::string name(_midi_in_checker.getPortName(i).c_str()); // strip null chars introduced by rtmidi
+//     // }
 
-        ImGui::TextColored(ImColor(155, 50, 255), "%s-", "bob");
+//     // // _midi_in_checker.getCurrentApi();
+//     // if (mNumPorts > 0)
+//     // {
+//     //     mName = _midi_in_checker.getPortName(mPort);
+//     //     _midi_in_checker.openPort(mPort);
+//     //     _midi_in_checker.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
+//     // }
+// }
 
-        ImGui::PopItemWidth();
-    }
-    // ImGui::End();
-    // if (ImGui::Button("Connect"))
-    // {
-    //     connect();
-    // }
-}
+// void MidiManager::disconnect()
+// {
+//     _midi_in_checker.closePort();
+//     _midi_in_checker.cancelCallback();
+// }
 
 auto MidiManager::max_index() const -> int
 {
@@ -101,6 +120,14 @@ void MidiManager::imgui_emulate_midi_keyboard()
             ImGui::SameLine();
         ImGui::PopID();
     }
+    for (unsigned int i = 0; i < _midi_in_checker.getPortCount(); ++i)
+    {
+        ImGui::TextUnformatted(_midi_in_checker.getPortName(i).c_str());
+    }
+    if (!_midi_in_checker.isPortOpen() && _midi_in_checker.getPortCount() > 0)
+        _midi_in_checker.openPort(0);
+    if (_midi_in_checker.getPortCount() == 0)
+        _midi_in_checker.closePort();
 }
 
 void MidiManager::imgui_visualize_channels()
