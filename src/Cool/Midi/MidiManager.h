@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include "MidiChannel.h"
@@ -23,22 +24,27 @@ public:
     /// Sets a callback that is called whenever the value of a Midi Cc changes.
     void set_additional_midi_callback(std::function<void()> callback) { _extra_midi_callback = std::move(callback); }
 
-    void imgui_emulate_midi_keyboard();
     void imgui_visualize_channels();
+    void imgui_controllers_dropdown();
+    void imgui_emulate_midi_keyboard();
 
 private:
     MidiManager(); // Use `mini_manager()` to get the unique instance of MidiManager.
 
     [[nodiscard]] auto max_index() const -> int;
 
+    void open_port(unsigned int index);
+    void close_port();
+
     static void midi_callback(double deltatime, std::vector<unsigned char>* message, void* userData);
     static void midi_error_callback(RtMidiError::Type type, const std::string& errorText, void* userData);
 
 private:
-    RtMidiIn                                  _midi_in_checker{};
-    std::unordered_map<std::string, RtMidiIn> _midi_inputs{};
-    std::unordered_map<int, float>            mIndexToValue;
-    std::function<void()>                     _extra_midi_callback{[] {
+    RtMidiIn                       _midi_input{};
+    std::string                    _port_name{};
+    std::optional<unsigned int>    _port_index{};
+    std::unordered_map<int, float> mIndexToValue;
+    std::function<void()>          _extra_midi_callback{[] {
     }};
 };
 

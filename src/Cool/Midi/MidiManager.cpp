@@ -8,7 +8,9 @@ namespace Cool {
 
 MidiManager::MidiManager()
 {
-    _midi_in_checker.setErrorCallback(&midi_error_callback);
+    _midi_input.setErrorCallback(&midi_error_callback);
+    _midi_input.setCallback(&midi_callback, this);
+    _midi_input.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
 }
 
 auto MidiManager::get_value(MidiChannel const& channel) const -> float
@@ -26,31 +28,19 @@ void MidiManager::set_value(MidiChannel const& channel, float value)
 
 void MidiManager::check_for_devices()
 {
-    { // Remove all ports that have closed
-        auto to_remove = std::vector<std::string>{};
-        for (auto& pair : _midi_inputs)
-        {
-            if (!pair.second.isPortOpen())
-                to_remove.push_back(pair.first);
-        }
-        for (auto const& port_name : to_remove)
-            _midi_inputs.erase(port_name);
-    }
+    auto const port_count = _midi_input.getPortCount();
 
-    // Add all new ports
-    for (unsigned int i = 0; i < _midi_in_checker.getPortCount(); ++i)
+    if (_port_index.has_value()
+        && *_port_index < port_count
+        && _midi_input.getPortName(*_port_index) == _port_name)
     {
-        auto const name = _midi_in_checker.getPortName(i);
-        auto const it   = _midi_inputs.find(name);
-        if (it != _midi_inputs.end())
-            continue;
-
-        auto const key_value = _midi_inputs.insert(std::make_pair(name, RtMidiIn{})).first;
-        key_value->second.setErrorCallback(&midi_error_callback);
-        key_value->second.setCallback(&midi_callback, this);
-        key_value->second.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
-        key_value->second.openPort(0);
+        return; // The port we have opened still exists and hasn't been moved because of the creation of new ports.
     }
+
+    if (port_count > 0)
+        open_port(0);
+    else
+        close_port();
 }
 
 void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned char>* message, void* user_data)
@@ -68,31 +58,6 @@ void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::s
     Cool::Log::ToUser::warning("MIDI", errorText);
 }
 
-// void MidiManager::connect()
-// {
-//     // mNumPorts = _midi_in_checker.getPortCount();
-
-//     // for (size_t i = 0; i < mNumPorts; ++i)
-//     // {
-//     //     std::cout << i << ": " << _midi_in_checker.getPortName(i).c_str() << std::endl;
-//     //     std::string name(_midi_in_checker.getPortName(i).c_str()); // strip null chars introduced by rtmidi
-//     // }
-
-//     // // _midi_in_checker.getCurrentApi();
-//     // if (mNumPorts > 0)
-//     // {
-//     //     mName = _midi_in_checker.getPortName(mPort);
-//     //     _midi_in_checker.openPort(mPort);
-//     //     _midi_in_checker.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
-//     // }
-// }
-
-// void MidiManager::disconnect()
-// {
-//     _midi_in_checker.closePort();
-//     _midi_in_checker.cancelCallback();
-// }
-
 auto MidiManager::max_index() const -> int
 {
     auto const it = std::max_element(mIndexToValue.begin(), mIndexToValue.end(), [](auto const& p1, auto const& p2) {
@@ -102,6 +67,43 @@ auto MidiManager::max_index() const -> int
     if (it == mIndexToValue.end())
         return 0;
     return it->first;
+}
+
+void MidiManager::open_port(unsigned int index)
+{
+    _midi_input.closePort();
+    _midi_input.openPort(index);
+    _port_name  = _midi_input.getPortName(index);
+    _port_index = index;
+}
+
+void MidiManager::close_port()
+{
+    _midi_input.closePort();
+    _port_name.clear();
+    _port_index.reset();
+}
+
+void MidiManager::imgui_visualize_channels()
+{
+    auto values = std::vector<float>(max_index() + 1);
+    for (int i = 0; i < static_cast<int>(values.size()); ++i)
+        values[i] = get_value({i});
+
+    ImGui::PlotHistogram("Channels", values.data(), static_cast<int>(values.size()), 0, nullptr, 0.f, 1.f, ImVec2(0, 80.0f));
+}
+
+void MidiManager::imgui_controllers_dropdown()
+{
+    if (ImGui::BeginCombo("Controller", _port_name.c_str()))
+    {
+        for (unsigned int i = 0; i < _midi_input.getPortCount(); ++i)
+        {
+            if (ImGui::Selectable(_midi_input.getPortName(i).c_str()))
+                open_port(i);
+        }
+        ImGui::EndCombo();
+    }
 }
 
 void MidiManager::imgui_emulate_midi_keyboard()
@@ -120,24 +122,14 @@ void MidiManager::imgui_emulate_midi_keyboard()
             ImGui::SameLine();
         ImGui::PopID();
     }
-    for (unsigned int i = 0; i < _midi_in_checker.getPortCount(); ++i)
+    for (unsigned int i = 0; i < _midi_input.getPortCount(); ++i)
     {
-        ImGui::TextUnformatted(_midi_in_checker.getPortName(i).c_str());
+        ImGui::TextUnformatted(_midi_input.getPortName(i).c_str());
     }
-    if (!_midi_in_checker.isPortOpen() && _midi_in_checker.getPortCount() > 0)
-        _midi_in_checker.openPort(0);
-    if (_midi_in_checker.getPortCount() == 0)
-        _midi_in_checker.closePort();
-}
-
-void MidiManager::imgui_visualize_channels()
-{
-    // ImGui::Text(buf);
-    auto values = std::vector<float>(max_index() + 1);
-    for (int i = 0; i < static_cast<int>(values.size()); ++i)
-        values[i] = get_value({i});
-
-    ImGui::PlotHistogram("Channels", values.data(), static_cast<int>(values.size()), 0, nullptr, 0.f, 1.f, ImVec2(0, 80.0f));
+    if (ImGui::Button("Add channel"))
+        values.push_back(0.f);
+    if (ImGui::Button("Remove channel"))
+        values.pop_back();
 }
 
 } // namespace Cool
