@@ -8,9 +8,9 @@ namespace Cool {
 
 MidiManager::MidiManager()
 {
-    _midi_input.setErrorCallback(&midi_error_callback);
-    _midi_input.setCallback(&midi_callback, this);
-    _midi_input.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
+    _midi.setErrorCallback(&midi_error_callback);
+    _midi.setCallback(&midi_callback, this);
+    _midi.ignoreTypes(true, true, true); // ignore sysex, timing, and active sensing messages.
 }
 
 auto MidiManager::get_value(MidiChannel const& channel) const -> float
@@ -28,11 +28,11 @@ void MidiManager::set_value(MidiChannel const& channel, float value)
 
 void MidiManager::check_for_devices()
 {
-    auto const port_count = _midi_input.getPortCount();
+    auto const port_count = _midi.getPortCount();
 
     if (_port_index.has_value()
         && *_port_index < port_count
-        && _midi_input.getPortName(*_port_index) == _port_name)
+        && _midi.getPortName(*_port_index) == _port_name)
     {
         return; // The port we have opened still exists and hasn't been moved because of the creation of new ports.
     }
@@ -71,15 +71,15 @@ auto MidiManager::max_index() const -> int
 
 void MidiManager::open_port(unsigned int index)
 {
-    _midi_input.closePort();
-    _midi_input.openPort(index);
-    _port_name  = _midi_input.getPortName(index);
+    _midi.closePort();
+    _midi.openPort(index);
+    _port_name  = _midi.getPortName(index);
     _port_index = index;
 }
 
 void MidiManager::close_port()
 {
-    _midi_input.closePort();
+    _midi.closePort();
     _port_name.clear();
     _port_index.reset();
 }
@@ -97,9 +97,9 @@ void MidiManager::imgui_controllers_dropdown()
 {
     if (ImGui::BeginCombo("Controller", _port_name.c_str()))
     {
-        for (unsigned int i = 0; i < _midi_input.getPortCount(); ++i)
+        for (unsigned int i = 0; i < _midi.getPortCount(); ++i)
         {
-            if (ImGui::Selectable(_midi_input.getPortName(i).c_str()))
+            if (ImGui::Selectable(_midi.getPortName(i).c_str()))
                 open_port(i);
         }
         ImGui::EndCombo();
@@ -122,9 +122,9 @@ void MidiManager::imgui_emulate_midi_keyboard()
             ImGui::SameLine();
         ImGui::PopID();
     }
-    for (unsigned int i = 0; i < _midi_input.getPortCount(); ++i)
+    for (unsigned int i = 0; i < _midi.getPortCount(); ++i)
     {
-        ImGui::TextUnformatted(_midi_input.getPortName(i).c_str());
+        ImGui::TextUnformatted(_midi.getPortName(i).c_str());
     }
     if (ImGui::Button("Add channel"))
         values.push_back(0.f);

@@ -40,7 +40,7 @@ private:
     static void midi_error_callback(RtMidiError::Type type, const std::string& errorText, void* userData);
 
 private:
-    RtMidiIn                       _midi_input{};
+    RtMidiIn                       _midi{};
     std::string                    _port_name{};
     std::optional<unsigned int>    _port_index{};
     std::unordered_map<int, float> mIndexToValue;
