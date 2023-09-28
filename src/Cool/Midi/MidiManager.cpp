@@ -1,8 +1,6 @@
 #include "MidiManager.h"
-#include <RtMidiWrapper/rtmidi/RtMidi.h>
 #include <imgui.h>
 #include "Cool/Log/ToUser.h"
-#include "Cool/Midi/MidiManager.h"
 
 namespace Cool {
 
@@ -15,15 +13,15 @@ MidiManager::MidiManager()
 
 auto MidiManager::get_value(MidiChannel const& channel) const -> float
 {
-    auto const it = mIndexToValue.find(channel.index);
-    if (it == mIndexToValue.end())
+    auto const it = _value_from_index.find(channel.index);
+    if (it == _value_from_index.end())
         return 0.f;
     return it->second;
 }
 
 void MidiManager::set_value(MidiChannel const& channel, float value)
 {
-    mIndexToValue[channel.index] = value;
+    _value_from_index[channel.index] = value;
 }
 
 void MidiManager::check_for_devices()
@@ -48,23 +46,23 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
     if (message->size() < 3)
         return;
 
-    auto* This                          = static_cast<MidiManager*>(user_data);
-    This->mIndexToValue[message->at(1)] = static_cast<float>(message->at(2)) / 127.f;
-    This->_extra_midi_callback();
+    auto& This                            = *static_cast<MidiManager*>(user_data);
+    This._value_from_index[(*message)[1]] = static_cast<float>((*message)[2]) / 127.f;
+    This._extra_midi_callback();
 }
 
-void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::string& errorText, void* /* userData */)
+void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::string& error_text, void* /* user_data */)
 {
-    Cool::Log::ToUser::warning("MIDI", errorText);
+    Cool::Log::ToUser::warning("MIDI", error_text);
 }
 
 auto MidiManager::max_index() const -> int
 {
-    auto const it = std::max_element(mIndexToValue.begin(), mIndexToValue.end(), [](auto const& p1, auto const& p2) {
+    auto const it = std::max_element(_value_from_index.begin(), _value_from_index.end(), [](auto const& p1, auto const& p2) {
         return p1.first < p2.first; // Compare the indices
     });
 
-    if (it == mIndexToValue.end())
+    if (it == _value_from_index.end())
         return 0;
     return it->first;
 }
@@ -114,7 +112,7 @@ void MidiManager::imgui_emulate_midi_keyboard()
         ImGui::PushID(i);
         if (ImGui::VSliderFloat("", ImVec2(30, 160), &values[i], 0.f, 1.f, ""))
         {
-            std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[i] * 127)};
+            std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[i] * 127.f)};
             midi_callback(0.f, &message, this);
         }
         ImGui::SetItemTooltip("%i", i);
@@ -122,13 +120,9 @@ void MidiManager::imgui_emulate_midi_keyboard()
             ImGui::SameLine();
         ImGui::PopID();
     }
-    for (unsigned int i = 0; i < _midi.getPortCount(); ++i)
-    {
-        ImGui::TextUnformatted(_midi.getPortName(i).c_str());
-    }
     if (ImGui::Button("Add channel"))
         values.push_back(0.f);
-    if (ImGui::Button("Remove channel"))
+    if (ImGui::Button("Remove channel") && !values.empty())
         values.pop_back();
 }
 
