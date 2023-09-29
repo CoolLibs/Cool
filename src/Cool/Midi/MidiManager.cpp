@@ -8,7 +8,7 @@ namespace Cool {
 
 MidiManager::MidiManager()
     : _config_window{
-        Cool::icon_fmt("Midi", ICOMOON_EQUALIZER2),
+        Cool::icon_fmt("MIDI", ICOMOON_EQUALIZER2),
         Cool::ImGuiWindowConfig{
             .is_modal   = false,
             .start_open = false,
