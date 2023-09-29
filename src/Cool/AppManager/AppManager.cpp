@@ -9,6 +9,8 @@
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Log/ToUser.h"
+#include "Cool/Midi/MidiManager.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
@@ -58,14 +60,24 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
 
 void AppManager::run(std::function<void()> on_update)
 {
+    auto const do_update = [&]() {
+        try
+        {
+            update();
+            on_update();
+        }
+        catch (std::exception const& e)
+        {
+            Cool::Log::ToUser::error("UNKNOWN ERROR", e.what());
+        }
+    };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD_Init();
         while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
         {
-            update();
-            on_update();
+            do_update();
         }
         should_stop = true;
     }};
@@ -77,8 +89,7 @@ void AppManager::run(std::function<void()> on_update)
     while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
     {
         glfwPollEvents();
-        update();
-        on_update();
+        do_update();
     }
 #endif
     // Restore any ImGui ini state that might have been stored
@@ -118,6 +129,7 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+    midi_manager().check_for_devices();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();

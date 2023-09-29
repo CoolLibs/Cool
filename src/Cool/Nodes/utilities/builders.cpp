@@ -8,8 +8,8 @@
 //   Written by Michal Cichon
 //------------------------------------------------------------------------------
 #include "builders.h"
-#include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include <imgui_internal.h>
+#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 //------------------------------------------------------------------------------
 namespace ed   = ax::NodeEditor;

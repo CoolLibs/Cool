@@ -136,3 +136,9 @@ auto glsl_type<glm::mat4>() -> std::string
 {
     return "mat4";
 }
+
+template<>
+auto glsl_type<Cool::MidiChannel>() -> std::string
+{
+    return "float";
+}

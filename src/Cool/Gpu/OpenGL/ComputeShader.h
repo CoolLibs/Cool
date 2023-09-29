@@ -3,7 +3,6 @@
 
 #include <filesystem>
 #include <glm/glm.hpp>
-
 #include "Shader.h"
 
 namespace Cool::OpenGL {
@@ -13,7 +12,7 @@ static void assert_compute_shader_is_bound(GLuint id);
 /// <summary>
 /// A wrapper for an OpenGL compute shader.
 /// </summary>
-class ComputeShader: public Shader {
+class ComputeShader : public Shader {
 public:
     /// <summary>
     /// Loads a compute shader from the given source code
@@ -28,7 +27,6 @@ public:
     /// </summary>
     /// <param name="size">The dimension of the call cube </param>
     void compute(glm::uvec3 size);
-
 
 private:
     glm::uvec3 _working_group_size;

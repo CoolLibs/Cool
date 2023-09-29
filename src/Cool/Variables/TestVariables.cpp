@@ -87,6 +87,8 @@ void test_variables()
     {
         static Cool::Variable<Cool::TextureDescriptor_FromWebcam> webcam{{"Webcam", {}}};
         Cool::imgui(webcam);
+        static Cool::Variable<Cool::MidiChannel> midi_channel{{"Midi", {}}};
+        Cool::imgui(midi_channel);
     }
 }
 

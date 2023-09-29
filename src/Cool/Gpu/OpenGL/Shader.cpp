@@ -1,3 +1,4 @@
+#if defined(COOL_OPENGL)
 #include "Cool/Gpu/OpenGL/Shader.h"
 #include <string>
 #include <string_view>
@@ -5,13 +6,11 @@
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Gpu/TextureSource.h"
+#include "Cool/Midi/MidiManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "imgui.h"
-#if defined(COOL_OPENGL)
-
-#include "Shader.h"
 #include "ShaderModule.h"
+#include "imgui.h"
 
 namespace Cool::OpenGL {
 
@@ -211,6 +210,10 @@ void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_i
 void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
 {
     set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
+}
+void Shader::set_uniform(std::string_view uniform_name, MidiChannel const& channel) const
+{
+    set_uniform(uniform_name, midi_manager().get_value(channel));
 }
 
 } // namespace Cool::OpenGL

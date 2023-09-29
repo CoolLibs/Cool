@@ -67,6 +67,15 @@ public:
             ImGui::End();
         }
     }
+    static void emulate_midi_keyboard(std::function<void()> callback)
+    {
+        if (instance().emulate_midi_keyboard)
+        {
+            ImGui::Begin(Cool::icon_fmt("Emulate midi keyboard", ICOMOON_WRENCH).c_str(), &instance().emulate_midi_keyboard, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
     static void test_tips(std::function<void()> callback)
     {
         if (instance().test_tips)
@@ -125,6 +134,7 @@ private:
         bool log_mouse_position_in_view{false};
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
+        bool emulate_midi_keyboard{false};
         bool test_tips{false};
         bool public_exhibition_mode{false};
         bool style_editor{false};
@@ -152,6 +162,7 @@ private:
                 cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
                 cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
@@ -167,6 +178,7 @@ private:
                 cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 cereal::make_nvp("Test Presets", test_presets__window),
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
                 cereal::make_nvp("Test tips", test_tips),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
@@ -192,6 +204,7 @@ private:
         instance().log_mouse_position_in_view          = false;
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
+        instance().emulate_midi_keyboard               = false;
         instance().test_tips                           = false;
         instance().public_exhibition_mode              = false;
         instance().style_editor                        = false;
@@ -265,6 +278,11 @@ private:
         if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test Markdown Formatting", &instance().test_markdown_formatting_window);
+        }
+
+        if (wafl::similarity_match({filter, "Emulate midi keyboard"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Emulate midi keyboard", &instance().emulate_midi_keyboard);
         }
 
         if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
@@ -372,6 +390,12 @@ private:
         if (wafl::similarity_match({filter, "Test Markdown Formatting"}) >= wafl::Matches::Strongly)
         {
             instance().test_markdown_formatting_window = !instance().test_markdown_formatting_window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Emulate midi keyboard"}) >= wafl::Matches::Strongly)
+        {
+            instance().emulate_midi_keyboard = !instance().emulate_midi_keyboard;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

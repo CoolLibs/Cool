@@ -27,4 +27,5 @@ using AnyVariable = std::variant<
     Variable<Cool::MathExpression>,
     Variable<glm::mat2>,
     Variable<glm::mat3>,
-    Variable<glm::mat4> >;
+    Variable<glm::mat4>,
+    Variable<Cool::MidiChannel> >;

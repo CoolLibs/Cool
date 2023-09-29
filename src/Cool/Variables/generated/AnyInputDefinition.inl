@@ -27,4 +27,5 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::MathExpression>,
     InputDefinition<glm::mat2>,
     InputDefinition<glm::mat3>,
-    InputDefinition<glm::mat4> >;
+    InputDefinition<glm::mat4>,
+    InputDefinition<Cool::MidiChannel> >;

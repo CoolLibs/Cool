@@ -27,4 +27,5 @@ using AnyInputRef = std::variant<
     std::reference_wrapper<Input<Cool::MathExpression>>,
     std::reference_wrapper<Input<glm::mat2>>,
     std::reference_wrapper<Input<glm::mat3>>,
-    std::reference_wrapper<Input<glm::mat4>>>;
+    std::reference_wrapper<Input<glm::mat4>>,
+    std::reference_wrapper<Input<Cool::MidiChannel>>>;

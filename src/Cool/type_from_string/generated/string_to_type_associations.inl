@@ -169,3 +169,8 @@ template<>
 struct from_impl<"mat4"> {
     using type = glm::mat4;
 };
+
+template<>
+struct from_impl<"Midi"> {
+    using type = Cool::MidiChannel;
+};

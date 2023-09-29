@@ -336,7 +336,7 @@ float {name}(float x)
             )STR"
         ),
         "expression"_a = expression.expression,
-        "name"_a = name
+        "name"_a       = name
     );
 }
 

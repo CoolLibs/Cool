@@ -247,6 +247,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
 add_subdirectory(lib/webcam_info)
 target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
 
+# RtMidi
+add_subdirectory(lib/RtMidiWrapper)
+target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)

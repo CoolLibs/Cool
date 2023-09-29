@@ -44,7 +44,7 @@ private:
 private:
     ed::EditorContext* _context{nullptr};
     std::string        _imnodes_settings{};
-    
+
 private:
     // Serialization
     friend class cereal::access;

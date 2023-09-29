@@ -1,4 +1,6 @@
 #include "EditorImpl.h"
+#include <imgui.h>
+#include <imgui/imgui_internal.h>
 #include <reg/src/internal/generate_uuid.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
@@ -17,8 +19,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-#include <imgui.h>
-#include <imgui/imgui_internal.h>
 
 namespace Cool {
 
