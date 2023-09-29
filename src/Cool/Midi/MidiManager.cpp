@@ -98,10 +98,17 @@ void MidiManager::open_port(unsigned int index)
     if (!_midi.has_value())
         return;
 
-    _midi->closePort();
-    _midi->openPort(index);
-    _port_name  = _midi->getPortName(index);
-    _port_index = index;
+    try
+    {
+        _midi->closePort();
+        _midi->openPort(index);
+        _port_name  = _midi->getPortName(index);
+        _port_index = index;
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::error("MIDI Error", e.what());
+    }
 }
 
 void MidiManager::close_port()
@@ -109,9 +116,16 @@ void MidiManager::close_port()
     if (!_midi.has_value())
         return;
 
-    _midi->closePort();
-    _port_name.clear();
-    _port_index.reset();
+    try
+    {
+        _midi->closePort();
+        _port_name.clear();
+        _port_index.reset();
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::error("MIDI Error", e.what());
+    }
 }
 
 void MidiManager::imgui_window_config()
@@ -136,14 +150,21 @@ void MidiManager::imgui_controllers_dropdown()
     if (!_midi.has_value())
         return;
 
-    if (ImGui::BeginCombo("Controller", _port_name.c_str()))
+    try
     {
-        for (unsigned int i = 0; i < _midi->getPortCount(); ++i)
+        if (ImGui::BeginCombo("Controller", _port_name.c_str()))
         {
-            if (ImGui::Selectable(_midi->getPortName(i).c_str()))
-                open_port(i);
+            for (unsigned int i = 0; i < _midi->getPortCount(); ++i)
+            {
+                if (ImGui::Selectable(_midi->getPortName(i).c_str()))
+                    open_port(i);
+            }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::error("MIDI Error", e.what());
     }
 }
 
