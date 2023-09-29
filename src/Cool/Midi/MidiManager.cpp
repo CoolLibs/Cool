@@ -1,10 +1,18 @@
 #include "MidiManager.h"
 #include <imgui.h>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
 MidiManager::MidiManager()
+    : _config_window{
+        Cool::icon_fmt("Midi", ICOMOON_EQUALIZER2),
+        Cool::ImGuiWindowConfig{
+            .is_modal   = false,
+            .start_open = false,
+        }}
 {
     _midi.setErrorCallback(&midi_error_callback);
     _midi.setCallback(&midi_callback, this);
@@ -80,6 +88,14 @@ void MidiManager::close_port()
     _midi.closePort();
     _port_name.clear();
     _port_index.reset();
+}
+
+void MidiManager::imgui_window_config()
+{
+    _config_window.show([&]() {
+        imgui_visualize_channels();
+        imgui_controllers_dropdown();
+    });
 }
 
 void MidiManager::imgui_visualize_channels()

@@ -2,6 +2,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include "Cool/ImGui/ImGuiWindow.h"
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
 
@@ -20,6 +21,9 @@ public:
     /// Sets a callback that is called after the value of a Midi Channel changes.
     void set_additional_midi_callback(std::function<void()> callback) { _extra_midi_callback = std::move(callback); }
 
+    void open_config_window() { _config_window.open(); }
+
+    void imgui_window_config();
     void imgui_visualize_channels();
     void imgui_controllers_dropdown();
     void imgui_emulate_midi_keyboard();
@@ -46,6 +50,7 @@ private:
     std::unordered_map<int, float> _value_from_index{};
     std::function<void()>          _extra_midi_callback{[] {
     }};
+    Cool::ImGuiWindow              _config_window;
 };
 
 inline auto midi_manager() -> MidiManager&
