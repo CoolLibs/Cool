@@ -44,7 +44,7 @@ private:
     static void midi_error_callback(RtMidiError::Type type, std::string const& error_text, void* user_data);
 
 private:
-    RtMidiIn                       _midi{};
+    std::optional<RtMidiIn>        _midi{}; // Optional because the creation might fail and throw an exception: http://www.music.mcgill.ca/~gary/rtmidi/index.html#start
     std::string                    _port_name{};
     std::optional<unsigned int>    _port_index{};
     std::unordered_map<int, float> _value_from_index{};

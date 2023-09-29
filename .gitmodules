@@ -103,9 +103,6 @@
 [submodule "lib/webcam_info"]
 	path = lib/webcam_info
 	url = https://github.com/CoolLibs/webcam_info.git
-[submodule "lib/rtmidi"]
-	path = lib/rtmidi
-	url = https://github.com/thestk/rtmidi
 [submodule "lib/RtMidiWrapper"]
 	path = lib/RtMidiWrapper
 	url = https://github.com/CoolLibs/RtMidiWrapper
