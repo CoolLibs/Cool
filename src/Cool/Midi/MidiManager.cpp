@@ -138,9 +138,9 @@ void MidiManager::imgui_window_config()
 
 void MidiManager::imgui_visualize_channels()
 {
-    auto values = std::vector<float>(max_index() + 1);
-    for (int i = 0; i < static_cast<int>(values.size()); ++i)
-        values[i] = get_value({i});
+    auto values = std::vector<float>(static_cast<size_t>(max_index() + 1));
+    for (size_t i = 0; i < values.size(); ++i)
+        values[i] = get_value({static_cast<int>(i)});
 
     ImGui::PlotHistogram("Channels", values.data(), static_cast<int>(values.size()), 0, nullptr, 0.f, 1.f, ImVec2(0, 80.0f));
 }
@@ -174,9 +174,9 @@ void MidiManager::imgui_emulate_midi_keyboard()
     for (int i = 0; i < static_cast<int>(values.size()); ++i)
     {
         ImGui::PushID(i);
-        if (ImGui::VSliderFloat("", ImVec2(30, 160), &values[i], 0.f, 1.f, ""))
+        if (ImGui::VSliderFloat("", ImVec2(30, 160), &values[static_cast<size_t>(i)], 0.f, 1.f, ""))
         {
-            std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[i] * 127.f)};
+            std::vector<unsigned char> message{0, static_cast<unsigned char>(i), static_cast<unsigned char>(values[static_cast<size_t>(i)] * 127.f)};
             midi_callback(0.f, &message, this);
         }
         ImGui::SetItemTooltip("%i", i);
