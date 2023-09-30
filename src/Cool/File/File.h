@@ -8,6 +8,9 @@ namespace Cool::File {
 /// Returns true iff file_path corresponds to an existing file or folder
 auto exists(std::filesystem::path const& file_path) -> bool;
 
+/// Returns true iff the operation was successful.
+auto remove(std::filesystem::path const& file_path) -> bool;
+
 /// Returns the name of the file + its extension (removes parent folders)
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
 

@@ -15,6 +15,19 @@ auto exists(std::filesystem::path const& file_path) -> bool
     return std::filesystem::exists(file_path);
 }
 
+auto remove(std::filesystem::path const& file_path) -> bool
+{
+    try
+    {
+        std::filesystem::remove(file_path);
+        return true;
+    }
+    catch (...)
+    {
+        return false;
+    }
+}
+
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.filename();

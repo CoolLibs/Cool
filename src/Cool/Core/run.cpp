@@ -57,18 +57,18 @@ static void erase_imgui_ini_if_old_version(int imgui_ini_version)
             auto input_file = std::ifstream{version_path};
             if (!input_file.is_open())
             {
-                std::filesystem::remove(ini_path);
+                Cool::File::remove(ini_path);
             }
             else
             {
                 int user_version{-1};
                 input_file >> user_version;
                 if (user_version < imgui_ini_version)
-                    std::filesystem::remove(ini_path);
+                    Cool::File::remove(ini_path);
             }
         }
 
-        std::filesystem::remove(version_path);
+        Cool::File::remove(version_path);
         auto output_file = std::ofstream{version_path};
         output_file << imgui_ini_version;
     }
