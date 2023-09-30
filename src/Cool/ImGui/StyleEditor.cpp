@@ -1,23 +1,21 @@
 #include "StyleEditor.h"
 #include <imgui.h>
-#include <cereal/archives/json.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Nodes/nodes_style_editor.h"
 #include "Cool/Path/Path.h"
-#include "Cool/Serialization/Serialization.h"
-#include "ImStyleEd/cereal_style.hpp"
+#include "Cool/internal/Serialization/SStyleEditor.h"
 
 namespace Cool {
 
 StyleEditor::StyleEditor()
 {
-    std::ignore = Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(*this, Cool::Path::user_data() / "style.json");
+    std::ignore = do_deserialize(*this, Cool::Path::user_data() / "style.json");
 }
 
 StyleEditor::~StyleEditor()
 {
-    Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(*this, Cool::Path::user_data() / "style.json");
+    do_serialize(*this, Cool::Path::user_data() / "style.json");
 }
 
 void StyleEditor::imgui()

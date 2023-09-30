@@ -1,10 +1,8 @@
 #pragma once
 #include <imgui-node-editor/imgui_node_editor.h>
-#include <cereal/types/polymorphic.hpp>
 #include <cereal/types/vector.hpp>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/UniqueEdContext.h"
-#include "Cool/Serialization/ImGuiSerialization.h"
 #include "Graph.h"
 #include "IEditor.h"
 #include "Node.h"
@@ -117,7 +115,3 @@ private:
 };
 
 } // namespace Cool
-
-#include <cereal/archives/json.hpp>
-CEREAL_REGISTER_TYPE(Cool::NodesEditorImpl);                                     /*NOLINT*/
-CEREAL_REGISTER_POLYMORPHIC_RELATION(Cool::INodesEditor, Cool::NodesEditorImpl); /*NOLINT*/
