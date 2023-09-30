@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Cool/Serialization/ImGuiSerialization.h>
 #include <cereal/types/list.hpp>
 #include <imgui_gradient/imgui_gradient.hpp>
+#include "ImStyleEd/cereal_style.hpp" // To serialize ImGui types
 
 namespace Cool {
 struct Gradient {

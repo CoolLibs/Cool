@@ -2,8 +2,8 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <boxer/boxer.h>
 #include <imgui.h>
-#include <cereal/archives/json.hpp>
 #include "Cool/Variables/PresetManager.h"
+#include "Cool/internal/Serialization/SPresetManager.h"
 
 // TODO(JF) In case of a change of Settings definition show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropdown that allows to link it to one of the new names that don't correspond to any old names)
 
@@ -12,19 +12,9 @@ namespace Cool {
 PresetManager::PresetManager(PresetsPaths const& paths)
     : _serializer{paths.user_defined_presets, "Presets"}
 {
-    auto const maybe_err = _serializer.load<reg::RawOrderedRegistry<Preset2>, cereal::JSONInputArchive>(_user_defined_presets);
+    auto const maybe_err = do_load(_user_defined_presets, _serializer);
     std::ignore          = maybe_err; // Ignore errors when file not found
-
-    // Load default presets
-    try
-    {
-        auto is      = std::ifstream{paths.default_presets};
-        auto archive = cereal::JSONInputArchive{is};
-        archive(_default_presets);
-    }
-    catch (...)
-    {
-    }
+    do_load_default_presets(_default_presets, paths.default_presets);
 }
 
 auto PresetManager::find_preset(std::function<bool(const Preset2&)> const& predicate) const -> PresetId
@@ -377,7 +367,7 @@ void PresetManager::save_preset(Settings_ConstRef new_preset_values, const Prese
 
 void PresetManager::save_to_file()
 {
-    _serializer.save<reg::RawOrderedRegistry<Preset2>, cereal::JSONOutputArchive>(_user_defined_presets);
+    do_save(_user_defined_presets, _serializer);
 }
 
 void PresetManager::imgui_adding_preset(Settings_ConstRef settings)

@@ -10,6 +10,7 @@
 #include "Cool/Nodes/EditorImpl.h"
 #include "Cool/Serialization/Serialization.h"
 #include "ImStyleEd/cereal_style.hpp"
+#include "SPresetManager.h"
 #include "SStyleEditor.h"
 #include "SWebcamsConfigs.h"
 
@@ -34,6 +35,27 @@ auto do_save(WebcamsConfigsMap const& configs, Cool::SerializerOnDemand const& s
 auto do_load(WebcamsConfigsMap& configs, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
 {
     return serializer.load<WebcamsConfigsMap, cereal::JSONInputArchive>(configs);
+}
+
+auto do_save(reg::RawOrderedRegistry<Preset2> const& data, Cool::SerializerOnDemand const& serializer) -> bool
+{
+    return serializer.save<reg::RawOrderedRegistry<Preset2>, cereal::JSONOutputArchive>(data);
+}
+auto do_load(reg::RawOrderedRegistry<Preset2>& data, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
+{
+    return serializer.load<reg::RawOrderedRegistry<Preset2>, cereal::JSONInputArchive>(data);
+}
+void do_load_default_presets(reg::RawOrderedRegistry<Preset2>& data, std::filesystem::path const& path)
+{
+    try
+    {
+        auto is      = std::ifstream{path};
+        auto archive = cereal::JSONInputArchive{is};
+        archive(data);
+    }
+    catch (...)
+    {
+    }
 }
 
 } // namespace Cool
