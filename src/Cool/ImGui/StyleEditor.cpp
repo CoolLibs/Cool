@@ -10,12 +10,12 @@ namespace Cool {
 
 StyleEditor::StyleEditor()
 {
-    std::ignore = do_deserialize(*this, Cool::Path::user_data() / "style.json");
+    std::ignore = do_load(*this, Cool::Path::user_data() / "style.json");
 }
 
 StyleEditor::~StyleEditor()
 {
-    do_serialize(*this, Cool::Path::user_data() / "style.json");
+    do_save(*this, Cool::Path::user_data() / "style.json");
 }
 
 void StyleEditor::imgui()

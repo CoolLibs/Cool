@@ -5,7 +5,7 @@
 
 namespace Cool {
 
-auto do_serialize(StyleEditor const&, std::filesystem::path const&) -> bool;
-auto do_deserialize(StyleEditor&, std::filesystem::path const&) -> Cool::OptionalErrorMessage;
+auto do_save(StyleEditor const&, std::filesystem::path const&) -> bool;
+auto do_load(StyleEditor&, std::filesystem::path const&) -> Cool::OptionalErrorMessage;
 
 } // namespace Cool

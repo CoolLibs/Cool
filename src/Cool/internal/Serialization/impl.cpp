@@ -18,11 +18,11 @@
 
 namespace Cool {
 
-auto do_serialize(StyleEditor const& editor, std::filesystem::path const& path) -> bool
+auto do_save(StyleEditor const& editor, std::filesystem::path const& path) -> bool
 {
     return Cool::Serialization::save<StyleEditor, cereal::JSONOutputArchive>(editor, path);
 }
-auto do_deserialize(StyleEditor& editor, std::filesystem::path const& path) -> Cool::OptionalErrorMessage
+auto do_load(StyleEditor& editor, std::filesystem::path const& path) -> Cool::OptionalErrorMessage
 {
     return Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(editor, path);
 }
