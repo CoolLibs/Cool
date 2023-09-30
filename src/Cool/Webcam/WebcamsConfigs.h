@@ -9,6 +9,8 @@
 
 namespace Cool {
 
+using WebcamsConfigsMap = std::unordered_map<std::string, WebcamConfig>;
+
 class WebcamsConfigs {
 public:
     [[nodiscard]] static auto instance() -> WebcamsConfigs&;
@@ -25,8 +27,6 @@ private:
     [[nodiscard]] auto get_config(std::string const& webcam_name, bool do_lock = true) -> WebcamConfig&;
 
 private:
-    using WebcamsConfigsMap = std::unordered_map<std::string, WebcamConfig>;
-
     WebcamsConfigsMap        _configs{};
     ImGuiWindow              _window{icon_fmt("Webcams Configs", ICOMOON_COG)};
     Cool::SerializerOnDemand _serializer{Cool::Path::user_data() / "webcams-configs.json", "Configs"};

@@ -23,9 +23,9 @@ public:
     }
 
     template<typename T, typename OutputArchive>
-    void save(T const& object) const
+    auto save(T const& object) const -> bool
     {
-        Serialization::save<T, OutputArchive>(object, _path, _key_name_in_json);
+        return Serialization::save<T, OutputArchive>(object, _path, _key_name_in_json);
     }
 
     [[nodiscard]] auto path() const -> auto const& { return _path; }

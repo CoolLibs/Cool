@@ -1,10 +1,7 @@
 #include "WebcamsConfigs.h"
-#include <cereal/archives/json.hpp>
-#include <cereal/types/string.hpp>
-#include <cereal/types/unordered_map.hpp>
-#include <cereal/types/vector.hpp>
 #include <webcam_info/webcam_info.hpp>
 #include "Cool/Image/AspectRatio.h"
+#include "Cool/internal/Serialization/SWebcamsConfigs.h"
 #include "TextureLibrary_FromWebcam.h"
 #include "WebcamsInfos.h"
 
@@ -13,7 +10,7 @@ namespace Cool {
 auto WebcamsConfigs::gen_instance() -> WebcamsConfigs&
 {
     static auto inst      = WebcamsConfigs{};
-    auto const  maybe_err = inst._serializer.load<WebcamsConfigsMap, cereal::JSONInputArchive>(inst._configs);
+    auto const  maybe_err = do_load(inst._configs, inst._serializer);
     std::ignore           = maybe_err; // Ignore errors when file not found
     return inst;
 }
@@ -73,7 +70,7 @@ void WebcamsConfigs::imgui_window()
                     {
                         config.resolution = resolution;
                         TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy the current request so that a new one will be created with the new requested resolution.
-                        _serializer.save<WebcamsConfigsMap, cereal::JSONOutputArchive>(_configs);
+                        do_save(_configs, _serializer);
                     }
 
                     if (is_selected)

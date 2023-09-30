@@ -11,6 +11,7 @@
 #include "Cool/Serialization/Serialization.h"
 #include "ImStyleEd/cereal_style.hpp"
 #include "SStyleEditor.h"
+#include "SWebcamsConfigs.h"
 
 //
 #include "cereal/archives/json.hpp"
@@ -24,6 +25,15 @@ auto do_serialize(StyleEditor const& editor, std::filesystem::path const& path) 
 auto do_deserialize(StyleEditor& editor, std::filesystem::path const& path) -> Cool::OptionalErrorMessage
 {
     return Cool::Serialization::load<StyleEditor, cereal::JSONInputArchive>(editor, path);
+}
+
+auto do_save(WebcamsConfigsMap const& configs, Cool::SerializerOnDemand const& serializer) -> bool
+{
+    return serializer.save<WebcamsConfigsMap, cereal::JSONOutputArchive>(configs);
+}
+auto do_load(WebcamsConfigsMap& configs, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
+{
+    return serializer.load<WebcamsConfigsMap, cereal::JSONInputArchive>(configs);
 }
 
 } // namespace Cool
