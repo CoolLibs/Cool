@@ -1,5 +1,6 @@
 #include "MidiManager.h"
 #include <imgui.h>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/ToUser.h"
@@ -141,6 +142,10 @@ void MidiManager::imgui_visualize_channels()
     auto values = std::vector<float>(static_cast<size_t>(max_index() + 1));
     for (size_t i = 0; i < values.size(); ++i)
         values[i] = get_value({static_cast<int>(i)});
+
+    ImGui::PushFont(Font::italic());
+    ImGui::TextUnformatted("Use your knob / slider / button and the value will reflect in the histogram below. You can then hover it to see the index.");
+    ImGui::PopFont();
 
     ImGui::PlotHistogram("Channels", values.data(), static_cast<int>(values.size()), 0, nullptr, 0.f, 1.f, ImVec2(0, 80.0f));
 }
