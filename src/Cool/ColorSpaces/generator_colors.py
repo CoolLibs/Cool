@@ -168,6 +168,37 @@ def convert_col_and_alpha_as():
     )
 
 
+def conversions_cpp_declaration():
+    from itertools import product
+
+    res = ""
+    for colors in product(color_spaces(), color_spaces()):
+        if colors[0] == colors[1]:
+            continue
+        res += f"""[[nodiscard]] auto {colors[0].name_in_code}_from_{colors[1].name_in_code}(glm::vec3 const&) -> glm::vec3;
+"""
+    return res
+
+
+def conversions_cpp_definition():
+    from itertools import product
+
+    res = ""
+    for colors in product(color_spaces(), color_spaces()):
+        func_name = f"{colors[0].name_in_code}_from_{colors[1].name_in_code}"
+        if (
+            colors[0] == colors[1]
+            or func_name == "LinearRGB_from_sRGB"
+            or func_name == "sRGB_from_LinearRGB"
+        ):
+            continue
+        res += f"""auto {func_name}(glm::vec3 const& c) -> glm::vec3
+{{
+    return {colors[0].name_in_code}_from_XYZ(XYZ_from_{colors[1].name_in_code}(c));
+}}"""
+    return res
+
+
 if __name__ == "__main__":
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
@@ -202,5 +233,7 @@ if __name__ == "__main__":
             define_color_and_alpha_getters,
             convert_col_as,
             convert_col_and_alpha_as,
+            conversions_cpp_declaration,
+            conversions_cpp_definition,
         ],
     )

@@ -38,23 +38,23 @@ static auto sRGB_from_LinearRGB_impl(float x) -> float
                : 1.055f * std::pow(x, 1.f / 2.4f) - 0.055f;
 }
 
-auto LinearRGB_from_sRGB(glm::vec3 srgb) -> glm::vec3
+auto LinearRGB_from_sRGB(glm::vec3 const& srgb) -> glm::vec3
 {
-    srgb = keep_above_0(srgb);
+    auto const clamped = keep_above_0(srgb);
     return {
-        LinearRGB_from_sRGB_impl(srgb.x),
-        LinearRGB_from_sRGB_impl(srgb.y),
-        LinearRGB_from_sRGB_impl(srgb.z),
+        LinearRGB_from_sRGB_impl(clamped.x),
+        LinearRGB_from_sRGB_impl(clamped.y),
+        LinearRGB_from_sRGB_impl(clamped.z),
     };
 }
 
-auto sRGB_from_LinearRGB(glm::vec3 rgb) -> glm::vec3
+auto sRGB_from_LinearRGB(glm::vec3 const& rgb) -> glm::vec3
 {
-    rgb = keep_above_0(rgb);
+    auto const clamped = keep_above_0(rgb);
     return {
-        sRGB_from_LinearRGB_impl(rgb.x),
-        sRGB_from_LinearRGB_impl(rgb.y),
-        sRGB_from_LinearRGB_impl(rgb.z),
+        sRGB_from_LinearRGB_impl(clamped.x),
+        sRGB_from_LinearRGB_impl(clamped.y),
+        sRGB_from_LinearRGB_impl(clamped.z),
     };
 }
 // End of [Block1]
@@ -66,10 +66,18 @@ auto XYZ_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
 {
     return c * glm::mat3(0.4124f, 0.3576f, 0.1805f, 0.2126f, 0.7152f, 0.0722f, 0.0193f, 0.1192f, 0.9505f);
 }
+auto LinearRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
+{
+    return c * glm::mat3(3.2406f, -1.5372f, -0.4986f, -0.9689f, 1.8758f, 0.0415f, 0.0557f, -0.2040f, 1.0570f);
+}
 
 auto XYZ_from_sRGB(glm::vec3 const& c) -> glm::vec3
 {
     return XYZ_from_LinearRGB(LinearRGB_from_sRGB(c));
+}
+auto sRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
+{
+    return sRGB_from_LinearRGB(LinearRGB_from_XYZ(c));
 }
 
 auto CIELAB_from_XYZ(glm::vec3 const& c) -> glm::vec3
@@ -85,16 +93,6 @@ auto CIELAB_from_XYZ(glm::vec3 const& c) -> glm::vec3
         5.f * (v.x - v.y),
         2.f * (v.y - v.z),
     };
-}
-
-auto CIELAB_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_sRGB(c));
-}
-
-auto CIELAB_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_LinearRGB(c));
 }
 
 auto XYZ_from_CIELAB(glm::vec3 const& c) -> glm::vec3
@@ -113,25 +111,6 @@ auto XYZ_from_CIELAB(glm::vec3 const& c) -> glm::vec3
     };
 }
 
-auto LinearRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
-{
-    return c * glm::mat3(3.2406f, -1.5372f, -0.4986f, -0.9689f, 1.8758f, 0.0415f, 0.0557f, -0.2040f, 1.0570f);
-}
-
-auto sRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
-{
-    return sRGB_from_LinearRGB(LinearRGB_from_XYZ(c));
-}
-
-auto sRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return sRGB_from_XYZ(XYZ_from_CIELAB(c));
-}
-
-auto LinearRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return LinearRGB_from_sRGB(sRGB_from_CIELAB(c));
-}
 // End of [Block2]
 
 // Start of [Block3]
@@ -396,38 +375,8 @@ auto HSLuv_from_XYZ(glm::vec3 const& col) -> glm::vec3
     return tmp / glm::vec3{360., 100.f, 100.f};
 }
 
-// SRGB
-auto HSLuv_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_sRGB(c));
-}
-
-auto sRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return sRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
-
-// LinearRGB
-auto HSLuv_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_LinearRGB(c));
-}
-
-auto LinearRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return LinearRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
-
-// CIELAB
-auto HSLuv_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_CIELAB(c));
-}
-
-auto CIELAB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_HSLuv(c));
-}
-
 // End of [Block3]
+
+#include "generated/conversions_cpp_definition.inl"
+
 } // namespace Cool
