@@ -43,9 +43,19 @@ vec3 Cool_XYZ_from_LinearRGB(vec3 c)
     return c * mat3(0.4124, 0.3576, 0.1805, 0.2126, 0.7152, 0.0722, 0.0193, 0.1192, 0.9505);
 }
 
+vec3 Cool_LinearRGB_from_XYZ(vec3 c)
+{
+    return c * mat3(3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
+}
+
 vec3 Cool_XYZ_from_sRGB(vec3 c)
 {
     return Cool_XYZ_from_LinearRGB(Cool_LinearRGB_from_sRGB(c));
+}
+
+vec3 Cool_sRGB_from_XYZ(vec3 c)
+{
+    return Cool_sRGB_from_LinearRGB(Cool_LinearRGB_from_XYZ(c));
 }
 
 vec3 Cool_CIELAB_from_XYZ(vec3 c)
@@ -62,16 +72,6 @@ vec3 Cool_CIELAB_from_XYZ(vec3 c)
     );
 }
 
-vec3 Cool_CIELAB_from_sRGB(vec3 c)
-{
-    return Cool_CIELAB_from_XYZ(Cool_XYZ_from_sRGB(c));
-}
-
-vec3 Cool_CIELAB_from_LinearRGB(vec3 c)
-{
-    return Cool_CIELAB_from_XYZ(Cool_XYZ_from_LinearRGB(c));
-}
-
 vec3 Cool_XYZ_from_CIELAB(vec3 c)
 {
     float fy = (c.x + 0.16) / 1.16;
@@ -86,26 +86,6 @@ vec3 Cool_XYZ_from_CIELAB(vec3 c)
         1.00000 * ((fy3 > 0.008856) ? fy3 : (fy - 16. / 116.) / 7.787),
         1.08883 * ((fz3 > 0.008856) ? fz3 : (fz - 16. / 116.) / 7.787)
     );
-}
-
-vec3 Cool_LinearRGB_from_XYZ(vec3 c)
-{
-    return c * mat3(3.2406, -1.5372, -0.4986, -0.9689, 1.8758, 0.0415, 0.0557, -0.2040, 1.0570);
-}
-
-vec3 Cool_sRGB_from_XYZ(vec3 c)
-{
-    return Cool_sRGB_from_LinearRGB(Cool_LinearRGB_from_XYZ(c));
-}
-
-vec3 Cool_sRGB_from_CIELAB(vec3 c)
-{
-    return Cool_sRGB_from_XYZ(Cool_XYZ_from_CIELAB(c));
-}
-
-vec3 Cool_LinearRGB_from_CIELAB(vec3 c)
-{
-    return Cool_LinearRGB_from_sRGB(Cool_sRGB_from_CIELAB(c));
 }
 // End of [Block2]
 
@@ -305,38 +285,6 @@ vec3 Cool_HSLuv_from_XYZ(vec3 tuple)
     return CoolHsluv_lchToHsluv(CoolHsluv_xyzToLch(saturate(tuple))) / vec3(360., 100., 100.);
 }
 
-// SRGB
-vec3 Cool_HSLuv_from_sRGB(vec3 c)
-{
-    return Cool_HSLuv_from_XYZ(Cool_XYZ_from_sRGB(c));
-}
-
-vec3 Cool_sRGB_from_HSLuv(vec3 c)
-{
-    return Cool_sRGB_from_XYZ(Cool_XYZ_from_HSLuv(c));
-}
-
-// LinearRGB
-vec3 Cool_HSLuv_from_LinearRGB(vec3 c)
-{
-    return Cool_HSLuv_from_XYZ(Cool_XYZ_from_LinearRGB(c));
-}
-
-vec3 Cool_LinearRGB_from_HSLuv(vec3 c)
-{
-    return Cool_LinearRGB_from_XYZ(Cool_XYZ_from_HSLuv(c));
-}
-
-// CIELAB
-vec3 Cool_HSLuv_from_CIELAB(vec3 c)
-{
-    return Cool_HSLuv_from_XYZ(Cool_XYZ_from_CIELAB(c));
-}
-
-vec3 Cool_CIELAB_from_HSLuv(vec3 c)
-{
-    return Cool_CIELAB_from_XYZ(Cool_XYZ_from_HSLuv(c));
-}
 // End of [Block3]
 
 // Start of [Block4]
@@ -381,6 +329,8 @@ vec2 Cool_apply_premultiplied_alpha_to_greyscale_and_alpha(vec2 greyscale, float
 }
 // End of [Block4]
 
+#include "_COOL_RES_/shaders/generated/conversions_glsl.inl"
+
 // Start of [Block5]
 vec3 Cool_CIELAB_from_Float(float x)
 {
@@ -390,32 +340,6 @@ float Cool_Float_from_CIELAB(vec3 lab)
 {
     return lab.x;
 }
-
-vec3 Cool_sRGB_from_Float(float x)
-{
-    return Cool_sRGB_from_CIELAB(Cool_CIELAB_from_Float(x));
-}
-float Cool_Float_from_sRGB(vec3 color)
-{
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_sRGB(color));
-}
-
-vec3 Cool_LinearRGB_from_Float(float x)
-{
-    return Cool_LinearRGB_from_CIELAB(Cool_CIELAB_from_Float(x));
-}
-float Cool_Float_from_LinearRGB(vec3 color)
-{
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_LinearRGB(color));
-}
-
-vec3 Cool_HSLuv_from_Float(float x)
-{
-    return Cool_HSLuv_from_CIELAB(Cool_CIELAB_from_Float(x));
-}
-float Cool_Float_from_HSLuv(vec3 color)
-{
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_HSLuv(color));
-}
+#include "_COOL_RES_/shaders/generated/conversions_glsl_with_float.inl"
 
 // End of [Block5]

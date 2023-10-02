@@ -199,6 +199,43 @@ def conversions_cpp_definition():
     return res
 
 
+def conversions_glsl():
+    from itertools import product
+
+    res = ""
+    for colors in product(color_spaces(), color_spaces()):
+        func_name = f"Cool_{colors[0].name_in_code}_from_{colors[1].name_in_code}"
+        if (
+            colors[0] == colors[1]
+            or func_name == "Cool_LinearRGB_from_sRGB"
+            or func_name == "Cool_sRGB_from_LinearRGB"
+        ):
+            continue
+        res += f"""vec3 {func_name}(vec3 c)
+{{
+    return Cool_{colors[0].name_in_code}_from_XYZ(Cool_XYZ_from_{colors[1].name_in_code}(c));
+}}"""
+    return res
+
+
+def conversions_glsl_with_float():
+    from itertools import product
+
+    res = ""
+    for color in color_spaces():
+        if color.name_in_code == "CIELAB":
+            continue
+        res += f"""vec3 Cool_{color.name_in_code}_from_Float(float x)
+{{
+    return Cool_{color.name_in_code}_from_CIELAB(Cool_CIELAB_from_Float(x));
+}}
+float Cool_Float_from_{color.name_in_code}(vec3 color)
+{{
+    return Cool_Float_from_CIELAB(Cool_CIELAB_from_{color.name_in_code}(color));
+}}"""
+    return res
+
+
 if __name__ == "__main__":
     # HACK: Python doesn't allow us to import from a parent folder (e.g. tooling.generate_files)
     # So we need to add the path manually to sys.path
@@ -235,5 +272,12 @@ if __name__ == "__main__":
             convert_col_and_alpha_as,
             conversions_cpp_declaration,
             conversions_cpp_definition,
+        ],
+    )
+    generate_files.generate(
+        folder="../../../res/shaders/generated",
+        files=[
+            conversions_glsl,
+            conversions_glsl_with_float,
         ],
     )
