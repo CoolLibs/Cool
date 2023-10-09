@@ -16,10 +16,6 @@ class AlphaSpace:
 def color_spaces():
     return [
         ColorSpace(
-            name_in_code="CIELAB",
-            user_facing_name="CIELAB",
-        ),
-        ColorSpace(
             name_in_code="Oklab",
             user_facing_name="Oklab",
         ),
@@ -227,15 +223,15 @@ def conversions_glsl_with_float():
 
     res = ""
     for color in color_spaces():
-        if color.name_in_code == "CIELAB":
+        if color.name_in_code == "Oklab":
             continue
         res += f"""vec3 Cool_{color.name_in_code}_from_Float(float x)
 {{
-    return Cool_{color.name_in_code}_from_CIELAB(Cool_CIELAB_from_Float(x));
+    return Cool_{color.name_in_code}_from_Oklab(Cool_Oklab_from_Float(x));
 }}
 float Cool_Float_from_{color.name_in_code}(vec3 color)
 {{
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_{color.name_in_code}(color));
+    return Cool_Float_from_Oklab(Cool_Oklab_from_{color.name_in_code}(color));
 }}"""
     return res
 

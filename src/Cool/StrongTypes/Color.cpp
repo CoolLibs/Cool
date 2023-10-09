@@ -46,7 +46,7 @@ auto Color::brighter() const -> Color
 
 auto get_text_color(Color const& background_color) -> Color
 {
-    bool const color_is_bright = background_color.as_CIELAB().x > 0.7f;
+    bool const color_is_bright = background_color.as_Oklab().x > 0.7f;
     auto const color           = user_settings().color_themes.editor().get_color_from_theme_if_any(color_is_bright ? "Light" : "Dark", "Text");
     return Color::from_srgb({color.r, color.g, color.b});
 }

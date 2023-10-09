@@ -5,11 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-auto Color::as_CIELAB() const -> glm::vec3
-{
-    return CIELAB_from_sRGB(_srgb);
-}
-
 auto Color::as_Oklab() const -> glm::vec3
 {
     return Oklab_from_sRGB(_srgb);

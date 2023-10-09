@@ -46,11 +46,6 @@ struct from_impl<"vec4"> {
 };
 
 template<>
-struct from_impl<"CIELAB"> {
-    using type = Cool::Color;
-};
-
-template<>
 struct from_impl<"Oklab"> {
     using type = Cool::Color;
 };
@@ -68,16 +63,6 @@ struct from_impl<"sRGB"> {
 template<>
 struct from_impl<"HSLuv"> {
     using type = Cool::Color;
-};
-
-template<>
-struct from_impl<"CIELAB_PremultipliedA"> {
-    using type = Cool::ColorAndAlpha;
-};
-
-template<>
-struct from_impl<"CIELAB_StraightA"> {
-    using type = Cool::ColorAndAlpha;
 };
 
 template<>

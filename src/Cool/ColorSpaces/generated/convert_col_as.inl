@@ -5,9 +5,6 @@
  * -----------------------------------------------------------------------------
  */
 
-case Cool::ColorSpace::CIELAB:
-return col.as_CIELAB();
-
 case Cool::ColorSpace::Oklab:
 return col.as_Oklab();
 

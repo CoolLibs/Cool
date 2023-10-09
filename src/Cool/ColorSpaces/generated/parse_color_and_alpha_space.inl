@@ -4,10 +4,6 @@
  * Instead, go to "generator_colors.py" and edit the "parse_color_and_alpha_space" function there.
  * -----------------------------------------------------------------------------
  */
-if (text == "CIELAB_PremultipliedA")
-    return ColorAndAlphaSpace::CIELAB_PremultipliedA;
-if (text == "CIELAB_StraightA")
-    return ColorAndAlphaSpace::CIELAB_StraightA;
 if (text == "Oklab_PremultipliedA")
     return ColorAndAlphaSpace::Oklab_PremultipliedA;
 if (text == "Oklab_StraightA")

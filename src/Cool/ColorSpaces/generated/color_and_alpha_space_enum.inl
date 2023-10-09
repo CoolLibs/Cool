@@ -4,9 +4,7 @@
  * Instead, go to "generator_colors.py" and edit the "color_and_alpha_space_enum" function there.
  * -----------------------------------------------------------------------------
  */
-CIELAB_PremultipliedA,
-    CIELAB_StraightA,
-    Oklab_PremultipliedA,
+Oklab_PremultipliedA,
     Oklab_StraightA,
     LinearRGB_PremultipliedA,
     LinearRGB_StraightA,

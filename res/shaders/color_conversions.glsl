@@ -58,35 +58,6 @@ vec3 Cool_sRGB_from_XYZ(vec3 c)
     return Cool_sRGB_from_LinearRGB(Cool_LinearRGB_from_XYZ(c));
 }
 
-vec3 Cool_CIELAB_from_XYZ(vec3 c)
-{
-    vec3 n = c / vec3(0.95047, 1., 1.08883);
-    vec3 v;
-    v.x = (n.x > 0.008856) ? pow(n.x, 1. / 3.) : (7.787 * n.x) + (16. / 116.);
-    v.y = (n.y > 0.008856) ? pow(n.y, 1. / 3.) : (7.787 * n.y) + (16. / 116.);
-    v.z = (n.z > 0.008856) ? pow(n.z, 1. / 3.) : (7.787 * n.z) + (16. / 116.);
-    return vec3(
-        (1.16 * v.y) - 0.16,
-        5. * (v.x - v.y),
-        2. * (v.y - v.z)
-    );
-}
-
-vec3 Cool_XYZ_from_CIELAB(vec3 c)
-{
-    float fy = (c.x + 0.16) / 1.16;
-    float fx = c.y / 5. + fy;
-    float fz = fy - c.z / 2.;
-
-    float fx3 = fx * fx * fx;
-    float fy3 = fy * fy * fy;
-    float fz3 = fz * fz * fz;
-    return vec3(
-        0.95047 * ((fx3 > 0.008856) ? fx3 : (fx - 16. / 116.) / 7.787),
-        1.00000 * ((fy3 > 0.008856) ? fy3 : (fy - 16. / 116.) / 7.787),
-        1.08883 * ((fz3 > 0.008856) ? fz3 : (fz - 16. / 116.) / 7.787)
-    );
-}
 // End of [Block2]
 
 // Start of [Block3]
@@ -370,11 +341,11 @@ vec2 Cool_apply_premultiplied_alpha_to_greyscale_and_alpha(vec2 greyscale, float
 #include "_COOL_RES_/shaders/generated/conversions_glsl.inl"
 
 // Start of [Block N]
-vec3 Cool_CIELAB_from_Float(float x)
+vec3 Cool_Oklab_from_Float(float x)
 {
     return vec3(saturate(x), 0., 0.);
 }
-float Cool_Float_from_CIELAB(vec3 lab)
+float Cool_Float_from_Oklab(vec3 lab)
 {
     return lab.x;
 }

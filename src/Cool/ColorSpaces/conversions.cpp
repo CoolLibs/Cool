@@ -80,37 +80,6 @@ auto sRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
     return sRGB_from_LinearRGB(LinearRGB_from_XYZ(c));
 }
 
-auto CIELAB_from_XYZ(glm::vec3 const& c) -> glm::vec3
-{
-    glm::vec3 const n = c / glm::vec3(0.95047f, 1.f, 1.08883f);
-    glm::vec3 const v{
-        (n.x > 0.008856) ? std::pow(n.x, 1.f / 3.f) : (7.787f * n.x) + (16.f / 116.f),
-        (n.y > 0.008856) ? std::pow(n.y, 1.f / 3.f) : (7.787f * n.y) + (16.f / 116.f),
-        (n.z > 0.008856) ? std::pow(n.z, 1.f / 3.f) : (7.787f * n.z) + (16.f / 116.f),
-    };
-    return {
-        (1.16f * v.y) - 0.16f,
-        5.f * (v.x - v.y),
-        2.f * (v.y - v.z),
-    };
-}
-
-auto XYZ_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    float const fy = (c.x + 0.16f) / 1.16f;
-    float const fx = c.y / 5.f + fy;
-    float const fz = fy - c.z / 2.f;
-
-    float const fx3 = fx * fx * fx;
-    float const fy3 = fy * fy * fy;
-    float const fz3 = fz * fz * fz;
-    return {
-        0.95047f * ((fx3 > 0.008856f) ? fx3 : (fx - 16.f / 116.f) / 7.787f),
-        1.00000f * ((fy3 > 0.008856f) ? fy3 : (fy - 16.f / 116.f) / 7.787f),
-        1.08883f * ((fz3 > 0.008856f) ? fz3 : (fz - 16.f / 116.f) / 7.787f),
-    };
-}
-
 // End of [Block2]
 
 // Start of [Block3]

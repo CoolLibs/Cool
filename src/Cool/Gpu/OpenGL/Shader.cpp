@@ -155,7 +155,7 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
         );
         set_uniform(
             fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx),
-            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_CIELAB_PremultipliedA()
+            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_Oklab_PremultipliedA()
         );
         idx++;
     }

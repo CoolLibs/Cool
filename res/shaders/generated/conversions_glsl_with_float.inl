@@ -4,35 +4,27 @@
  * Instead, go to "generator_colors.py" and edit the "conversions_glsl_with_float" function there.
  * -----------------------------------------------------------------------------
  */
-vec3 Cool_Oklab_from_Float(float x)
-{
-    return Cool_Oklab_from_CIELAB(Cool_CIELAB_from_Float(x));
-}
-float Cool_Float_from_Oklab(vec3 color)
-{
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_Oklab(color));
-}
 vec3 Cool_LinearRGB_from_Float(float x)
 {
-    return Cool_LinearRGB_from_CIELAB(Cool_CIELAB_from_Float(x));
+    return Cool_LinearRGB_from_Oklab(Cool_Oklab_from_Float(x));
 }
 float Cool_Float_from_LinearRGB(vec3 color)
 {
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_LinearRGB(color));
+    return Cool_Float_from_Oklab(Cool_Oklab_from_LinearRGB(color));
 }
 vec3 Cool_sRGB_from_Float(float x)
 {
-    return Cool_sRGB_from_CIELAB(Cool_CIELAB_from_Float(x));
+    return Cool_sRGB_from_Oklab(Cool_Oklab_from_Float(x));
 }
 float Cool_Float_from_sRGB(vec3 color)
 {
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_sRGB(color));
+    return Cool_Float_from_Oklab(Cool_Oklab_from_sRGB(color));
 }
 vec3 Cool_HSLuv_from_Float(float x)
 {
-    return Cool_HSLuv_from_CIELAB(Cool_CIELAB_from_Float(x));
+    return Cool_HSLuv_from_Oklab(Cool_Oklab_from_Float(x));
 }
 float Cool_Float_from_HSLuv(vec3 color)
 {
-    return Cool_Float_from_CIELAB(Cool_CIELAB_from_HSLuv(color));
+    return Cool_Float_from_Oklab(Cool_Oklab_from_HSLuv(color));
 }
