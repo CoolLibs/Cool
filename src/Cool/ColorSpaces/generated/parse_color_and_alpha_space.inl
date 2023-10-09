@@ -8,6 +8,10 @@ if (text == "CIELAB_PremultipliedA")
     return ColorAndAlphaSpace::CIELAB_PremultipliedA;
 if (text == "CIELAB_StraightA")
     return ColorAndAlphaSpace::CIELAB_StraightA;
+if (text == "Oklab_PremultipliedA")
+    return ColorAndAlphaSpace::Oklab_PremultipliedA;
+if (text == "Oklab_StraightA")
+    return ColorAndAlphaSpace::Oklab_StraightA;
 if (text == "LinearRGB_PremultipliedA")
     return ColorAndAlphaSpace::LinearRGB_PremultipliedA;
 if (text == "LinearRGB_StraightA")

@@ -4,6 +4,14 @@
  * Instead, go to "generator_colors.py" and edit the "conversions_glsl_with_float" function there.
  * -----------------------------------------------------------------------------
  */
+vec3 Cool_Oklab_from_Float(float x)
+{
+    return Cool_Oklab_from_CIELAB(Cool_CIELAB_from_Float(x));
+}
+float Cool_Float_from_Oklab(vec3 color)
+{
+    return Cool_Float_from_CIELAB(Cool_CIELAB_from_Oklab(color));
+}
 vec3 Cool_LinearRGB_from_Float(float x)
 {
     return Cool_LinearRGB_from_CIELAB(Cool_CIELAB_from_Float(x));

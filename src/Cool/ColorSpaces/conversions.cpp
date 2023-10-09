@@ -377,6 +377,44 @@ auto HSLuv_from_XYZ(glm::vec3 const& col) -> glm::vec3
 
 // End of [Block3]
 
+// Start of [Block4]
+// https://bottosson.github.io/posts/oklab/
+
+glm::vec3 Oklab_from_XYZ(glm::vec3 xyz)
+{
+    glm::vec3 lms = glm::mat3(
+                        +0.8189330101, +0.0329845436, +0.0482003018,
+                        +0.3618667424, +0.9293118715, +0.2643662691,
+                        -0.1288597137, +0.0361456387, +0.6338517070
+                    )
+                    * xyz;
+    lms = glm::pow(lms, glm::vec3(1. / 3.));
+    return glm::mat3(
+               +0.2104542553, +1.9779984951, +0.0259040371,
+               +0.7936177850, -2.4285922050, +0.7827717662,
+               0.0040720468, +0.4505937099, -0.8086757660
+           )
+           * lms;
+}
+
+glm::vec3 XYZ_from_Oklab(glm::vec3 lab)
+{
+    glm::vec3 lms = glm::mat3(
+                        +0.99192169488, +0.99192170523, +0.99192175065,
+                        +0.39706067252, -0.10483846197, -0.08876130171,
+                        +0.22623676972, -0.05342116300, -1.28105252562
+                    )
+                    * lab;
+    lms = glm::pow(lms, glm::vec3(3.));
+    return glm::inverse(glm::mat3(
+               +1.22701385110, -0.04058017842, -0.07638128451,
+               -0.55779998065, +1.11225686962, -0.42148197842,
+               +0.28125614897, -0.07167667867, +1.58616322044
+           ))
+           * lms;
+}
+// End of [Block4]
+
 #include "generated/conversions_cpp_definition.inl"
 
 } // namespace Cool

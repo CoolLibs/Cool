@@ -4,15 +4,23 @@
  * Instead, go to "generator_colors.py" and edit the "conversions_cpp_declaration" function there.
  * -----------------------------------------------------------------------------
  */
+[[nodiscard]] auto CIELAB_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto CIELAB_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto CIELAB_from_sRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto CIELAB_from_HSLuv(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Oklab_from_CIELAB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Oklab_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Oklab_from_sRGB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Oklab_from_HSLuv(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto LinearRGB_from_CIELAB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto LinearRGB_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto LinearRGB_from_sRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto LinearRGB_from_HSLuv(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto sRGB_from_CIELAB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto sRGB_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto sRGB_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto sRGB_from_HSLuv(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto HSLuv_from_CIELAB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto HSLuv_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto HSLuv_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto HSLuv_from_sRGB(glm::vec3 const&) -> glm::vec3;

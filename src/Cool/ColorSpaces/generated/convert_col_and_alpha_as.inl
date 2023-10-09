@@ -11,6 +11,12 @@ return col.as_CIELAB_PremultipliedA();
 case Cool::ColorAndAlphaSpace::CIELAB_StraightA:
 return col.as_CIELAB_StraightA();
 
+case Cool::ColorAndAlphaSpace::Oklab_PremultipliedA:
+return col.as_Oklab_PremultipliedA();
+
+case Cool::ColorAndAlphaSpace::Oklab_StraightA:
+return col.as_Oklab_StraightA();
+
 case Cool::ColorAndAlphaSpace::LinearRGB_PremultipliedA:
 return col.as_LinearRGB_PremultipliedA();
 

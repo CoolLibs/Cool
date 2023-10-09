@@ -6,6 +6,8 @@
  */
 if (text == "CIELAB")
     return ColorSpace::CIELAB;
+if (text == "Oklab")
+    return ColorSpace::Oklab;
 if (text == "LinearRGB")
     return ColorSpace::LinearRGB;
 if (text == "sRGB")

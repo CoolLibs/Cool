@@ -20,6 +20,10 @@ def color_spaces():
             user_facing_name="CIELAB",
         ),
         ColorSpace(
+            name_in_code="Oklab",
+            user_facing_name="Oklab",
+        ),
+        ColorSpace(
             name_in_code="LinearRGB",
             user_facing_name="Linear RGB",
         ),

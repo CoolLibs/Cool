@@ -4,6 +4,10 @@
  * Instead, go to "generator_colors.py" and edit the "conversions_cpp_definition" function there.
  * -----------------------------------------------------------------------------
  */
+auto CIELAB_from_Oklab(glm::vec3 const& c) -> glm::vec3
+{
+    return CIELAB_from_XYZ(XYZ_from_Oklab(c));
+}
 auto CIELAB_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
 {
     return CIELAB_from_XYZ(XYZ_from_LinearRGB(c));
@@ -16,9 +20,29 @@ auto CIELAB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
 {
     return CIELAB_from_XYZ(XYZ_from_HSLuv(c));
 }
+auto Oklab_from_CIELAB(glm::vec3 const& c) -> glm::vec3
+{
+    return Oklab_from_XYZ(XYZ_from_CIELAB(c));
+}
+auto Oklab_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
+{
+    return Oklab_from_XYZ(XYZ_from_LinearRGB(c));
+}
+auto Oklab_from_sRGB(glm::vec3 const& c) -> glm::vec3
+{
+    return Oklab_from_XYZ(XYZ_from_sRGB(c));
+}
+auto Oklab_from_HSLuv(glm::vec3 const& c) -> glm::vec3
+{
+    return Oklab_from_XYZ(XYZ_from_HSLuv(c));
+}
 auto LinearRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
 {
     return LinearRGB_from_XYZ(XYZ_from_CIELAB(c));
+}
+auto LinearRGB_from_Oklab(glm::vec3 const& c) -> glm::vec3
+{
+    return LinearRGB_from_XYZ(XYZ_from_Oklab(c));
 }
 auto LinearRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
 {
@@ -28,6 +52,10 @@ auto sRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
 {
     return sRGB_from_XYZ(XYZ_from_CIELAB(c));
 }
+auto sRGB_from_Oklab(glm::vec3 const& c) -> glm::vec3
+{
+    return sRGB_from_XYZ(XYZ_from_Oklab(c));
+}
 auto sRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
 {
     return sRGB_from_XYZ(XYZ_from_HSLuv(c));
@@ -35,6 +63,10 @@ auto sRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
 auto HSLuv_from_CIELAB(glm::vec3 const& c) -> glm::vec3
 {
     return HSLuv_from_XYZ(XYZ_from_CIELAB(c));
+}
+auto HSLuv_from_Oklab(glm::vec3 const& c) -> glm::vec3
+{
+    return HSLuv_from_XYZ(XYZ_from_Oklab(c));
 }
 auto HSLuv_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
 {

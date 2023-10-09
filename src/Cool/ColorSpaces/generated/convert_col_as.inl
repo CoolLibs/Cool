@@ -8,6 +8,9 @@
 case Cool::ColorSpace::CIELAB:
 return col.as_CIELAB();
 
+case Cool::ColorSpace::Oklab:
+return col.as_Oklab();
+
 case Cool::ColorSpace::LinearRGB:
 return col.as_LinearRGB();
 

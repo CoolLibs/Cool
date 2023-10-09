@@ -5,6 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 [[nodiscard]] auto as_CIELAB() const -> glm::vec3;
+[[nodiscard]] auto as_Oklab() const -> glm::vec3;
 [[nodiscard]] auto as_LinearRGB() const -> glm::vec3;
 [[nodiscard]] auto as_sRGB() const -> glm::vec3;
 [[nodiscard]] auto as_HSLuv() const -> glm::vec3;

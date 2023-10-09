@@ -6,6 +6,8 @@
  */
 CIELAB_PremultipliedA,
     CIELAB_StraightA,
+    Oklab_PremultipliedA,
+    Oklab_StraightA,
     LinearRGB_PremultipliedA,
     LinearRGB_StraightA,
     sRGB_PremultipliedA,
