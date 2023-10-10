@@ -6,13 +6,13 @@
  */
 [[nodiscard]] auto Oklab_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto Oklab_from_sRGB(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto Oklab_from_HSLuv(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Oklab_from_Okhsl(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto LinearRGB_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto LinearRGB_from_sRGB(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto LinearRGB_from_HSLuv(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto LinearRGB_from_Okhsl(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto sRGB_from_Oklab(glm::vec3 const&) -> glm::vec3;
 [[nodiscard]] auto sRGB_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto sRGB_from_HSLuv(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto HSLuv_from_Oklab(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto HSLuv_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
-[[nodiscard]] auto HSLuv_from_sRGB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto sRGB_from_Okhsl(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Okhsl_from_Oklab(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Okhsl_from_LinearRGB(glm::vec3 const&) -> glm::vec3;
+[[nodiscard]] auto Okhsl_from_sRGB(glm::vec3 const&) -> glm::vec3;

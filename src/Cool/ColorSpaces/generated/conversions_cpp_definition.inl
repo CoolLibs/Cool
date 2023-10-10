@@ -12,35 +12,19 @@ auto Oklab_from_sRGB(glm::vec3 const& c) -> glm::vec3
 {
     return Oklab_from_XYZ(XYZ_from_sRGB(c));
 }
-auto Oklab_from_HSLuv(glm::vec3 const& c) -> glm::vec3
+auto Oklab_from_Okhsl(glm::vec3 const& c) -> glm::vec3
 {
-    return Oklab_from_XYZ(XYZ_from_HSLuv(c));
+    return Oklab_from_XYZ(XYZ_from_Okhsl(c));
 }
 auto LinearRGB_from_Oklab(glm::vec3 const& c) -> glm::vec3
 {
     return LinearRGB_from_XYZ(XYZ_from_Oklab(c));
 }
-auto LinearRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return LinearRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
 auto sRGB_from_Oklab(glm::vec3 const& c) -> glm::vec3
 {
     return sRGB_from_XYZ(XYZ_from_Oklab(c));
 }
-auto sRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
+auto Okhsl_from_Oklab(glm::vec3 const& c) -> glm::vec3
 {
-    return sRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
-auto HSLuv_from_Oklab(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_Oklab(c));
-}
-auto HSLuv_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_LinearRGB(c));
-}
-auto HSLuv_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_sRGB(c));
+    return Okhsl_from_XYZ(XYZ_from_Oklab(c));
 }

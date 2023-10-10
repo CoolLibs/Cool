@@ -10,5 +10,5 @@ Oklab_PremultipliedA,
     LinearRGB_StraightA,
     sRGB_PremultipliedA,
     sRGB_StraightA,
-    HSLuv_PremultipliedA,
-    HSLuv_StraightA
+    Okhsl_PremultipliedA,
+    Okhsl_StraightA

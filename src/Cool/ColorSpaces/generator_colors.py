@@ -28,8 +28,8 @@ def color_spaces():
             user_facing_name="sRGB",
         ),
         ColorSpace(
-            name_in_code="HSLuv",
-            user_facing_name="HSLuv",
+            name_in_code="Okhsl",
+            user_facing_name="Okhsl",
         ),
     ]
 
@@ -190,6 +190,10 @@ def conversions_cpp_definition():
             colors[0] == colors[1]
             or func_name == "LinearRGB_from_sRGB"
             or func_name == "sRGB_from_LinearRGB"
+            or func_name == "LinearRGB_from_Okhsl"
+            or func_name == "Okhsl_from_LinearRGB"
+            or func_name == "sRGB_from_Okhsl"
+            or func_name == "Okhsl_from_sRGB"
         ):
             continue
         res += f"""auto {func_name}(glm::vec3 const& c) -> glm::vec3
@@ -209,6 +213,10 @@ def conversions_glsl():
             colors[0] == colors[1]
             or func_name == "Cool_LinearRGB_from_sRGB"
             or func_name == "Cool_sRGB_from_LinearRGB"
+            or func_name == "Cool_LinearRGB_from_Okhsl"
+            or func_name == "Cool_Okhsl_from_LinearRGB"
+            or func_name == "Cool_sRGB_from_Okhsl"
+            or func_name == "Cool_Okhsl_from_sRGB"
         ):
             continue
         res += f"""vec3 {func_name}(vec3 c)

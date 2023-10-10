@@ -23,8 +23,8 @@ return col.as_sRGB_PremultipliedA();
 case Cool::ColorAndAlphaSpace::sRGB_StraightA:
 return col.as_sRGB_StraightA();
 
-case Cool::ColorAndAlphaSpace::HSLuv_PremultipliedA:
-return col.as_HSLuv_PremultipliedA();
+case Cool::ColorAndAlphaSpace::Okhsl_PremultipliedA:
+return col.as_Okhsl_PremultipliedA();
 
-case Cool::ColorAndAlphaSpace::HSLuv_StraightA:
-return col.as_HSLuv_StraightA();
+case Cool::ColorAndAlphaSpace::Okhsl_StraightA:
+return col.as_Okhsl_StraightA();

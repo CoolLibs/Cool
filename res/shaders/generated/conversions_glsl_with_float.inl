@@ -20,11 +20,11 @@ float Cool_Float_from_sRGB(vec3 color)
 {
     return Cool_Float_from_Oklab(Cool_Oklab_from_sRGB(color));
 }
-vec3 Cool_HSLuv_from_Float(float x)
+vec3 Cool_Okhsl_from_Float(float x)
 {
-    return Cool_HSLuv_from_Oklab(Cool_Oklab_from_Float(x));
+    return Cool_Okhsl_from_Oklab(Cool_Oklab_from_Float(x));
 }
-float Cool_Float_from_HSLuv(vec3 color)
+float Cool_Float_from_Okhsl(vec3 color)
 {
-    return Cool_Float_from_Oklab(Cool_Oklab_from_HSLuv(color));
+    return Cool_Float_from_Oklab(Cool_Oklab_from_Okhsl(color));
 }

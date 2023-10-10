@@ -10,5 +10,5 @@ if (text == "LinearRGB")
     return ColorSpace::LinearRGB;
 if (text == "sRGB")
     return ColorSpace::sRGB;
-if (text == "HSLuv")
-    return ColorSpace::HSLuv;
+if (text == "Okhsl")
+    return ColorSpace::Okhsl;

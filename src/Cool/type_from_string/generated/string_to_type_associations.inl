@@ -61,7 +61,7 @@ struct from_impl<"sRGB"> {
 };
 
 template<>
-struct from_impl<"HSLuv"> {
+struct from_impl<"Okhsl"> {
     using type = Cool::Color;
 };
 
@@ -96,12 +96,12 @@ struct from_impl<"sRGB_StraightA"> {
 };
 
 template<>
-struct from_impl<"HSLuv_PremultipliedA"> {
+struct from_impl<"Okhsl_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
 
 template<>
-struct from_impl<"HSLuv_StraightA"> {
+struct from_impl<"Okhsl_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
 
