@@ -275,12 +275,12 @@ static auto find_gamut_intersection(float a, float b, float L1, float C1, float 
                 float u_g = g1 / (g1 * g1 - 0.5f * g * g2);
                 float t_g = -g * u_g;
 
-                float b  = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s - 1;
+                float b_ = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s - 1;
                 float b1 = -0.0041960863f * ldt - 0.7034186147f * mdt + 1.7076147010f * sdt;
                 float b2 = -0.0041960863f * ldt2 - 0.7034186147f * mdt2 + 1.7076147010f * sdt2;
 
-                float u_b = b1 / (b1 * b1 - 0.5f * b * b2);
-                float t_b = -b * u_b;
+                float u_b = b1 / (b1 * b1 - 0.5f * b_ * b2);
+                float t_b = -b_ * u_b;
 
                 t_r = u_r >= 0.f ? t_r : FLT_MAX;
                 t_g = u_g >= 0.f ? t_g : FLT_MAX;
