@@ -184,7 +184,7 @@ struct LC {
 
 // Alternative representation of (L_cusp, C_cusp)
 // Encoded so S = C_cusp/L_cusp and T = C_cusp/(1-L_cusp)
-// The maximum value for C in the triangle is then found as fmin(S*L, T*(1-L)),
+// The maximum value for C in the triangle is then found as std::min(S*L, T*(1-L)),
 // for a given L
 struct ST {
     float S;
@@ -200,7 +200,7 @@ static auto find_cusp(float a, float b) -> LC
 
     // Convert to linear sRGB to find the first point where at least one of r,g or b >= 1:
     glm::vec3 const rgb_at_max = LinearRGB_from_Oklab({1, S_cusp * a, S_cusp * b});
-    float           L_cusp     = cbrtf(1.f / fmax(fmax(rgb_at_max.r, rgb_at_max.g), rgb_at_max.b));
+    float           L_cusp     = cbrtf(1.f / std::max(std::max(rgb_at_max.r, rgb_at_max.g), rgb_at_max.b));
     float           C_cusp     = L_cusp * S_cusp;
 
     return {L_cusp, C_cusp};
