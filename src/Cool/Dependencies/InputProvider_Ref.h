@@ -64,11 +64,11 @@ public:
     auto variable_registries() -> VariableRegistries& { return _variable_registries; }
 
 private:
-    std::reference_wrapper<VariableRegistries>       _variable_registries;
-    float                                            _render_target_aspect_ratio;
-    float                                            _height;
-    float                                            _time;
-    glm::mat3                                        _camera2D;
+    std::reference_wrapper<VariableRegistries> _variable_registries;
+    float                                      _render_target_aspect_ratio;
+    float                                      _height;
+    float                                      _time;
+    glm::mat3                                  _camera2D;
 };
 
 } // namespace Cool

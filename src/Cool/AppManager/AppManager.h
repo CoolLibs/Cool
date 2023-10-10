@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cool/View/ViewsManager.h>
 #include <Cool/Window/Window.h>
 #include <Cool/Window/WindowManager.h>
 #include "AppManagerConfig.h"
@@ -8,10 +9,7 @@
 
 namespace Cool {
 
-/**
- * @brief Wrapper for an App. It handles the user events, the ImGui UI, and the windows' updates.
- *
- */
+/// Wrapper for an App. It handles the user events, the ImGui UI, and the windows' updates.
 class AppManager {
 public:
     /**
@@ -19,7 +17,7 @@ public:
      * @param app An instance of an App class that you have to implement, deriving from IApp.
      * @param config Configuration options that control the behaviour of the AppManager
      */
-    AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config);
+    AppManager(WindowManager& window_manager, ViewsManager& views, IApp& app, AppManagerConfig config);
 
     /// Runs the app's update loop continuously, until the user closes the main window.
     /// Also calls `on_update()` after every update.
@@ -34,12 +32,15 @@ private:
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void window_close_callback_for_secondary_windows(GLFWwindow* window);
-    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-    static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-    static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+
+    void dispatch_all_events();
+    void dispatch_mouse_movement();
+    void dispatch_mouse_click();
+    void dispatch_mouse_scroll();
 
 private:
     WindowManager&   _window_manager;
+    ViewsManager&    _views;
     IApp&            _app;
     AppManagerConfig _config;
 

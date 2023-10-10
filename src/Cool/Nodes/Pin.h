@@ -1,32 +1,42 @@
 #pragma once
 
-#include <imnodes/imnodes.h>
 #include <reg/cereal.hpp>
 #include <reg/reg.hpp>
+#include "Cool/Nodes/utilities/drawing.h"
+#include "utilities/drawing.h"
 
 namespace Cool {
 
 using PinId = reg::AnyId;
 
+enum class PinKind {
+    Input,
+    Output,
+};
+
 class Pin {
 public:
     Pin() = default;
     explicit Pin(std::string_view name);
-    virtual ~Pin() = default;
+    Pin(Pin const&)                    = default;
+    Pin(Pin&&)                         = default;
+    auto operator=(Pin const&) -> Pin& = default;
+    auto operator=(Pin&&) -> Pin&      = default;
+    virtual ~Pin()                     = default;
 
-    auto name() const -> std::string const& { return _name; }
-    auto id() const -> PinId const& { return _id; }
+    [[nodiscard]] auto name() const -> std::string const& { return _name; }
+    [[nodiscard]] auto id() const -> PinId const& { return _id; }
 
     void set_id(PinId const& id) { _id = id; }
 
-    virtual void show() const = 0;
+    [[nodiscard]] virtual auto kind() const -> PinKind = 0;
 
 protected:
     void show_impl() const;
 
 private:
-    std::string _name;
-    PinId       _id;
+    std::string _name{};
+    PinId       _id{};
 
 private:
     // Serialization
@@ -44,7 +54,7 @@ private:
 class InputPin : public Pin {
 public:
     using Pin::Pin;
-    void show() const override;
+    [[nodiscard]] auto kind() const -> PinKind override { return PinKind::Input; }
 
     friend auto operator==(InputPin const& lhs, InputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }
 
@@ -63,7 +73,7 @@ private:
 class OutputPin : public Pin {
 public:
     using Pin::Pin;
-    void show() const override;
+    [[nodiscard]] auto kind() const -> PinKind override { return PinKind::Output; }
 
     friend auto operator==(OutputPin const& lhs, OutputPin const& rhs) -> bool { return lhs.id() == rhs.id(); }
 

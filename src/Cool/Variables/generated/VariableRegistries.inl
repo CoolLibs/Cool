@@ -22,8 +22,10 @@ using VariableRegistries = reg::Registries<
     reg::Registry<Cool::Variable<Cool::Hue>>,
     reg::Registry<Cool::Variable<Cool::ColorPalette>>,
     reg::Registry<Cool::Variable<Cool::Gradient>>,
-    reg::Registry<Cool::Variable<Cool::TextureInfo>>,
+    reg::Registry<Cool::Variable<Cool::TextureDescriptor_FromFile>>,
+    reg::Registry<Cool::Variable<Cool::TextureDescriptor_FromWebcam>>,
     reg::Registry<Cool::Variable<Cool::MathExpression>>,
     reg::Registry<Cool::Variable<glm::mat2>>,
     reg::Registry<Cool::Variable<glm::mat3>>,
-    reg::Registry<Cool::Variable<glm::mat4>>>;
+    reg::Registry<Cool::Variable<glm::mat4>>,
+    reg::Registry<Cool::Variable<Cool::MidiChannel>>>;

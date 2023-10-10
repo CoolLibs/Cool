@@ -5,11 +5,11 @@
  * -----------------------------------------------------------------------------
  */
 
-case Cool::ColorAndAlphaSpace::CIELAB_PremultipliedA:
-return col.as_CIELAB_PremultipliedA();
+case Cool::ColorAndAlphaSpace::Oklab_PremultipliedA:
+return col.as_Oklab_PremultipliedA();
 
-case Cool::ColorAndAlphaSpace::CIELAB_StraightA:
-return col.as_CIELAB_StraightA();
+case Cool::ColorAndAlphaSpace::Oklab_StraightA:
+return col.as_Oklab_StraightA();
 
 case Cool::ColorAndAlphaSpace::LinearRGB_PremultipliedA:
 return col.as_LinearRGB_PremultipliedA();
@@ -23,8 +23,8 @@ return col.as_sRGB_PremultipliedA();
 case Cool::ColorAndAlphaSpace::sRGB_StraightA:
 return col.as_sRGB_StraightA();
 
-case Cool::ColorAndAlphaSpace::HSLuv_PremultipliedA:
-return col.as_HSLuv_PremultipliedA();
+case Cool::ColorAndAlphaSpace::Okhsl_PremultipliedA:
+return col.as_Okhsl_PremultipliedA();
 
-case Cool::ColorAndAlphaSpace::HSLuv_StraightA:
-return col.as_HSLuv_StraightA();
+case Cool::ColorAndAlphaSpace::Okhsl_StraightA:
+return col.as_Okhsl_StraightA();

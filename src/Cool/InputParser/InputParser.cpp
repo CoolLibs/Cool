@@ -231,7 +231,7 @@ static auto gen_code__number_of_marks_variable_name(std::string_view name)
 }
 
 template<>
-auto gen_input_shader_code__impl(const Cool::Gradient& value, std::string_view name) -> std::string
+auto gen_input_shader_code__impl(Cool::Gradient const& value, std::string_view name) -> std::string
 {
     using namespace fmt::literals;
     return value.value.gradient().is_empty()
@@ -336,7 +336,7 @@ float {name}(float x)
             )STR"
         ),
         "expression"_a = expression.expression,
-        "name"_a = name
+        "name"_a       = name
     );
 }
 

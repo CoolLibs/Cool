@@ -4,6 +4,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
 #include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/markdown.h"
 #include "Cool/Log/Message.h"
 #include "imgui.h"
 
@@ -40,6 +41,12 @@ void MessageConsole::send(const Message& message)
     on_message_sent(id);
 }
 
+static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
+{
+    return msg.forced_to_be_clearable
+           || msg.message.severity != MessageSeverity::Error;
+}
+
 void MessageConsole::on_message_sent(const internal::RawMessageId& id)
 {
     _is_open           = true;
@@ -74,12 +81,6 @@ void MessageConsole::clear()
 void MessageConsole::clear(MessageSeverity severity)
 {
     clear([&](auto&& message) { return message.severity == severity; });
-}
-
-static auto is_clearable(const internal::MessageWithMetadata& msg) -> bool
-{
-    return msg.forced_to_be_clearable
-           || msg.message.severity != MessageSeverity::Error;
 }
 
 auto MessageConsole::should_show(const internal::MessageWithMetadata& msg) const -> bool
@@ -176,7 +177,7 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         if (ImGui::BeginPopupContextItem(to_string(severity).c_str()))
         {
-            ImGuiExtras::maybe_disabled(!there_are_clearable_messages(severity), reason_for_disabling_clear_button, [&] {
+            ImGuiExtras::disabled_if(!there_are_clearable_messages(severity), reason_for_disabling_clear_button, [&] {
                 if (ImGui::Button("Clear"))
                     clear(severity);
             });
@@ -186,8 +187,24 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
     }
 }
 
+void MessageConsole::remove_messages_to_keep_size_below(size_t max_number_of_messages)
+{
+    while (_messages.underlying_container().underlying_container().size() > max_number_of_messages)
+    {
+        auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
+            return is_clearable(pair.second);
+        });
+        if (it != _messages.end())
+            _messages.underlying_container().underlying_container().erase(it);
+        else
+            break;
+    }
+}
+
 void MessageConsole::imgui_window()
 {
+    remove_messages_to_keep_size_below(999); // If there are too many messages the console starts to cause lag.
+
     if (_is_open)
     {
         refresh_counts_per_severity();
@@ -241,7 +258,7 @@ auto MessageConsole::there_are_clearable_messages(MessageSeverity severity) cons
 
 void MessageConsole::imgui_menu_bar()
 {
-    ImGuiExtras::maybe_disabled(!there_are_clearable_messages(), reason_for_disabling_clear_button, [&] {
+    ImGuiExtras::disabled_if(!there_are_clearable_messages(), reason_for_disabling_clear_button, [&] {
         if (ImGui::Button("Clear"))
             clear();
     });
@@ -287,7 +304,7 @@ void MessageConsole::imgui_show_all_messages()
                     msg.message.category.c_str()
                 );
                 ImGui::SameLine();
-                ImGui::TextUnformatted(msg.message.message.c_str());
+                ImGuiExtras::markdown(msg.message.message);
 
                 const bool close_button_is_hovered = [&] {
                     if (!is_clearable(msg))
@@ -298,7 +315,7 @@ void MessageConsole::imgui_show_all_messages()
                     {
                         msg_to_clear = id;
                     }
-                    ImGuiExtras::tooltip(("Close this " + to_string(msg.message.severity)).c_str());
+                    ImGui::SetItemTooltip("%s", ("Close this " + to_string(msg.message.severity)).c_str());
                     return ImGui::IsItemHovered();
                 }();
 
@@ -344,8 +361,8 @@ void MessageConsole::imgui_show_all_messages()
             };
 
             // Draw highlight of recent messages
-            const auto dt = std::chrono::duration<float>{
-                std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+            auto const dt = std::chrono::duration<float>{std::chrono::steady_clock::now() - msg.monotonic_timestamp};
+
             static constexpr float highlight_duration = 0.5f;
             if (dt.count() < highlight_duration)
             {

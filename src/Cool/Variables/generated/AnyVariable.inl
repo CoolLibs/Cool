@@ -22,8 +22,10 @@ using AnyVariable = std::variant<
     Variable<Cool::Hue>,
     Variable<Cool::ColorPalette>,
     Variable<Cool::Gradient>,
-    Variable<Cool::TextureInfo>,
+    Variable<Cool::TextureDescriptor_FromFile>,
+    Variable<Cool::TextureDescriptor_FromWebcam>,
     Variable<Cool::MathExpression>,
     Variable<glm::mat2>,
     Variable<glm::mat3>,
-    Variable<glm::mat4> >;
+    Variable<glm::mat4>,
+    Variable<Cool::MidiChannel> >;

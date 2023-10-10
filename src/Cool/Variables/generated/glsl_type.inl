@@ -102,9 +102,15 @@ auto glsl_type<Cool::Gradient>() -> std::string
 }
 
 template<>
-auto glsl_type<Cool::TextureInfo>() -> std::string
+auto glsl_type<Cool::TextureDescriptor_FromFile>() -> std::string
 {
-    return "TextureInfo";
+    return "Cool_Texture";
+}
+
+template<>
+auto glsl_type<Cool::TextureDescriptor_FromWebcam>() -> std::string
+{
+    return "Cool_Texture";
 }
 
 template<>
@@ -129,4 +135,10 @@ template<>
 auto glsl_type<glm::mat4>() -> std::string
 {
     return "mat4";
+}
+
+template<>
+auto glsl_type<Cool::MidiChannel>() -> std::string
+{
+    return "float";
 }

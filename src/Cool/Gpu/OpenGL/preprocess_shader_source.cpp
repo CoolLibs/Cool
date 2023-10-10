@@ -2,12 +2,12 @@
 #include <filesystem>
 #if defined(COOL_OPENGL)
 
-#include "preprocess_shader_source.h"
 #include <Cool/File/File.h>
 #include <Cool/Path/Path.h>
 #include <Cool/RegExp/RegExp.h>
 #include <Cool/String/String.h>
 #include <sstream>
+#include "preprocess_shader_source.h"
 
 namespace Cool::OpenGL {
 

@@ -5,8 +5,8 @@
  * -----------------------------------------------------------------------------
  */
 
-case Cool::ColorSpace::CIELAB:
-return col.as_CIELAB();
+case Cool::ColorSpace::Oklab:
+return col.as_Oklab();
 
 case Cool::ColorSpace::LinearRGB:
 return col.as_LinearRGB();
@@ -14,5 +14,5 @@ return col.as_LinearRGB();
 case Cool::ColorSpace::sRGB:
 return col.as_sRGB();
 
-case Cool::ColorSpace::HSLuv:
-return col.as_HSLuv();
+case Cool::ColorSpace::Okhsl:
+return col.as_Okhsl();

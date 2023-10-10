@@ -5,9 +5,9 @@
  * -----------------------------------------------------------------------------
  */
 
-auto Color::as_CIELAB() const -> glm::vec3
+auto Color::as_Oklab() const -> glm::vec3
 {
-    return CIELAB_from_sRGB(_srgb);
+    return Oklab_from_sRGB(_srgb);
 }
 
 auto Color::as_LinearRGB() const -> glm::vec3
@@ -20,7 +20,7 @@ auto Color::as_sRGB() const -> glm::vec3
     return (_srgb);
 }
 
-auto Color::as_HSLuv() const -> glm::vec3
+auto Color::as_Okhsl() const -> glm::vec3
 {
-    return HSLuv_from_sRGB(_srgb);
+    return Okhsl_from_sRGB(_srgb);
 }

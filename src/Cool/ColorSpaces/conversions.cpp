@@ -3,12 +3,12 @@
 
 namespace Cool {
 
-static auto saturate(glm::vec3 const& v) -> glm::vec3
+static auto keep_above_0(glm::vec3 const& v) -> glm::vec3
 {
     return {
-        std::clamp(v.x, 0.f, 1.f),
-        std::clamp(v.y, 0.f, 1.f),
-        std::clamp(v.z, 0.f, 1.f),
+        std::max(v.x, 0.f),
+        std::max(v.y, 0.f),
+        std::max(v.z, 0.f),
     };
 }
 
@@ -29,23 +29,23 @@ static auto sRGB_from_LinearRGB_impl(float x) -> float
                : 1.055f * std::pow(x, 1.f / 2.4f) - 0.055f;
 }
 
-auto LinearRGB_from_sRGB(glm::vec3 srgb) -> glm::vec3
+auto LinearRGB_from_sRGB(glm::vec3 const& srgb) -> glm::vec3
 {
-    srgb = saturate(srgb);
+    auto const clamped = keep_above_0(srgb);
     return {
-        LinearRGB_from_sRGB_impl(srgb.x),
-        LinearRGB_from_sRGB_impl(srgb.y),
-        LinearRGB_from_sRGB_impl(srgb.z),
+        LinearRGB_from_sRGB_impl(clamped.x),
+        LinearRGB_from_sRGB_impl(clamped.y),
+        LinearRGB_from_sRGB_impl(clamped.z),
     };
 }
 
-auto sRGB_from_LinearRGB(glm::vec3 rgb) -> glm::vec3
+auto sRGB_from_LinearRGB(glm::vec3 const& rgb) -> glm::vec3
 {
-    rgb = saturate(rgb);
+    auto const clamped = keep_above_0(rgb);
     return {
-        sRGB_from_LinearRGB_impl(rgb.x),
-        sRGB_from_LinearRGB_impl(rgb.y),
-        sRGB_from_LinearRGB_impl(rgb.z),
+        sRGB_from_LinearRGB_impl(clamped.x),
+        sRGB_from_LinearRGB_impl(clamped.y),
+        sRGB_from_LinearRGB_impl(clamped.z),
     };
 }
 // End of [Block1]
@@ -57,368 +57,481 @@ auto XYZ_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
 {
     return c * glm::mat3(0.4124f, 0.3576f, 0.1805f, 0.2126f, 0.7152f, 0.0722f, 0.0193f, 0.1192f, 0.9505f);
 }
-
-auto XYZ_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return XYZ_from_LinearRGB(LinearRGB_from_sRGB(c));
-}
-
-auto CIELAB_from_XYZ(glm::vec3 const& c) -> glm::vec3
-{
-    glm::vec3 const n = c / glm::vec3(0.95047f, 1.f, 1.08883f);
-    glm::vec3 const v{
-        (n.x > 0.008856) ? std::pow(n.x, 1.f / 3.f) : (7.787f * n.x) + (16.f / 116.f),
-        (n.y > 0.008856) ? std::pow(n.y, 1.f / 3.f) : (7.787f * n.y) + (16.f / 116.f),
-        (n.z > 0.008856) ? std::pow(n.z, 1.f / 3.f) : (7.787f * n.z) + (16.f / 116.f),
-    };
-    return {
-        (1.16f * v.y) - 0.16f,
-        5.f * (v.x - v.y),
-        2.f * (v.y - v.z),
-    };
-}
-
-auto CIELAB_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_sRGB(c));
-}
-
-auto CIELAB_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_LinearRGB(c));
-}
-
-auto XYZ_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    float const fy = (c.x + 0.16f) / 1.16f;
-    float const fx = c.y / 5.f + fy;
-    float const fz = fy - c.z / 2.f;
-
-    float const fx3 = fx * fx * fx;
-    float const fy3 = fy * fy * fy;
-    float const fz3 = fz * fz * fz;
-    return {
-        0.95047f * ((fx3 > 0.008856f) ? fx3 : (fx - 16.f / 116.f) / 7.787f),
-        1.00000f * ((fy3 > 0.008856f) ? fy3 : (fy - 16.f / 116.f) / 7.787f),
-        1.08883f * ((fz3 > 0.008856f) ? fz3 : (fz - 16.f / 116.f) / 7.787f),
-    };
-}
-
 auto LinearRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
 {
     return c * glm::mat3(3.2406f, -1.5372f, -0.4986f, -0.9689f, 1.8758f, 0.0415f, 0.0557f, -0.2040f, 1.0570f);
 }
 
+auto XYZ_from_sRGB(glm::vec3 const& c) -> glm::vec3
+{
+    return XYZ_from_LinearRGB(LinearRGB_from_sRGB(c));
+}
 auto sRGB_from_XYZ(glm::vec3 const& c) -> glm::vec3
 {
     return sRGB_from_LinearRGB(LinearRGB_from_XYZ(c));
 }
 
-auto sRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return sRGB_from_XYZ(XYZ_from_CIELAB(c));
-}
-
-auto LinearRGB_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return LinearRGB_from_sRGB(sRGB_from_CIELAB(c));
-}
 // End of [Block2]
 
 // Start of [Block3]
-/*
- * HSLuv-C: Human-friendly HSL
- * <https://github.com/hsluv/hsluv-c>
- * <https://www.hsluv.org/>
- *
- * Copyright (c) 2015 Alexei Boronine (original idea, JavaScript implementation)
- * Copyright (c) 2015 Roger Tallada (Obj-C implementation)
- * Copyright (c) 2017 Martin Mitas (C implementation, based on Obj-C implementation)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
-static const glm::vec3 some_matrix[3] = {
-    {3.24096994190452134377, -1.53738317757009345794, -0.49861076029300328366},
-    {-0.96924363628087982613, 1.87596750150772066772, 0.04155505740717561247},
-    {0.05563007969699360846, -0.20397695888897656435, 1.05697151424287856072}};
-static constexpr float ref_u = 0.19783000664283680764f;
-static constexpr float ref_v = 0.46831999493879100370f;
+// https://bottosson.github.io/posts/colorpicker/
+// Copyright(c) 2021 Bj�rn Ottosson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this softwareand associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions : The above copyright
+// noticeand this permission notice shall be included in all copies or
+// substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+// WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+// THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-static constexpr float kappa   = 903.29629629629629629630f;
-static constexpr float epsilon = 0.00885645167903563082f;
+// Finds the maximum saturation possible for a given hue that fits in sRGB
+// Saturation here is defined as S = C/L
+// a and b must be normalized so a^2 + b^2 == 1
+static auto compute_max_saturation(float a, float b) -> float
+{
+    // Max saturation will be when one of r, g or b goes below zero.
 
-struct Bounds {
-    float a;
-    float b;
+    // Select different coefficients depending on which component goes below zero first
+    float k0, k1, k2, k3, k4, wl, wm, ws; // NOLINT(cppcoreguidelines-init-variables, readability-isolate-declaration)
+
+    if (-1.88170328f * a - 0.80936493f * b > 1)
+    {
+        // Red component
+        k0 = +1.19086277f;
+        k1 = +1.76576728f;
+        k2 = +0.59662641f;
+        k3 = +0.75515197f;
+        k4 = +0.56771245f;
+        wl = +4.0767416621f;
+        wm = -3.3077115913f;
+        ws = +0.2309699292f;
+    }
+    else if (1.81444104f * a - 1.19445276f * b > 1)
+    {
+        // Green component
+        k0 = +0.73956515f;
+        k1 = -0.45954404f;
+        k2 = +0.08285427f;
+        k3 = +0.12541070f;
+        k4 = +0.14503204f;
+        wl = -1.2684380046f;
+        wm = +2.6097574011f;
+        ws = -0.3413193965f;
+    }
+    else
+    {
+        // Blue component
+        k0 = +1.35733652f;
+        k1 = -0.00915799f;
+        k2 = -1.15130210f;
+        k3 = -0.50559606f;
+        k4 = +0.00692167f;
+        wl = -0.0041960863f;
+        wm = -0.7034186147f;
+        ws = +1.7076147010f;
+    }
+
+    // Approximate max saturation using a polynomial:
+    float S = k0 + k1 * a + k2 * b + k3 * a * a + k4 * a * b;
+
+    // Do one step Halley's method to get closer
+    // this gives an error less than 10e6, except for some blue hues where the dS/dh is close to infinite
+    // this should be sufficient for most applications, otherwise do two/three steps
+
+    float k_l = +0.3963377774f * a + 0.2158037573f * b;
+    float k_m = -0.1055613458f * a - 0.0638541728f * b;
+    float k_s = -0.0894841775f * a - 1.2914855480f * b;
+
+    {
+        float l_ = 1.f + S * k_l;
+        float m_ = 1.f + S * k_m;
+        float s_ = 1.f + S * k_s;
+
+        float l = l_ * l_ * l_;
+        float m = m_ * m_ * m_;
+        float s = s_ * s_ * s_;
+
+        float l_dS = 3.f * k_l * l_ * l_;
+        float m_dS = 3.f * k_m * m_ * m_;
+        float s_dS = 3.f * k_s * s_ * s_;
+
+        float l_dS2 = 6.f * k_l * k_l * l_;
+        float m_dS2 = 6.f * k_m * k_m * m_;
+        float s_dS2 = 6.f * k_s * k_s * s_;
+
+        float f  = wl * l + wm * m + ws * s;
+        float f1 = wl * l_dS + wm * m_dS + ws * s_dS;
+        float f2 = wl * l_dS2 + wm * m_dS2 + ws * s_dS2;
+
+        S = S - f * f1 / (f1 * f1 - 0.5f * f * f2);
+    }
+
+    return S;
+}
+
+struct LC {
+    float L;
+    float C;
 };
 
-static void get_bounds(float l, Bounds bounds[6])
+// Alternative representation of (L_cusp, C_cusp)
+// Encoded so S = C_cusp/L_cusp and T = C_cusp/(1-L_cusp)
+// The maximum value for C in the triangle is then found as fmin(S*L, T*(1-L)),
+// for a given L
+struct ST {
+    float S;
+    float T;
+};
+
+// finds L_cusp and C_cusp for a given hue
+// a and b must be normalized so a^2 + b^2 == 1
+static auto find_cusp(float a, float b) -> LC
 {
-    float  tl   = l + 16.0f;
-    float sub1 = (tl * tl * tl) / 1560896.0f;
-    float sub2 = (sub1 > epsilon ? sub1 : (l / kappa));
-    int   channel;
-    int   t;
+    // First, find the maximum saturation (saturation S = C/L)
+    float S_cusp = compute_max_saturation(a, b);
 
-    for (channel = 0; channel < 3; channel++)
+    // Convert to linear sRGB to find the first point where at least one of r,g or b >= 1:
+    glm::vec3 const rgb_at_max = LinearRGB_from_Oklab({1, S_cusp * a, S_cusp * b});
+    float           L_cusp     = cbrtf(1.f / fmax(fmax(rgb_at_max.r, rgb_at_max.g), rgb_at_max.b));
+    float           C_cusp     = L_cusp * S_cusp;
+
+    return {L_cusp, C_cusp};
+}
+
+// Finds intersection of the line defined by
+// L = L0 * (1 - t) + t * L1;
+// C = t * C1;
+// a and b must be normalized so a^2 + b^2 == 1
+static auto find_gamut_intersection(float a, float b, float L1, float C1, float L0, LC cusp) -> float // NOLINT(bugprone-easily-swappable-parameters)
+{
+    // Find the intersection for upper and lower half seprately
+    float t; // NOLINT(cppcoreguidelines-init-variables)
+    if (((L1 - L0) * cusp.C - (cusp.L - L0) * C1) <= 0.f)
     {
-        float m1 = some_matrix[channel].x;
-        float m2 = some_matrix[channel].y;
-        float m3 = some_matrix[channel].z;
+        // Lower half
 
-        for (t = 0; t < 2; t++)
+        t = cusp.C * L0 / (C1 * cusp.L + cusp.C * (L0 - L1));
+    }
+    else
+    {
+        // Upper half
+
+        // First intersect with triangle
+        t = cusp.C * (L0 - 1.f) / (C1 * (cusp.L - 1.f) + cusp.C * (L0 - L1));
+
+        // Then one step Halley's method
         {
-            float top1   = (284517.f * m1 - 94839.f * m3) * sub2;
-            auto const tt     = static_cast<float>(t);
-            float      top2   = (838422.f * m3 + 769860.f * m2 + 731718.f * m1) * l * sub2 - 769860.f * tt * l;
-            float      bottom = (632260.f * m3 - 126452.f * m2) * sub2 + 126452.f * tt;
+            float dL = L1 - L0;
+            float dC = C1;
 
-            bounds[channel * 2 + t].a = top1 / bottom;
-            bounds[channel * 2 + t].b = top2 / bottom;
+            float k_l = +0.3963377774f * a + 0.2158037573f * b;
+            float k_m = -0.1055613458f * a - 0.0638541728f * b;
+            float k_s = -0.0894841775f * a - 1.2914855480f * b;
+
+            float l_dt = dL + dC * k_l;
+            float m_dt = dL + dC * k_m;
+            float s_dt = dL + dC * k_s;
+
+            // If higher accuracy is required, 2 or 3 iterations of the following block can be used:
+            {
+                float L = L0 * (1.f - t) + t * L1;
+                float C = t * C1;
+
+                float l_ = L + C * k_l;
+                float m_ = L + C * k_m;
+                float s_ = L + C * k_s;
+
+                float l = l_ * l_ * l_;
+                float m = m_ * m_ * m_;
+                float s = s_ * s_ * s_;
+
+                float ldt = 3 * l_dt * l_ * l_;
+                float mdt = 3 * m_dt * m_ * m_;
+                float sdt = 3 * s_dt * s_ * s_;
+
+                float ldt2 = 6 * l_dt * l_dt * l_;
+                float mdt2 = 6 * m_dt * m_dt * m_;
+                float sdt2 = 6 * s_dt * s_dt * s_;
+
+                float r  = 4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s - 1;
+                float r1 = 4.0767416621f * ldt - 3.3077115913f * mdt + 0.2309699292f * sdt;
+                float r2 = 4.0767416621f * ldt2 - 3.3077115913f * mdt2 + 0.2309699292f * sdt2;
+
+                float u_r = r1 / (r1 * r1 - 0.5f * r * r2);
+                float t_r = -r * u_r;
+
+                float g  = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s - 1;
+                float g1 = -1.2684380046f * ldt + 2.6097574011f * mdt - 0.3413193965f * sdt;
+                float g2 = -1.2684380046f * ldt2 + 2.6097574011f * mdt2 - 0.3413193965f * sdt2;
+
+                float u_g = g1 / (g1 * g1 - 0.5f * g * g2);
+                float t_g = -g * u_g;
+
+                float b_ = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s - 1;
+                float b1 = -0.0041960863f * ldt - 0.7034186147f * mdt + 1.7076147010f * sdt;
+                float b2 = -0.0041960863f * ldt2 - 0.7034186147f * mdt2 + 1.7076147010f * sdt2;
+
+                float u_b = b1 / (b1 * b1 - 0.5f * b_ * b2);
+                float t_b = -b_ * u_b;
+
+                t_r = u_r >= 0.f ? t_r : FLT_MAX;
+                t_g = u_g >= 0.f ? t_g : FLT_MAX;
+                t_b = u_b >= 0.f ? t_b : FLT_MAX;
+
+                t += fmin(t_r, fmin(t_g, t_b));
+            }
         }
     }
+
+    return t;
 }
 
-static float ray_length_until_intersect(float theta, Bounds const& line)
+static auto toe(float x) -> float
 {
-    return line.b / (std::sin(theta) - line.a * std::cos(theta));
+    constexpr float k_1 = 0.206f;
+    constexpr float k_2 = 0.03f;
+    constexpr float k_3 = (1.f + k_1) / (1.f + k_2);
+    return 0.5f * (k_3 * x - k_1 + sqrtf((k_3 * x - k_1) * (k_3 * x - k_1) + 4 * k_2 * k_3 * x));
 }
 
-static float max_chroma_for_lh(float l, float h)
+static auto toe_inv(float x) -> float
 {
-    float  min_len = FLT_MAX;
-    float  hrad    = h * 0.01745329251994329577f; /* (2 * pi / 360) */
-    Bounds bounds[6];
-    int    i;
+    constexpr float k_1 = 0.206f;
+    constexpr float k_2 = 0.03f;
+    constexpr float k_3 = (1.f + k_1) / (1.f + k_2);
+    return (x * x + k_1 * x) / (k_3 * (x + k_2));
+}
 
-    get_bounds(l, bounds);
-    for (i = 0; i < 6; i++)
+static auto to_ST(LC cusp) -> ST
+{
+    float L = cusp.L;
+    float C = cusp.C;
+    return {C / L, C / (1 - L)};
+}
+
+// Returns a smooth approximation of the location of the cusp
+// This polynomial was created by an optimization process
+// It has been designed so that S_mid < S_max and T_mid < T_max
+static auto get_ST_mid(float a_, float b_) -> ST
+{
+    float S = 0.11516993f + 1.f / (+7.44778970f + 4.15901240f * b_ + a_ * (-2.19557347f + 1.75198401f * b_ + a_ * (-2.13704948f - 10.02301043f * b_ + a_ * (-4.24894561f + 5.38770819f * b_ + 4.69891013f * a_))));
+
+    float T = 0.11239642f + 1.f / (+1.61320320f - 0.68124379f * b_ + a_ * (+0.40370612f + 0.90148123f * b_ + a_ * (-0.27087943f + 0.61223990f * b_ + a_ * (+0.00299215f - 0.45399568f * b_ - 0.14661872f * a_))));
+
+    return {S, T};
+}
+
+struct Cs {
+    float C_0;
+    float C_mid;
+    float C_max;
+};
+
+static auto get_Cs(float L, float a_, float b_) -> Cs
+{
+    LC cusp = find_cusp(a_, b_);
+
+    float C_max  = find_gamut_intersection(a_, b_, L, 1, L, cusp);
+    ST    ST_max = to_ST(cusp);
+
+    // Scale factor to compensate for the curved part of gamut shape:
+    float k = C_max / fmin((L * ST_max.S), (1 - L) * ST_max.T);
+
+    float C_mid; // NOLINT(cppcoreguidelines-init-variables)
     {
-        float len = ray_length_until_intersect(hrad, bounds[i]);
+        ST ST_mid = get_ST_mid(a_, b_);
 
-        if (len >= 0 && len < min_len)
-            min_len = len;
+        // Use a soft minimum function, instead of a sharp triangle shape to get a smooth value for chroma.
+        float C_a = L * ST_mid.S;
+        float C_b = (1.f - L) * ST_mid.T;
+        C_mid     = 0.9f * k * sqrtf(sqrtf(1.f / (1.f / (C_a * C_a * C_a * C_a) + 1.f / (C_b * C_b * C_b * C_b))));
     }
-    return min_len;
+
+    float C_0; // NOLINT(cppcoreguidelines-init-variables)
+    {
+        // for C_0, the shape is independent of hue, so ST are constant. Values picked to roughly be the average values of ST.
+        float C_a = L * 0.4f;
+        float C_b = (1.f - L) * 0.8f;
+
+        // Use a soft minimum function, instead of a sharp triangle shape to get a smooth value for chroma.
+        C_0 = sqrtf(1.f / (1.f / (C_a * C_a) + 1.f / (C_b * C_b)));
+    }
+
+    return {C_0, C_mid, C_max};
 }
 
-/* https://en.wikipedia.org/wiki/CIELUV
- * In these formulas, Yn refers to the reference white point. We are using
- * illuminant D65, so Yn (see refY in Maxima file) equals 1. The formula is
- * simplified accordingly.
- */
-static float y2l(float y)
+auto LinearRGB_from_Okhsl(glm::vec3 const& hsl) -> glm::vec3
 {
-    if (y <= epsilon)
-        return y * kappa;
+    float h = hsl.x;
+    float s = hsl.y;
+    float l = hsl.z;
+
+    if (l == 1.0f)
+        return {1.f, 1.f, 1.f};
+    if (l == 0.f)
+        return {0.f, 0.f, 0.f};
+
+    float a_ = cosf(2.f * glm::pi<float>() * h);
+    float b_ = sinf(2.f * glm::pi<float>() * h);
+    float L  = toe_inv(l);
+
+    Cs    cs    = get_Cs(L, a_, b_);
+    float C_0   = cs.C_0;
+    float C_mid = cs.C_mid;
+    float C_max = cs.C_max;
+
+    float mid     = 0.8f;
+    float mid_inv = 1.25f;
+
+    float C, t, k_0, k_1, k_2; // NOLINT(cppcoreguidelines-init-variables, readability-isolate-declaration)
+
+    if (s < mid)
+    {
+        t = mid_inv * s;
+
+        k_1 = mid * C_0;
+        k_2 = (1.f - k_1 / C_mid);
+
+        C = t * k_1 / (1.f - k_2 * t);
+    }
     else
-        return 116.f * std::cbrt(y) - 16.f;
+    {
+        t = (s - mid) / (1 - mid);
+
+        k_0 = C_mid;
+        k_1 = (1.f - mid) * C_mid * C_mid * mid_inv * mid_inv / C_0;
+        k_2 = (1.f - (k_1) / (C_max - C_mid));
+
+        C = k_0 + t * k_1 / (1.f - k_2 * t);
+    }
+
+    return LinearRGB_from_Oklab({L, C * a_, C * b_});
 }
 
-static float l2y(float l)
+auto Okhsl_from_LinearRGB(glm::vec3 const& rgb) -> glm::vec3
 {
-    if (l <= 8.f)
+    glm::vec3 const lab = Oklab_from_LinearRGB(rgb);
+
+    float C  = sqrtf(lab.y * lab.y + lab.z * lab.z);
+    float a_ = lab.y / C;
+    float b_ = lab.z / C;
+
+    float L = lab.x;
+    float h = 0.5f + 0.5f * atan2f(-lab.z, -lab.y) / glm::pi<float>();
+
+    Cs    cs    = get_Cs(L, a_, b_);
+    float C_0   = cs.C_0;
+    float C_mid = cs.C_mid;
+    float C_max = cs.C_max;
+
+    // Inverse of the interpolation in okhsl_to_srgb:
+
+    float mid     = 0.8f;
+    float mid_inv = 1.25f;
+
+    float s; // NOLINT(cppcoreguidelines-init-variables)
+    if (C < C_mid)
     {
-        return l / kappa;
+        float k_1 = mid * C_0;
+        float k_2 = (1.f - k_1 / C_mid);
+
+        float t = C / (k_1 + k_2 * C);
+        s       = t * mid;
     }
     else
     {
-        float x = (l + 16.f) / 116.f;
-        return x * x * x;
-    }
-}
+        float k_0 = C_mid;
+        float k_1 = (1.f - mid) * C_mid * C_mid * mid_inv * mid_inv / C_0;
+        float k_2 = (1.f - (k_1) / (C_max - C_mid));
 
-static void xyz2luv(glm::vec3& in_out)
-{
-    float var_u = (4.f * in_out.x) / (in_out.x + (15.f * in_out.y) + (3.f * in_out.z));
-    float var_v = (9.f * in_out.y) / (in_out.x + (15.f * in_out.y) + (3.f * in_out.z));
-    float l     = y2l(in_out.y);
-    float u     = 13.f * l * (var_u - ref_u);
-    float v     = 13.f * l * (var_v - ref_v);
-
-    in_out.x = l;
-    if (l < 0.00000001f)
-    {
-        in_out.y = 0.f;
-        in_out.z = 0.f;
-    }
-    else
-    {
-        in_out.y = u;
-        in_out.z = v;
-    }
-}
-
-static void luv2xyz(glm::vec3& in_out)
-{
-    if (in_out.x <= 0.00000001f)
-    {
-        /* Black will create a divide-by-zero error. */
-        in_out.x = 0.f;
-        in_out.y = 0.f;
-        in_out.z = 0.f;
-        return;
+        float t = (C - k_0) / (k_1 + k_2 * (C - k_0));
+        s       = mid + (1.f - mid) * t;
     }
 
-    float var_u = in_out.y / (13.f * in_out.x) + ref_u;
-    float var_v = in_out.z / (13.f * in_out.x) + ref_v;
-    float y     = l2y(in_out.x);
-    float x     = -(9.f * y * var_u) / ((var_u - 4.f) * var_v - var_u * var_v);
-    float z     = (9.f * y - (15.f * var_v * y) - (var_v * x)) / (3.f * var_v);
-    in_out.x    = x;
-    in_out.y    = y;
-    in_out.z    = z;
+    float l = toe(L);
+    return {h, s, l};
 }
 
-static void luv2lch(glm::vec3& in_out)
+auto sRGB_from_Okhsl(glm::vec3 const& hsl) -> glm::vec3
 {
-    float l = in_out.x;
-    float u = in_out.y;
-    float v = in_out.z;
-    float h;
-    float c = std::sqrt(u * u + v * v);
-
-    /* Grays: disambiguate hue */
-    if (c < 0.00000001f)
-    {
-        h = 0.f;
-    }
-    else
-    {
-        h = std::atan2(v, u) * 57.29577951f; /* (180 / pi) */
-        if (h < 0.f)
-            h += 360.f;
-    }
-
-    in_out.x = l;
-    in_out.y = c;
-    in_out.z = h;
+    return sRGB_from_LinearRGB(LinearRGB_from_Okhsl(hsl));
 }
 
-static void lch2luv(glm::vec3& in_out)
+auto Okhsl_from_sRGB(glm::vec3 const& rgb) -> glm::vec3
 {
-    float hrad = in_out.z * 0.01745329251994329577f; /* (pi / 180.0) */
-    float u    = std::cos(hrad) * in_out.y;
-    float v    = std::sin(hrad) * in_out.y;
-
-    in_out.y = u;
-    in_out.z = v;
+    return Okhsl_from_LinearRGB(LinearRGB_from_sRGB(rgb));
 }
 
-static void hsluv2lch(glm::vec3& in_out)
+auto XYZ_from_Okhsl(glm::vec3 const& col) -> glm::vec3
 {
-    float h = in_out.x;
-    float s = in_out.y;
-    float l = in_out.z;
-    float c;
-
-    /* White and black: disambiguate chroma */
-    if (l > 99.9999999f || l < 0.00000001f)
-        c = 0.f;
-    else
-        c = max_chroma_for_lh(l, h) / 100.f * s;
-
-    /* Grays: disambiguate hue */
-    if (s < 0.00000001f)
-        h = 0.f;
-
-    in_out.x = l;
-    in_out.y = c;
-    in_out.z = h;
+    return XYZ_from_LinearRGB(LinearRGB_from_Okhsl(col));
 }
 
-static void lch2hsluv(glm::vec3& in_out)
+auto Okhsl_from_XYZ(glm::vec3 const& col) -> glm::vec3
 {
-    float l = in_out.x;
-    float c = in_out.y;
-    float h = in_out.z;
-    float s;
-
-    /* White and black: disambiguate saturation */
-    if (l > 99.9999999f || l < 0.00000001f)
-        s = 0.f;
-    else
-        s = c / max_chroma_for_lh(l, h) * 100.f;
-
-    /* Grays: disambiguate hue */
-    if (c < 0.00000001f)
-        h = 0.f;
-
-    in_out.x = h;
-    in_out.y = s;
-    in_out.z = l;
-}
-
-auto XYZ_from_HSLuv(glm::vec3 const& col) -> glm::vec3
-{
-    glm::vec3 tmp = saturate(col) * glm::vec3{360., 100.f, 100.f};
-
-    hsluv2lch(tmp);
-    lch2luv(tmp);
-    luv2xyz(tmp);
-
-    return tmp;
-}
-
-auto HSLuv_from_XYZ(glm::vec3 const& col) -> glm::vec3
-{
-    glm::vec3 tmp = saturate(col);
-
-    xyz2luv(tmp);
-    luv2lch(tmp);
-    lch2hsluv(tmp);
-
-    return tmp / glm::vec3{360., 100.f, 100.f};
-}
-
-// SRGB
-auto HSLuv_from_sRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_sRGB(c));
-}
-
-auto sRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return sRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
-
-// LinearRGB
-auto HSLuv_from_LinearRGB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_LinearRGB(c));
-}
-
-auto LinearRGB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return LinearRGB_from_XYZ(XYZ_from_HSLuv(c));
-}
-
-// CIELAB
-auto HSLuv_from_CIELAB(glm::vec3 const& c) -> glm::vec3
-{
-    return HSLuv_from_XYZ(XYZ_from_CIELAB(c));
-}
-
-auto CIELAB_from_HSLuv(glm::vec3 const& c) -> glm::vec3
-{
-    return CIELAB_from_XYZ(XYZ_from_HSLuv(c));
+    return Okhsl_from_LinearRGB(LinearRGB_from_XYZ(col));
 }
 
 // End of [Block3]
+
+// Start of [Block4]
+// https://bottosson.github.io/posts/oklab/
+// Copyright(c) 2021 Bj�rn Ottosson
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this softwareand associated documentation files(the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and /or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions : The above copyright
+// noticeand this permission notice shall be included in all copies or
+// substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+// WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+// THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+auto Oklab_from_XYZ(glm::vec3 const& xyz) -> glm::vec3
+{
+    glm::vec3 lms = glm::mat3{
+                        +0.8189330101f, +0.0329845436f, +0.0482003018f,
+                        +0.3618667424f, +0.9293118715f, +0.2643662691f,
+                        -0.1288597137f, +0.0361456387f, +0.6338517070f}
+                    * xyz;
+    lms = glm::pow(lms, glm::vec3{1.f / 3.f});
+    return glm::mat3{
+               +0.2104542553f, +1.9779984951f, +0.0259040371f,
+               +0.7936177850f, -2.4285922050f, +0.7827717662f,
+               0.0040720468f, +0.4505937099f, -0.8086757660f}
+           * lms;
+}
+
+auto XYZ_from_Oklab(glm::vec3 const& lab) -> glm::vec3
+{
+    glm::vec3 lms = glm::mat3{
+                        +0.99192169488f, +0.99192170523f, +0.99192175065f,
+                        +0.39706067252f, -0.10483846197f, -0.08876130171f,
+                        +0.22623676972f, -0.05342116300f, -1.28105252562f}
+                    * lab;
+    lms = glm::pow(lms, glm::vec3{3.f});
+    return glm::inverse(glm::mat3{
+               +1.22701385110f, -0.04058017842f, -0.07638128451f,
+               -0.55779998065f, +1.11225686962f, -0.42148197842f,
+               +0.28125614897f, -0.07167667867f, +1.58616322044f})
+           * lms;
+}
+// End of [Block4]
+
+#include "generated/conversions_cpp_definition.inl"
+
 } // namespace Cool

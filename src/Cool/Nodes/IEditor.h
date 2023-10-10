@@ -14,10 +14,14 @@ public:
     INodesEditor(INodesEditor&&)                         = delete;
     auto operator=(INodesEditor&&) -> INodesEditor&      = delete;
 
-    virtual auto imgui_window(NodesConfig const&, NodesLibrary const&) -> bool = 0;
+    virtual auto imgui_windows(NodesConfig&, NodesLibrary const&) -> bool = 0;
+
+    virtual void for_each_selected_node(std::function<void(Node const&)> const&) const = 0;
 
     [[nodiscard]] virtual auto graph() const -> Graph const& = 0;
     [[nodiscard]] virtual auto graph() -> Graph&             = 0;
+
+    [[nodiscard]] virtual auto is_empty() const -> bool = 0;
 };
 
 } // namespace Cool

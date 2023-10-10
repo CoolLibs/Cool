@@ -73,8 +73,11 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
         std::make_pair("      3 / 4     ", 3.f / 4.f),
     };
 
-    if (width != 0.f)
-        ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(
+        width != 0.f
+            ? width
+            : ImGuiExtras::calc_custom_dropdown_input_width()
+    );
 
     if (ImGui::InputText("##aspect_ratio_input", &_input, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr, ImDrawFlags_RoundCornersLeft))
     {
@@ -88,7 +91,7 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
 
     ImGui::SameLine(0.f, 0.f);
 
-    if (ImGui::BeginCombo(label, "", ImGuiComboFlags_NoPreview, ImDrawFlags_RoundCornersRight))
+    if (ImGui::BeginCombo(label, "", ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, ImDrawFlags_RoundCornersRight))
     {
         for (auto const& ratio : ratios)
         {

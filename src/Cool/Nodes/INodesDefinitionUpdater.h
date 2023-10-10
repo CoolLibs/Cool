@@ -1,4 +1,5 @@
 #pragma once
+#include "NodesCategoryConfig.h"
 
 namespace Cool {
 
@@ -11,7 +12,10 @@ public:
     auto operator=(const INodesDefinitionUpdater&) -> INodesDefinitionUpdater& = delete;
     auto operator=(INodesDefinitionUpdater&&) -> INodesDefinitionUpdater&      = delete;
 
-    virtual void add_definition(std::filesystem::path const& path, std::filesystem::path const& root)    = 0;
+    virtual void add_definition(
+        std::filesystem::path const& path, std::filesystem::path const& root,
+        std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
+    )                                                                                                    = 0;
     virtual void remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) = 0;
 };
 

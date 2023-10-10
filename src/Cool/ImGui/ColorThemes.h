@@ -14,6 +14,8 @@ public:
 
     void update();
 
+    auto editor() const -> auto const& { return _editor; }
+
 private:
     class OsThemeChecker {
     public:

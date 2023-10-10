@@ -4,9 +4,15 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
-#include "Cool/Gpu/TextureLibrary.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/Input/MouseButtonEvent.h"
+#include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Log/ToUser.h"
+#include "Cool/Midi/MidiManager.h"
+#include "Cool/UserSettings/UserSettings.h"
+#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -23,8 +29,9 @@ static void imgui_dockspace();
 static void imgui_new_frame();
 static void end_frame(WindowManager& window_manager);
 
-AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfig config)
+AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
+    , _views{views}
     , _app{app}
     , _config{config}
 {
@@ -41,9 +48,9 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
     }
     // clang-format off
     glfwSetKeyCallback        (_window_manager.main_window().glfw(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), AppManager::mouse_button_callback);
-    glfwSetScrollCallback     (_window_manager.main_window().glfw(), AppManager::scroll_callback);
-    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), AppManager::cursor_position_callback);
+    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
+    glfwSetScrollCallback     (_window_manager.main_window().glfw(), ImGui_ImplGlfw_ScrollCallback);
+    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
     glfwSetCharCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
     glfwSetWindowFocusCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
     glfwSetCursorEnterCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
@@ -53,14 +60,24 @@ AppManager::AppManager(WindowManager& window_manager, IApp& app, AppManagerConfi
 
 void AppManager::run(std::function<void()> on_update)
 {
+    auto const do_update = [&]() {
+        try
+        {
+            update();
+            on_update();
+        }
+        catch (std::exception const& e)
+        {
+            Cool::Log::ToUser::error("UNKNOWN ERROR", e.what());
+        }
+    };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD_Init();
         while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
         {
-            update();
-            on_update();
+            do_update();
         }
         should_stop = true;
     }};
@@ -72,8 +89,7 @@ void AppManager::run(std::function<void()> on_update)
     while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
     {
         glfwPollEvents();
-        update();
-        on_update();
+        do_update();
     }
 #endif
     // Restore any ImGui ini state that might have been stored
@@ -84,7 +100,11 @@ void AppManager::run(std::function<void()> on_update)
 static void check_for_imgui_item_picker_request()
 {
 #if DEBUG
-    if (DebugOptions::imgui_item_picker())
+    if (DebugOptions::imgui_item_picker()
+        || (ImGui::GetIO().KeyCtrl
+            && ImGui::GetIO().KeyShift
+            && ImGui::IsKeyPressed(ImGuiKey_I)
+        ))
     {
         ImGui::DebugStartItemPicker();
     }
@@ -104,17 +124,26 @@ void AppManager::restore_imgui_ini_state_ifn()
 
 void AppManager::update()
 {
+    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-    if (TextureLibrary::instance().update())
+    midi_manager().check_for_devices();
+    TextureLibrary_FromWebcam::instance().on_frame_begin();
+    if (TextureLibrary_FromWebcam::instance().has_active_webcams())
+        _app.trigger_rerender();
+    if (TextureLibrary_FromFile::instance().update())
         _app.trigger_rerender();
     _app.update();
-    restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
+    restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
+    dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
+    for (auto& view : _views)
+        view->on_frame_end();
+    TextureLibrary_FromWebcam::instance().on_frame_end();
     end_frame(_window_manager);
 }
 
@@ -153,6 +182,16 @@ void AppManager::imgui_render(IApp& app)
     ImGui::PushFont(Font::regular());
     window_title_height_bias -= ImGui::GetFontSize();
 
+    // Menu bar
+    if (app.wants_to_show_menu_bar())
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImGuiExtras::GetStyle().menu_bar_spacing);
+        ImGui::BeginMainMenuBar();
+        app.imgui_menus();
+        ImGui::EndMainMenuBar();
+        ImGui::PopStyleVar();
+    }
+
     // Apply normal FramePadding. The one stored in ImGui::GetStyle() is used by the window titles only.
     window_title_height_bias += 2.f * ImGui::GetStyle().FramePadding.y;
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGuiExtras::GetStyle().frame_padding);
@@ -160,21 +199,13 @@ void AppManager::imgui_render(IApp& app)
 
     ImGui::GetCurrentContext()->window_title_height_bias = window_title_height_bias;
 
-    {
-        // Menu bar
-        if (app.wants_to_show_menu_bar())
-        {
-            ImGui::BeginMainMenuBar();
-            app.imgui_menus();
-            ImGui::EndMainMenuBar();
-        }
-        // Windows
-        app.imgui_windows();
-        imgui_windows();
-    }
+    // Windows
+    app.imgui_windows();
+    imgui_windows();
+
     ImGui::PopStyleVar();
     ImGui::PopFont();
-    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().title_bar_padding; // We need to apply the title_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
+    ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().tab_bar_padding; // We need to apply the tab_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
 static void end_frame(WindowManager& window_manager)
@@ -234,13 +265,6 @@ static void imgui_dockspace()
     }
 }
 
-static WindowCoordinates mouse_position(GLFWwindow* window)
-{
-    double x, y; // NOLINT
-    glfwGetCursorPos(window, &x, &y);
-    return WindowCoordinates{x, y};
-}
-
 static AppManager& get_app_manager(GLFWwindow* window)
 {
     return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
@@ -255,15 +279,6 @@ void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int act
         ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     }
     app_manager._window_manager.main_window().check_for_fullscreen_toggles(key, scancode, action, mods);
-    if (!ImGui::GetIO().WantTextInput && app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_keyboard_event({
-            .key      = key,
-            .scancode = scancode,
-            .action   = action,
-            .mods     = ModifierKeys{mods},
-        });
-    }
 }
 
 void AppManager::key_callback_for_secondary_windows(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
@@ -283,43 +298,72 @@ void AppManager::window_close_callback_for_secondary_windows(GLFWwindow* glfw_wi
     }
 }
 
-void AppManager::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+void AppManager::dispatch_all_events()
 {
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
+    if (!_app.inputs_are_allowed())
+        return;
+    dispatch_mouse_movement();
+    dispatch_mouse_click();
+    dispatch_mouse_scroll();
+}
+
+void AppManager::dispatch_mouse_movement()
+{
+    float const delta_x = ImGui::GetIO().MouseDelta.x;
+    float const delta_y = ImGui::GetIO().MouseDelta.y;
+    if (delta_x == 0.f && delta_y == 0.f)
+        return;
+
+    auto const event = MouseMoveEvent<ImGuiCoordinates>{
+        .position = ImGui::GetIO().MousePos,
+        // TODO(JF) Also pass the delta?
+    };
+    for (auto& view : _views)
+        view->dispatch_mouse_move_event(event);
+}
+
+void AppManager::dispatch_mouse_click()
+{
+    for (int button = 0; button < IM_ARRAYSIZE(ImGui::GetIO().MouseClicked); button++)
     {
-        app_manager._app.on_mouse_button({
-            .position = mouse_position(window),
-            .button   = button,
-            .action   = action,
-            .mods     = ModifierKeys{mods},
-        });
+        if (ImGui::IsMouseClicked(button))
+        {
+            auto const event = MouseButtonEvent<ImGuiCoordinates>{
+                .position = ImGui::GetIO().MousePos,
+                .button   = button,
+                .action   = ButtonAction::Pressed,
+            };
+            for (auto& view : _views)
+                view->dispatch_mouse_button_event(event);
+        }
+        if (ImGui::IsMouseReleased(button))
+        {
+            auto const event = MouseButtonEvent<ImGuiCoordinates>{
+                .position = ImGui::GetIO().MousePos,
+                .button   = button,
+                .action   = ButtonAction::Released,
+            };
+            for (auto& view : _views)
+                view->dispatch_mouse_button_event(event);
+        }
     }
 }
 
-void AppManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void AppManager::dispatch_mouse_scroll()
 {
-    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-    auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_mouse_scroll({
-            .position = mouse_position(window),
-            .dx       = static_cast<float>(xoffset),
-            .dy       = static_cast<float>(yoffset),
-        });
-    }
-}
+    float const scroll_x = ImGui::GetIO().MouseWheelH;
+    float const scroll_y = ImGui::GetIO().MouseWheel;
+    if (scroll_x == 0.f && scroll_y == 0.f)
+        return;
 
-void AppManager::cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-    auto& app_manager = get_app_manager(window);
-    if (app_manager._app.inputs_are_allowed())
-    {
-        app_manager._app.on_mouse_move({.position = WindowCoordinates{xpos, ypos}});
-    }
+    auto const event = MouseScrollEvent<ImGuiCoordinates>{
+        .position = ImGui::GetIO().MousePos,
+        .dx       = scroll_x,
+        .dy       = scroll_y,
+    };
+
+    for (auto& view : _views)
+        view->dispatch_mouse_scroll_event(event);
 }
 
 void AppManager::imgui_windows()

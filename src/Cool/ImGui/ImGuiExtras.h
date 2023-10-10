@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
 
 namespace Cool::ImGuiExtras {
@@ -24,13 +25,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2);
  * @param total_duration Optionnal : the total length of the time interval that time_in_sec is part of, expressed in seconds. (for example time_in_sec might be a timestamp in a video, and total_duration would be the duration of the video). It allows the formating to know whether it should write hours and minutes or not, in order for the display to be consistent accross the wole duration of total_duration. Leave as 0.f if you don't want or need this behaviour.
  */
 void time_formated_hms(float time_in_sec, float total_duration = 0.f);
-
-/**
- * @brief Displays some text on hover for the previously declared widget.
- *
- * @param text
- */
-void tooltip(const char* text);
 
 /**
  * @brief A greyed out button that you can't click on.
@@ -127,21 +121,17 @@ bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags pop
 void invisible_wrapper_around_previous_line(const char* str_id);
 
 /// Adds a button that opens a folder dialog.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto folder_dialog_button(
     std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder = ""
+    File::folder_dialog_args const& = {}
 ) -> bool;
 
 /// Adds a button that opens a file dialog.
-/// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
-/// `initial_folder` is the folder that the dialog window should open at. Leave blank for default (plateform-specific) behaviour.
 /// Returns true iff out_path was modified.
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters   = {},
-    std::filesystem::path               initial_folder = ""
+    std::filesystem::path* out_path,
+    File::file_dialog_args const& = {}
 ) -> bool;
 
 /// UI for a folder path. Creates a text input and a button to open a folder explorer.
@@ -179,7 +169,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
 bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
-void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets);
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets);
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
@@ -193,11 +183,11 @@ void background(std::function<void()> widget, ImVec4 color);
 void highlight(std::function<void()> widget, float opacity = 1.f);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
-auto link(std::string_view url) -> bool;
+void link(std::string_view url);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
 /// It will be rendered as `label`.
-auto link(std::string_view url, std::string_view label) -> bool;
+void link(std::string_view url, std::string_view label);
 
 /// Brings attention to the given widget (highlight, bring window to front, scroll to right position, etc.).
 /// `widget` must be a function that draws some ImGui widgets.
@@ -220,6 +210,14 @@ void begin_fullscreen(const char* name, bool* p_open = nullptr, ImGuiWindowFlags
 /// Since you might want several buttons lining up, you have to specify the order in which
 /// they should be drawn with `index`. The direction in which the several buttons will go
 /// is controlled by `align_vertically`.
-auto floating_button(const char* label, int index, bool align_vertically = true) -> bool;
+/// `is_enabled` allows you to treat your buttons as toggles and have them highlighted while `is_enabled` is true.
+auto floating_button(const char* label, int index, bool align_vertically = true, bool is_enabled = false) -> bool;
+
+void separator_text(std::string_view text);
+
+auto input_text_multiline(const char* label, std::string* str, const ImVec2& size = ImVec2(0, 0), ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = nullptr, void* user_data = nullptr)
+    -> bool;
+
+auto calc_custom_dropdown_input_width() -> float;
 
 } // namespace Cool::ImGuiExtras

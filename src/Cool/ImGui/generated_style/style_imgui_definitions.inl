@@ -8,7 +8,7 @@
 void Style::imgui_floating_buttons_spacing()
 {
     ImGui::SliderFloat("Floating buttons spacing", (float*)&floating_buttons_spacing, 0.f, 20.f, "%.0f");
-    ImGui::SameLine();
+
     ImGuiExtras::help_marker("Small buttons that overlap the View");
 }
 
@@ -17,7 +17,17 @@ void Style::imgui_frame_padding()
     ImGui::SliderFloat2("Frame padding", (float*)&frame_padding, 0.f, 20.f, "%.0f");
 }
 
-void Style::imgui_title_bar_padding()
+void Style::imgui_tab_bar_padding()
 {
-    ImGui::SliderFloat2("Title bar padding", (float*)&title_bar_padding, 0.f, 20.f, "%.0f");
+    ImGui::SliderFloat2("Tab bar padding", (float*)&tab_bar_padding, 0.f, 20.f, "%.0f");
+}
+
+void Style::imgui_menu_bar_spacing()
+{
+    ImGui::SliderFloat2("Menu bar spacing", (float*)&menu_bar_spacing, 0.f, 20.f, "%.0f");
+}
+
+void Style::imgui_node_title_vertical_alignment()
+{
+    ImGui::SliderFloat("Node title vertical alignment", (float*)&node_title_vertical_alignment, 0.f, 1.f);
 }

@@ -13,7 +13,7 @@ void validate_opengl_state(GLuint id)
         if (length > 0)
         {
             std::vector<GLchar> error_message;
-            error_message.reserve(static_cast<size_t>(length));
+            error_message.resize(static_cast<size_t>(length));
             GLDebug(glGetProgramInfoLog(id, length, nullptr, error_message.data()));
             throw std::invalid_argument(std::string{"Validation failed:\n"} + error_message.data());
         }

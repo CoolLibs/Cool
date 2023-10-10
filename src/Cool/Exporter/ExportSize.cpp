@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-void ExportSize::set_aspect_ratio(AspectRatio aspect_ratio)
+void ExportSize::set_aspect_ratio(AspectRatio const& aspect_ratio)
 {
     _aspect_ratio_is_locked = true;
     _aspect_ratio           = aspect_ratio;
@@ -47,12 +47,11 @@ auto ExportSize::imgui() -> bool
     }
 
     ImGui::SameLine();
-    ImGuiExtras::maybe_disabled(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
+    ImGuiExtras::disabled_if(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
         b |= _aspect_ratio.imgui(150.f);
     });
     ImGui::SameLine();
     b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
-    ImGui::SameLine();
     ImGuiExtras::help_marker(
         _aspect_ratio_is_locked
             ? "Unlock the ratio to edit the width and the height independently."

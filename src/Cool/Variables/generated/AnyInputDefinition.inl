@@ -22,8 +22,10 @@ using AnyInputDefinition = std::variant<
     InputDefinition<Cool::Hue>,
     InputDefinition<Cool::ColorPalette>,
     InputDefinition<Cool::Gradient>,
-    InputDefinition<Cool::TextureInfo>,
+    InputDefinition<Cool::TextureDescriptor_FromFile>,
+    InputDefinition<Cool::TextureDescriptor_FromWebcam>,
     InputDefinition<Cool::MathExpression>,
     InputDefinition<glm::mat2>,
     InputDefinition<glm::mat3>,
-    InputDefinition<glm::mat4> >;
+    InputDefinition<glm::mat4>,
+    InputDefinition<Cool::MidiChannel> >;

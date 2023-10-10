@@ -1,32 +1,38 @@
 #include "PresetManager.h"
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <boxer/boxer.h>
-#include <cereal/archives/json.hpp>
+#include <imgui.h>
 #include "Cool/Variables/PresetManager.h"
+#include "Cool/internal/Serialization/SPresetManager.h"
 
 // TODO(JF) In case of a change of Settings definition show a merge window that allows user to explicit the link between old and new names (for each old name that doesn't have a match in the new names, show a dropdown that allows to link it to one of the new names that don't correspond to any old names)
 
 namespace Cool {
 
-PresetManager::PresetManager(std::filesystem::path const& path)
-    : _serializer{path, "PresetManager"}
+PresetManager::PresetManager(PresetsPaths const& paths)
+    : _serializer{paths.user_defined_presets, "Presets"}
 {
-    auto const maybe_err = _serializer.load<PresetManager, cereal::JSONInputArchive>(*this);
+    auto const maybe_err = do_load(_user_defined_presets, _serializer);
     std::ignore          = maybe_err; // Ignore errors when file not found
+    do_load_default_presets(_default_presets, paths.default_presets);
 }
 
-/// Returns the ID of the first Preset that matches the `predicate`, or a null ID if there was none.
-static auto find_preset(
-    reg::RawOrderedRegistry<Preset2> const&    presets,
-    std::function<bool(const Preset2&)> const& predicate
-) -> PresetId
+auto PresetManager::find_preset(std::function<bool(const Preset2&)> const& predicate) const -> PresetId
 {
-    std::shared_lock lock{presets.mutex()};
-    for (const auto& [id, preset] : presets)
     {
-        if (predicate(preset))
+        std::shared_lock lock{_default_presets.mutex()};
+        for (auto const& [id, preset] : _default_presets)
         {
-            return id;
+            if (predicate(preset))
+                return id;
+        }
+    }
+    {
+        std::shared_lock lock{_user_defined_presets.mutex()};
+        for (auto const& [id, preset] : _user_defined_presets)
+        {
+            if (predicate(preset))
+                return id;
         }
     }
     return PresetId{};
@@ -34,20 +40,16 @@ static auto find_preset(
 
 auto PresetManager::find_preset_with_given_values(Settings_ConstRef values) const -> PresetId
 {
-    return find_preset(
-        _presets, [&](const Preset2& preset) {
-            return values.are_equal_to(preset.values);
-        }
-    );
+    return find_preset([&](const Preset2& preset) {
+        return values.are_equal_to(preset.values);
+    });
 }
 
 auto PresetManager::find_preset_with_given_name(std::string_view name) const -> PresetId
 {
-    return find_preset(
-        _presets, [&](const Preset2& preset) {
-            return preset.name == name;
-        }
-    );
+    return find_preset([&](const Preset2& preset) {
+        return preset.name == name;
+    });
 }
 
 static void set_default_value_to_current_value(Preset2& preset)
@@ -92,17 +94,27 @@ auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
     else
     {
         set_default_value_to_current_value(preset);
-        return _presets.create_raw(preset);
+        auto id = _user_defined_presets.create_raw(preset);
+        save_to_file();
+        return id;
     }
+}
+
+void PresetManager::remove(const PresetId& id)
+{
+    // _default_presets.destroy(id); // Users are not allowed to destroy default presets (+ they are likely stored alongside the executable, e.g. in "Program Files" on Windows, where the app is not allowed to edit files.)
+    _user_defined_presets.destroy(id);
+    save_to_file();
 }
 
 void PresetManager::edit(PresetId const& id, Settings const& new_values)
 {
     if (find_preset_with_given_values(new_values) == PresetId{}) // Make sure there isn't already a preset with the same values.
     {
-        _presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
             preset.values = new_values;
         });
+        save_to_file();
     }
     else
     {
@@ -118,9 +130,10 @@ void PresetManager::edit(PresetId const& id, Settings const& new_values)
 void PresetManager::rename(const PresetId& id, std::string_view new_name)
 {
     const auto do_rename = [&]() {
-        _presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
             preset.name = new_name;
         });
+        save_to_file();
     };
 
     const auto preset_with_same_name = find_preset_with_given_name(new_name);
@@ -151,7 +164,10 @@ auto PresetManager::preset_name(const PresetId& id) const -> std::optional<std::
     std::optional<std::string> name{};
 
     // Replace nullopt with preset name if it is found in the registry
-    _presets.with_ref(id, [&](const Preset2& preset) {
+    _default_presets.with_ref(id, [&](const Preset2& preset) {
+        name = preset.name;
+    });
+    _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
         name = preset.name;
     });
 
@@ -160,24 +176,38 @@ auto PresetManager::preset_name(const PresetId& id) const -> std::optional<std::
 
 auto PresetManager::apply(const PresetId& id, Settings_Ref settings) const -> bool
 {
-    return _presets.with_ref(id, [&](const Preset2& preset) {
+    return _default_presets.with_ref(id, [&](const Preset2& preset) {
+        settings.assign_from(preset.values);
+    }) || _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
         settings.assign_from(preset.values);
     });
 }
 
 void PresetManager::apply_first_preset_if_there_is_one(Settings_Ref settings) const
 {
-    std::shared_lock lock{_presets.mutex()};
-    if (!is_empty())
     {
-        settings.assign_from(_presets.begin()->second.values);
+        std::shared_lock lock{_default_presets.mutex()};
+        if (!_default_presets.is_empty())
+        {
+            settings.assign_from(_default_presets.begin()->second.values);
+            return;
+        }
+    }
+    {
+        std::shared_lock lock{_user_defined_presets.mutex()};
+        if (!_user_defined_presets.is_empty())
+        {
+            settings.assign_from(_user_defined_presets.begin()->second.values);
+            return;
+        }
     }
 }
 
 auto PresetManager::dropdown(
     std::string_view dropdown_name,
     std::string_view current_preset_name,
-    ImGuiComboFlags  combo_flags
+    ImGuiComboFlags  combo_flags,
+    ImDrawFlags      draw_flags
 ) -> PresetId
 {
     auto selected_id = PresetId{};
@@ -185,10 +215,21 @@ auto PresetManager::dropdown(
     if (ImGui::BeginCombo(
             dropdown_name.data(),
             current_preset_name.data(),
-            combo_flags
+            combo_flags,
+            draw_flags
         ))
     {
-        for (const auto& [id, preset] : _presets)
+        for (const auto& [id, preset] : _default_presets)
+        {
+            ImGui::PushID(&preset);
+            const bool is_selected = _current_preset_id == id;
+            if (ImGui::Selectable(preset.name.c_str(), is_selected))
+            {
+                selected_id = id;
+            }
+            ImGui::PopID();
+        }
+        for (const auto& [id, preset] : _user_defined_presets)
         {
             ImGui::PushID(&preset);
             const bool is_selected = _current_preset_id == id;
@@ -206,13 +247,17 @@ auto PresetManager::dropdown(
 void PresetManager::name_selector()
 {
     const auto id = dropdown(
-        "##465",
+        "New preset name",
         "",
-        ImGuiComboFlags_NoPreview // Draw just the arrow of the dropdown
+        ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
+        ImDrawFlags_RoundCornersRight
     );
 
     // Update _new_preset_name if a preset was selected in the dropdown
-    _presets.with_ref(id, [&](const Preset2& preset) {
+    _default_presets.with_ref(id, [&](const Preset2& preset) {
+        _new_preset_name = preset.name;
+    });
+    _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
         _new_preset_name = preset.name;
     });
 }
@@ -260,14 +305,14 @@ void PresetManager::RenamerWidget::imgui(const PresetId& id, std::string_view cu
 static auto add_button(bool the_name_is_not_already_used, std::string_view name) -> bool
 {
     auto is_clicked{false};
-    Cool::ImGuiExtras::maybe_disabled(name == "", "Can't create a preset with an empty name.", [&]() {
+    Cool::ImGuiExtras::disabled_if(name == "", "Can't create a preset with an empty name.", [&]() {
         if (the_name_is_not_already_used)
         {
             is_clicked = ImGui::Button("Save Preset");
         }
         else
         {
-            is_clicked = Cool::ImGuiExtras::colored_button("Overwrite", 0.5f);
+            is_clicked = Cool::ImGuiExtras::colored_button("Overwrite", 0.11f);
         }
     });
     return is_clicked;
@@ -275,9 +320,11 @@ static auto add_button(bool the_name_is_not_already_used, std::string_view name)
 
 auto PresetManager::imgui_name_input() -> bool
 {
-    name_selector();
+    ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
+    bool const wants_to_save = ImGui::InputText("##New preset name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
     ImGui::SameLine(0.f, 0.f);
-    return ImGui::InputText("Name", &_new_preset_name, ImGuiInputTextFlags_EnterReturnsTrue);
+    name_selector();
+    return wants_to_save;
 }
 
 static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view new_preset_name) -> bool
@@ -293,12 +340,15 @@ static auto make_sure_the_user_wants_to_overwrite_the_preset(std::string_view ne
 
 void PresetManager::save_preset(Settings_ConstRef new_preset_values, const PresetId& id)
 {
-    if (contains(id))
+    if (_default_presets.contains(id))
+        return; // Can't modify default presets
+
+    if (_user_defined_presets.contains(id))
     {
         if (!make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
             return;
 
-        _presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
             preset.values    = new_preset_values.as_settings();
             _new_preset_name = "";
         });
@@ -312,23 +362,24 @@ void PresetManager::save_preset(Settings_ConstRef new_preset_values, const Prese
         _new_preset_name   = "";
     }
 
-    _serializer.save<PresetManager, cereal::JSONOutputArchive>(*this); // Save to file.
+    save_to_file();
+}
+
+void PresetManager::save_to_file()
+{
+    do_save(_user_defined_presets, _serializer);
 }
 
 void PresetManager::imgui_adding_preset(Settings_ConstRef settings)
 {
     const auto preset_id = find_preset_with_given_name(_new_preset_name);
 
-    if (add_button(preset_id == PresetId{}, _new_preset_name))
+    if (imgui_name_input())
     {
         save_preset(settings, preset_id);
     }
 
-    ImGui::SameLine();
-    ImGui::Text("as");
-    ImGui::SameLine();
-
-    if (imgui_name_input())
+    if (add_button(preset_id == PresetId{}, _new_preset_name))
     {
         save_preset(settings, preset_id);
     }
@@ -350,9 +401,11 @@ auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
     }
     else
     {
-        delete_button(_current_preset_id, *current_preset_name, *this);
-        ImGui::SameLine();
-        _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
+        Cool::ImGuiExtras::disabled_if(_default_presets.contains(_current_preset_id), "You can only edit the presets you created, not the default ones that come with Coollab.", [&]() {
+            delete_button(_current_preset_id, *current_preset_name, *this);
+            ImGui::SameLine();
+            _rename_widget.imgui(_current_preset_id, *current_preset_name, *this);
+        });
     }
 
     return settings_have_changed;

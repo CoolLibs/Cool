@@ -24,7 +24,7 @@ auto NodesLibrary::get_category(std::string const& category_name) const -> Nodes
 
 auto NodesLibrary::get_category(std::string const& category_name) -> NodesCategory*
 {
-    auto it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory const& cat) {
+    auto const it = std::find_if(_categories.begin(), _categories.end(), [&](NodesCategory const& cat) {
         return cat.name() == category_name;
     });
 
@@ -62,7 +62,7 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
             ImGui::SetNextItemOpen(is_open);
 
         ImGui::PushID(13452);
-        bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().get_color());
+        bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().color());
         ImGui::PopID();
 
         category.config().imgui_popup();
@@ -84,7 +84,12 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
     return std::nullopt;
 }
 
-void NodesLibrary::add_definition(NodeDefinition const& definition, std::string category_name, std::filesystem::path const& category_folder)
+void NodesLibrary::add_definition(
+    NodeDefinition const&      definition,
+    std::string                category_name,
+    NodesCategoryConfig const& category_config,
+    int                        category_order
+)
 {
     // Add definition to the corresponding category if it exists
     for (auto& category : _categories)
@@ -98,12 +103,12 @@ void NodesLibrary::add_definition(NodeDefinition const& definition, std::string 
     }
 
     // Add new category if not found
-    _categories.push_back(NodesCategory{category_name, category_folder});
+    _categories.push_back(NodesCategory{category_name, category_config, category_order});
     _categories.back().definitions().push_back(definition);
     std::sort(
         _categories.begin(), _categories.end(),
         [](NodesCategory const& c1, NodesCategory const& c2) {
-            return Cool::String::to_lower(c1.name()) < Cool::String::to_lower(c2.name());
+            return c1.order() < c2.order();
         }
     );
 }

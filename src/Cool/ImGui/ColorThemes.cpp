@@ -1,4 +1,5 @@
 #include "ColorThemes.h"
+#include <imgui-node-editor/imgui_node_editor.h>
 #include <imgui.h>
 #include <wants_dark_theme/wants_dark_theme.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
@@ -11,9 +12,9 @@ static void register_imgui_extras_elements(ImStyleEd::Config& config);
 ColorThemes::ColorThemes()
     : _editor{
         ImStyleEd::SerializationPaths{
-            .current_theme = Cool::Path::root() / "color_theme_current.json",
-            .themes        = Cool::Path::root() / "color_themes.json",
-            .config        = Cool::Path::root() / "color_config.json",
+            .current_theme = Cool::Path::user_data() / "current_color_theme.json",
+            .themes        = Cool::Path::user_data() / "color_themes.json",
+            .config        = Cool::Path::user_data() / "color_config.json",
         },
         [](ImStyleEd::Config& config) {
             ImStyleEd::register_all_imgui_color_elements(config);
@@ -35,7 +36,7 @@ void ColorThemes::imgui_theme_picker()
         }
     }
 
-    ImGuiExtras::maybe_disabled(
+    ImGuiExtras::disabled_if(
         _use_os_theme.has_value(),
         "You are using the OS color theme. Disable the option above to edit your theme freely.",
         [&]() {
@@ -77,6 +78,7 @@ void ColorThemes::OsThemeChecker::update(ImStyleEd::Editor& editor)
 static void register_imgui_extras_elements(ImStyleEd::Config& config)
 {
 #include "generated_style/register_elements.inl"
+#include "generated_style_nodes/register_all_imnodes_color_elements.inl"
 }
 
 } // namespace Cool

@@ -1,6 +1,3 @@
-#ifndef IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_DEFINE_MATH_OPERATORS
-#endif
 #include "ImGuiExtras.h"
 #include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
@@ -9,8 +6,10 @@
 #include <imgui/imgui_internal.h>
 #include <open_link/open_link.hpp>
 #include <ostream>
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
 
@@ -18,10 +17,10 @@ namespace Cool::ImGuiExtras {
 
 void help_marker(const char* text)
 {
+    ImGui::SameLine();
     ImGui::TextDisabled(" " ICOMOON_INFO);
-    if (ImGui::IsItemHovered())
+    if (ImGui::BeginItemTooltip())
     {
-        ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
         ImGui::TextUnformatted(text);
         ImGui::PopTextWrapPos();
@@ -136,19 +135,9 @@ void time_formated_hms(float time_in_sec, float total_duration)
     }
 }
 
-void tooltip(const char* text)
-{
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::TextUnformatted(text);
-        ImGui::EndTooltip();
-    }
-}
-
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
-    maybe_disabled(true, reason_for_disabling, [&]() {
+    disabled_if(true, reason_for_disabling, [&]() {
         ImGui::Button(label);
     });
 }
@@ -172,7 +161,7 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
     image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
-    tooltip(reason_for_disabling);
+    ImGui::SetItemTooltip("%s", reason_for_disabling);
 }
 
 auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
@@ -291,42 +280,34 @@ void invisible_wrapper_around_previous_line(const char* str_id)
 }
 
 auto folder_dialog_button(
-    std::filesystem::path* out_path,
-    std::filesystem::path  initial_folder
+    std::filesystem::path*          out_path,
+    File::folder_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::PickFolder(outPath, std::filesystem::absolute(initial_folder).string().c_str());
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::folder_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
 auto file_dialog_button(
-    std::filesystem::path*              out_path,
-    std::vector<nfdfilteritem_t> const& file_filters,
-    std::filesystem::path               initial_folder
+    std::filesystem::path*        out_path,
+    File::file_dialog_args const& args
 ) -> bool
 {
     if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
         return false;
 
-    NFD::UniquePath outPath;
-    nfdresult_t     result = NFD::OpenDialog(
-        outPath,
-        file_filters.data(),
-        static_cast<nfdfiltersize_t>(file_filters.size()),
-        std::filesystem::absolute(initial_folder).string().c_str()
-    );
-    if (result != NFD_OKAY)
+    auto const maybe_path = File::file_opening_dialog(args);
+    if (!maybe_path)
         return false;
 
-    *out_path = std::filesystem::path{outPath.get()};
+    *out_path = *maybe_path;
     return true;
 }
 
@@ -355,14 +336,14 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
 auto folder(const char* label, std::filesystem::path* folder_path, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, folder_path, show_dialog_button, [&]() {
-        return ImGuiExtras::folder_dialog_button(folder_path, *folder_path);
+        return ImGuiExtras::folder_dialog_button(folder_path, {.initial_folder = *folder_path});
     });
 }
 
 auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, file_path, show_dialog_button, [&]() {
-        return ImGuiExtras::file_dialog_button(file_path, file_filters, !initial_folder.empty() ? initial_folder : *file_path);
+        return ImGuiExtras::file_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
     });
 }
 
@@ -422,9 +403,9 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
     return was_used;
 }
 
-void maybe_disabled(bool condition, const char* reason_to_disable, std::function<void()> widgets)
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
 {
-    if (condition)
+    if (condition_to_disable)
     {
         ImGui::BeginGroup();
         ImGui::BeginDisabled(true);
@@ -433,7 +414,7 @@ void maybe_disabled(bool condition, const char* reason_to_disable, std::function
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGuiExtras::tooltip(reason_to_disable);
+        ImGui::SetItemTooltip("%s", reason_to_disable);
     }
     else
     {
@@ -528,7 +509,7 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     draw_list.AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
     draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad + 1, col_midgrey, hue_cursor_segments);
     draw_list.AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
-    draw_list.AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), col_white, label);
+    draw_list.AddText(ImVec2(wheel_center.x + wheel_r_outer + style.ItemInnerSpacing.x, wheel_center.y - style.ItemInnerSpacing.y), ImGui::GetColorU32(ImGuiCol_Text), label);
 
     ImGui::EndGroup();
 
@@ -594,23 +575,17 @@ void highlight(std::function<void()> widget, float opacity)
     );
 }
 
-auto link(std::string_view url) -> bool
+void link(std::string_view url)
 {
-    return link(url, url);
+    link(url, url);
 }
 
-auto link(std::string_view url, std::string_view label) -> bool
+void link(std::string_view url, std::string_view label)
 {
-    const bool opened = ImGui::Selectable(label.data(), true);
-    if (opened)
-    {
-        Cool::open_link(url.data());
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    }
-    return opened;
+    auto const pos = ImGui::GetCursorPos();
+    ImGui::Dummy({ImGui::CalcTextSize(label.data())});
+    ImGui::SetCursorPos(pos);
+    ImGuiExtras::markdown(fmt::format("[{}]({})", label, url));
 }
 
 void bring_attention_if(bool should_bring_attention, std::function<void()> widget)
@@ -641,9 +616,10 @@ auto colored_collapsing_header(std::string_view name, Cool::Color const& color) 
     ImGui::PushStyleColor(ImGuiCol_Header, glm_to_imvec4(base_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered, glm_to_imvec4(bright_color));
     ImGui::PushStyleColor(ImGuiCol_HeaderActive, glm_to_imvec4(bright_color));
+    ImGui::PushStyleColor(ImGuiCol_Text, get_text_color(color).as_ImColor().Value);
 
     auto const b = ImGui::CollapsingHeader(name.data());
-    ImGui::PopStyleColor(3);
+    ImGui::PopStyleColor(4);
     return b;
 }
 
@@ -680,13 +656,13 @@ auto toggle(const char* label, bool* v) -> bool
     const ImRect check_bb(pos, pos + ImVec2(width, height));
     ImGui::RenderNavHighlight(total_bb, id);
 
-    const float            radius     = height * 0.50f;
-    float                  t          = *v ? 1.0f : 0.0f;
+    const float radius = height * 0.50f;
+    float       t      = *v ? 1.0f : 0.0f;
     if (g.LastActiveId == id) // && g.LastActiveIdTimer < ANIM_SPEED)
     {
         static constexpr float ANIM_SPEED = 0.08f;
-        float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
-        t            = *v ? (t_anim) : (1.0f - t_anim);
+        float                  t_anim     = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+        t                                 = *v ? (t_anim) : (1.0f - t_anim);
     }
 
     ImU32 col_bg;
@@ -711,7 +687,6 @@ void join_buttons()
 {
     ImGui::SameLine();
     ImGui::PushStyleColor(ImGuiCol_Separator, ImGuiExtras::GetStyle().buttons_separator);
-    ImGui::Separator(ImGui::ImGuiSeparatorFlags_Vertical);
     ImGui::PopStyleColor();
     ImGui::SameLine();
 }
@@ -738,7 +713,7 @@ void begin_fullscreen(const char* name, bool* p_open, ImGuiWindowFlags flags)
     );
 }
 
-auto floating_button(const char* label, int index, bool align_vertically) -> bool
+auto floating_button(const char* label, int index, bool align_vertically, bool is_enabled) -> bool
 {
     auto const spacing = [&]() { // Immediately-invoked lambda
         auto const size        = ImGui::GetFrameHeight();
@@ -755,15 +730,38 @@ auto floating_button(const char* label, int index, bool align_vertically) -> boo
     ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
-    ImGui::PushStyleColor(ImGuiCol_Button, GetStyle().floating_button);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GetStyle().floating_button_hovered);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GetStyle().floating_button_active);
+    // clang-format off
+    ImGui::PushStyleColor(ImGuiCol_Button,        is_enabled ? GetStyle().floating_button_enabled         : GetStyle().floating_button);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, is_enabled ? GetStyle().floating_button_hovered_enabled : GetStyle().floating_button_hovered);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,  is_enabled ? GetStyle().floating_button_active_enabled  : GetStyle().floating_button_active);
+    // clang-format on
     bool const b = button_with_text_icon(label);
     ImGui::PopStyleColor(3);
     ImGui::PopStyleVar();
 
     ImGui::SetCursorScreenPos(prev_pos);
     return b;
+}
+
+void separator_text(std::string_view text)
+{
+    ImGui::PushFont(Font::bold());
+    ImGui::SeparatorText(text.data());
+    ImGui::PopFont();
+}
+
+auto input_text_multiline(const char* label, std::string* str, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    -> bool
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, ImGui::GetStyle().ChildRounding);
+    bool const res = ImGui::InputTextMultiline(label, str, size, flags, callback, user_data);
+    ImGui::PopStyleVar();
+    return res;
+}
+
+auto calc_custom_dropdown_input_width() -> float
+{
+    return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
 }
 
 } // namespace Cool::ImGuiExtras

@@ -46,10 +46,39 @@ def all_debug_options():
             available_in_release=False,
         ),
         DebugOption(
+            name_in_code="log_mouse_position_in_view",
+            name_in_ui="Log mouse position in View",
+            available_in_release=True,
+        ),
+        DebugOption(
             name_in_code="test_presets__window",
             name_in_ui="Test Presets",
             available_in_release=True,
             kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="test_markdown_formatting_window",
+            name_in_ui="Test Markdown Formatting",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="emulate_midi_keyboard",
+            name_in_ui="Emulate midi keyboard",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="test_tips",
+            name_in_ui="Test tips",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="public_exhibition_mode",
+            name_in_ui="Public exhibition mode",
+            available_in_release=True,
+            detailed_description="Currently, simply resets the author info after sharing an image online.",
         ),
         DebugOption(
             name_in_code="style_editor",
@@ -74,15 +103,15 @@ def all_debug_options():
             name_in_ui="ImGui Item Picker",
             available_in_release=False,
             kind=Kind.BUTTON,
-            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.",
+            detailed_description="Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\\nShortcut: CTRL + SHIFT + I",
         ),
     ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",
-        cache_file_name="cache/debug-options-cool",
+        cache_file_name="debug-options-cool",
         debug_options=all_debug_options(),
     )

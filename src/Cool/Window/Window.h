@@ -9,7 +9,7 @@ class Window {
 public:
     explicit Window(GLFWwindow* glfw_window);
 
-    /// You have to forward the parameters of the `IApp::onKeyboardEvent()` function (a.k.a. glfw key callback) and it will turn fullscreen on / off appropriately.
+    /// You have to forward the parameters of the glfw key callback and it will turn fullscreen on / off appropriately.
     /// Returns true iff something has changed
     auto check_for_fullscreen_toggles(int key, int scancode, int action, int mods) -> bool;
     void toggle_fullscreen();

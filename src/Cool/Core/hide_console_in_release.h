@@ -1,8 +1,7 @@
 #pragma once
 
 #if !defined(DEBUG)
-// MSVC version
-#if defined(_MSC_VER)
+#if defined(_WIN32)
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 #endif

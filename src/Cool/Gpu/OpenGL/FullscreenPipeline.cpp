@@ -1,11 +1,11 @@
 #include "Cool/Log/Message.h"
 #if defined(COOL_OPENGL)
 
-#include "FullscreenPipeline.h"
 #include <Cool/File/File.h>
 #include <Cool/Gpu/OpenGL/preprocess_shader_source.h>
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
+#include "FullscreenPipeline.h"
 
 namespace Cool::OpenGL {
 

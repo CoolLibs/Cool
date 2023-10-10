@@ -11,12 +11,18 @@ ImVec4 toggle_bg_hovered{0.f, 0.f, 0.f, 1.f};
 ImVec4 checkbox_button{0.f, 0.f, 0.f, 1.f};
 ImVec4 checkbox_button_hovered{0.f, 0.f, 0.f, 1.f};
 ImVec4 checkbox_button_active{0.f, 0.f, 0.f, 1.f};
-ImVec4 floating_button{0.f, 0.f, 0.f, 1.f};         // Small buttons that overlap the View
-ImVec4 floating_button_hovered{0.f, 0.f, 0.f, 1.f}; // Small buttons that overlap the View
-ImVec4 floating_button_active{0.f, 0.f, 0.f, 1.f};  // Small buttons that overlap the View
-ImVec4 buttons_separator{0.f, 0.f, 0.f, 1.f};       // Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).
-ImVec4 highlight_items{0.f, 0.f, 0.f, 1.f};         // Used for example when hovering some error messages, to highlight the part of the UI that needs to be used in order to fix the error message. Use the "Test Message Console" debug option to send such an error message.
+ImVec4 floating_button{0.f, 0.f, 0.f, 1.f};                 // Small buttons that overlap the View
+ImVec4 floating_button_hovered{0.f, 0.f, 0.f, 1.f};         // Small buttons that overlap the View
+ImVec4 floating_button_active{0.f, 0.f, 0.f, 1.f};          // Small buttons that overlap the View
+ImVec4 floating_button_enabled{0.f, 0.f, 0.f, 1.f};         // Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.
+ImVec4 floating_button_hovered_enabled{0.f, 0.f, 0.f, 1.f}; // Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.
+ImVec4 floating_button_active_enabled{0.f, 0.f, 0.f, 1.f};  // Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.
+ImVec4 buttons_separator{0.f, 0.f, 0.f, 1.f};               // Separator used when we glue several buttons together without any spacing between them (e.g. the timeline buttons).
+ImVec4 highlight_items{0.f, 0.f, 0.f, 1.f};                 // Used for example when hovering some error messages, to highlight the part of the UI that needs to be used in order to fix the error message. Use the "Test Message Console" debug option to send such an error message.
 ImVec4 gradient_mark{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_hovered{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_selected{0.f, 0.f, 0.f, 1.f};
 ImVec4 gradient_mark_selected_hovered{0.f, 0.f, 0.f, 1.f};
+ImVec4 link{0.f, 0.f, 0.f, 1.f};
+ImVec4 link_hovered{0.f, 0.f, 0.f, 1.f};
+ImVec4 frame_node_color{0.f, 0.f, 0.f, 1.f};

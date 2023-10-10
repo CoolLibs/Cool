@@ -44,7 +44,10 @@ auto replace_all_words(std::string str, std::string_view from, std::string_view 
         auto const block_content = substring(str, word_position->first, word_position->second);
 
         if (block_content == from)
+        {
             str.replace(word_position->first, word_position->second - word_position->first, to);
+            word_position->second = word_position->first + to.length(); // Update end of word position, so that the next find_next_word_position() starts at the right place
+        }
 
         word_position = find_next_word_position(str, word_position->second, delimiters);
     }

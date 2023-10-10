@@ -12,7 +12,10 @@ public:
     explicit NodesFolderWatcher(std::filesystem::path folder_path, std::string extension);
 
     /// Returns true iff a node definition has been added, removed or updated in the library.
-    auto update(INodesDefinitionUpdater&) -> bool;
+    auto update(
+        INodesDefinitionUpdater&,
+        std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
+    ) -> bool;
 
     auto errors_map() -> auto& { return _node_parsing_errors; }
 

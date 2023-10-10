@@ -1,12 +1,16 @@
-#include "Cool/Gpu/TextureLibrary.h"
+#if defined(COOL_OPENGL)
+#include "Cool/Gpu/OpenGL/Shader.h"
+#include <string>
+#include <string_view>
+#include "Cool/Gpu/OpenGL/Texture.h"
+#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
+#include "Cool/Gpu/TextureSource.h"
+#include "Cool/Midi/MidiManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "imgui.h"
-#if defined(COOL_OPENGL)
-
-#include "Shader.h"
 #include "ShaderModule.h"
+#include "imgui.h"
 
 namespace Cool::OpenGL {
 
@@ -19,11 +23,6 @@ static void assert_shader_is_bound(GLuint id)
 #else
     (void)id;
 #endif
-}
-
-static auto as_glm(ImVec4 const& v) -> glm::vec4
-{
-    return {v.x, v.y, v.z, v.w};
 }
 
 void Shader::bind() const
@@ -54,7 +53,8 @@ void Shader::set_uniform(std::string_view uniform_name, int v) const
 }
 void Shader::set_uniform(std::string_view uniform_name, unsigned int v) const
 {
-    set_uniform(uniform_name, static_cast<int>(v));
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform1ui(uniform_location(uniform_name), v));
 }
 void Shader::set_uniform(std::string_view uniform_name, bool v) const
 {
@@ -79,6 +79,21 @@ void Shader::set_uniform(std::string_view uniform_name, const glm::vec4& v) cons
 {
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform4f(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec2& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform2ui(uniform_location(uniform_name), v.x, v.y));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec3& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform3ui(uniform_location(uniform_name), v.x, v.y, v.z));
+}
+void Shader::set_uniform(std::string_view uniform_name, const glm::uvec4& v) const
+{
+    assert_shader_is_bound(_shader.id());
+    GLDebug(glUniform4ui(uniform_location(uniform_name), v.x, v.y, v.z, v.w));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::mat2& mat) const
 {
@@ -140,7 +155,7 @@ void Shader::set_uniform(std::string_view uniform_name, const Gradient& gradient
         );
         set_uniform(
             fmt::format("{}[{}].col", Cool::internal::gradient_marks_array_name(uniform_name), idx),
-            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_CIELAB_PremultipliedA()
+            ColorAndAlpha::from_srgb_straight_alpha(as_glm(mark.color)).as_Oklab_PremultipliedA()
         );
         idx++;
     }
@@ -160,19 +175,45 @@ static auto max_number_of_texture_slots() -> GLuint
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &res);
     return static_cast<GLuint>(res);
 }
-void Shader::set_uniform(std::string_view uniform_name, TextureInfo const& texture_info) const
+
+static auto get_next_texture_slot() -> GLuint
 {
     static GLuint       current_slot = 0;
     static GLuint const max_slots    = max_number_of_texture_slots();
 
-    Texture const& tex = TextureLibrary::instance().get(texture_info.absolute_path);
-
-    tex.attach_to_slot(current_slot);
-    GLDebug(glBindSampler(current_slot, *TextureSamplerLibrary::instance().get(texture_info.sampler)));
-    set_uniform(fmt::format("{}", uniform_name), current_slot);
-    // set_uniform(fmt::format("{}.aspect_ratio", uniform_name), tex.aspect_ratio());
-
     current_slot = (current_slot + 1) % max_slots;
+    if (current_slot == 0) // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+        current_slot = 1;
+    return current_slot;
+}
+
+void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    texture.attach_to_slot(slot);
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(slot));
+    set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+}
+
+void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& sampler) const
+{
+    auto const slot = get_next_texture_slot();
+    GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+    GLDebug(glBindTexture(GL_TEXTURE_2D, texture_id));
+    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    set_uniform(uniform_name, static_cast<int>(slot));
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+}
+
+void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
+{
+    set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);
+}
+void Shader::set_uniform(std::string_view uniform_name, MidiChannel const& channel) const
+{
+    set_uniform(uniform_name, midi_manager().get_value(channel));
 }
 
 } // namespace Cool::OpenGL

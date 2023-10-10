@@ -46,7 +46,7 @@ struct from_impl<"vec4"> {
 };
 
 template<>
-struct from_impl<"CIELAB"> {
+struct from_impl<"Oklab"> {
     using type = Cool::Color;
 };
 
@@ -61,17 +61,17 @@ struct from_impl<"sRGB"> {
 };
 
 template<>
-struct from_impl<"HSLuv"> {
+struct from_impl<"Okhsl"> {
     using type = Cool::Color;
 };
 
 template<>
-struct from_impl<"CIELAB_PremultipliedA"> {
+struct from_impl<"Oklab_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
 
 template<>
-struct from_impl<"CIELAB_StraightA"> {
+struct from_impl<"Oklab_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
 
@@ -96,12 +96,12 @@ struct from_impl<"sRGB_StraightA"> {
 };
 
 template<>
-struct from_impl<"HSLuv_PremultipliedA"> {
+struct from_impl<"Okhsl_PremultipliedA"> {
     using type = Cool::ColorAndAlpha;
 };
 
 template<>
-struct from_impl<"HSLuv_StraightA"> {
+struct from_impl<"Okhsl_StraightA"> {
     using type = Cool::ColorAndAlpha;
 };
 
@@ -142,7 +142,12 @@ struct from_impl<"Gradient"> {
 
 template<>
 struct from_impl<"Texture"> {
-    using type = Cool::TextureInfo;
+    using type = Cool::TextureDescriptor_FromFile;
+};
+
+template<>
+struct from_impl<"Webcam"> {
+    using type = Cool::TextureDescriptor_FromWebcam;
 };
 
 template<>
@@ -163,4 +168,9 @@ struct from_impl<"mat3"> {
 template<>
 struct from_impl<"mat4"> {
     using type = glm::mat4;
+};
+
+template<>
+struct from_impl<"Midi"> {
+    using type = Cool::MidiChannel;
 };

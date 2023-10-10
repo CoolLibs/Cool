@@ -76,6 +76,27 @@ config.register_element(ImStyleEd::Element{
 });
 
 config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonEnabled",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_enabled; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_enabled = color; },
+    .description = "Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonHoveredEnabled",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_hovered_enabled; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_hovered_enabled = color; },
+    .description = "Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "FloatingButtonActiveEnabled",
+    .get_color   = []() { return ImGuiExtras::GetStyle().floating_button_active_enabled; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().floating_button_active_enabled = color; },
+    .description = "Small buttons that overlap the View\nThis is the color used when the button is used as a toggle and is currently on.",
+});
+
+config.register_element(ImStyleEd::Element{
     .name        = "ButtonsSeparator",
     .get_color   = []() { return ImGuiExtras::GetStyle().buttons_separator; },
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().buttons_separator = color; },
@@ -114,5 +135,26 @@ config.register_element(ImStyleEd::Element{
     .name        = "GradientMarkSelectedHovered",
     .get_color   = []() { return ImGuiExtras::GetStyle().gradient_mark_selected_hovered; },
     .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().gradient_mark_selected_hovered = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "Link",
+    .get_color   = []() { return ImGuiExtras::GetStyle().link; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "LinkHovered",
+    .get_color   = []() { return ImGuiExtras::GetStyle().link_hovered; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link_hovered = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "Frame node",
+    .get_color   = []() { return ImGuiExtras::GetStyle().frame_node_color; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().frame_node_color = color; },
     .description = "",
 });

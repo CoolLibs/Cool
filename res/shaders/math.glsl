@@ -1,6 +1,8 @@
-const float TAU    = 6.283185307180;
-const float PI     = 3.141592653590;
-const float sqrt_3 = 1.73205;
+const float TAU     = 6.283185307180;
+const float PI      = 3.141592653590;
+const float sqrt_3  = 1.73205;
+const float FLT_MAX = 3.402823466e+38;
+const float FLT_MIN = 1.175494351e-38;
 
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
@@ -36,11 +38,6 @@ float length_squared(vec4 p)
     return dot(p, p);
 }
 
-float hash_0_to_1_3D_to_1D(vec3 p)
-{
-    return fract(sin(dot(p, vec3(12.9898, 78.233, 74.7) * 2.0)) * 43758.5453);
-}
-
 vec3 hash_0_to_1_3D_to_3D(vec3 p)
 {
     p = vec3(
@@ -50,11 +47,6 @@ vec3 hash_0_to_1_3D_to_3D(vec3 p)
     );
 
     return fract(sin(p) * 43758.5453123);
-}
-
-vec3 hash_minus_1_to_1_3D_to_3D(vec3 p)
-{
-    return -1.0 + 2.0 * hash_0_to_1_3D_to_3D(p);
 }
 
 vec2 hash_0_to_1_1D_to_2D(float n)
@@ -69,9 +61,55 @@ vec2 hash_0_to_1_2D_to_2D(vec2 p)
     return fract(vec2(a.x * a.y, a.y * a.z));
 }
 
+// Good for input value in [0,+10k]
+float impl_base_noise(float seed1, float seed2)
+{
+    // From https://www.shadertoy.com/view/tlcBRl
+    return (fract(seed1 + 12.34567 * fract(100. * (abs(seed1 * 0.91) + seed2 + 94.68) * fract((abs(seed2 * 0.41) + 45.46) * fract((abs(seed2) + 757.21) * fract(seed1 * 0.0171)))))) * 1.0038 - 0.00185;
+}
+
+// Good for input value in [-100k,+100k]
 float hash_0_to_1_2D_to_1D(vec2 p)
 {
-    return fract(sin(dot(p, vec2(12.9898, 78.233) * 2.0)) * 43758.5453);
+    // From https://www.shadertoy.com/view/tlcBRl
+    float buff1 = abs(p.x + 100.94) + 1000.;
+    float buff2 = abs(p.y + 100.73) + 1000.;
+    buff1       = buff1 * fract(buff2 * fract(buff1 * fract(buff2 * 0.63)));
+    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(p.x * 0.79)));
+    buff1       = impl_base_noise(buff1, buff2);
+    return buff1 * 1.0038 - 0.00185;
+}
+
+// Good for input value in [-100k,+100k]
+float hash_0_to_1_3D_to_1D(vec3 p)
+{
+    // From https://www.shadertoy.com/view/tlcBRl
+    float buff1 = abs(p.x + 100.81) + 1000.3;
+    float buff2 = abs(p.y + 100.45) + 1000.2;
+    float buff3 = abs(impl_base_noise(p.x, p.y) + p.z) + 1000.1;
+    buff1       = buff3 * fract(buff2 * fract(buff1 * fract(buff2 * 0.146)));
+    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(buff3 * 0.52)));
+    buff1       = impl_base_noise(buff1, buff2);
+    return buff1;
+}
+
+// Good for input value in [-100k,+100k], high accuracy
+float hash_0_to_1_3D_to_1D_high_accuracy(vec3 p)
+{
+    // From https://www.shadertoy.com/view/tlcBRl
+    float buff1 = abs(p.x + 100.813) + 1000.314;
+    float buff2 = abs(p.y + 100.453) + 1000.213;
+    float buff3 = abs(impl_base_noise(buff2, buff1) + p.z) + 1000.17;
+    buff1       = buff3 * fract(buff2 * fract(buff1 * fract(buff2 * 0.14619)));
+    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(buff3 * 0.5215)));
+    buff1       = hash_0_to_1_3D_to_1D(vec3(impl_base_noise(p.y, buff1), impl_base_noise(p.x, buff2), impl_base_noise(p.z, buff3)));
+    return buff1;
+}
+
+// Good for input value in [-100k,+100k], high accuracy
+float hash_0_to_1_2D_to_1D_high_accuracy(vec2 p)
+{
+    return hash_0_to_1_3D_to_1D_high_accuracy(vec3(p.xy, 0.));
 }
 
 mat2 rotation_2D(float angle)
@@ -120,5 +158,3 @@ vec2 complex_division(vec2 n, vec2 d)
 }
 
 #define saturate(v) clamp(v, 0., 1.)
-
-#define FLT_MAX 3.402823466e+38
