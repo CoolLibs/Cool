@@ -286,7 +286,7 @@ static auto find_gamut_intersection(float a, float b, float L1, float C1, float 
                 t_g = u_g >= 0.f ? t_g : FLT_MAX;
                 t_b = u_b >= 0.f ? t_b : FLT_MAX;
 
-                t += fmin(t_r, fmin(t_g, t_b));
+                t += std::min(t_r, std::min(t_g, t_b));
             }
         }
     }
@@ -343,7 +343,7 @@ static auto get_Cs(float L, float a_, float b_) -> Cs
     ST    ST_max = to_ST(cusp);
 
     // Scale factor to compensate for the curved part of gamut shape:
-    float k = C_max / fmin((L * ST_max.S), (1 - L) * ST_max.T);
+    float k = C_max / std::min((L * ST_max.S), (1 - L) * ST_max.T);
 
     float C_mid; // NOLINT(cppcoreguidelines-init-variables)
     {
