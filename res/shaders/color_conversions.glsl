@@ -1,3 +1,13 @@
+vec3 premultiply(vec3 color, float alpha)
+{
+    return color * clamp(alpha, 0., 1.); // Need to clamp, otherwise weird colors can happen
+}
+
+vec3 unpremultiply(vec3 color, float alpha)
+{
+    return color / clamp(alpha, 0.0000001, 1.); // Need to clamp, otherwise weird colors can happen. Also, avoids division by 0.
+}
+
 // Start of [Block1]
 // From https://entropymine.com/imageworsener/srgbformula/
 float Cool_LinearRGB_from_sRGB_impl(float x)
@@ -533,7 +543,7 @@ vec4 Cool_apply_straight_alpha_to_color(vec3 color, float alpha)
 
 vec4 Cool_apply_premultiplied_alpha_to_color(vec3 color, float alpha)
 {
-    return vec4(color, 1.) * alpha;
+    return vec4(color, 1.) * clamp(alpha, 0., 1.);
 }
 
 vec2 Cool_apply_straight_alpha_to_greyscale(float greyscale, float alpha)
@@ -543,27 +553,27 @@ vec2 Cool_apply_straight_alpha_to_greyscale(float greyscale, float alpha)
 
 vec2 Cool_apply_premultiplied_alpha_to_greyscale(float greyscale, float alpha)
 {
-    return vec2(greyscale, 1.) * alpha;
+    return vec2(greyscale, 1.) * clamp(alpha, 0., 1.);
 }
 
 vec4 Cool_apply_straight_alpha_to_color_and_alpha(vec4 color, float alpha)
 {
-    return vec4(color.rgb, color.a * alpha);
+    return vec4(color.rgb, color.a * clamp(alpha, 0., 1.));
 }
 
 vec4 Cool_apply_premultiplied_alpha_to_color_and_alpha(vec4 color, float alpha)
 {
-    return color * alpha;
+    return color * clamp(alpha, 0., 1.);
 }
 
 vec2 Cool_apply_straight_alpha_to_greyscale_and_alpha(vec2 greyscale, float alpha)
 {
-    return vec2(greyscale.x, greyscale.y * alpha);
+    return vec2(greyscale.x, greyscale.y * clamp(alpha, 0., 1.));
 }
 
 vec2 Cool_apply_premultiplied_alpha_to_greyscale_and_alpha(vec2 greyscale, float alpha)
 {
-    return greyscale * alpha;
+    return greyscale * clamp(alpha, 0., 1.);
 }
 // End of [Block N-1]
 
