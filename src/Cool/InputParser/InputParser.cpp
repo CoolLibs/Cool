@@ -194,18 +194,34 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
     using fmt::literals::operator""_a;
     switch (interpolation_mode)
     {
-    case ImGG::Interpolation::Linear:
+    case ImGG::Interpolation::Linear_Light:
+    case ImGG::Interpolation::Linear_Paint:
     {
         return fmt::format(
             FMT_COMPILE(R"STR(
-            // The color is in Lab space with premultiplied alpha because interpolating in that space looks better (it matches human perception).
+            // The color is in Oklab space with premultiplied alpha because interpolating in that space looks better (it matches human perception).
             float mix_factor = (x_wrapped - {gradient_marks}[i - 1].pos) /
                             ({gradient_marks}[i].pos - {gradient_marks}[i - 1].pos);
             vec4 col1 = {gradient_marks}[i - 1].col;
             vec4 col2 = {gradient_marks}[i    ].col;
-            return mix(col1, col2, mix_factor);
+            return {mix_colors};
     )STR"),
-            "gradient_marks"_a = fmt::format("{}_", name)
+            "gradient_marks"_a = fmt::format("{}_", name),
+            "mix_colors"_a     = interpolation_mode == ImGG::Interpolation::Linear_Light
+                                     ? "mix(col1, col2, mix_factor)"
+                                     : R"STR(
+        vec4(
+            premultiply(
+                Cool_Oklab_from_sRGB(mixbox_lerp(
+                    Cool_sRGB_from_Oklab(unpremultiply(col1.rgb, col1.a)),
+                    Cool_sRGB_from_Oklab(unpremultiply(col2.rgb, col2.a)),
+                    mix_factor
+                )),
+                mix(col1.a, col2.a, mix_factor)
+            ),
+            mix(col1.a, col2.a, mix_factor)
+        )
+                )STR"
         );
     }
     case ImGG::Interpolation::Constant:
