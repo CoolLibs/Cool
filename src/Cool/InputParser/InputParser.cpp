@@ -213,8 +213,8 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
         vec4(
             premultiply(
                 Cool_Oklab_from_sRGB(mixbox_lerp(
-                    unpremultiply(Cool_sRGB_from_Oklab(col1.rgb), col1.a),
-                    unpremultiply(Cool_sRGB_from_Oklab(col2.rgb), col2.a),
+                    Cool_sRGB_from_Oklab(unpremultiply(col1.rgb, col1.a)),
+                    Cool_sRGB_from_Oklab(unpremultiply(col2.rgb, col2.a)),
                     mix_factor
                 )),
                 mix(col1.a, col2.a, mix_factor)
