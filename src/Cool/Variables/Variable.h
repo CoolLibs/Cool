@@ -3,75 +3,28 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <stringify/stringify.hpp>
 #include "Cool/Log/MessageId.h"
+#include "Dirty.h"
+#include "VariableTypeC.h"
 
 namespace Cool {
 
-template<typename Value>
-struct VariableMetadata; // You need to create a specialization of this template for each variable type that you want to use.
+template<VariableTypeC ValueT>
+struct Metadata; // You need to create a specialization of this template for each variable type that you want to use.
 
-template<typename Value>
+template<VariableTypeC ValueT>
 struct Variable {
-    struct Data {
-        std::string             name{};
-        Value                   value{};
-        VariableMetadata<Value> metadata{};
-        Value                   default_value{value};
-        VariableMetadata<Value> default_metadata{metadata};
+    std::string                name{};
+    std::optional<std::string> description{};
 
-        friend auto operator==(Data const&, Data const&) -> bool = default;
-    };
-    ~Variable() = default;
+    ValueT           value{};
+    Metadata<ValueT> metadata{};
 
-    Variable(Data data = {}) // NOLINT(*-explicit-constructor, *-explicit-conversions)
-        : data{std::move(data)}
-    {}
+    ValueT           default_value{value};
+    Metadata<ValueT> default_metadata{metadata};
 
-    auto name() -> auto& { return data.name; }
-    auto value() -> auto& { return data.value; }
-    auto metadata() -> auto& { return data.metadata; }
-    auto default_value() -> auto& { return data.default_value; }
-    auto default_metadata() -> auto& { return data.default_metadata; }
-
-    auto name() const -> auto const& { return data.name; }
-    auto value() const -> auto const& { return data.value; }
-    auto metadata() const -> auto const& { return data.metadata; }
-    auto default_value() const -> auto const& { return data.default_value; }
-    auto default_metadata() const -> auto const& { return data.default_metadata; }
-
-    Data data{};
-
-    MessageId message_id{};
-
-    friend auto operator==(Variable const& a, Variable const& b) -> bool
-    {
-        return a.data == b.data;
-    }
-
-    Variable(Variable const& other)
-        : data{other.data}
-    {}
-
-    Variable(Variable&& other) noexcept
-        : data{std::move(other.data)}
-        , message_id{std::move(other.message_id)}
-    {}
-
-    auto operator=(Variable const& other) -> Variable&
-    {
-        if (this == &other)
-            return *this;
-        data = other.data;
-        return *this;
-    }
-
-    auto operator=(Variable&& other) noexcept -> Variable&
-    {
-        if (this == &other)
-            return *this;
-        data       = std::move(other.data);
-        message_id = std::move(other.message_id);
-        return *this;
-    }
+    MessageId message_id{};          // TODO(Variable) Should be stored on the ValueT, only for the types that need it
+    DirtyFlag dirty_flag{};          // TODO(Variable) should be a function on_value_changed(), or at least a function that returns which DirtyFlag to set
+    int       desired_color_space{}; // TODO(Variable) HACK in order to know which color space to convert to when sending the value to a shader. Only used by Color input.
 
 private:
     // Serialization
@@ -80,11 +33,14 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", data.name),
-            cereal::make_nvp("Value", data.value),
-            cereal::make_nvp("Metadata", data.metadata),
-            cereal::make_nvp("Default Value", data.default_value),
-            cereal::make_nvp("Default Metadata", data.default_metadata)
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("Value", value),
+            cereal::make_nvp("Metadata", metadata),
+            cereal::make_nvp("Default Value", default_value),
+            cereal::make_nvp("Default Metadata", default_metadata),
+            cereal::make_nvp("Dirty Flag", dirty_flag),
+            cereal::make_nvp("Desired color space", desired_color_space)
+            // cereal::make_nvp("Description", description), // (JF): I don't think there is a need to serialize the description since it will be parsed from the shader each time, and applying presets and the like only affect the value of the variable.
         );
     }
 };
@@ -106,21 +62,21 @@ template<typename Value>
 auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks const& callbacks = {}) -> bool
 {
     bool b = false;
-    ImGuiExtras::disabled_if(var.value() == var.default_value(), "Disabled because it is already equal to the default value", [&]() {
-        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value()) + ")").c_str()))
+    ImGuiExtras::disabled_if(var.value == var.default_value, "Disabled because it is already equal to the default value", [&]() {
+        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value) + ")").c_str()))
         {
-            var.value() = var.default_value();
-            b           = true;
+            var.value = var.default_value;
+            b         = true;
             callbacks.on_value_changed();
             callbacks.on_value_editing_finished();
         }
     });
-    if (var.metadata() != var.default_metadata())
+    if (var.metadata != var.default_metadata)
     {
         ImGui::SameLine();
         if (ImGui::Button("Reset Metadata"))
         {
-            var.metadata() = var.default_metadata();
+            var.metadata = var.default_metadata;
             callbacks.on_metadata_changed();
             callbacks.on_metadata_editing_finished();
         }
@@ -154,12 +110,12 @@ auto imgui(
         callbacks.on_value_editing_finished();
     }
 
-    if (ImGui::BeginPopupContextItem(var.name().c_str()))
+    if (ImGui::BeginPopupContextItem(var.name.c_str()))
     {
         ImGui::PushID(&var + 1);
         ImGui::BeginGroup();
         {
-            if (imgui_widget(var.metadata()))
+            if (imgui_widget(var.metadata))
             {
                 callbacks.on_metadata_changed();
             }

@@ -57,7 +57,7 @@ static void set_default_value_to_current_value(Preset2& preset)
     for (auto& variable : preset.values)
     {
         std::visit([](auto&& variable) {
-            variable.default_value() = variable.value();
+            variable.default_value = variable.value;
         },
                    variable);
     }
@@ -112,7 +112,7 @@ void PresetManager::edit(PresetId const& id, Settings const& new_values)
     if (find_preset_with_given_values(new_values) == PresetId{}) // Make sure there isn't already a preset with the same values.
     {
         _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
-            preset.values = new_values;
+            // preset.values = new_values; // TODO(Variable)
         });
         save_to_file();
     }
@@ -349,17 +349,17 @@ void PresetManager::save_preset(Settings_ConstRef new_preset_values, const Prese
             return;
 
         _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
-            preset.values    = new_preset_values.as_settings();
+            // preset.values    = new_preset_values.as_settings(); // TODO(Variable)
             _new_preset_name = "";
         });
     }
     else
     {
-        _current_preset_id = add({
-            .name   = _new_preset_name,
-            .values = new_preset_values.as_settings(),
-        });
-        _new_preset_name   = "";
+        // _current_preset_id = add({
+        //     .name   = _new_preset_name,
+        //     .values = new_preset_values.as_settings(),// TODO(Variable)
+        // });
+        _new_preset_name = "";
     }
 
     save_to_file();

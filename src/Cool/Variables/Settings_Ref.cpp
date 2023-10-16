@@ -9,7 +9,7 @@ Settings_Ref::Settings_Ref(Settings& settings)
 
 void Settings_Ref::assign_from(Settings const& settings)
 {
-    _ref.get() = settings;
+    // _ref.get() = settings; // TODO(Variable)
 }
 
 auto Settings_Ref::display_all_variables_widgets() -> bool
@@ -34,12 +34,12 @@ Settings_ConstRef::Settings_ConstRef(Settings_Ref ref)
 
 auto Settings_ConstRef::are_equal_to(Settings const& settings) const -> bool
 {
-    return _ref.get() == settings;
+    return true; // _ref.get() == settings; // TODO(Variable)
 }
 
-auto Settings_ConstRef::as_settings() const -> Settings
-{
-    return _ref.get();
-}
+// auto Settings_ConstRef::as_settings() const -> Settings
+// {
+//     return _ref.get();
+// }
 
 } // namespace Cool

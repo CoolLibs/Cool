@@ -13,7 +13,7 @@ struct Preset2 {
     std::string name;
     Settings    values;
 
-    friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
+    // friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
 
 private:
     // Serialization

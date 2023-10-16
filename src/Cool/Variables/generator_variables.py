@@ -25,7 +25,7 @@ if True:
 
 
 @dataclass
-class VariableMetadata:
+class Metadata:
     field_name: str
     pretty_name: str
     type: str
@@ -38,7 +38,7 @@ class VariableDescription:
     cpp_type: str  # Type used in C++ to store the type
     glsl_type: str  # Raw glsl used to store the type
     include: str = ""  # File containing the C++ type
-    metadatas: list[VariableMetadata] = field(default_factory=lambda: [])
+    metadatas: list[Metadata] = field(default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
     # For example a Gradient variable can't be sent as a simple uniform to a shader; that's why we generate some to inject it into the shader.
     requires_shader_code_generation: bool = False
@@ -46,19 +46,19 @@ class VariableDescription:
 
 def angle_metadatas():
     return [
-        VariableMetadata(
+        Metadata(
             field_name="number_of_snaps",
             pretty_name="Number of snaps",
             type="int",
             default_value="24",
         ),
-        VariableMetadata(
+        Metadata(
             field_name="snaps_offset",
             pretty_name="Snaps offset (in radians)",
             type="float",
             default_value="0.f",
         ),
-        VariableMetadata(
+        Metadata(
             field_name="always_snap",
             pretty_name="Always snap",
             type="bool",
@@ -69,7 +69,7 @@ def angle_metadatas():
 
 def float_metadatas():
     return [
-        VariableMetadata(
+        Metadata(
             field_name="bounds",
             pretty_name="Bounds",
             type="internal::BoundsMetadata<float>",
@@ -86,7 +86,7 @@ def float_metadatas():
 
 
 def hdr_metadata():
-    return VariableMetadata(
+    return Metadata(
         field_name="is_hdr",
         pretty_name="Is HDR",
         type="bool",
@@ -108,7 +108,7 @@ def all_variable_descriptions():
             cpp_type="int",
             glsl_type="int",
             metadatas=[
-                VariableMetadata(
+                Metadata(
                     field_name="bounds",
                     pretty_name="Bounds",
                     type="internal::BoundsMetadata<int>",
@@ -137,7 +137,7 @@ def all_variable_descriptions():
             glsl_type="vec2",
             include="<Cool/StrongTypes/Point2D.h>",
             metadatas=[
-                VariableMetadata(
+                Metadata(
                     field_name="drag_speed",
                     pretty_name="Drag speed",
                     type="float",
@@ -252,7 +252,7 @@ def all_variable_descriptions():
             include="<Cool/StrongTypes/Gradient.h>",
             metadatas=[
                 hdr_metadata(),
-                VariableMetadata(
+                Metadata(
                     field_name="randomize_new_marks_colors",
                     pretty_name="Randomize new marks' colors",
                     type="bool",
@@ -320,7 +320,7 @@ def all_variable_descriptions():
     ]
 
 
-def all_variable_types():
+def all_cpp_types():
     return map(lambda desc: desc.cpp_type, all_variable_descriptions())
 
 
@@ -333,9 +333,7 @@ def strip_namespace(variable_type):
 
 
 def all_variable_types_without_namespaces():
-    return map(
-        lambda variable_type: strip_namespace(variable_type), all_variable_types()
-    )
+    return map(lambda variable_type: strip_namespace(variable_type), all_cpp_types())
 
 
 def all_variable_descriptions_without_namespaces():
@@ -385,7 +383,7 @@ def all_types_includes():
 # def register_set_variable_metadata_commands():
 #     out = "\n"
 #     for variable_type in all_variable_types():
-#         out += f"LAB_REGISTER_COMMAND(Lab::Command_SetVariableMetadata<{variable_type}>)\n"
+#         out += f"LAB_REGISTER_COMMAND(Lab::Command_SetMetadata<{variable_type}>)\n"
 #     return out
 
 
@@ -396,28 +394,36 @@ def VariableRegistries():
         + ",\n".join(
             map(
                 lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>",
-                all_variable_types(),
+                all_cpp_types(),
             )
         )
         + "\n>;"
     )
 
 
-def AnyInput():
+def AnySharedVariableId():
     return (
         "\n"
-        + "using AnyInput = std::variant<\n"
-        + ",\n".join(map(lambda var_type: f"Input<{var_type}>", all_variable_types()))
+        + "using AnySharedVariableId = std::variant<\n"
+        + ",\n".join(
+            map(lambda var_type: f"SharedVariableId<{var_type}>", all_cpp_types())
+        )
         + "\n>;"
     )
 
 
-def AnyInputDefinition():
+def VariableTypeC():  # TODO(Variable) Remove
+    return "\n||".join(
+        map(lambda cpp_type: f"std::is_same_v<T, {cpp_type}>", all_cpp_types())
+    )
+
+
+def AnyVariableDefinition():
     return (
         "\n"
-        + "using AnyInputDefinition = std::variant<\n"
+        + "using AnyVariableDefinition = std::variant<\n"
         + ",\n".join(
-            map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())
+            map(lambda var_type: f"VariableDefinition<{var_type}>", all_cpp_types())
         )
         + "\n>;"
     )
@@ -427,9 +433,7 @@ def AnyVariable():
     return (
         "\n"
         + "using AnyVariable = std::variant<\n"
-        + ",\n".join(
-            map(lambda var_type: f"Variable<{var_type}>", all_variable_types())
-        )
+        + ",\n".join(map(lambda var_type: f"Variable<{var_type}>", all_cpp_types()))
         + "\n>;"
     )
 
@@ -441,7 +445,7 @@ def AnyInputRef():
         + ",\n".join(
             map(
                 lambda var_type: f"std::reference_wrapper<Input<{var_type}>>",
-                all_variable_types(),
+                all_cpp_types(),
             )
         )
         + "\n>;"
@@ -455,7 +459,7 @@ def AnyInputRefToConst():
         + ",\n".join(
             map(
                 lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>",
-                all_variable_types(),
+                all_cpp_types(),
             )
         )
         + "\n>;"
@@ -465,7 +469,7 @@ def AnyInputRefToConst():
 def variables_includes():
     out = "\n"
     for variable_type in all_variable_types_without_namespaces():
-        out += f"#include <Cool/Variables/Variable_{variable_type}.h>\n"
+        out += f"#include <Cool/Variables/concrete/Variable_{variable_type}.h>\n"
     return out
 
 
@@ -483,7 +487,7 @@ def glsl_type():
     )
 
 
-def cereal_make_nvp(metadatas: List[VariableMetadata]):
+def cereal_make_nvp(metadatas: List[Metadata]):
     return ",\n".join(
         map(
             lambda meta: f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})',
@@ -492,7 +496,7 @@ def cereal_make_nvp(metadatas: List[VariableMetadata]):
     )
 
 
-def cereal_serialize_body(metadatas: List[VariableMetadata]):
+def cereal_serialize_body(metadatas: List[Metadata]):
     return f"""
         archive(
 {cereal_make_nvp(metadatas)}
@@ -500,7 +504,7 @@ def cereal_serialize_body(metadatas: List[VariableMetadata]):
 """
 
 
-def metadatas_definitions(metadatas: List[VariableMetadata]):
+def metadatas_definitions(metadatas: List[Metadata]):
     return "\n".join(
         map(
             lambda metadata: f"{metadata.type} {metadata.field_name}{{{metadata.default_value}}};",
@@ -515,15 +519,15 @@ def variable_definition_factory(variable_type_and_metadatas):
         return f"""
             {f'#include {variable_type_and_metadatas.include}' if variable_type_and_metadatas.include else ""}
             #include <Cool/Variables/Variable.h>
-            #include <Cool/Variables/internal/BoundsMetadata.h>
+            #include "../internal/BoundsMetadata.h"
 
             namespace Cool {{
 
             template<>
-            struct VariableMetadata<{variable_type_and_metadatas.cpp_type}> {{
+            struct Metadata<{variable_type_and_metadatas.cpp_type}> {{
                 {metadatas_definitions(variable_type_and_metadatas.metadatas)}
 
-                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&, const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) = default;
+                friend auto operator<=>(const Metadata<{variable_type_and_metadatas.cpp_type}>&, const Metadata<{variable_type_and_metadatas.cpp_type}>&) = default;
 
             private:
                 // Serialisation
@@ -535,7 +539,7 @@ def variable_definition_factory(variable_type_and_metadatas):
             }};
 
             auto imgui_widget(Variable<{variable_type_and_metadatas.cpp_type}>&) -> bool;
-            auto imgui_widget(VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) -> bool;
+            auto imgui_widget(Metadata<{variable_type_and_metadatas.cpp_type}>&) -> bool;
 
             }} // namespace Cool
         """
@@ -555,21 +559,8 @@ def requires_shader_code_generation():
     )
 
 
-def files():
-    res = [
-        # register_set_variable_commands,
-        # register_set_variable_metadata_commands,
-        VariableRegistries,
-        AnyInput,
-        AnyInputDefinition,
-        AnyVariable,
-        AnyInputRef,
-        AnyInputRefToConst,
-        all_variable_includes,
-        variables_includes,
-        glsl_type,
-        requires_shader_code_generation,
-    ]
+def concrete_files():
+    res = []
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(variable_types_and_metadatas)
         variable_definition.__name__ = (
@@ -596,8 +587,26 @@ def main():
     import generate_files
 
     generate_files.generate(
+        folder="concrete/generated",
+        files=concrete_files(),
+    )
+    generate_files.generate(
         folder="generated",
-        files=files(),
+        files=[
+            # register_set_variable_commands,
+            # register_set_variable_metadata_commands,
+            VariableRegistries,
+            AnySharedVariableId,
+            AnyVariableDefinition,
+            AnyVariable,
+            AnyInputRef,
+            AnyInputRefToConst,
+            all_variable_includes,
+            variables_includes,
+            glsl_type,
+            requires_shader_code_generation,
+            VariableTypeC,
+        ],
     )
 
     # HACK: Python doesn't allow us to import from a parent folder

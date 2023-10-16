@@ -27,7 +27,7 @@ public:
     Settings_ConstRef(Settings_Ref);    // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
 
     [[nodiscard]] auto are_equal_to(Settings const&) const -> bool;
-    [[nodiscard]] auto as_settings() const -> Settings;
+    // [[nodiscard]] auto as_settings() const -> Settings;
 
 private:
     std::reference_wrapper<Settings const> _ref;
