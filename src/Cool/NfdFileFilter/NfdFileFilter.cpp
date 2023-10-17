@@ -22,4 +22,16 @@ const std::vector<nfdfilteritem_t> NfdFileFilter::FragmentShader = {NfdFileFilte
 const std::vector<nfdfilteritem_t> NfdFileFilter::VertexShader   = {NfdFileFilter::Shader[2]};
 const std::vector<nfdfilteritem_t> NfdFileFilter::ComputeShader  = {NfdFileFilter::Shader[3]};
 
+const std::vector<nfdfilteritem_t> NfdFileFilter::Audio = {
+    // Restricted to only the extensions that libnyquist can load.
+    {"Audio", "mp3,wav,wave,wv,flac,ogg,opus,mpc,mpp"},
+    {"mp3", "mp3"},
+    {"wav", "wav,wave"},
+    {"wv", "wv"},
+    {"flac", "flac"},
+    {"ogg", "ogg"},
+    {"opus", "opus"},
+    {"mpc", "mpc,mpp"},
+};
+
 } // namespace Cool
