@@ -1,5 +1,6 @@
 #pragma once
 #include "Cool/Log/MessageId.h"
+#include "Cool/Time/Clock.h"
 
 namespace Cool {
 
@@ -7,7 +8,12 @@ class AudioManager {
 public:
     void play();
     void pause();
-    void seek_to(float time_in_sec);
+    void set_time(float time_in_sec);
+    auto time() const -> float;
+
+    void sync_with_clock(Cool::Clock const&);
+
+    void update();
 
     void imgui();
 

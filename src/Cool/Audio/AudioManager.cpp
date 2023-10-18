@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <exception>
 #include "Audio/Audio.hpp"
+#include "Cool/Audio/AudioManager.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/Message.h"
 #include "Cool/Log/MessageConsole.h"
@@ -10,45 +11,69 @@
 
 namespace Cool {
 
-static auto audio_player() -> RtAudioW::Player&
-{
-    static auto instance = RtAudioW::Player{};
-    return instance;
-}
-
 void AudioManager::play()
 {
-    audio_player().play();
+    RtAudioW::player().play();
 }
 
 void AudioManager::pause()
 {
-    audio_player().pause();
+    RtAudioW::player().pause();
 }
 
-void AudioManager::seek_to(float time_in_sec)
+void AudioManager::set_time(float time_in_sec)
 {
-    audio_player().seek(time_in_sec);
+    RtAudioW::player().set_time(time_in_sec);
+}
+
+void AudioManager::sync_with_clock(Cool::Clock const& clock)
+{
+    if (clock.is_playing() /* && clock.delta_time() > 0.0001f */ /* TODO should pause when the time is bloqued on a number, eg while we are in input text on the timeline */)
+    {
+        play();
+        static auto last_time = std::chrono::steady_clock::time_point{};
+        auto const  now       = std::chrono::steady_clock::now();
+        // if (now - last_time > 1s)
+        {
+            // set_time(clock.time());
+            if (std::abs(clock.time() - time()) > 0.05f)
+                set_time(clock.time());
+            last_time = now;
+        }
+    }
+    else
+    {
+        pause();
+    }
+}
+
+auto AudioManager::time() const -> float
+{
+    return RtAudioW::player().get_time();
+}
+
+void AudioManager::update()
+{
+    RtAudioW::player().update_device_if_necessary();
 }
 
 void AudioManager::imgui()
 {
     if (ImGuiExtras::file("Audio file", &_audio_file_path, NfdFileFilter::Audio))
         try_load_current_file();
-    auto volume = audio_player().get_volume();
-    if (ImGui::SliderFloat("Volume", &volume, 0.f, 1.f))
-        audio_player().set_volume(volume);
+    ImGui::SliderFloat("Volume", &RtAudioW::player().properties().volume, 0.f, 1.f); // TODO(Audio) GUI for all the properties
 }
 
 void AudioManager::try_load_current_file()
 {
     try
     {
-        load_audio_file(audio_player(), _audio_file_path);
+        load_audio_file(RtAudioW::player(), _audio_file_path);
         Cool::Log::ToUser::console().remove(_error_id);
     }
     catch (std::exception& e)
     {
+        // TODO(Audio) no error if empty file path, this is an indicator that the user doesn't want to play audio
         Cool::Log::ToUser::console().send(
             _error_id,
             Message{
@@ -57,7 +82,7 @@ void AudioManager::try_load_current_file()
                 .severity = MessageSeverity::Error,
             }
         );
-        audio_player().close();
+        RtAudioW::player().reset_audio_data();
     }
 }
 
