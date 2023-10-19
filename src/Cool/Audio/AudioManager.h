@@ -30,6 +30,7 @@ private:
     template<class Archive>
     void save(Archive& archive) const
     {
+        // TODO(Audio) Serialize the properties of the Player
         archive(
             cereal::make_nvp("Path", _audio_file_path)
         );
