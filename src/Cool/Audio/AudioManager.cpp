@@ -66,6 +66,12 @@ void AudioManager::imgui()
 
 void AudioManager::try_load_current_file()
 {
+    if (_audio_file_path.empty())
+    {
+        Cool::Log::ToUser::console().remove(_error_id);
+        return;
+    }
+
     try
     {
         load_audio_file(RtAudioW::player(), _audio_file_path);
