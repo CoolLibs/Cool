@@ -5,6 +5,7 @@
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
 #include "Cool/ImGui/StyleEditor.h"
+#include "RtAudioWrapper/RtAudioWrapper.hpp"
 #include "hide_console_in_release.h"
 
 #if defined(COOL_VULKAN)
@@ -72,6 +73,11 @@ void run(RunConfig const& config)
 
         // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
         Icons::close_button();
+
+        // Init error callbacks
+        RtAudioW::set_error_callback([](RtAudioErrorType, std::string const& error_message) {
+            Cool::Log::ToUser::warning("Audio", error_message);
+        });
 
         // Create and run the App
         const auto run_loop = [&](bool load_from_file) {
