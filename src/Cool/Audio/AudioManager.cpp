@@ -52,11 +52,6 @@ auto AudioManager::time() const -> float
     return RtAudioW::player().get_time();
 }
 
-void AudioManager::update()
-{
-    RtAudioW::player().update_device_if_necessary();
-}
-
 static void imgui_widgets(RtAudioW::PlayerProperties& props)
 {
     ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);

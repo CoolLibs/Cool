@@ -14,6 +14,7 @@
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
+#include "RtAudioWrapper/RtAudioWrapper.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
 
 #if defined(COOL_VULKAN)
@@ -130,6 +131,7 @@ void AppManager::update()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     midi_manager().check_for_devices();
+    RtAudioW::player().update_device_if_necessary();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();

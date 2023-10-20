@@ -16,8 +16,6 @@ public:
 
     void sync_with_clock(Cool::Clock const&);
 
-    void update();
-
     void open_imgui_window() { _window.open(); }
     void imgui_window();
 
