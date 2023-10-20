@@ -1,4 +1,7 @@
 #pragma once
+#include <Cool/ImGui/IcoMoonCodepoints.h>
+#include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Time/Clock.h"
 
@@ -15,7 +18,8 @@ public:
 
     void update();
 
-    void imgui();
+    void open_imgui_window() { _window.open(); }
+    void imgui_window();
 
 private:
     void try_load_current_file();
@@ -23,6 +27,7 @@ private:
 private:
     std::filesystem::path _audio_file_path{};
     MessageId             _error_id{};
+    ImGuiWindow           _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 
 private:
     // Serialization

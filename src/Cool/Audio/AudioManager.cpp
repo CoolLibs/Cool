@@ -57,11 +57,22 @@ void AudioManager::update()
     RtAudioW::player().update_device_if_necessary();
 }
 
-void AudioManager::imgui()
+void AudioManager::imgui_window()
 {
+    bool const needs_to_highlight_error = Cool::Log::ToUser::console().should_highlight(_error_id);
+    if (needs_to_highlight_error)
+        _window.open();
+
+    _window.show([&]() {
+        Cool::ImGuiExtras::bring_attention_if(
+            needs_to_highlight_error,
+            [&]() {
     if (ImGuiExtras::file("Audio file", &_audio_file_path, NfdFileFilter::Audio))
         try_load_current_file();
+            }
+        );
     ImGui::SliderFloat("Volume", &RtAudioW::player().properties().volume, 0.f, 1.f); // TODO(Audio) GUI for all the properties
+    });
 }
 
 void AudioManager::try_load_current_file()
