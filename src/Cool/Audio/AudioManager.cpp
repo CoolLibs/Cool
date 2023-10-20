@@ -71,6 +71,7 @@ void AudioManager::try_load_current_file()
     if (_audio_file_path.empty())
     {
         Cool::Log::ToUser::console().remove(_error_id);
+        RtAudioW::player().reset_audio_data();
         return;
     }
 
