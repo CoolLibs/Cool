@@ -28,7 +28,7 @@ void AudioManager::set_time(float time_in_sec)
 
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
-    if (clock.is_playing() /* && clock.delta_time() > 0.0001f */ /* TODO should pause when the time is bloqued on a number, eg while we are in input text on the timeline */)
+    if (clock.is_playing() /* && clock.delta_time() > 0.0001f */ /* TODO(Audio) should pause when the time is blocked on a number, eg while we are in input text on the timeline */)
     {
         play();
         static auto last_time = std::chrono::steady_clock::time_point{};
@@ -67,11 +67,11 @@ void AudioManager::imgui_window()
         Cool::ImGuiExtras::bring_attention_if(
             needs_to_highlight_error,
             [&]() {
-    if (ImGuiExtras::file("Audio file", &_audio_file_path, NfdFileFilter::Audio))
-        try_load_current_file();
+                if (ImGuiExtras::file("Audio file", &_audio_file_path, NfdFileFilter::Audio))
+                    try_load_current_file();
             }
         );
-    ImGui::SliderFloat("Volume", &RtAudioW::player().properties().volume, 0.f, 1.f); // TODO(Audio) GUI for all the properties
+        ImGui::SliderFloat("Volume", &RtAudioW::player().properties().volume, 0.f, 1.f); // TODO(Audio) GUI for all the properties
     });
 }
 
@@ -90,7 +90,6 @@ void AudioManager::try_load_current_file()
     }
     catch (std::exception& e)
     {
-        // TODO(Audio) no error if empty file path, this is an indicator that the user doesn't want to play audio
         Cool::Log::ToUser::console().send(
             _error_id,
             Message{
