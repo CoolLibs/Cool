@@ -52,6 +52,11 @@ auto AudioManager::time() const -> float
     return RtAudioW::player().get_time();
 }
 
+void AudioManager::update()
+{
+    RtAudioW::player().properties() = _properties;
+}
+
 static void imgui_widgets(RtAudioW::PlayerProperties& props)
 {
     ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
@@ -84,7 +89,7 @@ void AudioManager::imgui_window()
                     try_load_current_file();
             }
         );
-        imgui_widgets(RtAudioW::player().properties());
+        imgui_widgets(_properties);
     });
 }
 
