@@ -57,6 +57,24 @@ void AudioManager::update()
     RtAudioW::player().update_device_if_necessary();
 }
 
+static void imgui_widgets(RtAudioW::PlayerProperties& props)
+{
+    ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
+    ImGui::SetItemTooltip("%s", props.does_loop ? "The audio will loop." : "The audio will not loop. It will only play when the time is between 0 and the duration of the audio.");
+
+    ImGui::SameLine();
+
+    if (ImGuiExtras::button_with_text_icon(props.is_muted ? ICOMOON_VOLUME_MUTE2 : ICOMOON_VOLUME_MEDIUM))
+        props.is_muted = !props.is_muted;
+    ImGui::SetItemTooltip("%s", props.is_muted ? "Muted" : "Not muted");
+
+    ImGui::SameLine();
+
+    ImGuiExtras::disabled_if(props.is_muted, "The volume is muted.", [&]() {
+        ImGui::SliderFloat("Volume", &props.volume, 0.f, 1.f);
+    });
+}
+
 void AudioManager::imgui_window()
 {
     bool const needs_to_highlight_error = Cool::Log::ToUser::console().should_highlight(_error_id);
@@ -71,7 +89,7 @@ void AudioManager::imgui_window()
                     try_load_current_file();
             }
         );
-        ImGui::SliderFloat("Volume", &RtAudioW::player().properties().volume, 0.f, 1.f); // TODO(Audio) GUI for all the properties
+        imgui_widgets(RtAudioW::player().properties());
     });
 }
 
