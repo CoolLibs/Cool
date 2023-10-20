@@ -24,12 +24,7 @@ namespace Cool {
 
 class AudioManager {
 public:
-    void               play();
-    void               pause();
-    void               set_time(float time_in_sec);
-    void               sync_with_clock(Cool::Clock const&);
-    [[nodiscard]] auto time() const -> float;
-
+    void sync_with_clock(Cool::Clock const&);
     void update();
 
     void open_imgui_window() { _window.open(); }

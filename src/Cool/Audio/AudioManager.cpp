@@ -11,45 +11,15 @@
 
 namespace Cool {
 
-void AudioManager::play()
-{
-    RtAudioW::player().play();
-}
-
-void AudioManager::pause()
-{
-    RtAudioW::player().pause();
-}
-
-void AudioManager::set_time(float time_in_sec)
-{
-    RtAudioW::player().set_time(time_in_sec);
-}
-
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
     if (clock.is_playing() /* && clock.delta_time() > 0.0001f */ /* TODO(Audio) should pause when the time is blocked on a number, eg while we are in input text on the timeline */)
-    {
-        play();
-        static auto last_time = std::chrono::steady_clock::time_point{};
-        auto const  now       = std::chrono::steady_clock::now();
-        // if (now - last_time > 1s)
-        {
-            // set_time(clock.time());
-            if (std::abs(clock.time() - time()) > 0.05f)
-                set_time(clock.time());
-            last_time = now;
-        }
-    }
+        RtAudioW::player().play();
     else
-    {
-        pause();
-    }
-}
+        RtAudioW::player().pause();
 
-auto AudioManager::time() const -> float
-{
-    return RtAudioW::player().get_time();
+    if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.05f)
+        RtAudioW::player().set_time(clock.time());
 }
 
 void AudioManager::update()
