@@ -3,26 +3,18 @@
 namespace Cool {
 
 Clock_Realtime::Clock_Realtime()
-    : _initial_time(std_time()), _last_time(std_time()), _current_time(std_time())
+    : _initial_std_time(std_time()), _current_std_time(std_time())
 {
 }
 
-float Clock_Realtime::delta_time() const
+auto Clock_Realtime::delta_time() const -> float
 {
-    if (is_playing())
-    {
-        std::chrono::duration<float> dt = _current_time - _last_time;
-        return dt.count();
-    }
-    else
-    {
-        return 0.f;
-    }
+    return _delta_time;
 }
 
-float Clock_Realtime::time() const
+auto Clock_Realtime::time() const -> float
 {
-    std::chrono::duration<float> delta = _current_time - _initial_time;
+    auto const delta = std::chrono::duration<float>{_current_std_time - _initial_std_time};
     return delta.count() - _offset_with_std_time;
 }
 
@@ -33,11 +25,10 @@ void Clock_Realtime::set_time(float new_time)
 
 void Clock_Realtime::update()
 {
+    _delta_time = time() - _prev_time; // Must be before `_current_std_time = std_time();`, otherwise the delta will not be computed properly when the time is frozen because the user is using the input text of the timeline to set the time value.
+    _prev_time  = time();              //
     if (is_playing())
-    {
-        _last_time    = _current_time;
-        _current_time = std_time();
-    }
+        _current_std_time = std_time();
 }
 
 void Clock_Realtime::play()
@@ -45,7 +36,7 @@ void Clock_Realtime::play()
     if (is_playing())
         return;
     Clock::play();
-    std::chrono::duration<float> delta = std_time() - _time_when_paused;
+    auto const delta = std::chrono::duration<float>{std_time() - _std_time_when_paused};
     _offset_with_std_time += delta.count();
     update();
 }
@@ -55,7 +46,7 @@ void Clock_Realtime::pause()
     if (!is_playing())
         return;
     Clock::pause();
-    _time_when_paused = std_time();
+    _std_time_when_paused = std_time();
 }
 
 } // namespace Cool
