@@ -13,7 +13,7 @@ namespace Cool {
 
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
-    if (clock.is_playing() /* && clock.delta_time() > 0.0001f */ /* TODO(Audio) should pause when the time is blocked on a number, eg while we are in input text on the timeline */)
+    if (std::abs(clock.delta_time()) > 0.0001f) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
     {
         RtAudioW::player().play();
         if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.05f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
