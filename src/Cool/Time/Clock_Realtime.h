@@ -20,7 +20,8 @@ public:
     void pause() override;
 
 private:
-    inline std::chrono::steady_clock::time_point std_time() { return std::chrono::steady_clock::now(); }
+    auto compute_time() const -> float;
+    auto std_time() const -> std::chrono::steady_clock::time_point { return std::chrono::steady_clock::now(); }
 
 private:
     std::chrono::steady_clock::time_point _initial_std_time;
@@ -30,6 +31,7 @@ private:
 
     float _delta_time{0.f};
     float _prev_time{0.f};
+    float _time{0.f};
 
 private:
     // Serialization
@@ -53,6 +55,7 @@ private:
         );
         set_time(saved_time);
         set_playing(saved_is_playing);
+        _time      = saved_time;
         _prev_time = saved_time;
     }
 };

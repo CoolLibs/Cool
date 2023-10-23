@@ -14,6 +14,11 @@ auto Clock_Realtime::delta_time() const -> float
 
 auto Clock_Realtime::time() const -> float
 {
+    return _time;
+}
+
+auto Clock_Realtime::compute_time() const -> float
+{
     auto const delta = std::chrono::duration<float>{_current_std_time - _initial_std_time};
     return delta.count() - _offset_with_std_time;
 }
@@ -25,8 +30,10 @@ void Clock_Realtime::set_time(float new_time)
 
 void Clock_Realtime::update()
 {
-    _delta_time = time() - _prev_time; // Must be before `_current_std_time = std_time();`, otherwise the delta will not be computed properly when the time is frozen because the user is using the input text of the timeline to set the time value.
-    _prev_time  = time();              //
+    _prev_time  = _time;
+    _time       = compute_time();
+    _delta_time = _time - _prev_time; // Must be before `_current_std_time = std_time();`, otherwise the delta will not be computed properly when the time is frozen because the user is using the input text of the timeline to set the time value.
+
     if (is_playing())
         _current_std_time = std_time();
 }
