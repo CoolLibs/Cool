@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+#include "Cool/Audio/AudioManager.h"
 #include "Cool/Dependencies/Input.h"
 #include "Input.h"
 #include "VariableRegistries.h"
@@ -8,12 +10,20 @@ namespace Cool {
 
 class InputProvider_Ref {
 public:
-    InputProvider_Ref(VariableRegistries& registries, float render_target_aspect_ratio, float height, float time, glm::mat3 const& camera2D)
+    InputProvider_Ref(
+        VariableRegistries& registries,
+        float               render_target_aspect_ratio,
+        float               height,
+        float               time,
+        glm::mat3 const&    camera2D,
+        AudioManager const& audio_manager
+    )
         : _variable_registries{registries}
         , _render_target_aspect_ratio{render_target_aspect_ratio}
         , _height{height}
         , _time{time}
         , _camera2D{camera2D}
+        , _audio_manager{audio_manager}
     {}
 
     template<typename T>
@@ -56,6 +66,11 @@ public:
         return _time;
     }
 
+    auto operator()(const Input_AudioVolume&) const -> float
+    {
+        return _audio_manager.get().volume();
+    }
+
     auto operator()(const Input_Camera2D&) const -> glm::mat3
     {
         return _camera2D;
@@ -68,6 +83,7 @@ private:
     float                                      _render_target_aspect_ratio;
     float                                      _height;
     float                                      _time;
+    std::reference_wrapper<AudioManager const> _audio_manager;
     glm::mat3                                  _camera2D;
 };
 

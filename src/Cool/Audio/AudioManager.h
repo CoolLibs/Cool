@@ -24,6 +24,8 @@ namespace Cool {
 
 class AudioManager {
 public:
+    auto volume() const -> float;
+
     void sync_with_clock(Cool::Clock const&);
     void update();
 
@@ -38,6 +40,7 @@ private:
     RtAudioW::PlayerProperties _properties{};
     MessageId                  _error_id{};
     ImGuiWindow                _window{icon_fmt("Audio", ICOMOON_MUSIC)};
+    float                      _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it
 
 private:
     // Serialization

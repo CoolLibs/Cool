@@ -11,18 +11,20 @@
 
 namespace Cool {
 
+auto AudioManager::volume() const -> float
+{
+    return compute_volume(RtAudioW::player(), _average_duration_in_seconds);
+}
+
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
+    if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.05f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
+        RtAudioW::player().set_time(clock.time());                      // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+
     if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
-    {
         RtAudioW::player().play();
-        if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.05f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
-            RtAudioW::player().set_time(clock.time());
-    }
     else
-    {
         RtAudioW::player().pause();
-    }
 }
 
 void AudioManager::update()
@@ -63,6 +65,7 @@ void AudioManager::imgui_window()
             }
         );
         imgui_widgets(_properties);
+        ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
     });
 }
 
