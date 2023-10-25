@@ -1,5 +1,6 @@
 #include "AudioManager.h"
 #include <imgui.h>
+#include <complex>
 #include <exception>
 #include "Audio/Audio.hpp"
 #include "Cool/Audio/AudioManager.h"
@@ -66,6 +67,34 @@ void AudioManager::imgui_window()
         );
         imgui_widgets(_properties);
         ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
+
+        static int                       N{1024};
+        std::vector<std::complex<float>> myData(N);
+        for (size_t i = 0; i < N; i++)
+            myData[i] = 0.5f
+                        * (RtAudioW::player().sample_unaltered_volume(i + RtAudioW::player().current_frame_index() - N / 2, 0)
+                           + RtAudioW::player().sample_unaltered_volume(i + RtAudioW::player().current_frame_index() - N / 2, 1)
+                        );
+        static float max_value{3.f};
+        if ((N & (N - 1)) == 0 && N != 1)
+        {
+            auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
+            auto       data    = std::vector<float>{};
+            std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
+                return std::abs(x);
+            });
+
+            ImGui::PlotHistogram(
+                "Spectrum",
+                data.data(),
+                static_cast<int>(data.size()) / 2, // The second half is a mirror of the first half, so ne need to display it.
+                0, nullptr,
+                0.f, max_value, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
+                {0.f, 100.f}
+            );
+        }
+        ImGui::InputInt("fft size", &N);
+        ImGui::DragFloat("Max value", &max_value);
     });
 }
 
