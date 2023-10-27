@@ -75,7 +75,9 @@ void run(RunConfig const& config)
         Icons::close_button();
 
         // Init error callbacks
-        RtAudioW::set_error_callback([](RtAudioErrorType, std::string const& error_message) {
+        RtAudioW::set_error_callback([](RtAudioErrorType type, std::string const& error_message) {
+            // RtAudioErrorType::
+            // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id
             Cool::Log::ToUser::warning("Audio", error_message);
         });
 
