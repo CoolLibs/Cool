@@ -63,6 +63,8 @@ public:
 
     void remove_definition(NodeDefinitionIdentifier const&);
 
+    auto is_empty() const -> bool;
+
 private:
     template<typename T>
     static auto internal_get_definition(T&& nodes_library, Cool::NodeDefinitionIdentifier const& id_names) -> NodeDefinition*
