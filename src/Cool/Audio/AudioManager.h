@@ -46,6 +46,11 @@ public:
 private:
     void open_current_input_mode();
 
+    [[nodiscard]] auto compute_volume() const -> float;
+    [[nodiscard]] auto compute_spectrum() const -> std::vector<float>;
+
+    [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
+
 private:
     class IAudioInput {
     public:
@@ -56,28 +61,33 @@ private:
         auto operator=(IAudioInput&&) noexcept -> IAudioInput&      = default;
         virtual ~IAudioInput()                                      = default;
 
-        virtual void               update()                                       = 0;
-        virtual void               imgui(bool needs_to_highlight_error)           = 0;
-        [[nodiscard]] virtual auto compute_volume() const -> float                = 0;
-        [[nodiscard]] virtual auto compute_spectrum() const -> std::vector<float> = 0;
-        [[nodiscard]] virtual auto does_need_to_highlight_error() const -> bool   = 0;
+        /// Will call the `callback` once for each of the `frames_count` audio frames around the current moment in time.
+        /// If there are several channels in a frame, the `callback` will only be called once for all of these channels, and will be given the average of the samples.
+        virtual void for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const = 0;
+        /// Returns the number of frames contained in a second of the audio.
+        [[nodiscard]] virtual auto sample_rate() const -> float = 0;
+
+        virtual void               update()                                     = 0;
+        virtual void               imgui(bool needs_to_highlight_error)         = 0;
+        [[nodiscard]] virtual auto does_need_to_highlight_error() const -> bool = 0;
     };
 
     class AudioInput_File : public IAudioInput {
     public:
+        void               for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const override;
+        [[nodiscard]] auto sample_rate() const -> float override;
+
         void               update() override;
         void               imgui(bool needs_to_highlight_error) override;
-        [[nodiscard]] auto compute_volume() const -> float override;
-        [[nodiscard]] auto compute_spectrum() const -> std::vector<float> override;
         [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
         void try_load_current_file();
 
     private:
+        bool                       _apply_window{true};
         std::filesystem::path      _path{};
         RtAudioW::PlayerProperties _properties{};
         MessageId                  _error_id{};
-        float                      _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it
 
     private:
         // Serialization
@@ -94,10 +104,11 @@ private:
 
     class AudioInput_Device : public IAudioInput { // e.g. microphone
     public:
+        void               for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const override;
+        [[nodiscard]] auto sample_rate() const -> float override;
+
         void               update() override;
         void               imgui(bool needs_to_highlight_error) override;
-        [[nodiscard]] auto compute_volume() const -> float override;
-        [[nodiscard]] auto compute_spectrum() const -> std::vector<float> override;
         [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
         void open_device_stream();
@@ -134,6 +145,8 @@ private:
     mutable bool               _current_volume_needs_recompute{true};
     mutable std::vector<float> _current_spectrum{};
     mutable bool               _current_spectrum_needs_recompute{true};
+
+    float _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it // TODO(Audio) The name should indicate that it is only used in volume calculation. Or do we use it for fft ? We try to find the nearest power of 2?
 
     ImGuiWindow _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 

@@ -20,7 +20,7 @@ std::vector<float> input{};
 static auto input_stream() -> RtAudioW::InputStream&
 {
     static RtAudioW::InputStream instance{
-        [&](std::span<float> buffer) {
+        [&](std::span<float const> buffer) {
             input.assign(buffer.begin(), buffer.end());
             // input.resize(buffer.size());
             // for(size_t i = 0; i < buffer.size(); ++i)
@@ -57,19 +57,9 @@ auto AudioManager::volume() const -> float
     if (_current_volume_needs_recompute)
     {
         _current_volume_needs_recompute = false;
-        _current_volume                 = audio_input().compute_volume();
+        _current_volume                 = compute_volume();
     }
     return _current_volume;
-}
-
-auto AudioManager::AudioInput_File::compute_volume() const -> float
-{
-    return Cool::compute_volume(RtAudioW::player(), _average_duration_in_seconds);
-}
-
-auto AudioManager::AudioInput_Device::compute_volume() const -> float
-{
-    return Cool::compute_volume(_audio_data);
 }
 
 auto AudioManager::spectrum() const -> std::vector<float> const&
@@ -77,22 +67,46 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
     if (_current_spectrum_needs_recompute)
     {
         _current_spectrum_needs_recompute = false;
-        _current_spectrum                 = audio_input().compute_spectrum();
+        _current_spectrum                 = compute_spectrum();
     }
     return _current_spectrum;
 }
 
-auto AudioManager::AudioInput_File::compute_spectrum() const -> std::vector<float>
+// auto AudioManager::AudioInput_File::compute_volume() const -> float
+// {
+//     return Cool::compute_volume(RtAudioW::player(), _average_duration_in_seconds);
+// }
+
+auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
+{
+    return static_cast<int64_t>(
+        audio_input().sample_rate() * _average_duration_in_seconds
+    );
+}
+
+auto AudioManager::compute_volume() const -> float
+{
+    auto frames = std::vector<float>{};
+    audio_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
+        frames.push_back(frame);
+    });
+    return Cool::compute_volume(frames);
+}
+
+auto AudioManager::compute_spectrum() const -> std::vector<float>
 {
     static int N{1024}; // TODO(Audio)
     if ((N & (N - 1)) == 0 && N != 1 && N != 0)
     {
-        std::vector<std::complex<float>> myData(N);
-        for (size_t i = 0; i < N; i++)
-            myData[i] = 0.5f
-                        * (RtAudioW::player().sample_unaltered_volume(i + RtAudioW::player().current_frame_index() - N / 2, 0)
-                           + RtAudioW::player().sample_unaltered_volume(i + RtAudioW::player().current_frame_index() - N / 2, 1)
-                        );
+        std::vector<std::complex<float>> myData{};
+        myData.reserve(N);
+        audio_input().for_each_audio_frame(N, [&](float frame) {
+            // float       t      = i / (float)(N - 1);
+            // float const window = _apply_window
+            //                          ? 1.f - std::abs(2.f * t - 1.f)
+            //                          : 1.f;
+            myData.emplace_back(frame); // * window;
+        });
         auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
         auto       data    = std::vector<float>{};
         std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
@@ -104,15 +118,39 @@ auto AudioManager::AudioInput_File::compute_spectrum() const -> std::vector<floa
     return {};
 }
 
-auto AudioManager::AudioInput_Device::compute_spectrum() const -> std::vector<float>
+void AudioManager::AudioInput_File::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
 {
-    return {};
+    for (int i = 0; i < frames_count; ++i)
+        callback(RtAudioW::player().sample_unaltered_volume(i - frames_count / 2 + RtAudioW::player().current_frame_index()));
+}
+
+void AudioManager::AudioInput_Device::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
+{
+    // TODO(Audio) store a long enough buffer, and the audio in callback appends to the end of that buffer, and deletes the beginning once the buffer is long enough
+
+    for (int64_t i = 0; i < frames_count; ++i)
+    {
+        if (i < _audio_data.size())
+            callback(_audio_data[i]);
+        else
+            callback(0.f);
+    }
+}
+
+auto AudioManager::AudioInput_File::sample_rate() const -> float
+{
+    return static_cast<float>(RtAudioW::player().audio_data().sample_rate);
+}
+
+auto AudioManager::AudioInput_Device::sample_rate() const -> float
+{
+    return static_cast<float>(input_stream().sample_rate());
 }
 
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
-    if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.05f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
-        RtAudioW::player().set_time(clock.time());                      // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+    if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
+        RtAudioW::player().set_time(clock.time());                     // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
 
     if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
         RtAudioW::player().play();
@@ -210,7 +248,7 @@ void AudioManager::AudioInput_File::imgui(bool needs_to_highlight_error)
         }
     );
     imgui_widgets(_properties);
-    ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
+    ImGui::Checkbox("Apply window", &_apply_window);
 }
 void AudioManager::AudioInput_Device::imgui(bool needs_to_highlight_error)
 {
@@ -259,6 +297,8 @@ void AudioManager::imgui_window()
 
         // ImGui::SeparatorText(to_string(_current_input_mode));
         audio_input().imgui(needs_to_highlight_error);
+
+        ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
