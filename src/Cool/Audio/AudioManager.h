@@ -47,6 +47,7 @@ private:
     void open_current_input_mode();
 
     [[nodiscard]] auto compute_volume() const -> float;
+    /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
     [[nodiscard]] auto compute_spectrum() const -> std::vector<float>;
 
     [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
@@ -84,7 +85,6 @@ private:
         void try_load_current_file();
 
     private:
-        bool                       _apply_window{true};
         std::filesystem::path      _path{};
         RtAudioW::PlayerProperties _properties{};
         MessageId                  _error_id{};
@@ -140,6 +140,10 @@ private:
     AudioInput_File   _file_input{};
     AudioInput_Device _device_input{};
     AudioInputMode    _current_input_mode{};
+
+    bool  _apply_window{true};
+    float _spectrum_max_frequency_in_hz{5000}; // TODO(Audio) Serialize
+    int   _spectrum_nb_bins{8};                // TODO(Audio) Serialize
 
     mutable float              _current_volume{};
     mutable bool               _current_volume_needs_recompute{true};

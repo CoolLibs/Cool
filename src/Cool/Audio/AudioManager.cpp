@@ -93,29 +93,57 @@ auto AudioManager::compute_volume() const -> float
     return Cool::compute_volume(frames);
 }
 
+// TODO(Audio) Option to select how many bins we do (this is much more optimal to do binning on the cpu). This option should ideally be on each spectrum node, so that one can use the full spectrum while another is using only 8 bins.
+
+template<std::integral T>
+static auto next_power_of_two(T n) -> T
+{
+    if (n != 0 && !(n & (n - 1)))
+        return n; // n is already a power of 2
+
+    T power = 1;
+    while (power < n)
+    {
+        power <<= 1;
+    }
+
+    return power;
+}
+
+/// Since the FFT requires a size that is a power of two, we add 0s at the end of the data.
+/// https://mechanicalvibration.com/Zero_Padding_FFTs.html
+static void zero_pad(std::vector<std::complex<float>>& data)
+{
+    data.resize(next_power_of_two(data.size()));
+}
+
 auto AudioManager::compute_spectrum() const -> std::vector<float>
 {
-    static int N{1024}; // TODO(Audio)
-    if ((N & (N - 1)) == 0 && N != 1 && N != 0)
-    {
-        std::vector<std::complex<float>> myData{};
-        myData.reserve(N);
-        audio_input().for_each_audio_frame(N, [&](float frame) {
-            // float       t      = i / (float)(N - 1);
-            // float const window = _apply_window
-            //                          ? 1.f - std::abs(2.f * t - 1.f)
-            //                          : 1.f;
-            myData.emplace_back(frame); // * window;
-        });
-        auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
-        auto       data    = std::vector<float>{};
-        std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
-            return std::abs(x);
-        });
-        data.resize(data.size() / 2); // The second half is a mirror of the first half, so we don't need it.
-        return data;
-    }
-    return {};
+    auto const N      = nb_frames_for_characteristics_computation(); // TODO(Audio). 8192 gives a nice spectrum, roughly matches the default _average_duration_in_seconds, but its FFT is a bit slow to compute). One solution would be to have a separate thread compute it, and then update the current one when its ready. We wouldn't wait on the computation o finish, just grabbed the latest computed value. Although in release it's really not that bad
+    auto       myData = std::vector<std::complex<float>>{};
+    myData.reserve(next_power_of_two(N));
+    int i = 0;
+    audio_input().for_each_audio_frame(N, [&](float frame) {
+        float t = i / (float)(N - 1);
+        i++;
+        float const window = _apply_window
+                                 ? 1.f - std::abs(2.f * t - 1.f) // TODO(Audio) Better windowing function?
+                                 : 1.f;
+        myData.emplace_back(frame) * window;
+    });
+    zero_pad(myData); // Make sure the size of myData is a power of 2.
+    auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
+    auto       data    = std::vector<float>{};
+    std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
+        return std::abs(x);
+    });
+    data.resize(std::min(
+        data.size() / 2, // The second half is a mirror of the first half, so we don't need it.
+        static_cast<size_t>(
+            _spectrum_max_frequency_in_hz / (static_cast<float>(audio_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
+        )
+    ));
+    return data;
 }
 
 void AudioManager::AudioInput_File::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
@@ -224,7 +252,7 @@ static void imgui_widgets(RtAudioW::PlayerProperties& props)
 
     ImGui::SameLine();
 
-    ImGuiExtras::disabled_if(props.is_muted, "The volume is muted.", [&]() {
+    ImGuiExtras::disabled_if(props.is_muted, "The audio is muted.", [&]() {
         ImGui::SliderFloat("Volume", &props.volume, 0.f, 1.f);
     });
 }
@@ -248,7 +276,6 @@ void AudioManager::AudioInput_File::imgui(bool needs_to_highlight_error)
         }
     );
     imgui_widgets(_properties);
-    ImGui::Checkbox("Apply window", &_apply_window);
 }
 void AudioManager::AudioInput_Device::imgui(bool needs_to_highlight_error)
 {
@@ -277,6 +304,7 @@ void AudioManager::imgui_window()
         _window.open();
 
     _window.show([&]() {
+        ImGui::SeparatorText("Input Selection");
         // Select the input mode
         if (ImGui::BeginCombo("Input Mode", to_string(_current_input_mode)))
         {
@@ -299,11 +327,13 @@ void AudioManager::imgui_window()
         audio_input().imgui(needs_to_highlight_error);
 
         ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
+        ImGui::SliderFloat("Spectrum max frequency (Hertz)", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+        ImGui::Checkbox("Apply window", &_apply_window);
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
         static float max_value{3.f}; // TODO(Audio)
-        ImGui::PlotHistogram(
+        ImGui::PlotLines(
             "Spectrum",
             spectrum().data(),
             static_cast<int>(spectrum().size()),
