@@ -24,7 +24,7 @@ auto AudioManager::current_input() -> internal::IAudioInput&
         return _device_input;
     return _file_input;
 }
-auto AudioManager::audio_input() const -> internal::IAudioInput const&
+auto AudioManager::current_input() const -> internal::IAudioInput const&
 {
     if (_current_input_mode == AudioInputMode::Device)
         return _device_input;
@@ -54,14 +54,14 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
 auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
 {
     return static_cast<int64_t>(
-        audio_input().sample_rate() * _average_duration_in_seconds
+        current_input().sample_rate() * _average_duration_in_seconds
     );
 }
 
 auto AudioManager::compute_volume() const -> float
 {
     auto frames = std::vector<float>{};
-    audio_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
+    current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
         frames.push_back(frame);
     });
     return Cool::compute_volume(frames);
@@ -97,12 +97,10 @@ auto AudioManager::compute_spectrum() const -> std::vector<float>
     auto       myData = std::vector<std::complex<float>>{};
     myData.reserve(next_power_of_two(N));
     int i = 0;
-    audio_input().for_each_audio_frame(N, [&](float frame) {
+    current_input().for_each_audio_frame(N, [&](float frame) {
         float t = i / (float)(N - 1);
         i++;
-        float const window = _apply_window
-                                 ? 1.f - std::abs(2.f * t - 1.f) // TODO(Audio) Better windowing function?
-                                 : 1.f;
+        float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
         myData.emplace_back(frame * window);
     });
     zero_pad(myData); // Make sure the size of myData is a power of 2.
@@ -114,7 +112,7 @@ auto AudioManager::compute_spectrum() const -> std::vector<float>
     data.resize(std::min(
         data.size() / 2, // The second half is a mirror of the first half, so we don't need it.
         static_cast<size_t>(
-            _spectrum_max_frequency_in_hz / (static_cast<float>(audio_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
+            _spectrum_max_frequency_in_hz / (static_cast<float>(current_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
         )
     ));
     return data;
@@ -191,23 +189,21 @@ void AudioManager::imgui_window()
         // ImGui::SeparatorText(to_string(_current_input_mode));
         current_input().imgui(needs_to_highlight_error);
 
-        ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
-        ImGui::SliderFloat("Spectrum max frequency (Hertz)", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
-        ImGui::Checkbox("Apply window", &_apply_window);
+        // ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
+        // ImGui::Checkbox("Apply window", &_apply_window);
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
-        static float max_value{3.f}; // TODO(Audio)
         ImGui::PlotLines(
             "Spectrum",
             spectrum().data(),
             static_cast<int>(spectrum().size()),
             0, nullptr,
-            0.f, max_value, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
+            0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}
         );
-        // ImGui::InputInt("fft size", &N);
-        ImGui::DragFloat("Max value", &max_value);
+        ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+        ImGui::DragFloat("Max amplitude displayed", &_spectrum_max_amplitude); // TODO(Audio) This slides way to fast, and can go below 0
     });
 }
 

@@ -57,16 +57,16 @@ private:
 private:
     /// Returns the current audio input in use, as per `_current_input_mode`
     [[nodiscard]] auto current_input() -> internal::IAudioInput&;
-    [[nodiscard]] auto audio_input() const -> internal::IAudioInput const&;
+    [[nodiscard]] auto current_input() const -> internal::IAudioInput const&;
 
 private:
     internal::AudioInput_File   _file_input{};
     internal::AudioInput_Device _device_input{};
     AudioInputMode              _current_input_mode{};
 
-    bool  _apply_window{true};
-    float _spectrum_max_frequency_in_hz{5000}; // TODO(Audio) Serialize
-    int   _spectrum_nb_bins{8};                // TODO(Audio) Serialize
+    float _spectrum_max_frequency_in_hz{2500.f}; // TODO(Audio) Serialize
+    float _spectrum_max_amplitude{3.f};          // TODO(Audio) Serialize
+    int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
     mutable float              _current_volume{};
     mutable bool               _current_volume_needs_recompute{true};
