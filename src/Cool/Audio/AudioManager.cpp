@@ -10,42 +10,21 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/Message.h"
 #include "Cool/Log/MessageConsole.h"
-#include "Cool/Log/ToUser.h"
-#include "Cool/NfdFileFilter/NfdFileFilter.h"
 
 namespace Cool {
 
-std::vector<float> input{};
-
-static auto input_stream() -> RtAudioW::InputStream&
-{
-    static RtAudioW::InputStream instance{
-        [&](std::span<float const> buffer) {
-            input.assign(buffer.begin(), buffer.end());
-            // input.resize(buffer.size());
-            // for(size_t i = 0; i < buffer.size(); ++i)
-            // input[i] = buffer[i] * input_volume;
-        },
-        [](RtAudioErrorType type, std::string const& error_message) {
-            // RtAudioErrorType::
-            // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id
-            Cool::Log::ToUser::warning("Audio", error_message);
-        }};
-    return instance;
-}
-
 AudioManager::AudioManager()
 {
-    open_current_input_mode();
+    current_input().start();
 }
 
-auto AudioManager::audio_input() -> IAudioInput&
+auto AudioManager::current_input() -> internal::IAudioInput&
 {
     if (_current_input_mode == AudioInputMode::Device)
         return _device_input;
     return _file_input;
 }
-auto AudioManager::audio_input() const -> IAudioInput const&
+auto AudioManager::audio_input() const -> internal::IAudioInput const&
 {
     if (_current_input_mode == AudioInputMode::Device)
         return _device_input;
@@ -71,11 +50,6 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
     }
     return _current_spectrum;
 }
-
-// auto AudioManager::AudioInput_File::compute_volume() const -> float
-// {
-//     return Cool::compute_volume(RtAudioW::player(), _average_duration_in_seconds);
-// }
 
 auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
 {
@@ -146,35 +120,6 @@ auto AudioManager::compute_spectrum() const -> std::vector<float>
     return data;
 }
 
-void AudioManager::AudioInput_File::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
-{
-    for (int i = 0; i < frames_count; ++i)
-        callback(RtAudioW::player().sample_unaltered_volume(i - frames_count / 2 + RtAudioW::player().current_frame_index()));
-}
-
-void AudioManager::AudioInput_Device::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
-{
-    // TODO(Audio) store a long enough buffer, and the audio in callback appends to the end of that buffer, and deletes the beginning once the buffer is long enough
-
-    for (int64_t i = 0; i < frames_count; ++i)
-    {
-        if (i < _audio_data.size())
-            callback(_audio_data[i]);
-        else
-            callback(0.f);
-    }
-}
-
-auto AudioManager::AudioInput_File::sample_rate() const -> float
-{
-    return static_cast<float>(RtAudioW::player().audio_data().sample_rate);
-}
-
-auto AudioManager::AudioInput_Device::sample_rate() const -> float
-{
-    return static_cast<float>(input_stream().sample_rate());
-}
-
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
     if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
@@ -190,19 +135,8 @@ void AudioManager::update()
 {
     _current_spectrum_needs_recompute = true;
     _current_volume_needs_recompute   = true;
-    audio_input().update();
+    current_input().update();
     // TODO(Audio) if using device input, trigger rerender every frame
-}
-void AudioManager::AudioInput_File::update()
-{
-    RtAudioW::player().properties() = _properties;
-}
-void AudioManager::AudioInput_Device::update()
-{
-    // TODO(Audio)
-    _audio_data = input;
-    for (float& x : _audio_data)
-        x *= _volume;
 }
 
 static auto to_string(AudioInputMode mode) -> const char*
@@ -219,91 +153,22 @@ static auto to_string(AudioInputMode mode) -> const char*
 
 void AudioManager::set_current_input_mode(AudioInputMode mode)
 {
+    // TODO(Audio) Trigger rerender when something changes
     if (mode == _current_input_mode)
         return;
+    current_input().stop();
     _current_input_mode = mode;
-    open_current_input_mode();
-}
-
-void AudioManager::open_current_input_mode()
-{
-    switch (_current_input_mode)
-    {
-    case AudioInputMode::File:
-        _file_input.try_load_current_file(); // TODO(Audio) don't reload the file if it was already loaded
-        break;
-    case AudioInputMode::Device:
-        RtAudioW::player().reset_audio_data(); // Stop the playing of the audio
-        _device_input.open_device_stream();
-        break;
-    }
-}
-
-static void imgui_widgets(RtAudioW::PlayerProperties& props)
-{
-    ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
-    ImGui::SetItemTooltip("%s", props.does_loop ? "The audio will loop." : "The audio will not loop. It will only play when the time is between 0 and the duration of the audio.");
-
-    ImGui::SameLine();
-
-    if (ImGuiExtras::button_with_text_icon(props.is_muted ? ICOMOON_VOLUME_MUTE2 : ICOMOON_VOLUME_MEDIUM))
-        props.is_muted = !props.is_muted;
-    ImGui::SetItemTooltip("%s", props.is_muted ? "Muted" : "Not muted");
-
-    ImGui::SameLine();
-
-    ImGuiExtras::disabled_if(props.is_muted, "The audio is muted.", [&]() {
-        ImGui::SliderFloat("Volume", &props.volume, 0.f, 1.f);
-    });
-}
-
-auto AudioManager::AudioInput_File::does_need_to_highlight_error() const -> bool
-{
-    return Cool::Log::ToUser::console().should_highlight(_error_id);
-}
-auto AudioManager::AudioInput_Device::does_need_to_highlight_error() const -> bool
-{
-    return Cool::Log::ToUser::console().should_highlight(_error_id);
-}
-
-void AudioManager::AudioInput_File::imgui(bool needs_to_highlight_error)
-{
-    Cool::ImGuiExtras::bring_attention_if(
-        needs_to_highlight_error,
-        [&]() {
-            if (ImGuiExtras::file("Audio file", &_path, NfdFileFilter::Audio))
-                try_load_current_file();
-        }
-    );
-    imgui_widgets(_properties);
-}
-void AudioManager::AudioInput_Device::imgui(bool needs_to_highlight_error)
-{
-    auto const ids = input_stream().device_ids();
-    if (ImGui::BeginCombo("Input device", input_stream().current_device_name().c_str()))
-    {
-        for (auto const id : ids)
-        {
-            auto const info        = input_stream().device_info(id);
-            bool const is_selected = info.name == input_stream().current_device_name();
-            if (ImGui::Selectable(info.name.c_str(), is_selected))
-                input_stream().set_device(id);
-
-            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-    }
-    ImGui::DragFloat("Volume", &_volume, 20.f, 0.f, 1000000.f, "%.3f", ImGuiSliderFlags_Logarithmic);
+    current_input().start();
 }
 
 void AudioManager::imgui_window()
 {
-    bool const needs_to_highlight_error = audio_input().does_need_to_highlight_error();
+    bool const needs_to_highlight_error = current_input().does_need_to_highlight_error();
     if (needs_to_highlight_error)
         _window.open();
 
     _window.show([&]() {
+        // TODO(Audio) Trigger rerender when something changes
         ImGui::SeparatorText("Input Selection");
         // Select the input mode
         if (ImGui::BeginCombo("Input Mode", to_string(_current_input_mode)))
@@ -324,7 +189,7 @@ void AudioManager::imgui_window()
         }
 
         // ImGui::SeparatorText(to_string(_current_input_mode));
-        audio_input().imgui(needs_to_highlight_error);
+        current_input().imgui(needs_to_highlight_error);
 
         ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
         ImGui::SliderFloat("Spectrum max frequency (Hertz)", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
@@ -344,39 +209,6 @@ void AudioManager::imgui_window()
         // ImGui::InputInt("fft size", &N);
         ImGui::DragFloat("Max value", &max_value);
     });
-}
-
-void AudioManager::AudioInput_File::try_load_current_file()
-{
-    if (_path.empty())
-    {
-        Cool::Log::ToUser::console().remove(_error_id);
-        RtAudioW::player().reset_audio_data();
-        return;
-    }
-
-    try
-    {
-        load_audio_file(RtAudioW::player(), _path);
-        Cool::Log::ToUser::console().remove(_error_id);
-    }
-    catch (std::exception& e)
-    {
-        Cool::Log::ToUser::console().send(
-            _error_id,
-            Message{
-                .category = "Audio",
-                .message  = e.what(),
-                .severity = MessageSeverity::Error,
-            }
-        );
-        RtAudioW::player().reset_audio_data();
-    }
-}
-
-void AudioManager::AudioInput_Device::open_device_stream()
-{
-    // input_stream().
 }
 
 } // namespace Cool

@@ -5,7 +5,9 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Time/Clock.h"
-#include "RtAudioWrapper/RtAudioWrapper.hpp"
+#include "internal/AudioInput_Device.h"
+#include "internal/AudioInput_File.h"
+#include "internal/IAudioInput.h"
 
 namespace cereal {
 
@@ -53,93 +55,14 @@ private:
     [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
 
 private:
-    class IAudioInput {
-    public:
-        IAudioInput()                                               = default;
-        IAudioInput(IAudioInput const&)                             = default;
-        IAudioInput(IAudioInput&&)                                  = default;
-        auto operator=(IAudioInput const&) noexcept -> IAudioInput& = default;
-        auto operator=(IAudioInput&&) noexcept -> IAudioInput&      = default;
-        virtual ~IAudioInput()                                      = default;
-
-        /// Will call the `callback` once for each of the `frames_count` audio frames around the current moment in time.
-        /// If there are several channels in a frame, the `callback` will only be called once for all of these channels, and will be given the average of the samples.
-        virtual void for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const = 0;
-        /// Returns the number of frames contained in a second of the audio.
-        [[nodiscard]] virtual auto sample_rate() const -> float = 0;
-
-        virtual void               update()                                     = 0;
-        virtual void               imgui(bool needs_to_highlight_error)         = 0;
-        [[nodiscard]] virtual auto does_need_to_highlight_error() const -> bool = 0;
-    };
-
-    class AudioInput_File : public IAudioInput {
-    public:
-        void               for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const override;
-        [[nodiscard]] auto sample_rate() const -> float override;
-
-        void               update() override;
-        void               imgui(bool needs_to_highlight_error) override;
-        [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
-
-        void try_load_current_file();
-
-    private:
-        std::filesystem::path      _path{};
-        RtAudioW::PlayerProperties _properties{};
-        MessageId                  _error_id{};
-
-    private:
-        // Serialization
-        friend class cereal::access;
-        template<class Archive>
-        void serialize(Archive& archive)
-        {
-            archive(
-                cereal::make_nvp("Path", _path),
-                cereal::make_nvp("Properties", _properties)
-            );
-        }
-    };
-
-    class AudioInput_Device : public IAudioInput { // e.g. microphone
-    public:
-        void               for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const override;
-        [[nodiscard]] auto sample_rate() const -> float override;
-
-        void               update() override;
-        void               imgui(bool needs_to_highlight_error) override;
-        [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
-
-        void open_device_stream();
-
-    private:
-        std::vector<float> _audio_data{};
-        float              _volume{30.f};
-        unsigned int       _input_device_id{}; // TODO(Audio) Use this
-        MessageId          _error_id{};        // TODO(Audio) error when the device is unavailable
-
-    private:
-        // Serialization
-        friend class cereal::access;
-        template<class Archive>
-        void serialize(Archive& archive)
-        {
-            archive(
-                cereal::make_nvp("Input Device ID", _input_device_id),
-                cereal::make_nvp("Volume", _volume)
-            );
-        }
-    };
-
     /// Returns the current audio input in use, as per `_current_input_mode`
-    [[nodiscard]] auto audio_input() -> IAudioInput&;
-    [[nodiscard]] auto audio_input() const -> IAudioInput const&;
+    [[nodiscard]] auto current_input() -> internal::IAudioInput&;
+    [[nodiscard]] auto audio_input() const -> internal::IAudioInput const&;
 
 private:
-    AudioInput_File   _file_input{};
-    AudioInput_Device _device_input{};
-    AudioInputMode    _current_input_mode{};
+    internal::AudioInput_File   _file_input{};
+    internal::AudioInput_Device _device_input{};
+    AudioInputMode              _current_input_mode{};
 
     bool  _apply_window{true};
     float _spectrum_max_frequency_in_hz{5000}; // TODO(Audio) Serialize
@@ -174,7 +97,7 @@ private:
             _device_input,
             _current_input_mode
         );
-        open_current_input_mode();
+        current_input().start();
     }
 };
 
