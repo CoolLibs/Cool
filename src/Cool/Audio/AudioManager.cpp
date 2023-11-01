@@ -103,7 +103,7 @@ auto AudioManager::compute_spectrum() const -> std::vector<float>
         float const window = _apply_window
                                  ? 1.f - std::abs(2.f * t - 1.f) // TODO(Audio) Better windowing function?
                                  : 1.f;
-        myData.emplace_back(frame) * window;
+        myData.emplace_back(frame * window);
     });
     zero_pad(myData); // Make sure the size of myData is a power of 2.
     auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
