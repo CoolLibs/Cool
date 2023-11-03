@@ -44,9 +44,10 @@ auto AudioInput_File::does_need_to_highlight_error() const -> bool
     return Cool::Log::ToUser::console().should_highlight(_error_id);
 }
 
-static void imgui_widgets(RtAudioW::PlayerProperties& props)
+static auto imgui_widgets(RtAudioW::PlayerProperties& props) -> bool
 {
-    ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
+    bool b = false; // b is not affected when we change properties related to the volume, because we ignore these properties when computing the characteristics like volume, fft etc.
+    b |= ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
     ImGui::SetItemTooltip("%s", props.does_loop ? "The audio will loop." : "The audio will not loop. It will only play when the time is between 0 and the duration of the audio.");
 
     ImGui::SameLine();
@@ -60,18 +61,25 @@ static void imgui_widgets(RtAudioW::PlayerProperties& props)
     ImGuiExtras::disabled_if(props.is_muted, "The audio is muted.", [&]() {
         ImGui::SliderFloat("Volume", &props.volume, 0.f, 1.f);
     });
+
+    return b;
 }
 
-void AudioInput_File::imgui(bool needs_to_highlight_error)
+auto AudioInput_File::imgui(bool needs_to_highlight_error) -> bool
 {
+    bool b = false;
     Cool::ImGuiExtras::bring_attention_if(
         needs_to_highlight_error,
         [&]() {
             if (ImGuiExtras::file("Audio file", &_path, NfdFileFilter::Audio))
+            {
                 try_load_current_file();
+                b = true;
+            }
         }
     );
-    imgui_widgets(_properties);
+    b |= imgui_widgets(_properties);
+    return b;
 }
 
 void AudioInput_File::try_load_current_file()

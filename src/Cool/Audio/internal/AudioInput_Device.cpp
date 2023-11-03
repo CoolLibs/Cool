@@ -63,8 +63,10 @@ auto AudioInput_Device::does_need_to_highlight_error() const -> bool
     return Cool::Log::ToUser::console().should_highlight(_error_id);
 }
 
-void AudioInput_Device::imgui(bool needs_to_highlight_error)
+auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
 {
+    bool b = false;
+
     auto const ids = input_stream().device_ids();
     if (ImGui::BeginCombo("Input device", input_stream().current_device_name().c_str()))
     {
@@ -73,14 +75,18 @@ void AudioInput_Device::imgui(bool needs_to_highlight_error)
             auto const info        = input_stream().device_info(id);
             bool const is_selected = info.name == input_stream().current_device_name();
             if (ImGui::Selectable(info.name.c_str(), is_selected))
+            {
                 input_stream().set_device(id);
+                b = true;
+            }
 
             if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
     }
-    ImGui::DragFloat("Volume", &_volume, 20.f, 0.f, 1000000.f, "%.3f", ImGuiSliderFlags_Logarithmic);
+    b |= ImGui::DragFloat("Volume", &_volume, 20.f, 0.f, 1000000.f, "%.3f", ImGuiSliderFlags_Logarithmic);
+    return b;
 }
 
 void AudioInput_Device::open_device_stream()

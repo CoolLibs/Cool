@@ -17,7 +17,7 @@ public:
     void start() override;
     void stop() override;
 
-    void               imgui(bool needs_to_highlight_error) override;
+    auto               imgui(bool needs_to_highlight_error) -> bool override;
     [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
 private:

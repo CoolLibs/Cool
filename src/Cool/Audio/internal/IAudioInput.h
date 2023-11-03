@@ -26,7 +26,7 @@ public:
     /// Will be called when the input needs to stop feeding data.
     virtual void stop() = 0;
 
-    virtual void               imgui(bool needs_to_highlight_error)         = 0;
+    virtual auto               imgui(bool needs_to_highlight_error) -> bool = 0;
     [[nodiscard]] virtual auto does_need_to_highlight_error() const -> bool = 0;
 };
 

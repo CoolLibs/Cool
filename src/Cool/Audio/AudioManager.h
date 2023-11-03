@@ -68,6 +68,7 @@ private:
     internal::AudioInput_File   _file_input{};
     internal::AudioInput_Device _device_input{};
     AudioInputMode              _current_input_mode{};
+    bool                        _audio_data_has_changed{false}; // Used to signal that the app needs to rerender.
 
     float _spectrum_max_frequency_in_hz{2500.f}; // TODO(Audio) Serialize
     float _spectrum_max_amplitude{3.f};          // TODO(Audio) Serialize

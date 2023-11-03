@@ -86,7 +86,7 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
         current_input().for_each_audio_frame(N, [&](float frame) {
             float t = i / (float)(N - 1);
             i++;
-            float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+            float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
             myData.emplace_back(frame * window);
         });
         zero_pad(myData); // Make sure the size of myData is a power of 2.
@@ -137,10 +137,11 @@ void AudioManager::invalidate_caches()
 
 void AudioManager::update(std::function<void()> const& on_audio_data_changed)
 {
-    if (current_input().is_playing())
+    if (current_input().is_playing() || _audio_data_has_changed)
     {
         invalidate_caches();
         on_audio_data_changed();
+        _audio_data_has_changed = false;
     }
     current_input().update();
     _device_input.set_nb_of_retained_samples(
@@ -168,13 +169,13 @@ static auto to_string(AudioInputMode mode) -> const char*
 
 void AudioManager::set_current_input_mode(AudioInputMode mode)
 {
-    // TODO(Audio) Trigger rerender when something changes
     if (mode == _current_input_mode)
         return;
     current_input().stop();
     _current_input_mode = mode;
     current_input().start();
     invalidate_caches();
+    _audio_data_has_changed = true;
 }
 
 void AudioManager::imgui_window()
@@ -184,7 +185,6 @@ void AudioManager::imgui_window()
         _window.open();
 
     _window.show([&]() {
-        // TODO(Audio) Trigger rerender when something changes
         ImGui::SeparatorText("Input Selection");
         // Select the input mode
         if (ImGui::BeginCombo("Input Mode", to_string(_current_input_mode)))
@@ -204,12 +204,12 @@ void AudioManager::imgui_window()
             ImGui::EndCombo();
         }
 
-        current_input().imgui(needs_to_highlight_error);
+        _audio_data_has_changed |= current_input().imgui(needs_to_highlight_error);
 
         ImGui::NewLine();
         ImGui::SeparatorText("Volume");
         ImGui::ProgressBar(volume(), {0.f, 0.f});
-        ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
+        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Waveform");
@@ -221,7 +221,7 @@ void AudioManager::imgui_window()
             -1.f, 1.f, // Values are between -1 and 1
             {0.f, 100.f}
         );
-        ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
+        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
@@ -233,8 +233,8 @@ void AudioManager::imgui_window()
             0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}
         );
-        ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
-        ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
+        _audio_data_has_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
         ImGui::DragFloat("Max amplitude displayed", &_spectrum_max_amplitude); // TODO(Audio) This slides way to fast, and can go below 0
     });
 }
