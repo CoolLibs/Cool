@@ -13,7 +13,7 @@
 
 namespace Cool {
 
-// TODO(Audio) Also pass the waveform to the shader: https://youtu.be/uk96O7N1Yo0?t=288
+// TODO(Audio) The audio from file is ignored when exporting a video
 
 AudioManager::AudioManager()
 {
@@ -37,7 +37,7 @@ auto AudioManager::volume() const -> float
 {
     return _current_volume.get_value([&]() {
         auto frames = std::vector<float>{};
-        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
+        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(_window_length_in_seconds_for_volume), [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
             frames.push_back(frame);
         });
         return Cool::compute_volume(frames);
@@ -47,7 +47,7 @@ auto AudioManager::volume() const -> float
 auto AudioManager::waveform() const -> std::vector<float> const&
 {
     return _current_waveform.get_value([&]() {
-        auto const N        = nb_frames_for_characteristics_computation();
+        auto const N        = nb_frames_for_characteristics_computation(_window_length_in_seconds_for_waveform);
         auto       waveform = std::vector<float>{};
         current_input().for_each_audio_frame(N, [&](float sample) {
             waveform.push_back(sample);
@@ -81,7 +81,7 @@ static void zero_pad(std::vector<std::complex<float>>& data)
 auto AudioManager::spectrum() const -> std::vector<float> const&
 {
     return _current_spectrum.get_value([&]() {
-        auto const N      = nb_frames_for_characteristics_computation(); // TODO(Audio). 8192 gives a nice spectrum, roughly matches the default _average_duration_in_seconds, but its FFT is a bit slow to compute). One solution would be to have a separate thread compute it, and then update the current one when its ready. We wouldn't wait on the computation o finish, just grabbed the latest computed value. Although in release it's really not that bad
+        auto const N      = nb_frames_for_characteristics_computation(_window_length_in_seconds_for_spectrum);
         auto       myData = std::vector<std::complex<float>>{};
         myData.reserve(next_power_of_two(N));
         int i = 0;
@@ -107,10 +107,10 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
     });
 }
 
-auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
+auto AudioManager::nb_frames_for_characteristics_computation(float window_length_in_seconds) const -> int64_t
 {
     return static_cast<int64_t>(
-        current_input().sample_rate() * _average_duration_in_seconds
+        current_input().sample_rate() * window_length_in_seconds
     );
 }
 
@@ -142,6 +142,15 @@ void AudioManager::update(std::function<void()> const& on_audio_data_changed)
         on_audio_data_changed();
     }
     current_input().update();
+    _device_input.set_nb_of_retained_samples(
+        std::max(
+            std::max(
+                nb_frames_for_characteristics_computation(_window_length_in_seconds_for_waveform),
+                nb_frames_for_characteristics_computation(_window_length_in_seconds_for_spectrum)
+            ),
+            nb_frames_for_characteristics_computation(_window_length_in_seconds_for_volume)
+        )
+    );
 }
 
 static auto to_string(AudioInputMode mode) -> const char*
@@ -194,33 +203,36 @@ void AudioManager::imgui_window()
             ImGui::EndCombo();
         }
 
-        // ImGui::SeparatorText(to_string(_current_input_mode));
         current_input().imgui(needs_to_highlight_error);
 
-        ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
-        // ImGui::Checkbox("Apply window", &_apply_window);
+        ImGui::NewLine();
+        ImGui::SeparatorText("Volume");
+        ImGui::ProgressBar(volume(), {0.f, 0.f});
+        ImGui::SliderFloat("Window length##Volume", &_window_length_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Waveform");
         ImGui::PlotLines(
-            "Waveform",
+            "##Waveform",
             waveform().data(),
             static_cast<int>(waveform().size()),
             0, nullptr,
             -1.f, 1.f, // Values are between -1 and 1
             {0.f, 100.f}
         );
+        ImGui::SliderFloat("Window length##Waveform", &_window_length_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
         ImGui::PlotLines(
-            "Spectrum",
+            "##Spectrum",
             spectrum().data(),
             static_cast<int>(spectrum().size()),
             0, nullptr,
             0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}
         );
+        ImGui::SliderFloat("Window length##Spectrum", &_window_length_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
         ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
         ImGui::DragFloat("Max amplitude displayed", &_spectrum_max_amplitude); // TODO(Audio) This slides way to fast, and can go below 0
     });

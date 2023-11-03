@@ -54,7 +54,7 @@ public:
 private:
     void open_current_input_mode();
 
-    [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
+    [[nodiscard]] auto nb_frames_for_characteristics_computation(float window_length_in_seconds) const -> int64_t;
 
     void invalidate_caches();
 
@@ -75,7 +75,9 @@ private:
     mutable Cached<std::vector<float>> _current_spectrum{};
     mutable Cached<float>              _current_volume{};
 
-    float _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it // TODO(Audio) The name should indicate that it is only used in volume calculation. Or do we use it for fft ? We try to find the nearest power of 2? // TODO(Audio) Use a different one for each feature. 0.2 is good for volume, 0.05 for waveform, and 0.1 for spectrum
+    float _window_length_in_seconds_for_waveform{0.05f}; // TODO(Audio) Do we expose this ? If yes, then serialize it
+    float _window_length_in_seconds_for_spectrum{0.1f};  // TODO(Audio) Do we expose this ? If yes, then serialize it
+    float _window_length_in_seconds_for_volume{0.2f};    // TODO(Audio) Do we expose this ? If yes, then serialize it
 
     ImGuiWindow _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 

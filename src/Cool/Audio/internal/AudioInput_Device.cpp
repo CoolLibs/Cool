@@ -16,6 +16,11 @@ static auto input_stream() -> RtAudioW::InputStream&
     return instance;
 }
 
+void AudioInput_Device::set_nb_of_retained_samples(size_t samples_count)
+{
+    input_stream().set_nb_of_retained_samples(samples_count);
+}
+
 void AudioInput_Device::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
 {
     input_stream().for_each_sample(frames_count, [&](float const sample) { // We know that an input stream has only 1 channel, so 1 sample == 1 frame, no need to average across all the channels.
