@@ -5,6 +5,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Time/Clock.h"
+#include "Cool/Utils/Cached.h"
 #include "internal/AudioInput_Device.h"
 #include "internal/AudioInput_File.h"
 #include "internal/IAudioInput.h"
@@ -35,6 +36,7 @@ public:
     AudioManager();
 
     [[nodiscard]] auto volume() const -> float;
+    /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
     [[nodiscard]] auto spectrum() const -> std::vector<float> const&;
 
     void sync_with_clock(Cool::Clock const&);
@@ -47,10 +49,6 @@ public:
 
 private:
     void open_current_input_mode();
-
-    [[nodiscard]] auto compute_volume() const -> float;
-    /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
-    [[nodiscard]] auto compute_spectrum() const -> std::vector<float>;
 
     [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
 
@@ -68,10 +66,8 @@ private:
     float _spectrum_max_amplitude{3.f};          // TODO(Audio) Serialize
     int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
-    mutable float              _current_volume{};
-    mutable bool               _current_volume_needs_recompute{true};
-    mutable std::vector<float> _current_spectrum{};
-    mutable bool               _current_spectrum_needs_recompute{true};
+    mutable Cached<float>              _current_volume{};
+    mutable Cached<std::vector<float>> _current_spectrum{};
 
     float _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it // TODO(Audio) The name should indicate that it is only used in volume calculation. Or do we use it for fft ? We try to find the nearest power of 2?
 

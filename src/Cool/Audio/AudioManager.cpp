@@ -13,6 +13,8 @@
 
 namespace Cool {
 
+// TODO(Audio) Also pass the waveform to the shader: https://youtu.be/uk96O7N1Yo0?t=288
+
 AudioManager::AudioManager()
 {
     current_input().start();
@@ -33,41 +35,14 @@ auto AudioManager::current_input() const -> internal::IAudioInput const&
 
 auto AudioManager::volume() const -> float
 {
-    if (_current_volume_needs_recompute)
-    {
-        _current_volume_needs_recompute = false;
-        _current_volume                 = compute_volume();
-    }
-    return _current_volume;
-}
-
-auto AudioManager::spectrum() const -> std::vector<float> const&
-{
-    if (_current_spectrum_needs_recompute)
-    {
-        _current_spectrum_needs_recompute = false;
-        _current_spectrum                 = compute_spectrum();
-    }
-    return _current_spectrum;
-}
-
-auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
-{
-    return static_cast<int64_t>(
-        current_input().sample_rate() * _average_duration_in_seconds
-    );
-}
-
-auto AudioManager::compute_volume() const -> float
-{
-    auto frames = std::vector<float>{};
-    current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
-        frames.push_back(frame);
+    return _current_volume.get_value([&]() {
+        auto frames = std::vector<float>{};
+        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
+            frames.push_back(frame);
+        });
+        return Cool::compute_volume(frames);
     });
-    return Cool::compute_volume(frames);
 }
-
-// TODO(Audio) Option to select how many bins we do (this is much more optimal to do binning on the cpu). This option should ideally be on each spectrum node, so that one can use the full spectrum while another is using only 8 bins.
 
 template<std::integral T>
 static auto next_power_of_two(T n) -> T
@@ -91,7 +66,7 @@ static void zero_pad(std::vector<std::complex<float>>& data)
     data.resize(next_power_of_two(data.size()));
 }
 
-auto AudioManager::compute_spectrum() const -> std::vector<float>
+auto AudioManager::spectrum() const -> std::vector<float> const&
 {
     auto const N      = nb_frames_for_characteristics_computation(); // TODO(Audio). 8192 gives a nice spectrum, roughly matches the default _average_duration_in_seconds, but its FFT is a bit slow to compute). One solution would be to have a separate thread compute it, and then update the current one when its ready. We wouldn't wait on the computation o finish, just grabbed the latest computed value. Although in release it's really not that bad
     auto       myData = std::vector<std::complex<float>>{};
@@ -118,6 +93,15 @@ auto AudioManager::compute_spectrum() const -> std::vector<float>
     return data;
 }
 
+auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
+{
+    return static_cast<int64_t>(
+        current_input().sample_rate() * _average_duration_in_seconds
+    );
+}
+
+// TODO(Audio) Option to select how many bins we do (this is much more optimal to do binning on the cpu). This option should ideally be on each spectrum node, so that one can use the full spectrum while another is using only 8 bins.
+
 void AudioManager::sync_with_clock(Cool::Clock const& clock)
 {
     if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
@@ -131,8 +115,8 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock)
 
 void AudioManager::update()
 {
-    _current_spectrum_needs_recompute = true;
-    _current_volume_needs_recompute   = true;
+    _current_spectrum.invalidate_cache();
+    _current_volume.invalidate_cache();
     current_input().update();
     // TODO(Audio) if using device input, trigger rerender every frame
 }
