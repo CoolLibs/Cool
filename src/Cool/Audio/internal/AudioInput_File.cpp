@@ -18,6 +18,11 @@ auto AudioInput_File::sample_rate() const -> float
     return static_cast<float>(RtAudioW::player().audio_data().sample_rate);
 }
 
+auto AudioInput_File::is_playing() const -> bool
+{
+    return RtAudioW::player().is_playing();
+}
+
 void AudioInput_File::update()
 {
     RtAudioW::player().properties() = _properties;

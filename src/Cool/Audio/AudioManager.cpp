@@ -37,10 +37,22 @@ auto AudioManager::volume() const -> float
 {
     return _current_volume.get_value([&]() {
         auto frames = std::vector<float>{};
-        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) {
+        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(), [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
             frames.push_back(frame);
         });
         return Cool::compute_volume(frames);
+    });
+}
+
+auto AudioManager::waveform() const -> std::vector<float> const&
+{
+    return _current_waveform.get_value([&]() {
+        auto const N        = nb_frames_for_characteristics_computation();
+        auto       waveform = std::vector<float>{};
+        current_input().for_each_audio_frame(N, [&](float sample) {
+            waveform.push_back(sample);
+        });
+        return waveform;
     });
 }
 
@@ -68,29 +80,31 @@ static void zero_pad(std::vector<std::complex<float>>& data)
 
 auto AudioManager::spectrum() const -> std::vector<float> const&
 {
-    auto const N      = nb_frames_for_characteristics_computation(); // TODO(Audio). 8192 gives a nice spectrum, roughly matches the default _average_duration_in_seconds, but its FFT is a bit slow to compute). One solution would be to have a separate thread compute it, and then update the current one when its ready. We wouldn't wait on the computation o finish, just grabbed the latest computed value. Although in release it's really not that bad
-    auto       myData = std::vector<std::complex<float>>{};
-    myData.reserve(next_power_of_two(N));
-    int i = 0;
-    current_input().for_each_audio_frame(N, [&](float frame) {
-        float t = i / (float)(N - 1);
-        i++;
-        float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
-        myData.emplace_back(frame * window);
+    return _current_spectrum.get_value([&]() {
+        auto const N      = nb_frames_for_characteristics_computation(); // TODO(Audio). 8192 gives a nice spectrum, roughly matches the default _average_duration_in_seconds, but its FFT is a bit slow to compute). One solution would be to have a separate thread compute it, and then update the current one when its ready. We wouldn't wait on the computation o finish, just grabbed the latest computed value. Although in release it's really not that bad
+        auto       myData = std::vector<std::complex<float>>{};
+        myData.reserve(next_power_of_two(N));
+        int i = 0;
+        current_input().for_each_audio_frame(N, [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
+            float t = i / (float)(N - 1);
+            i++;
+            float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+            myData.emplace_back(frame * window);
+        });
+        zero_pad(myData); // Make sure the size of myData is a power of 2.
+        auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
+        auto       data    = std::vector<float>{};
+        std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
+            return std::abs(x);
+        });
+        data.resize(std::min(
+            data.size() / 2, // The second half is a mirror of the first half, so we don't need it.
+            static_cast<size_t>(
+                _spectrum_max_frequency_in_hz / (static_cast<float>(current_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
+            )
+        ));
+        return data;
     });
-    zero_pad(myData); // Make sure the size of myData is a power of 2.
-    auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
-    auto       data    = std::vector<float>{};
-    std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
-        return std::abs(x);
-    });
-    data.resize(std::min(
-        data.size() / 2, // The second half is a mirror of the first half, so we don't need it.
-        static_cast<size_t>(
-            _spectrum_max_frequency_in_hz / (static_cast<float>(current_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
-        )
-    ));
-    return data;
 }
 
 auto AudioManager::nb_frames_for_characteristics_computation() const -> int64_t
@@ -113,12 +127,21 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock)
         RtAudioW::player().pause();
 }
 
-void AudioManager::update()
+void AudioManager::invalidate_caches()
 {
+    _current_waveform.invalidate_cache();
     _current_spectrum.invalidate_cache();
     _current_volume.invalidate_cache();
+}
+
+void AudioManager::update(std::function<void()> const& on_audio_data_changed)
+{
+    if (current_input().is_playing())
+    {
+        invalidate_caches();
+        on_audio_data_changed();
+    }
     current_input().update();
-    // TODO(Audio) if using device input, trigger rerender every frame
 }
 
 static auto to_string(AudioInputMode mode) -> const char*
@@ -141,6 +164,7 @@ void AudioManager::set_current_input_mode(AudioInputMode mode)
     current_input().stop();
     _current_input_mode = mode;
     current_input().start();
+    invalidate_caches();
 }
 
 void AudioManager::imgui_window()
@@ -173,8 +197,19 @@ void AudioManager::imgui_window()
         // ImGui::SeparatorText(to_string(_current_input_mode));
         current_input().imgui(needs_to_highlight_error);
 
-        // ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
+        ImGui::SliderFloat("Average duration", &_average_duration_in_seconds, 0.f, 1.f);
         // ImGui::Checkbox("Apply window", &_apply_window);
+
+        ImGui::NewLine();
+        ImGui::SeparatorText("Waveform");
+        ImGui::PlotLines(
+            "Waveform",
+            waveform().data(),
+            static_cast<int>(waveform().size()),
+            0, nullptr,
+            -1.f, 1.f, // Values are between -1 and 1
+            {0.f, 100.f}
+        );
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");

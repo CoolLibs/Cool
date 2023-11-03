@@ -42,6 +42,16 @@ auto AudioInput_Device::sample_rate() const -> float
     return static_cast<float>(input_stream().sample_rate());
 }
 
+auto AudioInput_Device::is_playing() const -> bool
+{
+    return has_device();
+}
+
+auto AudioInput_Device::has_device() const -> bool
+{
+    return true; // TODO(Audio)
+}
+
 void AudioInput_Device::update()
 {
     // TODO(Audio)

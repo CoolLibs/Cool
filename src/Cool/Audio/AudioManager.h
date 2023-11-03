@@ -35,12 +35,16 @@ class AudioManager {
 public:
     AudioManager();
 
-    [[nodiscard]] auto volume() const -> float;
+    /// Returns an array containing the raw audio samples, with values between -1 and 1. There is only one channel, so each sample corresponds to the next moment in time.
+    [[nodiscard]] auto waveform() const -> std::vector<float> const&;
     /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
     [[nodiscard]] auto spectrum() const -> std::vector<float> const&;
+    ///
+    [[nodiscard]] auto volume() const -> float;
 
     void sync_with_clock(Cool::Clock const&);
-    void update();
+    /// Must be called every frame. Will do some internal bookkeeping, and call `on_audio_data_changed` iff the audio data has changed (e.g. music player is playing, or a microphone is beeing used).
+    void update(std::function<void()> const& on_audio_data_changed);
 
     void set_current_input_mode(AudioInputMode);
 
@@ -52,7 +56,8 @@ private:
 
     [[nodiscard]] auto nb_frames_for_characteristics_computation() const -> int64_t;
 
-private:
+    void invalidate_caches();
+
     /// Returns the current audio input in use, as per `_current_input_mode`
     [[nodiscard]] auto current_input() -> internal::IAudioInput&;
     [[nodiscard]] auto current_input() const -> internal::IAudioInput const&;
@@ -66,8 +71,9 @@ private:
     float _spectrum_max_amplitude{3.f};          // TODO(Audio) Serialize
     int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
-    mutable Cached<float>              _current_volume{};
+    mutable Cached<std::vector<float>> _current_waveform{};
     mutable Cached<std::vector<float>> _current_spectrum{};
+    mutable Cached<float>              _current_volume{};
 
     float _average_duration_in_seconds{0.2f}; // TODO(Audio) Do we expose this ? If yes, then serialize it // TODO(Audio) The name should indicate that it is only used in volume calculation. Or do we use it for fft ? We try to find the nearest power of 2?
 
