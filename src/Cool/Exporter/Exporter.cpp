@@ -15,4 +15,10 @@ auto Exporter::operator=(Exporter&& o) noexcept -> Exporter&
     return *this;
 }
 
+auto Exporter::clock() const -> Clock const&
+{
+    assert(_video_export_process.has_value() && "Can only be called if `is_exporting()` is true");
+    return _video_export_process->clock(); // NOLINT(bugprone-unchecked-optional-access)
+}
+
 } // namespace Cool

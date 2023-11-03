@@ -32,6 +32,9 @@ public:
     /// Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue.
     void update(Polaroid const& polaroid) { _gui->update(polaroid, _video_export_process); }
 
+    /// Can only be called if `is_exporting()` is true.
+    auto clock() const -> Clock const&;
+
 private:
     std::unique_ptr<ExporterGui>      _gui{std::make_unique<ExporterGui>()}; // Pointer so that the address doesn't change when we move the Exporter (important because we have events that store references to things in the gui)
     std::optional<VideoExportProcess> _video_export_process;
