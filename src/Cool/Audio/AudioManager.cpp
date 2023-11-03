@@ -13,8 +13,6 @@
 
 namespace Cool {
 
-// TODO(Audio) The audio from file is ignored when exporting a video
-
 AudioManager::AudioManager()
 {
     current_input().start();
@@ -116,11 +114,14 @@ auto AudioManager::nb_frames_for_characteristics_computation(float window_length
 
 // TODO(Audio) Option to select how many bins we do (this is much more optimal to do binning on the cpu). This option should ideally be on each spectrum node, so that one can use the full spectrum while another is using only 8 bins.
 
-void AudioManager::sync_with_clock(Cool::Clock const& clock)
+void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_time)
 {
-    if (std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f) // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
-        RtAudioW::player().set_time(clock.time());                     // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
-
+    if (force_sync_time
+        || std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
+    )
+    {
+        RtAudioW::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+    }
     if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
         RtAudioW::player().play();
     else

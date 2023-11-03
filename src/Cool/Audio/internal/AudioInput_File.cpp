@@ -26,6 +26,7 @@ auto AudioInput_File::is_playing() const -> bool
 void AudioInput_File::update()
 {
     RtAudioW::player().properties() = _properties;
+    RtAudioW::player().properties().is_muted |= _force_mute;
 }
 
 void AudioInput_File::start()

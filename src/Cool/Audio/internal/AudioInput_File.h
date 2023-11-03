@@ -17,6 +17,8 @@ public:
     void               imgui(bool needs_to_highlight_error) override;
     [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
+    void set_force_mute(bool mute) { _force_mute = mute; }
+
 private:
     void try_load_current_file();
 
@@ -24,6 +26,8 @@ private:
     std::filesystem::path      _path{};
     RtAudioW::PlayerProperties _properties{};
     MessageId                  _error_id{};
+
+    bool _force_mute{false};
 
 private:
     // Serialization

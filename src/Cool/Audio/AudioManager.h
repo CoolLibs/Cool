@@ -42,7 +42,7 @@ public:
     ///
     [[nodiscard]] auto volume() const -> float;
 
-    void sync_with_clock(Cool::Clock const&);
+    void sync_with_clock(Cool::Clock const&, bool force_sync_time = false);
     /// Must be called every frame. Will do some internal bookkeeping, and call `on_audio_data_changed` iff the audio data has changed (e.g. music player is playing, or a microphone is beeing used).
     void update(std::function<void()> const& on_audio_data_changed);
 
@@ -50,6 +50,8 @@ public:
 
     void open_imgui_window() { _window.open(); }
     void imgui_window();
+
+    void set_force_mute(bool mute) { _file_input.set_force_mute(mute); }
 
 private:
     void open_current_input_mode();
