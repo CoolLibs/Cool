@@ -5,17 +5,9 @@
 
 namespace Cool::internal {
 
-std::vector<float> input{};
-
 static auto input_stream() -> RtAudioW::InputStream&
 {
     static RtAudioW::InputStream instance{
-        [&](std::span<float const> buffer) {
-            input.assign(buffer.begin(), buffer.end());
-            // input.resize(buffer.size());
-            // for(size_t i = 0; i < buffer.size(); ++i)
-            // input[i] = buffer[i] * input_volume;
-        },
         [](RtAudioErrorType type, std::string const& error_message) {
             // RtAudioErrorType::
             // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id
@@ -26,15 +18,9 @@ static auto input_stream() -> RtAudioW::InputStream&
 
 void AudioInput_Device::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
 {
-    // TODO(Audio) store a long enough buffer, and the audio in callback appends to the end of that buffer, and deletes the beginning once the buffer is long enough
-
-    for (int64_t i = 0; i < frames_count; ++i)
-    {
-        if (i < _audio_data.size())
-            callback(_audio_data[i]);
-        else
-            callback(0.f);
-    }
+    input_stream().for_each_sample(frames_count, [&](float const sample) { // We know that an input stream has only 1 channel, so 1 sample == 1 frame, no need to average across all the channels.
+        callback(sample * _volume);
+    });
 }
 
 auto AudioInput_Device::sample_rate() const -> float
@@ -55,9 +41,6 @@ auto AudioInput_Device::has_device() const -> bool
 void AudioInput_Device::update()
 {
     // TODO(Audio)
-    _audio_data = input;
-    for (float& x : _audio_data)
-        x *= _volume;
 }
 
 void AudioInput_Device::start()

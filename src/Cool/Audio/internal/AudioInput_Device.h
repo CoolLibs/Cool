@@ -21,10 +21,9 @@ private:
     [[nodiscard]] auto has_device() const -> bool;
 
 private:
-    std::vector<float> _audio_data{};
-    float              _volume{30.f};
-    unsigned int       _input_device_id{}; // TODO(Audio) Use this
-    MessageId          _error_id{};        // TODO(Audio) error when the device is unavailable
+    float        _volume{30.f};
+    unsigned int _input_device_id{}; // TODO(Audio) Use this
+    MessageId    _error_id{};        // TODO(Audio) error when the device is unavailable
 
 private:
     // Serialization
