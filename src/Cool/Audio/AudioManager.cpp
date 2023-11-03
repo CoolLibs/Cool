@@ -35,7 +35,7 @@ auto AudioManager::volume() const -> float
 {
     return _current_volume.get_value([&]() {
         auto frames = std::vector<float>{};
-        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(_window_length_in_seconds_for_volume), [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
+        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(_window_size_in_seconds_for_volume), [&](float frame) {
             frames.push_back(frame);
         });
         return Cool::compute_volume(frames);
@@ -45,7 +45,7 @@ auto AudioManager::volume() const -> float
 auto AudioManager::waveform() const -> std::vector<float> const&
 {
     return _current_waveform.get_value([&]() {
-        auto const N        = nb_frames_for_characteristics_computation(_window_length_in_seconds_for_waveform);
+        auto const N        = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_waveform);
         auto       waveform = std::vector<float>{};
         current_input().for_each_audio_frame(N, [&](float sample) {
             waveform.push_back(sample);
@@ -79,11 +79,11 @@ static void zero_pad(std::vector<std::complex<float>>& data)
 auto AudioManager::spectrum() const -> std::vector<float> const&
 {
     return _current_spectrum.get_value([&]() {
-        auto const N      = nb_frames_for_characteristics_computation(_window_length_in_seconds_for_spectrum);
+        auto const N      = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum);
         auto       myData = std::vector<std::complex<float>>{};
         myData.reserve(next_power_of_two(N));
         int i = 0;
-        current_input().for_each_audio_frame(N, [&](float frame) { // TODO(Audio) Use _current_waveform instead of calling for_each_audio_frame again
+        current_input().for_each_audio_frame(N, [&](float frame) {
             float t = i / (float)(N - 1);
             i++;
             float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
@@ -105,10 +105,10 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
     });
 }
 
-auto AudioManager::nb_frames_for_characteristics_computation(float window_length_in_seconds) const -> int64_t
+auto AudioManager::nb_frames_for_characteristics_computation(float window_size_in_seconds) const -> int64_t
 {
     return static_cast<int64_t>(
-        current_input().sample_rate() * window_length_in_seconds
+        current_input().sample_rate() * window_size_in_seconds
     );
 }
 
@@ -146,10 +146,10 @@ void AudioManager::update(std::function<void()> const& on_audio_data_changed)
     _device_input.set_nb_of_retained_samples(
         std::max(
             std::max(
-                nb_frames_for_characteristics_computation(_window_length_in_seconds_for_waveform),
-                nb_frames_for_characteristics_computation(_window_length_in_seconds_for_spectrum)
+                nb_frames_for_characteristics_computation(_window_size_in_seconds_for_waveform),
+                nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum)
             ),
-            nb_frames_for_characteristics_computation(_window_length_in_seconds_for_volume)
+            nb_frames_for_characteristics_computation(_window_size_in_seconds_for_volume)
         )
     );
 }
@@ -209,7 +209,7 @@ void AudioManager::imgui_window()
         ImGui::NewLine();
         ImGui::SeparatorText("Volume");
         ImGui::ProgressBar(volume(), {0.f, 0.f});
-        ImGui::SliderFloat("Window length##Volume", &_window_length_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
+        ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Waveform");
@@ -221,7 +221,7 @@ void AudioManager::imgui_window()
             -1.f, 1.f, // Values are between -1 and 1
             {0.f, 100.f}
         );
-        ImGui::SliderFloat("Window length##Waveform", &_window_length_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
+        ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
@@ -233,7 +233,7 @@ void AudioManager::imgui_window()
             0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}
         );
-        ImGui::SliderFloat("Window length##Spectrum", &_window_length_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
+        ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
         ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
         ImGui::DragFloat("Max amplitude displayed", &_spectrum_max_amplitude); // TODO(Audio) This slides way to fast, and can go below 0
     });

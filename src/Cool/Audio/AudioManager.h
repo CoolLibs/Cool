@@ -77,9 +77,9 @@ private:
     mutable Cached<std::vector<float>> _current_spectrum{};
     mutable Cached<float>              _current_volume{};
 
-    float _window_length_in_seconds_for_waveform{0.05f}; // TODO(Audio) Do we expose this ? If yes, then serialize it
-    float _window_length_in_seconds_for_spectrum{0.1f};  // TODO(Audio) Do we expose this ? If yes, then serialize it
-    float _window_length_in_seconds_for_volume{0.2f};    // TODO(Audio) Do we expose this ? If yes, then serialize it
+    float _window_size_in_seconds_for_waveform{0.05f};
+    float _window_size_in_seconds_for_spectrum{0.1f};
+    float _window_size_in_seconds_for_volume{0.2f};
 
     ImGuiWindow _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 
@@ -92,7 +92,10 @@ private:
         archive(
             cereal::make_nvp("File input", _file_input),
             cereal::make_nvp("Device input", _device_input),
-            cereal::make_nvp("Current input mode", _current_input_mode)
+            cereal::make_nvp("Current input mode", _current_input_mode),
+            cereal::make_nvp("Window size for waveform", _window_size_in_seconds_for_waveform),
+            cereal::make_nvp("Window size for spectrum", _window_size_in_seconds_for_spectrum),
+            cereal::make_nvp("Window size for volume", _window_size_in_seconds_for_volume)
         );
     }
     template<class Archive>
