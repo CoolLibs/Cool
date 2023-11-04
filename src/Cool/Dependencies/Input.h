@@ -76,7 +76,7 @@ struct Input_Camera2D {
 };
 struct Input_Time {
 };
-struct Input_AudioVolume {
+struct Input_Audio {
 };
 
 #include <Cool/Variables/generated/AnyInput.inl>

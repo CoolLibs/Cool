@@ -66,9 +66,9 @@ public:
         return _time;
     }
 
-    auto operator()(const Input_AudioVolume&) const -> float
+    auto operator()(const Input_Audio&) const -> AudioManager const&
     {
-        return _audio_manager.get().volume();
+        return _audio_manager;
     }
 
     auto operator()(const Input_Camera2D&) const -> glm::mat3
