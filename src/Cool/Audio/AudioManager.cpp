@@ -137,11 +137,11 @@ void AudioManager::invalidate_caches()
 
 void AudioManager::update(std::function<void()> const& on_audio_data_changed)
 {
-    if (current_input().is_playing() || _audio_data_has_changed)
+    if (current_input().is_playing() || _audio_settings_have_changed)
     {
         invalidate_caches();
         on_audio_data_changed();
-        _audio_data_has_changed = false;
+        _audio_settings_have_changed = false;
     }
     current_input().update();
     _device_input.set_nb_of_retained_samples(
@@ -160,9 +160,9 @@ static auto to_string(AudioInputMode mode) -> const char*
     switch (mode)
     {
     case AudioInputMode::File:
-        return "File (.mp3, etc.)";
+        return "File";
     case AudioInputMode::Device:
-        return "Device (Microphone, etc.)";
+        return "Device";
     }
     return "";
 }
@@ -175,7 +175,7 @@ void AudioManager::set_current_input_mode(AudioInputMode mode)
     _current_input_mode = mode;
     current_input().start();
     invalidate_caches();
-    _audio_data_has_changed = true;
+    _audio_settings_have_changed = true;
 }
 
 void AudioManager::imgui_window()
@@ -204,12 +204,12 @@ void AudioManager::imgui_window()
             ImGui::EndCombo();
         }
 
-        _audio_data_has_changed |= current_input().imgui(needs_to_highlight_error);
+        _audio_settings_have_changed |= current_input().imgui(needs_to_highlight_error);
 
         ImGui::NewLine();
         ImGui::SeparatorText("Volume");
         ImGui::ProgressBar(volume(), {0.f, 0.f});
-        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
+        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Waveform");
@@ -221,7 +221,7 @@ void AudioManager::imgui_window()
             -1.f, 1.f, // Values are between -1 and 1
             {0.f, 100.f}
         );
-        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
+        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
@@ -233,8 +233,8 @@ void AudioManager::imgui_window()
             0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}
         );
-        _audio_data_has_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
-        _audio_data_has_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
+        _audio_settings_have_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
         ImGui::DragFloat("Max amplitude displayed", &_spectrum_max_amplitude); // TODO(Audio) This slides way to fast, and can go below 0
     });
 }
