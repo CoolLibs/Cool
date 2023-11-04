@@ -93,14 +93,14 @@ void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::Textur
 void Texture::set_interpolation_mode(glpp::Interpolation interpolation_mode)
 {
     bind();
-    glpp::set_minification_filter<glpp::TextureKind::Tex2D>(*_tex, interpolation_mode);
-    glpp::set_magnification_filter<glpp::TextureKind::Tex2D>(*_tex, interpolation_mode);
+    glpp::set_minification_filter<glpp::TextureKind::Tex2D>(_tex.id(), interpolation_mode);
+    glpp::set_magnification_filter<glpp::TextureKind::Tex2D>(_tex.id(), interpolation_mode);
 }
 
 void Texture::set_wrap_mode(glpp::Wrap wrap_mode)
 {
     bind();
-    glpp::set_wrap<glpp::TextureKind::Tex2D>(*_tex, wrap_mode);
+    glpp::set_wrap<glpp::TextureKind::Tex2D>(_tex.id(), wrap_mode);
 }
 
 void Texture::bind()

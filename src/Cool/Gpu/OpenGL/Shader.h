@@ -54,6 +54,7 @@ public:
     void set_uniform(std::string_view uniform_name, TextureDescriptor const&) const;
     void set_uniform(std::string_view uniform_name, Texture const&, TextureSamplerDescriptor const& = {}) const;
     void set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& = {}) const;
+    void set_uniform_texture1D(std::string_view uniform_name, GLuint texture_id) const;
     void set_uniform(std::string_view uniform_name, MidiChannel const&) const;
 
 private:

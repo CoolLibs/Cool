@@ -1,7 +1,7 @@
 #include "AudioManager.h"
 #include <Audio/lib/libnyquist/third_party/rtaudio/RtAudio.h>
-#include <glpp/Enums/Interpolation.h>
-#include <glpp/Enums/Wrap.h>
+#include <glpp-extended/src/TextureLayout.h>
+#include <glpp/glpp.h>
 #include <imgui.h>
 #include <Audio/lib/RtAudioWrapper/src/InputStream.hpp>
 #include <Audio/lib/RtAudioWrapper/src/Player.hpp>
@@ -9,15 +9,13 @@
 #include <exception>
 #include "Audio/Audio.hpp"
 #include "Cool/Audio/AudioManager.h"
-#include "Cool/Gpu/OpenGL/Texture.h"
-#include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/Message.h"
 #include "Cool/Log/MessageConsole.h"
 
 namespace Cool {
 
-// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an opengl texture (might be fixed when we use only 1 color channel per pixel instead of 3)
+// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an opengl texture
 
 AudioManager::AudioManager()
 {
@@ -111,39 +109,34 @@ auto AudioManager::spectrum() const -> std::vector<float> const&
     });
 }
 
-auto AudioManager::waveform_texture() const -> Texture const&
+static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data)
 {
-    return _current_waveform_texture.get_value([&](Texture& tex) {
-        // TODO(Audio) Use a 1D, float32 texture with only 1 color channel
-        std::vector<uint8_t> data;
-        for (float const sample : waveform())
-        {
-            auto const val = static_cast<uint8_t>(std::clamp((sample * 0.5f + 0.5f) * 255.f, 0.f, 255.f));
-            data.push_back(val);
-            data.push_back(val);
-            data.push_back(val);
+    tex.upload_data(
+        static_cast<GLsizei>(data.size()), data.data(),
+        glpp::TextureLayout{
+            .internal_format = glpp::InternalFormat::R16F,
+            .channels        = glpp::Channels::R,
+            .texel_data_type = glpp::TexelDataType::Float,
         }
-        tex.set_image(img::Size{static_cast<unsigned int>(waveform().size()), 1}, 3, data.data());
-        tex.set_interpolation_mode(glpp::Interpolation::Linear);
-        tex.set_wrap_mode(glpp::Wrap::ClampToBorder);
+    );
+    glpp::set_wrap<glpp::TextureKind::Tex1D>(tex.id(), glpp::Wrap::ClampToBorder);
+    glpp::set_magnification_filter<glpp::TextureKind::Tex1D>(tex.id(), glpp::Interpolation::Linear);
+    glpp::set_minification_filter<glpp::TextureKind::Tex1D>(tex.id(), glpp::Interpolation::NearestNeighbour);
+    GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
+    GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
+}
+
+auto AudioManager::waveform_texture() const -> glpp::Texture1D const&
+{
+    return _current_waveform_texture.get_value([&](glpp::Texture1D& tex) {
+        set_texture_data(tex, waveform());
     });
 }
 
-auto AudioManager::spectrum_texture() const -> Texture const&
+auto AudioManager::spectrum_texture() const -> glpp::Texture1D const&
 {
-    return _current_spectrum_texture.get_value([&](Texture& tex) {
-        // TODO(Audio) Use a 1D, float32 texture with only 1 color channel
-        std::vector<uint8_t> data;
-        for (float const sample : spectrum())
-        {
-            auto const val = static_cast<uint8_t>(std::clamp(sample * 255.f / _spectrum_max_amplitude, 0.f, 255.f));
-            data.push_back(val);
-            data.push_back(val);
-            data.push_back(val);
-        }
-        tex.set_image(img::Size{static_cast<unsigned int>(spectrum().size()), 1}, 3, data.data());
-        tex.set_interpolation_mode(glpp::Interpolation::Linear);
-        tex.set_wrap_mode(glpp::Wrap::ClampToBorder);
+    return _current_spectrum_texture.get_value([&](glpp::Texture1D& tex) {
+        set_texture_data(tex, spectrum());
     });
 }
 
