@@ -1,7 +1,6 @@
 #include "AudioManager.h"
 #include <Audio/lib/libnyquist/third_party/rtaudio/RtAudio.h>
 #include <glpp-extended/src/TextureLayout.h>
-#include <glpp/glpp.h>
 #include <imgui.h>
 #include <Audio/lib/RtAudioWrapper/src/InputStream.hpp>
 #include <Audio/lib/RtAudioWrapper/src/Player.hpp>
@@ -119,9 +118,9 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
             .texel_data_type = glpp::TexelDataType::Float,
         }
     );
-    glpp::set_wrap<glpp::TextureKind::Tex1D>(tex.id(), glpp::Wrap::ClampToBorder);
-    glpp::set_magnification_filter<glpp::TextureKind::Tex1D>(tex.id(), glpp::Interpolation::Linear);
-    glpp::set_minification_filter<glpp::TextureKind::Tex1D>(tex.id(), glpp::Interpolation::NearestNeighbour);
+    tex.set_wrap(glpp::Wrap::ClampToBorder);
+    tex.set_magnification_filter(glpp::Interpolation::Linear);
+    tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
     GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
 }
