@@ -4,8 +4,8 @@
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
+#include "Audio/Audio.hpp"
 #include "Cool/ImGui/StyleEditor.h"
-#include "RtAudioWrapper/RtAudioWrapper.hpp"
 #include "hide_console_in_release.h"
 
 #if defined(COOL_VULKAN)
@@ -75,7 +75,7 @@ void run(RunConfig const& config)
         Icons::close_button();
 
         // Init error callbacks
-        RtAudioW::set_error_callback([](RtAudioErrorType type, std::string const& error_message) {
+        Audio::set_error_callback([](RtAudioErrorType type, std::string const& error_message) {
             // RtAudioErrorType::
             // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id
             Cool::Log::ToUser::warning("Audio", error_message);

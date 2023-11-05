@@ -1,13 +1,13 @@
 #include "AudioInput_Device.h"
 #include <Cool/ImGui/IcoMoonCodepoints.h>
+#include "Audio/Audio.hpp"
 #include "Cool/Log/ToUser.h"
-#include "RtAudioWrapper/RtAudioWrapper.hpp"
 
 namespace Cool::internal {
 
-static auto input_stream() -> RtAudioW::InputStream&
+static auto input_stream() -> Audio::InputStream&
 {
-    static RtAudioW::InputStream instance{
+    static Audio::InputStream instance{
         [](RtAudioErrorType type, std::string const& error_message) {
             // RtAudioErrorType::
             // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id

@@ -1,9 +1,6 @@
 #include "AudioManager.h"
-#include <Audio/lib/libnyquist/third_party/rtaudio/RtAudio.h>
 #include <glpp-extended/src/TextureLayout.h>
 #include <imgui.h>
-#include <Audio/lib/RtAudioWrapper/src/InputStream.hpp>
-#include <Audio/lib/RtAudioWrapper/src/Player.hpp>
 #include <complex>
 #include <exception>
 #include "Audio/Audio.hpp"
@@ -46,7 +43,7 @@ auto AudioManager::volume() const -> float
         current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(_window_size_in_seconds_for_volume), [&](float frame) {
             frames.push_back(frame);
         });
-        return Cool::compute_volume(frames);
+        return Audio::compute_volume(frames);
     });
 }
 
@@ -65,57 +62,27 @@ auto AudioManager::waveform() const -> std::vector<float> const&
     });
 }
 
-template<std::integral T>
-static auto next_power_of_two(T n) -> T
-{
-    if (n != 0 && !(n & (n - 1)))
-        return n; // n is already a power of 2
-
-    T power = 1;
-    while (power < n)
-    {
-        power <<= 1;
-    }
-
-    return power;
-}
-
-/// Since the FFT requires a size that is a power of two, we add 0s at the end of the data.
-/// https://mechanicalvibration.com/Zero_Padding_FFTs.html
-static void zero_pad(std::vector<std::complex<float>>& data)
-{
-    data.resize(next_power_of_two(data.size()));
-}
-
-auto AudioManager::spectrum() const -> std::vector<float> const&
+auto AudioManager::spectrum() const -> Audio::Spectrum const&
 {
     return _current_spectrum.get_value([&]() {
         if (Cool::DebugOptions::log_when_computing_audio_features())
             Cool::Log::ToUser::info("Audio", "Computing spectrum");
 
-        auto const N      = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum);
-        auto       myData = std::vector<std::complex<float>>{};
-        myData.reserve(next_power_of_two(N));
-        int i = 0;
-        current_input().for_each_audio_frame(N, [&](float frame) {
-            float t = i / (float)(N - 1);
-            i++;
-            float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
-            myData.emplace_back(frame * window);
-        });
-        zero_pad(myData); // Make sure the size of myData is a power of 2.
-        auto const fftData = dj::fft1d(myData, dj::fft_dir::DIR_FWD);
-        auto       data    = std::vector<float>{};
-        std::transform(fftData.begin(), fftData.end(), std::back_inserter(data), [](auto const x) {
-            return std::abs(x);
-        });
-        data.resize(std::min(
-            data.size() / 2, // The second half is a mirror of the first half, so we don't need it.
-            static_cast<size_t>(
-                _spectrum_max_frequency_in_hz / (static_cast<float>(current_input().sample_rate()) / static_cast<float>(data.size())) // The values in the `data` correspond to frequencies from 0 to sample_rate, evenly spaced.
-            )
-        ));
-        return data;
+        auto const N = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum);
+        return Audio::fourier_transform(
+            N,
+            [&](std::function<void(float)> const& callback) {
+                int i = 0;
+                current_input().for_each_audio_frame(N, [&](float frame) {
+                    float const t = static_cast<float>(i) / static_cast<float>(N - 1);
+                    i++;
+                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+                    callback(frame * window);
+                });
+            },
+            static_cast<float>(current_input().sample_rate()),
+            _spectrum_max_frequency_in_hz
+        );
     });
 }
 
@@ -146,7 +113,7 @@ auto AudioManager::waveform_texture() const -> glpp::Texture1D const&
 auto AudioManager::spectrum_texture() const -> glpp::Texture1D const&
 {
     return _current_spectrum_texture.get_value([&](glpp::Texture1D& tex) {
-        set_texture_data(tex, spectrum());
+        set_texture_data(tex, spectrum().data);
     });
 }
 
@@ -162,15 +129,15 @@ auto AudioManager::nb_frames_for_characteristics_computation(float window_size_i
 void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_time)
 {
     if (force_sync_time
-        || std::abs(clock.time() - RtAudioW::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
+        || std::abs(clock.time() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
     )
     {
-        RtAudioW::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+        Audio::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
     }
     if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
-        RtAudioW::player().play();
+        Audio::player().play();
     else
-        RtAudioW::player().pause();
+        Audio::player().pause();
 }
 
 void AudioManager::invalidate_caches()
@@ -274,8 +241,8 @@ void AudioManager::imgui_window()
         ImGui::SeparatorText("Spectrum");
         ImGui::PlotLines(
             "##Spectrum",
-            spectrum().data(),
-            static_cast<int>(spectrum().size()),
+            spectrum().data.data(),
+            static_cast<int>(spectrum().data.size()),
             0, nullptr,
             0.f, _spectrum_max_amplitude, // Values are between 0 and 1 // TODO(Audio) No they are not, cf code geass
             {0.f, 100.f}

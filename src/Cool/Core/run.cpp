@@ -7,12 +7,12 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include "Audio/Audio.hpp"
 #include "Cool/File/File.h"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Path/Path.h"
 #include "Cool/View/ViewsManager.h"
-#include "RtAudioWrapper/RtAudioWrapper.hpp"
 
 namespace Cool::internal {
 
@@ -25,7 +25,7 @@ void shut_down()
     TextureLibrary_FromFile::instance().clear();
     TextureSamplerLibrary::instance().clear();
     FullscreenPipeline::shut_down();
-    RtAudioW::shut_down();
+    Audio::shut_down();
 }
 
 auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>

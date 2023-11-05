@@ -10,23 +10,23 @@ namespace Cool::internal {
 void AudioInput_File::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
 {
     for (int i = 0; i < frames_count; ++i)
-        callback(RtAudioW::player().sample_unaltered_volume(i - frames_count / 2 + RtAudioW::player().current_frame_index()));
+        callback(Audio::player().sample_unaltered_volume(i - frames_count / 2 + Audio::player().current_frame_index()));
 }
 
 auto AudioInput_File::sample_rate() const -> float
 {
-    return static_cast<float>(RtAudioW::player().audio_data().sample_rate);
+    return static_cast<float>(Audio::player().audio_data().sample_rate);
 }
 
 auto AudioInput_File::is_playing() const -> bool
 {
-    return RtAudioW::player().is_playing();
+    return Audio::player().is_playing();
 }
 
 void AudioInput_File::update()
 {
-    RtAudioW::player().properties() = _properties;
-    RtAudioW::player().properties().is_muted |= _force_mute;
+    Audio::player().properties() = _properties;
+    Audio::player().properties().is_muted |= _force_mute;
 }
 
 void AudioInput_File::start()
@@ -36,7 +36,7 @@ void AudioInput_File::start()
 
 void AudioInput_File::stop()
 {
-    RtAudioW::player().reset_audio_data(); // Stop the playing of the audio // TODO(Audio) instead, keep the file in memory but don't play it, so that it is faster to switch between input mode and we don't have to reload it over and over again
+    Audio::player().reset_audio_data(); // Stop the playing of the audio // TODO(Audio) instead, keep the file in memory but don't play it, so that it is faster to switch between input mode and we don't have to reload it over and over again
 }
 
 auto AudioInput_File::does_need_to_highlight_error() const -> bool
@@ -44,7 +44,7 @@ auto AudioInput_File::does_need_to_highlight_error() const -> bool
     return Cool::Log::ToUser::console().should_highlight(_error_id);
 }
 
-static auto imgui_widgets(RtAudioW::PlayerProperties& props) -> bool
+static auto imgui_widgets(Audio::PlayerProperties& props) -> bool
 {
     bool b = false; // b is not affected when we change properties related to the volume, because we ignore these properties when computing the characteristics like volume, fft etc.
     b |= ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
@@ -87,13 +87,13 @@ void AudioInput_File::try_load_current_file()
     if (_path.empty())
     {
         Cool::Log::ToUser::console().remove(_error_id);
-        RtAudioW::player().reset_audio_data();
+        Audio::player().reset_audio_data();
         return;
     }
 
     try
     {
-        load_audio_file(RtAudioW::player(), _path);
+        load_audio_file(Audio::player(), _path);
         Cool::Log::ToUser::console().remove(_error_id);
     }
     catch (std::exception& e)
@@ -106,7 +106,7 @@ void AudioInput_File::try_load_current_file()
                 .severity = MessageSeverity::Error,
             }
         );
-        RtAudioW::player().reset_audio_data();
+        Audio::player().reset_audio_data();
     }
 }
 

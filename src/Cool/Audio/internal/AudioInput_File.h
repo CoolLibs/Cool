@@ -1,6 +1,6 @@
 #pragma once
+#include "Audio/Audio.hpp"
 #include "IAudioInput.h"
-#include "RtAudioWrapper/RtAudioWrapper.hpp"
 
 namespace Cool::internal {
 
@@ -23,9 +23,9 @@ private:
     void try_load_current_file();
 
 private:
-    std::filesystem::path      _path{};
-    RtAudioW::PlayerProperties _properties{};
-    MessageId                  _error_id{};
+    std::filesystem::path   _path{};
+    Audio::PlayerProperties _properties{};
+    MessageId               _error_id{};
 
     bool _force_mute{false};
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/ImGui/IcoMoonCodepoints.h>
-#include <Audio/lib/RtAudioWrapper/src/InputStream.hpp>
+#include <Audio/Audio.hpp>
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/MessageId.h"
@@ -14,7 +14,7 @@
 namespace cereal {
 
 template<class Archive>
-void serialize(Archive& archive, RtAudioW::PlayerProperties& properties)
+void serialize(Archive& archive, Audio::PlayerProperties& properties)
 {
     archive(
         cereal::make_nvp("Volume", properties.volume),
@@ -41,7 +41,7 @@ public:
     /// Returns a 1D texture with all the waveform going from UV 0 to UV 1. Contains values between -1 and 1.
     [[nodiscard]] auto waveform_texture() const -> glpp::Texture1D const&;
     /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
-    [[nodiscard]] auto spectrum() const -> std::vector<float> const&;
+    [[nodiscard]] auto spectrum() const -> Audio::Spectrum const&;
     /// Returns a 1D texture with all the spectrum going from UV 0 to UV 1. Contains values between 0 and +infinity.
     [[nodiscard]] auto spectrum_texture() const -> glpp::Texture1D const&;
     ///
@@ -80,7 +80,7 @@ private:
     int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
     mutable Cached<std::vector<float>> _current_waveform{};
-    mutable Cached<std::vector<float>> _current_spectrum{};
+    mutable Cached<Audio::Spectrum>    _current_spectrum{};
     mutable Cached<float>              _current_volume{};
     mutable Cached<glpp::Texture1D>    _current_waveform_texture{};
     mutable Cached<glpp::Texture1D>    _current_spectrum_texture{};
