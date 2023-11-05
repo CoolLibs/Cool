@@ -424,28 +424,32 @@ auto find_block_following(
 
 auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters) -> bool
 {
+    return find_word(word, text, 0, delimiters) != std::string_view::npos;
+}
+
+auto find_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters) -> size_t
+{
     if (word.empty())
-    {
-        return false;
-    }
+        return std::string_view::npos;
 
-    const auto index = text.find(word);
+    auto const index = text.find(word, offset);
     if (index == std::string_view::npos)
-    {
-        return false;
-    }
+        return std::string_view::npos;
 
-    const auto there_is_a_delimiter_at = [&](size_t index) -> bool {
-        return delimiters.find(text[index]) != delimiters.npos;
+    auto const there_is_a_delimiter_at = [&](size_t index) -> bool {
+        return delimiters.find(text[index]) != std::string_view::npos;
     };
 
-    const bool is_beginning_of_a_word = index == 0
+    bool const is_beginning_of_a_word = index == 0
                                         || there_is_a_delimiter_at(index - 1);
 
-    const bool is_end_of_a_word = index + word.size() == text.size()
+    bool const is_end_of_a_word = index + word.size() == text.size()
                                   || there_is_a_delimiter_at(index + word.size());
 
-    return is_beginning_of_a_word && is_end_of_a_word;
+    if (!is_beginning_of_a_word || !is_end_of_a_word)
+        return std::string_view::npos;
+
+    return index;
 }
 
 enum class CommentParsingState {
