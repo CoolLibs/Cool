@@ -15,6 +15,8 @@ namespace Cool {
 
 // TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an opengl texture
 
+// TODO(Audio) Average the spectrum across several frames, to make it look smoother.
+
 AudioManager::AudioManager()
 {
     current_input().start();
@@ -97,6 +99,7 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
         }
     );
     tex.set_wrap(glpp::Wrap::ClampToBorder);
+    // tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);// TODO(Audio) Option to switch between bars and connected lines
     tex.set_magnification_filter(glpp::Interpolation::Linear);
     tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
@@ -239,6 +242,7 @@ void AudioManager::imgui_window()
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
+        // ImGui::PlotHistogram( // TODO(Audio) Option to switch between bars and connected lines
         ImGui::PlotLines(
             "##Spectrum",
             spectrum().data.data(),
