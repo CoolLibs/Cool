@@ -34,7 +34,8 @@ public:
         std::filesystem::path const& path, std::filesystem::path const& root,
         std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
     ) override;
-    void remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) override;
+    void               remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) override;
+    [[nodiscard]] auto library_is_empty() const -> bool override;
 
 private:
     void handle_error(std::filesystem::path const& definition_path, std::string const& message);

@@ -131,4 +131,9 @@ void NodesLibrary::remove_definition(NodeDefinitionIdentifier const& identifier)
     }
 }
 
+auto NodesLibrary::is_empty() const -> bool
+{
+    return _categories.empty();
+}
+
 } // namespace Cool

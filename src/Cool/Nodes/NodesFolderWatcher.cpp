@@ -1,6 +1,7 @@
 #include "NodesFolderWatcher.h"
 #include <utility>
 #include "Cool/Log/ToUser.h"
+#include "Cool/UserSettings/UserSettings.h"
 
 namespace Cool {
 
@@ -14,6 +15,13 @@ auto NodesFolderWatcher::update(
     std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
 ) -> bool
 {
+    // If not in nodes dev mode, we disable hot reloading. We only update the folder watcher once, when the library is empty, to fill it.
+    if (!Cool::user_settings().nodes_developer_mode
+        && !updater.library_is_empty())
+    {
+        return false;
+    }
+
     bool       has_changed                      = false;
     auto const clear_errors_and_check_extension = [&](std::filesystem::path const& path) {
         Cool::Log::ToUser::console().remove(_error_message_id);

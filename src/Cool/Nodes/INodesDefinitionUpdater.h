@@ -15,8 +15,9 @@ public:
     virtual void add_definition(
         std::filesystem::path const& path, std::filesystem::path const& root,
         std::function<NodesCategoryConfig(std::filesystem::path const&)> const& make_category_config
-    )                                                                                                    = 0;
-    virtual void remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) = 0;
+    )                                                                                                                  = 0;
+    virtual void               remove_definition(std::filesystem::path const& path, std::filesystem::path const& root) = 0;
+    [[nodiscard]] virtual auto library_is_empty() const -> bool                                                        = 0;
 };
 
 }; // namespace Cool

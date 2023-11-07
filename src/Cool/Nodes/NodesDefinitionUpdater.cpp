@@ -77,6 +77,11 @@ void NodesDefinitionUpdater::remove_definition(std::filesystem::path const& path
     });
 }
 
+auto NodesDefinitionUpdater::library_is_empty() const -> bool
+{
+    return _library.is_empty();
+}
+
 void NodesDefinitionUpdater::handle_error(std::filesystem::path const& definition_path, std::string const& message)
 {
     Cool::Log::ToUser::console().send(
