@@ -10,4 +10,4 @@
 
 ## Alpha spaces, tips ans tricks
 
-- When premultiplying / unpremultiplying, weird colors can arise if your alpha is not between 0 and 1. Always clamp it. In Cool this is done automatically when calling the recommended functions `premultiply(vec3 color, float alpha) -> vec3` and `unpremultiply(vec3 color, float alpha) -> vec3` that are in *Cool/res/shaders/color_conversions.glsl*.
+- When premultiplying / unpremultiplying, weird colors can arise if your alpha is not between 0 and 1. Always clamp it. In Cool this is done automatically when calling the recommended functions `Cool_premultiply_color(vec3 color, float alpha) -> vec3` and `Cool_unpremultiply_color(vec3 color, float alpha) -> vec3` that are in *Cool/res/shaders/color_conversions.glsl*, or the greyscale alternatives: `Cool_premultiply_greyscale(float greyscale, float alpha) -> float` and `Cool_unpremultiply_greyscale(float greyscale, float alpha) -> float`, or `Cool_apply_premultiplied_alpha_to_color_and_alpha` etc..

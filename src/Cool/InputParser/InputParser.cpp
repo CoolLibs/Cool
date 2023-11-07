@@ -211,10 +211,10 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
                                      ? "mix(col1, col2, mix_factor)"
                                      : R"STR(
         vec4(
-            premultiply(
+            Cool_premultiply_color(
                 Cool_Oklab_from_sRGB(mixbox_lerp(
-                    Cool_sRGB_from_Oklab(unpremultiply(col1.rgb, col1.a)),
-                    Cool_sRGB_from_Oklab(unpremultiply(col2.rgb, col2.a)),
+                    Cool_sRGB_from_Oklab(Cool_unpremultiply_color(col1.rgb, col1.a)),
+                    Cool_sRGB_from_Oklab(Cool_unpremultiply_color(col2.rgb, col2.a)),
                     mix_factor
                 )),
                 mix(col1.a, col2.a, mix_factor)
