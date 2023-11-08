@@ -40,8 +40,9 @@ class VariableDescription:
     include: str = ""  # File containing the C++ type
     metadatas: list[VariableMetadata] = field(default_factory=lambda: [])
     do_generate_get_default_metadata: bool = True
-    # For example a Gradient variable can't be sent as a simple uniform to a shader; that's why we generate some to inject it into the shader.
-    requires_shader_code_generation: bool = False
+    # For example a MathExpression can't be sent as a simple uniform to a shader; that's why we generate some code to inject it into the shader.
+    # For more complex cases like Gradient which only sometimes requires code generation, set this to False and hardcode something as the `use_secondary_dirty_flag` when calling set_dirty() (e.g., if you are developing Coollab, in `set_value_default_impl()` of Command_SetVariable.h)
+    always_requires_shader_code_generation: bool = False
 
 
 def angle_metadatas():
@@ -101,7 +102,7 @@ def all_variable_descriptions():
             cpp_type="bool",
             glsl_type="bool",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["int"],
@@ -122,14 +123,14 @@ def all_variable_descriptions():
                     """,
                 ),
             ],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["float"],
             cpp_type="float",
             glsl_type="float",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["UV", "Point2D"],
@@ -144,7 +145,7 @@ def all_variable_descriptions():
                     default_value="0.0001f",
                 ),
             ],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["vec2"],
@@ -152,7 +153,7 @@ def all_variable_descriptions():
             glsl_type="vec2",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["vec3"],
@@ -160,7 +161,7 @@ def all_variable_descriptions():
             glsl_type="vec3",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["vec4"],
@@ -168,7 +169,7 @@ def all_variable_descriptions():
             glsl_type="vec4",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=list(
@@ -181,7 +182,7 @@ def all_variable_descriptions():
                 hdr_metadata(),
             ],
             do_generate_get_default_metadata=False,
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=list(generator_colors.color_and_alpha_spaces_names()),
@@ -192,7 +193,7 @@ def all_variable_descriptions():
                 hdr_metadata(),
             ],
             do_generate_get_default_metadata=False,
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Camera"],
@@ -201,7 +202,7 @@ def all_variable_descriptions():
             glsl_type="mat4",
             include="<Cool/Camera/Camera.h>",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Camera2D"],
@@ -209,7 +210,7 @@ def all_variable_descriptions():
             glsl_type="mat3",
             include="<Cool/StrongTypes/Camera2D.h>",
             metadatas=angle_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Angle"],
@@ -217,7 +218,7 @@ def all_variable_descriptions():
             glsl_type="float",
             include="<Cool/StrongTypes/Angle.h>",
             metadatas=angle_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Direction2D"],
@@ -225,7 +226,7 @@ def all_variable_descriptions():
             glsl_type="vec2",
             include="<Cool/StrongTypes/Direction2D.h>",
             metadatas=angle_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Hue"],
@@ -233,7 +234,7 @@ def all_variable_descriptions():
             glsl_type="float",
             include="<Cool/StrongTypes/Hue.h>",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["ColorPalette"],
@@ -243,7 +244,7 @@ def all_variable_descriptions():
             metadatas=[
                 hdr_metadata(),
             ],
-            requires_shader_code_generation=True,
+            always_requires_shader_code_generation=True,  # TODO Should be false and only require shader generation when changing the number of colors
         ),
         VariableDescription(
             input_type=["Gradient"],
@@ -259,7 +260,7 @@ def all_variable_descriptions():
                     default_value="true",
                 ),
             ],
-            requires_shader_code_generation=True,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Texture"],
@@ -267,7 +268,7 @@ def all_variable_descriptions():
             glsl_type="Cool_Texture",
             include="<Cool/Gpu/TextureDescriptor.h>",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Webcam"],
@@ -275,7 +276,7 @@ def all_variable_descriptions():
             glsl_type="Cool_Texture",
             include="<Cool/Gpu/TextureDescriptor.h>",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["MathExpression"],
@@ -283,7 +284,7 @@ def all_variable_descriptions():
             glsl_type="NO TYPE THIS IS A FUNCTION",
             include="<Cool/StrongTypes/MathExpression.h>",
             metadatas=[],
-            requires_shader_code_generation=True,
+            always_requires_shader_code_generation=True,
         ),
         VariableDescription(
             input_type=["mat2"],
@@ -291,7 +292,7 @@ def all_variable_descriptions():
             glsl_type="mat2",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["mat3"],
@@ -299,7 +300,7 @@ def all_variable_descriptions():
             glsl_type="mat3",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["mat4"],
@@ -307,7 +308,7 @@ def all_variable_descriptions():
             glsl_type="mat4",
             include="<glm/glm.hpp>",
             metadatas=float_metadatas(),
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Midi"],
@@ -315,7 +316,7 @@ def all_variable_descriptions():
             glsl_type="float",
             include="<Cool/Midi/MidiChannel.h>",
             metadatas=[],
-            requires_shader_code_generation=False,
+            always_requires_shader_code_generation=False,
         ),
     ]
 
@@ -543,12 +544,12 @@ def variable_definition_factory(variable_type_and_metadatas):
     return variable_definition
 
 
-def requires_shader_code_generation():
+def always_requires_shader_code_generation():
     return "\n\n".join(
         map(
             lambda desc: f"""
             if constexpr (std::is_same_v<T, {desc.cpp_type}>)
-                return {"true" if desc.requires_shader_code_generation else "false"};
+                return {"true" if desc.always_requires_shader_code_generation else "false"};
             """,
             all_variable_descriptions(),
         )
@@ -568,7 +569,7 @@ def files():
         all_variable_includes,
         variables_includes,
         glsl_type,
-        requires_shader_code_generation,
+        always_requires_shader_code_generation,
     ]
     for variable_types_and_metadatas in all_variable_descriptions():
         variable_definition = variable_definition_factory(variable_types_and_metadatas)

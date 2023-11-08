@@ -21,10 +21,11 @@ public:
     }
 
     template<typename T>
-    auto make(InputDefinition<T> const& def, DirtyFlag const& dirty_flag) const -> Input<T>
+    auto make(InputDefinition<T> const& def, DirtyFlag dirty_flag, DirtyFlag secondary_dirty_flag = {}) const -> Input<T>
     {
         return Input{
             dirty_flag,
+            secondary_dirty_flag,
             def.name,
             def.description,
             _variable_registries.get().create_shared(
@@ -34,7 +35,7 @@ public:
         };
     }
 
-    auto make(AnyInputDefinition const&, DirtyFlag const&) const -> AnyInput;
+    auto make(AnyInputDefinition const&, DirtyFlag dirty_flag, DirtyFlag secondary_dirty_flag = {}) const -> AnyInput;
 
 private:
     std::reference_wrapper<VariableRegistries> _variable_registries;
@@ -42,10 +43,11 @@ private:
 };
 
 template<>
-inline auto InputFactory_Ref::make(InputDefinition<Camera> const& def, DirtyFlag const& dirty_flag) const -> Input<Camera>
+inline auto InputFactory_Ref::make(InputDefinition<Camera> const& def, DirtyFlag dirty_flag, DirtyFlag secondary_dirty_flag) const -> Input<Camera>
 {
     return Input{
         dirty_flag,
+        secondary_dirty_flag,
         def.name,
         def.description,
         _default_camera_id,
