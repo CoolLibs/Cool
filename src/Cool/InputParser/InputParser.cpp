@@ -20,6 +20,7 @@ static auto make_input(
     const std::string_view            name,
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
+    DirtyFlag                         secondary_dirty_flag,
     InputFactory_Ref                  input_factory,
     std::string_view                  type
 ) -> Input<T>
@@ -29,7 +30,8 @@ static auto make_input(
             .name        = std::string{name},
             .description = description,
         },
-        dirty_flag
+        dirty_flag,
+        secondary_dirty_flag
     );
 
     if constexpr (std::is_same_v<T, Cool::Color>)
@@ -49,10 +51,11 @@ static auto make_any_input(
     std::string_view                  name,
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
+    DirtyFlag                         secondary_dirty_flag,
     InputFactory_Ref                  input_factory
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, input_factory, type));
+    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, secondary_dirty_flag, input_factory, type));
 }
 
 struct TypeAndName_Ref {
@@ -110,6 +113,7 @@ static auto parse_description(std::string_view line) -> std::optional<std::strin
 auto try_parse_input(
     std::string_view line,
     DirtyFlag        dirty_flag,
+    DirtyFlag        secondary_dirty_flag,
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>
 {
@@ -124,6 +128,7 @@ auto try_parse_input(
         type_and_name->name,
         parse_description(line),
         dirty_flag,
+        secondary_dirty_flag,
         input_factory
     );
 }
@@ -131,6 +136,7 @@ auto try_parse_input(
 auto parse_all_inputs(
     std::string_view source_code,
     DirtyFlag        dirty_flag,
+    DirtyFlag        secondary_dirty_flag,
     InputFactory_Ref input_factory
 ) -> tl::expected<std::vector<AnyInput>, std::string>
 {
@@ -143,7 +149,7 @@ auto parse_all_inputs(
         line_count++;
         try
         {
-            const auto input = try_parse_input(line, dirty_flag, input_factory);
+            const auto input = try_parse_input(line, dirty_flag, secondary_dirty_flag, input_factory);
             if (input)
             {
                 new_inputs.emplace_back(std::move(*input));

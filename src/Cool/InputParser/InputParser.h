@@ -10,6 +10,7 @@ namespace Cool {
 auto parse_all_inputs(
     std::string_view text,
     DirtyFlag        dirty_flag,
+    DirtyFlag        secondary_dirty_flag,
     InputFactory_Ref input_factory
 ) -> tl::expected<std::vector<AnyInput>, std::string>;
 
@@ -19,6 +20,7 @@ auto parse_all_inputs(
 auto try_parse_input(
     std::string_view line,
     DirtyFlag        dirty_flag,
+    DirtyFlag        secondary_dirty_flag,
     InputFactory_Ref input_factory
 ) -> std::optional<AnyInput>;
 
