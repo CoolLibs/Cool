@@ -76,7 +76,7 @@ private:
     bool                        _audio_settings_have_changed{false}; // Used to signal that the app needs to rerender.
 
     float _spectrum_max_frequency_in_hz{2500.f}; // TODO(Audio) Serialize
-    float _spectrum_max_amplitude{3.f};          // TODO(Audio) Serialize
+    float _spectrum_scale_height{1.f};           // TODO(Audio) Serialize
     int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
     mutable Cached<std::vector<float>> _current_waveform{};
