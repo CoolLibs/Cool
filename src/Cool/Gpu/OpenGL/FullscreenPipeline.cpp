@@ -12,15 +12,15 @@ namespace Cool::OpenGL {
 std::optional<ShaderModule>& vertex_module()
 {
     static std::optional<ShaderModule> shader_module = ShaderModule{{
-        *File::to_string(Path::cool_res() / "shaders/fullscreen.vert")
-             .map_error([](const std::string& error_message) {
-                 Cool::Log::ToUser::error(
-                     "FullscreenPipeline::vertex_module()",
-                     "Couldn't load fullscreen shader. Please fix this and then restart the app.\n" + error_message
-                 );
-                 return tl::expected<std::string, std::string>{"VERTEX SHADER FILE NOT FOUND"};
-             }),
-        ShaderKind::Vertex,
+        .kind        = ShaderKind::Vertex,
+        .source_code = *File::to_string(Path::cool_res() / "shaders/fullscreen.vert")
+                            .map_error([](const std::string& error_message) {
+                                Cool::Log::ToUser::error(
+                                    "FullscreenPipeline::vertex_module()",
+                                    "Couldn't load fullscreen shader. Please fix this and then restart the app.\n" + error_message
+                                );
+                                return tl::expected<std::string, std::string>{"VERTEX SHADER FILE NOT FOUND"};
+                            }),
     }};
     return shader_module;
 }
@@ -47,9 +47,10 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
         _shader = Shader{
             *vertex_module(),
             ShaderModule{{
-                std::string{fragment_shader_source_code},
                 ShaderKind::Fragment,
-            }}};
+                std::string{fragment_shader_source_code},
+            }}
+        };
         return {};
     }
     catch (const std::exception& e)
@@ -64,7 +65,8 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
             std::vector<ClipboardContent>{
                 {.title = "shader code", .content = shader_code},
                 {.title = "error message", .content = e.what()},
-            }};
+            }
+        };
     }
 }
 

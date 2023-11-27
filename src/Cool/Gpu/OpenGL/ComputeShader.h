@@ -38,7 +38,7 @@ private:
 /// <param name="filePath">The path to the file containing the compute shader source code.
 ComputeShader load_compute_shader_from_file(glm::uvec3 working_group_size, const std::filesystem::path& filePath);
 
-auto generate_boilderplate_for_size(glm::uvec3 working_group_size) -> std::string;
+auto generate_boilerplate_for_size(glm::uvec3 working_group_size) -> std::string;
 
 } // namespace Cool::OpenGL
 

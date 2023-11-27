@@ -39,7 +39,7 @@ public:
     static void unbind();
 
     /// The native OpenGL ID of the texture.
-    [[nodiscard]] auto id() const -> GLuint { return *_tex; }
+    [[nodiscard]] auto id() const -> GLuint { return _tex.id(); }
     /// The ID that ImGui expects
     [[nodiscard]] auto imgui_texture_id() const -> ImTextureID { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(id())); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 

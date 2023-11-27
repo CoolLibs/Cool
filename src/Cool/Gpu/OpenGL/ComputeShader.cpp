@@ -1,8 +1,8 @@
 #if defined(COOL_OPENGL)
 
-#include "ComputeShader.h"
 #include <filesystem>
 #include <glm/glm.hpp>
+#include "ComputeShader.h"
 #include "Cool/File/File.h"
 #include "Shader.h"
 #include "glm/common.hpp"
@@ -24,9 +24,9 @@ static void assert_compute_shader_is_bound(GLuint id)
 
 ComputeShader::ComputeShader(glm::uvec3 working_group_size, std::string_view source_code)
     : Shader(
-        ShaderModule{{
-            generate_boilderplate_for_size(working_group_size) + std::string(source_code),
-            ShaderKind::Compute,
+        ShaderModule{ShaderDescription{
+            .kind        = ShaderKind::Compute,
+            .source_code = generate_boilerplate_for_size(working_group_size) + std::string(source_code),
         }}
     )
     , _working_group_size(working_group_size)
@@ -53,7 +53,7 @@ auto load_compute_shader_from_file(glm::uvec3 working_group_size, const std::fil
     return ComputeShader(working_group_size, *File::to_string(filePath));
 }
 
-auto generate_boilderplate_for_size(glm::uvec3 working_group_size) -> std::string
+auto generate_boilerplate_for_size(glm::uvec3 working_group_size) -> std::string
 {
     return std::string(R"V0G0N(
 #version 430
