@@ -11,16 +11,8 @@ namespace Cool::internal {
 static auto input_stream() -> Audio::InputStream&
 {
     static Audio::InputStream instance{
-        [](RtAudioErrorType type, std::string const& error_message) {
-            if (type == RtAudioErrorType::RTAUDIO_DEVICE_DISCONNECT
-                || type == RtAudioErrorType::RTAUDIO_INVALID_DEVICE
-                || type == RtAudioErrorType::RTAUDIO_NO_DEVICES_FOUND)
-            {
-            }
-            else
-            {
-                Cool::Log::ToUser::warning("Audio", error_message); // TODO(Audio) Don't show these warnings, they are useless
-            }
+        [](RtAudioErrorType /* type */, std::string const& /* error_message */) {
+            // Ignore all warnings, they tend to be pretty useless.
         }
     };
     return instance;
