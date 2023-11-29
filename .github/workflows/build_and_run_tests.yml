@@ -134,7 +134,7 @@ jobs:
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Debug:
     name: Linux Clang Debug
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -158,7 +158,7 @@ jobs:
   #-----------------------------------------------------------------------------------------------
   Linux_Clang_Release:
     name: Linux Clang Release
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
