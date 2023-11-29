@@ -98,6 +98,7 @@ private:
     void save(Archive& archive) const
     {
         archive(
+            cereal::make_nvp("Window", _window),
             cereal::make_nvp("File input", _file_input),
             cereal::make_nvp("Device input", _device_input),
             cereal::make_nvp("Current input mode", _current_input_mode),
@@ -110,9 +111,13 @@ private:
     void load(Archive& archive)
     {
         archive(
+            _window,
             _file_input,
             _device_input,
-            _current_input_mode
+            _current_input_mode,
+            _window_size_in_seconds_for_waveform,
+            _window_size_in_seconds_for_spectrum,
+            _window_size_in_seconds_for_volume
         );
         current_input().start();
     }
