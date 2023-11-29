@@ -1,6 +1,9 @@
 #include "AudioInput_Device.h"
 #include <Cool/ImGui/IcoMoonCodepoints.h>
+#include <Audio/src/InputStream.hpp>
+#include <variant>
 #include "Audio/Audio.hpp"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/ToUser.h"
 
 namespace Cool::internal {
@@ -9,10 +12,17 @@ static auto input_stream() -> Audio::InputStream&
 {
     static Audio::InputStream instance{
         [](RtAudioErrorType type, std::string const& error_message) {
-            // RtAudioErrorType::
-            // TODO(Audio) in case of device disconnect error, signal it directly to the audiomanager so that it can send a nice error to the user, with an error id
-            Cool::Log::ToUser::warning("Audio", error_message);
-        }};
+            if (type == RtAudioErrorType::RTAUDIO_DEVICE_DISCONNECT
+                || type == RtAudioErrorType::RTAUDIO_INVALID_DEVICE
+                || type == RtAudioErrorType::RTAUDIO_NO_DEVICES_FOUND)
+            {
+            }
+            else
+            {
+                Cool::Log::ToUser::warning("Audio", error_message); // TODO(Audio) Don't show these warnings, they are useless
+            }
+        }
+    };
     return instance;
 }
 
@@ -43,24 +53,53 @@ auto AudioInput_Device::has_device() const -> bool
     return true; // TODO(Audio)
 }
 
+static auto get_device_name_impl(Audio::UseDefaultDevice) -> std::string
+{
+    return fmt::format("Use default device: {}", input_stream().device_info(input_stream().default_device_id()).name);
+}
+static auto get_device_name_impl(Audio::UseGivenDevice const& device) -> std::string
+{
+    return device.name;
+}
+
+static auto get_device_name(Audio::SelectedDevice const& selected_device) -> std::string
+{
+    return std::visit([](auto&& selected_device) { return get_device_name_impl(selected_device); }, selected_device);
+}
+
 void AudioInput_Device::update()
 {
-    // TODO(Audio)
+    input_stream().update();
+    if (!input_stream().current_device_is_valid())
+    {
+        Cool::Log::ToUser::console().send(
+            _error_id_device_invalid,
+            Message{
+                .category = "Audio",
+                .message  = fmt::format("Invalid device \"{}\"", get_device_name(input_stream().current_device())),
+                .severity = MessageSeverity::Error,
+            }
+        );
+    }
+    else
+    {
+        Cool::Log::ToUser::console().remove(_error_id_device_invalid);
+    }
 }
 
 void AudioInput_Device::start()
 {
-    open_device_stream();
+    // input_stream().open(); // TODO(Audio)
 }
 
 void AudioInput_Device::stop()
 {
-    // close_device_stream(); // TODO(Audio)
+    input_stream().close();
 }
 
 auto AudioInput_Device::does_need_to_highlight_error() const -> bool
 {
-    return Cool::Log::ToUser::console().should_highlight(_error_id);
+    return Cool::Log::ToUser::console().should_highlight(_error_id_device_invalid);
 }
 
 auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
@@ -68,23 +107,35 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
     bool b = false;
 
     auto const ids = input_stream().device_ids();
-    if (ImGui::BeginCombo("Input device", input_stream().current_device_name().c_str()))
-    {
-        for (auto const id : ids)
-        {
-            auto const info        = input_stream().device_info(id);
-            bool const is_selected = info.name == input_stream().current_device_name();
-            if (ImGui::Selectable(info.name.c_str(), is_selected))
+    Cool::ImGuiExtras::bring_attention_if(
+        needs_to_highlight_error,
+        [&]() {
+            auto const combo_text = get_device_name(input_stream().current_device());
+            if (ImGui::BeginCombo("Input device", combo_text.c_str()))
             {
-                input_stream().set_device(id);
-                b = true;
-            }
+                bool const is_selected = std::holds_alternative<Audio::UseDefaultDevice>(input_stream().current_device());
+                if (ImGui::Selectable(get_device_name_impl(Audio::UseDefaultDevice{}).c_str(), is_selected))
+                    input_stream().use_default_device();
+                if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    ImGui::SetItemDefaultFocus();
 
-            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                ImGui::SetItemDefaultFocus();
+                for (auto const id : ids)
+                {
+                    auto const info        = input_stream().device_info(id);
+                    bool const is_selected = info.name == combo_text;
+                    if (ImGui::Selectable(info.name.c_str(), is_selected))
+                    {
+                        input_stream().use_given_device(info);
+                        b = true;
+                    }
+
+                    if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
         }
-        ImGui::EndCombo();
-    }
+    );
     b |= ImGui::DragFloat("Volume", &_volume, 20.f, 0.f, 1000000.f, "%.3f", ImGuiSliderFlags_Logarithmic);
     return b;
 }

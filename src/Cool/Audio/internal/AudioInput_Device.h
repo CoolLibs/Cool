@@ -25,9 +25,8 @@ private:
     [[nodiscard]] auto has_device() const -> bool;
 
 private:
-    float        _volume{30.f};
-    unsigned int _input_device_id{}; // TODO(Audio) Use this
-    MessageId    _error_id{};        // TODO(Audio) error when the device is unavailable
+    float     _volume{30.f};
+    MessageId _error_id_device_invalid{};
 
 private:
     // Serialization
@@ -36,7 +35,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Input Device ID", _input_device_id),
+            // cereal::make_nvp("Input Device ID", _input_device_id), // TODO(Audio) Serialize the SelectedDevice
             cereal::make_nvp("Volume", _volume)
         );
     }
