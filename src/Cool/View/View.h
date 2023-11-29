@@ -108,6 +108,17 @@ private:
     MessageId _log_position_message_id{};
 
     bool _has_vertical_margins{false};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Is open", _is_open)
+        );
+    }
 };
 
 } // namespace Cool
