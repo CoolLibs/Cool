@@ -45,12 +45,7 @@ auto AudioInput_Device::sample_rate() const -> float
 
 auto AudioInput_Device::is_playing() const -> bool
 {
-    return has_device();
-}
-
-auto AudioInput_Device::has_device() const -> bool
-{
-    return true; // TODO(Audio)
+    return input_stream().current_device_is_valid();
 }
 
 static auto get_device_name_impl(Audio::UseDefaultDevice) -> std::string
@@ -89,7 +84,7 @@ void AudioInput_Device::update()
 
 void AudioInput_Device::start()
 {
-    // input_stream().open(); // TODO(Audio)
+    // No need to do anything on start, `input_stream().update()` will start the stream when necessary.
 }
 
 void AudioInput_Device::stop()
@@ -140,9 +135,14 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
     return b;
 }
 
-void AudioInput_Device::open_device_stream()
+auto AudioInput_Device::get_input_device_selection() const -> Audio::SelectedDevice
 {
-    // input_stream(). // TODO(Audio)
+    return input_stream().current_device();
+}
+
+void AudioInput_Device::set_input_device_selection(Audio::SelectedDevice device)
+{
+    input_stream().use_device(std::move(device));
 }
 
 } // namespace Cool::internal

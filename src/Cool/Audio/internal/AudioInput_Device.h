@@ -1,6 +1,22 @@
 #pragma once
 #include "IAudioInput.h"
 
+namespace cereal {
+
+template<class Archive>
+void serialize(Archive& archive, Audio::UseGivenDevice& device)
+{
+    archive(
+        cereal::make_nvp("Name", device.name)
+    );
+}
+template<class Archive>
+void serialize(Archive&, Audio::UseDefaultDevice&)
+{
+}
+
+} // namespace cereal
+
 namespace Cool::internal {
 
 class AudioInput_Device : public IAudioInput { // e.g. microphone
@@ -21,8 +37,8 @@ public:
     [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
 private:
-    void               open_device_stream();
-    [[nodiscard]] auto has_device() const -> bool;
+    auto get_input_device_selection() const -> Audio::SelectedDevice;
+    void set_input_device_selection(Audio::SelectedDevice);
 
 private:
     float     _volume{30.f};
@@ -32,12 +48,22 @@ private:
     // Serialization
     friend class cereal::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    void save(Archive& archive) const
     {
         archive(
-            // cereal::make_nvp("Input Device ID", _input_device_id), // TODO(Audio) Serialize the SelectedDevice
+            cereal::make_nvp("Input Device", get_input_device_selection()),
             cereal::make_nvp("Volume", _volume)
         );
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        Audio::SelectedDevice device;
+        archive(
+            device,
+            _volume
+        );
+        set_input_device_selection(std::move(device));
     }
 };
 
