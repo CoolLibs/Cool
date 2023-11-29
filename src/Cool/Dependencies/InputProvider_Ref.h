@@ -8,12 +8,13 @@ namespace Cool {
 
 class InputProvider_Ref {
 public:
-    InputProvider_Ref(VariableRegistries& registries, float render_target_aspect_ratio, float height, float time, glm::mat3 const& camera2D)
+    InputProvider_Ref(VariableRegistries& registries, float render_target_aspect_ratio, float height, float time, glm::mat3 const& camera2D, GLuint particles_texture_id)
         : _variable_registries{registries}
         , _render_target_aspect_ratio{render_target_aspect_ratio}
         , _height{height}
         , _time{time}
         , _camera2D{camera2D}
+        , _particles_texture_id{particles_texture_id}
     {}
 
     template<typename T>
@@ -56,6 +57,11 @@ public:
         return _time;
     }
 
+    auto operator()(const Input_ParticlesTextureId&) const -> GLuint
+    {
+        return _particles_texture_id;
+    }
+
     auto operator()(const Input_Camera2D&) const -> glm::mat3
     {
         return _camera2D;
@@ -69,6 +75,7 @@ private:
     float                                      _height;
     float                                      _time;
     glm::mat3                                  _camera2D;
+    GLuint                                     _particles_texture_id;
 };
 
 } // namespace Cool
