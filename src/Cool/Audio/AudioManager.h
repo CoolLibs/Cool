@@ -11,6 +11,13 @@
 #include "internal/AudioInput_File.h"
 #include "internal/IAudioInput.h"
 
+// TODO(Audio) Chaque AudioFeature possède se propre Source qui dit d'où il veut prendre l'audio (quel fichier, ou input device)
+// et ses caractéristiques (durée de la fenêtre etc.). L'imgui n'affiche pas la feature (car relou d'accéder à l'audio manager pendant imgui, +pas nécessaire c'est on a de bons visualiseurs par défaut)
+// Pour savoir si le cache est invalide, l'audio library stocke un id, qui change à chaque fois que l'audio change, et la feature compare l'id courant à l'id de quand elle s'est calculée la dernière fois
+// Et pour savoir combien de samples garder pour les input devices, l'AudioLibrary stocke la liste du max demandé, sur quelques frames, pour toujours s'adapter au nombre courant de samples demandé
+// TODO(Audio) et ça serait bien de pouvoir référencer une variable "AudioSource", pour que si on a 3 nodes audio qui doivent toujours utiliser la même source, on n'ait pas besoin de changer ça en plusieurs endroits
+// Ou alors, il y a une MainAudioSource sur le Manager, et on peut en créer d'autres au besoin. Et les AudioFeature ont un dropdown pour savoir quelle source utiliser, par défaut ça sera MainAudioSource.
+
 namespace cereal {
 
 template<class Archive>
@@ -44,8 +51,6 @@ public:
     [[nodiscard]] auto spectrum() const -> Audio::Spectrum const&;
     /// Returns a 1D texture with all the spectrum going from UV 0 to UV 1. Contains values between 0 and +infinity.
     [[nodiscard]] auto spectrum_texture() const -> glpp::Texture1D const&;
-    ///
-    [[nodiscard]] auto volume() const -> float;
 
     void sync_with_clock(Cool::Clock const&, bool force_sync_time = false);
     /// Must be called every frame. Will do some internal bookkeeping, and call `on_audio_data_changed` iff the audio data has changed (e.g. music player is playing, or a microphone is beeing used).
@@ -80,14 +85,12 @@ private:
     int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
 
     mutable Cached<std::vector<float>> _current_waveform{};
-    mutable Cached<Audio::Spectrum>    _current_spectrum{};
-    mutable Cached<float>              _current_volume{};
     mutable Cached<glpp::Texture1D>    _current_waveform_texture{};
+    mutable Cached<Audio::Spectrum>    _current_spectrum{};
     mutable Cached<glpp::Texture1D>    _current_spectrum_texture{};
 
     float _window_size_in_seconds_for_waveform{0.05f};
     float _window_size_in_seconds_for_spectrum{0.1f};
-    float _window_size_in_seconds_for_volume{0.2f};
 
     ImGuiWindow _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 
