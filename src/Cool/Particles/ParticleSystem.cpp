@@ -46,6 +46,20 @@ void main()
           )STR",
           }}
       }
+    , _simulation_shader{64,
+                         R"STR(
+layout(std430, binding=0) buffer _positions_buffer{
+   float _positions[];
+};
+
+void cool_main()
+{
+    uint gid  = gl_GlobalInvocationID.x;
+    _positions[gid * 2] += 0.001;
+    if (_positions[gid * 2] > 1.)
+        _positions[gid * 2] = -1.;
+}
+        )STR"}
 {
     static constexpr size_t dimension{2};
     std::vector<float>      positions;
@@ -82,6 +96,12 @@ void ParticleSystem::render()
     _render_shader.bind();
     glpp::bind_vertex_array(_render_vao);
     glpp::draw_arrays_instanced(_render_vao, glpp::PrimitiveDrawMode::Triangles, 0, 6, static_cast<GLsizei>(_particles_count));
+}
+
+void ParticleSystem::update()
+{
+    _simulation_shader.bind();
+    _simulation_shader.compute({_particles_count, 1, 1});
 }
 
 } // namespace Cool
