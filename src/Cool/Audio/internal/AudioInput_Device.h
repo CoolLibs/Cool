@@ -1,4 +1,5 @@
 #pragma once
+#include "Audio/Audio.hpp"
 #include "IAudioInput.h"
 
 namespace cereal {
