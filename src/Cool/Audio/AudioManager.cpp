@@ -1,14 +1,8 @@
 #include "AudioManager.h"
 #include <glpp-extended/src/TextureLayout.h>
 #include <imgui.h>
-#include <complex>
-#include <exception>
-#include "Audio/Audio.hpp"
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/DebugOptions/DebugOptions.h"
-#include "Cool/ImGui/ImGuiExtras.h"
-#include "Cool/Log/Message.h"
-#include "Cool/Log/MessageConsole.h"
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
@@ -99,8 +93,8 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
         }
     );
     tex.set_wrap(glpp::Wrap::ClampToBorder);
-    // tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);// TODO(Audio) Option to switch between bars and connected lines
-    tex.set_magnification_filter(glpp::Interpolation::Linear);
+    tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour); // TODO(Audio) Option to switch between bars and connected lines
+    // tex.set_magnification_filter(glpp::Interpolation::Linear);
     tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
     GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
@@ -242,8 +236,8 @@ void AudioManager::imgui_window()
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
-        // ImGui::PlotHistogram( // TODO(Audio) Option to switch between bars and connected lines
-        ImGui::PlotLines(
+        ImGui::PlotHistogram( // TODO(Audio) Option to switch between bars and connected lines
+                              // ImGui::PlotLines(
             "##Spectrum",
             spectrum().data.data(),
             static_cast<int>(spectrum().data.size()),

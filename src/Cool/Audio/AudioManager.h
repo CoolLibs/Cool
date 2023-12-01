@@ -77,7 +77,7 @@ private:
 
     float _spectrum_max_frequency_in_hz{2500.f}; // TODO(Audio) Serialize
     float _spectrum_scale_height{1.f};           // TODO(Audio) Serialize
-    int   _spectrum_nb_bins{8};                  // TODO(Audio) Serialize
+    int   _spectrum_bars_count{8};               // TODO(Audio) Serialize // TODO(Audio) Use this instead of _window_size_in_seconds_for_spectrum
 
     mutable Cached<std::vector<float>> _current_waveform{};
     mutable Cached<Audio::Spectrum>    _current_spectrum{};
