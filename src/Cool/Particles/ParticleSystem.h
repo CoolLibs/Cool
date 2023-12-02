@@ -6,9 +6,15 @@
 
 namespace Cool {
 
+struct ParticlesShadersCode {
+    std::string simulation;
+    std::string vertex;
+    std::string fragment;
+};
+
 class ParticleSystem {
 public:
-    ParticleSystem();
+    explicit ParticleSystem(ParticlesShadersCode const& = {});
 
     void render();
     void update();

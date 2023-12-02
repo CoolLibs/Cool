@@ -75,6 +75,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="particles_debug_menu_window",
+            name_in_ui="Particles Debug Menu",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="public_exhibition_mode",
             name_in_ui="Public exhibition mode",
             available_in_release=True,
