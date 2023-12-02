@@ -19,7 +19,7 @@ public:
     /// Note that myBuffer and data are arbitrary names and you can change them as you please.
     /// Also, the layout doesn't need to use floats, you can basically use any type you want (kind of, vec3 doesn't work) : float, vec2, vec4, a struct, etc.
     /// </param>
-    SSBO(unsigned int binding)
+    explicit SSBO(unsigned int binding)
         : _binding(binding)
     {
         GLDebug(glGenBuffers(1, &_id));
@@ -28,6 +28,25 @@ public:
     ~SSBO()
     {
         GLDebug(glDeleteBuffers(1, &_id));
+    }
+    SSBO(SSBO const&)            = delete;
+    SSBO& operator=(SSBO const&) = delete;
+    SSBO(SSBO&& other) noexcept
+        : _binding{other._binding}
+        , _id{other._id}
+    {
+        other._id = 0;
+    }
+    auto operator=(SSBO&& other) noexcept -> SSBO&
+    {
+        _binding = other._binding;
+        if (this != &other)
+        {
+            GLDebug(glDeleteBuffers(1, &_id));
+            _id       = other._id;
+            other._id = 0;
+        }
+        return *this;
     }
 
     /// <summary>
@@ -75,8 +94,8 @@ public:
     }
 
 private:
-    unsigned int _binding;
-    unsigned int _id;
+    unsigned int _binding{};
+    unsigned int _id{};
 };
 
 } // namespace Cool
