@@ -73,7 +73,7 @@ private:
     internal::AudioInput_File   _file_input{};
     internal::AudioInput_Device _device_input{};
     AudioInputMode              _current_input_mode{AudioInputMode::Device};
-    bool                        _audio_settings_have_changed{false}; // Used to signal that the app needs to rerender.
+    bool                        _audio_settings_have_changed{false}; // Used to signal that `on_audio_data_changed` needs to be called during `update()`.
 
     mutable Cached<std::vector<float>> _current_waveform{};
     mutable Cached<Audio::Spectrum>    _current_spectrum{};
