@@ -242,9 +242,7 @@ void AudioManager::imgui_window()
             {
                 bool const is_selected = i == mode;
                 if (ImGui::Selectable(to_string(static_cast<AudioInputMode>(i)), is_selected))
-                {
                     set_current_input_mode(static_cast<AudioInputMode>(i));
-                }
 
                 if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     ImGui::SetItemDefaultFocus();
