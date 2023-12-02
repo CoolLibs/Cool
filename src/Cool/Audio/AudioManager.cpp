@@ -49,9 +49,8 @@ auto AudioManager::waveform() const -> std::vector<float> const&
         if (Cool::DebugOptions::log_when_computing_audio_features())
             Cool::Log::ToUser::info("Audio", "Computing waveform");
 
-        auto const N        = nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform);
-        auto       waveform = std::vector<float>{};
-        current_input().for_each_audio_frame(N, [&](float sample) {
+        auto waveform = std::vector<float>{};
+        current_input().for_each_audio_frame(nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform), [&](float sample) {
             waveform.push_back(sample);
         });
         return waveform;
@@ -72,7 +71,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
                 current_input().for_each_audio_frame(N, [&](float frame) {
                     float const t = static_cast<float>(i) / static_cast<float>(N - 1);
                     i++;
-                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (We're gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
                     callback(frame * window * _spectrum_height_scale);
                 });
             },
@@ -82,7 +81,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
     });
 }
 
-static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data, bool spectrum_display_as_bars)
+static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data, bool display_as_bars)
 {
     tex.upload_data(
         static_cast<GLsizei>(data.size()), data.data(),
@@ -92,8 +91,7 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
             .texel_data_type = glpp::TexelDataType::Float,
         }
     );
-    tex.set_wrap(glpp::Wrap::ClampToBorder);
-    if (spectrum_display_as_bars)
+    if (display_as_bars)
     {
         tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);
         tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
@@ -103,6 +101,7 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
         tex.set_magnification_filter(glpp::Interpolation::Linear);
         tex.set_minification_filter(glpp::Interpolation::Linear);
     }
+    tex.set_wrap(glpp::Wrap::ClampToBorder);
     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
     GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
 }
@@ -110,7 +109,7 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
 auto AudioManager::waveform_texture() const -> glpp::Texture1D const&
 {
     return _current_waveform_texture.get_value([&](glpp::Texture1D& tex) {
-        set_texture_data(tex, waveform(), false /*spectrum_display_as_bars*/);
+        set_texture_data(tex, waveform(), false /*display_as_bars*/);
     });
 }
 
