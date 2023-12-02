@@ -108,15 +108,15 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
 
                 for (auto const id : ids)
                 {
-                    auto const info        = input_stream().device_info(id);
-                    bool const is_selected = info.name == combo_text;
-                    if (ImGui::Selectable(info.name.c_str(), is_selected))
+                    auto const info         = input_stream().device_info(id);
+                    bool const is_selected2 = info.name == combo_text;
+                    if (ImGui::Selectable(info.name.c_str(), is_selected2))
                     {
                         input_stream().use_given_device(info);
                         b = true;
                     }
 
-                    if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected2) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();
