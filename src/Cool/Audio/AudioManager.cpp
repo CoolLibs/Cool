@@ -255,50 +255,62 @@ void AudioManager::imgui_window()
         _audio_settings_have_changed |= current_input().imgui(needs_to_highlight_error);
 
         ImGui::NewLine();
-        ImGui::SeparatorText("Volume");
-        ImGui::ProgressBar(volume(), {0.f, 0.f});
-        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
-
-        ImGui::NewLine();
-        ImGui::SeparatorText("Waveform");
-        ImGui::PlotLines(
-            "##Waveform",
-            waveform().data(),
-            static_cast<int>(waveform().size()),
-            0, nullptr,
-            -1.f, 1.f, // Values are between -1 and 1
-            {0.f, 100.f}
-        );
-        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
-
-        ImGui::NewLine();
-        ImGui::SeparatorText("Spectrum");
-        if (_spectrum_display_as_bars)
+        if (ImGui::BeginTabBar("##audio_features"))
         {
-            ImGui::PlotHistogram(
-                "##Spectrum",
-                spectrum().data.data(),
-                static_cast<int>(spectrum().data.size()),
-                0, nullptr,
-                0.f, 1.f,
-                {0.f, 100.f}
-            );
+            if (ImGui::BeginTabItem("Volume"))
+            {
+                ImGui::ProgressBar(volume(), {0.f, 0.f});
+                _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Waveform"))
+            {
+                ImGui::PlotLines(
+                    "##Waveform",
+                    waveform().data(),
+                    static_cast<int>(waveform().size()),
+                    0, nullptr,
+                    -1.f, 1.f, // Values are between -1 and 1
+                    {0.f, 100.f}
+                );
+                _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("Spectrum"))
+            {
+                if (_spectrum_display_as_bars)
+                {
+                    ImGui::PlotHistogram(
+                        "##Spectrum",
+                        spectrum().data.data(),
+                        static_cast<int>(spectrum().data.size()),
+                        0, nullptr,
+                        0.f, 1.f,
+                        {0.f, 100.f}
+                    );
+                }
+                else
+                {
+                    ImGui::PlotLines(
+                        "##Spectrum",
+                        spectrum().data.data(),
+                        static_cast<int>(spectrum().data.size()),
+                        0, nullptr,
+                        0.f, 1.f,
+                        {0.f, 100.f}
+                    );
+                }
+                _audio_settings_have_changed |= imgui_spectrum_display_as_bars(&_spectrum_display_as_bars);
+                _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
+                _audio_settings_have_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+                _audio_settings_have_changed |= ImGui::DragFloat("Height (scale factor)", &_spectrum_scale_height, 0.01f, 0.0001f, FLT_MAX);
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
         }
-        else
-        {
-            ImGui::PlotLines(
-                "##Spectrum",
-                spectrum().data.data(),
-                static_cast<int>(spectrum().data.size()),
-                0, nullptr,
-                0.f, 1.f,
-                {0.f, 100.f}
-            );
-        }
-        _audio_settings_have_changed |= imgui_spectrum_display_as_bars(&_spectrum_display_as_bars);
-        _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
-        _audio_settings_have_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
-        _audio_settings_have_changed |= ImGui::DragFloat("Height (scale factor)", &_spectrum_scale_height, 0.01f, 0.0001f, FLT_MAX);
     });
 }
 
