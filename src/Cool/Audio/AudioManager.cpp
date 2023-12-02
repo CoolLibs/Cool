@@ -82,7 +82,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
     });
 }
 
-static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data)
+static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data, bool spectrum_display_as_bars)
 {
     tex.upload_data(
         static_cast<GLsizei>(data.size()), data.data(),
@@ -93,9 +93,16 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
         }
     );
     tex.set_wrap(glpp::Wrap::ClampToBorder);
-    tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour); // TODO(Audio) Option to switch between bars and connected lines
-    // tex.set_magnification_filter(glpp::Interpolation::Linear);
-    tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
+    if (spectrum_display_as_bars)
+    {
+        tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);
+        tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
+    }
+    else
+    {
+        tex.set_magnification_filter(glpp::Interpolation::Linear);
+        tex.set_minification_filter(glpp::Interpolation::Linear);
+    }
     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
     GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
 }
@@ -103,14 +110,14 @@ static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& dat
 auto AudioManager::waveform_texture() const -> glpp::Texture1D const&
 {
     return _current_waveform_texture.get_value([&](glpp::Texture1D& tex) {
-        set_texture_data(tex, waveform());
+        set_texture_data(tex, waveform(), false /*spectrum_display_as_bars*/);
     });
 }
 
 auto AudioManager::spectrum_texture() const -> glpp::Texture1D const&
 {
     return _current_spectrum_texture.get_value([&](glpp::Texture1D& tex) {
-        set_texture_data(tex, spectrum().data);
+        set_texture_data(tex, spectrum().data, _spectrum_display_as_bars);
     });
 }
 
@@ -189,6 +196,36 @@ void AudioManager::set_current_input_mode(AudioInputMode mode)
     _audio_settings_have_changed = true;
 }
 
+static auto imgui_spectrum_display_as_bars(bool* val) -> bool
+{
+    bool b = false;
+    if (ImGui::BeginCombo("Display as", *val ? "Bars" : "Lines"))
+    {
+        {
+            bool const is_selected = *val;
+            if (ImGui::Selectable("Bars", is_selected))
+            {
+                *val = true;
+                b    = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        }
+        {
+            bool const is_selected = !*val;
+            if (ImGui::Selectable("Lines", is_selected))
+            {
+                *val = false;
+                b    = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+    return b;
+}
+
 void AudioManager::imgui_window()
 {
     bool const needs_to_highlight_error = current_input().does_need_to_highlight_error();
@@ -236,15 +273,29 @@ void AudioManager::imgui_window()
 
         ImGui::NewLine();
         ImGui::SeparatorText("Spectrum");
-        ImGui::PlotHistogram( // TODO(Audio) Option to switch between bars and connected lines
-                              // ImGui::PlotLines(
-            "##Spectrum",
-            spectrum().data.data(),
-            static_cast<int>(spectrum().data.size()),
-            0, nullptr,
-            0.f, 1.f,
-            {0.f, 100.f}
-        );
+        if (_spectrum_display_as_bars)
+        {
+            ImGui::PlotHistogram(
+                "##Spectrum",
+                spectrum().data.data(),
+                static_cast<int>(spectrum().data.size()),
+                0, nullptr,
+                0.f, 1.f,
+                {0.f, 100.f}
+            );
+        }
+        else
+        {
+            ImGui::PlotLines(
+                "##Spectrum",
+                spectrum().data.data(),
+                static_cast<int>(spectrum().data.size()),
+                0, nullptr,
+                0.f, 1.f,
+                {0.f, 100.f}
+            );
+        }
+        _audio_settings_have_changed |= imgui_spectrum_display_as_bars(&_spectrum_display_as_bars);
         _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
         _audio_settings_have_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
         _audio_settings_have_changed |= ImGui::DragFloat("Height (scale factor)", &_spectrum_scale_height, 0.01f, 0.0001f, FLT_MAX);
