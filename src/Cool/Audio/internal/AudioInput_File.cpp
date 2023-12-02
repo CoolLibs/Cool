@@ -31,12 +31,13 @@ void AudioInput_File::update()
 
 void AudioInput_File::start()
 {
-    try_load_current_file(); // TODO(Audio) don't reload the file if it was already loaded
+    if (_path != _currently_loaded_path)
+        try_load_current_file();
 }
 
 void AudioInput_File::stop()
 {
-    Audio::player().reset_audio_data(); // Stop the playing of the audio // TODO(Audio) instead, keep the file in memory but don't play it, so that it is faster to switch between input mode and we don't have to reload it over and over again
+    Audio::player().pause(); // Stop the playing of the audio
 }
 
 auto AudioInput_File::does_need_to_highlight_error() const -> bool
@@ -59,7 +60,7 @@ static auto imgui_widgets(Audio::PlayerProperties& props) -> bool
     ImGui::SameLine();
 
     ImGuiExtras::disabled_if(props.is_muted, "The audio is muted.", [&]() {
-        ImGui::SliderFloat("Volume", &props.volume, 0.f, 1.f);
+        ImGui::SliderFloat("Playback Volume", &props.volume, 0.f, 1.f);
     });
 
     return b;
@@ -88,12 +89,14 @@ void AudioInput_File::try_load_current_file()
     {
         Cool::Log::ToUser::console().remove(_error_id);
         Audio::player().reset_audio_data();
+        _currently_loaded_path = "";
         return;
     }
 
     try
     {
         load_audio_file(Audio::player(), _path);
+        _currently_loaded_path = _path;
         Cool::Log::ToUser::console().remove(_error_id);
     }
     catch (std::exception& e)
@@ -107,6 +110,7 @@ void AudioInput_File::try_load_current_file()
             }
         );
         Audio::player().reset_audio_data();
+        _currently_loaded_path = "";
     }
 }
 

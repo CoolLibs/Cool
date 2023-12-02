@@ -123,7 +123,7 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
             }
         }
     );
-    b |= ImGui::DragFloat("Volume", &_volume, 20.f, 0.f, 1000000.f, "%.3f", ImGuiSliderFlags_Logarithmic);
+    b |= ImGui::DragFloat("Volume Amplifier", &_volume, 0.03f, 0.f, 1000000.f);
     return b;
 }
 

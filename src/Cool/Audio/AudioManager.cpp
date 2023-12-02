@@ -130,6 +130,9 @@ auto AudioManager::nb_frames_for_characteristics_computation(float window_size_i
 
 void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_time)
 {
+    if (_current_input_mode != AudioInputMode::File)
+        return;
+
     if (force_sync_time
         || std::abs(clock.time() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
     )

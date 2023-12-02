@@ -24,6 +24,7 @@ private:
 
 private:
     std::filesystem::path   _path{};
+    std::filesystem::path   _currently_loaded_path{};
     Audio::PlayerProperties _properties{};
     MessageId               _error_id{};
 
