@@ -61,7 +61,7 @@ public:
 private:
     void open_current_input_mode();
 
-    [[nodiscard]] auto nb_frames_for_characteristics_computation(float window_size_in_seconds) const -> int64_t;
+    [[nodiscard]] auto nb_frames_for_feature_computation(float window_size_in_seconds) const -> int64_t;
 
     void invalidate_caches();
 

@@ -36,7 +36,7 @@ auto AudioManager::volume() const -> float
             Cool::Log::ToUser::info("Audio", "Computing volume");
 
         auto frames = std::vector<float>{};
-        current_input().for_each_audio_frame(nb_frames_for_characteristics_computation(_window_size_in_seconds_for_volume), [&](float frame) {
+        current_input().for_each_audio_frame(nb_frames_for_feature_computation(_window_size_in_seconds_for_volume), [&](float frame) {
             frames.push_back(frame);
         });
         return Audio::compute_volume(frames);
@@ -49,7 +49,7 @@ auto AudioManager::waveform() const -> std::vector<float> const&
         if (Cool::DebugOptions::log_when_computing_audio_features())
             Cool::Log::ToUser::info("Audio", "Computing waveform");
 
-        auto const N        = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_waveform);
+        auto const N        = nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform);
         auto       waveform = std::vector<float>{};
         current_input().for_each_audio_frame(N, [&](float sample) {
             waveform.push_back(sample);
@@ -64,7 +64,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
         if (Cool::DebugOptions::log_when_computing_audio_features())
             Cool::Log::ToUser::info("Audio", "Computing spectrum");
 
-        auto const N = nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum);
+        auto const N = nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum);
         return Audio::fourier_transform(
             N,
             [&](std::function<void(float)> const& callback) {
@@ -121,7 +121,7 @@ auto AudioManager::spectrum_texture() const -> glpp::Texture1D const&
     });
 }
 
-auto AudioManager::nb_frames_for_characteristics_computation(float window_size_in_seconds) const -> int64_t
+auto AudioManager::nb_frames_for_feature_computation(float window_size_in_seconds) const -> int64_t
 {
     return static_cast<int64_t>(
         current_input().sample_rate() * window_size_in_seconds
@@ -166,10 +166,10 @@ void AudioManager::update(std::function<void()> const& on_audio_data_changed)
     _device_input.set_nb_of_retained_samples(
         std::max(
             std::max(
-                nb_frames_for_characteristics_computation(_window_size_in_seconds_for_waveform),
-                nb_frames_for_characteristics_computation(_window_size_in_seconds_for_spectrum)
+                nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
+                nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
             ),
-            nb_frames_for_characteristics_computation(_window_size_in_seconds_for_volume)
+            nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
         )
     );
 }
