@@ -82,7 +82,7 @@ private:
     mutable Cached<glpp::Texture1D>    _current_spectrum_texture{};
 
     float _window_size_in_seconds_for_waveform{0.05f};
-    float _window_size_in_seconds_for_spectrum{0.1f};
+    float _window_size_in_seconds_for_spectrum{0.015f};
     float _window_size_in_seconds_for_volume{0.2f};
 
     float _spectrum_max_frequency_in_hz{2500.f};
