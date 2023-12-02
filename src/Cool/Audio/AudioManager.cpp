@@ -73,7 +73,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
                     float const t = static_cast<float>(i) / static_cast<float>(N - 1);
                     i++;
                     float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (I'm gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
-                    callback(frame * window * _spectrum_scale_height);
+                    callback(frame * window * _spectrum_height_scale);
                 });
             },
             static_cast<float>(current_input().sample_rate()),
@@ -303,7 +303,7 @@ void AudioManager::imgui_window()
                 _audio_settings_have_changed |= imgui_spectrum_display_as_bars(&_spectrum_display_as_bars);
                 _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
                 _audio_settings_have_changed |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
-                _audio_settings_have_changed |= ImGui::DragFloat("Height (scale factor)", &_spectrum_scale_height, 0.01f, 0.0001f, FLT_MAX);
+                _audio_settings_have_changed |= ImGui::DragFloat("Height (scale factor)", &_spectrum_height_scale, 0.01f, 0.0001f, FLT_MAX);
                 ImGui::EndTabItem();
             }
 

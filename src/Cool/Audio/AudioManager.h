@@ -72,12 +72,8 @@ private:
 private:
     internal::AudioInput_File   _file_input{};
     internal::AudioInput_Device _device_input{};
-    AudioInputMode              _current_input_mode{};
+    AudioInputMode              _current_input_mode{AudioInputMode::Device};
     bool                        _audio_settings_have_changed{false}; // Used to signal that the app needs to rerender.
-
-    float _spectrum_max_frequency_in_hz{2500.f}; // TODO(Audio) Serialize
-    float _spectrum_scale_height{1.f};           // TODO(Audio) Serialize
-    bool  _spectrum_display_as_bars{true};       // TODO(Audio) Serialize
 
     mutable Cached<std::vector<float>> _current_waveform{};
     mutable Cached<Audio::Spectrum>    _current_spectrum{};
@@ -88,6 +84,10 @@ private:
     float _window_size_in_seconds_for_waveform{0.05f};
     float _window_size_in_seconds_for_spectrum{0.1f};
     float _window_size_in_seconds_for_volume{0.2f};
+
+    float _spectrum_max_frequency_in_hz{2500.f};
+    float _spectrum_height_scale{1.f};
+    bool  _spectrum_display_as_bars{true};
 
     ImGuiWindow _window{icon_fmt("Audio", ICOMOON_MUSIC)};
 
@@ -104,7 +104,10 @@ private:
             cereal::make_nvp("Current input mode", _current_input_mode),
             cereal::make_nvp("Window size for waveform", _window_size_in_seconds_for_waveform),
             cereal::make_nvp("Window size for spectrum", _window_size_in_seconds_for_spectrum),
-            cereal::make_nvp("Window size for volume", _window_size_in_seconds_for_volume)
+            cereal::make_nvp("Window size for volume", _window_size_in_seconds_for_volume),
+            cereal::make_nvp("Spectrum max frequency in Hz", _spectrum_max_frequency_in_hz),
+            cereal::make_nvp("Spectrum height scale", _spectrum_height_scale),
+            cereal::make_nvp("Spectrum display as bars", _spectrum_display_as_bars)
         );
     }
     template<class Archive>
@@ -117,7 +120,10 @@ private:
             _current_input_mode,
             _window_size_in_seconds_for_waveform,
             _window_size_in_seconds_for_spectrum,
-            _window_size_in_seconds_for_volume
+            _window_size_in_seconds_for_volume,
+            _spectrum_max_frequency_in_hz,
+            _spectrum_height_scale,
+            _spectrum_display_as_bars
         );
         current_input().start();
     }
