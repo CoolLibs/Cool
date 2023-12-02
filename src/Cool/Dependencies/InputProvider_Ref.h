@@ -83,8 +83,8 @@ private:
     float                                      _render_target_aspect_ratio;
     float                                      _height;
     float                                      _time;
-    std::reference_wrapper<AudioManager const> _audio_manager;
     glm::mat3                                  _camera2D;
+    std::reference_wrapper<AudioManager const> _audio_manager;
 };
 
 } // namespace Cool
