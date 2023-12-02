@@ -7,9 +7,9 @@
 
 namespace Cool {
 
-// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an opengl texture
+// TODO(Audio-Philippe) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture
 
-// TODO(Audio) Average the spectrum across several frames, to make it look smoother.
+// TODO(Audio-Philippe) Average the spectrum across several frames, to make it look smoother.
 
 AudioManager::AudioManager()
 {
@@ -127,8 +127,6 @@ auto AudioManager::nb_frames_for_characteristics_computation(float window_size_i
         current_input().sample_rate() * window_size_in_seconds
     );
 }
-
-// TODO(Audio) Option to select how many bins we do (this is much more optimal to do binning on the cpu). This option should ideally be on each spectrum node, so that one can use the full spectrum while another is using only 8 bins.
 
 void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_time)
 {
