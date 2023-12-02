@@ -38,8 +38,8 @@ public:
     [[nodiscard]] auto does_need_to_highlight_error() const -> bool override;
 
 private:
-    auto get_input_device_selection() const -> Audio::SelectedDevice;
-    void set_input_device_selection(Audio::SelectedDevice);
+    auto get_selected_input_device() const -> Audio::SelectedDevice;
+    void set_selected_input_device(Audio::SelectedDevice);
 
 private:
     float     _volume{30.f};
@@ -52,7 +52,7 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Input Device", get_input_device_selection()),
+            cereal::make_nvp("Input Device", get_selected_input_device()),
             cereal::make_nvp("Volume", _volume)
         );
     }
@@ -64,7 +64,7 @@ private:
             device,
             _volume
         );
-        set_input_device_selection(std::move(device));
+        set_selected_input_device(std::move(device));
     }
 };
 

@@ -102,7 +102,10 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
             {
                 bool const is_selected = std::holds_alternative<Audio::UseDefaultDevice>(input_stream().current_device());
                 if (ImGui::Selectable(get_device_name_impl(Audio::UseDefaultDevice{}).c_str(), is_selected))
+                {
                     input_stream().use_default_device();
+                    b = true;
+                }
                 if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     ImGui::SetItemDefaultFocus();
 
@@ -127,12 +130,12 @@ auto AudioInput_Device::imgui(bool needs_to_highlight_error) -> bool
     return b;
 }
 
-auto AudioInput_Device::get_input_device_selection() const -> Audio::SelectedDevice
+auto AudioInput_Device::get_selected_input_device() const -> Audio::SelectedDevice
 {
     return input_stream().current_device();
 }
 
-void AudioInput_Device::set_input_device_selection(Audio::SelectedDevice device)
+void AudioInput_Device::set_selected_input_device(Audio::SelectedDevice device)
 {
     input_stream().use_device(std::move(device));
 }
