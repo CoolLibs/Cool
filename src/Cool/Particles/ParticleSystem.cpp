@@ -6,8 +6,8 @@
 
 namespace Cool {
 
-ParticleSystem::ParticleSystem(ParticlesShadersCode const& shader_code)
-    : _particles_count{500}
+ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode const& shader_code)
+    : _particles_count{particles_count}
     , _render_shader{
           Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
               .kind        = Cool::ShaderKind::Vertex,
