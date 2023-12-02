@@ -47,7 +47,7 @@ auto AudioInput_File::does_need_to_highlight_error() const -> bool
 
 static auto imgui_widgets(Audio::PlayerProperties& props) -> bool
 {
-    bool b = false; // b is not affected when we change properties related to the volume, because we ignore these properties when computing the characteristics like volume, fft etc.
+    bool b = false; // b is not affected when we change properties related to the volume, because we ignore these properties when computing the features like volume, fft etc.
     b |= ImGuiExtras::checkbox_button(ICOMOON_LOOP, &props.does_loop);
     ImGui::SetItemTooltip("%s", props.does_loop ? "The audio will loop." : "The audio will not loop. It will only play when the time is between 0 and the duration of the audio.");
 

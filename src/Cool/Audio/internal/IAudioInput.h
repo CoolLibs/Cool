@@ -5,9 +5,9 @@ namespace Cool::internal {
 class IAudioInput {
 public:
     IAudioInput()                                               = default;
-    IAudioInput(IAudioInput const&)                             = default;
+    IAudioInput(IAudioInput const&)                             = delete;
+    auto operator=(IAudioInput const&) noexcept -> IAudioInput& = delete;
     IAudioInput(IAudioInput&&)                                  = default;
-    auto operator=(IAudioInput const&) noexcept -> IAudioInput& = default;
     auto operator=(IAudioInput&&) noexcept -> IAudioInput&      = default;
     virtual ~IAudioInput()                                      = default;
 
