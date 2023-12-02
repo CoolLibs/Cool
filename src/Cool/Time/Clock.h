@@ -19,8 +19,12 @@ public:
     void               toggle_play_pause();
     [[nodiscard]] auto is_playing() const -> bool { return _is_playing; }
 
+    auto is_being_forced_to_not_respect_realtime() const -> bool { return _is_being_changed_in_GUI; }
+    void set_is_being_changed_in_GUI(bool state) { _is_being_changed_in_GUI = state; }
+
 private:
-    bool _is_playing = true;
+    bool _is_playing{true};
+    bool _is_being_changed_in_GUI{false};
 };
 
 } // namespace Cool

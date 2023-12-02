@@ -40,9 +40,8 @@ void imgui_timeline(Cool::Clock& clock)
     ImGui::PushFont(Font::monospace());
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::DragFloat("##time", &t, 0.01f, 0.f, 0.f, "%.2f seconds"))
-    {
         clock.set_time(t);
-    }
+    clock.set_is_being_changed_in_GUI(ImGui::IsItemActive());
     ImGui::PopFont();
 }
 

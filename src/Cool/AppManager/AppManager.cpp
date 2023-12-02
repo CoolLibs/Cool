@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
+#include "Audio/Audio.hpp"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -130,6 +131,7 @@ void AppManager::update()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     midi_manager().check_for_devices();
+    Audio::player().update_device_if_necessary();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();

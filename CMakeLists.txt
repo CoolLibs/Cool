@@ -193,6 +193,10 @@ install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 add_subdirectory(lib/img)
 target_link_libraries(Cool-PublicProperties INTERFACE img::img)
 
+# Audio
+add_subdirectory(lib/Audio)
+target_link_libraries(Cool-PublicProperties INTERFACE Cool::Audio)
+
 # exe_path
 add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)

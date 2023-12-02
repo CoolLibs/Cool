@@ -15,6 +15,8 @@ public:
     auto update(Polaroid polaroid) -> bool;
     void imgui(std::function<void()> const& extra_widgets);
 
+    auto clock() const -> Clock const& { return _clock; }
+
 private:
     auto estimated_remaining_time() -> float;
     void update_time_estimate();
