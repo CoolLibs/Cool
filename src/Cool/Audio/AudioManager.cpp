@@ -272,7 +272,7 @@ void AudioManager::imgui_window()
                     -1.f, 1.f, // Values are between -1 and 1
                     {0.f, 100.f}
                 );
-                _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 1.f, "%.3f seconds");
+                _audio_settings_have_changed |= ImGui::SliderFloat("Window size##Waveform", &_window_size_in_seconds_for_waveform, 0.f, 0.74f, "%.3f seconds");
                 ImGui::EndTabItem();
             }
 
