@@ -65,7 +65,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
 
         auto const N = nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum);
         return Audio::fourier_transform(
-            N,
+            static_cast<size_t>(N),
             [&](std::function<void(float)> const& callback) {
                 int i = 0;
                 current_input().for_each_audio_frame(N, [&](float frame) {
@@ -163,13 +163,13 @@ void AudioManager::update(std::function<void()> const& on_audio_data_changed)
     }
     current_input().update();
     _device_input.set_nb_of_retained_samples(
-        std::max(
+        static_cast<size_t>(std::max(
             std::max(
                 nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
                 nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
             ),
             nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
-        )
+        ))
     );
 }
 
