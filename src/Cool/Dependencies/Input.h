@@ -81,8 +81,6 @@ struct Input_Time {
 };
 struct Input_Audio {
 };
-struct Input_ParticlesTextureId {
-};
 
 #include <Cool/Variables/generated/AnyInput.inl>
 #include <Cool/Variables/generated/AnyInputRef.inl>

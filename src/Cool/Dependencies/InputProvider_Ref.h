@@ -1,5 +1,4 @@
 #pragma once
-
 #include <functional>
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/Dependencies/Input.h"
@@ -16,8 +15,7 @@ public:
         float               height,
         float               time,
         glm::mat3 const&    camera2D,
-        AudioManager const& audio_manager,
-        GLuint              particles_texture_id
+        AudioManager const& audio_manager
     )
         : _variable_registries{registries}
         , _render_target_aspect_ratio{render_target_aspect_ratio}
@@ -25,7 +23,6 @@ public:
         , _time{time}
         , _camera2D{camera2D}
         , _audio_manager{audio_manager}
-        , _particles_texture_id{particles_texture_id}
     {}
 
     template<typename T>
@@ -73,11 +70,6 @@ public:
         return _audio_manager;
     }
 
-    auto operator()(const Input_ParticlesTextureId&) const -> GLuint
-    {
-        return _particles_texture_id;
-    }
-
     auto operator()(const Input_Camera2D&) const -> glm::mat3
     {
         return _camera2D;
@@ -92,7 +84,6 @@ private:
     float                                      _time;
     glm::mat3                                  _camera2D;
     std::reference_wrapper<AudioManager const> _audio_manager;
-    GLuint                                     _particles_texture_id;
 };
 
 } // namespace Cool
