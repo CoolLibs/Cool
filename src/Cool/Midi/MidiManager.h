@@ -51,6 +51,17 @@ private:
     std::function<void()>          _extra_midi_callback{[] {
     }};
     Cool::ImGuiWindow              _config_window;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Window", _config_window)
+        );
+    }
 };
 
 inline auto midi_manager() -> MidiManager&

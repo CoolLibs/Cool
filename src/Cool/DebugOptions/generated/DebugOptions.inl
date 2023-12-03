@@ -29,6 +29,7 @@ public:
     [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
+    [[nodiscard]] static auto log_when_computing_audio_features() -> bool& { return instance().log_when_computing_audio_features; }
     static void               texture_library_debug_view(std::function<void()> callback)
     {
         if (instance().texture_library_debug_view)
@@ -135,6 +136,7 @@ private:
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_textures{false};
+        bool log_when_computing_audio_features{false};
         bool texture_library_debug_view{false};
         bool log_number_of_threads_in_the_thread_pool{false};
 #if DEBUG
@@ -166,6 +168,7 @@ private:
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
+                cereal::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log OpenGL info", log_opengl_info),
@@ -184,6 +187,7 @@ private:
                 cereal::make_nvp("Log when autosaving", log_when_autosaving),
                 cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 cereal::make_nvp("Log when creating textures", log_when_creating_textures),
+                cereal::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 cereal::make_nvp("View Texture Library", texture_library_debug_view),
                 cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
@@ -208,6 +212,7 @@ private:
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_textures                       = false;
+        instance().log_when_computing_audio_features                = false;
         instance().texture_library_debug_view                       = false;
         instance().log_number_of_threads_in_the_thread_pool         = false;
 #if DEBUG
@@ -257,6 +262,11 @@ private:
         if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Log when creating textures", &instance().log_when_creating_textures);
+        }
+
+        if (wafl::similarity_match({filter, "Log when computing audio features"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Log when computing audio features", &instance().log_when_computing_audio_features);
         }
 
         if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
@@ -368,6 +378,12 @@ private:
         if (wafl::similarity_match({filter, "Log when creating textures"}) >= wafl::Matches::Strongly)
         {
             instance().log_when_creating_textures = !instance().log_when_creating_textures;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log when computing audio features"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_when_computing_audio_features = !instance().log_when_computing_audio_features;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

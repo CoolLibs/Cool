@@ -1,8 +1,7 @@
-#pragma once
-#include "glpp-extended/src/Texture2D.h"
 #if defined(COOL_OPENGL)
-
+#pragma once
 #include <glpp/glpp.hpp>
+#include "glpp-extended/src/Texture2D.h"
 #include "img/src/Image.h"
 #include "img/src/Size.h"
 

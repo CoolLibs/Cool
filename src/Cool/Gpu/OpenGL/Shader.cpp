@@ -207,6 +207,16 @@ void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_i
     GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
 }
 
+void Shader::set_uniform_texture1D(std::string_view uniform_name, GLuint texture_id) const
+{
+    auto const slot = get_next_texture_slot();
+    GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
+    GLDebug(glBindTexture(GL_TEXTURE_1D, texture_id));
+    GLDebug(glBindSampler(slot, 0)); // No sampler, we use the one from the texture
+    set_uniform(uniform_name, static_cast<int>(slot));
+    GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
+}
+
 void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const& texture_info) const
 {
     set_uniform(uniform_name, get_texture(texture_info.source), texture_info.sampler);

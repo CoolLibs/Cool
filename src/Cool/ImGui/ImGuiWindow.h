@@ -13,8 +13,8 @@ class ImGuiWindow {
 public:
     explicit ImGuiWindow(std::string title, ImGuiWindowConfig const& config = {})
         : _title{std::move(title)}
-        , _is_open{config.start_open}
         , _is_modal{config.is_modal}
+        , _is_open{config.start_open}
     {
     }
 
@@ -36,9 +36,21 @@ public:
 
 private:
     std::string                _title;
-    bool                       _is_open;
     bool                       _is_modal;
     EventDispatcher<OpenEvent> _open_event_dispatcher;
+
+    bool _is_open;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Is open", _is_open)
+        );
+    }
 };
 
 } // namespace Cool

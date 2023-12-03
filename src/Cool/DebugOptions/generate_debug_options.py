@@ -29,6 +29,11 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
+            name_in_code="log_when_computing_audio_features",
+            name_in_ui="Log when computing audio features",
+            available_in_release=True,
+        ),
+        DebugOption(
             name_in_code="texture_library_debug_view",
             name_in_ui="View Texture Library",
             available_in_release=True,

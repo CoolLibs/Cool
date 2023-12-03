@@ -199,6 +199,12 @@ auto find_block_following(
 /// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
 auto contains_word(std::string_view word, std::string_view text, std::string_view delimiters = default_word_delimiters) -> bool;
 
+/// Returns the index of the beginning of the `word` in `text`, or std::string_view::npos if the word is not found.
+/// Only starts searching at indices equal or greater to `offset`.
+/// A word is delimited by `delimiters`.
+/// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
+auto find_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters = default_word_delimiters) -> size_t;
+
 /// Removes all `//` and `/* */` comments
 auto remove_comments(std::string const&) -> std::string;
 

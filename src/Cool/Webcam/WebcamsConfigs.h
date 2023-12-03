@@ -30,6 +30,17 @@ private:
     WebcamsConfigsMap        _configs{};
     ImGuiWindow              _window{icon_fmt("Webcams Configs", ICOMOON_COG)};
     Cool::SerializerOnDemand _serializer{Cool::Path::user_data() / "webcams-configs.json", "Configs"};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Window", _window)
+        );
+    }
 };
 
 } // namespace Cool

@@ -79,6 +79,8 @@ struct Input_Camera2D {
 };
 struct Input_Time {
 };
+struct Input_Audio {
+};
 struct Input_ParticlesTextureId {
 };
 
