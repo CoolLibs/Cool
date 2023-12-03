@@ -12,8 +12,8 @@
 #include "Cool/Nodes/utilities/drawing.h"
 #include "Cool/StrongTypes/Color.h"
 #include "EditorImpl.h"
-#include "Graph.h"
 #include "NodesConfig.h"
+#include "NodesGraph.h"
 #include "NodesLibrary.h"
 #include "as_ed_id.h"
 #include "as_reg_id.h"
@@ -51,7 +51,7 @@ FrameNode::FrameNode()
 
 } // namespace internal
 
-static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& category, NodesConfig& nodes_cfg, Graph& graph)
+static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& category, NodesConfig& nodes_cfg, NodesGraph& graph)
     -> bool
 {
     bool graph_has_changed = false;
@@ -71,7 +71,7 @@ static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& c
     return graph_has_changed;
 }
 
-static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library, NodesGraph& graph) -> bool
 {
     auto const* category = library.get_category(node.category_name());
     if (!category)
@@ -158,7 +158,7 @@ static auto get_selected_links_ids() -> std::vector<ed::LinkId>
     return links;
 }
 
-static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, Graph& graph)
+static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, NodesGraph& graph)
     -> bool
 {
     ImGuiExtras::separator_text(node.definition_name());
@@ -236,7 +236,7 @@ auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, bool menu_ju
     return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
 }
 
-static auto find_pin(ed::PinId const& id, Graph const& graph) -> Pin const*
+static auto find_pin(ed::PinId const& id, NodesGraph const& graph) -> Pin const*
 {
     if (!id)
         return nullptr;
@@ -255,7 +255,7 @@ static auto find_pin(ed::PinId const& id, Graph const& graph) -> Pin const*
     return nullptr;
 }
 
-static auto is_allowed_connection(Pin const& a, Pin const& b, Graph const& graph) -> bool
+static auto is_allowed_connection(Pin const& a, Pin const& b, NodesGraph const& graph) -> bool
 {
     auto const node_id_a = graph.find_node_containing_pin(a.id());
     auto const node_id_b = graph.find_node_containing_pin(b.id());
@@ -557,7 +557,7 @@ static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed:
                       frame_nodes.end());
 }
 
-static auto process_deletions(Graph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
+static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
 {
     if (wants_to_delete_selection)
     {

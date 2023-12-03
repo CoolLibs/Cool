@@ -1,13 +1,13 @@
-#include "Graph.h"
+#include "NodesGraph.h"
 
 namespace Cool {
 
-auto Graph::add_node(Node node) -> NodeId
+auto NodesGraph::add_node(Node node) -> NodeId
 {
     return _nodes.create_raw(std::move(node));
 }
 
-void Graph::remove_node(NodeId const& node_id)
+void NodesGraph::remove_node(NodeId const& node_id)
 {
     auto const maybe_node = _nodes.get(node_id);
     if (!maybe_node)
@@ -32,24 +32,24 @@ void Graph::remove_node(NodeId const& node_id)
     _nodes.destroy(node_id);
 }
 
-void Graph::remove_all_nodes()
+void NodesGraph::remove_all_nodes()
 {
     _nodes.clear();
     _links.clear();
 }
 
-auto Graph::add_link(Link link) -> LinkId
+auto NodesGraph::add_link(Link link) -> LinkId
 {
     remove_link_going_into(link.to_pin_id);
     return _links.create_raw(link);
 }
 
-void Graph::remove_link(LinkId const& id)
+void NodesGraph::remove_link(LinkId const& id)
 {
     _links.destroy(id);
 }
 
-void Graph::remove_link_going_into(PinId const& pin_id)
+void NodesGraph::remove_link_going_into(PinId const& pin_id)
 {
     std::unique_lock lock{_links.mutex()};
     std::erase_if(_links.underlying_container(), [&](auto const& pair) {
@@ -57,7 +57,7 @@ void Graph::remove_link_going_into(PinId const& pin_id)
     });
 }
 
-void Graph::remove_link_coming_from(PinId const& pin_id)
+void NodesGraph::remove_link_coming_from(PinId const& pin_id)
 {
     std::unique_lock lock{_links.mutex()};
     std::erase_if(_links.underlying_container(), [&](auto const& pair) {
@@ -65,7 +65,7 @@ void Graph::remove_link_coming_from(PinId const& pin_id)
     });
 }
 
-auto Graph::find_node_connected_to_input_pin(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
+auto NodesGraph::find_node_connected_to_input_pin(PinId const& pin_id, OutputPin* out__output_pin) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};
     std::shared_lock links_lock{links().mutex()};
@@ -95,7 +95,7 @@ auto Graph::find_node_connected_to_input_pin(PinId const& pin_id, OutputPin* out
     return {};
 }
 
-auto Graph::find_node_connected_to_output_pin(PinId const& pin_id) const -> NodeId
+auto NodesGraph::find_node_connected_to_output_pin(PinId const& pin_id) const -> NodeId
 {
     std::shared_lock nodes_lock{nodes().mutex()};
     std::shared_lock links_lock{links().mutex()};
@@ -123,7 +123,7 @@ auto Graph::find_node_connected_to_output_pin(PinId const& pin_id) const -> Node
     return {};
 }
 
-auto Graph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
+auto NodesGraph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
 {
     for (auto const& [node_id, node] : nodes())
     {

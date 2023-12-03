@@ -1,11 +1,11 @@
 #pragma once
-#include "Graph.h"
+#include "NodesGraph.h"
 #include "as_ed_id.h"
 #include "ed.h"
 
 namespace Cool {
 
-inline auto as_reg_id(ed::NodeId const& ed_id, Graph const& graph) -> NodeId
+inline auto as_reg_id(ed::NodeId const& ed_id, NodesGraph const& graph) -> NodeId
 {
     for (auto const& [reg_id, _] : graph.nodes())
     {
@@ -15,7 +15,7 @@ inline auto as_reg_id(ed::NodeId const& ed_id, Graph const& graph) -> NodeId
     return {};
 }
 
-inline auto as_reg_id(ed::LinkId const& ed_id, Graph const& graph) -> LinkId
+inline auto as_reg_id(ed::LinkId const& ed_id, NodesGraph const& graph) -> LinkId
 {
     for (auto const& [reg_id, _] : graph.links())
     {
