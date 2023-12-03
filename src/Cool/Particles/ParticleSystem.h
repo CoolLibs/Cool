@@ -19,6 +19,11 @@ public:
     void render();
     void update();
 
+    auto simulation_shader() -> OpenGL::ComputeShader& { return _simulation_shader; }
+    auto simulation_shader() const -> OpenGL::ComputeShader const& { return _simulation_shader; }
+    auto render_shader() -> OpenGL::Shader& { return _render_shader; }
+    auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
+
 private:
     SSBO<float> _positions{0};
     size_t      _particles_count{};
