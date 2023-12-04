@@ -26,6 +26,7 @@ public:
 
 private:
     SSBO<float> _positions{0};
+    SSBO<float> _velocities{1};
     size_t      _particles_count{};
 
     OpenGL::Shader          _render_shader;

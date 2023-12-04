@@ -22,15 +22,18 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 {
     static constexpr size_t dimension{2};
     std::vector<float>      positions;
+    std::vector<float>      velocities;
     positions.reserve(_particles_count * dimension);
     for (size_t i = 0; i < _particles_count; ++i)
     {
         for (size_t j = 0; j < dimension; ++j)
         {
             positions.push_back(Random::range_minus1to1());
+            velocities.push_back(0.f);
         }
     }
     _positions.upload_data(positions);
+    _velocities.upload_data(velocities);
 
     glpp::bind_vertex_array(_render_vao);
     glpp::bind_vertex_buffer(_render_vbo);
