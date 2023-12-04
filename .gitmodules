@@ -16,9 +16,6 @@
 [submodule "lib/scope_guard"]
 	path = lib/scope_guard
 	url = https://github.com/ricab/scope_guard
-[submodule "lib/glm"]
-	path = lib/glm
-	url = https://github.com/CoolLibs/glm
 [submodule "lib/easy-shaderc"]
 	path = lib/easy-shaderc
 	url = https://github.com/CoolLibs/easy-shaderc
