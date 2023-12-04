@@ -21,13 +21,10 @@ public:
 
 private:
     auto compute_time() const -> float;
-    auto std_time() const -> std::chrono::steady_clock::time_point { return std::chrono::steady_clock::now(); }
 
 private:
-    std::chrono::steady_clock::time_point _initial_std_time;
-    std::chrono::steady_clock::time_point _current_std_time;
+    std::chrono::steady_clock::time_point _offset_with_std_time; // Allows us to set_time() as we wish
     std::chrono::steady_clock::time_point _std_time_when_paused;
-    float                                 _offset_with_std_time{0.f}; // Allows us to set_time() as we wish
 
     float _delta_time{0.f};
     float _prev_time{0.f};
