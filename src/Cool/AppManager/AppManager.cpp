@@ -15,6 +15,7 @@
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
+#include "nfd.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
 
 #if defined(COOL_VULKAN)
@@ -75,7 +76,7 @@ void AppManager::run(std::function<void()> on_update)
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
-        NFD_Init();
+        NFD::Guard nfd_guard{};
         while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
         {
             do_update();
@@ -87,6 +88,7 @@ void AppManager::run(std::function<void()> on_update)
         glfwWaitEvents();
     }
 #else
+    NFD::Guard nfd_guard{};
     while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
     {
         glfwPollEvents();
