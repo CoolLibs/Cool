@@ -190,6 +190,11 @@ auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::fil
     return std::filesystem::path{path.get()};
 }
 
+auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
+{
+    return path.empty() ? "" : std::filesystem::absolute(path);
+}
+
 auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
 {
     auto        path   = NFD::UniquePath{};
@@ -197,7 +202,7 @@ auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::file
         path,
         args.file_filters.data(),
         static_cast<nfdfiltersize_t>(args.file_filters.size()),
-        std::filesystem::absolute(args.initial_folder).string().c_str()
+        make_absolute(args.initial_folder).string().c_str()
     );
     if (result != NFD_OKAY)
         return std::nullopt;
