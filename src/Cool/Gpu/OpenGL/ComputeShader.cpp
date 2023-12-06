@@ -57,6 +57,7 @@ auto generate_boilerplate_for_size(glm::uvec3 working_group_size) -> std::string
 {
     return std::string(R"V0G0N(
 #version 430
+#define COOL_COMPUTE_SHADER // Used to know if we can use some functions that are specific to compute shaders / fragment shaders.
 
 uniform uvec3 DispatchSize;
 
