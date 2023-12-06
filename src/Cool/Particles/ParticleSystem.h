@@ -8,6 +8,7 @@ namespace Cool {
 
 struct ParticlesShadersCode {
     std::string simulation;
+    std::string init;
     std::string vertex;
     std::string fragment;
 };
@@ -21,6 +22,8 @@ public:
 
     auto simulation_shader() -> OpenGL::ComputeShader& { return _simulation_shader; }
     auto simulation_shader() const -> OpenGL::ComputeShader const& { return _simulation_shader; }
+    auto init_shader() -> OpenGL::ComputeShader& { return _init_shader; }
+    auto init_shader() const -> OpenGL::ComputeShader const& { return _init_shader; }
     auto render_shader() -> OpenGL::Shader& { return _render_shader; }
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
 
@@ -34,6 +37,7 @@ private:
     glpp::UniqueBuffer      _render_vbo{};
 
     OpenGL::ComputeShader _simulation_shader;
+    OpenGL::ComputeShader _init_shader;
 };
 
 } // namespace Cool

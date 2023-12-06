@@ -19,21 +19,13 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
           }}
       }
     , _simulation_shader{64, shader_code.simulation}
+    , _init_shader{64, shader_code.init}
 {
-    static constexpr size_t dimension{2};
-    std::vector<float>      positions;
-    std::vector<float>      velocities;
-    positions.reserve(_particles_count * dimension);
-    for (size_t i = 0; i < _particles_count; ++i)
-    {
-        for (size_t j = 0; j < dimension; ++j)
-        {
-            positions.push_back(Random::range_minus1to1());
-            velocities.push_back(0.f);
-        }
-    }
-    _positions.upload_data(positions);
-    _velocities.upload_data(velocities);
+    _init_shader.bind();
+
+    _positions.upload_data(_particles_count * 2, nullptr);
+    _velocities.upload_data(_particles_count * 2, nullptr);
+    _init_shader.compute({_particles_count, 1, 1});
 
     glpp::bind_vertex_array(_render_vao);
     glpp::bind_vertex_buffer(_render_vbo);
