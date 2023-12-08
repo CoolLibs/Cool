@@ -38,8 +38,8 @@ using PresetId = reg::Id<Preset2>;
 ///
 /// Note that the default presets are read only! Users cannot change them through the UI.
 struct PresetsPaths {
-    std::filesystem::path user_defined_presets;
-    std::filesystem::path default_presets;
+    std::filesystem::path user_defined_presets{};
+    std::filesystem::path default_presets{};
 };
 
 class PresetManager {
