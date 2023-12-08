@@ -1,4 +1,5 @@
 #pragma once
+#include <glpp/UniqueHandles/UniqueRenderBuffer.h>
 #if defined(COOL_OPENGL)
 
 #include "FrameBuffer.h"
@@ -8,7 +9,6 @@ namespace Cool {
 class RenderBufferFB : public FrameBuffer {
 public:
     RenderBufferFB() = default;
-    ~RenderBufferFB();
 
 private:
     void createAttachments(img::Size size) override;
@@ -16,7 +16,7 @@ private:
     void attachAttachments() override;
 
 private:
-    GLuint m_colorRenderBufferId = static_cast<GLuint>(-1);
+    std::optional<glpp::UniqueRenderbuffer> m_colorRenderBufferId{};
 };
 
 } // namespace Cool

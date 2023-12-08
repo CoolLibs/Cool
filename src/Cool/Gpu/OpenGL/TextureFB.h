@@ -1,17 +1,16 @@
 #pragma once
 #if defined(COOL_OPENGL)
-
 #include "FrameBuffer.h"
+#include "glpp/glpp.hpp"
 
 namespace Cool {
 
 class TextureFB : public FrameBuffer {
 public:
     TextureFB() = default;
-    ~TextureFB();
 
     void   attachTextureToSlot(unsigned int slot) const;
-    GLuint textureID() const { return m_colorTextureId; }
+    GLuint textureID() const { return m_colorTextureId->id(); }
 
 private:
     void createAttachments(img::Size size) override;
@@ -19,7 +18,7 @@ private:
     void attachAttachments() override;
 
 private:
-    GLuint m_colorTextureId = static_cast<GLuint>(-1);
+    std::optional<glpp::UniqueTexture2D> m_colorTextureId{};
 };
 
 } // namespace Cool
