@@ -137,7 +137,7 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();
-    if (TextureLibrary_FromFile::instance().update())
+    if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
         _app.trigger_rerender();
     _app.update();
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
