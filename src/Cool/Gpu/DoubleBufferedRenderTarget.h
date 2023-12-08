@@ -5,7 +5,7 @@ namespace Cool {
 
 class DoubleBufferedRenderTarget {
 public:
-    auto read_target() -> Cool::RenderTarget const&;
+    auto read_target() const -> Cool::RenderTarget const&;
     auto write_target() -> Cool::RenderTarget&;
 
     void swap_buffers();

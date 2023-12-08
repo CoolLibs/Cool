@@ -2,7 +2,7 @@
 
 namespace Cool {
 
-auto DoubleBufferedRenderTarget::read_target() -> Cool::RenderTarget const&
+auto DoubleBufferedRenderTarget::read_target() const -> Cool::RenderTarget const&
 {
     return _rt1_is_read
                ? _rt1
