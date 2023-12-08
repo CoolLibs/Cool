@@ -26,6 +26,7 @@ public:
     auto init_shader() const -> OpenGL::ComputeShader const& { return _init_shader; }
     auto render_shader() -> OpenGL::Shader& { return _render_shader; }
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
+    void set_simulation_shader(std::string const& shader_code);
 
 private:
     SSBO<float> _positions{0};

@@ -58,4 +58,8 @@ void ParticleSystem::update()
     _simulation_shader.compute({_particles_count, 1, 1});
 }
 
+void ParticleSystem::set_simulation_shader(std::string const& shader_code)
+{
+    _simulation_shader = OpenGL::ComputeShader{64, shader_code};
+}
 } // namespace Cool
