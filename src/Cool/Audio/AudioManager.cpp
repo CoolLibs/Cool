@@ -132,21 +132,26 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_tim
     if (_current_input_mode != AudioInputMode::File)
         return;
 
+    if (!clock.is_playing()
+        || clock.is_being_forced_to_not_respect_realtime() // Time is paused or frozen because the user is using the input text of the timeline to set the time value, or dragging the timeline.
+    )
+    {
+        Audio::player().pause();
+    }
+    else
+    {
+        Audio::player().play();
+    }
+
+    force_sync_time |= !Audio::player().is_playing(); // While paused, we can force syncing without hearing audio glitches. And this helps making it smoother when we drag time on the timeline: the audio updates immediately and not through increments of 0.5 seconds.
     if (force_sync_time
         || std::abs(clock.time() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
     )
     {
-        Audio::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
-        _audio_data_has_been_invalidated = true;
+        // NB: We sync the player even when it is paused because the audio features need the player to always be synced with the clock in order to get the data from the current time.
+        if (Audio::player().set_time(clock.time()))
+            _audio_data_has_been_invalidated = true;
     }
-
-    if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
-        Audio::player().play();
-    else
-        Audio::player().pause();
-
-    if (clock.is_being_forced_to_not_respect_realtime())
-        _audio_data_has_been_invalidated = true;
 }
 
 void AudioManager::invalidate_caches()
