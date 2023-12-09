@@ -28,8 +28,8 @@ void serialize(Archive& archive, Audio::PlayerProperties& properties)
 namespace Cool {
 
 enum class AudioInputMode {
-    File,
     Device,
+    File,
 };
 
 class AudioManager {

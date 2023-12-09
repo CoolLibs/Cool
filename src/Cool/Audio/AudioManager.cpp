@@ -184,9 +184,9 @@ static auto to_string(AudioInputMode mode) -> const char*
     switch (mode)
     {
     case AudioInputMode::File:
-        return "File";
+        return ICOMOON_FILE_MUSIC " File";
     case AudioInputMode::Device:
-        return "Device";
+        return ICOMOON_MIC " Device";
     }
     return "";
 }
