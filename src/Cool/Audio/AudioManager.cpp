@@ -18,15 +18,15 @@ AudioManager::AudioManager()
 
 auto AudioManager::current_input() -> internal::IAudioInput&
 {
-    if (_current_input_mode == AudioInputMode::Device)
-        return _device_input;
-    return _file_input;
+        if (_current_input_mode == AudioInputMode::Device)
+            return _device_input;
+        return _file_input;
 }
 auto AudioManager::current_input() const -> internal::IAudioInput const&
 {
-    if (_current_input_mode == AudioInputMode::Device)
-        return _device_input;
-    return _file_input;
+        if (_current_input_mode == AudioInputMode::Device)
+            return _device_input;
+        return _file_input;
 }
 
 auto AudioManager::volume() const -> float
@@ -168,15 +168,18 @@ void AudioManager::update(std::function<void()> const& on_audio_data_changed)
         _audio_data_has_been_invalidated = false;
     }
     current_input().update();
-    _device_input.set_nb_of_retained_samples(
-        static_cast<size_t>(std::max(
-            std::max(
-                nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
-                nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
-            ),
-            nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
-        ))
-    );
+    if (_current_input_mode == AudioInputMode::Device)
+    {
+        _device_input.set_nb_of_retained_samples(
+            static_cast<size_t>(std::max(
+                std::max(
+                    nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
+                    nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
+                ),
+                nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
+            ))
+        );
+    }
 }
 
 static auto to_string(AudioInputMode mode) -> const char*
