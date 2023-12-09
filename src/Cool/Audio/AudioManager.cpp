@@ -160,7 +160,8 @@ void AudioManager::invalidate_caches()
 
 void AudioManager::update(std::function<void()> const& on_audio_data_changed)
 {
-    if (current_input().is_playing() || _audio_data_has_been_invalidated)
+    _audio_data_has_been_invalidated |= current_input().is_playing();
+    if (_audio_data_has_been_invalidated)
     {
         invalidate_caches();
         on_audio_data_changed();
@@ -197,7 +198,6 @@ void AudioManager::set_current_input_mode(AudioInputMode mode)
     current_input().stop();
     _current_input_mode = mode;
     current_input().start();
-    invalidate_caches();
     _audio_data_has_been_invalidated = true;
 }
 
