@@ -137,11 +137,16 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_tim
     )
     {
         Audio::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+        _audio_data_has_been_invalidated = true;
     }
+
     if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
         Audio::player().play();
     else
         Audio::player().pause();
+
+    if (clock.is_being_forced_to_not_respect_realtime())
+        _audio_data_has_been_invalidated = true;
 }
 
 void AudioManager::invalidate_caches()
