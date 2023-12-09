@@ -7,9 +7,9 @@
 
 namespace Cool {
 
-// TODO(Audio-Philippe) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture
+// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture
 
-// TODO(Audio-Philippe) Average the spectrum across several frames, to make it look smoother.
+// TODO(Audio) Average the spectrum across several frames, to make it look smoother.
 
 AudioManager::AudioManager()
 {
@@ -71,7 +71,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
                 current_input().for_each_audio_frame(N, [&](float frame) {
                     float const t = static_cast<float>(i) / static_cast<float>(N - 1);
                     i++;
-                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (We're gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (We're gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
                     callback(frame * window * _spectrum_height_scale);
                 });
             },
