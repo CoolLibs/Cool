@@ -427,7 +427,6 @@ auto contains_word(std::string_view word, std::string_view text, std::string_vie
     return find_word(word, text, 0, delimiters) != std::string_view::npos;
 }
 
-// TODO(Particles) Don't skip if first check is not a word, continue checking
 auto find_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters) -> size_t
 {
     if (word.empty())
@@ -448,7 +447,7 @@ auto find_word(std::string_view word, std::string_view text, size_t offset, std:
                                   || there_is_a_delimiter_at(index + word.size());
 
     if (!is_beginning_of_a_word || !is_end_of_a_word)
-        return std::string_view::npos;
+        return find_word(word, text, index + word.size(), delimiters);
 
     return index;
 }

@@ -339,6 +339,7 @@ TEST_CASE("contains_word()")
     CHECK(Cool::String::contains_word("", "Hello World") == false);
     CHECK(Cool::String::contains_word("", "") == false);
     CHECK(Cool::String::contains_word("Hello World", "Hello World") == true);
+    CHECK(Cool::String::contains_word("_time", "_delta_time _time") == true);
 }
 
 TEST_CASE("remove_comments()")
