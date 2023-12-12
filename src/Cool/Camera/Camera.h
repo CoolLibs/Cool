@@ -2,6 +2,7 @@
 
 #include <Cool/Constants/Constants.h>
 #include "Projection_Perspective.h"
+#include "glm/matrix.hpp"
 
 namespace Cool {
 
@@ -14,6 +15,7 @@ public:
     auto      projection_matrix(float aspect_ratio) const -> glm::mat4 { return Cool::projection_matrix(_projection, aspect_ratio); }
     auto      inverse_projection_matrix(float aspect_ratio) const -> glm::mat4 { return glm::inverse(projection_matrix(aspect_ratio)); }
     auto      inverse_view_projection_matrix(float aspect_ratio) const -> glm::mat4;
+    auto      view_projection_matrix(float aspect_ratio) const -> glm::mat4 { return glm::inverse(inverse_view_projection_matrix(aspect_ratio)); }
     glm::vec3 right_axis() const;
     glm::vec3 up_axis() const;
     glm::vec3 front_axis() const;

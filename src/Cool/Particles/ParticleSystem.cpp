@@ -23,8 +23,8 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 {
     _init_shader.bind();
 
-    _positions.upload_data(_particles_count * 2, nullptr);
-    _velocities.upload_data(_particles_count * 2, nullptr);
+    _positions.upload_data(_particles_count * 3, nullptr);
+    _velocities.upload_data(_particles_count * 3, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 
     glpp::bind_vertex_array(_render_vao);
