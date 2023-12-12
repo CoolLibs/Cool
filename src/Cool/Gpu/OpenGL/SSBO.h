@@ -49,6 +49,12 @@ public:
         return *this;
     }
 
+    void bind()
+    {
+        GLDebug(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _binding, _id));
+        GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
+    }
+
     /// <summary>
     /// Sends some data (an array of T) from the CPU (your C++ code) to the GPU (your shader code).
     /// </summary>
@@ -57,7 +63,7 @@ public:
     /// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
     void upload_data(size_t nb_of_elements, T* data, GLenum usage = GL_STREAM_READ)
     {
-        GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
+        bind();
         GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
     }
 
