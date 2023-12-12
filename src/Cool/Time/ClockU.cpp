@@ -9,7 +9,7 @@
 
 namespace Cool::ClockU {
 
-void imgui_timeline(Cool::Clock& clock)
+void imgui_timeline(Cool::Clock& clock, std::function<void()> const &on_time_reset)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0.f, 0.f});
     {
@@ -19,6 +19,7 @@ void imgui_timeline(Cool::Clock& clock)
         if (ImGui::Button(ICOMOON_PREVIOUS2, button_size, ImDrawFlags_RoundCornersLeft))
         {
             clock.set_time(0.f);
+            on_time_reset();
         }
         ImGui::PopStyleVar();
         ImGui::SetItemTooltip("%s", "Reset time to 0.");
