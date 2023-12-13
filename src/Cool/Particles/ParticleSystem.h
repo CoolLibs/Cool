@@ -28,11 +28,14 @@ public:
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
     void set_simulation_shader(std::string const& shader_code);
     void reset();
+    void set_particles_count(size_t particles_count);
+    void set_particle_size(float particle_size);
 
 private:
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
     size_t      _particles_count{};
+    float       _particle_size{};
 
     OpenGL::Shader          _render_shader;
     glpp::UniqueVertexArray _render_vao{};

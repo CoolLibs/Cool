@@ -16,7 +16,8 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
           Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
               .kind        = Cool::ShaderKind::Fragment,
               .source_code = shader_code.fragment,
-          }}}
+          }}
+      }
     , _simulation_shader{64, shader_code.simulation}
     , _init_shader{64, shader_code.init}
 {
@@ -39,7 +40,8 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 
             -1.f, -1.f, 0.0f, 0.0f,
             +1.f, +1.f, 1.0f, 1.0f,
-            -1.f, +1.f, 0.0f, 1.0f}
+            -1.f, +1.f, 0.0f, 1.0f
+        }
     );
 }
 
@@ -58,6 +60,7 @@ void ParticleSystem::update()
     _velocities.bind();
     _simulation_shader.bind();
     _simulation_shader.compute({_particles_count, 1, 1});
+    _simulation_shader.compute({_particle_size, 1, 1});
 }
 
 void ParticleSystem::set_simulation_shader(std::string const& shader_code)
@@ -71,6 +74,21 @@ void ParticleSystem::reset()
     _velocities.bind();
     _init_shader.bind();
     _init_shader.compute({_particles_count, 1, 1});
+    _init_shader.compute({_particle_size, 1, 1});
 }
 
+void ParticleSystem::set_particles_count(size_t _particles_count)
+{
+    _positions.bind();
+    _velocities.bind();
+    _init_shader.bind();
+    _positions.upload_data(_particles_count * 2, nullptr);
+    _velocities.upload_data(_particles_count * 2, nullptr);
+    _init_shader.compute({_particles_count, 1, 1});
+}
+
+void ParticleSystem::set_particle_size(float particle_size)
+{
+    _particle_size = particle_size;
+}
 } // namespace Cool
