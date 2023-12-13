@@ -8,6 +8,12 @@ auto DoubleBufferedRenderTarget::read_target() const -> Cool::RenderTarget const
                ? _rt1
                : _rt2;
 }
+auto DoubleBufferedRenderTarget::read_target() -> Cool::RenderTarget&
+{
+    return _rt1_is_read
+               ? _rt1
+               : _rt2;
+}
 
 auto DoubleBufferedRenderTarget::write_target() -> Cool::RenderTarget&
 {
@@ -26,6 +32,11 @@ void DoubleBufferedRenderTarget::clear_render_targets()
         glClearColor(0.f, 0.f, 0.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT);
     });
+}
+
+void DoubleBufferedRenderTarget::set_read_target_size_immediately(img::Size const& size)
+{
+    read_target().set_size_immediately(size);
 }
 
 void DoubleBufferedRenderTarget::swap_buffers()

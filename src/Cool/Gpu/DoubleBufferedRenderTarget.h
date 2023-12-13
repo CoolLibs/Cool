@@ -11,6 +11,10 @@ public:
     void swap_buffers();
 
     void clear_render_targets();
+    void set_read_target_size_immediately(img::Size const&);
+
+private:
+    auto read_target() -> Cool::RenderTarget&;
 
 private:
     Cool::RenderTarget _rt1{};
