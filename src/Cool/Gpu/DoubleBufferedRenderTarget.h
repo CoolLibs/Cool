@@ -10,6 +10,8 @@ public:
 
     void swap_buffers();
 
+    void clear_render_targets();
+
 private:
     Cool::RenderTarget _rt1{};
     Cool::RenderTarget _rt2{};
