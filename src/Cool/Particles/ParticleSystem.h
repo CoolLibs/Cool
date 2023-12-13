@@ -35,7 +35,7 @@ private:
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
     size_t      _particles_count{};
-    float       _particle_size{};
+    SSBO<float> _sizes{2};
 
     OpenGL::Shader          _render_shader;
     glpp::UniqueVertexArray _render_vao{};

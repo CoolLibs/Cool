@@ -25,6 +25,7 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 
     _positions.upload_data(_particles_count * 2, nullptr);
     _velocities.upload_data(_particles_count * 2, nullptr);
+    _sizes.upload_data(_particles_count, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 
     glpp::bind_vertex_array(_render_vao);
@@ -50,6 +51,7 @@ void ParticleSystem::render()
     _render_shader.bind();
     _positions.bind();
     _velocities.bind();
+    _sizes.bind();
     glpp::bind_vertex_array(_render_vao);
     glpp::draw_arrays_instanced(_render_vao, glpp::PrimitiveDrawMode::Triangles, 0, 6, static_cast<GLsizei>(_particles_count));
 }
@@ -58,9 +60,9 @@ void ParticleSystem::update()
 {
     _positions.bind();
     _velocities.bind();
+    _sizes.bind();
     _simulation_shader.bind();
     _simulation_shader.compute({_particles_count, 1, 1});
-    _simulation_shader.compute({_particle_size, 1, 1});
 }
 
 void ParticleSystem::set_simulation_shader(std::string const& shader_code)
@@ -72,23 +74,25 @@ void ParticleSystem::reset()
 {
     _positions.bind();
     _velocities.bind();
+    _sizes.bind();
     _init_shader.bind();
     _init_shader.compute({_particles_count, 1, 1});
-    _init_shader.compute({_particle_size, 1, 1});
 }
 
 void ParticleSystem::set_particles_count(size_t _particles_count)
 {
     _positions.bind();
     _velocities.bind();
+    _sizes.bind();
     _init_shader.bind();
     _positions.upload_data(_particles_count * 2, nullptr);
     _velocities.upload_data(_particles_count * 2, nullptr);
+    _sizes.upload_data(_particles_count, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 }
 
 void ParticleSystem::set_particle_size(float particle_size)
 {
-    _particle_size = particle_size;
+    _sizes.bind();
 }
 } // namespace Cool
