@@ -16,8 +16,7 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
           Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
               .kind        = Cool::ShaderKind::Fragment,
               .source_code = shader_code.fragment,
-          }}
-      }
+          }}}
     , _simulation_shader{64, shader_code.simulation}
     , _init_shader{64, shader_code.init}
 {
@@ -26,6 +25,7 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
     _positions.upload_data(_particles_count * 2, nullptr);
     _velocities.upload_data(_particles_count * 2, nullptr);
     _sizes.upload_data(_particles_count, nullptr);
+    _lifetimes.upload_data(_particles_count, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 
     glpp::bind_vertex_array(_render_vao);
@@ -41,8 +41,7 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 
             -1.f, -1.f, 0.0f, 0.0f,
             +1.f, +1.f, 1.0f, 1.0f,
-            -1.f, +1.f, 0.0f, 1.0f
-        }
+            -1.f, +1.f, 0.0f, 1.0f}
     );
 }
 
