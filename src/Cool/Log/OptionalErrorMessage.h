@@ -39,6 +39,8 @@ public:
         MessageConsole&                                         console = Log::ToUser::console()
     ) const;
 
+    auto error_message() const -> std::optional<std::string> const& { return _message; }
+
 private:
     auto gen_message(std::function<Cool::Message(const std::string&)> const& transform) const -> Message;
 
