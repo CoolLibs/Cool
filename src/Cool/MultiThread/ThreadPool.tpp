@@ -40,11 +40,11 @@ void ThreadPool<Job>::start()
 {
     assert(!_running && "You already called start.");
     _threads.reserve(_nb_threads);
+    _running = true;
     for (size_t i = 0; i < _nb_threads; ++i)
     {
         _threads.emplace_back([this]() { check_for_jobs(); });
     }
-    _running = true;
 }
 
 template<typename Job>
