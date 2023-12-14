@@ -13,7 +13,7 @@ public:
     auto delta_time() const -> float override;
     auto time() const -> float override;
 
-    void set_time(float new_time) override;
+    void set_time(float new_time, bool force_delta_time_to_ignore_the_change = false) override;
     void update() override;
 
     void play() override;

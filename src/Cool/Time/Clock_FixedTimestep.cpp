@@ -25,7 +25,7 @@ float Clock_FixedTimestep::time() const
     return static_cast<float>(_frames_count) * _dt;
 }
 
-void Clock_FixedTimestep::set_time(float new_time)
+void Clock_FixedTimestep::set_time(float new_time, bool /* force_delta_time_to_ignore_the_change */)
 {
     _frames_count = static_cast<long long int>(std::round(new_time / _dt));
 }

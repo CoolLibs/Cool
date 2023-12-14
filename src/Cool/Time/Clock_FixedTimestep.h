@@ -12,7 +12,7 @@ public:
     float delta_time() const override;
     float time() const override;
 
-    void set_time(float new_time) override;
+    void set_time(float new_time, bool force_delta_time_to_ignore_the_change = false) override;
     void update() override;
 
 private:

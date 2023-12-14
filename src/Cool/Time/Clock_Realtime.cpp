@@ -29,9 +29,11 @@ auto Clock_Realtime::compute_time() const -> float
     return std::chrono::duration<float>{now - _offset_with_std_time}.count();
 }
 
-void Clock_Realtime::set_time(float new_time)
+void Clock_Realtime::set_time(float new_time, bool force_delta_time_to_ignore_the_change)
 {
     _offset_with_std_time += std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(time() - new_time));
+    if (force_delta_time_to_ignore_the_change)
+        _time = compute_time();
 }
 
 void Clock_Realtime::update()
