@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include <Cool/Constants/Constants.h>
 #include <glm/gtc/matrix_access.hpp>
+#include "glm/fwd.hpp"
 
 namespace Cool {
 
@@ -50,6 +51,11 @@ void Camera::rotate(float angle, glm::vec3 const& axis)
 auto Camera::inverse_view_projection_matrix(float aspect_ratio) const -> glm::mat4
 {
     return transform_matrix() * inverse_projection_matrix(aspect_ratio);
+}
+
+auto Camera::view_projection_matrix(float aspect_ratio) const -> glm::mat4
+{
+    return projection_matrix(aspect_ratio) * view_matrix();
 }
 
 } // namespace Cool

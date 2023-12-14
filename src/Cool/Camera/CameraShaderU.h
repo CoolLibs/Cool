@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cool/Gpu/OpenGL/Shader.h>
+#include "Cool/Camera/Camera.h"
 
 namespace Cool::CameraShaderU {
 
