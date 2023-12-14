@@ -6,8 +6,9 @@
 
 namespace Cool {
 
-ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode const& shader_code)
+ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode const& shader_code, size_t const& dimension)
     : _particles_count{particles_count}
+    , _dimension(dimension)
     , _render_shader{
           Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
               .kind        = Cool::ShaderKind::Vertex,
@@ -23,8 +24,8 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
 {
     _init_shader.bind();
 
-    _positions.upload_data(_particles_count * 2, nullptr);
-    _velocities.upload_data(_particles_count * 2, nullptr);
+    _positions.upload_data(_particles_count * _dimension, nullptr);
+    _velocities.upload_data(_particles_count * _dimension, nullptr);
     _sizes.upload_data(_particles_count, nullptr);
     _lifetimes.upload_data(_particles_count, nullptr);
     _init_shader.compute({_particles_count, 1, 1});

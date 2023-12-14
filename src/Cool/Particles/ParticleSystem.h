@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include <glpp/extended.hpp>
 #include "Cool/Gpu/OpenGL/ComputeShader.h"
 #include "Cool/Gpu/OpenGL/SSBO.h"
@@ -15,7 +16,7 @@ struct ParticlesShadersCode {
 
 class ParticleSystem {
 public:
-    explicit ParticleSystem(size_t particles_count = 500, ParticlesShadersCode const& = {});
+    explicit ParticleSystem(size_t particles_count = 500, ParticlesShadersCode const& = {}, size_t const& dimension = 2);
 
     void render();
     void update();
@@ -26,6 +27,7 @@ public:
     auto init_shader() const -> OpenGL::ComputeShader const& { return _init_shader; }
     auto render_shader() -> OpenGL::Shader& { return _render_shader; }
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
+    auto dimension() const -> size_t const& { return _dimension; }
     void set_simulation_shader(std::string const& shader_code);
     void reset();
     void set_particles_count(size_t particles_count);
@@ -40,6 +42,7 @@ private:
     size_t      _particles_count{};
     SSBO<float> _sizes{2};
     SSBO<float> _lifetimes{3};
+    size_t      _dimension;
 
     OpenGL::Shader          _render_shader;
     glpp::UniqueVertexArray _render_vao{};
