@@ -32,6 +32,9 @@ public:
     void set_particle_size(float particle_size);
 
 private:
+    void bind_SSBOs();
+
+private:
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
     size_t      _particles_count{};
