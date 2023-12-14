@@ -20,7 +20,7 @@ public:
 private:
     auto estimated_remaining_time() -> float;
     void update_time_estimate();
-    void export_frame(Polaroid polaroid, std::filesystem::path file_path);
+    void export_frame(Polaroid polaroid, std::filesystem::path const& file_path);
 
 private:
     std::filesystem::path _folder_path;

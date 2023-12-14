@@ -95,7 +95,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
     extra_widgets();
 }
 
-void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path file_path)
+void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path const& file_path)
 {
     polaroid.render(_clock.time(), _clock.delta_time(), _size);
 
