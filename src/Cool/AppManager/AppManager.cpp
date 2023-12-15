@@ -70,7 +70,8 @@ void AppManager::run(std::function<void()> on_update)
         }
         catch (std::exception const& e)
         {
-            Cool::Log::ToUser::error("UNKNOWN ERROR", e.what());
+            Cool::Log::ToUser::error("UNKNOWN ERROR 1", e.what());
+            assert(false); // Please catch the error where appropriate, and handle it properly.
         }
     };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
@@ -139,7 +140,15 @@ void AppManager::update()
         _app.trigger_rerender();
     if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
         _app.trigger_rerender();
-    _app.update();
+    try
+    {
+        _app.update();
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
+        assert(false); // Please catch the error where appropriate, and handle it properly.
+    }
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
