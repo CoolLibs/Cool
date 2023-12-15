@@ -7,7 +7,7 @@ Exception::Exception(OptionalErrorMessage message)
     : _error_message{std::move(message)}
 {}
 
-auto Exception::what() const -> const char*
+auto Exception::what() const noexcept -> const char*
 {
     auto const& msg = _error_message.error_message();
     if (msg.has_value())
