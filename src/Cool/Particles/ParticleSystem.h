@@ -42,6 +42,7 @@ private:
     size_t      _particles_count{};
     SSBO<float> _sizes{2};
     SSBO<float> _lifetimes{3};
+    SSBO<float> _colors{4};
     size_t      _dimension;
 
     OpenGL::Shader          _render_shader;

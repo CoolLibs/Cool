@@ -22,13 +22,15 @@ ParticleSystem::ParticleSystem(size_t particles_count, ParticlesShadersCode cons
     , _simulation_shader{64, shader_code.simulation}
     , _init_shader{64, shader_code.init}
 {
-    _init_shader.bind();
+    set_particles_count(_particles_count);
+    // _init_shader.bind();
 
-    _positions.upload_data(_particles_count * _dimension, nullptr);
-    _velocities.upload_data(_particles_count * _dimension, nullptr);
-    _sizes.upload_data(_particles_count, nullptr);
-    _lifetimes.upload_data(_particles_count, nullptr);
-    _init_shader.compute({_particles_count, 1, 1});
+    // _positions.upload_data(_particles_count * _dimension, nullptr);
+    // _velocities.upload_data(_particles_count * _dimension, nullptr);
+    // _sizes.upload_data(_particles_count, nullptr);
+    // _lifetimes.upload_data(_particles_count, nullptr);
+    // _colors.upload_data(_particles_count * 4, nullptr);
+    // _init_shader.compute({_particles_count, 1, 1});
 
     glpp::bind_vertex_array(_render_vao);
     glpp::bind_vertex_buffer(_render_vbo);
@@ -82,6 +84,7 @@ void ParticleSystem::set_particles_count(size_t _particles_count)
     _positions.upload_data(_particles_count * 2, nullptr);
     _velocities.upload_data(_particles_count * 2, nullptr);
     _sizes.upload_data(_particles_count, nullptr);
+    _colors.upload_data(_particles_count * 4, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 }
 
@@ -95,6 +98,7 @@ void ParticleSystem::bind_SSBOs()
     _positions.bind();
     _velocities.bind();
     _sizes.bind();
+    _colors.bind();
 }
 
 } // namespace Cool
