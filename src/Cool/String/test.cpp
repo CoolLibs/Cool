@@ -127,6 +127,15 @@ TEST_CASE("[Cool::String] replace()")
     }
 }
 
+TEST_CASE("[Cool::String] find_beginning_of_word()")
+{
+    CHECK(Cool::String::find_beginning_of_word("ell", "Hello World") == std::string::npos);
+    CHECK(Cool::String::find_beginning_of_word("Hell", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Hello", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Hello Wor", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Wor", "Hello World") == 6);
+}
+
 TEST_CASE("[Cool::String] find_matching_pair()")
 {
     SUBCASE("When there is nested delimiters")

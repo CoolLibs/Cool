@@ -48,6 +48,18 @@ auto replace_all_words(std::string str, std::string_view from, std::string_view 
     return str;
 }
 
+auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    auto word_position = find_beginning_of_word(from, str, 0, delimiters);
+    while (word_position != std::string_view::npos)
+    {
+        str.replace(word_position, from.size(), to);
+        word_position = find_beginning_of_word(from, str, word_position + to.size(), delimiters);
+    }
+
+    return str;
+}
+
 auto replace_between_delimiters(const ReplacementInput& in) -> std::string
 {
     auto next = replace_next(in, 0);
@@ -441,6 +453,28 @@ auto find_word(std::string_view word, std::string_view text, size_t offset, std:
 
     if (!is_beginning_of_a_word || !is_end_of_a_word)
         return find_word(word, text, index + word.size(), delimiters);
+
+    return index;
+}
+
+auto find_beginning_of_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters) -> size_t
+{
+    if (word.empty())
+        return std::string_view::npos;
+
+    auto const index = text.find(word, offset);
+    if (index == std::string_view::npos)
+        return std::string_view::npos;
+
+    auto const there_is_a_delimiter_at = [&](size_t index) -> bool {
+        return delimiters.find(text[index]) != std::string_view::npos;
+    };
+
+    bool const is_beginning_of_a_word = index == 0
+                                        || there_is_a_delimiter_at(index - 1);
+
+    if (!is_beginning_of_a_word)
+        return find_beginning_of_word(word, text, index + word.size(), delimiters);
 
     return index;
 }
