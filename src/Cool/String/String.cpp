@@ -2,6 +2,7 @@
 #include <charconv>
 #include <exception>
 #include <glm/detail/qualifier.hpp>
+#include <string>
 #include <string_view>
 #include "Cool/String/String.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
@@ -22,7 +23,7 @@ auto to_lower(std::string_view str) -> std::string
     return res;
 }
 
-void replace_all(std::string& str, std::string_view from, std::string_view to)
+void replace_all_inplace(std::string& str, std::string_view from, std::string_view to)
 {
     if (from.empty())
     {
@@ -36,7 +37,13 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
-auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+auto replace_all(std::string str, std::string_view from, std::string_view to) -> std::string
+{
+    replace_all_inplace(str, from, to);
+    return str;
+}
+
+void replace_all_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters)
 {
     auto word_position = find_word(from, str, 0, delimiters);
     while (word_position != std::string_view::npos)
@@ -44,11 +51,15 @@ auto replace_all_words(std::string str, std::string_view from, std::string_view 
         str.replace(word_position, from.size(), to);
         word_position = find_word(from, str, word_position + to.size(), delimiters);
     }
+}
 
+auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    replace_all_words_inplace(str, from, to, delimiters);
     return str;
 }
 
-auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+void replace_all_beginnings_of_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters)
 {
     auto word_position = find_beginning_of_word(from, str, 0, delimiters);
     while (word_position != std::string_view::npos)
@@ -56,7 +67,11 @@ auto replace_all_beginnings_of_words(std::string str, std::string_view from, std
         str.replace(word_position, from.size(), to);
         word_position = find_beginning_of_word(from, str, word_position + to.size(), delimiters);
     }
+}
 
+auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    replace_all_beginnings_of_words_inplace(str, from, to, delimiters);
     return str;
 }
 
@@ -213,10 +228,10 @@ auto split_into_words(
 auto remove_whitespaces(std::string_view text) -> std::string
 {
     auto res = std::string{text};
-    replace_all(res, " ", "");
-    replace_all(res, "\n", "");
-    replace_all(res, "\t", "");
-    replace_all(res, "\r", "");
+    replace_all_inplace(res, " ", "");
+    replace_all_inplace(res, "\n", "");
+    replace_all_inplace(res, "\t", "");
+    replace_all_inplace(res, "\r", "");
     return res;
 }
 

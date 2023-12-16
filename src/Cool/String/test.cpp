@@ -77,32 +77,17 @@ TEST_CASE("[Cool::String] replace()")
     };
     SUBCASE("replace_all()")
     {
-        std::string str = "Effect_intensity";
-        Cool::String::replace_all(str, "_", " ");
-        CHECK(str == "Effect intensity");
+        CHECK(Cool::String::replace_all("Effect_intensity", "_", " ") == "Effect intensity");
     }
     SUBCASE("replace_all_words()")
     {
-        {
-            auto const str = "Test helloworld hello world hello something"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop");
-            CHECK(res == "Test helloworld plop world plop something");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "hello plop");
-            CHECK(res == "hello plop world");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello");
-            CHECK(res == "plop hello world");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello pouet");
-            CHECK(res == "plop hello pouet world");
-        }
+        CHECK(Cool::String::replace_all_words("Test helloworld hello world hello something", "hello", "plop") == "Test helloworld plop world plop something");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "hello plop") == "hello plop world");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "plop hello") == "plop hello world");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "plop hello pouet") == "plop hello pouet world");
     }
     SUBCASE("replace_between_delimiters()")
     {

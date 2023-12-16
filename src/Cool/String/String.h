@@ -26,12 +26,20 @@ auto contains(std::string_view text, std::string_view characters) -> bool; // TO
 auto to_lower(std::string_view str) -> std::string;
 
 /// Modifies `str` by replacing all occurrences of `from` with `to`.
-void replace_all(std::string& str, std::string_view from, std::string_view to);
+void replace_all_inplace(std::string& str, std::string_view from, std::string_view to);
+/// Returns a new string where all occurrences of `from` have been replaced with `to`.
+[[nodiscard]] auto replace_all(std::string str, std::string_view from, std::string_view to) -> std::string;
 
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
+void replace_all_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters);
 /// Returns a new string where all `from` words have been replaced with `to`.
 /// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
 [[nodiscard]] auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
 
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match the beginning of a word: for example we won't replace "world" in "helloworld" but we will replace "hello".
+void replace_all_beginnings_of_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters);
 /// Returns a new string where all `from` words have been replaced with `to`.
 /// We need to match the beginning of a word: for example we won't replace "world" in "helloworld" but we will replace "hello".
 [[nodiscard]] auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
