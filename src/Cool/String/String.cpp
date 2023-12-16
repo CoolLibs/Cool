@@ -38,18 +38,11 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
 
 auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
 {
-    auto word_position = find_next_word_position(str, 0, delimiters);
-    while (word_position)
+    auto word_position = find_word(from, str, 0, delimiters);
+    while (word_position != std::string_view::npos)
     {
-        auto const block_content = substring(str, word_position->first, word_position->second);
-
-        if (block_content == from)
-        {
-            str.replace(word_position->first, word_position->second - word_position->first, to);
-            word_position->second = word_position->first + to.length(); // Update end of word position, so that the next find_next_word_position() starts at the right place
-        }
-
-        word_position = find_next_word_position(str, word_position->second, delimiters);
+        str.replace(word_position, from.size(), to);
+        word_position = find_word(from, str, word_position + to.size(), delimiters);
     }
 
     return str;
