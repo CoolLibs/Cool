@@ -86,7 +86,7 @@ void ParticleSystem::set_particles_count(size_t particles_count)
     _velocities.upload_data(_particles_count * 2, nullptr);
     _sizes.upload_data(_particles_count, nullptr);
     _lifetimes.upload_data(_particles_count, nullptr);
-    _ages.upload_data(_particles_count, nullptr);
+    _lifetime_maxs.upload_data(_particles_count, nullptr);
     _colors.upload_data(_particles_count * 4, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 }
@@ -102,7 +102,7 @@ void ParticleSystem::bind_SSBOs()
     _velocities.bind();
     _sizes.bind();
     _lifetimes.bind();
-    _ages.bind();
+    _lifetime_maxs.bind();
     _sizes.bind();
     _colors.bind();
 }
