@@ -77,15 +77,16 @@ void ParticleSystem::reset()
     _init_shader.compute({_particles_count, 1, 1});
 }
 
-void ParticleSystem::set_particles_count(size_t _particles_count)
+void ParticleSystem::set_particles_count(size_t particles_count)
 {
+    _particles_count = particles_count;
     bind_SSBOs();
     _init_shader.bind();
-    _positions.upload_data(_particles_count * 2, nullptr);
-    _velocities.upload_data(_particles_count * 2, nullptr);
-    _sizes.upload_data(_particles_count, nullptr);
-    _colors.upload_data(_particles_count * 4, nullptr);
-    _init_shader.compute({_particles_count, 1, 1});
+    _positions.upload_data(particles_count * 2, nullptr);
+    _velocities.upload_data(particles_count * 2, nullptr);
+    _sizes.upload_data(particles_count, nullptr);
+    _colors.upload_data(particles_count * 4, nullptr);
+    _init_shader.compute({particles_count, 1, 1});
 }
 
 void ParticleSystem::set_particle_size(float particle_size)
