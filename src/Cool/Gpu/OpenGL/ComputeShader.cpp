@@ -1,8 +1,8 @@
 #if defined(COOL_OPENGL)
 
+#include "ComputeShader.h"
 #include <filesystem>
 #include <glm/glm.hpp>
-#include "ComputeShader.h"
 #include "Cool/File/File.h"
 #include "Shader.h"
 #include "glm/common.hpp"
@@ -40,9 +40,9 @@ ComputeShader::ComputeShader(unsigned int working_group_size, std::string_view s
 void ComputeShader::compute(glm::uvec3 size)
 {
     assert(size != glm::uvec3(0));
-    set_uniform("DispatchSize", size);
-    glm::uvec3 dispatch_group_count = (size-glm::uvec3{1}) / _working_group_size + glm::uvec3(1);
     assert_compute_shader_is_bound(id());
+    set_uniform("DispatchSize", size);
+    glm::uvec3 dispatch_group_count = (size - glm::uvec3{1}) / _working_group_size + glm::uvec3(1);
     GLDebug(glDispatchCompute(dispatch_group_count.x, dispatch_group_count.y, dispatch_group_count.z));
     GLDebug(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
 }
