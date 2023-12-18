@@ -41,7 +41,7 @@ void ComputeShader::compute(glm::uvec3 size)
 {
     assert(size != glm::uvec3(0));
     set_uniform("DispatchSize", size);
-    glm::uvec3 dispatch_group_count = size / _working_group_size + glm::uvec3(1);
+    glm::uvec3 dispatch_group_count = (size-glm::uvec3{1}) / _working_group_size + glm::uvec3(1);
     assert_compute_shader_is_bound(id());
     GLDebug(glDispatchCompute(dispatch_group_count.x, dispatch_group_count.y, dispatch_group_count.z));
     GLDebug(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
