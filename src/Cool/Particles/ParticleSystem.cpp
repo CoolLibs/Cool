@@ -24,7 +24,8 @@ ParticleSystem::ParticleSystem(size_t const& dimension, size_t particles_count, 
     , _init_shader{64, shader_code.init}
 #endif
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     set_particles_count(_particles_count);
     // _init_shader.bind();
 
@@ -51,47 +52,57 @@ ParticleSystem::ParticleSystem(size_t const& dimension, size_t particles_count, 
             -1.f, +1.f, 0.0f, 1.0f
         }
     );
-    #endif
+
+#endif
 }
 
 void ParticleSystem::render()
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     bind_SSBOs();
     _render_shader.bind();
     glpp::bind_vertex_array(_render_vao);
     glpp::draw_arrays_instanced(_render_vao, glpp::PrimitiveDrawMode::Triangles, 0, 6, static_cast<GLsizei>(_particles_count));
-    #endif
+
+#endif
 }
 
 void ParticleSystem::update()
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     bind_SSBOs();
     _simulation_shader.bind();
     _simulation_shader.compute({_particles_count, 1, 1});
-    #endif
+
+#endif
 }
 
 void ParticleSystem::set_simulation_shader(std::string const& shader_code)
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     _simulation_shader = OpenGL::ComputeShader{64, shader_code};
-    #endif
+
+#endif
 }
 
 void ParticleSystem::reset()
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     bind_SSBOs();
     _init_shader.bind();
     _init_shader.compute({_particles_count, 1, 1});
-    #endif
+
+#endif
 }
 
 void ParticleSystem::set_particles_count(size_t particles_count)
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     _particles_count = particles_count;
     bind_SSBOs();
     _init_shader.bind();
@@ -102,19 +113,23 @@ void ParticleSystem::set_particles_count(size_t particles_count)
     _lifetime_maxs.upload_data(_particles_count, nullptr);
     _colors.upload_data(_particles_count * 4, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
-    #endif
+
+#endif
 }
 
 void ParticleSystem::set_particle_size(float particle_size)
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     _sizes.bind();
-    #endif
+
+#endif
 }
 
 void ParticleSystem::bind_SSBOs()
 {
-    #ifndef __APPLE__
+#ifndef __APPLE__
+
     _positions.bind();
     _velocities.bind();
     _sizes.bind();
@@ -122,7 +137,8 @@ void ParticleSystem::bind_SSBOs()
     _lifetime_maxs.bind();
     _sizes.bind();
     _colors.bind();
-    #endif
+
+#endif
 }
 
 } // namespace Cool
