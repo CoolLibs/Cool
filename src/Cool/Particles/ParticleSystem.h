@@ -16,7 +16,7 @@ struct ParticlesShadersCode {
 
 class ParticleSystem {
 public:
-    explicit ParticleSystem(size_t particles_count = 500, ParticlesShadersCode const& = {}, size_t const& dimension = 2);
+    explicit ParticleSystem(size_t const& dimension, size_t particles_count = 500, ParticlesShadersCode const& = {});
 
     void render();
     void update();
