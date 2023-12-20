@@ -7,9 +7,9 @@
 
 namespace Cool {
 
-// TODO(Audio-Philippe) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture
+// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture
 
-// TODO(Audio-Philippe) Average the spectrum across several frames, to make it look smoother.
+// TODO(Audio) Average the spectrum across several frames, to make it look smoother.
 
 AudioManager::AudioManager()
 {
@@ -71,7 +71,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
                 current_input().for_each_audio_frame(N, [&](float frame) {
                     float const t = static_cast<float>(i) / static_cast<float>(N - 1);
                     i++;
-                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio-Philippe) Better windowing function? Or give the option to choose which windowing function to use? (We're gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
+                    float const window = 1.f - std::abs(2.f * t - 1.f); // Applying a window allows us to reduce "spectral leakage" https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/  // TODO(Audio) Better windowing function? Or give the option to choose which windowing function to use? (We're gonna create the widget anyways to test. If we do give the option, we need to specify next to each window what it is good at.)  We can pick from https://digitalsoundandmusic.com/2-3-11-windowing-functions-to-eliminate-spectral-leakage/
                     callback(frame * window * _spectrum_height_scale);
                 });
             },
@@ -132,16 +132,26 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_tim
     if (_current_input_mode != AudioInputMode::File)
         return;
 
+    if (!clock.is_playing()
+        || clock.is_being_forced_to_not_respect_realtime() // Time is paused or frozen because the user is using the input text of the timeline to set the time value, or dragging the timeline.
+    )
+    {
+        Audio::player().pause();
+    }
+    else
+    {
+        Audio::player().play();
+    }
+
+    force_sync_time |= !Audio::player().is_playing(); // While paused, we can force syncing without hearing audio glitches. And this helps making it smoother when we drag time on the timeline: the audio updates immediately and not through increments of 0.5 seconds.
     if (force_sync_time
         || std::abs(clock.time() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
     )
     {
-        Audio::player().set_time(clock.time()); // We sync even when the clock is paused because volume() needs the player to always be synced with the clock.
+        // NB: We sync the player even when it is paused because the audio features need the player to always be synced with the clock in order to get the data from the current time.
+        if (Audio::player().set_time(clock.time()))
+            _audio_data_has_been_invalidated = true;
     }
-    if (clock.is_playing() && !clock.is_being_forced_to_not_respect_realtime()) // Time is paused or frozen because the user is using the input text of the timeline to set the time value
-        Audio::player().play();
-    else
-        Audio::player().pause();
 }
 
 void AudioManager::invalidate_caches()
@@ -155,22 +165,26 @@ void AudioManager::invalidate_caches()
 
 void AudioManager::update(std::function<void()> const& on_audio_data_changed)
 {
-    if (current_input().is_playing() || _audio_data_has_been_invalidated)
+    _audio_data_has_been_invalidated |= current_input().is_playing();
+    if (_audio_data_has_been_invalidated)
     {
         invalidate_caches();
         on_audio_data_changed();
         _audio_data_has_been_invalidated = false;
     }
     current_input().update();
-    _device_input.set_nb_of_retained_samples(
-        static_cast<size_t>(std::max(
-            std::max(
-                nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
-                nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
-            ),
-            nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
-        ))
-    );
+    if (_current_input_mode == AudioInputMode::Device)
+    {
+        _device_input.set_nb_of_retained_samples(
+            static_cast<size_t>(std::max(
+                std::max(
+                    nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform),
+                    nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum)
+                ),
+                nb_frames_for_feature_computation(_window_size_in_seconds_for_volume)
+            ))
+        );
+    }
 }
 
 static auto to_string(AudioInputMode mode) -> const char*
@@ -178,9 +192,9 @@ static auto to_string(AudioInputMode mode) -> const char*
     switch (mode)
     {
     case AudioInputMode::File:
-        return "File";
+        return ICOMOON_FILE_MUSIC " File";
     case AudioInputMode::Device:
-        return "Device";
+        return ICOMOON_MIC " Device";
     }
     return "";
 }
@@ -192,7 +206,6 @@ void AudioManager::set_current_input_mode(AudioInputMode mode)
     current_input().stop();
     _current_input_mode = mode;
     current_input().start();
-    invalidate_caches();
     _audio_data_has_been_invalidated = true;
 }
 
@@ -302,8 +315,8 @@ void AudioManager::imgui_window()
                 }
                 _audio_data_has_been_invalidated |= imgui_spectrum_display_as_bars(&_spectrum_display_as_bars);
                 _audio_data_has_been_invalidated |= ImGui::SliderFloat("Window size##Spectrum", &_window_size_in_seconds_for_spectrum, 0.f, 0.5f, "%.3f seconds");
-                _audio_data_has_been_invalidated |= ImGui::SliderFloat("Max frequency displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
-                _audio_data_has_been_invalidated |= ImGui::DragFloat("Height (scale factor)", &_spectrum_height_scale, 0.01f, 0.0001f, FLT_MAX);
+                _audio_data_has_been_invalidated |= ImGui::SliderFloat("Max pitch displayed", &_spectrum_max_frequency_in_hz, 0.f, 22000.f, "%.0f Hertz");
+                _audio_data_has_been_invalidated |= ImGui::DragFloat("Height stretch", &_spectrum_height_scale, 0.01f, 0.0001f, FLT_MAX);
                 ImGui::EndTabItem();
             }
 

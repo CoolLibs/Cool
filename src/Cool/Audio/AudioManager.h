@@ -28,8 +28,8 @@ void serialize(Archive& archive, Audio::PlayerProperties& properties)
 namespace Cool {
 
 enum class AudioInputMode {
-    File,
     Device,
+    File,
 };
 
 class AudioManager {
@@ -125,6 +125,8 @@ private:
             _spectrum_height_scale,
             _spectrum_display_as_bars
         );
+        _device_input.stop(); // Device input always automatically starts when it is created, so we need to stop it.
+        _file_input.stop();
         current_input().start();
     }
 };
