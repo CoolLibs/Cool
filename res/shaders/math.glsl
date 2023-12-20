@@ -3,6 +3,8 @@ const float PI      = 3.141592653590;
 const float sqrt_3  = 1.73205;
 const float FLT_MAX = 3.402823466e+38;
 const float FLT_MIN = 1.175494351e-38;
+const int   INT_MIN = -2147483648;
+const int   INT_MAX = 2147483647;
 
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
@@ -38,27 +40,49 @@ float length_squared(vec4 p)
     return dot(p, p);
 }
 
+int rand_xorshift(int seed)
+{
+    // Xorshift algorithm from George Marsaglia's paper
+    seed ^= (seed << 13);
+    seed ^= (seed >> 17);
+    seed ^= (seed << 5);
+    return seed;
+}
+
+float rand_xorshift_0_to_1(float seed)
+{
+    int seed_int = floatBitsToInt(seed);
+    seed_int     = rand_xorshift(seed_int);
+    float random = (float(seed_int) / float(INT_MAX));
+    return random / 2 + 0.5;
+}
+
 vec3 hash_0_to_1_3D_to_3D(vec3 p)
 {
-    p = vec3(
-        dot(p, vec3(127.1, 311.7, 74.7)),
-        dot(p, vec3(269.5, 183.3, 246.1)),
-        dot(p, vec3(113.5, 271.9, 124.6))
+    float xy = rand_xorshift_0_to_1(p.x + p.y);
+    float yz = rand_xorshift_0_to_1(p.y + p.z);
+    float zx = rand_xorshift_0_to_1(p.z + p.x);
+    return vec3(
+        rand_xorshift_0_to_1(xy * p.z),
+        rand_xorshift_0_to_1(yz * p.x),
+        rand_xorshift_0_to_1(zx * p.y)
     );
-
-    return fract(sin(p) * 43758.5453123);
 }
 
 vec2 hash_0_to_1_1D_to_2D(float n)
 {
-    return fract(sin(vec2(n, n + 1.0)) * vec2(43758.5453123, 22578.1459123));
+    float x = rand_xorshift_0_to_1(n);
+    float y = rand_xorshift_0_to_1(x);
+    return vec2(x, y);
 }
 
 vec2 hash_0_to_1_2D_to_2D(vec2 p)
 {
-    vec3 a = fract(p.xyx * vec3(123.34, 234.34, 345.65));
-    a += dot(a, a + 34.45);
-    return fract(vec2(a.x * a.y, a.y * a.z));
+    float xy = rand_xorshift_0_to_1(p.x + p.y);
+    return vec2(
+        rand_xorshift_0_to_1(xy * p.x),
+        rand_xorshift_0_to_1(xy * p.y)
+    );
 }
 
 // Good for input value in [0,+10k]
@@ -68,29 +92,17 @@ float impl_base_noise(float seed1, float seed2)
     return (fract(seed1 + 12.34567 * fract(100. * (abs(seed1 * 0.91) + seed2 + 94.68) * fract((abs(seed2 * 0.41) + 45.46) * fract((abs(seed2) + 757.21) * fract(seed1 * 0.0171)))))) * 1.0038 - 0.00185;
 }
 
-// Good for input value in [-100k,+100k]
 float hash_0_to_1_2D_to_1D(vec2 p)
 {
-    // From https://www.shadertoy.com/view/tlcBRl
-    float buff1 = abs(p.x + 100.94) + 1000.;
-    float buff2 = abs(p.y + 100.73) + 1000.;
-    buff1       = buff1 * fract(buff2 * fract(buff1 * fract(buff2 * 0.63)));
-    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(p.x * 0.79)));
-    buff1       = impl_base_noise(buff1, buff2);
-    return buff1 * 1.0038 - 0.00185;
+    vec2 s = hash_0_to_1_2D_to_2D(p);
+    return rand_xorshift_0_to_1(s.x + s.y);
 }
 
 // Good for input value in [-100k,+100k]
 float hash_0_to_1_3D_to_1D(vec3 p)
 {
-    // From https://www.shadertoy.com/view/tlcBRl
-    float buff1 = abs(p.x + 100.81) + 1000.3;
-    float buff2 = abs(p.y + 100.45) + 1000.2;
-    float buff3 = abs(impl_base_noise(p.x, p.y) + p.z) + 1000.1;
-    buff1       = buff3 * fract(buff2 * fract(buff1 * fract(buff2 * 0.146)));
-    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(buff3 * 0.52)));
-    buff1       = impl_base_noise(buff1, buff2);
-    return buff1;
+    vec3 s = hash_0_to_1_3D_to_3D(p);
+    return rand_xorshift_0_to_1(s.x + s.y + s.z);
 }
 
 // Good for input value in [-100k,+100k], high accuracy
