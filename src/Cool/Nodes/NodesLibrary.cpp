@@ -1,6 +1,7 @@
 #include "NodesLibrary.h"
 #include <Cool/String/String.h>
 #include <wafl/wafl.hpp>
+#include "Cool/ImGui/ImGuiExtras.h"
 
 namespace Cool {
 
@@ -74,10 +75,23 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
                 if (!internal::name_matches_filter(def.name(), nodes_filter))
                     continue;
 
-                if (select_first || ImGui::Selectable(def.name().c_str()))
-                {
-                    return NodeDefinitionAndCategoryName{def, category.name()};
-                }
+#ifndef __APPLE__
+                bool const isParticleSupported = true;
+#else
+                bool const isParticleSupported = false;
+#endif
+
+                std::optional<NodeDefinitionAndCategoryName> node_definition_and_category_name;
+
+                Cool::ImGuiExtras::disabled_if(!isParticleSupported && (Cool::String::contains(category.name(), "Particle")), "Particle nodes are not supported on macOS", [&]() {
+                    if (select_first || ImGui::Selectable(def.name().c_str()))
+                    {
+                        node_definition_and_category_name = NodeDefinitionAndCategoryName{def, category.name()};
+                    }
+                });
+
+                if (node_definition_and_category_name.has_value())
+                    return node_definition_and_category_name;
             }
         }
     }
