@@ -17,7 +17,7 @@ public:
         auto const* const maybe_def = _library.get().get_definition(id_names);
         if (!maybe_def)
             return nullptr;
-        return &maybe_def->downcast<NodeDefT>();
+        return &maybe_def->template downcast<NodeDefT>();
     }
 
 private:
@@ -36,7 +36,7 @@ public:
         auto* const maybe_def = _library.get().get_definition(id_names);
         if (!maybe_def)
             return nullptr;
-        return &maybe_def->downcast<NodeDefT>();
+        return &maybe_def->template downcast<NodeDefT>();
     }
 
 private:
