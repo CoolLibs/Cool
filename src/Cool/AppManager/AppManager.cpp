@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
+#include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/ImGui/Fonts.h"
@@ -37,6 +38,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     , _app{app}
     , _config{config}
 {
+    fix_tdr_delay::set_minimum_delay(60); // Fixes a GPU crash on Windows. See the documentation of the library: https://github.com/CoolLibs/fix-tdr-delay
     // Set callbacks
     for (auto& window : _window_manager.windows())
     {

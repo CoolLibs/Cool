@@ -106,3 +106,6 @@
 [submodule "lib/Audio"]
 	path = lib/Audio
 	url = https://github.com/CoolLibs/Audio
+[submodule "lib/fix-tdr-delay"]
+	path = lib/fix-tdr-delay
+	url = https://github.com/CoolLibs/fix-tdr-delay
