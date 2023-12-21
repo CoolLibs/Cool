@@ -26,16 +26,18 @@ public:
     auto simulation_shader() const -> OpenGL::ComputeShader const& { return _simulation_shader; }
     auto init_shader() -> OpenGL::ComputeShader& { return _init_shader; }
     auto init_shader() const -> OpenGL::ComputeShader const& { return _init_shader; }
+#endif
 
     auto render_shader() -> OpenGL::Shader& { return _render_shader; }
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
     auto dimension() const -> size_t const& { return _dimension; }
-#endif
 
     void set_simulation_shader(std::string const& shader_code);
     void reset();
     void set_particles_count(size_t particles_count);
     void set_particle_size(float particle_size);
+
+    auto particles_count() const -> size_t { return _particles_count; }
 
 private:
     void bind_SSBOs();
