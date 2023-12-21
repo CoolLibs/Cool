@@ -40,6 +40,8 @@ void FrameBuffer::setSize(img::Size size)
         }();
         Log::Debug::error("Framebuffer is not complete : {}", statusStr);
     }
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Make sure to init the values in the framebuffer
     unbind();
 #endif
 }
