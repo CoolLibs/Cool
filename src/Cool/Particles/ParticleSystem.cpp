@@ -98,7 +98,7 @@ void ParticleSystem::set_particles_count(size_t particles_count)
     _colors.upload_data(_particles_count * 4, nullptr);
     _init_shader.compute({_particles_count, 1, 1});
 #else
-    std::ignore = particles_count
+    std::ignore = particles_count;
 #endif
 }
 
