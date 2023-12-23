@@ -64,7 +64,7 @@ public:
     void upload_data(size_t nb_of_elements, T* data, GLenum usage = GL_STREAM_READ)
     {
         bind();
-        GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
+        GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(nb_of_elements * sizeof(T)), data, usage));
     }
 
     /// <summary>
