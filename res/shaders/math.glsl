@@ -59,30 +59,24 @@ float rand_xorshift_0_to_1(float seed)
 
 vec3 hash_0_to_1_3D_to_3D(vec3 p)
 {
-    float xy = rand_xorshift_0_to_1(p.x + p.y);
-    float yz = rand_xorshift_0_to_1(p.y + p.z);
-    float zx = rand_xorshift_0_to_1(p.z + p.x);
-    return vec3(
-        rand_xorshift_0_to_1(xy * p.z),
-        rand_xorshift_0_to_1(yz * p.x),
-        rand_xorshift_0_to_1(zx * p.y)
-    );
+    float rand1 = rand_xorshift_0_to_1(p.x + p.y + p.z);
+    float rand2 = rand_xorshift_0_to_1(rand1);
+    float rand3 = rand_xorshift_0_to_1(rand2);
+    return vec3(rand1, rand2, rand3);
 }
 
 vec2 hash_0_to_1_1D_to_2D(float n)
 {
-    float x = rand_xorshift_0_to_1(n);
-    float y = rand_xorshift_0_to_1(x);
-    return vec2(x, y);
+    float rand1 = rand_xorshift_0_to_1(n);
+    float rand2 = rand_xorshift_0_to_1(rand1);
+    return vec2(rand1, rand2);
 }
 
 vec2 hash_0_to_1_2D_to_2D(vec2 p)
 {
-    float xy = rand_xorshift_0_to_1(p.x + p.y);
-    return vec2(
-        rand_xorshift_0_to_1(xy * p.x),
-        rand_xorshift_0_to_1(xy * p.y)
-    );
+    float rand1 = rand_xorshift_0_to_1(p.x + p.y);
+    float rand2 = rand_xorshift_0_to_1(rand1);
+    return vec2(rand1, rand2);
 }
 
 // Good for input value in [0,+10k]
@@ -94,15 +88,13 @@ float impl_base_noise(float seed1, float seed2)
 
 float hash_0_to_1_2D_to_1D(vec2 p)
 {
-    vec2 s = hash_0_to_1_2D_to_2D(p);
-    return rand_xorshift_0_to_1(s.x + s.y);
+    return rand_xorshift_0_to_1(p.x + p.y);
 }
 
 // Good for input value in [-100k,+100k]
 float hash_0_to_1_3D_to_1D(vec3 p)
 {
-    vec3 s = hash_0_to_1_3D_to_3D(p);
-    return rand_xorshift_0_to_1(s.x + s.y + s.z);
+    return rand_xorshift_0_to_1(p.x + p.y + p.z);
 }
 
 // Good for input value in [-100k,+100k], high accuracy
