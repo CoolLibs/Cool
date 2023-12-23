@@ -86,15 +86,6 @@ public:
             ImGui::End();
         }
     }
-    static void particles_debug_menu_window(std::function<void()> callback)
-    {
-        if (instance().particles_debug_menu_window)
-        {
-            ImGui::Begin(Cool::icon_fmt("Particles Debug Menu", ICOMOON_WRENCH).c_str(), &instance().particles_debug_menu_window, ImGuiWindowFlags_NoFocusOnAppearing);
-            callback();
-            ImGui::End();
-        }
-    }
     [[nodiscard]] static auto public_exhibition_mode() -> bool& { return instance().public_exhibition_mode; }
     static void               style_editor(std::function<void()> callback)
     {
@@ -147,7 +138,6 @@ private:
         bool test_markdown_formatting_window{false};
         bool emulate_midi_keyboard{false};
         bool test_tips{false};
-        bool particles_debug_menu_window{false};
         bool public_exhibition_mode{false};
         bool style_editor{false};
         bool color_themes_editor{false};
@@ -177,7 +167,6 @@ private:
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
                 cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
                 cereal::make_nvp("Test tips", test_tips),
-                cereal::make_nvp("Particles Debug Menu", particles_debug_menu_window),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -195,7 +184,6 @@ private:
                 cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
                 cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
                 cereal::make_nvp("Test tips", test_tips),
-                cereal::make_nvp("Particles Debug Menu", particles_debug_menu_window),
                 cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
                 cereal::make_nvp("Style Editor", style_editor),
                 cereal::make_nvp("Color Themes: Editor", color_themes_editor),
@@ -223,7 +211,6 @@ private:
         instance().test_markdown_formatting_window     = false;
         instance().emulate_midi_keyboard               = false;
         instance().test_tips                           = false;
-        instance().particles_debug_menu_window         = false;
         instance().public_exhibition_mode              = false;
         instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
@@ -311,11 +298,6 @@ private:
         if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test tips", &instance().test_tips);
-        }
-
-        if (wafl::similarity_match({filter, "Particles Debug Menu"}) >= wafl::Matches::Strongly)
-        {
-            Cool::ImGuiExtras::toggle("Particles Debug Menu", &instance().particles_debug_menu_window);
         }
 
         if (wafl::similarity_match({filter, "Public exhibition mode"}) >= wafl::Matches::Strongly)
@@ -436,12 +418,6 @@ private:
         if (wafl::similarity_match({filter, "Test tips"}) >= wafl::Matches::Strongly)
         {
             instance().test_tips = !instance().test_tips;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
-        }
-
-        if (wafl::similarity_match({filter, "Particles Debug Menu"}) >= wafl::Matches::Strongly)
-        {
-            instance().particles_debug_menu_window = !instance().particles_debug_menu_window;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

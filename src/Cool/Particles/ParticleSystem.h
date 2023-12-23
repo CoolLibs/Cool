@@ -35,7 +35,6 @@ public:
     void set_simulation_shader(std::string const& shader_code);
     void reset();
     void set_particles_count(size_t particles_count);
-    void set_particle_size(float particle_size);
 
     auto particles_count() const -> size_t { return _particles_count; }
 
@@ -44,14 +43,14 @@ private:
 
 private:
 #ifndef __APPLE__
+    size_t      _particles_count{};
+    size_t      _dimension; // 2 for 2D particles, and 3 for 3D particles
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
-    size_t      _particles_count{};
     SSBO<float> _sizes{2};
     SSBO<float> _lifetimes{3};
     SSBO<float> _lifetime_maxs{4};
     SSBO<float> _colors{5};
-    size_t      _dimension;
 
     OpenGL::Shader          _render_shader;
     glpp::UniqueVertexArray _render_vao{};

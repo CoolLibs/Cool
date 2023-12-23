@@ -117,15 +117,6 @@ void ParticleSystem::set_particles_count(size_t particles_count)
 #endif
 }
 
-void ParticleSystem::set_particle_size(float particle_size)
-{
-#ifndef __APPLE__
-
-    _sizes.bind();
-
-#endif
-}
-
 void ParticleSystem::bind_SSBOs()
 {
 #ifndef __APPLE__

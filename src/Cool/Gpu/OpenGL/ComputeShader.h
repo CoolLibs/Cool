@@ -7,8 +7,6 @@
 
 namespace Cool::OpenGL {
 
-static void assert_compute_shader_is_bound(GLuint id);
-
 /// <summary>
 /// A wrapper for an OpenGL compute shader.
 /// </summary>
