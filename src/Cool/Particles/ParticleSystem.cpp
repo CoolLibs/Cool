@@ -6,7 +6,7 @@
 
 namespace Cool {
 
-ParticleSystem::ParticleSystem(size_t dimension, size_t particles_count, ParticlesShadersCode const& shader_code)
+ParticleSystem::ParticleSystem(int dimension, size_t particles_count, ParticlesShadersCode const& shader_code)
     : _particles_count{particles_count}
     , _dimension(dimension)
 #ifndef __APPLE__
@@ -90,8 +90,8 @@ void ParticleSystem::set_particles_count(size_t particles_count)
 #ifndef __APPLE__
     bind_SSBOs();
     _init_shader.bind();
-    _positions.upload_data(_particles_count * _dimension, nullptr);
-    _velocities.upload_data(_particles_count * _dimension, nullptr);
+    _positions.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
+    _velocities.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
     _sizes.upload_data(_particles_count, nullptr);
     _lifetimes.upload_data(_particles_count, nullptr);
     _lifetime_maxs.upload_data(_particles_count, nullptr);

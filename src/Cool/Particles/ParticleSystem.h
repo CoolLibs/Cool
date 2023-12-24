@@ -16,7 +16,7 @@ struct ParticlesShadersCode {
 
 class ParticleSystem {
 public:
-    explicit ParticleSystem(size_t dimension, size_t particles_count = 500, ParticlesShadersCode const& = {});
+    explicit ParticleSystem(int dimension, size_t particles_count = 500, ParticlesShadersCode const& = {});
 
     void render();
     void update();
@@ -30,7 +30,7 @@ public:
     auto render_shader() -> OpenGL::Shader& { return _render_shader; }
     auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
 #endif
-    auto dimension() const -> size_t { return _dimension; }
+    auto dimension() const -> int { return _dimension; }
 
     void set_simulation_shader(std::string const& shader_code);
     void reset();
@@ -43,7 +43,7 @@ private:
 
 private:
     size_t _particles_count{};
-    size_t _dimension; // 2 for 2D particles, and 3 for 3D particles
+    int    _dimension; // 2 for 2D particles, and 3 for 3D particles
 #ifndef __APPLE__
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
