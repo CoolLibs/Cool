@@ -3,8 +3,6 @@ const float PI      = 3.141592653590;
 const float sqrt_3  = 1.73205;
 const float FLT_MAX = 3.402823466e+38;
 const float FLT_MIN = 1.175494351e-38;
-const int   INT_MIN = -2147483648;
-const int   INT_MAX = 2147483647;
 
 // See https://www.iquilezles.org/www/articles/smin/smin.htm
 float smooth_min_polynomial(float a, float b, float smoothing)
@@ -38,82 +36,6 @@ float length_squared(vec3 p)
 float length_squared(vec4 p)
 {
     return dot(p, p);
-}
-
-int rand_xorshift(int seed)
-{
-    // Xorshift algorithm from George Marsaglia's paper
-    seed ^= (seed << 13);
-    seed ^= (seed >> 17);
-    seed ^= (seed << 5);
-    return seed;
-}
-
-float rand_xorshift_0_to_1(float seed)
-{
-    int seed_int = floatBitsToInt(seed);
-    seed_int     = rand_xorshift(seed_int);
-    float random = (float(seed_int) / float(INT_MAX));
-    return random / 2 + 0.5;
-}
-
-vec3 hash_0_to_1_3D_to_3D(vec3 p)
-{
-    float rand1 = rand_xorshift_0_to_1(p.x + p.y + p.z);
-    float rand2 = rand_xorshift_0_to_1(rand1);
-    float rand3 = rand_xorshift_0_to_1(rand2);
-    return vec3(rand1, rand2, rand3);
-}
-
-vec2 hash_0_to_1_1D_to_2D(float n)
-{
-    float rand1 = rand_xorshift_0_to_1(n);
-    float rand2 = rand_xorshift_0_to_1(rand1);
-    return vec2(rand1, rand2);
-}
-
-vec2 hash_0_to_1_2D_to_2D(vec2 p)
-{
-    float rand1 = rand_xorshift_0_to_1(p.x + p.y);
-    float rand2 = rand_xorshift_0_to_1(rand1);
-    return vec2(rand1, rand2);
-}
-
-// Good for input value in [0,+10k]
-float impl_base_noise(float seed1, float seed2)
-{
-    // From https://www.shadertoy.com/view/tlcBRl
-    return (fract(seed1 + 12.34567 * fract(100. * (abs(seed1 * 0.91) + seed2 + 94.68) * fract((abs(seed2 * 0.41) + 45.46) * fract((abs(seed2) + 757.21) * fract(seed1 * 0.0171)))))) * 1.0038 - 0.00185;
-}
-
-float hash_0_to_1_2D_to_1D(vec2 p)
-{
-    return rand_xorshift_0_to_1(p.x + p.y);
-}
-
-// Good for input value in [-100k,+100k]
-float hash_0_to_1_3D_to_1D(vec3 p)
-{
-    return rand_xorshift_0_to_1(p.x + p.y + p.z);
-}
-
-// Good for input value in [-100k,+100k], high accuracy
-float hash_0_to_1_3D_to_1D_high_accuracy(vec3 p)
-{
-    // From https://www.shadertoy.com/view/tlcBRl
-    float buff1 = abs(p.x + 100.813) + 1000.314;
-    float buff2 = abs(p.y + 100.453) + 1000.213;
-    float buff3 = abs(impl_base_noise(buff2, buff1) + p.z) + 1000.17;
-    buff1       = buff3 * fract(buff2 * fract(buff1 * fract(buff2 * 0.14619)));
-    buff2       = buff2 * fract(buff2 * fract(buff1 + buff2 * fract(buff3 * 0.5215)));
-    buff1       = hash_0_to_1_3D_to_1D(vec3(impl_base_noise(p.y, buff1), impl_base_noise(p.x, buff2), impl_base_noise(p.z, buff3)));
-    return buff1;
-}
-
-// Good for input value in [-100k,+100k], high accuracy
-float hash_0_to_1_2D_to_1D_high_accuracy(vec2 p)
-{
-    return hash_0_to_1_3D_to_1D_high_accuracy(vec3(p.xy, 0.));
 }
 
 mat2 rotation_2D(float angle)
