@@ -8,20 +8,21 @@
 namespace Cool {
 
 struct ParticlesShadersCode {
-    std::string simulation;
-    std::string init;
-    std::string vertex;
-    std::string fragment;
+    std::string simulation{};
+    std::string init{};
+    std::string vertex{};
+    std::string fragment{};
 };
 
 class ParticleSystem {
 public:
-    explicit ParticleSystem(int dimension, size_t particles_count = 500, ParticlesShadersCode const& = {});
+    /// `dimension` should be 2 for 2D particles, and 3 for 3D particles
+    explicit ParticleSystem(int dimension, ParticlesShadersCode const&, size_t particles_count = 500);
 
     void render();
     void update();
 
-#ifndef __APPLE__
+#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
     auto simulation_shader() -> OpenGL::ComputeShader& { return _simulation_shader; }
     auto simulation_shader() const -> OpenGL::ComputeShader const& { return _simulation_shader; }
     auto init_shader() -> OpenGL::ComputeShader& { return _init_shader; }
@@ -43,8 +44,8 @@ private:
 
 private:
     size_t _particles_count{};
-    int    _dimension; // 2 for 2D particles, and 3 for 3D particles
-#ifndef __APPLE__
+    int    _dimension{}; // 2 for 2D particles, and 3 for 3D particles
+#ifndef __APPLE__        // OpenGL computer shaders don't work on MacOS
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
     SSBO<float> _sizes{2};
