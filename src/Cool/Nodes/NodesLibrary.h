@@ -49,6 +49,9 @@ struct NodeDefinitionAndCategoryName {
     std::string    category_name;
 };
 
+/// Returns a message if the NodeDefinition should be disabled, explaining why it is disabled. Or nullopt if it is not disabled.
+using MaybeDisableNodeDefinition = std::function<std::optional<const char*>(NodeDefinition const&, NodesCategory const&)>;
+
 class NodesLibrary {
 public:
     auto get_definition(Cool::NodeDefinitionIdentifier const& id_names) const -> NodeDefinition const* { return internal_get_definition(*this, id_names); }
@@ -57,7 +60,7 @@ public:
     auto get_category(std::string const& category_name) const -> NodesCategory const*;
     auto get_category(std::string const& category_name) -> NodesCategory*;
 
-    auto imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>;
+    auto imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const&, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>;
 
     void add_definition(NodeDefinition const&, std::string category_name, NodesCategoryConfig const&, int category_order);
 

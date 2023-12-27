@@ -403,9 +403,14 @@ auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()
     return was_used;
 }
 
-void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> widgets)
+void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> const& widgets)
 {
-    if (condition_to_disable)
+    disabled_if(condition_to_disable ? std::make_optional(reason_to_disable) : std::nullopt, widgets);
+}
+
+void disabled_if(std::optional<const char*> reason_to_disable, std::function<void()> const& widgets)
+{
+    if (reason_to_disable.has_value())
     {
         ImGui::BeginGroup();
         ImGui::BeginDisabled(true);
@@ -414,7 +419,7 @@ void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGui::SetItemTooltip("%s", reason_to_disable);
+        ImGui::SetItemTooltip("%s", reason_to_disable.value());
     }
     else
     {
@@ -451,7 +456,8 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     const float wheel_r_inner   = wheel_r_outer - wheel_thickness;
     const auto  wheel_center    = ImVec2{
         widget_pos.x + wheel_r_outer,
-        widget_pos.y + wheel_r_outer};
+        widget_pos.y + wheel_r_outer
+    };
 
     bool        value_changed = false;
     const float initial_hue   = *hue;

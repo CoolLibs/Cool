@@ -34,7 +34,7 @@ auto NodesLibrary::get_category(std::string const& category_name) -> NodesCatego
     return nullptr;
 }
 
-auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
+auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const& maybe_disable, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
 {
     for (auto& category : _categories)
     {
@@ -75,23 +75,14 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
                 if (!internal::name_matches_filter(def.name(), nodes_filter))
                     continue;
 
-#ifndef __APPLE__
-                bool const isParticleSupported = true;
-#else
-                bool const isParticleSupported = false;
-#endif
-
-                std::optional<NodeDefinitionAndCategoryName> node_definition_and_category_name;
-
-                Cool::ImGuiExtras::disabled_if(!isParticleSupported && (Cool::String::contains(category.name(), "Particle")), "Particle nodes are not supported on macOS", [&]() {
+                auto selected_definition = std::optional<NodeDefinitionAndCategoryName>{};
+                Cool::ImGuiExtras::disabled_if(maybe_disable(def, category), [&]() {
                     if (select_first || ImGui::Selectable(def.name().c_str()))
-                    {
-                        node_definition_and_category_name = NodeDefinitionAndCategoryName{def, category.name()};
-                    }
+                        selected_definition = NodeDefinitionAndCategoryName{def, category.name()};
                 });
 
-                if (node_definition_and_category_name.has_value())
-                    return node_definition_and_category_name;
+                if (selected_definition.has_value())
+                    return selected_definition;
             }
         }
     }

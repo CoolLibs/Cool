@@ -18,6 +18,7 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin
     { const_cfg.name(node) } -> std::convertible_to<std::string>;
     cfg.widget_to_rename_node(node);
     { cfg.make_node(def_and_cat) } -> std::convertible_to<Node>;
+    { const_cfg.maybe_disable_node_definition() } -> std::convertible_to<MaybeDisableNodeDefinition>;
 }; // clang-format on
 
 class NodesConfig {
@@ -35,6 +36,7 @@ public:
     [[nodiscard]] auto name(Node const& node) const -> std::string { return _pimpl->name(node); }
     void               widget_to_rename_node(Node& node) { _pimpl->widget_to_rename_node(node); }
     [[nodiscard]] auto make_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> Node { return _pimpl->make_node(def_and_cat); }
+    auto               maybe_disable_node_definition() const -> Cool::MaybeDisableNodeDefinition { return _pimpl->maybe_disable_node_definition(); }
 
 public: // Type-erasure implementation details
     template<NodesConfig_Concept NodesCfgT>
@@ -64,6 +66,7 @@ private:
         [[nodiscard]] virtual auto name(Node const&) const -> std::string                                                         = 0;
         virtual void               widget_to_rename_node(Node&)                                                                   = 0;
         [[nodiscard]] virtual auto make_node(Cool::NodeDefinitionAndCategoryName const&) -> Node                                  = 0;
+        virtual auto               maybe_disable_node_definition() const -> Cool::MaybeDisableNodeDefinition                      = 0;
     };
 
     template<NodesConfig_Concept NodesCfgT>
@@ -119,6 +122,10 @@ private:
         [[nodiscard]] auto make_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> Node override
         {
             return _cfg.make_node(def_and_cat);
+        }
+        auto maybe_disable_node_definition() const -> Cool::MaybeDisableNodeDefinition override
+        {
+            return _cfg.maybe_disable_node_definition();
         }
 
         NodesCfgT _cfg;

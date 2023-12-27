@@ -227,13 +227,13 @@ auto NodesEditorImpl::imgui_windows(
     return graph_has_changed;
 }
 
-auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, bool menu_just_opened)
+auto NodesEditorImpl::imgui_nodes_menu(NodesLibrary const& library, MaybeDisableNodeDefinition const& maybe_disable, bool menu_just_opened)
     -> std::optional<NodeDefinitionAndCategoryName>
 {
     bool const should_select_first_node   = _search_bar.imgui_widget();
     bool       should_open_all_categories = ImGui::IsItemEdited();
 
-    return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), should_select_first_node, should_open_all_categories, menu_just_opened);
+    return library.imgui_nodes_menu(_search_bar.get_nodes_filter(), maybe_disable, should_select_first_node, should_open_all_categories, menu_just_opened);
 }
 
 static auto find_pin(ed::PinId const& id, NodesGraph const& graph) -> Pin const*
@@ -653,7 +653,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     ed::Suspend();
     if (ImGui::BeginPopup("Nodes Library Menu"))
     {
-        auto const new_node_def_id = imgui_nodes_menu(library, _menu_just_opened);
+        auto const new_node_def_id = imgui_nodes_menu(library, nodes_cfg.maybe_disable_node_definition(), _menu_just_opened);
         _menu_just_opened          = false;
         if (ImGui::Selectable("Frame (Comment)"))
         {
