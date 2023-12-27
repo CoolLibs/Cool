@@ -1,41 +1,45 @@
+// Inspired by https://stackoverflow.com/a/17479300
+
 const float UINT_MAX = 4294967295.;
 
-uint rand_xorshift_1D(uint seed)
+uint uint_hash_1D(uint seed)
 {
-    // Xorshift algorithm from George Marsaglia's paper
-    seed ^= (seed << 13);
-    seed ^= (seed >> 17);
-    seed ^= (seed << 5);
+    // A single iteration of Bob Jenkins' One-At-A-Time hashing algorithm.
+    seed += (seed << 10u);
+    seed ^= (seed >> 6u);
+    seed += (seed << 3u);
+    seed ^= (seed >> 11u);
+    seed += (seed << 15u);
     return seed;
 }
-uint rand_xorshift_2D(uvec2 seed)
+uint uint_hash_2D(uvec2 seed)
 {
-    return rand_xorshift_1D(seed.x ^ rand_xorshift_1D(seed.y));
+    return uint_hash_1D(seed.x ^ uint_hash_1D(seed.y));
 }
-uint rand_xorshift_3D(uvec3 seed)
+uint uint_hash_3D(uvec3 seed)
 {
-    return rand_xorshift_1D(seed.x ^ rand_xorshift_2D(seed.yz));
+    return uint_hash_1D(seed.x ^ uint_hash_2D(seed.yz));
 }
-uint rand_xorshift_4D(uvec4 seed)
+uint uint_hash_4D(uvec4 seed)
 {
-    return rand_xorshift_1D(seed.x ^ rand_xorshift_3D(seed.yzw));
+    return uint_hash_1D(seed.x ^ uint_hash_3D(seed.yzw));
 }
 
 float hash_0_to_1_1D_to_1D(float seed)
 {
-    return float(rand_xorshift_1D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_1D(floatBitsToUint(seed))) / UINT_MAX;
 }
 float hash_0_to_1_2D_to_1D(vec2 seed)
 {
-    return float(rand_xorshift_2D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_2D(floatBitsToUint(seed))) / UINT_MAX;
 }
 float hash_0_to_1_3D_to_1D(vec3 seed)
 {
-    return float(rand_xorshift_3D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_3D(floatBitsToUint(seed))) / UINT_MAX;
 }
 float hash_0_to_1_4D_to_1D(vec4 seed)
 {
-    return float(rand_xorshift_4D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_4D(floatBitsToUint(seed))) / UINT_MAX;
 }
 
 vec2 hash_0_to_1_1D_to_2D(float seed)
