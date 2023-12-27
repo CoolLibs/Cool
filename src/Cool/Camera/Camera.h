@@ -2,7 +2,6 @@
 
 #include <Cool/Constants/Constants.h>
 #include "Projection_Perspective.h"
-#include "glm/matrix.hpp"
 
 namespace Cool {
 

@@ -1,7 +1,6 @@
 #include "Camera.h"
 #include <Cool/Constants/Constants.h>
 #include <glm/gtc/matrix_access.hpp>
-#include "glm/fwd.hpp"
 
 namespace Cool {
 
