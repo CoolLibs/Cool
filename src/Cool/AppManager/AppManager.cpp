@@ -324,14 +324,12 @@ void AppManager::dispatch_all_events()
 
 void AppManager::dispatch_mouse_movement()
 {
-    float const delta_x = ImGui::GetIO().MouseDelta.x;
-    float const delta_y = ImGui::GetIO().MouseDelta.y;
-    if (delta_x == 0.f && delta_y == 0.f)
+    if (ImGui::GetIO().MouseDelta == ImVec2{0.f, 0.f})
         return;
 
     auto const event = MouseMoveEvent<ImGuiCoordinates>{
         .position = ImGui::GetIO().MousePos,
-        // TODO(JF) Also pass the delta?
+        .delta    = ImGui::GetIO().MouseDelta,
     };
     for (auto& view : _views)
         view->dispatch_mouse_move_event(event);

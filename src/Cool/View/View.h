@@ -61,7 +61,7 @@ public:
     /// /!\ This is not the size of the image in the View, this is the size of the full window, including the potential margins around the image.
     auto window_size() const -> std::optional<img::Size> { return _window_size; }
 
-    auto to_view_coordinates(ImGuiCoordinates) const -> ViewCoordinates;
+    auto to_view_coordinates(ImGuiCoordinates, bool should_apply_translation = true) const -> ViewCoordinates;
     auto to_imgui_coordinates(ViewCoordinates) const -> ImGuiCoordinates;
     auto mouse_is_in_view() const -> bool;
 

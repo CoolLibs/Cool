@@ -116,15 +116,16 @@ auto View::mouse_is_in_view() const -> bool
     return _window_is_hovered && _window_size;
 }
 
-auto View::to_view_coordinates(ImGuiCoordinates const pos) const -> ViewCoordinates
+auto View::to_view_coordinates(ImGuiCoordinates const pos, bool should_apply_translation) const -> ViewCoordinates
 {
     if (!_window_size)
         return ViewCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
     auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
-    auto       res         = glm::vec2{pos};
 
-    res -= _window_position + window_size / 2.f;
+    auto res = glm::vec2{pos};
+    if (should_apply_translation)
+        res -= _window_position + window_size / 2.f;
     res /= img_size.height() / 2.f;
     res.y *= -1.f;
 
@@ -150,9 +151,10 @@ void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& eve
 {
     if (!_accepts_mouse_events)
         return;
-    auto const pos = to_view_coordinates(event.position);
-    _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos});
-    _mouse_event_dispatcher.move_event().dispatch({pos});
+    auto const pos   = to_view_coordinates(event.position, /*should_apply_translation=*/true);
+    auto const delta = to_view_coordinates(event.delta, /*should_apply_translation=*/false);
+    _mouse_event_dispatcher.drag().dispatch_mouse_move_event({pos, delta});
+    _mouse_event_dispatcher.move_event().dispatch({pos, delta});
 
     if (DebugOptions::log_mouse_position_in_view())
     {

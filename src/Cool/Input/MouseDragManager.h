@@ -20,7 +20,6 @@ template<MouseCoordinates Coords>
 struct DragState {
     size_t           listener_index{};
     ImGuiMouseButton button{};
-    Coords           last_mouse_position{};
 };
 
 template<MouseCoordinates Coords>
@@ -53,9 +52,8 @@ public:
 
         dragged_listener().on_update({
             event.position,
-            Coords{event.position - _drag_state->last_mouse_position},
+            event.delta,
         });
-        _drag_state->last_mouse_position = event.position;
     }
 
 private:
@@ -77,9 +75,8 @@ private:
             if (_listeners_stack[i].on_start({event.position}))
             {
                 _drag_state.emplace(DragState<Coords>{
-                    .listener_index      = i,
-                    .button              = event.button,
-                    .last_mouse_position = event.position,
+                    .listener_index = i,
+                    .button         = event.button,
                 });
                 return;
             }
