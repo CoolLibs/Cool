@@ -1,6 +1,6 @@
 // Inspired by https://stackoverflow.com/a/17479300
 
-const float UINT_MAX = 4294967295.;
+const float UINT_MAX_AS_FLOAT = 4294967295.;
 
 uint uint_hash_1D(uint seed)
 {
@@ -27,19 +27,19 @@ uint uint_hash_4D(uvec4 seed)
 
 float hash_0_to_1_1D_to_1D(float seed)
 {
-    return float(uint_hash_1D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_1D(floatBitsToUint(seed))) / UINT_MAX_AS_FLOAT;
 }
 float hash_0_to_1_2D_to_1D(vec2 seed)
 {
-    return float(uint_hash_2D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_2D(floatBitsToUint(seed))) / UINT_MAX_AS_FLOAT;
 }
 float hash_0_to_1_3D_to_1D(vec3 seed)
 {
-    return float(uint_hash_3D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_3D(floatBitsToUint(seed))) / UINT_MAX_AS_FLOAT;
 }
 float hash_0_to_1_4D_to_1D(vec4 seed)
 {
-    return float(uint_hash_4D(floatBitsToUint(seed))) / UINT_MAX;
+    return float(uint_hash_4D(floatBitsToUint(seed))) / UINT_MAX_AS_FLOAT;
 }
 
 vec2 hash_0_to_1_1D_to_2D(float seed)
