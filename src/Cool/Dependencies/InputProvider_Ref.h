@@ -1,5 +1,4 @@
 #pragma once
-
 #include <functional>
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/Dependencies/Input.h"
@@ -15,6 +14,7 @@ public:
         float               render_target_aspect_ratio,
         float               height,
         float               time,
+        float               delta_time,
         glm::mat3 const&    camera2D,
         AudioManager const& audio_manager
     )
@@ -22,6 +22,7 @@ public:
         , _render_target_aspect_ratio{render_target_aspect_ratio}
         , _height{height}
         , _time{time}
+        , _delta_time{delta_time}
         , _camera2D{camera2D}
         , _audio_manager{audio_manager}
     {}
@@ -66,6 +67,11 @@ public:
         return _time;
     }
 
+    auto operator()(const Input_DeltaTime&) const -> float
+    {
+        return _delta_time;
+    }
+
     auto operator()(const Input_Audio&) const -> AudioManager const&
     {
         return _audio_manager;
@@ -83,6 +89,7 @@ private:
     float                                      _render_target_aspect_ratio;
     float                                      _height;
     float                                      _time;
+    float                                      _delta_time;
     glm::mat3                                  _camera2D;
     std::reference_wrapper<AudioManager const> _audio_manager;
 };

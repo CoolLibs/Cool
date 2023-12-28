@@ -13,6 +13,11 @@ static auto make_valid_ratio(float ratio) -> float
 
 static auto parse_ratio(std::string const& input) -> float
 {
+    if (input == "A4 Horizontal")
+        return 1.41421356f;
+    if (input == "A4 Vertical")
+        return 0.70710678f;
+
     float value = 1.f;
 
     std::regex const pattern(R"((\d*(\.\d*)?)(/(\d*(\.\d*)?))?(.*))"); // Matches a number and maybe a / and maybe another number
@@ -48,6 +53,10 @@ void AspectRatio::set(float aspect_ratio)
 
 auto string_from_ratio(float ratio) -> std::string
 {
+    if (std::abs(ratio - 1.41421356f) < 0.001f)
+        return "A4 Horizontal";
+    if (std::abs(ratio - 0.70710678f) < 0.001f)
+        return "A4 Vertical";
     smart::Fraction const fraction = smart::as_fraction(ratio);
 
     bool const fraction_is_small_enough =
@@ -63,11 +72,13 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
 {
     bool b = false;
 
-    static constexpr std::array ratios = {
+    static constexpr auto ratios = std::array{
+        std::make_pair("  A4 Horizontal ", 1.41421356f),
         std::make_pair("     16 / 9     ", 16.f / 9.f),
         std::make_pair("      3 / 2     ", 3.f / 2.f),
         std::make_pair("      4 / 3     ", 4.f / 3.f),
         std::make_pair("      1 / 1     ", 1.f),
+        std::make_pair("   A4 Vertical  ", 0.70710678f),
         std::make_pair("      9 / 16    ", 9.f / 16.f),
         std::make_pair("      2 / 3     ", 2.f / 3.f),
         std::make_pair("      3 / 4     ", 3.f / 4.f),

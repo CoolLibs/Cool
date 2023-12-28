@@ -1,6 +1,6 @@
 #pragma once
-#include "Graph.h"
 #include "NodesConfig.h"
+#include "NodesGraph.h"
 #include "NodesLibrary.h"
 
 namespace Cool {
@@ -18,8 +18,8 @@ public:
 
     virtual void for_each_selected_node(std::function<void(Node const&)> const&) const = 0;
 
-    [[nodiscard]] virtual auto graph() const -> Graph const& = 0;
-    [[nodiscard]] virtual auto graph() -> Graph&             = 0;
+    [[nodiscard]] virtual auto graph() const -> NodesGraph const& = 0;
+    [[nodiscard]] virtual auto graph() -> NodesGraph&             = 0;
 
     [[nodiscard]] virtual auto is_empty() const -> bool = 0;
 };

@@ -4,17 +4,6 @@
 
 namespace Cool {
 
-FrameBuffer::FrameBuffer()
-{
-    GLDebug(glGenFramebuffers(1, &m_frameBufferId));
-}
-
-FrameBuffer::~FrameBuffer()
-{
-    destroyAttachments();
-    GLDebug(glDeleteFramebuffers(1, &m_frameBufferId));
-}
-
 void FrameBuffer::setSize(img::Size size)
 {
     m_size = size;
@@ -51,15 +40,17 @@ void FrameBuffer::setSize(img::Size size)
         }();
         Log::Debug::error("Framebuffer is not complete : {}", statusStr);
     }
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Make sure to init the values in the framebuffer
     unbind();
 #endif
 }
 
 void FrameBuffer::bind() const
 {
-    GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferId));
+    GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferId.id()));
     GLDebug(glGetIntegerv(GL_VIEWPORT, m_prevViewport));                                      // Store viewport settings to restore them when unbinding
-    GLDebug(glViewport(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()))); // Only usefull if we plan on using this frame buffer at a different resolution than the screen's
+    GLDebug(glViewport(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()))); // Only useful if we plan on using this frame buffer at a different resolution than the screen's
 }
 
 void FrameBuffer::unbind() const
@@ -71,7 +62,7 @@ void FrameBuffer::unbind() const
 void FrameBuffer::blitTo(const glm::ivec2& botLeft, const glm::ivec2& topRight, GLuint dstFrameBufferID, GLenum interpolationMode) const
 {
     GLDebug(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBufferID));
-    GLDebug(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId));
+    GLDebug(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBufferId.id()));
     GLDebug(glBlitFramebuffer(0, 0, static_cast<GLsizei>(width()), static_cast<GLsizei>(height()), botLeft.x, botLeft.y, topRight.x, topRight.y, GL_COLOR_BUFFER_BIT, interpolationMode));
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
@@ -83,21 +74,21 @@ void FrameBuffer::blitTo(FrameBuffer& frameBuffer, GLenum interpolationMode) con
 
 void FrameBuffer::createAttachments(img::Size size)
 {
-    GLDebug(glGenRenderbuffers(1, &m_depthRenderBufferId));
-    GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId));
+    m_depthRenderBufferId.emplace();
+    GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, m_depthRenderBufferId->id()));
     GLDebug(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height())));
     GLDebug(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 }
 
 void FrameBuffer::destroyAttachments()
 {
-    GLDebug(glDeleteRenderbuffers(1, &m_depthRenderBufferId));
+    m_depthRenderBufferId.reset();
 }
 
 void FrameBuffer::attachAttachments()
 {
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId()));
-    GLDebug(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId));
+    GLDebug(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthRenderBufferId->id()));
     GLDebug(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 

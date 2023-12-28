@@ -79,6 +79,8 @@ struct Input_Camera2D {
 };
 struct Input_Time {
 };
+struct Input_DeltaTime {
+};
 struct Input_Audio {
 };
 

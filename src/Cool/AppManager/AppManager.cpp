@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
+#include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/ImGui/Fonts.h"
@@ -37,6 +38,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     , _app{app}
     , _config{config}
 {
+    fix_tdr_delay::set_minimum_delay(60); // Fixes a GPU crash on Windows. See the documentation of the library: https://github.com/CoolLibs/fix-tdr-delay
     // Set callbacks
     for (auto& window : _window_manager.windows())
     {
@@ -70,7 +72,8 @@ void AppManager::run(std::function<void()> on_update)
         }
         catch (std::exception const& e)
         {
-            Cool::Log::ToUser::error("UNKNOWN ERROR", e.what());
+            Cool::Log::ToUser::error("UNKNOWN ERROR 1", e.what());
+            assert(false); // Please catch the error where appropriate, and handle it properly.
         }
     };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
@@ -137,9 +140,17 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.trigger_rerender();
-    if (TextureLibrary_FromFile::instance().update())
+    if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
         _app.trigger_rerender();
-    _app.update();
+    try
+    {
+        _app.update();
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
+        assert(false); // Please catch the error where appropriate, and handle it properly.
+    }
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();

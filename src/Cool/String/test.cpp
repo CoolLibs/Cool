@@ -77,32 +77,17 @@ TEST_CASE("[Cool::String] replace()")
     };
     SUBCASE("replace_all()")
     {
-        std::string str = "Effect_intensity";
-        Cool::String::replace_all(str, "_", " ");
-        CHECK(str == "Effect intensity");
+        CHECK(Cool::String::replace_all("Effect_intensity", "_", " ") == "Effect intensity");
     }
     SUBCASE("replace_all_words()")
     {
-        {
-            auto const str = "Test helloworld hello world hello something"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop");
-            CHECK(res == "Test helloworld plop world plop something");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "hello plop");
-            CHECK(res == "hello plop world");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello");
-            CHECK(res == "plop hello world");
-        }
-        { // When `to` contains `from`
-            auto const str = "hello world"s;
-            auto const res = Cool::String::replace_all_words(str, "hello", "plop hello pouet");
-            CHECK(res == "plop hello pouet world");
-        }
+        CHECK(Cool::String::replace_all_words("Test helloworld hello world hello something", "hello", "plop") == "Test helloworld plop world plop something");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "hello plop") == "hello plop world");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "plop hello") == "plop hello world");
+        // When `to` contains `from`
+        CHECK(Cool::String::replace_all_words("hello world", "hello", "plop hello pouet") == "plop hello pouet world");
     }
     SUBCASE("replace_between_delimiters()")
     {
@@ -125,6 +110,15 @@ TEST_CASE("[Cool::String] replace()")
     {
         CHECK(Cool::String::replace_at(3, 5, "0123456789", "abcde") == "012abcde56789");
     }
+}
+
+TEST_CASE("[Cool::String] find_beginning_of_word()")
+{
+    CHECK(Cool::String::find_beginning_of_word("ell", "Hello World") == std::string::npos);
+    CHECK(Cool::String::find_beginning_of_word("Hell", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Hello", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Hello Wor", "Hello World") == 0);
+    CHECK(Cool::String::find_beginning_of_word("Wor", "Hello World") == 6);
 }
 
 TEST_CASE("[Cool::String] find_matching_pair()")
@@ -339,6 +333,7 @@ TEST_CASE("contains_word()")
     CHECK(Cool::String::contains_word("", "Hello World") == false);
     CHECK(Cool::String::contains_word("", "") == false);
     CHECK(Cool::String::contains_word("Hello World", "Hello World") == true);
+    CHECK(Cool::String::contains_word("_time", "_delta_time _time") == true);
 }
 
 TEST_CASE("remove_comments()")

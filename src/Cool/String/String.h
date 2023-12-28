@@ -26,11 +26,23 @@ auto contains(std::string_view text, std::string_view characters) -> bool; // TO
 auto to_lower(std::string_view str) -> std::string;
 
 /// Modifies `str` by replacing all occurrences of `from` with `to`.
-void replace_all(std::string& str, std::string_view from, std::string_view to);
+void replace_all_inplace(std::string& str, std::string_view from, std::string_view to);
+/// Returns a new string where all occurrences of `from` have been replaced with `to`.
+[[nodiscard]] auto replace_all(std::string str, std::string_view from, std::string_view to) -> std::string;
 
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
+void replace_all_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters);
 /// Returns a new string where all `from` words have been replaced with `to`.
 /// We need to match a whole word: for example we won't replace "hello" in "helloworld" but we will replace it in "hello world".
 [[nodiscard]] auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
+
+/// Modifies `str` by replacing all `from` words with `to`.
+/// We need to match the beginning of a word: for example we won't replace "world" in "helloworld" but we will replace "hello".
+void replace_all_beginnings_of_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters);
+/// Returns a new string where all `from` words have been replaced with `to`.
+/// We need to match the beginning of a word: for example we won't replace "world" in "helloworld" but we will replace "hello".
+[[nodiscard]] auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters = default_word_delimiters) -> std::string;
 
 /**
  * @brief Converts a number to a string. Adds 0s to the left until the size of the string is greater or equal to min_nb_of_characters.
@@ -203,7 +215,13 @@ auto contains_word(std::string_view word, std::string_view text, std::string_vie
 /// Only starts searching at indices equal or greater to `offset`.
 /// A word is delimited by `delimiters`.
 /// Note that we only match whole words, so for example "Hello World" is not considered to contain "ell", only "Hello" and "World".
-auto find_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters = default_word_delimiters) -> size_t;
+auto find_word(std::string_view word, std::string_view text, size_t offset = 0, std::string_view delimiters = default_word_delimiters) -> size_t;
+
+/// Returns the index of the beginning of the `word` in `text`, or std::string_view::npos if the word is not found.
+/// Only starts searching at indices equal or greater to `offset`.
+/// A word is delimited by `delimiters`.
+/// Note that we only match beginnings of words, so for example "Hello World" is not considered to contain "ell", only "Hello" or "Hello Wor" or "Worl" for example.
+auto find_beginning_of_word(std::string_view word, std::string_view text, size_t offset = 0, std::string_view delimiters = default_word_delimiters) -> size_t;
 
 /// Removes all `//` and `/* */` comments
 auto remove_comments(std::string const&) -> std::string;

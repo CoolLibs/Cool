@@ -19,7 +19,7 @@ public:
     /// Note that myBuffer and data are arbitrary names and you can change them as you please.
     /// Also, the layout doesn't need to use floats, you can basically use any type you want (kind of, vec3 doesn't work) : float, vec2, vec4, a struct, etc.
     /// </param>
-    SSBO(unsigned int binding)
+    explicit SSBO(unsigned int binding)
         : _binding(binding)
     {
         GLDebug(glGenBuffers(1, &_id));
@@ -28,6 +28,31 @@ public:
     ~SSBO()
     {
         GLDebug(glDeleteBuffers(1, &_id));
+    }
+    SSBO(SSBO const&)            = delete;
+    SSBO& operator=(SSBO const&) = delete;
+    SSBO(SSBO&& other) noexcept
+        : _binding{other._binding}
+        , _id{other._id}
+    {
+        other._id = 0;
+    }
+    auto operator=(SSBO&& other) noexcept -> SSBO&
+    {
+        _binding = other._binding;
+        if (this != &other)
+        {
+            GLDebug(glDeleteBuffers(1, &_id));
+            _id       = other._id;
+            other._id = 0;
+        }
+        return *this;
+    }
+
+    void bind()
+    {
+        GLDebug(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _binding, _id));
+        GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
     }
 
     /// <summary>
@@ -38,8 +63,8 @@ public:
     /// <param name="usage">A hint that allows OpenGL to optimize the SSBO. You can see all possible values here : http://docs.gl/gl4/glBufferData</param>
     void upload_data(size_t nb_of_elements, T* data, GLenum usage = GL_STREAM_READ)
     {
-        GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
-        GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, nb_of_elements * sizeof(T), data, usage));
+        bind();
+        GLDebug(glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GLsizeiptr>(nb_of_elements * sizeof(T)), data, usage));
     }
 
     /// <summary>
@@ -75,8 +100,8 @@ public:
     }
 
 private:
-    unsigned int _binding;
-    unsigned int _id;
+    unsigned int _binding{};
+    unsigned int _id{};
 };
 
 } // namespace Cool

@@ -10,8 +10,8 @@ public:
     [[nodiscard]] virtual auto delta_time() const -> float = 0;
     [[nodiscard]] virtual auto time() const -> float       = 0;
 
-    virtual void set_time(float new_time) = 0;
-    virtual void update()                 = 0;
+    virtual void set_time(float new_time, bool force_delta_time_to_ignore_the_change = false) = 0;
+    virtual void update()                                                                     = 0;
 
     virtual void       play();
     virtual void       pause();

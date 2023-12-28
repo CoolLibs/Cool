@@ -42,8 +42,9 @@ private:
     void set_selected_input_device(Audio::SelectedDevice);
 
 private:
-    float     _volume{30.f};
-    MessageId _error_id_device_invalid{};
+    float        _volume{30.f};
+    MessageId    _error_id_device_invalid{};
+    mutable bool _has_started{false};
 
 private:
     // Serialization

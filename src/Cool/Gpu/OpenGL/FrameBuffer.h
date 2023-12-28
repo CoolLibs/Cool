@@ -1,7 +1,8 @@
 #pragma once
+#include <optional>
 #if defined(COOL_OPENGL)
-
 #include <img/img.hpp>
+#include "glpp/glpp.hpp"
 
 namespace Cool {
 
@@ -9,8 +10,8 @@ static constexpr GLuint SCREEN_FRAMEBUFFER_ID = 0;
 
 class FrameBuffer {
 public:
-    FrameBuffer();
-    virtual ~FrameBuffer();
+    FrameBuffer()          = default;
+    virtual ~FrameBuffer() = default;
 
     void setSize(img::Size size);
 
@@ -46,13 +47,13 @@ protected:
     virtual void createAttachments(img::Size size);
     virtual void attachAttachments();
 
-    inline GLuint frameBufferId() { return m_frameBufferId; }
+    inline GLuint frameBufferId() { return m_frameBufferId.id(); }
 
 private:
-    GLuint      m_frameBufferId       = static_cast<GLuint>(-1);
-    GLuint      m_depthRenderBufferId = static_cast<GLuint>(-1);
-    img::Size   m_size;
-    mutable int m_prevViewport[4] = {};
+    glpp::UniqueFramebuffer                 m_frameBufferId{};
+    std::optional<glpp::UniqueRenderbuffer> m_depthRenderBufferId{};
+    img::Size                               m_size;
+    mutable int                             m_prevViewport[4] = {};
 };
 
 } // namespace Cool

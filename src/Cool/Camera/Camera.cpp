@@ -52,6 +52,11 @@ auto Camera::inverse_view_projection_matrix(float aspect_ratio) const -> glm::ma
     return transform_matrix() * inverse_projection_matrix(aspect_ratio);
 }
 
+auto Camera::view_projection_matrix(float aspect_ratio) const -> glm::mat4
+{
+    return projection_matrix(aspect_ratio) * view_matrix();
+}
+
 } // namespace Cool
 
 #if COOL_ENABLE_TESTS

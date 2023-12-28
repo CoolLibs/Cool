@@ -24,9 +24,9 @@ static void assert_compute_shader_is_bound(GLuint id)
 
 ComputeShader::ComputeShader(glm::uvec3 working_group_size, std::string_view source_code)
     : Shader(
-        ShaderModule{{
-            generate_boilderplate_for_size(working_group_size) + std::string(source_code),
-            ShaderKind::Compute,
+        ShaderModule{ShaderDescription{
+            .kind        = ShaderKind::Compute,
+            .source_code = generate_boilerplate_for_size(working_group_size) + std::string(source_code),
         }}
     )
     , _working_group_size(working_group_size)
@@ -40,9 +40,9 @@ ComputeShader::ComputeShader(unsigned int working_group_size, std::string_view s
 void ComputeShader::compute(glm::uvec3 size)
 {
     assert(size != glm::uvec3(0));
-    set_uniform("DispatchSize", size);
-    glm::uvec3 dispatch_group_count = size / _working_group_size + glm::uvec3(1);
     assert_compute_shader_is_bound(id());
+    set_uniform("DispatchSize", size);
+    glm::uvec3 dispatch_group_count = (size - glm::uvec3{1}) / _working_group_size + glm::uvec3(1);
     GLDebug(glDispatchCompute(dispatch_group_count.x, dispatch_group_count.y, dispatch_group_count.z));
     GLDebug(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT));
 }
@@ -53,10 +53,11 @@ auto load_compute_shader_from_file(glm::uvec3 working_group_size, const std::fil
     return ComputeShader(working_group_size, *File::to_string(filePath));
 }
 
-auto generate_boilderplate_for_size(glm::uvec3 working_group_size) -> std::string
+auto generate_boilerplate_for_size(glm::uvec3 working_group_size) -> std::string
 {
     return std::string(R"V0G0N(
 #version 430
+#define COOL_COMPUTE_SHADER // Used to know if we can use some functions that are specific to compute shaders / fragment shaders.
 
 uniform uvec3 DispatchSize;
 

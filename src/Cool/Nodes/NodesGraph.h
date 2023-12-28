@@ -8,7 +8,7 @@
 
 namespace Cool {
 
-class Graph {
+class NodesGraph {
 public:
     auto add_node(Node) -> NodeId;
     void remove_node(NodeId const&);

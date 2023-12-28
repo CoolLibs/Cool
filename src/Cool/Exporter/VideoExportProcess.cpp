@@ -95,16 +95,17 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
     extra_widgets();
 }
 
-void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path file_path)
+void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path const& file_path)
 {
-    polaroid.render(_clock.time(), _size);
+    polaroid.render(_clock.time(), _clock.delta_time(), _size);
 
     _thread_pool.push_job(ImageExportJob{
         file_path,
         polaroid.render_target.download_pixels(),
         _average_export_time,
         _average_export_time_mutex,
-        _nb_frames_which_finished_exporting});
+        _nb_frames_which_finished_exporting
+    });
 }
 
 } // namespace Cool

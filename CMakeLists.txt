@@ -201,6 +201,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE Cool::Audio)
 add_subdirectory(lib/exe_path)
 target_link_libraries(Cool-PublicProperties INTERFACE exe_path::exe_path)
 
+# fix_tdr_delay
+add_subdirectory(lib/fix-tdr-delay)
+target_link_libraries(Cool-PrivateProperties INTERFACE fix_tdr_delay::fix_tdr_delay)
+
 # serv
 # ## Disabled for now, we will reintroduce it when we will use it
 # add_subdirectory(lib/serv)

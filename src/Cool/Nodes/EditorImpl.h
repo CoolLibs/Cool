@@ -3,11 +3,11 @@
 #include <cereal/types/vector.hpp>
 #include <reg/src/AnyId.hpp>
 #include "Cool/Nodes/UniqueEdContext.h"
-#include "Graph.h"
 #include "IEditor.h"
 #include "Node.h"
 #include "NodeId.h"
 #include "NodesConfig.h"
+#include "NodesGraph.h"
 #include "NodesLibrary.h"
 #include "ed.h"
 #include "utilities/builders.h"
@@ -57,8 +57,8 @@ class NodesEditorImpl : public INodesEditor {
 public:
     auto imgui_windows(NodesConfig&, NodesLibrary const&) -> bool override;
 
-    auto graph() const -> Graph const& override { return _graph; }
-    auto graph() -> Graph& override { return _graph; }
+    auto graph() const -> NodesGraph const& override { return _graph; }
+    auto graph() -> NodesGraph& override { return _graph; }
 
     void for_each_selected_node(std::function<void(Node const&)> const&) const override;
 
@@ -70,13 +70,13 @@ private:
 
 private:
     /// Returns the id of the node definition that we should create, or std::nullopt if no node should be created.
-    auto imgui_nodes_menu(NodesLibrary const&, bool just_opened) -> std::optional<NodeDefinitionAndCategoryName>;
+    auto imgui_nodes_menu(NodesLibrary const&, MaybeDisableNodeDefinition const& maybe_disable, bool just_opened) -> std::optional<NodeDefinitionAndCategoryName>;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
 
 private:
     internal::UniqueEdContext        _context{};
-    Graph                            _graph;
+    NodesGraph                       _graph;
     std::vector<internal::FrameNode> _frame_nodes{};
     bool                             _workspace_is_hovered{};
     internal::SearchBarState         _search_bar{};

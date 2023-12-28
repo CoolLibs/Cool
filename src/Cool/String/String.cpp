@@ -2,6 +2,7 @@
 #include <charconv>
 #include <exception>
 #include <glm/detail/qualifier.hpp>
+#include <string>
 #include <string_view>
 #include "Cool/String/String.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
@@ -22,7 +23,7 @@ auto to_lower(std::string_view str) -> std::string
     return res;
 }
 
-void replace_all(std::string& str, std::string_view from, std::string_view to)
+void replace_all_inplace(std::string& str, std::string_view from, std::string_view to)
 {
     if (from.empty())
     {
@@ -36,22 +37,41 @@ void replace_all(std::string& str, std::string_view from, std::string_view to)
     }
 }
 
+auto replace_all(std::string str, std::string_view from, std::string_view to) -> std::string
+{
+    replace_all_inplace(str, from, to);
+    return str;
+}
+
+void replace_all_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters)
+{
+    auto word_position = find_word(from, str, 0, delimiters);
+    while (word_position != std::string_view::npos)
+    {
+        str.replace(word_position, from.size(), to);
+        word_position = find_word(from, str, word_position + to.size(), delimiters);
+    }
+}
+
 auto replace_all_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
 {
-    auto word_position = find_next_word_position(str, 0, delimiters);
-    while (word_position)
+    replace_all_words_inplace(str, from, to, delimiters);
+    return str;
+}
+
+void replace_all_beginnings_of_words_inplace(std::string& str, std::string_view from, std::string_view to, std::string_view delimiters)
+{
+    auto word_position = find_beginning_of_word(from, str, 0, delimiters);
+    while (word_position != std::string_view::npos)
     {
-        auto const block_content = substring(str, word_position->first, word_position->second);
-
-        if (block_content == from)
-        {
-            str.replace(word_position->first, word_position->second - word_position->first, to);
-            word_position->second = word_position->first + to.length(); // Update end of word position, so that the next find_next_word_position() starts at the right place
-        }
-
-        word_position = find_next_word_position(str, word_position->second, delimiters);
+        str.replace(word_position, from.size(), to);
+        word_position = find_beginning_of_word(from, str, word_position + to.size(), delimiters);
     }
+}
 
+auto replace_all_beginnings_of_words(std::string str, std::string_view from, std::string_view to, std::string_view delimiters) -> std::string
+{
+    replace_all_beginnings_of_words_inplace(str, from, to, delimiters);
     return str;
 }
 
@@ -208,10 +228,10 @@ auto split_into_words(
 auto remove_whitespaces(std::string_view text) -> std::string
 {
     auto res = std::string{text};
-    replace_all(res, " ", "");
-    replace_all(res, "\n", "");
-    replace_all(res, "\t", "");
-    replace_all(res, "\r", "");
+    replace_all_inplace(res, " ", "");
+    replace_all_inplace(res, "\n", "");
+    replace_all_inplace(res, "\t", "");
+    replace_all_inplace(res, "\r", "");
     return res;
 }
 
@@ -447,7 +467,29 @@ auto find_word(std::string_view word, std::string_view text, size_t offset, std:
                                   || there_is_a_delimiter_at(index + word.size());
 
     if (!is_beginning_of_a_word || !is_end_of_a_word)
+        return find_word(word, text, index + word.size(), delimiters);
+
+    return index;
+}
+
+auto find_beginning_of_word(std::string_view word, std::string_view text, size_t offset, std::string_view delimiters) -> size_t
+{
+    if (word.empty())
         return std::string_view::npos;
+
+    auto const index = text.find(word, offset);
+    if (index == std::string_view::npos)
+        return std::string_view::npos;
+
+    auto const there_is_a_delimiter_at = [&](size_t index) -> bool {
+        return delimiters.find(text[index]) != std::string_view::npos;
+    };
+
+    bool const is_beginning_of_a_word = index == 0
+                                        || there_is_a_delimiter_at(index - 1);
+
+    if (!is_beginning_of_a_word)
+        return find_beginning_of_word(word, text, index + word.size(), delimiters);
 
     return index;
 }

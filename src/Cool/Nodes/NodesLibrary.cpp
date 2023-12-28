@@ -1,6 +1,7 @@
 #include "NodesLibrary.h"
 #include <Cool/String/String.h>
 #include <wafl/wafl.hpp>
+#include "Cool/ImGui/ImGuiExtras.h"
 
 namespace Cool {
 
@@ -33,7 +34,7 @@ auto NodesLibrary::get_category(std::string const& category_name) -> NodesCatego
     return nullptr;
 }
 
-auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
+auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const& maybe_disable, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
 {
     for (auto& category : _categories)
     {
@@ -74,10 +75,14 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, bool select
                 if (!internal::name_matches_filter(def.name(), nodes_filter))
                     continue;
 
-                if (select_first || ImGui::Selectable(def.name().c_str()))
-                {
-                    return NodeDefinitionAndCategoryName{def, category.name()};
-                }
+                auto selected_definition = std::optional<NodeDefinitionAndCategoryName>{};
+                Cool::ImGuiExtras::disabled_if(maybe_disable(def, category), [&]() {
+                    if (select_first || ImGui::Selectable(def.name().c_str()))
+                        selected_definition = NodeDefinitionAndCategoryName{def, category.name()};
+                });
+
+                if (selected_definition.has_value())
+                    return selected_definition;
             }
         }
     }

@@ -191,7 +191,7 @@ void Shader::set_uniform(std::string_view uniform_name, Texture const& texture, 
 {
     auto const slot = get_next_texture_slot();
     texture.attach_to_slot(slot);
-    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    GLDebug(glBindSampler(slot, TextureSamplerLibrary::instance().get(sampler).id()));
     set_uniform(fmt::format("{}.tex", uniform_name), static_cast<int>(slot));
     set_uniform(fmt::format("{}.aspect_ratio", uniform_name), texture.aspect_ratio());
     GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
@@ -202,7 +202,7 @@ void Shader::set_uniform_texture(std::string_view uniform_name, GLuint texture_i
     auto const slot = get_next_texture_slot();
     GLDebug(glActiveTexture(GL_TEXTURE0 + slot));
     GLDebug(glBindTexture(GL_TEXTURE_2D, texture_id));
-    GLDebug(glBindSampler(slot, *TextureSamplerLibrary::instance().get(sampler)));
+    GLDebug(glBindSampler(slot, TextureSamplerLibrary::instance().get(sampler).id()));
     set_uniform(uniform_name, static_cast<int>(slot));
     GLDebug(glActiveTexture(GL_TEXTURE0)); // HACK Slot 0 is used for texture operations like resizing and setting the image, anyone might override the texture set here at any time. So we use all slots but the 0th one for rendering.
 }

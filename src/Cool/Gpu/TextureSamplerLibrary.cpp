@@ -51,9 +51,9 @@ auto TextureSamplerLibrary::get(TextureSamplerDescriptor const& info) -> glpp::U
     // Create a new sampler
     _samplers[info] = glpp::UniqueTextureSampler{};
     auto& sampler   = _samplers[info];
-    apply_repeat_mode(*sampler, info.repeat_mode);
-    glSamplerParameteri(*sampler, GL_TEXTURE_MAG_FILTER, glpp::raw(info.interpolation_mode));
-    glSamplerParameteri(*sampler, GL_TEXTURE_MIN_FILTER, glpp::raw(info.interpolation_mode));
+    apply_repeat_mode(sampler.id(), info.repeat_mode);
+    glSamplerParameteri(sampler.id(), GL_TEXTURE_MAG_FILTER, glpp::raw(info.interpolation_mode));
+    glSamplerParameteri(sampler.id(), GL_TEXTURE_MIN_FILTER, glpp::raw(info.interpolation_mode));
 
     return sampler;
 }

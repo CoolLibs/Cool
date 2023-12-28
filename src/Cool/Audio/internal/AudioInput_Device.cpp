@@ -25,6 +25,7 @@ void AudioInput_Device::set_nb_of_retained_samples(size_t samples_count)
 
 void AudioInput_Device::for_each_audio_frame(int64_t frames_count, std::function<void(float)> const& callback) const
 {
+    _has_started = true;
     input_stream().for_each_sample(frames_count, [&](float const sample) { // We know that an input stream has only 1 channel, so 1 sample == 1 frame, no need to average across all the channels.
         callback(sample * _volume);
     });
@@ -56,6 +57,8 @@ static auto get_device_name(Audio::SelectedDevice const& selected_device) -> std
 
 void AudioInput_Device::update()
 {
+    if (!_has_started) // HACK don't update until for_each_audio_frame() has been called at least once, to make sure we don't create an audio stream and request access to the mic unless it is actually necessary. Otherwise we would use the mic as soon as the app starts up, even if we are not using audio nodes or showing the audio config window.
+        return;
     input_stream().update();
     if (!input_stream().current_device_is_valid())
     {
@@ -82,6 +85,7 @@ void AudioInput_Device::start()
 void AudioInput_Device::stop()
 {
     input_stream().close();
+    _has_started = false;
 }
 
 auto AudioInput_Device::does_need_to_highlight_error() const -> bool
