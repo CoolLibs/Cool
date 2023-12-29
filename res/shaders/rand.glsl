@@ -91,6 +91,8 @@ vec4 hash_0_to_1_4D_to_4D(vec4 p)
 
 vec2 random_point_on_disk(float seed)
 {
+    const float PI = 3.141592653590;
+
     vec2  random    = hash_0_to_1_1D_to_2D(seed);
     float theta     = 2 * PI * random.x;
     float r         = sqrt(random.y);
@@ -100,6 +102,8 @@ vec2 random_point_on_disk(float seed)
 
 vec3 random_point_on_sphere(float seed)
 {
+    const float PI = 3.141592653590;
+
     vec3  random    = hash_0_to_1_1D_to_3D(seed);
     float theta     = 2 * PI * random.x;
     float ry        = random.y * 2 - 1;
