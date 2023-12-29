@@ -1,6 +1,6 @@
 // Inspired by https://stackoverflow.com/a/17479300
 
-uint uint_hash_1D(uint seed)
+uint uint_hash_1D_to_1D(uint seed)
 {
     // A single iteration of Bob Jenkins' One-At-A-Time hashing algorithm.
     seed += (seed << 10u);
@@ -10,35 +10,106 @@ uint uint_hash_1D(uint seed)
     seed += (seed << 15u);
     return seed;
 }
-uint uint_hash_2D(uvec2 seed)
+uint uint_hash_2D_to_1D(uvec2 seed)
 {
-    return uint_hash_1D(seed.x ^ uint_hash_1D(seed.y));
+    return uint_hash_1D_to_1D(seed.x ^ uint_hash_1D_to_1D(seed.y));
 }
-uint uint_hash_3D(uvec3 seed)
+uint uint_hash_3D_to_1D(uvec3 seed)
 {
-    return uint_hash_1D(seed.x ^ uint_hash_2D(seed.yz));
+    return uint_hash_1D_to_1D(seed.x ^ uint_hash_2D_to_1D(seed.yz));
 }
-uint uint_hash_4D(uvec4 seed)
+uint uint_hash_4D_to_1D(uvec4 seed)
 {
-    return uint_hash_1D(seed.x ^ uint_hash_3D(seed.yzw));
+    return uint_hash_1D_to_1D(seed.x ^ uint_hash_3D_to_1D(seed.yzw));
 }
 
-float float_0_to_1(uint x)
+uvec2 uint_hash_1D_to_2D(uint seed)
+{
+    uint rand1 = uint_hash_1D_to_1D(seed);
+    uint rand2 = uint_hash_1D_to_1D(rand1);
+    return uvec2(
+        rand1,
+        rand2
+    );
+}
+uvec3 uint_hash_1D_to_3D(uint seed)
+{
+    uint rand1 = uint_hash_1D_to_1D(seed);
+    uint rand2 = uint_hash_1D_to_1D(rand1);
+    uint rand3 = uint_hash_1D_to_1D(rand2);
+    return uvec3(
+        rand1,
+        rand2,
+        rand3
+    );
+}
+uvec4 uint_hash_1D_to_4D(uint seed)
+{
+    uint rand1 = uint_hash_1D_to_1D(seed);
+    uint rand2 = uint_hash_1D_to_1D(rand1);
+    uint rand3 = uint_hash_1D_to_1D(rand2);
+    uint rand4 = uint_hash_1D_to_1D(rand3);
+    return uvec4(
+        rand1,
+        rand2,
+        rand3,
+        rand4
+    );
+}
+
+uvec2 uint_hash_2D_to_2D(uvec2 seed)
+{
+    return uint_hash_1D_to_2D(uint_hash_2D_to_1D(seed));
+}
+uvec3 uint_hash_2D_to_3D(uvec2 seed)
+{
+    return uint_hash_1D_to_3D(uint_hash_2D_to_1D(seed));
+}
+uvec4 uint_hash_2D_to_4D(uvec2 seed)
+{
+    return uint_hash_1D_to_4D(uint_hash_2D_to_1D(seed));
+}
+uvec2 uint_hash_3D_to_2D(uvec3 seed)
+{
+    return uint_hash_1D_to_2D(uint_hash_3D_to_1D(seed));
+}
+uvec3 uint_hash_3D_to_3D(uvec3 seed)
+{
+    return uint_hash_1D_to_3D(uint_hash_3D_to_1D(seed));
+}
+uvec4 uint_hash_3D_to_4D(uvec3 seed)
+{
+    return uint_hash_1D_to_4D(uint_hash_3D_to_1D(seed));
+}
+uvec2 uint_hash_4D_to_2D(uvec4 seed)
+{
+    return uint_hash_1D_to_2D(uint_hash_4D_to_1D(seed));
+}
+uvec3 uint_hash_4D_to_3D(uvec4 seed)
+{
+    return uint_hash_1D_to_3D(uint_hash_4D_to_1D(seed));
+}
+uvec4 uint_hash_4D_to_4D(uvec4 seed)
+{
+    return uint_hash_1D_to_4D(uint_hash_4D_to_1D(seed));
+}
+
+float float_0_to_1_from_uint(uint x)
 {
     const float UINT_MAX_AS_FLOAT = 4294967295.;
     return float(x) / UINT_MAX_AS_FLOAT;
 }
-vec2 vec2_0_to_1(uvec2 x)
+vec2 vec2_0_to_1_from_uint(uvec2 x)
 {
     const float UINT_MAX_AS_FLOAT = 4294967295.;
     return vec2(x) / UINT_MAX_AS_FLOAT;
 }
-vec3 vec3_0_to_1(uvec3 x)
+vec3 vec3_0_to_1_from_uint(uvec3 x)
 {
     const float UINT_MAX_AS_FLOAT = 4294967295.;
     return vec3(x) / UINT_MAX_AS_FLOAT;
 }
-vec4 vec4_0_to_1(uvec4 x)
+vec4 vec4_0_to_1_from_uint(uvec4 x)
 {
     const float UINT_MAX_AS_FLOAT = 4294967295.;
     return vec4(x) / UINT_MAX_AS_FLOAT;
@@ -46,87 +117,67 @@ vec4 vec4_0_to_1(uvec4 x)
 
 float hash_0_to_1_1D_to_1D(float seed)
 {
-    return float_0_to_1(uint_hash_1D(floatBitsToUint(seed)));
+    return float_0_to_1_from_uint(uint_hash_1D_to_1D(floatBitsToUint(seed)));
 }
 float hash_0_to_1_2D_to_1D(vec2 seed)
 {
-    return float_0_to_1(uint_hash_2D(floatBitsToUint(seed)));
+    return float_0_to_1_from_uint(uint_hash_2D_to_1D(floatBitsToUint(seed)));
 }
 float hash_0_to_1_3D_to_1D(vec3 seed)
 {
-    return float_0_to_1(uint_hash_3D(floatBitsToUint(seed)));
+    return float_0_to_1_from_uint(uint_hash_3D_to_1D(floatBitsToUint(seed)));
 }
 float hash_0_to_1_4D_to_1D(vec4 seed)
 {
-    return float_0_to_1(uint_hash_4D(floatBitsToUint(seed)));
+    return float_0_to_1_from_uint(uint_hash_4D_to_1D(floatBitsToUint(seed)));
 }
-
 vec2 hash_0_to_1_1D_to_2D(float seed)
 {
-    uint rand1 = uint_hash_1D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    return vec2_0_to_1(uvec2(
-        rand1,
-        rand2
-    ));
+    return vec2_0_to_1_from_uint(uint_hash_1D_to_2D(floatBitsToUint(seed)));
 }
 vec3 hash_0_to_1_1D_to_3D(float seed)
 {
-    uint rand1 = uint_hash_1D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    uint rand3 = uint_hash_1D(rand2);
-    return vec3_0_to_1(uvec3(
-        rand1,
-        rand2,
-        rand3
-    ));
+    return vec3_0_to_1_from_uint(uint_hash_1D_to_3D(floatBitsToUint(seed)));
 }
 vec4 hash_0_to_1_1D_to_4D(float seed)
 {
-    uint rand1 = uint_hash_1D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    uint rand3 = uint_hash_1D(rand2);
-    uint rand4 = uint_hash_1D(rand3);
-    return vec4_0_to_1(uvec4(
-        rand1,
-        rand2,
-        rand3,
-        rand4
-    ));
+    return vec4_0_to_1_from_uint(uint_hash_1D_to_4D(floatBitsToUint(seed)));
 }
-
 vec2 hash_0_to_1_2D_to_2D(vec2 seed)
 {
-    uint rand1 = uint_hash_2D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    return vec2_0_to_1(uvec2(
-        rand1,
-        rand2
-    ));
+    return vec2_0_to_1_from_uint(uint_hash_2D_to_2D(floatBitsToUint(seed)));
+}
+vec3 hash_0_to_1_2D_to_3D(vec2 seed)
+{
+    return vec3_0_to_1_from_uint(uint_hash_2D_to_3D(floatBitsToUint(seed)));
+}
+vec4 hash_0_to_1_2D_to_4D(vec2 seed)
+{
+    return vec4_0_to_1_from_uint(uint_hash_2D_to_4D(floatBitsToUint(seed)));
+}
+vec2 hash_0_to_1_3D_to_2D(vec3 seed)
+{
+    return vec2_0_to_1_from_uint(uint_hash_3D_to_2D(floatBitsToUint(seed)));
 }
 vec3 hash_0_to_1_3D_to_3D(vec3 seed)
 {
-    uint rand1 = uint_hash_3D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    uint rand3 = uint_hash_1D(rand2);
-    return vec3_0_to_1(uvec3(
-        rand1,
-        rand2,
-        rand3
-    ));
+    return vec3_0_to_1_from_uint(uint_hash_3D_to_3D(floatBitsToUint(seed)));
+}
+vec4 hash_0_to_1_3D_to_4D(vec3 seed)
+{
+    return vec4_0_to_1_from_uint(uint_hash_3D_to_4D(floatBitsToUint(seed)));
+}
+vec2 hash_0_to_1_4D_to_2D(vec4 seed)
+{
+    return vec2_0_to_1_from_uint(uint_hash_4D_to_2D(floatBitsToUint(seed)));
+}
+vec3 hash_0_to_1_4D_to_3D(vec4 seed)
+{
+    return vec3_0_to_1_from_uint(uint_hash_4D_to_3D(floatBitsToUint(seed)));
 }
 vec4 hash_0_to_1_4D_to_4D(vec4 seed)
 {
-    uint rand1 = uint_hash_4D(floatBitsToUint(seed));
-    uint rand2 = uint_hash_1D(rand1);
-    uint rand3 = uint_hash_1D(rand2);
-    uint rand4 = uint_hash_1D(rand3);
-    return vec4_0_to_1(uvec4(
-        rand1,
-        rand2,
-        rand3,
-        rand4
-    ));
+    return vec4_0_to_1_from_uint(uint_hash_4D_to_4D(floatBitsToUint(seed)));
 }
 
 vec2 random_point_on_disk(float seed)
