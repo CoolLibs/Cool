@@ -1,4 +1,5 @@
 // Inspired by https://stackoverflow.com/a/17479300
+#include "_COOL_RES_/shaders/math.glsl"
 
 uint uint_hash_1D_to_1D(uint seed)
 {
