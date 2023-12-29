@@ -88,3 +88,22 @@ vec4 hash_0_to_1_4D_to_4D(vec4 p)
         hash_0_to_1_4D_to_1D(p.wxyz)
     );
 }
+
+vec2 random_point_on_circle(vec3 seed)
+{
+    vec2  random    = hash_0_to_1_3D_to_3D(seed).xy;
+    float r         = sqrt(random.y);
+    vec2  direction = vec2(cos(theta), sin(theta));
+    return r * direction;
+}
+
+vec3 random_point_on_sphere(vec3 seed)
+{
+    vec3  random    = hash_0_to_1_3D_to_3D(seed);
+    float theta     = 2 * PI * random.x;
+    float ry        = random.y * 2 - 1;
+    float ry2       = sqrt(1 - ry * ry);
+    float r         = pow(random.z, 1. / 3.);
+    vec3  direction = vec3(cos(theta) * ry2, sin(theta) * ry2, ry);
+    return r * direction;
+}
