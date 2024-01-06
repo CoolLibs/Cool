@@ -28,12 +28,12 @@ auto load(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessa
         }
         catch (const std::exception& e)
         {
-            return std::string_view{fmt::format("Invalid {} file.\nStarting with default values instead.\n{}", file_path, e.what())};
+            return fmt::format("Invalid {} file.\nStarting with default values instead.\n{}", file_path, e.what());
         }
     }
     else
     {
-        return std::string_view{fmt::format("{} not found.\nStarting with default values instead.", file_path)};
+        return fmt::format("{} not found.\nStarting with default values instead.", file_path);
     }
     return {};
 }

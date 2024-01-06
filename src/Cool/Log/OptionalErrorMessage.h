@@ -10,8 +10,8 @@ namespace Cool {
 class [[nodiscard]] OptionalErrorMessage {
 public:
     OptionalErrorMessage() = default;
-    OptionalErrorMessage(std::string_view message, std::optional<std::vector<ClipboardContent>> clipboard_contents = {}) // NOLINT(*-explicit-constructor, *-explicit-conversions)
-        : _message{message}
+    OptionalErrorMessage(std::string message, std::optional<std::vector<ClipboardContent>> clipboard_contents = {}) // NOLINT(*-explicit-constructor, *-explicit-conversions)
+        : _message{std::move(message)}
         , _clipboard_contents{std::move(clipboard_contents)}
     {}
 
