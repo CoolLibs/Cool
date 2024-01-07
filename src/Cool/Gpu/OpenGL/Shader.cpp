@@ -166,7 +166,7 @@ void Shader::set_uniform(std::string_view uniform_name, Point2D point2D) const
 }
 void Shader::set_uniform(std::string_view uniform_name, Camera2D const& cam) const
 {
-    set_uniform(uniform_name, cam.transform_matrix());
+    set_uniform(uniform_name, cam.transform_matrix(1.f));
 }
 
 static auto max_number_of_texture_slots() -> GLuint
