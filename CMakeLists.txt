@@ -132,6 +132,11 @@ elseif(COOL_USE_OPENGL)
     add_subdirectory(lib/glpp-extended)
     target_compile_definitions(glpp-extended PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
     target_link_libraries(Cool-PublicProperties INTERFACE glpp::extended)
+
+    if(APPLE)
+        target_compile_definitions(Cool-PublicProperties INTERFACE
+            COOL_PARTICLES_DISABLED_REASON="Particles are not supported on MacOS for now.")
+    endif()
 endif()
 
 # -------------------

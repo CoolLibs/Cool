@@ -5,7 +5,7 @@ namespace Cool {
 ParticleSystem::ParticleSystem(int dimension, ParticlesShadersCode const& shader_code, size_t particles_count)
     : _particles_count{particles_count}
     , _dimension(dimension)
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     , _render_shader{
           Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
               .kind        = Cool::ShaderKind::Vertex,
@@ -21,8 +21,7 @@ ParticleSystem::ParticleSystem(int dimension, ParticlesShadersCode const& shader
 #endif
 {
     set_particles_count(_particles_count); // Will init all the particles attributes (by calling the init shader)
-
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     glpp::bind_vertex_array(_render_vao);
     glpp::bind_vertex_buffer(_render_vbo);
     glpp::set_vertex_buffer_attribute(_render_vbo, 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);                          // Vertices positions
@@ -40,13 +39,14 @@ ParticleSystem::ParticleSystem(int dimension, ParticlesShadersCode const& shader
         }
     );
 #else
+    Cool::Log::ToUser::error("Particles", "Particles are not supported on MacOS for now.");
     std::ignore = shader_code;
 #endif
 }
 
 void ParticleSystem::render()
 {
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _render_shader.bind();
     glpp::bind_vertex_array(_render_vao);
@@ -56,7 +56,7 @@ void ParticleSystem::render()
 
 void ParticleSystem::update()
 {
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _simulation_shader.bind();
     _simulation_shader.compute({_particles_count, 1, 1});
@@ -65,7 +65,7 @@ void ParticleSystem::update()
 
 void ParticleSystem::set_simulation_shader(std::string const& shader_code)
 {
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     _simulation_shader = OpenGL::ComputeShader{64, shader_code};
 #else
     std::ignore = shader_code;
@@ -74,7 +74,7 @@ void ParticleSystem::set_simulation_shader(std::string const& shader_code)
 
 void ParticleSystem::reset()
 {
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _init_shader.bind();
     _init_shader.compute({_particles_count, 1, 1});
@@ -84,7 +84,7 @@ void ParticleSystem::reset()
 void ParticleSystem::set_particles_count(size_t particles_count)
 {
     _particles_count = particles_count;
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _positions.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
     _velocities.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
@@ -101,7 +101,7 @@ void ParticleSystem::set_particles_count(size_t particles_count)
 
 void ParticleSystem::bind_SSBOs()
 {
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     _positions.bind();
     _velocities.bind();
     _sizes.bind();

@@ -1,5 +1,4 @@
 #pragma once
-#include <cstddef>
 #include <glpp/extended.hpp>
 #include "Cool/Gpu/OpenGL/ComputeShader.h"
 #include "Cool/Gpu/OpenGL/SSBO.h"
@@ -22,7 +21,7 @@ public:
     void render();
     void update();
 
-#ifndef __APPLE__ // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     auto simulation_shader() -> OpenGL::ComputeShader& { return _simulation_shader; }
     auto simulation_shader() const -> OpenGL::ComputeShader const& { return _simulation_shader; }
     auto init_shader() -> OpenGL::ComputeShader& { return _init_shader; }
@@ -45,7 +44,7 @@ private:
 private:
     size_t _particles_count{};
     int    _dimension{}; // 2 for 2D particles, and 3 for 3D particles
-#ifndef __APPLE__        // OpenGL computer shaders don't work on MacOS
+#if !defined(COOL_PARTICLES_DISABLED_REASON)
     SSBO<float> _positions{0};
     SSBO<float> _velocities{1};
     SSBO<float> _sizes{2};
