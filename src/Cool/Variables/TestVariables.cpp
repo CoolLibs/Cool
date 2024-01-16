@@ -65,7 +65,7 @@ void test_variables()
         Cool::imgui(color_palette);
     }
     {
-        static Cool::Variable<Cool::Gradient> gradient{{"Gradient", {}}};
+        Cool::Variable<Cool::Gradient> gradient{{"Gradient", {}}};
         Cool::imgui(gradient);
     }
     {
