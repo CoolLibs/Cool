@@ -49,11 +49,6 @@ jobs:
               os: macos-latest,
               cmake_configure_args: -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++,
             }
-          - {
-              name: MacOS GCC,
-              os: macos-latest,
-              cmake_configure_args: -D CMAKE_C_COMPILER=gcc-13 -D CMAKE_CXX_COMPILER=g++-13,
-            }
         build_type:
           - Debug
           - Release
