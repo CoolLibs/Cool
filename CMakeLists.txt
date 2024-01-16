@@ -52,6 +52,14 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
 target_sources(Cool PRIVATE ${COOL_SOURCES})
 
+if(WIN32)
+    if(MSVC)
+    # target_compile_options(Coollab-Properties INTERFACE /bigobj) # We use too many templates apparently so we need this flag O:)
+    elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(Cool-PublicProperties INTERFACE -Wa,-mbig-obj -fdata-sections -ffunction-sections -Wl,--gc-sections) # We use too many templates apparently so we need this flag O:)
+    endif()
+endif()
+
 # -----------------------------
 # ---Set include directories---
 # -----------------------------
