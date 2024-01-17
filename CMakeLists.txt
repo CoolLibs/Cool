@@ -160,6 +160,9 @@ target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 install(FILES "lib/scope_guard/LICENSE" DESTINATION "license/scope_guard")
 
 # GLFW
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
