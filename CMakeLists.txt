@@ -168,9 +168,6 @@ add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
 
-# glm
-install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
-
 # cereal
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
 install(FILES "lib/cereal/LICENSE" DESTINATION "license/cereal")
