@@ -264,6 +264,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
 add_subdirectory(lib/RtMidiWrapper)
 target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
 
+# oscpack
+add_subdirectory(lib/oscpack)
+target_link_libraries(Cool-PublicProperties INTERFACE oscpack)
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
