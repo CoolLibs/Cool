@@ -4,6 +4,7 @@
 #include <mutex>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "ip/UdpSocket.h"
 #include "osc/OscPacketListener.h"
@@ -20,6 +21,45 @@ OSCManager::OSCManager()
     }
 {
     start_listening(); // TODO(OSC) Only start listening when really necessary
+}
+// TODO(OSC) rerender when new OSC value arrives, if we depend on that value
+
+auto OSCManager::get_value(OSCChannel const& channel) const -> float
+{
+    std::lock_guard lock{_mutex};
+    for (auto const& pair : _values)
+    {
+        if (pair.first == channel.route)
+            return pair.second;
+    }
+    return 0.f;
+}
+
+auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
+{
+    bool b = false;
+    // TODO(OSC) ImGuiExtras widget that does this input text + dropdown automatically
+    ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
+    b |= ImGui::InputText("##Route name", &channel.route, ImGuiInputTextFlags_None, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
+    ImGui::SameLine(0.f, 0.f);
+    if (ImGui::BeginCombo(label, channel.route.c_str(),
+                          ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
+                          ImDrawFlags_RoundCornersRight))
+    {
+        std::lock_guard lock{_mutex};
+        for (auto const& [name, _] : _values)
+        {
+            bool const is_selected = name == channel.route;
+            if (ImGui::Selectable(name.c_str(), is_selected))
+            {
+                channel.route = name;
+                b             = true;
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    return b;
 }
 
 void OSCManager::imgui_window_config()

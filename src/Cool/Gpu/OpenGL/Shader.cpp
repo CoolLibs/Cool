@@ -7,6 +7,7 @@
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Gpu/TextureSource.h"
 #include "Cool/Midi/MidiManager.h"
+#include "Cool/OSC/OSCManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "ShaderModule.h"
@@ -224,6 +225,10 @@ void Shader::set_uniform(std::string_view uniform_name, TextureDescriptor const&
 void Shader::set_uniform(std::string_view uniform_name, MidiChannel const& channel) const
 {
     set_uniform(uniform_name, midi_manager().get_value(channel));
+}
+void Shader::set_uniform(std::string_view uniform_name, OSCChannel const& channel) const
+{
+    set_uniform(uniform_name, osc_manager().get_value(channel));
 }
 
 } // namespace Cool::OpenGL

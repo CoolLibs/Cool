@@ -16,6 +16,7 @@
 #include <Cool/Variables/Variable_Hue.h>
 #include <Cool/Variables/Variable_MathExpression.h>
 #include <Cool/Variables/Variable_MidiChannel.h>
+#include <Cool/Variables/Variable_OSCChannel.h>
 #include <Cool/Variables/Variable_Point2D.h>
 #include <Cool/Variables/Variable_TextureDescriptor_FromFile.h>
 #include <Cool/Variables/Variable_TextureDescriptor_FromWebcam.h>

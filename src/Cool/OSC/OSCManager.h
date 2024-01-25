@@ -1,10 +1,16 @@
 #pragma once
 #include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/OSC/OSCChannel.h"
+#include "OSCChannel.h"
 
 namespace Cool {
 
 class OSCManager {
 public:
+    auto get_value(OSCChannel const&) const -> float;
+
+    auto imgui_channel_widget(const char* label, OSCChannel&) const -> bool;
+
     void open_config_window() { _config_window.open(); }
     void imgui_window_config();
 
@@ -18,7 +24,7 @@ private:
     void imgui_show_all_values();
 
 private:
-    std::mutex                                 _mutex;
+    mutable std::mutex                         _mutex;
     std::vector<std::pair<std::string, float>> _values{};
     Cool::ImGuiWindow                          _config_window;
     std::optional<std::thread>                 _thread;

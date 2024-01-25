@@ -142,3 +142,9 @@ auto glsl_type<Cool::MidiChannel>() -> std::string
 {
     return "float";
 }
+
+template<>
+auto glsl_type<Cool::OSCChannel>() -> std::string
+{
+    return "float";
+}

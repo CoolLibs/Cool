@@ -318,6 +318,14 @@ def all_variable_descriptions():
             metadatas=[],
             always_requires_shader_code_generation=False,
         ),
+        VariableDescription(
+            input_type=["OSC"],
+            cpp_type="Cool::OSCChannel",
+            glsl_type="float",
+            include="<Cool/OSC/OSCChannel.h>",
+            metadatas=[],
+            always_requires_shader_code_generation=False,
+        ),
     ]
 
 
