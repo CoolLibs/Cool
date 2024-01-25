@@ -765,7 +765,7 @@ auto input_text_multiline(const char* label, std::string* str, const ImVec2& siz
     return res;
 }
 
-auto input_text_with_dropdown(const char* label, std::string* value, std::function<bool()> const& combo_content, ImGuiInputTextFlags flags) -> bool
+auto input_text_with_dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry, ImGuiInputTextFlags flags) -> bool
 {
     bool b = false;
     ImGui::PushID(label);
@@ -776,7 +776,16 @@ auto input_text_with_dropdown(const char* label, std::string* value, std::functi
                           ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
                           ImDrawFlags_RoundCornersRight))
     {
-        b |= combo_content();
+        for_each_dropdown_entry([&](std::string const& combo_content) {
+            bool const is_selected = *value == combo_content;
+            if (ImGui::Selectable(combo_content.c_str(), is_selected))
+            {
+                *value = combo_content;
+                b      = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        });
         ImGui::EndCombo();
     }
     ImGui::PopID();

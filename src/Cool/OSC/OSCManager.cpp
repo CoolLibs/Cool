@@ -27,6 +27,7 @@ OSCManager::~OSCManager()
     stop_listening();
 }
 // TODO(OSC) rerender when new OSC value arrives, if we depend on that value
+// TODO(OSC) do the same for midi
 
 auto OSCManager::get_value(OSCChannel const& channel) const -> float
 {
@@ -73,21 +74,10 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
         channel.name = _values[0].first;
         b            = true;
     }
-    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&]() {
-        bool            b = false;
+    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
         std::lock_guard lock{_mutex};
         for (auto const& [name, _] : _values)
-        {
-            bool const is_selected = name == channel.name;
-            if (ImGui::Selectable(name.c_str(), is_selected))
-            {
-                channel.name = name;
-                b            = true;
-            }
-            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                ImGui::SetItemDefaultFocus();
-        }
-        return b;
+            with_dropdown_entry(name);
     });
 
     return b;
@@ -199,23 +189,13 @@ void OSCManager::imgui_select_connection_endpoint()
         set_port(_endpoint.port);
     ImGui::PopItemWidth();
     // Address
-    bool const address_has_changed = ImGuiExtras::input_text_with_dropdown("IP Address", &_endpoint.ip_address, [&]() {
-        bool b = false;
-        for (const char* ip_address : {OSC_EVERY_AVAILABLE_ADDRESS, "localhost"})
-        {
-            bool const is_selected = ip_address == _endpoint.ip_address;
-            if (ImGui::Selectable(ip_address, is_selected))
-            {
-                _endpoint.ip_address = ip_address;
-                b                    = true;
-            }
-            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                ImGui::SetItemDefaultFocus();
-        }
-        return b;
-    });
-    if (address_has_changed)
+    if (ImGuiExtras::input_text_with_dropdown("IP Address", &_endpoint.ip_address, [&](auto&& with_dropdown_entry) {
+            with_dropdown_entry(OSC_EVERY_AVAILABLE_ADDRESS);
+            with_dropdown_entry("localhost");
+        }))
+    {
         set_ip_address(_endpoint.ip_address); // TODO(OSC) Check that we don't crash when inputting invalid addresses
+    }
 }
 
 namespace {
