@@ -5,7 +5,7 @@ namespace Cool {
 struct OSCChannel {
     std::string name{""};
 
-    friend auto operator==(OSCChannel const&, OSCChannel const&) -> bool = default;
+    friend auto operator<=>(OSCChannel const&, OSCChannel const&) = default;
 
 private:
     // Serialization

@@ -1,10 +1,20 @@
 #pragma once
+#include <set>
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/OSC/OSCChannel.h"
 #include "OSCChannel.h"
 #include "OSCConnectionEndpoint.h"
 
 namespace Cool {
+
+namespace internal {
+struct SharedWithThread {
+    mutable std::mutex                         values_mutex{};
+    std::vector<std::pair<std::string, float>> values{};
+    std::mutex                                 channels_that_have_changed_mutex{};
+    std::set<OSCChannel>                       channels_that_have_changed{};
+};
+} // namespace internal
 
 class OSCManager {
 public:
@@ -15,6 +25,8 @@ public:
     ~OSCManager();
 
     auto get_value(OSCChannel const&) const -> float;
+    /// The `callback` will be called once for each channel whose value has changed since the last call to `for_each_channel_that_has_changed()`.
+    void for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback);
 
     void set_port(int port);
     void set_ip_address(std::string ip_address);
@@ -37,12 +49,11 @@ private:
     void imgui_select_connection_endpoint();
 
 private:
-    mutable std::mutex                         _mutex;
-    std::vector<std::pair<std::string, float>> _values{};
-    Cool::ImGuiWindow                          _config_window;
-    std::optional<std::thread>                 _thread;
-    std::function<void()>                      _stop_thread;
-    OSCConnectionEndpoint                      _endpoint{};
+    internal::SharedWithThread _s{};
+    Cool::ImGuiWindow          _config_window;
+    std::optional<std::thread> _thread;
+    std::function<void()>      _stop_thread;
+    OSCConnectionEndpoint      _endpoint{};
 
 private:
     // Serialization

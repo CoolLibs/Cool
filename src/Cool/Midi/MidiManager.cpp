@@ -73,7 +73,7 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
 {
     if (message->size() < 3)
         return;
-    // TODO() don't we need a lock / Mutex ?
+    // TODO(OSC) don't we need a lock / Mutex ?
     auto& This                            = *static_cast<MidiManager*>(user_data);
     This._value_from_index[(*message)[1]] = static_cast<float>((*message)[2]) / 127.f;
     This._extra_midi_callback();

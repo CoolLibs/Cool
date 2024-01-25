@@ -139,9 +139,9 @@ void AppManager::update()
     Audio::player().update_device_if_necessary();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
-        _app.trigger_rerender();
+        _app.request_rerender();
     if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
-        _app.trigger_rerender();
+        _app.request_rerender();
     try
     {
         _app.update();

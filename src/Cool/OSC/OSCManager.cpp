@@ -26,18 +26,25 @@ OSCManager::~OSCManager()
 {
     stop_listening();
 }
-// TODO(OSC) rerender when new OSC value arrives, if we depend on that value
-// TODO(OSC) do the same for midi
+// TODO(OSC) rerender when new midi value arrives, if we depend on that value
 
 auto OSCManager::get_value(OSCChannel const& channel) const -> float
 {
-    std::lock_guard lock{_mutex};
-    for (auto const& pair : _values)
+    std::lock_guard lock{_s.values_mutex};
+    for (auto const& pair : _s.values)
     {
         if (pair.first == channel.name)
             return pair.second;
     }
     return 0.f;
+}
+
+void OSCManager::for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback)
+{
+    std::lock_guard lock{_s.channels_that_have_changed_mutex};
+    for (auto const& channel : _s.channels_that_have_changed)
+        callback(channel);
+    _s.channels_that_have_changed.clear();
 }
 
 void OSCManager::set_port(int port)
@@ -55,7 +62,7 @@ void OSCManager::set_connection_endpoint(OSCConnectionEndpoint endpoint)
     _endpoint = std::move(endpoint);
     // Recreate a listener using the new port and address
     stop_listening();
-    _values.clear(); // No need to lock since the thread that might modify it has been stopped by stop_listening().
+    _s.values.clear(); // No need to lock since the thread that might modify it has been stopped by stop_listening().
     start_listening();
 }
 
@@ -69,14 +76,14 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
 {
     bool b = false;
-    if (channel.name.empty() && !_values.empty())
+    if (channel.name.empty() && !_s.values.empty())
     {
-        channel.name = _values[0].first;
+        channel.name = _s.values[0].first;
         b            = true;
     }
     b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
-        std::lock_guard lock{_mutex};
-        for (auto const& [name, _] : _values)
+        std::lock_guard lock{_s.values_mutex};
+        for (auto const& [name, _] : _s.values)
             with_dropdown_entry(name);
     });
 
@@ -89,14 +96,14 @@ void OSCManager::imgui_window_config()
         imgui_select_connection_endpoint();
         imgui_show_all_values();
         // TODO(OSC) UI to choose address
-        // TODO(OSC) reset _values when changing address
+        // TODO(OSC) reset _s.values when changing address
         // TODO(OSC) button to reset _values
     });
 }
 
 void OSCManager::imgui_show_all_values()
 {
-    std::lock_guard       lock{_mutex};
+    std::lock_guard       lock{_s.values_mutex};
     static constexpr auto table_flags = 0
                                         // | ImGuiTableFlags_Resizable
                                         | ImGuiTableFlags_RowBg
@@ -117,7 +124,7 @@ void OSCManager::imgui_show_all_values()
         // ImGui::TableSetupColumn("Value");
         // ImGui::TableHeadersRow();
         ImGui::PushFont(Cool::Font::monospace());
-        for (auto const& pair : _values)
+        for (auto const& pair : _s.values)
         {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
@@ -201,47 +208,55 @@ void OSCManager::imgui_select_connection_endpoint()
 namespace {
 class OSCMessagesHandler : public osc::OscPacketListener {
 public:
-    OSCMessagesHandler(std::vector<std::pair<std::string, float>>& values, std::mutex& mutex)
-        : _values{values}
-        , _mutex{mutex}
+    explicit OSCMessagesHandler(internal::SharedWithThread& s)
+        : _s{s}
     {}
 
 private:
     void ProcessMessage(osc::ReceivedMessage const& m, IpEndpointName const&) override
     {
-        std::lock_guard lock{_mutex};
+        std::lock_guard lock{_s.values_mutex};
         size_t const    index{find_index(m.AddressPattern())};
+        bool            has_set_value{false};
+        auto const      set_value = [&](float value) {
+            _s.values[index].second = value;
+            has_set_value           = true;
+        };
         for (auto arg = m.ArgumentsBegin(); arg != m.ArgumentsEnd(); ++arg)
         {
             if (arg->IsFloat())
-                _values[index].second = arg->AsFloatUnchecked();
+                set_value(arg->AsFloatUnchecked());
             if (arg->IsDouble())
-                _values[index].second = static_cast<float>(arg->AsDoubleUnchecked());
+                set_value(static_cast<float>(arg->AsDoubleUnchecked()));
             if (arg->IsInt32())
-                _values[index].second = static_cast<float>(arg->AsInt32Unchecked());
+                set_value(static_cast<float>(arg->AsInt32Unchecked()));
             if (arg->IsInt64())
-                _values[index].second = static_cast<float>(arg->AsInt64Unchecked());
+                set_value(static_cast<float>(arg->AsInt64Unchecked()));
             if (arg->IsChar())
-                _values[index].second = static_cast<float>(arg->AsCharUnchecked());
+                set_value(static_cast<float>(arg->AsCharUnchecked()));
             if (arg->IsBool())
-                _values[index].second = arg->AsBoolUnchecked() ? 1.f : 0.f;
+                set_value(arg->AsBoolUnchecked() ? 1.f : 0.f);
+        }
+        if (has_set_value)
+        {
+            std::lock_guard lock2{_s.channels_that_have_changed_mutex};
+            _s.channels_that_have_changed.emplace(m.AddressPattern());
         }
     }
 
     auto find_index(std::string const& name) -> size_t
     {
-        for (size_t i = 0; i < _values.size(); ++i)
+        for (size_t i = 0; i < _s.values.size(); ++i)
         {
-            if (_values[i].first == name)
+            if (_s.values[i].first == name)
                 return i;
         }
-        _values.emplace_back(name, 0.f);
-        return _values.size() - 1;
+        _s.values.emplace_back(name, 0.f);
+        return _s.values.size() - 1;
     }
 
 private:
-    std::vector<std::pair<std::string, float>>& _values;
-    std::mutex&                                 _mutex;
+    internal::SharedWithThread& _s;
 };
 } // namespace
 // TODO(OSC) Crash when changing port too fast
@@ -259,12 +274,12 @@ void OSCManager::start_listening()
         return;
 
     _thread = std::thread([&]() {
-        auto listener = OSCMessagesHandler{_values, _mutex};
-        auto s        = UdpListeningReceiveSocket{get_ip_endpoint_name(_endpoint), &listener};
+        auto listener = OSCMessagesHandler{_s};
+        auto socket   = UdpListeningReceiveSocket{get_ip_endpoint_name(_endpoint), &listener};
         _stop_thread  = [&]() {
-            s.AsynchronousBreak();
+            socket.AsynchronousBreak();
         };
-        s.Run();
+        socket.Run();
     });
 }
 
