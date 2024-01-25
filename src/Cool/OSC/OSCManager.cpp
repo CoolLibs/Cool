@@ -6,6 +6,7 @@
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/OSC/OSCConnectionEndpoint.h"
 #include "ip/UdpSocket.h"
 #include "osc/OscPacketListener.h"
 
@@ -40,16 +41,26 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
 
 void OSCManager::set_port(int port)
 {
-    _port = port;
-    // Recreate a listener using the new port
+    set_connection_endpoint({port, _endpoint.ip_address});
+}
+
+void OSCManager::set_ip_address(std::string ip_address)
+{
+    set_connection_endpoint({_endpoint.port, std::move(ip_address)});
+}
+
+void OSCManager::set_connection_endpoint(OSCConnectionEndpoint endpoint)
+{
+    _endpoint = std::move(endpoint);
+    // Recreate a listener using the new port and address
     stop_listening();
     _values.clear(); // No need to lock since the thread that might modify it has been stopped by stop_listening().
     start_listening();
 }
 
-auto OSCManager::get_port() const -> int
+auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint
 {
-    return _port;
+    return _endpoint;
 }
 
 // TODO(OSC) Error message when an OSC node tries to use a channel name that does not exist
@@ -89,7 +100,7 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
 void OSCManager::imgui_window_config()
 {
     _config_window.show([&]() {
-        imgui_select_port();
+        imgui_select_connection_endpoint();
         imgui_show_all_values();
         // TODO(OSC) UI to choose address
         // TODO(OSC) reset _values when changing address
@@ -178,24 +189,26 @@ void OSCManager::imgui_show_all_values()
     }
 }
 
-void OSCManager::imgui_select_port()
+void OSCManager::imgui_select_connection_endpoint()
 {
-    if (_port < 0)
+    if (!_endpoint.is_valid())
     {
         ImGui::PushFont(Font::italic());
         ImGui::TextUnformatted("OSC listener is OFF. Select a valid port to start listening to OSC messages.");
         ImGui::PopFont();
     }
+    // Port
     ImGui::PushItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
-    if (ImGui::InputInt("Port", &_port, -1, -1, ImGuiInputTextFlags_AutoSelectAll))
-        set_port(_port);
+    if (ImGui::InputInt("Port", &_endpoint.port, -1, -1, ImGuiInputTextFlags_AutoSelectAll))
+        set_port(_endpoint.port);
     ImGui::PopItemWidth();
+    // Address
 }
 
 namespace {
-class PacketListener : public osc::OscPacketListener {
+class OSCMessagesHandler : public osc::OscPacketListener {
 public:
-    PacketListener(std::vector<std::pair<std::string, float>>& values, std::mutex& mutex)
+    OSCMessagesHandler(std::vector<std::pair<std::string, float>>& values, std::mutex& mutex)
         : _values{values}
         , _mutex{mutex}
     {}
@@ -239,14 +252,22 @@ private:
 };
 } // namespace
 // TODO(OSC) Crash when changing port too fast
+
+static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> IpEndpointName
+{
+    return endpoint.ip_address == OSC_EVERY_AVAILABLE_ADDRESS
+               ? IpEndpointName(IpEndpointName::ANY_ADDRESS, endpoint.port)
+               : IpEndpointName(endpoint.ip_address.c_str(), endpoint.port);
+}
+
 void OSCManager::start_listening()
 {
-    if (_port < 0)
+    if (!_endpoint.is_valid())
         return;
 
     _thread = std::thread([&]() {
-        auto listener = PacketListener{_values, _mutex};
-        auto s        = UdpListeningReceiveSocket{IpEndpointName(IpEndpointName::ANY_ADDRESS, _port), &listener};
+        auto listener = OSCMessagesHandler{_values, _mutex};
+        auto s        = UdpListeningReceiveSocket{get_ip_endpoint_name(_endpoint), &listener};
         _stop_thread  = [&]() {
             s.AsynchronousBreak();
         };

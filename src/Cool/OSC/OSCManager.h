@@ -2,6 +2,7 @@
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/OSC/OSCChannel.h"
 #include "OSCChannel.h"
+#include "OSCConnectionEndpoint.h"
 
 namespace Cool {
 
@@ -14,8 +15,11 @@ public:
     ~OSCManager();
 
     auto get_value(OSCChannel const&) const -> float;
+
     void set_port(int port);
-    auto get_port() const -> int;
+    void set_ip_address(std::string ip_address);
+    void set_connection_endpoint(OSCConnectionEndpoint);
+    auto get_connection_endpoint() const -> OSCConnectionEndpoint;
 
     auto imgui_channel_widget(const char* label, OSCChannel&) const -> bool;
 
@@ -30,7 +34,7 @@ private:
     void stop_listening();
 
     void imgui_show_all_values();
-    void imgui_select_port();
+    void imgui_select_connection_endpoint();
 
 private:
     mutable std::mutex                         _mutex;
@@ -38,7 +42,7 @@ private:
     Cool::ImGuiWindow                          _config_window;
     std::optional<std::thread>                 _thread;
     std::function<void()>                      _stop_thread;
-    int                                        _port{-1};
+    OSCConnectionEndpoint                      _endpoint{};
 
 private:
     // Serialization
