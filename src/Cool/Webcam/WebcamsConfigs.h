@@ -28,7 +28,7 @@ private:
 
 private:
     WebcamsConfigsMap        _configs{};
-    ImGuiWindow              _window{icon_fmt("Webcams Configs", ICOMOON_VIDEO_CAMERA)};
+    ImGuiWindow              _window{icon_fmt("Webcams", ICOMOON_VIDEO_CAMERA)};
     Cool::SerializerOnDemand _serializer{Cool::Path::user_data() / "webcams-configs.json", "Configs"};
 
 private:
