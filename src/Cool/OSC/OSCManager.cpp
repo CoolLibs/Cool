@@ -19,8 +19,11 @@ OSCManager::OSCManager()
             .start_open = false,
         }
     }
+{}
+
+OSCManager::~OSCManager()
 {
-    start_listening(); // TODO(OSC) Only start listening when really necessary
+    stop_listening();
 }
 // TODO(OSC) rerender when new OSC value arrives, if we depend on that value
 
@@ -35,13 +38,29 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
     return 0.f;
 }
 
+void OSCManager::set_port(int port)
+{
+    _port = port;
+    // Recreate a listener using the new port
+    stop_listening();
+    _values.clear(); // No need to lock since the thread that might modify it has been stopped by stop_listening().
+    start_listening();
+}
+
+auto OSCManager::get_port() const -> int
+{
+    return _port;
+}
+
+// TODO(OSC) Error message when an OSC node tries to use a channel name that does not exist
+
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
 {
     bool b = false;
     if (channel.name.empty() && !_values.empty())
     {
         channel.name = _values[0].first;
-        b             = true;
+        b            = true;
     }
     // TODO(OSC) ImGuiExtras widget that does this input text + dropdown automatically
     ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
@@ -58,7 +77,7 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
             if (ImGui::Selectable(name.c_str(), is_selected))
             {
                 channel.name = name;
-                b             = true;
+                b            = true;
             }
         }
         ImGui::EndCombo();
@@ -70,9 +89,10 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
 void OSCManager::imgui_window_config()
 {
     _config_window.show([&]() {
+        imgui_select_port();
         imgui_show_all_values();
-        // TODO(OSC) UI to choose port number, and address
-        // TODO(OSC) reset _values when changing port or address
+        // TODO(OSC) UI to choose address
+        // TODO(OSC) reset _values when changing address
         // TODO(OSC) button to reset _values
     });
 }
@@ -158,6 +178,20 @@ void OSCManager::imgui_show_all_values()
     }
 }
 
+void OSCManager::imgui_select_port()
+{
+    if (_port < 0)
+    {
+        ImGui::PushFont(Font::italic());
+        ImGui::TextUnformatted("OSC listener is OFF. Select a valid port to start listening to OSC messages.");
+        ImGui::PopFont();
+    }
+    ImGui::PushItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
+    if (ImGui::InputInt("Port", &_port, -1, -1, ImGuiInputTextFlags_AutoSelectAll))
+        set_port(_port);
+    ImGui::PopItemWidth();
+}
+
 namespace {
 class PacketListener : public osc::OscPacketListener {
 public:
@@ -204,20 +238,27 @@ private:
     std::mutex&                                 _mutex;
 };
 } // namespace
-
+// TODO(OSC) Crash when changing port too fast
 void OSCManager::start_listening()
 {
+    if (_port < 0)
+        return;
+
     _thread = std::thread([&]() {
         auto listener = PacketListener{_values, _mutex};
-        auto s        = UdpListeningReceiveSocket{IpEndpointName(IpEndpointName::ANY_ADDRESS, 7000), &listener};
-        s.Run(); // TODO(OSC) Listen for stop requests
+        auto s        = UdpListeningReceiveSocket{IpEndpointName(IpEndpointName::ANY_ADDRESS, _port), &listener};
+        _stop_thread  = [&]() {
+            s.AsynchronousBreak();
+        };
+        s.Run();
     });
 }
 
-void OSCManager::stop_listening() // TODO(OSC) Call this in destructor
+void OSCManager::stop_listening()
 {
     if (!_thread.has_value())
         return;
+    _stop_thread();
     if (_thread->joinable())
         _thread->join();
     _thread.reset();

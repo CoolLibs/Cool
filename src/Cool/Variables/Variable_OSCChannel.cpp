@@ -12,6 +12,8 @@ auto imgui_widget(Variable<OSCChannel>& var) -> bool
         osc_manager().open_config_window();
     ImGui::SetItemTooltip("%s", "Open OSC config to choose which port and address to listen to.");
 
+    // TODO(OSC) Warning when no port is set on OSC manager, tell people to go to the config to set it
+
     return osc_manager().imgui_channel_widget(var.name().c_str(), var.value());
 }
 
