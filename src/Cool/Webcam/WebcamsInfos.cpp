@@ -72,8 +72,7 @@ auto WebcamsInfos::imgui_widget_webcam_name(std::string& webcam_name) -> bool
                 b           = true;
                 webcam_name = info.name;
             }
-
-            if (is_selected)
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();

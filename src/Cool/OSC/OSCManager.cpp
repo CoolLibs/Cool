@@ -73,14 +73,8 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
         channel.name = _values[0].first;
         b            = true;
     }
-    // TODO(OSC) ImGuiExtras widget that does this input text + dropdown automatically
-    ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
-    b |= ImGui::InputText("##Channel name", &channel.name, ImGuiInputTextFlags_None, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
-    ImGui::SameLine(0.f, 0.f);
-    if (ImGui::BeginCombo(label, channel.name.c_str(),
-                          ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
-                          ImDrawFlags_RoundCornersRight))
-    {
+    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&]() {
+        bool            b = false;
         std::lock_guard lock{_mutex};
         for (auto const& [name, _] : _values)
         {
@@ -90,9 +84,11 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
                 channel.name = name;
                 b            = true;
             }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
         }
-        ImGui::EndCombo();
-    }
+        return b;
+    });
 
     return b;
 }
@@ -203,6 +199,23 @@ void OSCManager::imgui_select_connection_endpoint()
         set_port(_endpoint.port);
     ImGui::PopItemWidth();
     // Address
+    bool const address_has_changed = ImGuiExtras::input_text_with_dropdown("IP Address", &_endpoint.ip_address, [&]() {
+        bool b = false;
+        for (const char* ip_address : {OSC_EVERY_AVAILABLE_ADDRESS, "localhost"})
+        {
+            bool const is_selected = ip_address == _endpoint.ip_address;
+            if (ImGui::Selectable(ip_address, is_selected))
+            {
+                _endpoint.ip_address = ip_address;
+                b                    = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        }
+        return b;
+    });
+    if (address_has_changed)
+        set_ip_address(_endpoint.ip_address); // TODO(OSC) Check that we don't crash when inputting invalid addresses
 }
 
 namespace {

@@ -765,6 +765,24 @@ auto input_text_multiline(const char* label, std::string* str, const ImVec2& siz
     return res;
 }
 
+auto input_text_with_dropdown(const char* label, std::string* value, std::function<bool()> const& combo_content, ImGuiInputTextFlags flags) -> bool
+{
+    bool b = false;
+    ImGui::PushID(label);
+    ImGui::SetNextItemWidth(calc_custom_dropdown_input_width());
+    b |= ImGui::InputText("", value, flags, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
+    ImGui::SameLine(0.f, 0.f);
+    if (ImGui::BeginCombo(label, value->c_str(),
+                          ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
+                          ImDrawFlags_RoundCornersRight))
+    {
+        b |= combo_content();
+        ImGui::EndCombo();
+    }
+    ImGui::PopID();
+    return b;
+}
+
 auto calc_custom_dropdown_input_width() -> float
 {
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
