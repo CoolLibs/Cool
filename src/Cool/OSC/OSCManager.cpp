@@ -29,7 +29,7 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
     std::lock_guard lock{_mutex};
     for (auto const& pair : _values)
     {
-        if (pair.first == channel.route)
+        if (pair.first == channel.name)
             return pair.second;
     }
     return 0.f;
@@ -38,21 +38,26 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
 {
     bool b = false;
+    if (channel.name.empty() && !_values.empty())
+    {
+        channel.name = _values[0].first;
+        b             = true;
+    }
     // TODO(OSC) ImGuiExtras widget that does this input text + dropdown automatically
     ImGui::SetNextItemWidth(ImGuiExtras::calc_custom_dropdown_input_width());
-    b |= ImGui::InputText("##Route name", &channel.route, ImGuiInputTextFlags_None, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
+    b |= ImGui::InputText("##Channel name", &channel.name, ImGuiInputTextFlags_None, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
     ImGui::SameLine(0.f, 0.f);
-    if (ImGui::BeginCombo(label, channel.route.c_str(),
+    if (ImGui::BeginCombo(label, channel.name.c_str(),
                           ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
                           ImDrawFlags_RoundCornersRight))
     {
         std::lock_guard lock{_mutex};
         for (auto const& [name, _] : _values)
         {
-            bool const is_selected = name == channel.route;
+            bool const is_selected = name == channel.name;
             if (ImGui::Selectable(name.c_str(), is_selected))
             {
-                channel.route = name;
+                channel.name = name;
                 b             = true;
             }
         }
@@ -71,8 +76,6 @@ void OSCManager::imgui_window_config()
         // TODO(OSC) button to reset _values
     });
 }
-
-// TODO(OSC) ImGui function to choose which route to use for a specific OSC node. Dropdown that shows all the routes that we have received so far, + input text to choose your own route
 
 void OSCManager::imgui_show_all_values()
 {

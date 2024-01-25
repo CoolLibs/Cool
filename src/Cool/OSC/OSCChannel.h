@@ -3,7 +3,7 @@
 namespace Cool {
 
 struct OSCChannel {
-    std::string route{""};
+    std::string name{""};
 
     friend auto operator==(OSCChannel const&, OSCChannel const&) -> bool = default;
 
@@ -13,7 +13,7 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Route", route));
+        archive(cereal::make_nvp("Name", name));
     }
 };
 
