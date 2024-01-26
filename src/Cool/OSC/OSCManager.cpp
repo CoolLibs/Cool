@@ -133,25 +133,12 @@ void OSCManager::imgui_window_config()
 void OSCManager::imgui_show_all_values()
 {
     std::lock_guard       lock{_s.values_mutex};
-    static constexpr auto table_flags = 0
-                                        // | ImGuiTableFlags_Resizable
-                                        | ImGuiTableFlags_RowBg
+    static constexpr auto table_flags = ImGuiTableFlags_RowBg
                                         | ImGuiTableFlags_Borders
-                                        // | ImGuiTableFlags_HighlightHoveredColumn
                                         | ImGuiTableFlags_NoHostExtendX
-                                        //
-                                        | ImGuiTableFlags_SizingFixedFit
-        // | ImGuiTableFlags_Resizable
-        // | ImGuiTableFlags_BordersOuter
-        // | ImGuiTableFlags_BordersV
-        // | ImGuiTableFlags_ContextMenuInBody
-        //
-        ;
+                                        | ImGuiTableFlags_SizingFixedFit;
     if (ImGui::BeginTable("OSC Values", 2, table_flags))
     {
-        // ImGui::TableSetupColumn("Address");
-        // ImGui::TableSetupColumn("Value");
-        // ImGui::TableHeadersRow();
         ImGui::PushFont(Cool::Font::monospace());
         for (auto const& pair : _s.values)
         {
@@ -159,10 +146,9 @@ void OSCManager::imgui_show_all_values()
             ImGui::TableSetColumnIndex(0);
             ImGui::BeginGroup();
             ImGui::TextUnformatted(pair.first.c_str());
-            // ImGui::Selectable(pair.first.c_str(), false, ImGuiSelectableFlags_Disabled, ImVec2(0, ImGui::GetTextLineHeight()));
             ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
             ImGui::EndGroup();
-            if (ImGui::BeginPopupContextItem(pair.first.c_str()))
+            if (ImGui::BeginPopupContextItem(&pair.first))
             {
                 if (ImGui::Button("Copy to clipboard"))
                 {
@@ -171,31 +157,11 @@ void OSCManager::imgui_show_all_values()
                 }
                 ImGui::EndPopup();
             }
-
-            // int const column = 0;
-            // ImGui::PushID(column);
-            // if (ImGui::BeginPopup(pair.first.c_str()))
-            // {
-            //     if (ImGui::Button("Copy to clipboard"))
-            //     {
-            //         ImGui::SetClipboardText(pair.first.c_str());
-            //         ImGui::CloseCurrentPopup();
-            //     }
-            //     ImGui::EndPopup();
-            // }
-            // ImGui::PopID();
             ImGui::TableSetColumnIndex(1);
             ImGui::BeginGroup();
-            // ImGui::Text("%.3f", pair.second);
             ImGui::TextUnformatted(fmt::format("{}", pair.second).c_str());
-            // ImGui::Selectable(pair.first.c_str(), false, ImGuiSelectableFlags_Disabled, ImVec2(0, ImGui::GetTextLineHeight()));
             ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
             ImGui::EndGroup();
-            // if (ImGui::BeginItemTooltip())
-            // {
-            //     ImGui::TextUnformatted(fmt::format("{}", pair.second).c_str());
-            //     ImGui::EndTooltip();
-            // }
             if (ImGui::BeginPopupContextItem(&pair.second))
             {
                 if (ImGui::Button("Copy to clipboard"))
