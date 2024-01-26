@@ -30,7 +30,6 @@ OSCManager::~OSCManager()
 {
     stop_listening();
 }
-// TODO(OSC) rerender when new midi value arrives, if we depend on that value
 
 auto OSCManager::get_value(OSCChannel const& channel) const -> float
 {
@@ -109,8 +108,8 @@ void OSCManager::imgui_window_config()
     _config_window.show([&]() {
         imgui_select_connection_endpoint();
         imgui_show_all_values();
-        // TODO(OSC) UI to choose address
-        // TODO(OSC) button to reset _values
+        ImGui::SameLine();
+        imgui_button_to_reset_values();
     });
 }
 
@@ -212,8 +211,26 @@ void OSCManager::imgui_select_connection_endpoint()
             ImGuiInputTextFlags_AutoSelectAll
         ))
     {
-        set_ip_address(_endpoint.ip_address); // TODO(OSC) Check that we don't crash when inputting invalid addresses
+        set_ip_address(_endpoint.ip_address);
     }
+}
+
+void OSCManager::imgui_button_to_reset_values()
+{
+    if (values_are_empty())
+        return;
+
+    if (ImGui::Button("Reset values"))
+    {
+        std::lock_guard lock{_s.values_mutex};
+        _s.values.clear();
+    }
+}
+
+auto OSCManager::values_are_empty() const -> bool
+{
+    std::lock_guard lock{_s.values_mutex};
+    return _s.values.empty();
 }
 
 namespace {
@@ -267,10 +284,9 @@ private:
     }
 
 private:
-    internal::SharedWithThread& _s;
+    internal::SharedWithThread& _s; // NOLINT(*avoid-const-or-ref-data-members)
 };
 } // namespace
-// TODO(OSC) Crash when changing port too fast
 
 static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> tl::expected<IpEndpointName, std::string>
 {

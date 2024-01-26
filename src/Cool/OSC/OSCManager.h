@@ -48,6 +48,9 @@ private:
 
     void imgui_show_all_values();
     void imgui_select_connection_endpoint();
+    void imgui_button_to_reset_values();
+
+    auto values_are_empty() const -> bool;
 
 private:
     internal::SharedWithThread _s{};
