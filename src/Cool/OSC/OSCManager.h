@@ -24,6 +24,7 @@ public:
     OSCManager& operator=(OSCManager&&) noexcept = delete;
     ~OSCManager();
 
+    /// Throws a Cool::Exception if the channel doesn't correspond to any received value.
     auto get_value(OSCChannel const&) const -> float;
     /// The `callback` will be called once for each channel whose value has changed since the last call to `for_each_channel_that_has_changed()`.
     void for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback);

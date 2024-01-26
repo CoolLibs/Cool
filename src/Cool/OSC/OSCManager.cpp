@@ -4,12 +4,15 @@
 #include <exception>
 #include <mutex>
 #include <regex>
+#include <sstream>
 #include <thread>
 #include <tl/expected.hpp>
+#include "Cool/Exception/Exception.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/Log/OptionalErrorMessage.h"
 #include "Cool/OSC/OSCConnectionEndpoint.h"
 #include "ip/UdpSocket.h"
 #include "osc/OscPacketListener.h"
@@ -31,6 +34,14 @@ OSCManager::~OSCManager()
     stop_listening();
 }
 
+static auto list_channel_names(std::vector<std::pair<std::string, float>> const& values) -> std::string
+{
+    std::stringstream ss;
+    for (auto const& [name, _] : values)
+        ss << "- \"" << name << "\"\n";
+    return ss.str();
+}
+
 auto OSCManager::get_value(OSCChannel const& channel) const -> float
 {
     std::lock_guard lock{_s.values_mutex};
@@ -39,7 +50,15 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
         if (pair.first == channel.name)
             return pair.second;
     }
-    return 0.f;
+    throw Cool::Exception{OptionalErrorMessage{
+        fmt::format(
+            "\"{}\" is not a valid OSC channel.\n{}",
+            channel.name,
+            _s.values.empty()
+                ? "We haven't received any OSC messages yet. " + _error_message_for_endpoint_creation
+                : "The OSC channels that we have received are:\n" + list_channel_names(_s.values)
+        )
+    }};
 }
 
 void OSCManager::for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback)
@@ -73,8 +92,6 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint
 {
     return _endpoint;
 }
-
-// TODO(OSC) Error message when an OSC node tries to use a channel name that does not exist
 
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
 {
