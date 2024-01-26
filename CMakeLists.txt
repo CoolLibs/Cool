@@ -266,7 +266,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
 
 # oscpack
 add_subdirectory(lib/oscpack)
-target_link_libraries(Cool-PublicProperties INTERFACE oscpack)
+target_link_libraries(Cool-PrivateProperties INTERFACE oscpack)
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
