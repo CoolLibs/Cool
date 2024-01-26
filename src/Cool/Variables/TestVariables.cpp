@@ -4,6 +4,7 @@
 #include <vector>
 #include "Cool/Camera/Camera.h"
 #include "Cool/Gpu/TextureDescriptor.h"
+#include "Cool/OSC/OSCChannel.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
 #include "Cool/StrongTypes/MathExpression.h"
 #include "Cool/StrongTypes/Point2D.h"
@@ -87,8 +88,14 @@ void test_variables()
     {
         static Cool::Variable<Cool::TextureDescriptor_FromWebcam> webcam{{"Webcam", {}}};
         Cool::imgui(webcam);
+    }
+    {
         static Cool::Variable<Cool::MidiChannel> midi_channel{{"Midi", {}}};
         Cool::imgui(midi_channel);
+    }
+    {
+        static Cool::Variable<Cool::OSCChannel> osc_channel{{"OSC", {}}};
+        Cool::imgui(osc_channel);
     }
 }
 

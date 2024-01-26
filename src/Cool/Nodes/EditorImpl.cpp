@@ -65,6 +65,8 @@ static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& c
             nodes_cfg.update_node_with_new_definition(node, def, graph);
             graph_has_changed = true;
         }
+        if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+            ImGui::SetItemDefaultFocus();
         ImGui::PopID();
     }
 

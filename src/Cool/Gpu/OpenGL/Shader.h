@@ -3,6 +3,7 @@
 
 #include <Cool/Gpu/TextureDescriptor.h>
 #include <Cool/Midi/MidiChannel.h>
+#include <Cool/OSC/OSCChannel.h>
 #include <Cool/StrongTypes/Angle.h>
 #include <Cool/StrongTypes/Camera2D.h>
 #include <Cool/StrongTypes/Color.h>
@@ -56,6 +57,7 @@ public:
     void set_uniform_texture(std::string_view uniform_name, GLuint texture_id, TextureSamplerDescriptor const& = {}) const;
     void set_uniform_texture1D(std::string_view uniform_name, GLuint texture_id) const;
     void set_uniform(std::string_view uniform_name, MidiChannel const&) const;
+    void set_uniform(std::string_view uniform_name, OSCChannel const&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

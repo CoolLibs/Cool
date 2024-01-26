@@ -28,4 +28,5 @@ using AnyInputRefToConst = std::variant<
     std::reference_wrapper<const Input<glm::mat2>>,
     std::reference_wrapper<const Input<glm::mat3>>,
     std::reference_wrapper<const Input<glm::mat4>>,
-    std::reference_wrapper<const Input<Cool::MidiChannel>>>;
+    std::reference_wrapper<const Input<Cool::MidiChannel>>,
+    std::reference_wrapper<const Input<Cool::OSCChannel>>>;

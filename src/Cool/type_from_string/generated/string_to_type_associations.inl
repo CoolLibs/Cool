@@ -174,3 +174,8 @@ template<>
 struct from_impl<"Midi"> {
     using type = Cool::MidiChannel;
 };
+
+template<>
+struct from_impl<"OSC"> {
+    using type = Cool::OSCChannel;
+};

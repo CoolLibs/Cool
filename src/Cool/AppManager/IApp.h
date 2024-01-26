@@ -15,7 +15,7 @@ public:
 
     /// Called when a global setting changed and the app will need to rerender.
     /// (Useful if the app has optimizations that only make it render when something changes).
-    virtual void trigger_rerender(){};
+    virtual void request_rerender(){};
 
     /**
      * @brief User inputs are only dispatched to the app when this returns true.

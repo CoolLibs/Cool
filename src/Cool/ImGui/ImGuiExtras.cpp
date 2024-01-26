@@ -765,6 +765,33 @@ auto input_text_multiline(const char* label, std::string* str, const ImVec2& siz
     return res;
 }
 
+auto input_text_with_dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry, ImGuiInputTextFlags flags) -> bool
+{
+    bool b = false;
+    ImGui::PushID(label);
+    ImGui::SetNextItemWidth(calc_custom_dropdown_input_width());
+    b |= ImGui::InputText("", value, flags, nullptr, nullptr, ImDrawFlags_RoundCornersLeft);
+    ImGui::SameLine(0.f, 0.f);
+    if (ImGui::BeginCombo(label, value->c_str(),
+                          ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft, // Draw just the arrow of the dropdown
+                          ImDrawFlags_RoundCornersRight))
+    {
+        for_each_dropdown_entry([&](std::string const& combo_content) {
+            bool const is_selected = *value == combo_content;
+            if (ImGui::Selectable(combo_content.c_str(), is_selected))
+            {
+                *value = combo_content;
+                b      = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        });
+        ImGui::EndCombo();
+    }
+    ImGui::PopID();
+    return b;
+}
+
 auto calc_custom_dropdown_input_width() -> float
 {
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();

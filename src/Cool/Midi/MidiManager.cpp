@@ -13,7 +13,8 @@ MidiManager::MidiManager()
         Cool::ImGuiWindowConfig{
             .is_modal   = false,
             .start_open = false,
-        }}
+        }
+    }
 {
     try
     {
@@ -72,7 +73,8 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
 {
     if (message->size() < 3)
         return;
-
+    // TODO(OSC) don't we need a lock / Mutex ?
+    // TODO(OSC) rerender when new midi value arrives, if we depend on that value (like what we did for OSC)
     auto& This                            = *static_cast<MidiManager*>(user_data);
     This._value_from_index[(*message)[1]] = static_cast<float>((*message)[2]) / 127.f;
     This._extra_midi_callback();
@@ -129,7 +131,7 @@ void MidiManager::close_port()
     }
 }
 
-void MidiManager::imgui_window_config()
+void MidiManager::imgui_window()
 {
     _config_window.show([&]() {
         imgui_visualize_channels();

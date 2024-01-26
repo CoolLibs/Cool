@@ -72,8 +72,7 @@ void WebcamsConfigs::imgui_window()
                         TextureLibrary_FromWebcam::instance().invalidate_request(info.name); // Destroy the current request so that a new one will be created with the new requested resolution.
                         do_save(_configs, _serializer);
                     }
-
-                    if (is_selected)
+                    if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();

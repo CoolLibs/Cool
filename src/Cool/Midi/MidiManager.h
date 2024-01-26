@@ -23,7 +23,7 @@ public:
 
     void open_config_window() { _config_window.open(); }
 
-    void imgui_window_config();
+    void imgui_window();
     void imgui_visualize_channels();
     void imgui_controllers_dropdown();
     void imgui_emulate_midi_keyboard();

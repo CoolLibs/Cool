@@ -1,0 +1,349 @@
+#include "OSCManager.h"
+#include <exception>
+#include <mutex>
+#include <regex>
+#include <sstream>
+#include <thread>
+#include <tl/expected.hpp>
+#include "Cool/Exception/Exception.h"
+#include "Cool/ImGui/Fonts.h"
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/ImGui/icon_fmt.h"
+#include "Cool/Log/OptionalErrorMessage.h"
+#include "Cool/OSC/OSCChannel.h"
+#include "Cool/OSC/OSCConnectionEndpoint.h"
+#include "ip/UdpSocket.h"
+#include "osc/OscPacketListener.h"
+
+namespace Cool {
+
+OSCManager::OSCManager()
+    : _config_window{
+        Cool::icon_fmt("OSC", ICOMOON_CONNECTION),
+        Cool::ImGuiWindowConfig{
+            .is_modal   = false,
+            .start_open = false,
+        }
+    }
+{}
+
+OSCManager::~OSCManager()
+{
+    stop_listening();
+}
+
+static auto list_channel_names(std::vector<std::pair<std::string, float>> const& values) -> std::string
+{
+    std::stringstream ss;
+    for (auto const& [name, _] : values)
+        ss << "- \"" << name << "\"\n";
+    return ss.str();
+}
+
+auto OSCManager::get_value(OSCChannel const& channel) const -> float
+{
+    std::lock_guard lock{_s.values_mutex};
+    for (auto const& pair : _s.values)
+    {
+        if (pair.first == channel.name)
+            return pair.second;
+    }
+    throw Cool::Exception{OptionalErrorMessage{
+        fmt::format(
+            "\"{}\" is not a valid OSC channel.\n{}",
+            channel.name,
+            _s.values.empty()
+                ? "We haven't received any OSC messages yet. " + _error_message_for_endpoint_creation
+                : "The OSC channels that we have received are:\n" + list_channel_names(_s.values)
+        )
+    }};
+}
+
+void OSCManager::for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback)
+{
+    std::lock_guard lock{_s.channels_that_have_changed_mutex};
+    for (auto const& channel : _s.channels_that_have_changed)
+        callback(channel);
+    _s.channels_that_have_changed.clear();
+}
+
+void OSCManager::set_port(int port)
+{
+    set_connection_endpoint({port, _endpoint.ip_address});
+}
+
+void OSCManager::set_ip_address(std::string ip_address)
+{
+    set_connection_endpoint({_endpoint.port, std::move(ip_address)});
+}
+
+void OSCManager::set_connection_endpoint(OSCConnectionEndpoint endpoint)
+{
+    _endpoint = std::move(endpoint);
+    // Recreate a listener using the new port and address
+    stop_listening();
+    reset_values();
+    start_listening();
+}
+
+auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint const&
+{
+    return _endpoint;
+}
+
+auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
+{
+    bool b = false;
+    // if (channel.name.empty() && !_s.values.empty())
+    // {
+    //     channel.name = _s.values[0].first; // Actually this is probably a bad idea
+    //     b            = true;
+    // }
+    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
+        std::lock_guard lock{_s.values_mutex};
+        for (auto const& [name, _] : _s.values)
+            with_dropdown_entry(name);
+    });
+
+    return b;
+}
+
+void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text) const
+{
+    if (_error_message_for_endpoint_creation.empty())
+        return;
+
+    ImGui::PushFont(Font::italic());
+    ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation + extra_text).c_str());
+    ImGui::PopFont();
+}
+
+void OSCManager::imgui_window()
+{
+    _config_window.show([&]() {
+        imgui_select_connection_endpoint();
+        imgui_show_all_values();
+        ImGui::SameLine();
+        imgui_button_to_reset_values();
+    });
+}
+
+void OSCManager::imgui_show_all_values()
+{
+    std::lock_guard       lock{_s.values_mutex};
+    static constexpr auto table_flags = ImGuiTableFlags_RowBg
+                                        | ImGuiTableFlags_Borders
+                                        | ImGuiTableFlags_NoHostExtendX
+                                        | ImGuiTableFlags_SizingFixedFit;
+    if (ImGui::BeginTable("OSC Values", 2, table_flags))
+    {
+        ImGui::PushFont(Cool::Font::monospace());
+        for (auto const& [name, value] : _s.values)
+        {
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::BeginGroup();
+            ImGui::TextUnformatted(name.c_str());
+            ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
+            ImGui::EndGroup();
+            if (ImGui::BeginPopupContextItem(&name))
+            {
+                if (ImGui::Button("Copy to clipboard"))
+                {
+                    ImGui::SetClipboardText(name.c_str());
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+            ImGui::TableSetColumnIndex(1);
+            ImGui::BeginGroup();
+            ImGui::TextUnformatted(fmt::format("{}", value).c_str());
+            ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
+            ImGui::EndGroup();
+            if (ImGui::BeginPopupContextItem(&value))
+            {
+                if (ImGui::Button("Copy to clipboard"))
+                {
+                    ImGui::SetClipboardText(fmt::format("{}", value).c_str());
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+        }
+        ImGui::PopFont();
+        ImGui::EndTable();
+    }
+}
+
+void OSCManager::imgui_select_connection_endpoint()
+{
+    imgui_error_message_for_invalid_endpoint();
+    // Port
+    ImGui::PushItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
+    if (ImGui::InputInt("Port", &_endpoint.port, -1, -1, ImGuiInputTextFlags_AutoSelectAll))
+        set_port(_endpoint.port);
+    ImGui::PopItemWidth();
+    // Address
+    if (ImGuiExtras::input_text_with_dropdown(
+            "IP Address", &_endpoint.ip_address, [&](auto&& with_dropdown_entry) {
+                with_dropdown_entry(OSC_EVERY_AVAILABLE_ADDRESS);
+                with_dropdown_entry("localhost");
+            },
+            ImGuiInputTextFlags_AutoSelectAll
+        ))
+    {
+        set_ip_address(_endpoint.ip_address);
+    }
+}
+
+void OSCManager::imgui_button_to_reset_values()
+{
+    if (values_are_empty())
+        return;
+
+    if (ImGui::Button("Reset values"))
+        reset_values();
+}
+
+auto OSCManager::values_are_empty() const -> bool
+{
+    std::lock_guard lock{_s.values_mutex};
+    return _s.values.empty();
+}
+
+void OSCManager::reset_values()
+{
+    std::lock_guard lock{_s.values_mutex};
+    std::lock_guard lock2{_s.channels_that_have_changed_mutex};
+    for (auto const& [name, _] : _s.values)
+        _s.channels_that_have_changed.insert(OSCChannel{name});
+    _s.values.clear();
+}
+
+namespace {
+class OSCMessageHandler : public osc::OscPacketListener {
+public:
+    explicit OSCMessageHandler(internal::SharedWithThread& s)
+        : _s{s}
+    {}
+
+private:
+    void ProcessMessage(osc::ReceivedMessage const& m, IpEndpointName const&) override
+    {
+        std::lock_guard lock{_s.values_mutex};
+        size_t const    index{find_index(m.AddressPattern())};
+        bool            has_set_value{false};
+        auto const      set_value = [&](float value) {
+            _s.values[index].second = value;
+            has_set_value           = true;
+        };
+        for (auto arg = m.ArgumentsBegin(); arg != m.ArgumentsEnd(); ++arg)
+        {
+            if (arg->IsFloat())
+                set_value(arg->AsFloatUnchecked());
+            if (arg->IsDouble())
+                set_value(static_cast<float>(arg->AsDoubleUnchecked()));
+            if (arg->IsInt32())
+                set_value(static_cast<float>(arg->AsInt32Unchecked()));
+            if (arg->IsInt64())
+                set_value(static_cast<float>(arg->AsInt64Unchecked()));
+            if (arg->IsChar())
+                set_value(static_cast<float>(arg->AsCharUnchecked()));
+            if (arg->IsBool())
+                set_value(arg->AsBoolUnchecked() ? 1.f : 0.f);
+            // TODO(OSC) Support more messages types?
+        }
+        if (has_set_value)
+        {
+            std::lock_guard lock2{_s.channels_that_have_changed_mutex};
+            _s.channels_that_have_changed.insert(OSCChannel{m.AddressPattern()});
+        }
+    }
+
+    auto find_index(std::string const& name) -> size_t
+    {
+        for (size_t i = 0; i < _s.values.size(); ++i)
+        {
+            if (_s.values[i].first == name)
+                return i;
+        }
+        _s.values.emplace_back(name, 0.f);
+        return _s.values.size() - 1;
+    }
+
+private:
+    internal::SharedWithThread& _s; // NOLINT(*avoid-const-or-ref-data-members)
+};
+} // namespace
+
+static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> tl::expected<IpEndpointName, std::string>
+{
+    // Check port
+    if (endpoint.port < 0)
+        return tl::make_unexpected("Select a valid port to start listening to OSC messages.");
+
+    // Check address
+    if (endpoint.ip_address == OSC_EVERY_AVAILABLE_ADDRESS)
+        return IpEndpointName{IpEndpointName::ANY_ADDRESS, endpoint.port};
+    if (endpoint.ip_address == "localhost")
+        return IpEndpointName{"localhost", endpoint.port};
+
+    static const auto ipv4_regexp   = std::regex{R"((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))"};
+    auto              match_results = std::smatch{};
+    if (std::regex_match(endpoint.ip_address, match_results, ipv4_regexp))
+        return IpEndpointName{std::stoi(match_results[1]), std::stoi(match_results[2]), std::stoi(match_results[3]), std::stoi(match_results[4]), endpoint.port};
+
+    return tl::make_unexpected(fmt::format(R"STR(Select a valid IPv4 address to start listening to OSC messages.
+Allowed addresses are "{}", "localhost", or something of the form "192.168.1.1".)STR",
+                                           OSC_EVERY_AVAILABLE_ADDRESS));
+}
+
+void OSCManager::start_listening()
+{
+    auto const endpoint_name = get_ip_endpoint_name(_endpoint);
+    if (!endpoint_name.has_value())
+    {
+        _error_message_for_endpoint_creation = endpoint_name.error();
+        return;
+    }
+    _error_message_for_endpoint_creation = "";
+
+    std::atomic<bool> thread_has_finished_init{false};
+    _thread = std::thread([&]() {
+        try
+        {
+            auto listener = OSCMessageHandler{_s};
+            auto socket   = UdpListeningReceiveSocket{*endpoint_name, &listener};
+            _stop_thread  = [&]() {
+                socket.AsynchronousBreak();
+            };
+            thread_has_finished_init.store(true);
+            socket.Run();
+        }
+        catch (std::exception const& e)
+        {
+            _stop_thread = []() {
+            };
+            _error_message_for_endpoint_creation = fmt::format("Select a valid IPv4 address to start listening to OSC messages. ({})", e.what());
+            thread_has_finished_init.store(true);
+        }
+    });
+    while (!thread_has_finished_init.load()) // Block until the thread is ready, otherwise we might continue and call stop_listening() when the thread is not properly setup, which will crash.
+    {
+    }
+}
+
+void OSCManager::stop_listening()
+{
+    if (!_thread.has_value())
+        return;
+    _stop_thread();
+    _stop_thread = []() {
+    };
+    if (_thread->joinable())
+        _thread->join();
+    _thread.reset();
+}
+
+} // namespace Cool

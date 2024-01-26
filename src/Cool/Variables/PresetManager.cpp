@@ -224,9 +224,9 @@ auto PresetManager::dropdown(
             ImGui::PushID(&preset);
             const bool is_selected = _current_preset_id == id;
             if (ImGui::Selectable(preset.name.c_str(), is_selected))
-            {
                 selected_id = id;
-            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
             ImGui::PopID();
         }
         for (const auto& [id, preset] : _user_defined_presets)
@@ -234,9 +234,9 @@ auto PresetManager::dropdown(
             ImGui::PushID(&preset);
             const bool is_selected = _current_preset_id == id;
             if (ImGui::Selectable(preset.name.c_str(), is_selected))
-            {
                 selected_id = id;
-            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
             ImGui::PopID();
         }
         ImGui::EndCombo();
