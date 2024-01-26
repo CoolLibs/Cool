@@ -83,7 +83,7 @@ void OSCManager::set_connection_endpoint(OSCConnectionEndpoint endpoint)
     _endpoint = std::move(endpoint);
     // Recreate a listener using the new port and address
     stop_listening();
-    _s.values.clear(); // No need to lock since the thread that might modify it has been stopped by stop_listening().
+    reset_values();
     start_listening();
 }
 
@@ -203,16 +203,22 @@ void OSCManager::imgui_button_to_reset_values()
         return;
 
     if (ImGui::Button("Reset values"))
-    {
-        std::lock_guard lock{_s.values_mutex};
-        _s.values.clear();
-    }
+        reset_values();
 }
 
 auto OSCManager::values_are_empty() const -> bool
 {
     std::lock_guard lock{_s.values_mutex};
     return _s.values.empty();
+}
+
+void OSCManager::reset_values()
+{
+    std::lock_guard lock{_s.values_mutex};
+    std::lock_guard lock2{_s.channels_that_have_changed_mutex};
+    for (auto const& [name, _] : _s.values)
+        _s.channels_that_have_changed.insert(OSCChannel{name});
+    _s.values.clear();
 }
 
 namespace {

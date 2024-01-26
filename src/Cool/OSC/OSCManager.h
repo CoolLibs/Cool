@@ -51,6 +51,7 @@ private:
     void imgui_button_to_reset_values();
 
     auto values_are_empty() const -> bool;
+    void reset_values();
 
 private:
     internal::SharedWithThread _s{};
