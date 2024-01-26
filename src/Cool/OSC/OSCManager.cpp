@@ -1,6 +1,4 @@
 #include "OSCManager.h"
-#include <imgui.h>
-#include <imgui_internal.h>
 #include <exception>
 #include <mutex>
 #include <regex>
@@ -121,7 +119,7 @@ void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text
     }
 }
 
-void OSCManager::imgui_window_config()
+void OSCManager::imgui_window()
 {
     _config_window.show([&]() {
         imgui_select_connection_endpoint();

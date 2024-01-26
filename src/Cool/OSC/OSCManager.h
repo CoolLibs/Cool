@@ -1,7 +1,6 @@
 #pragma once
 #include <set>
 #include "Cool/ImGui/ImGuiWindow.h"
-#include "Cool/OSC/OSCChannel.h"
 #include "OSCChannel.h"
 #include "OSCConnectionEndpoint.h"
 
@@ -38,7 +37,7 @@ public:
     void imgui_error_message_for_invalid_endpoint(const char* extra_text = "") const;
 
     void open_config_window() { _config_window.open(); }
-    void imgui_window_config();
+    void imgui_window();
 
 private:
     OSCManager(); // This is private, because all instances of OSCManager must be guaranteed to have a fixed address in memory. Use osc_manager() to access the global OSCManager.

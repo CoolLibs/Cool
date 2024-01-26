@@ -131,7 +131,7 @@ void MidiManager::close_port()
     }
 }
 
-void MidiManager::imgui_window_config()
+void MidiManager::imgui_window()
 {
     _config_window.show([&]() {
         imgui_visualize_channels();
