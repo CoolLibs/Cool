@@ -73,7 +73,10 @@ void AppManager::run(std::function<void()> on_update)
         catch (std::exception const& e)
         {
             Cool::Log::ToUser::error("UNKNOWN ERROR 1", e.what());
+#if DEBUG
+            std::cerr << e.what() << '\n';
             assert(false); // Please catch the error where appropriate, and handle it properly.
+#endif
         }
     };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
@@ -149,7 +152,10 @@ void AppManager::update()
     catch (std::exception const& e)
     {
         Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
+#if DEBUG
+        std::cerr << e.what() << '\n';
         assert(false); // Please catch the error where appropriate, and handle it properly.
+#endif
     }
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();

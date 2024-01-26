@@ -1,7 +1,11 @@
 #include "OSCManager.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <exception>
 #include <mutex>
+#include <regex>
+#include <thread>
+#include <tl/expected.hpp>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
@@ -96,7 +100,6 @@ void OSCManager::imgui_window_config()
         imgui_select_connection_endpoint();
         imgui_show_all_values();
         // TODO(OSC) UI to choose address
-        // TODO(OSC) reset _s.values when changing address
         // TODO(OSC) button to reset _values
     });
 }
@@ -184,10 +187,10 @@ void OSCManager::imgui_show_all_values()
 
 void OSCManager::imgui_select_connection_endpoint()
 {
-    if (!_endpoint.is_valid())
+    if (!_error_message_for_endpoint_creation.empty())
     {
         ImGui::PushFont(Font::italic());
-        ImGui::TextUnformatted("OSC listener is OFF. Select a valid port to start listening to OSC messages.");
+        ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation).c_str());
         ImGui::PopFont();
     }
     // Port
@@ -196,10 +199,13 @@ void OSCManager::imgui_select_connection_endpoint()
         set_port(_endpoint.port);
     ImGui::PopItemWidth();
     // Address
-    if (ImGuiExtras::input_text_with_dropdown("IP Address", &_endpoint.ip_address, [&](auto&& with_dropdown_entry) {
-            with_dropdown_entry(OSC_EVERY_AVAILABLE_ADDRESS);
-            with_dropdown_entry("localhost");
-        }))
+    if (ImGuiExtras::input_text_with_dropdown(
+            "IP Address", &_endpoint.ip_address, [&](auto&& with_dropdown_entry) {
+                with_dropdown_entry(OSC_EVERY_AVAILABLE_ADDRESS);
+                with_dropdown_entry("localhost");
+            },
+            ImGuiInputTextFlags_AutoSelectAll
+        ))
     {
         set_ip_address(_endpoint.ip_address); // TODO(OSC) Check that we don't crash when inputting invalid addresses
     }
@@ -261,26 +267,62 @@ private:
 } // namespace
 // TODO(OSC) Crash when changing port too fast
 
-static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> IpEndpointName
+static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> tl::expected<IpEndpointName, std::string>
 {
-    return endpoint.ip_address == OSC_EVERY_AVAILABLE_ADDRESS
-               ? IpEndpointName(IpEndpointName::ANY_ADDRESS, endpoint.port)
-               : IpEndpointName(endpoint.ip_address.c_str(), endpoint.port);
+    // Check port
+    if (endpoint.port < 0)
+        return tl::make_unexpected("Select a valid port to start listening to OSC messages.");
+
+    // Check address
+    if (endpoint.ip_address == OSC_EVERY_AVAILABLE_ADDRESS)
+        return IpEndpointName{IpEndpointName::ANY_ADDRESS, endpoint.port};
+    if (endpoint.ip_address == "localhost")
+        return IpEndpointName{"localhost", endpoint.port};
+
+    static const auto ipv4_regexp   = std::regex{R"((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))"};
+    auto              match_results = std::smatch{};
+    if (std::regex_match(endpoint.ip_address, match_results, ipv4_regexp))
+        return IpEndpointName{std::stoi(match_results[1]), std::stoi(match_results[2]), std::stoi(match_results[3]), std::stoi(match_results[4]), endpoint.port};
+
+    return tl::make_unexpected(fmt::format(R"STR(Select a valid IPv4 address to start listening to OSC messages.
+Allowed addresses are "{}", "localhost", or something of the form "192.168.1.1".)STR",
+                                           OSC_EVERY_AVAILABLE_ADDRESS));
 }
 
 void OSCManager::start_listening()
 {
-    if (!_endpoint.is_valid())
+    auto const endpoint_name = get_ip_endpoint_name(_endpoint);
+    if (!endpoint_name.has_value())
+    {
+        _error_message_for_endpoint_creation = endpoint_name.error();
         return;
+    }
+    _error_message_for_endpoint_creation = "";
+
+    std::atomic<bool> thread_has_finished_init{false};
 
     _thread = std::thread([&]() {
-        auto listener = OSCMessagesHandler{_s};
-        auto socket   = UdpListeningReceiveSocket{get_ip_endpoint_name(_endpoint), &listener};
-        _stop_thread  = [&]() {
-            socket.AsynchronousBreak();
-        };
-        socket.Run();
+        try
+        {
+            auto listener = OSCMessagesHandler{_s};
+            auto socket   = UdpListeningReceiveSocket{*endpoint_name, &listener};
+            _stop_thread  = [&]() {
+                socket.AsynchronousBreak();
+            };
+            thread_has_finished_init.store(true);
+            socket.Run();
+        }
+        catch (std::exception& e)
+        {
+            _stop_thread = []() {
+            };
+            _error_message_for_endpoint_creation = fmt::format("Select a valid IPv4 address to start listening to OSC messages. ({})", e.what());
+            thread_has_finished_init.store(true);
+        }
     });
+    while (!thread_has_finished_init.load()) // Block until the thread is ready, otherwise we might continue and call stop_listening() when the thread is not properly setup, which will crash.
+    {
+    }
 }
 
 void OSCManager::stop_listening()
@@ -288,6 +330,8 @@ void OSCManager::stop_listening()
     if (!_thread.has_value())
         return;
     _stop_thread();
+    _stop_thread = []() {
+    };
     if (_thread->joinable())
         _thread->join();
     _thread.reset();

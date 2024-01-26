@@ -51,9 +51,11 @@ private:
 private:
     internal::SharedWithThread _s{};
     Cool::ImGuiWindow          _config_window;
-    std::optional<std::thread> _thread;
-    std::function<void()>      _stop_thread;
+    std::optional<std::thread> _thread{};
+    std::function<void()>      _stop_thread{[]() {
+    }};
     OSCConnectionEndpoint      _endpoint{};
+    std::string                _error_message_for_endpoint_creation{};
 
 private:
     // Serialization
