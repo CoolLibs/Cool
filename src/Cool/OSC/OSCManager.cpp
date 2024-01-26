@@ -251,7 +251,7 @@ private:
         if (has_set_value)
         {
             std::lock_guard lock2{_s.channels_that_have_changed_mutex};
-            _s.channels_that_have_changed.emplace(m.AddressPattern());
+            _s.channels_that_have_changed.emplace(std::string{m.AddressPattern()});
         }
     }
 
