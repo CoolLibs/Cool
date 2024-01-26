@@ -87,7 +87,7 @@ void OSCManager::set_connection_endpoint(OSCConnectionEndpoint endpoint)
     start_listening();
 }
 
-auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint
+auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint const&
 {
     return _endpoint;
 }
@@ -95,11 +95,11 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
 {
     bool b = false;
-    if (channel.name.empty() && !_s.values.empty())
-    {
-        channel.name = _s.values[0].first;
-        b            = true;
-    }
+    // if (channel.name.empty() && !_s.values.empty())
+    // {
+    //     channel.name = _s.values[0].first; // Actually this is probably a bad idea
+    //     b            = true;
+    // }
     b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
         std::lock_guard lock{_s.values_mutex};
         for (auto const& [name, _] : _s.values)
@@ -111,12 +111,12 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
 
 void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text) const
 {
-    if (!_error_message_for_endpoint_creation.empty())
-    {
-        ImGui::PushFont(Font::italic());
-        ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation + extra_text).c_str());
-        ImGui::PopFont();
-    }
+    if (_error_message_for_endpoint_creation.empty())
+        return;
+
+    ImGui::PushFont(Font::italic());
+    ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation + extra_text).c_str());
+    ImGui::PopFont();
 }
 
 void OSCManager::imgui_window()
@@ -139,33 +139,33 @@ void OSCManager::imgui_show_all_values()
     if (ImGui::BeginTable("OSC Values", 2, table_flags))
     {
         ImGui::PushFont(Cool::Font::monospace());
-        for (auto const& pair : _s.values)
+        for (auto const& [name, value] : _s.values)
         {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::BeginGroup();
-            ImGui::TextUnformatted(pair.first.c_str());
+            ImGui::TextUnformatted(name.c_str());
             ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
             ImGui::EndGroup();
-            if (ImGui::BeginPopupContextItem(&pair.first))
+            if (ImGui::BeginPopupContextItem(&name))
             {
                 if (ImGui::Button("Copy to clipboard"))
                 {
-                    ImGui::SetClipboardText(pair.first.c_str());
+                    ImGui::SetClipboardText(name.c_str());
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
             }
             ImGui::TableSetColumnIndex(1);
             ImGui::BeginGroup();
-            ImGui::TextUnformatted(fmt::format("{}", pair.second).c_str());
+            ImGui::TextUnformatted(fmt::format("{}", value).c_str());
             ImGui::Dummy({ImGui::GetContentRegionAvail().x, 0.f});
             ImGui::EndGroup();
-            if (ImGui::BeginPopupContextItem(&pair.second))
+            if (ImGui::BeginPopupContextItem(&value))
             {
                 if (ImGui::Button("Copy to clipboard"))
                 {
-                    ImGui::SetClipboardText(fmt::format("{}", pair.second).c_str());
+                    ImGui::SetClipboardText(fmt::format("{}", value).c_str());
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
@@ -222,9 +222,9 @@ void OSCManager::reset_values()
 }
 
 namespace {
-class OSCMessagesHandler : public osc::OscPacketListener {
+class OSCMessageHandler : public osc::OscPacketListener {
 public:
-    explicit OSCMessagesHandler(internal::SharedWithThread& s)
+    explicit OSCMessageHandler(internal::SharedWithThread& s)
         : _s{s}
     {}
 
@@ -252,6 +252,7 @@ private:
                 set_value(static_cast<float>(arg->AsCharUnchecked()));
             if (arg->IsBool())
                 set_value(arg->AsBoolUnchecked() ? 1.f : 0.f);
+            // TODO(OSC) Support more messages types?
         }
         if (has_set_value)
         {
@@ -309,11 +310,10 @@ void OSCManager::start_listening()
     _error_message_for_endpoint_creation = "";
 
     std::atomic<bool> thread_has_finished_init{false};
-
     _thread = std::thread([&]() {
         try
         {
-            auto listener = OSCMessagesHandler{_s};
+            auto listener = OSCMessageHandler{_s};
             auto socket   = UdpListeningReceiveSocket{*endpoint_name, &listener};
             _stop_thread  = [&]() {
                 socket.AsynchronousBreak();
@@ -321,7 +321,7 @@ void OSCManager::start_listening()
             thread_has_finished_init.store(true);
             socket.Run();
         }
-        catch (std::exception& e)
+        catch (std::exception const& e)
         {
             _stop_thread = []() {
             };

@@ -31,7 +31,7 @@ public:
     void set_port(int port);
     void set_ip_address(std::string ip_address);
     void set_connection_endpoint(OSCConnectionEndpoint);
-    auto get_connection_endpoint() const -> OSCConnectionEndpoint;
+    auto get_connection_endpoint() const -> OSCConnectionEndpoint const&;
 
     auto imgui_channel_widget(const char* label, OSCChannel&) const -> bool;
     void imgui_error_message_for_invalid_endpoint(const char* extra_text = "") const;
