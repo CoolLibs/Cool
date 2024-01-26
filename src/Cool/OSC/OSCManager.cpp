@@ -13,6 +13,7 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/OptionalErrorMessage.h"
+#include "Cool/OSC/OSCChannel.h"
 #include "Cool/OSC/OSCConnectionEndpoint.h"
 #include "ip/UdpSocket.h"
 #include "osc/OscPacketListener.h"
@@ -251,7 +252,7 @@ private:
         if (has_set_value)
         {
             std::lock_guard lock2{_s.channels_that_have_changed_mutex};
-            _s.channels_that_have_changed.emplace(std::string{m.AddressPattern()});
+            _s.channels_that_have_changed.insert(OSCChannel{m.AddressPattern()});
         }
     }
 
