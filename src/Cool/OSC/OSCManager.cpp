@@ -94,6 +94,16 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
     return b;
 }
 
+void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text) const
+{
+    if (!_error_message_for_endpoint_creation.empty())
+    {
+        ImGui::PushFont(Font::italic());
+        ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation + extra_text).c_str());
+        ImGui::PopFont();
+    }
+}
+
 void OSCManager::imgui_window_config()
 {
     _config_window.show([&]() {
@@ -187,12 +197,7 @@ void OSCManager::imgui_show_all_values()
 
 void OSCManager::imgui_select_connection_endpoint()
 {
-    if (!_error_message_for_endpoint_creation.empty())
-    {
-        ImGui::PushFont(Font::italic());
-        ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation).c_str());
-        ImGui::PopFont();
-    }
+    imgui_error_message_for_invalid_endpoint();
     // Port
     ImGui::PushItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
     if (ImGui::InputInt("Port", &_endpoint.port, -1, -1, ImGuiInputTextFlags_AutoSelectAll))

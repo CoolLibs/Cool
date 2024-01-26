@@ -34,6 +34,7 @@ public:
     auto get_connection_endpoint() const -> OSCConnectionEndpoint;
 
     auto imgui_channel_widget(const char* label, OSCChannel&) const -> bool;
+    void imgui_error_message_for_invalid_endpoint(const char* extra_text = "") const;
 
     void open_config_window() { _config_window.open(); }
     void imgui_window_config();

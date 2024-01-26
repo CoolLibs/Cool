@@ -77,7 +77,7 @@ static void imgui_load_fonts()
     { // Italic font
         auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Italic.otf";
         Font::italic()  = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
-        // merge_icons_into_current_font(); // Not needed for now
+        merge_icons_into_current_font();
     }
     { // Regular font
         auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Regular.otf";
