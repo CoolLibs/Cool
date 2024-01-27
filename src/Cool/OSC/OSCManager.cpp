@@ -252,7 +252,6 @@ private:
                 set_value(static_cast<float>(arg->AsCharUnchecked()));
             if (arg->IsBool())
                 set_value(arg->AsBoolUnchecked() ? 1.f : 0.f);
-            // TODO(OSC) Support more messages types?
         }
         if (has_set_value)
         {

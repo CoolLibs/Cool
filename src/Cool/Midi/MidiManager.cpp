@@ -40,6 +40,14 @@ auto MidiManager::get_value(MidiChannel const& channel) const -> float
 void MidiManager::set_value(MidiChannel const& channel, float value)
 {
     _value_from_index[channel.index] = value;
+    _channels_that_have_changed.insert(channel);
+}
+
+void MidiManager::for_each_channel_that_has_changed(std::function<void(MidiChannel const&)> const& callback)
+{
+    for (auto const& channel : _channels_that_have_changed)
+        callback(channel);
+    _channels_that_have_changed.clear();
 }
 
 void MidiManager::check_for_devices()
@@ -74,10 +82,8 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
     if (message->size() < 3)
         return;
     // TODO(OSC) don't we need a lock / Mutex ?
-    // TODO(OSC) rerender when new midi value arrives, if we depend on that value (like what we did for OSC)
-    auto& This                            = *static_cast<MidiManager*>(user_data);
-    This._value_from_index[(*message)[1]] = static_cast<float>((*message)[2]) / 127.f;
-    This._extra_midi_callback();
+    auto& This = *static_cast<MidiManager*>(user_data);
+    This.set_value(MidiChannel{(*message)[1]}, static_cast<float>((*message)[2]) / 127.f);
 }
 
 void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::string& error_text, void* /* user_data */)

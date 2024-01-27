@@ -5,7 +5,7 @@ namespace Cool {
 struct MidiChannel {
     int index{};
 
-    friend auto operator==(MidiChannel const&, MidiChannel const&) -> bool = default;
+    friend auto operator<=>(MidiChannel const&, MidiChannel const&) = default;
 
 private:
     // Serialization
