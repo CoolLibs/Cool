@@ -8,6 +8,7 @@ UniqueEdContext::UniqueEdContext()
     config.UserPointer    = this;
     config.LoadSettings   = &load_imnodes_settings;
     config.SaveSettings   = &save_imnodes_settings;
+    config.CanvasSizeMode = ed::CanvasSizeMode::CenterOnly;
     _context              = ed::CreateEditor(&config);
 }
 
