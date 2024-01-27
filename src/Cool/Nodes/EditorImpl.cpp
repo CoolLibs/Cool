@@ -624,6 +624,16 @@ void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& 
 
 auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
+    {
+        // HACK(ImNodes) To make sure the zoom level is properly restored as it was when we closed the app
+        // we need to give one frame for all the other ImGui windows to render
+        // and only start rendering the nodes' workspace during the second frame.
+        // NB: go check out the other "HACK(ImNodes)"
+        _frames_count++;
+        if (_frames_count <= 1)
+            return false;
+    }
+
     bool graph_has_changed = false;
 
     ed::SetCurrentEditor(_context);

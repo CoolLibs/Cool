@@ -30,7 +30,6 @@ namespace Cool {
 static void prepare_windows(WindowManager& window_manager);
 static void imgui_dockspace();
 static void imgui_new_frame();
-static void end_frame(WindowManager& window_manager);
 
 AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
@@ -229,29 +228,38 @@ void AppManager::imgui_render(IApp& app)
     ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().tab_bar_padding; // We need to apply the tab_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
-static void end_frame(WindowManager& window_manager)
+void AppManager::end_frame(WindowManager& window_manager)
 {
     ImGui::Render();
-#if defined(COOL_VULKAN)
-    ImDrawData* main_draw_data    = ImGui::GetDrawData();
-    const bool  main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-    if (!main_is_minimized)
+    ImDrawData* draw_data = ImGui::GetDrawData();
     {
-        window_manager.main_window().FrameRender(main_draw_data);
+        // HACK(ImNodes) Since nodes' workspace is not rendered during the first frame,
+        // to avoid a flash we skip ImGui display altogether for the first few frames.
+        // NB: go check out the other "HACK(ImNodes)"
+        _frames_count++;
+        if (_frames_count <= 2)
+            draw_data = nullptr;
+    }
+#if defined(COOL_VULKAN)
+    const bool can_render = draw_data && draw_data->DisplaySize.x > 0.0f && draw_data->DisplaySize.y > 0.0f;
+    if (can_render)
+    {
+        window_manager.main_window().FrameRender(draw_data);
     }
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
-    if (!main_is_minimized)
+    if (can_render)
     {
         window_manager.main_window().FramePresent();
     }
 #elif defined(COOL_OPENGL)
     ImGuiIO& io = ImGui::GetIO();
     glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (draw_data)
+        ImGui_ImplOpenGL3_RenderDrawData(draw_data);
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) // NOLINT
     {
         GLFWwindow* backup_current_context = glfwGetCurrentContext();
