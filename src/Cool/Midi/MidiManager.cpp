@@ -31,6 +31,12 @@ MidiManager::MidiManager()
 
 auto MidiManager::get_value(MidiChannel const& channel) const -> float
 {
+    std::lock_guard lock{_mutex};
+    return get_value_no_locking(channel);
+}
+
+auto MidiManager::get_value_no_locking(MidiChannel const& channel) const -> float
+{
     auto const it = _value_from_index.find(channel.index);
     if (it == _value_from_index.end())
         return 0.f;
@@ -39,12 +45,14 @@ auto MidiManager::get_value(MidiChannel const& channel) const -> float
 
 void MidiManager::set_value(MidiChannel const& channel, float value)
 {
+    std::lock_guard lock{_mutex};
     _value_from_index[channel.index] = value;
     _channels_that_have_changed.insert(channel);
 }
 
 void MidiManager::for_each_channel_that_has_changed(std::function<void(MidiChannel const&)> const& callback)
 {
+    std::lock_guard lock{_mutex};
     for (auto const& channel : _channels_that_have_changed)
         callback(channel);
     _channels_that_have_changed.clear();
@@ -81,7 +89,6 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
 {
     if (message->size() < 3)
         return;
-    // TODO(OSC) don't we need a lock / Mutex ?
     auto& This = *static_cast<MidiManager*>(user_data);
     This.set_value(MidiChannel{(*message)[1]}, static_cast<float>((*message)[2]) / 127.f);
 }
@@ -147,9 +154,10 @@ void MidiManager::imgui_window()
 
 void MidiManager::imgui_visualize_channels()
 {
-    auto values = std::vector<float>(static_cast<size_t>(max_index() + 1));
+    std::lock_guard lock{_mutex};
+    auto            values = std::vector<float>(static_cast<size_t>(max_index() + 1));
     for (size_t i = 0; i < values.size(); ++i)
-        values[i] = get_value({static_cast<int>(i)});
+        values[i] = get_value_no_locking({static_cast<int>(i)});
 
     ImGui::PushFont(Font::italic());
     ImGui::TextUnformatted("Use your knob / slider / button and the value will reflect in the histogram below. You can then hover it to see the index.");

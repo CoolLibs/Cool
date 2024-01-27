@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -38,12 +39,14 @@ private:
     void open_port(unsigned int index);
     void close_port();
 
+    auto               get_value_no_locking(MidiChannel const& channel) const -> float;
     [[nodiscard]] auto max_index() const -> int;
 
     static void midi_callback(double delta_time, std::vector<unsigned char>* message, void* user_data);
     static void midi_error_callback(RtMidiError::Type type, std::string const& error_text, void* user_data);
 
 private:
+    mutable std::mutex             _mutex{};
     std::optional<RtMidiIn>        _midi{}; // Optional because the creation might fail and throw an exception: http://www.music.mcgill.ca/~gary/rtmidi/index.html#start
     std::string                    _port_name{};
     std::optional<unsigned int>    _port_index{};
