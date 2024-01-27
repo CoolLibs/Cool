@@ -189,6 +189,7 @@ void MessageConsole::show_number_of_messages_of_given_severity(MessageSeverity s
 
 void MessageConsole::remove_messages_to_keep_size_below(size_t max_number_of_messages)
 {
+    std::unique_lock lock{_messages.mutex()};
     while (_messages.underlying_container().underlying_container().size() > max_number_of_messages)
     {
         auto const it = std::find_if(_messages.begin(), _messages.end(), [](auto const& pair) {
@@ -390,10 +391,10 @@ void MessageConsole::imgui_show_all_messages()
 void MessageConsole::refresh_counts_per_severity()
 {
     _counts_per_severity.reset_to_zero();
-    std::shared_lock lock{_messages.mutex()};
-    for (const auto& id_and_message : _messages)
     {
-        _counts_per_severity.increment(id_and_message.second.message.severity);
+        std::shared_lock lock{_messages.mutex()};
+        for (const auto& id_and_message : _messages)
+            _counts_per_severity.increment(id_and_message.second.message.severity);
     }
     close_window_if_empty();
 }
