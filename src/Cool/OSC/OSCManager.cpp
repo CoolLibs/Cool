@@ -41,7 +41,7 @@ static auto list_channel_names(std::vector<std::pair<std::string, float>> const&
     return ss.str();
 }
 
-auto OSCManager::get_value(OSCChannel const& channel) const -> float
+auto OSCManager::get_value(OSCChannel const& channel) -> float
 {
     std::lock_guard lock{_s.values_mutex};
     for (auto const& pair : _s.values)
@@ -49,6 +49,8 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
         if (pair.first == channel.name)
             return pair.second;
     }
+
+    _config_window.open();
     throw Cool::Exception{OptionalErrorMessage{
         fmt::format(
             "\"{}\" is not a valid OSC channel.\n{}",
@@ -92,8 +94,11 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint const&
     return _endpoint;
 }
 
-auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
+auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) -> bool
 {
+    if (!_error_message_for_endpoint_creation.empty())
+        _config_window.open();
+
     bool b = false;
     // if (channel.name.empty() && !_s.values.empty())
     // {

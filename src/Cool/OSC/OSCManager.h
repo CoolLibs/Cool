@@ -24,7 +24,7 @@ public:
     ~OSCManager();
 
     /// Throws a Cool::Exception if the channel doesn't correspond to any received value.
-    auto get_value(OSCChannel const&) const -> float;
+    auto get_value(OSCChannel const&) -> float;
     /// The `callback` will be called once for each channel whose value has changed since the last call to `for_each_channel_that_has_changed()`.
     void for_each_channel_that_has_changed(std::function<void(OSCChannel const&)> const& callback);
 
@@ -33,7 +33,7 @@ public:
     void set_connection_endpoint(OSCConnectionEndpoint);
     auto get_connection_endpoint() const -> OSCConnectionEndpoint const&;
 
-    auto imgui_channel_widget(const char* label, OSCChannel&) const -> bool;
+    auto imgui_channel_widget(const char* label, OSCChannel&) -> bool;
     void imgui_error_message_for_invalid_endpoint(const char* extra_text = "") const;
 
     void open_config_window() { _config_window.open(); }
