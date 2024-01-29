@@ -100,7 +100,7 @@ auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) co
     //     channel.name = _s.values[0].first; // Actually this is probably a bad idea
     //     b            = true;
     // }
-    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
+    b |= ImGuiExtras::dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
         std::lock_guard lock{_s.values_mutex};
         for (auto const& [name, _] : _s.values)
             with_dropdown_entry(name);
