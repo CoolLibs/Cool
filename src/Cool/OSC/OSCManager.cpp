@@ -268,6 +268,9 @@ private:
                 return i;
         }
         _s.values.emplace_back(name, 0.f);
+        std::sort(_s.values.begin(), _s.values.end(), [](auto const& a, auto const& b) {
+            return a.first < b.first;
+        });
         return _s.values.size() - 1;
     }
 
