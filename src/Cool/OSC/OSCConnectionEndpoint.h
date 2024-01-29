@@ -2,7 +2,7 @@
 
 namespace Cool {
 
-static constexpr const char* OSC_EVERY_AVAILABLE_ADDRESS{"Every available address"};
+static constexpr const char* OSC_EVERY_AVAILABLE_ADDRESS{"Auto-detect"};
 
 struct OSCConnectionEndpoint {
     int         port{-1};
