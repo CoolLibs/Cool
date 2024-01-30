@@ -375,43 +375,6 @@ auto gen_input_shader_code(AnyInput const& input, std::string_view name) -> std:
     return std::visit([&](auto&& input) { return gen_input_shader_code(input, name); }, input);
 }
 
-static auto gen_input_shader_code(std::string_view name, std::vector<AnyInput> const& inputs) -> std::string
-{
-    std::string res;
-    for (const auto& input : inputs)
-    {
-        std::visit(
-            [&](auto&& input) {
-                if (input.name() == name)
-                {
-                    res = gen_input_shader_code(input);
-                }
-            },
-            input
-        );
-    }
-    return res;
-}
-
-auto preprocess_inputs(std::string_view source_code, std::vector<AnyInput> const& inputs) -> std::string
-{
-    std::stringstream in{std::string{source_code}};
-    std::stringstream out{};
-    std::string       line;
-    while (getline(in, line))
-    {
-        if (const auto info = find_type_and_name(line))
-        {
-            out << gen_input_shader_code(info->name, inputs) << '\n';
-        }
-        else
-        {
-            out << line << '\n';
-        }
-    }
-    return out.str();
-}
-
 } // namespace Cool
 
 #if COOL_ENABLE_TESTS
