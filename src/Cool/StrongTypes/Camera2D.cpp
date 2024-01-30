@@ -21,6 +21,17 @@ auto Camera2D::transform_matrix() const -> glm::mat3
     return res;
 }
 
+auto Camera2D::view_matrix() const -> glm::mat3
+{
+    auto res = glm::mat3{1.f};
+
+    res = glm::scale(res, glm::vec2{zoom});
+    res = glm::translate(res, -translation);
+    res = glm::rotate(res, -rotation.as_radians());
+
+    return res;
+}
+
 auto to_string(Camera2D const& cam) -> std::string
 {
     return fmt::format(

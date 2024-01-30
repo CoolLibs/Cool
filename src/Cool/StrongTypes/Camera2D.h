@@ -8,7 +8,10 @@ struct Camera2D {
     Angle     rotation{Radians(0.f)};
     float     zoom{1.f};
 
+    /// Inverse of view_matrix().
     auto transform_matrix() const -> glm::mat3;
+    /// Inverse of transform_matrix().
+    auto view_matrix() const -> glm::mat3;
 
     friend auto operator==(Camera2D const& a, Camera2D const& b) -> bool = default;
 
