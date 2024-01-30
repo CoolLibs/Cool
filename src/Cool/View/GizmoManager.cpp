@@ -51,7 +51,7 @@ void GizmoManager::render(View const& view)
 
 auto GizmoManager::is_dragging_gizmo() const -> bool
 {
-    return !_dragged_gizmo_id.underlying_uuid().is_nil();
+    return _dragged_gizmo_id.has_value();
 }
 
 auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const&, View const& view) -> bool
@@ -76,7 +76,7 @@ void GizmoManager::on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&)
     with_dragged_gizmo([](Gizmo_Point2D const& gizmo) {
         gizmo.on_drag_stop();
     });
-    _dragged_gizmo_id = {};
+    _dragged_gizmo_id.reset();
 }
 
 void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D const&)> const& callback)

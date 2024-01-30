@@ -398,20 +398,6 @@ def all_types_includes():
 #     return out
 
 
-def VariableRegistries():
-    return (
-        "\n"
-        + "using VariableRegistries = reg::Registries<\n"
-        + ",\n".join(
-            map(
-                lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>",
-                all_variable_types(),
-            )
-        )
-        + "\n>;"
-    )
-
-
 def AnyInput():
     return (
         "\n"
@@ -440,6 +426,12 @@ def AnyVariable():
             map(lambda var_type: f"Variable<{var_type}>", all_variable_types())
         )
         + "\n>;"
+    )
+
+
+def AnyVariableData():
+    return ",\n".join(
+        map(lambda var_type: f"VariableData<{var_type}>", all_variable_types())
     )
 
 
@@ -568,12 +560,13 @@ def files():
     res = [
         # register_set_variable_commands,
         # register_set_variable_metadata_commands,
-        VariableRegistries,
         AnyInput,
         AnyInputDefinition,
         AnyVariable,
+        AnyVariableData,
         AnyInputRef,
         AnyInputRefToConst,
+        all_types_includes,
         all_variable_includes,
         variables_includes,
         glsl_type,

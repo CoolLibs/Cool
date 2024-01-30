@@ -52,16 +52,16 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     });
 }
 
-static void set_default_value_to_current_value(Preset2& preset)
-{
-    for (auto& variable : preset.values)
-    {
-        std::visit([](auto&& variable) {
-            variable.default_value() = variable.value();
-        },
-                   variable);
-    }
-}
+// static void set_default_value_to_current_value(Preset2& preset)
+// {
+//     for (auto& variable : preset.values)
+//     {
+//         std::visit([](auto&& variable) {
+//             variable.default_value() = variable.value();
+//         },
+//                    variable);
+//     }
+// }
 
 auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
 {
@@ -93,7 +93,7 @@ auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
     }
     else
     {
-        set_default_value_to_current_value(preset);
+        // set_default_value_to_current_value(preset); // TODO(Variables) This should probably be done elsewhere, when applying a preset
         auto id = _user_defined_presets.create_raw(preset);
         save_to_file();
         return id;
@@ -411,17 +411,17 @@ auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
     return settings_have_changed;
 }
 
-auto PresetManager::imgui(Settings_Ref settings) -> bool
-{
-    bool settings_have_changed{false};
+// auto PresetManager::imgui(Settings_Ref settings) -> bool
+// {
+//     bool settings_have_changed{false};
 
-    settings_have_changed |= settings.display_all_variables_widgets();
+//     settings_have_changed |= settings.display_all_variables_widgets();
 
-    ImGui::Separator();
+//     ImGui::Separator();
 
-    settings_have_changed |= imgui_presets(settings);
+//     settings_have_changed |= imgui_presets(settings);
 
-    return settings_have_changed;
-}
+//     return settings_have_changed;
+// }
 
 } // namespace Cool

@@ -44,7 +44,7 @@ def evaluate_function_template():
     for key, values in tfs_global_type_to_string_associations.items():
         for value in values:
             out += (
-                f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return function_template<{key}>arguments;'
+                f'{"else " if not is_first else ""}if ((type_as_string) == "{value}") return out_type{{function_template<{key}>arguments}};'
                 + "\\\n"
             )
             is_first = False

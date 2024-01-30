@@ -49,7 +49,7 @@ public:
     [[nodiscard]] auto path() const -> auto const& { return _serializer.path(); }
 
     /// Renders the UI for the whole `PresetManager`.
-    auto imgui(Settings_Ref settings) -> bool;
+    // auto imgui(Settings_Ref settings) -> bool;
 
     /// Renders only the UI for the presets.
     auto imgui_presets(Settings_Ref settings) -> bool;

@@ -21,18 +21,15 @@ static auto make_input(
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
     DirtyFlag                         secondary_dirty_flag,
-    InputFactory_Ref                  input_factory,
     std::string_view                  type
 ) -> Input<T>
 {
-    auto input = input_factory.make<T>(
-        InputDefinition<T>{
-            .name        = std::string{name},
-            .description = description,
-        },
+    auto input = Input<T>{
+        Variable<T>{{std::string{name}}},
         dirty_flag,
+        description,
         secondary_dirty_flag
-    );
+    };
 
     if constexpr (std::is_same_v<T, Cool::Color>)
     {
@@ -51,11 +48,10 @@ static auto make_any_input(
     std::string_view                  name,
     const std::optional<std::string>& description,
     DirtyFlag                         dirty_flag,
-    DirtyFlag                         secondary_dirty_flag,
-    InputFactory_Ref                  input_factory
+    DirtyFlag                         secondary_dirty_flag
 ) -> AnyInput
 {
-    return COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, secondary_dirty_flag, input_factory, type));
+    return AnyInput{COOL_TFS_EVALUATE_FUNCTION_TEMPLATE(make_input, type, AnyInput, (name, description, dirty_flag, secondary_dirty_flag, type))};
 }
 
 struct TypeAndName_Ref {
@@ -113,8 +109,7 @@ static auto parse_description(std::string_view line) -> std::optional<std::strin
 auto try_parse_input(
     std::string_view line,
     DirtyFlag        dirty_flag,
-    DirtyFlag        secondary_dirty_flag,
-    InputFactory_Ref input_factory
+    DirtyFlag        secondary_dirty_flag
 ) -> std::optional<AnyInput>
 {
     const auto type_and_name = find_type_and_name(line);
@@ -128,16 +123,14 @@ auto try_parse_input(
         type_and_name->name,
         parse_description(line),
         dirty_flag,
-        secondary_dirty_flag,
-        input_factory
+        secondary_dirty_flag
     );
 }
 
 auto parse_all_inputs(
     std::string_view source_code,
     DirtyFlag        dirty_flag,
-    DirtyFlag        secondary_dirty_flag,
-    InputFactory_Ref input_factory
+    DirtyFlag        secondary_dirty_flag
 ) -> tl::expected<std::vector<AnyInput>, std::string>
 {
     std::vector<AnyInput> new_inputs;
@@ -149,11 +142,9 @@ auto parse_all_inputs(
         line_count++;
         try
         {
-            const auto input = try_parse_input(line, dirty_flag, secondary_dirty_flag, input_factory);
+            auto input = try_parse_input(line, dirty_flag, secondary_dirty_flag);
             if (input)
-            {
                 new_inputs.emplace_back(std::move(*input));
-            }
         }
         catch (const std::exception& e)
         {
@@ -164,9 +155,9 @@ auto parse_all_inputs(
     }
     return new_inputs;
 }
-
+// TODO(Variables) Move shader code gen in another file ?
 template<typename T>
-auto gen_input_shader_code__impl(const T&, std::string_view name) -> std::string
+static auto gen_input_shader_code__impl(const T&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
@@ -363,28 +354,28 @@ float {name}(float x)
 }
 
 template<typename T>
-auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider) -> std::string
+static auto gen_input_shader_code(Input<T> const& input) -> std::string
 {
-    return gen_input_shader_code<T>(input, input_provider, input.name());
+    return gen_input_shader_code<T>(input, input.name());
 }
 
 template<typename T>
-auto gen_input_shader_code(const Input<T>& input, Cool::InputProvider_Ref input_provider, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string
+static auto gen_input_shader_code(Input<T> const& input, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string // TODO(Variables) Is this overload where we overwrite the name still useful?
 {
-    return gen_input_shader_code__impl(input_provider(input), name);
+    return gen_input_shader_code__impl(input.value(), name);
 }
 
-auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider) -> std::string
+auto gen_input_shader_code(AnyInput const& input) -> std::string
 {
-    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider); }, input);
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input); }, input);
 }
 
-auto gen_input_shader_code(AnyInput const& input, Cool::InputProvider_Ref input_provider, std::string_view name) -> std::string
+auto gen_input_shader_code(AnyInput const& input, std::string_view name) -> std::string
 {
-    return std::visit([&](auto&& input) { return gen_input_shader_code(input, input_provider, name); }, input);
+    return std::visit([&](auto&& input) { return gen_input_shader_code(input, name); }, input);
 }
 
-static auto gen_input_shader_code(std::string_view name, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
+static auto gen_input_shader_code(std::string_view name, std::vector<AnyInput> const& inputs) -> std::string
 {
     std::string res;
     for (const auto& input : inputs)
@@ -393,7 +384,7 @@ static auto gen_input_shader_code(std::string_view name, const std::vector<AnyIn
             [&](auto&& input) {
                 if (input.name() == name)
                 {
-                    res = gen_input_shader_code(input, input_provider);
+                    res = gen_input_shader_code(input);
                 }
             },
             input
@@ -402,7 +393,7 @@ static auto gen_input_shader_code(std::string_view name, const std::vector<AnyIn
     return res;
 }
 
-auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>& inputs, Cool::InputProvider_Ref input_provider) -> std::string
+auto preprocess_inputs(std::string_view source_code, std::vector<AnyInput> const& inputs) -> std::string
 {
     std::stringstream in{std::string{source_code}};
     std::stringstream out{};
@@ -411,7 +402,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
     {
         if (const auto info = find_type_and_name(line))
         {
-            out << gen_input_shader_code(info->name, inputs, input_provider) << '\n';
+            out << gen_input_shader_code(info->name, inputs) << '\n';
         }
         else
         {
@@ -429,7 +420,7 @@ auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>
 // TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
 namespace doctest {
 template<typename T>
-doctest::String toString(const std::optional<T>& value)
+doctest::String toString(std::optional<T> const& value)
 {
     if (value)
     {

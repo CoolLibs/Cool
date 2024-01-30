@@ -14,43 +14,43 @@ namespace Cool {
 void test_variables()
 {
     {
-        static Cool::Variable<bool> var_bool{{"Bool", {}}};
+        static Cool::Variable<bool> var_bool{{"Bool"}};
         Cool::imgui(var_bool);
     }
     {
-        static Cool::Variable<int> var_int{{"Int", {}}};
+        static Cool::Variable<int> var_int{{"Int"}};
         Cool::imgui(var_int);
     }
     {
-        static Cool::Variable<float> var_float{{"Float", {}}};
+        static Cool::Variable<float> var_float{{"Float"}};
         Cool::imgui(var_float);
     }
     {
-        static Cool::Variable<glm::vec2> vector2{{"Vector2", {}}};
+        static Cool::Variable<glm::vec2> vector2{{"Vector2"}};
         Cool::imgui(vector2);
     }
     {
-        static Cool::Variable<glm::vec3> vector3{{"Vector3", {}}};
+        static Cool::Variable<glm::vec3> vector3{{"Vector3"}};
         Cool::imgui(vector3);
     }
     {
-        static Cool::Variable<glm::vec4> vector4{{"Vector4", {}}};
+        static Cool::Variable<glm::vec4> vector4{{"Vector4"}};
         Cool::imgui(vector4);
     }
     {
-        static Cool::Variable<Cool::Point2D> point2D{{"Point2D", {}}};
+        static Cool::Variable<Cool::Point2D> point2D{{"Point2D"}};
         Cool::imgui(point2D);
     }
     {
-        static Cool::Variable<Cool::Angle> angle{{"Angle", {}}};
+        static Cool::Variable<Cool::Angle> angle{{"Angle"}};
         Cool::imgui(angle);
     }
     {
-        static Cool::Variable<Cool::Direction2D> direction2D{{"Direction 2D", {}}};
+        static Cool::Variable<Cool::Direction2D> direction2D{{"Direction 2D"}};
         Cool::imgui(direction2D);
     }
     {
-        static Cool::Variable<Cool::Hue> hue{{"Hue", {}}};
+        static Cool::Variable<Cool::Hue> hue{{"Hue"}};
         Cool::imgui(hue);
     }
     {
@@ -66,35 +66,35 @@ void test_variables()
         Cool::imgui(color_palette);
     }
     {
-        static Cool::Variable<Cool::Gradient> gradient{{"Gradient", {}}};
+        static Cool::Variable<Cool::Gradient> gradient{{"Gradient"}};
         Cool::imgui(gradient);
     }
     {
-        static Cool::Variable<Cool::Camera> camera{{"Camera 3D", {}}};
+        static Cool::Variable<Cool::Camera> camera{{"Camera 3D"}};
         Cool::imgui(camera);
     }
     {
-        static Cool::Variable<Cool::Camera2D> camera{{"Camera 2D", {}}};
+        static Cool::Variable<Cool::Camera2D> camera{{"Camera 2D"}};
         Cool::imgui(camera);
     }
     {
-        static Cool::Variable<Cool::MathExpression> math_expression{{"Math Expression", {}}};
+        static Cool::Variable<Cool::MathExpression> math_expression{{"Math Expression"}};
         Cool::imgui(math_expression);
     }
     {
-        static Cool::Variable<Cool::TextureDescriptor_FromFile> tex{{"Texture", {}}};
+        static Cool::Variable<Cool::TextureDescriptor_FromFile> tex{{"Texture"}};
         Cool::imgui(tex);
     }
     {
-        static Cool::Variable<Cool::TextureDescriptor_FromWebcam> webcam{{"Webcam", {}}};
+        static Cool::Variable<Cool::TextureDescriptor_FromWebcam> webcam{{"Webcam"}};
         Cool::imgui(webcam);
     }
     {
-        static Cool::Variable<Cool::MidiChannel> midi_channel{{"Midi", {}}};
+        static Cool::Variable<Cool::MidiChannel> midi_channel{{"Midi"}};
         Cool::imgui(midi_channel);
     }
     {
-        static Cool::Variable<Cool::OSCChannel> osc_channel{{"OSC", {}}};
+        static Cool::Variable<Cool::OSCChannel> osc_channel{{"OSC"}};
         Cool::imgui(osc_channel);
     }
 }
