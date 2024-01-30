@@ -19,7 +19,7 @@ auto try_parse_input(
     DirtyFlag        secondary_dirty_flag
 ) -> std::optional<AnyInput>;
 
-auto preprocess_inputs(std::string_view source_code, const std::vector<AnyInput>&, Cool::InputProvider_Ref) -> std::string;
+// TODO(Variables) Split in two files?
 
 /// Defines the uniform in shader code; e.g. something like `uniform float name;` (or something more complex for some types like Gradient).
 auto gen_input_shader_code(AnyInput const&) -> std::string;

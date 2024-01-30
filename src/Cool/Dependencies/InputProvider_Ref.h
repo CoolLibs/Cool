@@ -1,10 +1,26 @@
 #pragma once
 #include <functional>
 #include "Cool/Audio/AudioManager.h"
+#include "Cool/Camera/Camera.h"
 #include "Cool/Dependencies/Input.h"
 #include "Input.h"
 
 namespace Cool {
+
+struct Input_AspectRatio {
+};
+struct Input_Height {
+};
+struct Input_Camera2D {
+};
+struct Input_Camera3D {
+};
+struct Input_Time {
+};
+struct Input_DeltaTime {
+};
+struct Input_Audio {
+};
 
 class InputProvider_Ref {
 public:
@@ -14,6 +30,7 @@ public:
         float               time,
         float               delta_time,
         glm::mat3 const&    camera2D,
+        Cool::Camera const& camera3D,
         AudioManager const& audio_manager
     )
         : _render_target_aspect_ratio{render_target_aspect_ratio}
@@ -21,6 +38,7 @@ public:
         , _time{time}
         , _delta_time{delta_time}
         , _camera2D{camera2D}
+        , _camera3D{camera3D}
         , _audio_manager{audio_manager}
     {}
 
@@ -50,9 +68,13 @@ public:
         return _audio_manager;
     }
 
-    auto operator()(const Input_Camera2D&) const -> glm::mat3
+    auto operator()(const Input_Camera2D&) const -> glm::mat3 const&
     {
         return _camera2D;
+    }
+    auto operator()(const Input_Camera3D&) const -> Cool::Camera const&
+    {
+        return _camera3D;
     }
 
 private:
@@ -61,6 +83,7 @@ private:
     float                                      _time;
     float                                      _delta_time;
     glm::mat3                                  _camera2D;
+    Cool::Camera                               _camera3D;
     std::reference_wrapper<AudioManager const> _audio_manager;
 };
 

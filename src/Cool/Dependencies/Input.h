@@ -24,7 +24,7 @@ public:
     Input(
         InputDefinition<T> def,
         DirtyFlag          dirty_flag,
-        DirtyFlag          secondary_dirty_flag
+        DirtyFlag          secondary_dirty_flag = {}
     )
         : _dirty_flag{dirty_flag}
         , _secondary_dirty_flag{secondary_dirty_flag}
@@ -57,7 +57,6 @@ public:
     // }
 
 public: // private: TODO(Variable) make this private
-    friend class InputProvider_Ref;
     friend class Ui_Ref;
     DirtyFlag                    _dirty_flag;
     DirtyFlag                    _secondary_dirty_flag; // TODO(Variable) Don't we need to serialize this ?
@@ -78,19 +77,6 @@ private:
             cereal::make_nvp("desired color space", _desired_color_space)
         );
     }
-};
-
-struct Input_AspectRatio {
-};
-struct Input_Height {
-};
-struct Input_Camera2D {
-};
-struct Input_Time {
-};
-struct Input_DeltaTime {
-};
-struct Input_Audio {
 };
 
 } // namespace Cool
