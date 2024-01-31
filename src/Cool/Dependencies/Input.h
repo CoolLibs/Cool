@@ -7,7 +7,7 @@
 namespace Cool {
 
 template<typename T>
-class Input { // TODO(Variables) Rename
+class Input { // TODO(Variables) Rename (as SharedVariable?)
 public:
     Input() = default; // For serialization
     Input(
