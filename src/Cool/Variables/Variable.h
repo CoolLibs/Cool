@@ -1,9 +1,4 @@
 #pragma once
-#include <Cool/ImGui/ImGuiExtras.h>
-#include <gsl/pointers>
-#include <memory>
-#include <stringify/stringify.hpp>
-#include "Cool/Log/MessageId.h"
 
 namespace Cool {
 
@@ -34,6 +29,17 @@ private:
     }
 };
 
+struct ImGuiVariableCallbacks {
+    std::function<void()> on_value_changed = []() {
+    };
+    std::function<void()> on_metadata_changed = []() {
+    };
+    std::function<void()> on_value_editing_finished = []() {
+    };
+    std::function<void()> on_metadata_editing_finished = []() {
+    };
+};
+
 /// A simple object that wraps a value with some metadata,
 /// allowing the user to customize the UI,
 /// and reset to the default value.
@@ -48,29 +54,23 @@ public:
         , _default_metadata{data.metadata}
     {}
 
-    // friend auto operator==(Variable const& a, Variable const& b) -> bool
-    // {
-    //     return a.data == b.data;
-    // }
+    auto name() const -> std::string const& { return _name; }
+    auto value() const -> T const& { return _value; }
+    auto value() -> T& { return _value; }
+    auto metadata() -> VariableMetadata<T>& { return _metadata; }
 
-    // auto name() -> auto& { return _name; }
-    auto value() -> auto& { return _value; }
-    auto metadata() -> auto& { return _metadata; }
-    // auto default_value() -> auto& { return _default_value; }       // TODO(Variables) Remove ?
-    // auto default_metadata() -> auto& { return _default_metadata; } // TODO(Variables) Remove ?
-
-    auto name() const -> auto const& { return _name; }
-    auto value() const -> auto const& { return _value; }
-    auto metadata() const -> auto const& { return _metadata; }
-    auto default_value() const -> auto const& { return _default_value; }       // TODO(Variables) Remove ?
-    auto default_metadata() const -> auto const& { return _default_metadata; } // TODO(Variables) Remove ?
+    /// Calls the corresponding callback if either `value` or `metadata` change.
+    void imgui(ImGuiVariableCallbacks const& callbacks = {});
 
 private:
-    std::string                      _name{};
-    T                                _value{};
-    VariableMetadata<T>              _metadata{};
-    T /*  const */                   _default_value{};    // NOLINT(*avoid-const-or-ref-data-members)
-    VariableMetadata<T> /*  const */ _default_metadata{}; // NOLINT(*avoid-const-or-ref-data-members)
+    void imgui_reset_buttons(ImGuiVariableCallbacks const& callbacks);
+
+private:
+    std::string         _name{};
+    T                   _value{};
+    VariableMetadata<T> _metadata{};
+    T                   _default_value{};
+    VariableMetadata<T> _default_metadata{};
 
 private:
     // Serialization
@@ -88,92 +88,6 @@ private:
     }
 };
 
-struct ImGuiVariableCallbacks {
-    std::function<void()> on_value_changed = []() {
-    };
-    std::function<void()> on_metadata_changed = []() {
-    };
-    std::function<void()> on_value_editing_finished = []() {
-    };
-    std::function<void()> on_metadata_editing_finished = []() {
-    };
-};
-
-/// Returns true iff the `value` of the variable changed
-/// (Currently there is no way to know if the metadata changed)
-template<typename Value>
-auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks const& callbacks = {}) -> bool
-{
-    bool b = false;
-    ImGuiExtras::disabled_if(var.value() == var.default_value(), "Disabled because it is already equal to the default value", [&]() {
-        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value()) + ")").c_str()))
-        {
-            var.value() = var.default_value();
-            b           = true;
-            callbacks.on_value_changed();
-            callbacks.on_value_editing_finished();
-        }
-    });
-    if (var.metadata() != var.default_metadata())
-    {
-        ImGui::SameLine();
-        if (ImGui::Button("Reset Metadata"))
-        {
-            var.metadata() = var.default_metadata();
-            callbacks.on_metadata_changed();
-            callbacks.on_metadata_editing_finished();
-        }
-    }
-    return b;
-}
-
-/// Returns true iff the `value` of the variable changed
-/// Calls the corresponding callback if either `value` or `metadata` change
-template<typename Value>
-auto imgui(
-    Variable<Value>&       var,
-    ImGuiVariableCallbacks callbacks = {}
-) -> bool
-{
-    bool b = false;
-
-    ImGui::PushID(&var);
-    ImGui::BeginGroup();
-    {
-        if (imgui_widget(var))
-        {
-            b = true;
-            callbacks.on_value_changed();
-        }
-    }
-    ImGui::EndGroup();
-    ImGui::PopID();
-    if (ImGui::IsItemDeactivatedAfterEdit())
-    {
-        callbacks.on_value_editing_finished();
-    }
-
-    if (ImGui::BeginPopupContextItem(var.name().c_str()))
-    {
-        ImGui::PushID(&var + 1);
-        ImGui::BeginGroup();
-        {
-            if (imgui_widget(var.metadata()))
-            {
-                callbacks.on_metadata_changed();
-            }
-        }
-        ImGui::EndGroup();
-        ImGui::PopID();
-        if (ImGui::IsItemDeactivatedAfterEdit())
-        {
-            callbacks.on_metadata_editing_finished();
-        }
-        b |= imgui_variable_reset_buttons(var, callbacks);
-        ImGui::EndPopup();
-    }
-
-    return b;
-}
-
 } // namespace Cool
+
+#include "Variable.tpp"

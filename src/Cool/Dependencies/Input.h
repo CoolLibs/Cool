@@ -60,8 +60,8 @@ public: // private: TODO(Variable) make this private
     friend class Ui_Ref;
     DirtyFlag                    _dirty_flag;
     DirtyFlag                    _secondary_dirty_flag; // TODO(Variable) Don't we need to serialize this ?
-    std::optional<std::string>   _description;
-    std::shared_ptr<Variable<T>> _variable; // Shared_ptr to make sure the address stays stable in memory and we can reference it in Commands stored in the History + survive through serialization
+    std::optional<std::string>   _description;          // TODO(Variables) Move to Variable?
+    std::shared_ptr<Variable<T>> _variable;             // Shared_ptr to make sure the address stays stable in memory and we can reference it in Commands stored in the History + survive through serialization
     mutable MessageId            _message_id{};
     int                          _desired_color_space{0}; // HACK in order to know which color space to convert to when sending the value to a shader. Only used by Color input.
 
