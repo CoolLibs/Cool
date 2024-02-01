@@ -1,28 +1,15 @@
 #include "gen_input_shader_code.h"
-// TODO(Variables) cleanup includes
-#include <Cool/Dependencies/Input.h>
-#include <Cool/String/String.h>
-#include <Cool/StrongTypes/Color.h>
-#include <Cool/Variables/Variable.h>
 #include <Cool/Variables/glsl_type.h>
-#include <Cool/type_from_string/type_from_string.h>
-#include <sstream>
-#include <string_view>
-#include "Cool/ColorSpaces/ColorAndAlphaSpace.h"
-#include "Cool/ColorSpaces/ColorSpace.h"
-#include "Cool/StrongTypes/ColorAndAlpha.h"
-#include "Cool/StrongTypes/MathExpression.h"
-#include "fmt/format.h"
 
 namespace Cool {
 
 template<typename T>
-static auto gen_input_shader_code__impl(const T&, std::string_view name) -> std::string
+static auto gen_input_shader_code_impl(T const&, std::string_view name) -> std::string
 {
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
 
-static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
+static auto gen_code_wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
 {
     switch (wrap_mode)
     {
@@ -40,13 +27,13 @@ static auto gen_code__wrap_mode(ImGG::WrapMode wrap_mode) -> std::string
     }
     default:
     {
-        Cool::Log::Debug::error("InputParser::gen_code__wrap_mode", "Invalid WrapMode enum value");
+        Cool::Log::Debug::error("InputParser::gen_code_wrap_mode", "Invalid WrapMode enum value");
         return "";
     }
     }
 }
 
-static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
+static auto gen_code_interpolation(std::string_view name, ImGG::Interpolation interpolation_mode) -> std::string
 {
     using fmt::literals::operator""_a;
     switch (interpolation_mode)
@@ -92,21 +79,21 @@ static auto gen_code__interpolation(std::string_view name, ImGG::Interpolation i
     }
     default:
     {
-        Cool::Log::Debug::error("InputParser::gen_code__interpolation", "Invalid Interpolation enum value");
+        Cool::Log::Debug::error("InputParser::gen_code_interpolation", "Invalid Interpolation enum value");
         return "";
     }
     }
 }
 
-static auto gen_code__number_of_marks_variable_name(std::string_view name)
+static auto gen_code_number_of_marks_variable_name(std::string_view name)
 {
     return fmt::format("numberOfMarksOf{}", internal::gradient_marks_array_name(name));
 }
 
 template<>
-auto gen_input_shader_code__impl(Cool::Gradient const& value, std::string_view name) -> std::string
+auto gen_input_shader_code_impl(Cool::Gradient const& value, std::string_view name) -> std::string
 {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     return value.value.gradient().is_empty()
                ? fmt::format(
                    R"STR(
@@ -144,24 +131,24 @@ vec4 {gradient_function}(float x) // we benchmarked and linear scan is faster th
 }}
     )STR"),
                    "gradient_size"_a     = value.value.gradient().get_marks().size(),
-                   "number_of_marks"_a   = gen_code__number_of_marks_variable_name(name),
+                   "number_of_marks"_a   = gen_code_number_of_marks_variable_name(name),
                    "gradient_function"_a = name,
-                   "wrap"_a              = gen_code__wrap_mode(value.wrap_mode),
-                   "interpolation"_a     = gen_code__interpolation(name, value.value.gradient().interpolation_mode()),
+                   "wrap"_a              = gen_code_wrap_mode(value.wrap_mode),
+                   "interpolation"_a     = gen_code_interpolation(name, value.value.gradient().interpolation_mode()),
                    "gradient_marks"_a    = internal::gradient_marks_array_name(name)
                );
 }
 
-static auto gen_code__number_of_colors_variable_name(std::string_view name)
+static auto gen_code_number_of_colors_variable_name(std::string_view name)
 {
     return fmt::format("number_of_colors_of_{}", internal::color_palette_array_name(name));
 }
 
 template<>
-auto gen_input_shader_code__impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
+auto gen_input_shader_code_impl(const Cool::ColorPalette& value, std::string_view name) -> std::string
 {
     // NB: we create a function rather than an array to hold our palette. That is because glsl doesn't allow arrays of size 0.
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     return value.value.empty()
                ? fmt::format(
                    FMT_COMPILE(
@@ -189,16 +176,16 @@ vec3 {color_palette_function}(int index)
     )STR"
                    ),
                    "palette_size"_a           = value.value.size(),
-                   "number_of_colors"_a       = gen_code__number_of_colors_variable_name(name),
+                   "number_of_colors"_a       = gen_code_number_of_colors_variable_name(name),
                    "color_palette_function"_a = name,
                    "color_palette_name"_a     = internal::color_palette_array_name(name)
                );
 }
 
 template<>
-auto gen_input_shader_code__impl(Cool::MathExpression const& expression, std::string_view name) -> std::string
+auto gen_input_shader_code_impl(Cool::MathExpression const& expression, std::string_view name) -> std::string
 {
-    using namespace fmt::literals;
+    using fmt::literals::operator""_a;
     return fmt::format(
         FMT_COMPILE(
             R"STR(
@@ -222,7 +209,7 @@ static auto gen_input_shader_code(Input<T> const& input) -> std::string
 template<typename T>
 static auto gen_input_shader_code(Input<T> const& input, std::string_view name /* Allows us to use a different name than the input's user-facing name if we want to */) -> std::string // TODO(Variables) Is this overload where we overwrite the name still useful?
 {
-    return gen_input_shader_code__impl(input.value(), name);
+    return gen_input_shader_code_impl(input.value(), name);
 }
 
 auto gen_input_shader_code(AnyInput const& input) -> std::string
@@ -236,24 +223,3 @@ auto gen_input_shader_code(AnyInput const& input, std::string_view name) -> std:
 }
 
 } // namespace Cool
-
-#if COOL_ENABLE_TESTS
-#include "doctest/doctest.h"
-
-// TODO(LD) TODO(JF) Move this in a Cool/Testing/testing.h (and same for the print of vector)
-namespace doctest {
-template<typename T>
-doctest::String toString(std::optional<T> const& value)
-{
-    if (value)
-    {
-        return "Some(" + toString(*value) + ")";
-    }
-    else
-    {
-        return "None";
-    }
-}
-} // namespace doctest
-
-#endif
