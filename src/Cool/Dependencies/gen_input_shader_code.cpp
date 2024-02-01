@@ -1,4 +1,5 @@
-#include "InputParser.h"
+#include "gen_input_shader_code.h"
+// TODO(Variables) cleanup includes
 #include <Cool/Dependencies/Input.h>
 #include <Cool/String/String.h>
 #include <Cool/StrongTypes/Color.h>
