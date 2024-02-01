@@ -12,7 +12,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<bool> {
-    friend auto operator<=>(const VariableMetadata<bool>&, const VariableMetadata<bool>&) = default;
+    friend auto operator<=>(VariableMetadata<bool> const&, VariableMetadata<bool> const&) = default;
 
 private:
     // Serialisation

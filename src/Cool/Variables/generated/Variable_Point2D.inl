@@ -15,7 +15,7 @@ template<>
 struct VariableMetadata<Cool::Point2D> {
     float drag_speed{0.0001f};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Point2D>&, const VariableMetadata<Cool::Point2D>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Point2D> const&, VariableMetadata<Cool::Point2D> const&) = default;
 
 private:
     // Serialisation

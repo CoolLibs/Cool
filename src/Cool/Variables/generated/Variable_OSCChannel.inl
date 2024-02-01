@@ -13,7 +13,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::OSCChannel> {
-    friend auto operator<=>(const VariableMetadata<Cool::OSCChannel>&, const VariableMetadata<Cool::OSCChannel>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::OSCChannel> const&, VariableMetadata<Cool::OSCChannel> const&) = default;
 
 private:
     // Serialisation

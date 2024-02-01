@@ -57,6 +57,7 @@ public:
     auto name() const -> std::string const& { return _name; }
     auto value() const -> T const& { return _value; }
     auto value() -> T& { return _value; }
+    auto metadata() const -> VariableMetadata<T> const& { return _metadata; }
     auto metadata() -> VariableMetadata<T>& { return _metadata; }
 
     /// Calls the corresponding callback if either `value` or `metadata` change.

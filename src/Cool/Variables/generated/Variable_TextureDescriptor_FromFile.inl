@@ -13,7 +13,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::TextureDescriptor_FromFile> {
-    friend auto operator<=>(const VariableMetadata<Cool::TextureDescriptor_FromFile>&, const VariableMetadata<Cool::TextureDescriptor_FromFile>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::TextureDescriptor_FromFile> const&, VariableMetadata<Cool::TextureDescriptor_FromFile> const&) = default;
 
 private:
     // Serialisation

@@ -21,7 +21,7 @@ struct VariableMetadata<int> {
         .use_slider    = false,
     };
 
-    friend auto operator<=>(const VariableMetadata<int>&, const VariableMetadata<int>&) = default;
+    friend auto operator<=>(VariableMetadata<int> const&, VariableMetadata<int> const&) = default;
 
 private:
     // Serialisation

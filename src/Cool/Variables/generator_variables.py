@@ -485,7 +485,7 @@ def variable_definition_factory(variable_type_and_metadatas):
             struct VariableMetadata<{variable_type_and_metadatas.cpp_type}> {{
                 {metadatas_definitions(variable_type_and_metadatas.metadatas)}
 
-                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&, const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) = default;
+                friend auto operator<=>(VariableMetadata<{variable_type_and_metadatas.cpp_type}> const&, VariableMetadata<{variable_type_and_metadatas.cpp_type}> const&) = default;
 
             private:
                 // Serialisation

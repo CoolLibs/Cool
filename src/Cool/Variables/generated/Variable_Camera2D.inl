@@ -17,7 +17,7 @@ struct VariableMetadata<Cool::Camera2D> {
     float snaps_offset{0.f};
     bool  always_snap{false};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Camera2D>&, const VariableMetadata<Cool::Camera2D>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Camera2D> const&, VariableMetadata<Cool::Camera2D> const&) = default;
 
 private:
     // Serialisation
