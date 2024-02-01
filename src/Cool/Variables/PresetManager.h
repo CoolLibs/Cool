@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-// TODO(JF) Remove the old presets system
+// TODO(Variables) Remove the old presets system
 
 struct Preset2 {
     std::string name;
