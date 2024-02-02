@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Cool/Serialization/SerializerOnDemand.h>
 #include <reg/cereal.hpp>
 #include "Settings.h"
@@ -7,13 +6,11 @@
 
 namespace Cool {
 
-// TODO(Variables) Remove the old presets system
-
-struct Preset2 {
+struct Preset {
     std::string name;
     Settings    values;
 
-    friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
+    friend auto operator==(const Preset&, const Preset&) -> bool = default;
 
 private:
     // Serialization
@@ -28,7 +25,7 @@ private:
     }
 };
 
-using PresetId = reg::Id<Preset2>;
+using PresetId = reg::Id<Preset>;
 
 /// You might want to separate the presets you ship with your application
 /// and the ones defined by your users. So that for example when a user
@@ -56,7 +53,7 @@ public:
 
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
-    auto add(Preset2 preset, bool show_warning_messages = true) -> PresetId;
+    auto add(Preset preset, bool show_warning_messages = true) -> PresetId;
 
     /// Removes the preset referenced by `id`.
     void remove(const PresetId& id);
@@ -116,7 +113,7 @@ private:
     void save_to_file();
 
     /// Returns the ID of the first Preset that matches the `predicate`, or a null ID if there was none.
-    auto find_preset(std::function<bool(const Preset2&)> const& predicate) const -> PresetId;
+    auto find_preset(std::function<bool(const Preset&)> const& predicate) const -> PresetId;
 
 private:
     class RenamerWidget {
@@ -129,16 +126,16 @@ private:
     };
 
 private:
-    reg::RawOrderedRegistry<Preset2> _default_presets;
-    reg::RawOrderedRegistry<Preset2> _user_defined_presets;
-    PresetId                         _current_preset_id;
-    std::string                      _new_preset_name;
-    RenamerWidget                    _rename_widget;
-    Cool::SerializerOnDemand         _serializer;
+    reg::RawOrderedRegistry<Preset> _default_presets;
+    reg::RawOrderedRegistry<Preset> _user_defined_presets;
+    PresetId                        _current_preset_id;
+    std::string                     _new_preset_name;
+    RenamerWidget                   _rename_widget;
+    Cool::SerializerOnDemand        _serializer;
 
 private:
     // Serialization
-    // Actually this class is not serialized automatically, but serializes its two reg::RawOrderedRegistry<Preset2> manually.
+    // Actually this class is not serialized automatically, but serializes its two reg::RawOrderedRegistry<Preset> manually.
 };
 
 } // namespace Cool

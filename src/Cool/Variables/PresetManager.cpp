@@ -17,7 +17,7 @@ PresetManager::PresetManager(PresetsPaths const& paths)
     do_load_default_presets(_default_presets, paths.default_presets);
 }
 
-auto PresetManager::find_preset(std::function<bool(const Preset2&)> const& predicate) const -> PresetId
+auto PresetManager::find_preset(std::function<bool(const Preset&)> const& predicate) const -> PresetId
 {
     {
         std::shared_lock lock{_default_presets.mutex()};
@@ -40,19 +40,19 @@ auto PresetManager::find_preset(std::function<bool(const Preset2&)> const& predi
 
 auto PresetManager::find_preset_with_given_values(Settings_ConstRef values) const -> PresetId
 {
-    return find_preset([&](const Preset2& preset) {
+    return find_preset([&](const Preset& preset) {
         return values.are_equal_to(preset.values);
     });
 }
 
 auto PresetManager::find_preset_with_given_name(std::string_view name) const -> PresetId
 {
-    return find_preset([&](const Preset2& preset) {
+    return find_preset([&](const Preset& preset) {
         return preset.name == name;
     });
 }
 
-// static void set_default_value_to_current_value(Preset2& preset)
+// static void set_default_value_to_current_value(Preset& preset)
 // {
 //     for (auto& variable : preset.values)
 //     {
@@ -63,7 +63,7 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
 //     }
 // }
 
-auto PresetManager::add(Preset2 preset, bool show_warning_messages) -> PresetId
+auto PresetManager::add(Preset preset, bool show_warning_messages) -> PresetId
 {
     if (find_preset_with_given_values(preset.values) != PresetId{})
     {
@@ -111,7 +111,7 @@ void PresetManager::edit(PresetId const& id, Settings const& new_values)
 {
     if (find_preset_with_given_values(new_values) == PresetId{}) // Make sure there isn't already a preset with the same values.
     {
-        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset& preset) {
             preset.values = new_values;
         });
         save_to_file();
@@ -130,7 +130,7 @@ void PresetManager::edit(PresetId const& id, Settings const& new_values)
 void PresetManager::rename(const PresetId& id, std::string_view new_name)
 {
     const auto do_rename = [&]() {
-        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset& preset) {
             preset.name = new_name;
         });
         save_to_file();
@@ -164,10 +164,10 @@ auto PresetManager::preset_name(const PresetId& id) const -> std::optional<std::
     std::optional<std::string> name{};
 
     // Replace nullopt with preset name if it is found in the registry
-    _default_presets.with_ref(id, [&](const Preset2& preset) {
+    _default_presets.with_ref(id, [&](const Preset& preset) {
         name = preset.name;
     });
-    _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
+    _user_defined_presets.with_ref(id, [&](const Preset& preset) {
         name = preset.name;
     });
 
@@ -176,9 +176,9 @@ auto PresetManager::preset_name(const PresetId& id) const -> std::optional<std::
 
 auto PresetManager::apply(const PresetId& id, Settings_Ref settings) const -> bool
 {
-    return _default_presets.with_ref(id, [&](const Preset2& preset) {
+    return _default_presets.with_ref(id, [&](const Preset& preset) {
         settings.assign_from(preset.values);
-    }) || _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
+    }) || _user_defined_presets.with_ref(id, [&](const Preset& preset) {
         settings.assign_from(preset.values);
     });
 }
@@ -254,10 +254,10 @@ void PresetManager::name_selector()
     );
 
     // Update _new_preset_name if a preset was selected in the dropdown
-    _default_presets.with_ref(id, [&](const Preset2& preset) {
+    _default_presets.with_ref(id, [&](const Preset& preset) {
         _new_preset_name = preset.name;
     });
-    _user_defined_presets.with_ref(id, [&](const Preset2& preset) {
+    _user_defined_presets.with_ref(id, [&](const Preset& preset) {
         _new_preset_name = preset.name;
     });
 }
@@ -348,7 +348,7 @@ void PresetManager::save_preset(Settings_ConstRef new_preset_values, const Prese
         if (!make_sure_the_user_wants_to_overwrite_the_preset(_new_preset_name))
             return;
 
-        _user_defined_presets.with_mutable_ref(id, [&](Preset2& preset) {
+        _user_defined_presets.with_mutable_ref(id, [&](Preset& preset) {
             preset.values    = new_preset_values.as_settings();
             _new_preset_name = "";
         });
