@@ -387,13 +387,10 @@ void PresetManager::imgui_adding_preset(Settings_ConstRef settings)
 
 auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
 {
-    _current_preset_id = find_preset_with_given_values(settings);
-
-    const auto current_preset_name = preset_name(_current_preset_id);
-
-    const auto selected_id = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
-
-    const auto settings_have_changed = apply(selected_id, settings);
+    _current_preset_id               = find_preset_with_given_values(settings);
+    auto const current_preset_name   = preset_name(_current_preset_id);
+    auto const selected_id           = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
+    auto const settings_have_changed = apply(selected_id, settings);
 
     if (!current_preset_name)
     {
