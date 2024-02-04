@@ -82,7 +82,7 @@ public:
     /// </summary>
     /// <param name="nb_of_elements">Number of elements in the array</param>
     /// <param name="data">Pointer to the beginning of the array</param>
-    void download_data(size_t nb_of_elements, T* data)
+    void download_data(size_t nb_of_elements, T* data) const
     {
         GLDebug(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _id));
         GLDebug(GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
@@ -94,7 +94,7 @@ public:
     /// Retrieves the data from the GPU (your shader code) back to the CPU (your C++ code) and writes it in the given std::vector.
     /// </summary>
     /// <param name="v">The vector that will receive the data. Please make sure that it already has the right size !</param>
-    void download_data(std::vector<T>& v)
+    void download_data(std::vector<T>& v) const
     {
         download_data(v.size(), v.data());
     }
