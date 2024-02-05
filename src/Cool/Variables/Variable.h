@@ -59,6 +59,8 @@ public:
     auto value() -> T& { return _value; }
     auto metadata() const -> VariableMetadata<T> const& { return _metadata; }
     auto metadata() -> VariableMetadata<T>& { return _metadata; }
+    auto default_value() const -> T const& { return _default_value; }
+    auto default_value() -> T& { return _default_value; }
 
     /// Calls the corresponding callback if either `value` or `metadata` change.
     void imgui(ImGuiVariableCallbacks const& callbacks = {});
