@@ -54,10 +54,8 @@ auto imgui_widget(std::string_view name, Camera2D& cam, int number_of_snaps, flo
     b |= ImGui::DragFloat("Zoom", &cam.zoom, 0.01f, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
     if (ImGui::Button(icon_fmt("Reset Camera", ICOMOON_TARGET).c_str()))
     {
-        cam.rotation    = Cool::Angle{Cool::Radians{0.}};
-        cam.zoom        = 1.f;
-        cam.translation = glm::vec2(0.);
-        b               = true;
+        cam = {};
+        b   = true;
     }
 
     ImGui::PopID();
