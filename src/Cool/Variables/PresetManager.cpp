@@ -52,17 +52,6 @@ auto PresetManager::find_preset_with_given_name(std::string_view name) const -> 
     });
 }
 
-// static void set_default_value_to_current_value(Preset& preset)
-// {
-//     for (auto& variable : preset.values)
-//     {
-//         std::visit([](auto&& variable) {
-//             variable.default_value() = variable.value();
-//         },
-//                    variable);
-//     }
-// }
-
 auto PresetManager::add(Preset preset, bool show_warning_messages) -> PresetId
 {
     if (find_preset_with_given_values(preset.values) != PresetId{})
@@ -93,7 +82,6 @@ auto PresetManager::add(Preset preset, bool show_warning_messages) -> PresetId
     }
     else
     {
-        // set_default_value_to_current_value(preset); // TODO(Variables) This should probably be done elsewhere, when applying a preset
         auto id = _user_defined_presets.create_raw(preset);
         save_to_file();
         return id;
@@ -370,19 +358,20 @@ void PresetManager::save_to_file()
     do_save(_user_defined_presets, _serializer);
 }
 
-void PresetManager::imgui_adding_preset(Settings_ConstRef settings)
+auto PresetManager::imgui_adding_preset(Settings_ConstRef settings) -> bool
 {
-    const auto preset_id = find_preset_with_given_name(_new_preset_name);
+    auto const preset_id = find_preset_with_given_name(_new_preset_name);
 
-    if (imgui_name_input())
+    bool wants_to_save{false};
+    wants_to_save |= imgui_name_input();
+    wants_to_save |= add_button(preset_id == PresetId{}, _new_preset_name);
+
+    if (wants_to_save)
     {
         save_preset(settings, preset_id);
+        return true;
     }
-
-    if (add_button(preset_id == PresetId{}, _new_preset_name))
-    {
-        save_preset(settings, preset_id);
-    }
+    return false;
 }
 
 auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
@@ -390,11 +379,11 @@ auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
     _current_preset_id               = find_preset_with_given_values(settings);
     auto const current_preset_name   = preset_name(_current_preset_id);
     auto const selected_id           = dropdown("Presets", current_preset_name.value_or("Unsaved Settings..."));
-    auto const settings_have_changed = apply(selected_id, settings);
+    auto       settings_have_changed = apply(selected_id, settings);
 
     if (!current_preset_name)
     {
-        imgui_adding_preset(settings);
+        settings_have_changed |= imgui_adding_preset(settings); // Change settings_have_changed, to force applying the value as the default value when saving current values as a preset
     }
     else
     {

@@ -100,7 +100,7 @@ private:
     void name_selector();
 
     /// Displays UI to add a preset in PresetManager with add_button, an input text and name_selector.
-    void imgui_adding_preset(Settings_ConstRef);
+    auto imgui_adding_preset(Settings_ConstRef) -> bool;
 
     /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
     /// Returns true if we should create a preset.
