@@ -54,11 +54,7 @@ public:
         DirtyFlag          secondary_dirty_flag = {}
     )
         : _ref{
-            std::make_shared<Variable<T>>(VariableData<T>{
-                def.name,
-                def.default_value,
-                def.metadata,
-            }),
+            std::make_shared<Variable<T>>(def.var_data),
             std::move(dirty_flag),
             std::move(secondary_dirty_flag),
             def.desired_color_space,
