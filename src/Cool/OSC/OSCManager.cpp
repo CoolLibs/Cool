@@ -96,9 +96,6 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint const&
 
 auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) -> bool
 {
-    if (!_error_message_for_endpoint_creation.empty())
-        _config_window.open();
-
     bool b = false;
     // if (channel.name.empty() && !_s.values.empty())
     // {
