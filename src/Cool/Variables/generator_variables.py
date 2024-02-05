@@ -398,21 +398,26 @@ def all_types_includes():
 #     return out
 
 
-def AnyInput():
+def AnySharedVariable():
     return (
         "\n"
-        + "using AnyInput = std::variant<\n"
-        + ",\n".join(map(lambda var_type: f"Input<{var_type}>", all_variable_types()))
+        + "using AnySharedVariable = std::variant<\n"
+        + ",\n".join(
+            map(lambda var_type: f"SharedVariable<{var_type}>", all_variable_types())
+        )
         + "\n>;"
     )
 
 
-def AnyInputDefinition():
+def AnySharedVariableDefinition():
     return (
         "\n"
-        + "using AnyInputDefinition = std::variant<\n"
+        + "using AnySharedVariableDefinition = std::variant<\n"
         + ",\n".join(
-            map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())
+            map(
+                lambda var_type: f"SharedVariableDefinition<{var_type}>",
+                all_variable_types(),
+            )
         )
         + "\n>;"
     )
@@ -521,8 +526,8 @@ def files():
     res = [
         # register_set_variable_commands,
         # register_set_variable_metadata_commands,
-        AnyInput,
-        AnyInputDefinition,
+        AnySharedVariable,
+        AnySharedVariableDefinition,
         AnyVariableData,
         all_types_includes,
         all_variable_includes,

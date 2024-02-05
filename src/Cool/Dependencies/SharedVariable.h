@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/Dependencies/DirtyFlag.h>
-#include "Cool/Dependencies/InputDefinition.h"
+#include "Cool/Dependencies/SharedVariableDefinition.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/Variables/Variable.h"
 #include "Cool/Variables/Variables.h"
@@ -8,7 +8,7 @@
 namespace Cool {
 
 template<typename T>
-struct InputStrongRef {
+struct SharedVariableStrongRef {
     std::shared_ptr<Variable<T>> variable; // Shared_ptr to make sure the address stays stable in memory and we can reference it in Commands stored in the History + survive through serialization
     DirtyFlag                    dirty_flag;
     DirtyFlag                    secondary_dirty_flag;
@@ -32,10 +32,10 @@ private:
 };
 
 template<typename T>
-class Input { // TODO(Variables) Rename (as SharedVariable?)
+class SharedVariable {
 public:
-    Input() = default; // For serialization
-    Input(
+    SharedVariable() = default; // For serialization
+    SharedVariable(
         Variable<T>                variable,
         DirtyFlag                  dirty_flag,
         std::optional<std::string> description          = {},
@@ -48,10 +48,10 @@ public:
         }
         , _description{std::move(description)}
     {}
-    Input(
-        InputDefinition<T> def,
-        DirtyFlag          dirty_flag,
-        DirtyFlag          secondary_dirty_flag = {}
+    SharedVariable(
+        SharedVariableDefinition<T> def,
+        DirtyFlag                   dirty_flag,
+        DirtyFlag                   secondary_dirty_flag = {}
     )
         : _ref{
             std::make_shared<Variable<T>>(def.var_data),
@@ -69,15 +69,15 @@ public:
     auto id() const -> uintptr_t { return _ref.id(); }
     auto variable_data() const -> VariableData<T> { return {name(), value(), _ref.variable->metadata()}; }
     auto variable() -> Variable<T>& { return *_ref.variable; }
-    auto get_ref() const -> InputStrongRef<T> const& { return _ref; }
-    auto get_ref() -> InputStrongRef<T>& { return _ref; }
+    auto get_ref() const -> SharedVariableStrongRef<T> const& { return _ref; }
+    auto get_ref() -> SharedVariableStrongRef<T>& { return _ref; }
     auto description() const -> std::optional<std::string> const& { return _description; }
     auto description() -> std::optional<std::string>& { return _description; }
     auto message_id() const -> MessageId const& { return _message_id; }
     auto message_id() -> MessageId& { return _message_id; }
 
 private:
-    InputStrongRef<T>          _ref;
+    SharedVariableStrongRef<T> _ref;
     std::optional<std::string> _description; // TODO(Variables) Move to Variable?
     mutable MessageId          _message_id{};
 
