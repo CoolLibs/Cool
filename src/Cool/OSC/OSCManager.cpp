@@ -41,7 +41,7 @@ static auto list_channel_names(std::vector<std::pair<std::string, float>> const&
     return ss.str();
 }
 
-auto OSCManager::get_value(OSCChannel const& channel) const -> float
+auto OSCManager::get_value(OSCChannel const& channel) -> float
 {
     std::lock_guard lock{_s.values_mutex};
     for (auto const& pair : _s.values)
@@ -49,6 +49,8 @@ auto OSCManager::get_value(OSCChannel const& channel) const -> float
         if (pair.first == channel.name)
             return pair.second;
     }
+
+    _config_window.open();
     throw Cool::Exception{OptionalErrorMessage{
         fmt::format(
             "\"{}\" is not a valid OSC channel.\n{}",
@@ -92,15 +94,18 @@ auto OSCManager::get_connection_endpoint() const -> OSCConnectionEndpoint const&
     return _endpoint;
 }
 
-auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) const -> bool
+auto OSCManager::imgui_channel_widget(const char* label, OSCChannel& channel) -> bool
 {
+    if (!_error_message_for_endpoint_creation.empty())
+        _config_window.open();
+
     bool b = false;
     // if (channel.name.empty() && !_s.values.empty())
     // {
     //     channel.name = _s.values[0].first; // Actually this is probably a bad idea
     //     b            = true;
     // }
-    b |= ImGuiExtras::input_text_with_dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
+    b |= ImGuiExtras::dropdown(label, &channel.name, [&](auto&& with_dropdown_entry) {
         std::lock_guard lock{_s.values_mutex};
         for (auto const& [name, _] : _s.values)
             with_dropdown_entry(name);
@@ -268,6 +273,9 @@ private:
                 return i;
         }
         _s.values.emplace_back(name, 0.f);
+        std::sort(_s.values.begin(), _s.values.end(), [](auto const& a, auto const& b) {
+            return a.first < b.first;
+        });
         return _s.values.size() - 1;
     }
 

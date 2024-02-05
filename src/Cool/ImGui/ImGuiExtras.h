@@ -221,6 +221,7 @@ auto input_text_multiline(const char* label, std::string* str, const ImVec2& siz
     -> bool;
 
 auto input_text_with_dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry, ImGuiInputTextFlags flags = 0) -> bool;
+auto dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry) -> bool;
 
 auto calc_custom_dropdown_input_width() -> float;
 

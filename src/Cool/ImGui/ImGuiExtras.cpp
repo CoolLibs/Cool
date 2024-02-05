@@ -792,6 +792,28 @@ auto input_text_with_dropdown(const char* label, std::string* value, std::functi
     return b;
 }
 
+auto dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry) -> bool
+{
+    bool b = false;
+    ImGui::PushID(label);
+    if (ImGui::BeginCombo(label, value->c_str()))
+    {
+        for_each_dropdown_entry([&](std::string const& combo_content) {
+            bool const is_selected = *value == combo_content;
+            if (ImGui::Selectable(combo_content.c_str(), is_selected))
+            {
+                *value = combo_content;
+                b      = true;
+            }
+            if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                ImGui::SetItemDefaultFocus();
+        });
+        ImGui::EndCombo();
+    }
+    ImGui::PopID();
+    return b;
+}
+
 auto calc_custom_dropdown_input_width() -> float
 {
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
