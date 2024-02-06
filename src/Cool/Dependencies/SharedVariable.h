@@ -72,13 +72,12 @@ public:
     auto get_ref() -> SharedVariableStrongRef<T>& { return _ref; }
     auto description() const -> std::optional<std::string> const& { return _description; }
     auto description() -> std::optional<std::string>& { return _description; }
-    auto message_id() const -> MessageId const& { return _message_id; }
-    auto message_id() -> MessageId& { return _message_id; }
+    auto message_id() const -> MessageId& { return _message_id; }
 
 private:
     SharedVariableStrongRef<T> _ref;
     std::optional<std::string> _description; // TODO(Variables) Move to Variable?
-    MessageId                  _message_id{};
+    mutable MessageId          _message_id{};
 
 private:
     friend class cereal::access;
