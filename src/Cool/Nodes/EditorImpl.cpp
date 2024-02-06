@@ -93,6 +93,7 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
 [[nodiscard]] static auto wants_to_delete_selection() -> bool
 {
     return !ImGui::GetIO().WantTextInput
+           && ImGui::IsWindowFocused()
            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
                || ImGui::IsKeyReleased(ImGuiKey_Backspace)
            );
