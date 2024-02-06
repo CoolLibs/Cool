@@ -16,7 +16,7 @@ auto gen_input_shader_code(T const& value, std::string_view name) -> std::string
         return math_expression_input_shader_code(value, name);
 
 #ifdef _MSC_VER
-#pragma warning(suppress : 2220) // "Unreachable code"
+#pragma warning(suppress : 4702) // "Unreachable code"
 #endif
     return fmt::format("uniform {} {};", glsl_type<T>(), name);
 }
