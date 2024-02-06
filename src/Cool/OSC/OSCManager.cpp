@@ -125,7 +125,7 @@ void OSCManager::imgui_window()
 {
     _config_window.show([&]() {
         imgui_select_connection_endpoint();
-        imgui_show_all_values();
+        imgui_show_all_values(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
         ImGui::SameLine();
         imgui_button_to_reset_values();
     });
