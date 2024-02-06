@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Cool/Serialization/SerializerOnDemand.h>
 #include <reg/cereal.hpp>
 #include "Settings.h"
@@ -7,13 +6,11 @@
 
 namespace Cool {
 
-// TODO(JF) Remove the old presets system
-
-struct Preset2 {
+struct Preset {
     std::string name;
     Settings    values;
 
-    friend auto operator==(const Preset2&, const Preset2&) -> bool = default;
+    friend auto operator==(const Preset&, const Preset&) -> bool = default;
 
 private:
     // Serialization
@@ -28,7 +25,7 @@ private:
     }
 };
 
-using PresetId = reg::Id<Preset2>;
+using PresetId = reg::Id<Preset>;
 
 /// You might want to separate the presets you ship with your application
 /// and the ones defined by your users. So that for example when a user
@@ -48,15 +45,12 @@ public:
 
     [[nodiscard]] auto path() const -> auto const& { return _serializer.path(); }
 
-    /// Renders the UI for the whole `PresetManager`.
-    auto imgui(Settings_Ref settings) -> bool;
-
     /// Renders only the UI for the presets.
     auto imgui_presets(Settings_Ref settings) -> bool;
 
     /// Adds `preset` to the list of presets.
     /// Returns the ID that will allow you to reference that `preset`.
-    auto add(Preset2 preset, bool show_warning_messages = true) -> PresetId;
+    auto add(Preset preset, bool show_warning_messages = true) -> PresetId;
 
     /// Removes the preset referenced by `id`.
     void remove(const PresetId& id);
@@ -103,7 +97,7 @@ private:
     void name_selector();
 
     /// Displays UI to add a preset in PresetManager with add_button, an input text and name_selector.
-    void imgui_adding_preset(Settings_ConstRef);
+    auto imgui_adding_preset(Settings_ConstRef) -> bool;
 
     /// Creates an InputText to write the _new_preset_name and an arrow to fill it with an already existing preset's name.
     /// Returns true if we should create a preset.
@@ -116,7 +110,7 @@ private:
     void save_to_file();
 
     /// Returns the ID of the first Preset that matches the `predicate`, or a null ID if there was none.
-    auto find_preset(std::function<bool(const Preset2&)> const& predicate) const -> PresetId;
+    auto find_preset(std::function<bool(const Preset&)> const& predicate) const -> PresetId;
 
 private:
     class RenamerWidget {
@@ -129,16 +123,16 @@ private:
     };
 
 private:
-    reg::RawOrderedRegistry<Preset2> _default_presets;
-    reg::RawOrderedRegistry<Preset2> _user_defined_presets;
-    PresetId                         _current_preset_id;
-    std::string                      _new_preset_name;
-    RenamerWidget                    _rename_widget;
-    Cool::SerializerOnDemand         _serializer;
+    reg::RawOrderedRegistry<Preset> _default_presets;
+    reg::RawOrderedRegistry<Preset> _user_defined_presets;
+    PresetId                        _current_preset_id;
+    std::string                     _new_preset_name;
+    RenamerWidget                   _rename_widget;
+    Cool::SerializerOnDemand        _serializer;
 
 private:
     // Serialization
-    // Actually this class is not serialized automatically, but serializes its two reg::RawOrderedRegistry<Preset2> manually.
+    // Actually this class is not serialized automatically, but serializes its two reg::RawOrderedRegistry<Preset> manually.
 };
 
 } // namespace Cool

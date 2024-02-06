@@ -37,15 +37,15 @@ auto do_load(WebcamsConfigsMap& configs, Cool::SerializerOnDemand const& seriali
     return serializer.load<WebcamsConfigsMap, cereal::JSONInputArchive>(configs);
 }
 
-auto do_save(reg::RawOrderedRegistry<Preset2> const& data, Cool::SerializerOnDemand const& serializer) -> bool
+auto do_save(reg::RawOrderedRegistry<Preset> const& data, Cool::SerializerOnDemand const& serializer) -> bool
 {
-    return serializer.save<reg::RawOrderedRegistry<Preset2>, cereal::JSONOutputArchive>(data);
+    return serializer.save<reg::RawOrderedRegistry<Preset>, cereal::JSONOutputArchive>(data);
 }
-auto do_load(reg::RawOrderedRegistry<Preset2>& data, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
+auto do_load(reg::RawOrderedRegistry<Preset>& data, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
 {
-    return serializer.load<reg::RawOrderedRegistry<Preset2>, cereal::JSONInputArchive>(data);
+    return serializer.load<reg::RawOrderedRegistry<Preset>, cereal::JSONInputArchive>(data);
 }
-void do_load_default_presets(reg::RawOrderedRegistry<Preset2>& data, std::filesystem::path const& path)
+void do_load_default_presets(reg::RawOrderedRegistry<Preset>& data, std::filesystem::path const& path)
 {
     try
     {

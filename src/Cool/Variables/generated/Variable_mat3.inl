@@ -22,7 +22,7 @@ struct VariableMetadata<glm::mat3> {
         .use_slider    = false,
     };
 
-    friend auto operator<=>(const VariableMetadata<glm::mat3>&, const VariableMetadata<glm::mat3>&) = default;
+    friend auto operator<=>(VariableMetadata<glm::mat3> const&, VariableMetadata<glm::mat3> const&) = default;
 
 private:
     // Serialisation

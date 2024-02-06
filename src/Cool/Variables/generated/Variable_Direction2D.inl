@@ -17,7 +17,7 @@ struct VariableMetadata<Cool::Direction2D> {
     float snaps_offset{0.f};
     bool  always_snap{false};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Direction2D>&, const VariableMetadata<Cool::Direction2D>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Direction2D> const&, VariableMetadata<Cool::Direction2D> const&) = default;
 
 private:
     // Serialisation

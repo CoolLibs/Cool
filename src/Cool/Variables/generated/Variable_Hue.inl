@@ -13,7 +13,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::Hue> {
-    friend auto operator<=>(const VariableMetadata<Cool::Hue>&, const VariableMetadata<Cool::Hue>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Hue> const&, VariableMetadata<Cool::Hue> const&) = default;
 
 private:
     // Serialisation

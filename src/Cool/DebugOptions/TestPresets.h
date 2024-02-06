@@ -16,9 +16,9 @@ private:
     }};
 
     Cool::Settings _current_settings{
-        Cool::Variable<int>{{.name = "First", .value = 3}},
-        Cool::Variable<float>{{.name = "Second", .value = 1.f}},
-        Cool::Variable<float>{{.name = "Third", .value = 1.f}},
+        Cool::VariableData<int>{.name = "First", .value = 3},
+        Cool::VariableData<float>{.name = "Second", .value = 1.f},
+        Cool::VariableData<float>{.name = "Third", .value = 1.f},
     };
 
     int _next_field_name = 0;

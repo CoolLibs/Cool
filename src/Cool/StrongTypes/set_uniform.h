@@ -1,6 +1,4 @@
 #pragma once
-
-#include <Cool/Dependencies/Input.h>
 #include <Cool/Gpu/OpenGL/Shader.h>
 #include "Cool/StrongTypes/MathExpression.h"
 

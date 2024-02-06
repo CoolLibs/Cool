@@ -13,7 +13,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::TextureDescriptor_FromWebcam> {
-    friend auto operator<=>(const VariableMetadata<Cool::TextureDescriptor_FromWebcam>&, const VariableMetadata<Cool::TextureDescriptor_FromWebcam>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::TextureDescriptor_FromWebcam> const&, VariableMetadata<Cool::TextureDescriptor_FromWebcam> const&) = default;
 
 private:
     // Serialisation

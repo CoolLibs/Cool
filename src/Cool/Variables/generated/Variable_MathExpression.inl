@@ -13,7 +13,7 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::MathExpression> {
-    friend auto operator<=>(const VariableMetadata<Cool::MathExpression>&, const VariableMetadata<Cool::MathExpression>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::MathExpression> const&, VariableMetadata<Cool::MathExpression> const&) = default;
 
 private:
     // Serialisation

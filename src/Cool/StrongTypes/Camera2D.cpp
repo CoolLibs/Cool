@@ -21,6 +21,17 @@ auto Camera2D::transform_matrix() const -> glm::mat3
     return res;
 }
 
+auto Camera2D::view_matrix() const -> glm::mat3
+{
+    auto res = glm::mat3{1.f};
+
+    res = glm::scale(res, glm::vec2{zoom});
+    res = glm::translate(res, -translation);
+    res = glm::rotate(res, -rotation.as_radians());
+
+    return res;
+}
+
 auto to_string(Camera2D const& cam) -> std::string
 {
     return fmt::format(
@@ -43,10 +54,8 @@ auto imgui_widget(std::string_view name, Camera2D& cam, int number_of_snaps, flo
     b |= ImGui::DragFloat("Zoom", &cam.zoom, 0.01f, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
     if (ImGui::Button(icon_fmt("Reset Camera", ICOMOON_TARGET).c_str()))
     {
-        cam.rotation    = Cool::Angle{Cool::Radians{0.}};
-        cam.zoom        = 1.f;
-        cam.translation = glm::vec2(0.);
-        b               = true;
+        cam = {};
+        b   = true;
     }
 
     ImGui::PopID();

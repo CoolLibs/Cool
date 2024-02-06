@@ -15,7 +15,7 @@ template<>
 struct VariableMetadata<Cool::ColorAndAlpha> {
     bool is_hdr{false};
 
-    friend auto operator<=>(const VariableMetadata<Cool::ColorAndAlpha>&, const VariableMetadata<Cool::ColorAndAlpha>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::ColorAndAlpha> const&, VariableMetadata<Cool::ColorAndAlpha> const&) = default;
 
 private:
     // Serialisation

@@ -17,7 +17,7 @@ struct VariableMetadata<Cool::Angle> {
     float snaps_offset{0.f};
     bool  always_snap{false};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Angle>&, const VariableMetadata<Cool::Angle>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Angle> const&, VariableMetadata<Cool::Angle> const&) = default;
 
 private:
     // Serialisation

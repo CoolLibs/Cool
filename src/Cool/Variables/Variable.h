@@ -1,77 +1,19 @@
 #pragma once
 
-#include <Cool/ImGui/ImGuiExtras.h>
-#include <stringify/stringify.hpp>
-#include "Cool/Log/MessageId.h"
-
 namespace Cool {
 
-template<typename Value>
+// TODO(Variable) Make many things in Coollab variables, so that users can customize GUI and reset to default values. This shouldn't only be for nodes params.
+
+template<typename T>
 struct VariableMetadata; // You need to create a specialization of this template for each variable type that you want to use.
 
-template<typename Value>
-struct Variable {
-    struct Data {
-        std::string             name{};
-        Value                   value{};
-        VariableMetadata<Value> metadata{};
-        Value                   default_value{value};
-        VariableMetadata<Value> default_metadata{metadata};
+template<typename T>
+struct VariableData {
+    std::string         name{};
+    T                   value{};
+    VariableMetadata<T> metadata{};
 
-        friend auto operator==(Data const&, Data const&) -> bool = default;
-    };
-    ~Variable() = default;
-
-    Variable(Data data = {}) // NOLINT(*-explicit-constructor, *-explicit-conversions)
-        : data{std::move(data)}
-    {}
-
-    auto name() -> auto& { return data.name; }
-    auto value() -> auto& { return data.value; }
-    auto metadata() -> auto& { return data.metadata; }
-    auto default_value() -> auto& { return data.default_value; }
-    auto default_metadata() -> auto& { return data.default_metadata; }
-
-    auto name() const -> auto const& { return data.name; }
-    auto value() const -> auto const& { return data.value; }
-    auto metadata() const -> auto const& { return data.metadata; }
-    auto default_value() const -> auto const& { return data.default_value; }
-    auto default_metadata() const -> auto const& { return data.default_metadata; }
-
-    Data data{};
-
-    MessageId message_id{};
-
-    friend auto operator==(Variable const& a, Variable const& b) -> bool
-    {
-        return a.data == b.data;
-    }
-
-    Variable(Variable const& other)
-        : data{other.data}
-    {}
-
-    Variable(Variable&& other) noexcept
-        : data{std::move(other.data)}
-        , message_id{std::move(other.message_id)}
-    {}
-
-    auto operator=(Variable const& other) -> Variable&
-    {
-        if (this == &other)
-            return *this;
-        data = other.data;
-        return *this;
-    }
-
-    auto operator=(Variable&& other) noexcept -> Variable&
-    {
-        if (this == &other)
-            return *this;
-        data       = std::move(other.data);
-        message_id = std::move(other.message_id);
-        return *this;
-    }
+    friend auto operator==(VariableData const&, VariableData const&) -> bool = default;
 
 private:
     // Serialization
@@ -80,11 +22,9 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", data.name),
-            cereal::make_nvp("Value", data.value),
-            cereal::make_nvp("Metadata", data.metadata),
-            cereal::make_nvp("Default Value", data.default_value),
-            cereal::make_nvp("Default Metadata", data.default_metadata)
+            cereal::make_nvp("Name", name),
+            cereal::make_nvp("Value", value),
+            cereal::make_nvp("Metadata", metadata)
         );
     }
 };
@@ -100,81 +40,57 @@ struct ImGuiVariableCallbacks {
     };
 };
 
-/// Returns true iff the `value` of the variable changed
-/// (Currently there is no way to know if the metadata changed)
-template<typename Value>
-auto imgui_variable_reset_buttons(Variable<Value>& var, ImGuiVariableCallbacks const& callbacks = {}) -> bool
-{
-    bool b = false;
-    ImGuiExtras::disabled_if(var.value() == var.default_value(), "Disabled because it is already equal to the default value", [&]() {
-        if (ImGui::Button(("Reset to default value (" + stringify(var.default_value()) + ")").c_str()))
-        {
-            var.value() = var.default_value();
-            b           = true;
-            callbacks.on_value_changed();
-            callbacks.on_value_editing_finished();
-        }
-    });
-    if (var.metadata() != var.default_metadata())
-    {
-        ImGui::SameLine();
-        if (ImGui::Button("Reset Metadata"))
-        {
-            var.metadata() = var.default_metadata();
-            callbacks.on_metadata_changed();
-            callbacks.on_metadata_editing_finished();
-        }
-    }
-    return b;
-}
+/// A simple object that wraps a value with some metadata,
+/// allowing the user to customize the UI,
+/// and reset to the default value.
+template<typename T>
+class Variable {
+public:
+    explicit Variable(VariableData<T> const& data = {})
+        : _name{data.name}
+        , _value{data.value}
+        , _metadata{data.metadata}
+        , _default_value{data.value}
+        , _default_metadata{data.metadata}
+    {}
 
-/// Returns true iff the `value` of the variable changed
-/// Calls the corresponding callback if either `value` or `metadata` change
-template<typename Value>
-auto imgui(
-    Variable<Value>&       var,
-    ImGuiVariableCallbacks callbacks = {}
-) -> bool
-{
-    bool b = false;
+    auto name() const -> std::string const& { return _name; }
+    auto value() const -> T const& { return _value; }
+    auto value() -> T& { return _value; }
+    auto metadata() const -> VariableMetadata<T> const& { return _metadata; }
+    auto metadata() -> VariableMetadata<T>& { return _metadata; }
+    auto default_value() const -> T const& { return _default_value; }
+    auto default_value() -> T& { return _default_value; }
 
-    ImGui::PushID(&var);
-    ImGui::BeginGroup();
-    {
-        if (imgui_widget(var))
-        {
-            b = true;
-            callbacks.on_value_changed();
-        }
-    }
-    ImGui::EndGroup();
-    ImGui::PopID();
-    if (ImGui::IsItemDeactivatedAfterEdit())
-    {
-        callbacks.on_value_editing_finished();
-    }
+    /// Calls the corresponding callback if either `value` or `metadata` changes.
+    void imgui(ImGuiVariableCallbacks const& callbacks = {});
 
-    if (ImGui::BeginPopupContextItem(var.name().c_str()))
-    {
-        ImGui::PushID(&var + 1);
-        ImGui::BeginGroup();
-        {
-            if (imgui_widget(var.metadata()))
-            {
-                callbacks.on_metadata_changed();
-            }
-        }
-        ImGui::EndGroup();
-        ImGui::PopID();
-        if (ImGui::IsItemDeactivatedAfterEdit())
-        {
-            callbacks.on_metadata_editing_finished();
-        }
-        b |= imgui_variable_reset_buttons(var, callbacks);
-        ImGui::EndPopup();
-    }
+private:
+    void imgui_reset_buttons(ImGuiVariableCallbacks const& callbacks);
 
-    return b;
-}
+private:
+    std::string         _name{};
+    T                   _value{};
+    VariableMetadata<T> _metadata{};
+    T                   _default_value{};
+    VariableMetadata<T> _default_metadata{};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Name", _name),
+            cereal::make_nvp("Value", _value),
+            cereal::make_nvp("Metadata", _metadata),
+            cereal::make_nvp("Default Value", _default_value),
+            cereal::make_nvp("Default Metadata", _default_metadata)
+        );
+    }
+};
 
 } // namespace Cool
+
+#include "Variable.tpp"

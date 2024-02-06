@@ -14,7 +14,7 @@ void MessageConsole::send(MessageId& id, const Message& message)
 {
     if (!_messages.contains(id.raw()))
     {
-        id = _messages.create_unique(internal::MessageWithMetadata{
+        id = _messages.create_shared(internal::MessageWithMetadata{
             .message = message,
         });
     }

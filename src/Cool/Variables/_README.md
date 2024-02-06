@@ -6,9 +6,9 @@
 
 - Copy-paste one of the existing Variable files (`Variable_float.h`/`Variable_float.cpp` for example) and replace the implementation of all the required functions for your type.
 
-- Update the documentation on the website (TODO(JF) Explain more).
+- Update the documentation on the website (TODO(Variables) Explain more).
 
-- If your variable needs special code to be generated in the shader (other than replacing `INPUT` with `uniform`), implement a specialization of `gen_input_shader_code__impl()`.
+- If your variable needs special code to be generated in the shader (other than replacing `INPUT` with `uniform`), add it to `gen_input_shader_code()`.
 
 - If you are working on Coollab, re-run the "src/Commands/generate_commands.py" and "src/Commands/generate_set_variable_commands.py" scripts.
 

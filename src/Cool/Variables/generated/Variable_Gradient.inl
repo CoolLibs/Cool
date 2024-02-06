@@ -16,7 +16,7 @@ struct VariableMetadata<Cool::Gradient> {
     bool is_hdr{false};
     bool randomize_new_marks_colors{true};
 
-    friend auto operator<=>(const VariableMetadata<Cool::Gradient>&, const VariableMetadata<Cool::Gradient>&) = default;
+    friend auto operator<=>(VariableMetadata<Cool::Gradient> const&, VariableMetadata<Cool::Gradient> const&) = default;
 
 private:
     // Serialisation

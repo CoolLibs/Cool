@@ -398,13 +398,24 @@ def all_types_includes():
 #     return out
 
 
-def VariableRegistries():
+def AnySharedVariable():
     return (
         "\n"
-        + "using VariableRegistries = reg::Registries<\n"
+        + "using AnySharedVariable = std::variant<\n"
+        + ",\n".join(
+            map(lambda var_type: f"SharedVariable<{var_type}>", all_variable_types())
+        )
+        + "\n>;"
+    )
+
+
+def AnySharedVariableDefinition():
+    return (
+        "\n"
+        + "using AnySharedVariableDefinition = std::variant<\n"
         + ",\n".join(
             map(
-                lambda var_type: f"reg::Registry<Cool::Variable<{var_type}>>",
+                lambda var_type: f"SharedVariableDefinition<{var_type}>",
                 all_variable_types(),
             )
         )
@@ -412,62 +423,9 @@ def VariableRegistries():
     )
 
 
-def AnyInput():
-    return (
-        "\n"
-        + "using AnyInput = std::variant<\n"
-        + ",\n".join(map(lambda var_type: f"Input<{var_type}>", all_variable_types()))
-        + "\n>;"
-    )
-
-
-def AnyInputDefinition():
-    return (
-        "\n"
-        + "using AnyInputDefinition = std::variant<\n"
-        + ",\n".join(
-            map(lambda var_type: f"InputDefinition<{var_type}>", all_variable_types())
-        )
-        + "\n>;"
-    )
-
-
-def AnyVariable():
-    return (
-        "\n"
-        + "using AnyVariable = std::variant<\n"
-        + ",\n".join(
-            map(lambda var_type: f"Variable<{var_type}>", all_variable_types())
-        )
-        + "\n>;"
-    )
-
-
-def AnyInputRef():
-    return (
-        "\n"
-        + "using AnyInputRef = std::variant<\n"
-        + ",\n".join(
-            map(
-                lambda var_type: f"std::reference_wrapper<Input<{var_type}>>",
-                all_variable_types(),
-            )
-        )
-        + "\n>;"
-    )
-
-
-def AnyInputRefToConst():
-    return (
-        "\n"
-        + "using AnyInputRefToConst = std::variant<\n"
-        + ",\n".join(
-            map(
-                lambda var_type: f"std::reference_wrapper<const Input<{var_type}>>",
-                all_variable_types(),
-            )
-        )
-        + "\n>;"
+def AnyVariableData():
+    return ",\n".join(
+        map(lambda var_type: f"VariableData<{var_type}>", all_variable_types())
     )
 
 
@@ -532,7 +490,7 @@ def variable_definition_factory(variable_type_and_metadatas):
             struct VariableMetadata<{variable_type_and_metadatas.cpp_type}> {{
                 {metadatas_definitions(variable_type_and_metadatas.metadatas)}
 
-                friend auto operator<=>(const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&, const VariableMetadata<{variable_type_and_metadatas.cpp_type}>&) = default;
+                friend auto operator<=>(VariableMetadata<{variable_type_and_metadatas.cpp_type}> const&, VariableMetadata<{variable_type_and_metadatas.cpp_type}> const&) = default;
 
             private:
                 // Serialisation
@@ -568,12 +526,10 @@ def files():
     res = [
         # register_set_variable_commands,
         # register_set_variable_metadata_commands,
-        VariableRegistries,
-        AnyInput,
-        AnyInputDefinition,
-        AnyVariable,
-        AnyInputRef,
-        AnyInputRefToConst,
+        AnySharedVariable,
+        AnySharedVariableDefinition,
+        AnyVariableData,
+        all_types_includes,
         all_variable_includes,
         variables_includes,
         glsl_type,

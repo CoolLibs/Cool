@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <reg/src/AnyId.hpp>
 #include <reg/src/Id.hpp>
 #include "Cool/Input/MouseDragEvents.h"
@@ -26,7 +27,7 @@ private:
 
 private:
     std::vector<Gizmo_Point2D> _gizmos{};
-    reg::AnyId                 _dragged_gizmo_id{};
+    std::optional<uintptr_t>   _dragged_gizmo_id{};
 };
 
 } // namespace Cool
