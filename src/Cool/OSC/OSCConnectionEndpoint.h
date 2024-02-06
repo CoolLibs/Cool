@@ -8,7 +8,7 @@ struct OSCConnectionEndpoint {
     int         port{-1};
     std::string ip_address{OSC_EVERY_AVAILABLE_ADDRESS};
 
-    friend auto operator<=>(OSCConnectionEndpoint const&, OSCConnectionEndpoint const&) = default;
+    friend auto operator==(OSCConnectionEndpoint const&, OSCConnectionEndpoint const&) -> bool = default;
 
 private:
     // Serialization
