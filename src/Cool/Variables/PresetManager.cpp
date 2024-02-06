@@ -397,17 +397,4 @@ auto PresetManager::imgui_presets(Settings_Ref settings) -> bool
     return settings_have_changed;
 }
 
-// auto PresetManager::imgui(Settings_Ref settings) -> bool
-// {
-//     bool settings_have_changed{false};
-
-//     settings_have_changed |= settings.display_all_variables_widgets();
-
-//     ImGui::Separator();
-
-//     settings_have_changed |= imgui_presets(settings);
-
-//     return settings_have_changed;
-// }
-
 } // namespace Cool

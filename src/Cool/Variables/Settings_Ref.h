@@ -11,7 +11,6 @@ public:
     Settings_Ref(Settings&); // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
 
     void assign_from(Settings const&);
-    // auto display_all_variables_widgets() -> bool;
 
 private:
     std::reference_wrapper<Settings> _ref;

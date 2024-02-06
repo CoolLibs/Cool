@@ -11,7 +11,7 @@ public:
     void set_clean() const { *_is_dirty = false; }
 
 private:
-    std::shared_ptr<bool> _is_dirty{std::make_shared<bool>(true)}; // Shared_ptr to make sure the address stays stable in memory and we can reference it in Commands stored in the History + survive through serialization
+    std::shared_ptr<bool> _is_dirty{std::make_shared<bool>(true)}; // shared_ptr to make sure the address stays stable in memory and we can reference it in Commands stored in the History + survive through serialization
 
 private:
     friend class cereal::access;
@@ -19,7 +19,7 @@ private:
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Is Dirty", _is_dirty)
+            cereal::make_nvp("Is dirty", _is_dirty)
         );
     }
     template<class Archive>

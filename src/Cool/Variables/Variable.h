@@ -62,7 +62,7 @@ public:
     auto default_value() const -> T const& { return _default_value; }
     auto default_value() -> T& { return _default_value; }
 
-    /// Calls the corresponding callback if either `value` or `metadata` change.
+    /// Calls the corresponding callback if either `value` or `metadata` changes.
     void imgui(ImGuiVariableCallbacks const& callbacks = {});
 
 private:

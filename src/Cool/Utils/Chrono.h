@@ -5,7 +5,7 @@ namespace Cool {
 
 class Chrono {
 public:
-    /// Returns true iff more than `duration` has elapsed since the last call to `elapsed_more_than()`, or to the creation of the class when this is called for the first time.
+    /// Returns true iff more than `duration` has elapsed since the last call to `elapsed_more_than()`, or since the creation of the class when this is called for the first time.
     template<typename Duration>
     auto elapsed_more_than(Duration const& duration) -> bool
     {
