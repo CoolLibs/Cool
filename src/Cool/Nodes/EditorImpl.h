@@ -95,7 +95,7 @@ private:
     void render_node(Node&, NodeId const&, NodesConfig&, NodesLibrary const&, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder);
 
     auto process_creations(NodesConfig&) -> bool;
-    // auto process_node_creation() -> bool;
+    auto process_copy_paste() -> bool;
     auto process_link_creation(NodesConfig&) -> bool;
     void process_link_released();
 

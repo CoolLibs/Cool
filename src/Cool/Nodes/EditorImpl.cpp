@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 #include <reg/src/internal/generate_uuid.hpp>
+#include <sstream>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
@@ -19,6 +20,8 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
+// Must be included last, otherwise slows down compilation
+#include <cereal/archives/json.hpp> // TODO(CopyPaste) Move to another file to speed up compilation ?
 
 namespace Cool {
 
@@ -90,13 +93,29 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     return graph_has_changed;
 }
 
-[[nodiscard]] static auto wants_to_delete_selection() -> bool
+[[nodiscard]] static auto is_listening_to_keyboard_shortcuts() -> bool
 {
     return !ImGui::GetIO().WantTextInput
-           && ImGui::IsWindowFocused()
+           && ImGui::IsWindowFocused();
+}
+[[nodiscard]] static auto wants_to_delete_selection() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
                || ImGui::IsKeyReleased(ImGuiKey_Backspace)
            );
+}
+[[nodiscard]] static auto wants_to_copy() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_C);
+}
+[[nodiscard]] static auto wants_to_paste() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_V);
 }
 
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
@@ -551,6 +570,68 @@ auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
     return graph_has_changed;
 }
 
+struct NodesAndLinksGroup {
+    std::vector<Node> nodes;
+    std::vector<Link> links;
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Nodes", nodes),
+            cereal::make_nvp("Links", links)
+        );
+    }
+};
+
+auto NodesEditorImpl::process_copy_paste() -> bool
+{
+    if (wants_to_copy())
+    {
+        auto selection = NodesAndLinksGroup{};
+        for_each_selected_node([&](Node const& node) {
+            selection.nodes.push_back(node);
+        });
+
+        auto ss = std::stringstream{};
+        {
+            auto archive = cereal::JSONOutputArchive{ss};
+            archive(selection);
+        } // archive actual work happens during its destruction
+        ImGui::SetClipboardText(ss.str().c_str());
+
+        return false;
+    }
+
+    if (wants_to_paste())
+    {
+        try
+        {
+            auto selection = NodesAndLinksGroup{};
+            {
+                auto ss      = std::stringstream{ImGui::GetClipboardText()};
+                auto archive = cereal::JSONInputArchive{ss};
+                archive(selection);
+            } // archive actual work happens during its destruction
+            for (auto const& node : selection.nodes)
+            {
+                _graph.add_node(node);
+            }
+            return true;
+        }
+        catch (... /* std::exception const& e */)
+        {
+            // Cool::Log::Debug::warning("Paste nodes", e.what());
+            return false;
+        }
+    }
+
+    return false;
+}
+
 static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed::NodeId id)
 {
     frame_nodes.erase(std::remove_if(frame_nodes.begin(), frame_nodes.end(), [&](internal::FrameNode const& node) {
@@ -646,6 +727,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
+    graph_has_changed |= process_copy_paste();
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
     {
