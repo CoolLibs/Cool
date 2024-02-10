@@ -2,7 +2,6 @@
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
 #include <reg/src/internal/generate_uuid.hpp>
-#include <sstream>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
@@ -20,8 +19,6 @@
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
 #include "reg/src/AnyId.hpp"
-// Must be included last, otherwise slows down compilation
-#include <cereal/archives/json.hpp> // TODO(CopyPaste) Move to another file to speed up compilation ?
 
 namespace Cool {
 
@@ -570,72 +567,17 @@ auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
     return graph_has_changed;
 }
 
-struct NodesAndLinksGroup {
-    std::vector<Node> nodes;
-    std::vector<Link> links;
-
-private:
-    // Serialization
-    friend class cereal::access;
-    template<class Archive>
-    void serialize(Archive& archive)
-    {
-        archive(
-            cereal::make_nvp("Nodes", nodes),
-            cereal::make_nvp("Links", links)
-        );
-    }
-};
-
 auto NodesEditorImpl::process_copy_paste(NodesConfig& nodes_cfg) -> bool
 {
     if (wants_to_copy())
     {
-        auto selection = NodesAndLinksGroup{};
-        for_each_selected_node([&](Node const& node) {
-            selection.nodes.push_back(node);
-        });
-
-        auto ss = std::stringstream{};
-        {
-            auto archive = cereal::JSONOutputArchive{ss};
-            archive(selection);
-        } // archive actual work happens during its destruction
-        ImGui::SetClipboardText(ss.str().c_str());
-
+        ImGui::SetClipboardText(nodes_cfg.copy_nodes().c_str());
         return false;
     }
 
     if (wants_to_paste())
     {
-        try
-        {
-            auto selection = NodesAndLinksGroup{};
-            {
-                auto ss      = std::stringstream{ImGui::GetClipboardText()};
-                auto archive = cereal::JSONInputArchive{ss};
-                archive(selection);
-            } // archive actual work happens during its destruction
-            for (auto node : selection.nodes)
-            {
-                // TODO(CopyPaste) Choose node position (where the mouse cursor is ?)
-                for (auto& pin : node.input_pins())
-                    pin.set_id({reg::internal::generate_uuid()});
-                for (auto& pin : node.output_pins())
-                    pin.set_id({reg::internal::generate_uuid()});
-                auto const new_node_id    = _graph.add_node(node);
-                auto*      new_node       = _graph.nodes().get_mutable_ref(new_node_id);
-                auto const new_node_id_ed = as_ed_id(new_node_id);
-                ed::SelectNode(new_node_id_ed);
-                nodes_cfg.on_node_created(*new_node, new_node_id, nullptr);
-            }
-            return true;
-        }
-        catch (... /* std::exception const& e */)
-        {
-            // Cool::Log::Debug::warning("Paste nodes", e.what());
-            return false;
-        }
+        return nodes_cfg.paste_nodes(ImGui::GetClipboardText());
     }
 
     return false;
@@ -838,6 +780,7 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
         }
         else // Frame node
         {
+            // TODO(CopyPaste) We want to copy-paste frame nodes too
         }
     }
 }
