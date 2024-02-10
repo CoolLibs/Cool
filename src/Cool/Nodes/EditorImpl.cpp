@@ -212,7 +212,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
             ImGui::PopFont();
         }
 
-        // Show all nodes
+        // Show all selected nodes
         for (auto const& ed_node_id : selected_nodes_ids)
         {
             auto const node_id = as_reg_id(ed_node_id, _graph);
@@ -587,7 +587,7 @@ private:
     }
 };
 
-auto NodesEditorImpl::process_copy_paste() -> bool
+auto NodesEditorImpl::process_copy_paste(NodesConfig& nodes_cfg) -> bool
 {
     if (wants_to_copy())
     {
@@ -616,9 +616,18 @@ auto NodesEditorImpl::process_copy_paste() -> bool
                 auto archive = cereal::JSONInputArchive{ss};
                 archive(selection);
             } // archive actual work happens during its destruction
-            for (auto const& node : selection.nodes)
+            for (auto node : selection.nodes)
             {
-                _graph.add_node(node);
+                // TODO(CopyPaste) Choose node position (where the mouse cursor is ?)
+                for (auto& pin : node.input_pins())
+                    pin.set_id({reg::internal::generate_uuid()});
+                for (auto& pin : node.output_pins())
+                    pin.set_id({reg::internal::generate_uuid()});
+                auto const new_node_id    = _graph.add_node(node);
+                auto*      new_node       = _graph.nodes().get_mutable_ref(new_node_id);
+                auto const new_node_id_ed = as_ed_id(new_node_id);
+                ed::SelectNode(new_node_id_ed);
+                nodes_cfg.on_node_created(*new_node, new_node_id, nullptr);
             }
             return true;
         }
@@ -727,7 +736,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
-    graph_has_changed |= process_copy_paste();
+    graph_has_changed |= process_copy_paste(nodes_cfg);
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
     {
