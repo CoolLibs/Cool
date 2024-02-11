@@ -67,6 +67,7 @@ public:
     auto dirty_flag() const -> DirtyFlag const& { return _ref.dirty_flag; }
     auto id() const -> uintptr_t { return _ref.id(); }
     auto variable_data() const -> VariableData<T> { return {name(), value(), _ref.variable->metadata()}; }
+    auto variable() const -> Variable<T> const& { return *_ref.variable; }
     auto variable() -> Variable<T>& { return *_ref.variable; }
     auto get_ref() const -> SharedVariableStrongRef<T> const& { return _ref; }
     auto get_ref() -> SharedVariableStrongRef<T>& { return _ref; }

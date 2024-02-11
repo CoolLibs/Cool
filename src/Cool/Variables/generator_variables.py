@@ -429,6 +429,12 @@ def AnyVariableData():
     )
 
 
+def AnyVariable():
+    return ",\n".join(
+        map(lambda var_type: f"Variable<{var_type}>", all_variable_types())
+    )
+
+
 def variables_includes():
     out = "\n"
     for variable_type in all_variable_types_without_namespaces():
@@ -529,6 +535,7 @@ def files():
         AnySharedVariable,
         AnySharedVariableDefinition,
         AnyVariableData,
+        AnyVariable,
         all_types_includes,
         all_variable_includes,
         variables_includes,
