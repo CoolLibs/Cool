@@ -38,9 +38,14 @@ void NodesGraph::remove_all_nodes()
     _links.clear();
 }
 
-auto NodesGraph::add_link(Link link) -> LinkId
+auto NodesGraph::add_link(Link const& link) -> LinkId
 {
     remove_link_going_into(link.to_pin_id);
+    return add_link_unchecked(link);
+}
+
+auto NodesGraph::add_link_unchecked(Link const& link) -> LinkId
+{
     return _links.create_raw(link);
 }
 
@@ -139,6 +144,31 @@ auto NodesGraph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
         }
     }
     return {};
+}
+
+static auto link_is_connected_to_node(Link const& link, Node const& node) -> bool
+{
+    for (auto const& pin : node.input_pins())
+    {
+        if (pin.id() == link.to_pin_id)
+            return true;
+    }
+    for (auto const& pin : node.output_pins())
+    {
+        if (pin.id() == link.from_pin_id)
+            return true;
+    }
+    return false;
+}
+
+void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(Link const&)> const& callback) const
+{
+    std::shared_lock lock{links().mutex()};
+    for (auto const& [_, link] : links())
+    {
+        if (link_is_connected_to_node(link, node))
+            callback(link);
+    }
 }
 
 } // namespace Cool
