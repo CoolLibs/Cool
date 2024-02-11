@@ -114,6 +114,12 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
            && ImGui::GetIO().KeyCtrl
            && ImGui::IsKeyReleased(ImGuiKey_V);
 }
+[[nodiscard]] static auto wants_to_duplicate() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_D);
+}
 
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 {
@@ -578,6 +584,11 @@ auto NodesEditorImpl::process_copy_paste(NodesConfig& nodes_cfg) -> bool
     if (wants_to_paste())
     {
         return nodes_cfg.paste_nodes(ImGui::GetClipboardText());
+    }
+
+    if (wants_to_duplicate())
+    {
+        return nodes_cfg.paste_nodes(nodes_cfg.copy_nodes());
     }
 
     return false;
