@@ -60,7 +60,7 @@ public:
     auto graph() const -> NodesGraph const& override { return _graph; }
     auto graph() -> NodesGraph& override { return _graph; }
 
-    void for_each_selected_node(std::function<void(Node const&)> const&) const override;
+    void for_each_selected_node(std::function<void(Node const&, NodeId const&)> const&) const override;
 
     [[nodiscard]] auto is_empty() const -> bool override;
 

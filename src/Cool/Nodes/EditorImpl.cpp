@@ -765,7 +765,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     return graph_has_changed;
 }
 
-void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> const& callback) const
+void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&, NodeId const&)> const& callback) const
 {
     ed::SetCurrentEditor(_context);
     auto const selected_nodes_ids = get_selected_nodes_ids();
@@ -776,7 +776,7 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
         auto const* node = _graph.nodes().get_ref(node_id);
         if (node)
         {
-            callback(*node);
+            callback(*node, node_id);
         }
         else // Frame node
         {
