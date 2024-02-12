@@ -527,16 +527,15 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
     // return false;
     // }
 
-    if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
-    {
-        auto const link = Link{
-            .from_pin_id = begin_pin->id(),
-            .to_pin_id   = end_pin->id(),
-        };
-        auto const link_id = _graph.add_link(link);
-        nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
-    }
+    if (!ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
+        return false;
 
+    auto const link = Link{
+        .from_pin_id = begin_pin->id(),
+        .to_pin_id   = end_pin->id(),
+    };
+    auto const link_id = _graph.add_link(link);
+    nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
 }
 
