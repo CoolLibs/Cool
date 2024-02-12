@@ -742,6 +742,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 }
 
                 nodes_cfg.on_node_created(*new_node, new_node_id, _pin_to_link_to_new_node); // Must be called last, once the node has been fully set up (link created etc.).
+                graph_has_changed = true;
             }
         }
 
