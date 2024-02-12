@@ -60,7 +60,7 @@ public:
     auto graph() const -> NodesGraph const& override { return _graph; }
     auto graph() -> NodesGraph& override { return _graph; }
 
-    void for_each_selected_node(std::function<void(Node const&)> const&) const override;
+    void for_each_selected_node(std::function<void(Node const&, NodeId const&)> const&) const override;
 
     [[nodiscard]] auto is_empty() const -> bool override;
 
@@ -95,7 +95,7 @@ private:
     void render_node(Node&, NodeId const&, NodesConfig&, NodesLibrary const&, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder);
 
     auto process_creations(NodesConfig&) -> bool;
-    // auto process_node_creation() -> bool;
+    auto process_copy_paste(NodesConfig&) -> bool;
     auto process_link_creation(NodesConfig&) -> bool;
     void process_link_released();
 

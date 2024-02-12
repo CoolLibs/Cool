@@ -14,7 +14,9 @@ public:
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
-    auto add_link(Link) -> LinkId;
+    auto add_link(Link const&) -> LinkId;
+    /// No checks to remove existing links that would be incompatible with this one.
+    auto add_link_unchecked(Link const&) -> LinkId;
     void remove_link(LinkId const&);
     void remove_link_going_into(PinId const&);
     void remove_link_coming_from(PinId const&);
@@ -62,6 +64,7 @@ public:
             callback(node.template downcast<NodeT>());
         }
     }
+    void for_each_link_connected_to_node(Node const&, std::function<void(Link const&)> const& callback) const;
 
 private:
     reg::RawRegistry<Node> _nodes;

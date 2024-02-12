@@ -90,13 +90,35 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
     return graph_has_changed;
 }
 
-[[nodiscard]] static auto wants_to_delete_selection() -> bool
+[[nodiscard]] static auto is_listening_to_keyboard_shortcuts() -> bool
 {
     return !ImGui::GetIO().WantTextInput
-           && ImGui::IsWindowFocused()
+           && ImGui::IsWindowFocused();
+}
+[[nodiscard]] static auto wants_to_delete_selection() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
                || ImGui::IsKeyReleased(ImGuiKey_Backspace)
            );
+}
+[[nodiscard]] static auto wants_to_copy() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_C);
+}
+[[nodiscard]] static auto wants_to_paste() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_V);
+}
+[[nodiscard]] static auto wants_to_duplicate() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_D);
 }
 
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
@@ -193,7 +215,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
             ImGui::PopFont();
         }
 
-        // Show all nodes
+        // Show all selected nodes
         for (auto const& ed_node_id : selected_nodes_ids)
         {
             auto const node_id = as_reg_id(ed_node_id, _graph);
@@ -551,6 +573,27 @@ auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
     return graph_has_changed;
 }
 
+auto NodesEditorImpl::process_copy_paste(NodesConfig& nodes_cfg) -> bool
+{
+    if (wants_to_copy())
+    {
+        ImGui::SetClipboardText(nodes_cfg.copy_nodes().c_str());
+        return false;
+    }
+
+    if (wants_to_paste())
+    {
+        return nodes_cfg.paste_nodes(ImGui::GetClipboardText());
+    }
+
+    if (wants_to_duplicate())
+    {
+        return nodes_cfg.paste_nodes(nodes_cfg.copy_nodes());
+    }
+
+    return false;
+}
+
 static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed::NodeId id)
 {
     frame_nodes.erase(std::remove_if(frame_nodes.begin(), frame_nodes.end(), [&](internal::FrameNode const& node) {
@@ -646,6 +689,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
 
     graph_has_changed |= process_creations(nodes_cfg);
     graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
+    graph_has_changed |= process_copy_paste(nodes_cfg);
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
     {
@@ -732,7 +776,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     return graph_has_changed;
 }
 
-void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> const& callback) const
+void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&, NodeId const&)> const& callback) const
 {
     ed::SetCurrentEditor(_context);
     auto const selected_nodes_ids = get_selected_nodes_ids();
@@ -743,10 +787,11 @@ void NodesEditorImpl::for_each_selected_node(std::function<void(Node const&)> co
         auto const* node = _graph.nodes().get_ref(node_id);
         if (node)
         {
-            callback(*node);
+            callback(*node, node_id);
         }
         else // Frame node
         {
+            // TODO(CopyPaste) We want to copy-paste frame nodes too
         }
     }
 }
