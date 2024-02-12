@@ -64,7 +64,7 @@ public:
             callback(node.template downcast<NodeT>());
         }
     }
-    void for_each_link_connected_to_node(Node const&, std::function<void(Link const&)> const& callback) const;
+    void for_each_link_connected_to_node(Node const&, std::function<void(Link const&, bool is_connected_to_input_pin)> const& callback) const;
 
 private:
     reg::RawRegistry<Node> _nodes;

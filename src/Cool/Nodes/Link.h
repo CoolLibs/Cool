@@ -1,5 +1,4 @@
 #pragma once
-
 #include <reg/reg.hpp>
 #include "Pin.h"
 
@@ -8,6 +7,8 @@ namespace Cool {
 struct Link {
     PinId from_pin_id;
     PinId to_pin_id;
+
+    friend auto operator==(Link const&, Link const&) -> bool = default;
 
 private:
     // Serialization
