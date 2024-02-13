@@ -11,6 +11,7 @@ namespace Cool {
 class NodesGraph {
 public:
     auto add_node(Node) -> NodeId;
+    void add_node(NodeId const&, Node);
     void remove_node(NodeId const&);
     void remove_all_nodes();
 

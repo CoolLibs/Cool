@@ -720,7 +720,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         {
             ImGui::CloseCurrentPopup();
 
-            auto const new_node_id = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
+            auto const new_node_id = nodes_cfg.add_node(*new_node_def_id);
             auto*      new_node    = _graph.nodes().get_mutable_ref(new_node_id);
             if (new_node)
             {
