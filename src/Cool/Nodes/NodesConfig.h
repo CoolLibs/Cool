@@ -17,6 +17,9 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin
     { const_cfg.name(node) } -> std::convertible_to<std::string>;
     cfg.widget_to_rename_node(node);
     { cfg.add_node(def_and_cat) } -> std::convertible_to<NodeId>;
+    { cfg.add_link(link_const) } -> std::convertible_to<LinkId>;
+    cfg.remove_node(node_id, node_const);
+    cfg.remove_link(link_id, link_const);
     cfg.on_node_created(node, node_id, pin_linked_to_new_node);
     { const_cfg.copy_nodes() } -> std::convertible_to<std::string>;
     { cfg.paste_nodes("Some clipboard content") } -> std::convertible_to<bool>;
@@ -36,7 +39,10 @@ public:
     void               update_node_with_new_definition(Node& node, NodeDefinition const& node_def, NodesGraph& graph) { _pimpl->update_node_with_new_definition(node, node_def, graph); }
     [[nodiscard]] auto name(Node const& node) const -> std::string { return _pimpl->name(node); }
     void               widget_to_rename_node(Node& node) { _pimpl->widget_to_rename_node(node); }
-    [[nodiscard]] auto add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId { return _pimpl->add_node(def_and_cat); }
+    auto               add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId { return _pimpl->add_node(def_and_cat); }
+    auto               add_link(Cool::Link const& link) -> LinkId { return _pimpl->add_link(link); }
+    void               remove_node(Cool::NodeId const& id, Cool::Node const& node) { return _pimpl->remove_node(id, node); }
+    void               remove_link(Cool::LinkId const& id, Cool::Link const& link) { return _pimpl->remove_link(id, link); }
     void               on_node_created(Node& node, NodeId const& id, Pin const* pin_linked_to_new_node) { _pimpl->on_node_created(node, id, pin_linked_to_new_node); }
     [[nodiscard]] auto copy_nodes() const -> std::string { return _pimpl->copy_nodes(); }
     /// Returns true iff successfully pasted nodes
@@ -69,7 +75,10 @@ private:
         virtual void               update_node_with_new_definition(Cool::Node&, Cool::NodeDefinition const&, Cool::NodesGraph&)   = 0;
         [[nodiscard]] virtual auto name(Node const&) const -> std::string                                                         = 0;
         virtual void               widget_to_rename_node(Node&)                                                                   = 0;
-        [[nodiscard]] virtual auto add_node(Cool::NodeDefinitionAndCategoryName const&) -> NodeId                                 = 0;
+        virtual auto               add_node(Cool::NodeDefinitionAndCategoryName const&) -> NodeId                                 = 0;
+        virtual auto               add_link(Cool::Link const&) -> LinkId                                                          = 0;
+        virtual void               remove_node(Cool::NodeId const&, Cool::Node const&)                                            = 0;
+        virtual void               remove_link(Cool::LinkId const&, Cool::Link const&)                                            = 0;
         virtual void               on_node_created(Node&, Cool::NodeId const&, Pin const* pin_linked_to_new_node)                 = 0;
         [[nodiscard]] virtual auto copy_nodes() const -> std::string                                                              = 0;
         virtual auto               paste_nodes(std::string_view clipboard_content) -> bool                                        = 0;
@@ -122,9 +131,21 @@ private:
         {
             return _cfg.widget_to_rename_node(node);
         }
-        [[nodiscard]] auto add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId override
+        auto add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId override
         {
             return _cfg.add_node(def_and_cat);
+        }
+        auto add_link(Cool::Link const& link) -> LinkId override
+        {
+            return _cfg.add_link(link);
+        }
+        void remove_node(Cool::NodeId const& id, Cool::Node const& node) override
+        {
+            _cfg.remove_node(id, node);
+        }
+        void remove_link(Cool::LinkId const& id, Cool::Link const& link) override
+        {
+            _cfg.remove_link(id, link);
         }
         void on_node_created(Node& node, Cool::NodeId const& id, Pin const* pin_linked_to_new_node) override
         {

@@ -16,6 +16,7 @@ public:
     void remove_all_nodes();
 
     auto add_link(Link const&) -> LinkId;
+    void add_link(LinkId const&, Link const&);
     /// No checks to remove existing links that would be incompatible with this one.
     auto add_link_unchecked(Link const&) -> LinkId;
     void remove_link(LinkId const&);

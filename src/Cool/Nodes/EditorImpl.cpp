@@ -534,7 +534,7 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
         .from_pin_id = begin_pin->id(),
         .to_pin_id   = end_pin->id(),
     };
-    auto const link_id = _graph.add_link(link);
+    auto const link_id = nodes_cfg.add_link(link);
     nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
 }
@@ -601,7 +601,7 @@ static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed:
                       frame_nodes.end());
 }
 
-static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
+static auto process_deletions(NodesConfig& nodes_cfg, NodesGraph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
 {
     if (wants_to_delete_selection)
     {
@@ -628,8 +628,13 @@ static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode
                 {
                     if (ed::AcceptDeletedItem())
                     {
-                        graph.remove_link(as_reg_id(link_id, graph));
-                        graph_has_changed = true;
+                        auto const  id   = as_reg_id(link_id, graph);
+                        auto const* link = graph.links().get_ref(id);
+                        if (link)
+                        {
+                            nodes_cfg.remove_link(id, *link);
+                            graph_has_changed = true;
+                        }
                     }
                 }
             }
@@ -639,9 +644,17 @@ static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode
                 {
                     if (ed::AcceptDeletedItem())
                     {
-                        graph.remove_node(as_reg_id(node_id, graph));
-                        remove_frame_node(frame_nodes, node_id);
-                        graph_has_changed = true;
+                        auto const  id   = as_reg_id(node_id, graph);
+                        auto const* node = graph.nodes().get_ref(id);
+                        if (node)
+                        {
+                            nodes_cfg.remove_node(id, *node);
+                            graph_has_changed = true;
+                        }
+                        else
+                        {
+                            remove_frame_node(frame_nodes, node_id);
+                        }
                     }
                 }
             }
@@ -687,7 +700,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     render_editor(nodes_cfg, library);
 
     graph_has_changed |= process_creations(nodes_cfg);
-    graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
+    graph_has_changed |= process_deletions(nodes_cfg, _graph, _frame_nodes, wants_to_delete_selection());
     graph_has_changed |= process_copy_paste(nodes_cfg);
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
@@ -732,11 +745,11 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
-                        _graph.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
+                        nodes_cfg.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
                     }
                     else if (!new_node->input_pins().empty())
                     {
-                        _graph.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
+                        nodes_cfg.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
                     }
                 }
 

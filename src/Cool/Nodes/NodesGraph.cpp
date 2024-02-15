@@ -12,6 +12,11 @@ void NodesGraph::add_node(NodeId const& id, Node node)
     _nodes.insert_raw(id, std::move(node));
 }
 
+void NodesGraph::add_link(LinkId const& id, Link const& link)
+{
+    _links.insert_raw(id, link);
+}
+
 void NodesGraph::remove_node(NodeId const& node_id)
 {
     auto const maybe_node = _nodes.get(node_id);
