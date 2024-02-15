@@ -648,6 +648,16 @@ static auto process_deletions(NodesConfig& nodes_cfg, NodesGraph& graph, std::ve
                         auto const* node = graph.nodes().get_ref(id);
                         if (node)
                         {
+                            // Remove connected links
+                            {
+                                auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't delete links while iterating over them, so we delay deletion
+                                graph.for_each_link_connected_to_node(*node, [&](Link const& link, LinkId const& link_id, bool) {
+                                    links_to_remove.emplace_back(link_id, link);
+                                    // ed::DeleteLink(as_ed_id(link_id)); Don't think this is needed
+                                });
+                                for (auto const& [link_id, link] : links_to_remove)
+                                    nodes_cfg.remove_link(link_id, link);
+                            }
                             nodes_cfg.remove_node(id, *node);
                             graph_has_changed = true;
                         }

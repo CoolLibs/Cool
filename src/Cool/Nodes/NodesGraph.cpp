@@ -156,20 +156,20 @@ auto NodesGraph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
     return {};
 }
 
-void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(Link const&, bool is_connected_to_input_pin)> const& callback) const
+void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(Link const&, LinkId const&, bool is_connected_to_input_pin)> const& callback) const
 {
     std::shared_lock lock{links().mutex()};
-    for (auto const& [_, link] : links())
+    for (auto const& [link_id, link] : links())
     {
         for (auto const& pin : node.input_pins())
         {
             if (pin.id() == link.to_pin_id)
-                callback(link, true);
+                callback(link, link_id, true);
         }
         for (auto const& pin : node.output_pins())
         {
             if (pin.id() == link.from_pin_id)
-                callback(link, false);
+                callback(link, link_id, false);
         }
     }
 }
