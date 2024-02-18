@@ -64,7 +64,7 @@ void NodesDefinitionUpdater::add_definition(
         for (auto& [_, node] : _graph.nodes())
         {
             if (node.category_name() == category_name && node.definition_name() == definition->name())
-                _config.update_node_with_new_definition(node, *definition, _graph);
+                _config.update_node_with_new_definition(node, *definition);
         }
     }
 }

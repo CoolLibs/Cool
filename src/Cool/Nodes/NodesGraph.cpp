@@ -156,7 +156,7 @@ auto NodesGraph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
     return {};
 }
 
-void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(Link const&, LinkId const&, bool is_connected_to_input_pin)> const& callback) const
+void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const& callback) const
 {
     std::shared_lock lock{links().mutex()};
     for (auto const& [link_id, link] : links())
@@ -164,13 +164,25 @@ void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function
         for (auto const& pin : node.input_pins())
         {
             if (pin.id() == link.to_pin_id)
-                callback(link, link_id, true);
+                callback(link_id, link, true);
         }
         for (auto const& pin : node.output_pins())
         {
             if (pin.id() == link.from_pin_id)
-                callback(link, link_id, false);
+                callback(link_id, link, false);
         }
+    }
+}
+
+void NodesGraph::for_each_link_connected_to_pin(PinId const& pin_id, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const& callback) const
+{
+    std::shared_lock lock{_links.mutex()};
+    for (auto const& [id, link] : _links)
+    {
+        if (link.to_pin_id == pin_id)
+            callback(id, link, true);
+        if (link.from_pin_id == pin_id)
+            callback(id, link, false);
     }
 }
 
