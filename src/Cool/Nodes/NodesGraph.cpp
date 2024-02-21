@@ -7,6 +7,16 @@ auto NodesGraph::add_node(Node node) -> NodeId
     return _nodes.create_raw(std::move(node));
 }
 
+void NodesGraph::add_node(NodeId const& id, Node node)
+{
+    _nodes.insert_raw(id, std::move(node));
+}
+
+void NodesGraph::add_link(LinkId const& id, Link const& link)
+{
+    _links.insert_raw(id, link);
+}
+
 void NodesGraph::remove_node(NodeId const& node_id)
 {
     auto const maybe_node = _nodes.get(node_id);
@@ -146,21 +156,33 @@ auto NodesGraph::find_node_containing_pin(PinId const& pin_id) const -> NodeId
     return {};
 }
 
-void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(Link const&, bool is_connected_to_input_pin)> const& callback) const
+void NodesGraph::for_each_link_connected_to_node(Node const& node, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const& callback) const
 {
     std::shared_lock lock{links().mutex()};
-    for (auto const& [_, link] : links())
+    for (auto const& [link_id, link] : links())
     {
         for (auto const& pin : node.input_pins())
         {
             if (pin.id() == link.to_pin_id)
-                callback(link, true);
+                callback(link_id, link, true);
         }
         for (auto const& pin : node.output_pins())
         {
             if (pin.id() == link.from_pin_id)
-                callback(link, false);
+                callback(link_id, link, false);
         }
+    }
+}
+
+void NodesGraph::for_each_link_connected_to_pin(PinId const& pin_id, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const& callback) const
+{
+    std::shared_lock lock{_links.mutex()};
+    for (auto const& [id, link] : _links)
+    {
+        if (link.to_pin_id == pin_id)
+            callback(id, link, true);
+        if (link.from_pin_id == pin_id)
+            callback(id, link, false);
     }
 }
 

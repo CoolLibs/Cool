@@ -51,7 +51,7 @@ FrameNode::FrameNode()
 
 } // namespace internal
 
-static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& category, NodesConfig& nodes_cfg, NodesGraph& graph)
+static auto imgui_all_definitions_selectables(NodeId const& node_id, Node& node, NodesCategory const& category, NodesConfig& nodes_cfg)
     -> bool
 {
     bool graph_has_changed = false;
@@ -62,7 +62,7 @@ static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& c
         bool const is_selected = def.name() == node.definition_name();
         if (ImGui::Selectable(def.name().c_str(), is_selected))
         {
-            nodes_cfg.update_node_with_new_definition(node, def, graph);
+            nodes_cfg.change_node_definition(node_id, node, def);
             graph_has_changed = true;
         }
         if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -73,7 +73,7 @@ static auto imgui_all_definitions_selectables(Node& node, NodesCategory const& c
     return graph_has_changed;
 }
 
-static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library, NodesGraph& graph) -> bool
+static auto dropdown_to_switch_between_nodes_of_the_same_category(NodeId const& node_id, Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
 {
     auto const* category = library.get_category(node.category_name());
     if (!category)
@@ -83,7 +83,7 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(Cool::Node& no
 
     if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
     {
-        graph_has_changed |= imgui_all_definitions_selectables(node, *category, nodes_cfg, graph);
+        graph_has_changed |= imgui_all_definitions_selectables(node_id, node, *category, nodes_cfg);
         ImGui::EndCombo();
     }
 
@@ -183,7 +183,7 @@ static auto get_selected_links_ids() -> std::vector<ed::LinkId>
     return links;
 }
 
-static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, NodesGraph& graph)
+static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library)
     -> bool
 {
     ImGuiExtras::separator_text(node.definition_name());
@@ -192,7 +192,7 @@ static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& n
     nodes_cfg.imgui_in_inspector_above_node_info(node, id);
 
     nodes_cfg.widget_to_rename_node(node);
-    bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(node, nodes_cfg, library, graph);
+    bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(id, node, nodes_cfg, library);
 
     nodes_cfg.imgui_in_inspector_below_node_info(node, id);
 
@@ -223,7 +223,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
             auto* node = _graph.nodes().get_mutable_ref(node_id);
             if (node)
             {
-                graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library, _graph);
+                graph_has_changed |= imgui_node_in_inspector(*node, node_id, nodes_cfg, library);
             }
             else // Frame node
             {
@@ -534,7 +534,7 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
         .from_pin_id = begin_pin->id(),
         .to_pin_id   = end_pin->id(),
     };
-    auto const link_id = _graph.add_link(link);
+    auto const link_id = nodes_cfg.add_link(link);
     nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
 }
@@ -601,7 +601,7 @@ static void remove_frame_node(std::vector<internal::FrameNode>& frame_nodes, ed:
                       frame_nodes.end());
 }
 
-static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
+static auto process_deletions(NodesConfig& nodes_cfg, NodesGraph& graph, std::vector<internal::FrameNode>& frame_nodes, bool wants_to_delete_selection) -> bool
 {
     if (wants_to_delete_selection)
     {
@@ -628,8 +628,13 @@ static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode
                 {
                     if (ed::AcceptDeletedItem())
                     {
-                        graph.remove_link(as_reg_id(link_id, graph));
-                        graph_has_changed = true;
+                        auto const  id   = as_reg_id(link_id, graph);
+                        auto const* link = graph.links().get_ref(id);
+                        if (link)
+                        {
+                            nodes_cfg.remove_link(id, *link);
+                            graph_has_changed = true;
+                        }
                     }
                 }
             }
@@ -639,9 +644,27 @@ static auto process_deletions(NodesGraph& graph, std::vector<internal::FrameNode
                 {
                     if (ed::AcceptDeletedItem())
                     {
-                        graph.remove_node(as_reg_id(node_id, graph));
-                        remove_frame_node(frame_nodes, node_id);
-                        graph_has_changed = true;
+                        auto const  id   = as_reg_id(node_id, graph);
+                        auto const* node = graph.nodes().get_ref(id);
+                        if (node)
+                        {
+                            // Remove connected links
+                            {
+                                auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't delete links while iterating over them, so we delay deletion
+                                graph.for_each_link_connected_to_node(*node, [&](LinkId const& link_id, Link const& link, bool) {
+                                    links_to_remove.emplace_back(link_id, link);
+                                    // ed::DeleteLink(as_ed_id(link_id)); Don't think this is needed
+                                });
+                                for (auto const& [link_id, link] : links_to_remove)
+                                    nodes_cfg.remove_link(link_id, link);
+                            }
+                            nodes_cfg.remove_node(id, *node);
+                            graph_has_changed = true;
+                        }
+                        else
+                        {
+                            remove_frame_node(frame_nodes, node_id);
+                        }
                     }
                 }
             }
@@ -687,7 +710,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     render_editor(nodes_cfg, library);
 
     graph_has_changed |= process_creations(nodes_cfg);
-    graph_has_changed |= process_deletions(_graph, _frame_nodes, wants_to_delete_selection());
+    graph_has_changed |= process_deletions(nodes_cfg, _graph, _frame_nodes, wants_to_delete_selection());
     graph_has_changed |= process_copy_paste(nodes_cfg);
 
     if (wants_to_open_nodes_menu() || _link_has_just_been_released)
@@ -720,7 +743,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         {
             ImGui::CloseCurrentPopup();
 
-            auto const new_node_id = _graph.add_node(nodes_cfg.make_node(*new_node_def_id));
+            auto const new_node_id = nodes_cfg.add_node(*new_node_def_id);
             auto*      new_node    = _graph.nodes().get_mutable_ref(new_node_id);
             if (new_node)
             {
@@ -732,11 +755,11 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
-                        _graph.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
+                        nodes_cfg.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
                     }
                     else if (!new_node->input_pins().empty())
                     {
-                        _graph.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
+                        nodes_cfg.add_link(Link{begin_pin->id(), new_node->input_pins()[0].id()});
                     }
                 }
 
@@ -755,7 +778,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         {
             auto const* category = library.get_category(node->category_name());
             if (category)
-                graph_has_changed |= imgui_all_definitions_selectables(*node, *category, nodes_cfg, _graph);
+                graph_has_changed |= imgui_all_definitions_selectables(id, *node, *category, nodes_cfg);
         }
         else // Frame node
         {

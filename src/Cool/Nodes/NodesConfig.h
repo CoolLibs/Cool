@@ -13,10 +13,14 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin
     { const_cfg.node_color(node_const, node_id) } -> std::convertible_to<Cool::Color>;
     { const_cfg.pin_color(pin_const, idx, node_const, node_id) } -> std::convertible_to<Cool::Color>;
     cfg.on_link_created_between_existing_nodes(link_const, link_id);
-    cfg.update_node_with_new_definition(node, node_def, graph);
+    cfg.update_node_with_new_definition(node, node_def);
+    cfg.change_node_definition(node_id, node, node_def);
     { const_cfg.name(node) } -> std::convertible_to<std::string>;
     cfg.widget_to_rename_node(node);
-    { cfg.make_node(def_and_cat) } -> std::convertible_to<Node>;
+    { cfg.add_node(def_and_cat) } -> std::convertible_to<NodeId>;
+    { cfg.add_link(link_const) } -> std::convertible_to<LinkId>;
+    cfg.remove_node(node_id, node_const);
+    cfg.remove_link(link_id, link_const);
     cfg.on_node_created(node, node_id, pin_linked_to_new_node);
     { const_cfg.copy_nodes() } -> std::convertible_to<std::string>;
     { cfg.paste_nodes("Some clipboard content") } -> std::convertible_to<bool>;
@@ -33,10 +37,14 @@ public:
     [[nodiscard]] auto pin_color(Pin const& pin, size_t pin_index, Node const& node, NodeId const& id) const -> Cool::Color { return _pimpl->pin_color(pin, pin_index, node, id); }
     /// Doesn't get called when a link is released on the workspace and creates a new node (If you want to handle that, you already have on_node_created(): if pin_linked_to_new_node is not null then this means said event occurred).
     void               on_link_created_between_existing_nodes(Link const& link, LinkId const& id) { _pimpl->on_link_created_between_existing_nodes(link, id); }
-    void               update_node_with_new_definition(Node& node, NodeDefinition const& node_def, NodesGraph& graph) { _pimpl->update_node_with_new_definition(node, node_def, graph); }
+    void               update_node_with_new_definition(Node& node, NodeDefinition const& node_def) { _pimpl->update_node_with_new_definition(node, node_def); }
+    void               change_node_definition(NodeId const& id, Node& node, NodeDefinition const& def) { _pimpl->change_node_definition(id, node, def); }
     [[nodiscard]] auto name(Node const& node) const -> std::string { return _pimpl->name(node); }
     void               widget_to_rename_node(Node& node) { _pimpl->widget_to_rename_node(node); }
-    [[nodiscard]] auto make_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> Node { return _pimpl->make_node(def_and_cat); }
+    auto               add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId { return _pimpl->add_node(def_and_cat); }
+    auto               add_link(Cool::Link const& link) -> LinkId { return _pimpl->add_link(link); }
+    void               remove_node(Cool::NodeId const& id, Cool::Node const& node) { return _pimpl->remove_node(id, node); }
+    void               remove_link(Cool::LinkId const& id, Cool::Link const& link) { return _pimpl->remove_link(id, link); }
     void               on_node_created(Node& node, NodeId const& id, Pin const* pin_linked_to_new_node) { _pimpl->on_node_created(node, id, pin_linked_to_new_node); }
     [[nodiscard]] auto copy_nodes() const -> std::string { return _pimpl->copy_nodes(); }
     /// Returns true iff successfully pasted nodes
@@ -66,10 +74,14 @@ private:
         [[nodiscard]] virtual auto node_color(Node const&, Cool::NodeId const&) const -> Cool::Color                              = 0;
         [[nodiscard]] virtual auto pin_color(Pin const&, size_t pin_index, Node const&, Cool::NodeId const&) const -> Cool::Color = 0;
         virtual void               on_link_created_between_existing_nodes(Link const&, Cool::LinkId const&)                       = 0;
-        virtual void               update_node_with_new_definition(Cool::Node&, Cool::NodeDefinition const&, Cool::NodesGraph&)   = 0;
+        virtual void               update_node_with_new_definition(Cool::Node&, Cool::NodeDefinition const&)                      = 0;
+        virtual void               change_node_definition(NodeId const& id, Node& node, NodeDefinition const& def)                = 0;
         [[nodiscard]] virtual auto name(Node const&) const -> std::string                                                         = 0;
         virtual void               widget_to_rename_node(Node&)                                                                   = 0;
-        [[nodiscard]] virtual auto make_node(Cool::NodeDefinitionAndCategoryName const&) -> Node                                  = 0;
+        virtual auto               add_node(Cool::NodeDefinitionAndCategoryName const&) -> NodeId                                 = 0;
+        virtual auto               add_link(Cool::Link const&) -> LinkId                                                          = 0;
+        virtual void               remove_node(Cool::NodeId const&, Cool::Node const&)                                            = 0;
+        virtual void               remove_link(Cool::LinkId const&, Cool::Link const&)                                            = 0;
         virtual void               on_node_created(Node&, Cool::NodeId const&, Pin const* pin_linked_to_new_node)                 = 0;
         [[nodiscard]] virtual auto copy_nodes() const -> std::string                                                              = 0;
         virtual auto               paste_nodes(std::string_view clipboard_content) -> bool                                        = 0;
@@ -110,9 +122,13 @@ private:
         {
             _cfg.on_link_created_between_existing_nodes(link, id);
         }
-        void update_node_with_new_definition(Cool::Node& node, Cool::NodeDefinition const& node_def, Cool::NodesGraph& graph) override
+        void update_node_with_new_definition(Cool::Node& node, Cool::NodeDefinition const& node_def) override
         {
-            _cfg.update_node_with_new_definition(node, node_def, graph);
+            _cfg.update_node_with_new_definition(node, node_def);
+        }
+        void change_node_definition(NodeId const& id, Node& node, NodeDefinition const& def) override
+        {
+            _cfg.change_node_definition(id, node, def);
         }
         [[nodiscard]] auto name(Node const& node) const -> std::string override
         {
@@ -122,9 +138,21 @@ private:
         {
             return _cfg.widget_to_rename_node(node);
         }
-        [[nodiscard]] auto make_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> Node override
+        auto add_node(Cool::NodeDefinitionAndCategoryName const& def_and_cat) -> NodeId override
         {
-            return _cfg.make_node(def_and_cat);
+            return _cfg.add_node(def_and_cat);
+        }
+        auto add_link(Cool::Link const& link) -> LinkId override
+        {
+            return _cfg.add_link(link);
+        }
+        void remove_node(Cool::NodeId const& id, Cool::Node const& node) override
+        {
+            _cfg.remove_node(id, node);
+        }
+        void remove_link(Cool::LinkId const& id, Cool::Link const& link) override
+        {
+            _cfg.remove_link(id, link);
         }
         void on_node_created(Node& node, Cool::NodeId const& id, Pin const* pin_linked_to_new_node) override
         {

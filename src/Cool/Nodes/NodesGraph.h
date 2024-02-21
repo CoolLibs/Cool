@@ -11,10 +11,12 @@ namespace Cool {
 class NodesGraph {
 public:
     auto add_node(Node) -> NodeId;
+    void add_node(NodeId const&, Node);
     void remove_node(NodeId const&);
     void remove_all_nodes();
 
     auto add_link(Link const&) -> LinkId;
+    void add_link(LinkId const&, Link const&);
     /// No checks to remove existing links that would be incompatible with this one.
     auto add_link_unchecked(Link const&) -> LinkId;
     void remove_link(LinkId const&);
@@ -64,7 +66,8 @@ public:
             callback(node.template downcast<NodeT>());
         }
     }
-    void for_each_link_connected_to_node(Node const&, std::function<void(Link const&, bool is_connected_to_input_pin)> const& callback) const;
+    void for_each_link_connected_to_node(Node const&, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const&) const;
+    void for_each_link_connected_to_pin(PinId const&, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const&) const;
 
 private:
     reg::RawRegistry<Node> _nodes;
