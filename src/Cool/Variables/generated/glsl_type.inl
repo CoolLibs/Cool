@@ -148,3 +148,9 @@ auto glsl_type<Cool::OSCChannel>() -> std::string
 {
     return "float";
 }
+
+template<>
+auto glsl_type<Cool::TimeSpeed>() -> std::string
+{
+    return "float";
+}

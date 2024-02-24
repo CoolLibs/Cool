@@ -9,7 +9,7 @@
 
 namespace Cool::ClockU {
 
-void imgui_timeline(Cool::Clock& clock, std::function<void()> const& on_time_reset)
+void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widgets, std::function<void()> const& on_time_reset)
 {
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0.f, 0.f});
     {
@@ -35,9 +35,11 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& on_time_res
     ImGui::PopStyleVar();
 
     ImGui::SameLine();
+    extra_widgets();
+    ImGui::SameLine();
 
     // Timeline
-    float t = clock.time();
+    float t = clock.time_in_seconds();
     ImGui::PushFont(Font::monospace());
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::DragFloat("##time", &t, 0.01f, 0.f, 0.f, "%.2f seconds"))
@@ -48,7 +50,7 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& on_time_res
 
 void imgui_display_time(Cool::Clock& clock)
 {
-    ImGui::Text("%.2f seconds", clock.time());
+    ImGui::Text("%.2f seconds", clock.time_in_seconds());
 }
 
 } // namespace Cool::ClockU

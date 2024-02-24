@@ -1,23 +1,19 @@
 #pragma once
-
 #include "Clock.h"
 
 namespace Cool {
 
 class Clock_FixedTimestep : public Clock {
 public:
-    Clock_FixedTimestep(float fps, float initial_time = 0.f);
-    ~Clock_FixedTimestep() = default;
-
-    float delta_time() const override;
-    float time() const override;
-
-    void set_time(float new_time, bool force_delta_time_to_ignore_the_change = false) override;
-    void update() override;
+    explicit Clock_FixedTimestep(float fps)
+        : _delta_time_in_nanoseconds{static_cast<int64_t>(1'000'000'000.f / fps)} // TODO(TimeSpeed) Wrong speed
+    {}
 
 private:
-    const float   _dt;
-    long long int _frames_count; // store time as an int to avoid floating point imprecisions when adding a small number (dt) to a big one (time) [don't know if this is really necessary though]
+    auto update_and_get_delta_time_in_nanoseconds() -> int64_t override { return _delta_time_in_nanoseconds; }
+
+private:
+    int64_t _delta_time_in_nanoseconds;
 };
 
 } // namespace Cool

@@ -326,6 +326,14 @@ def all_variable_descriptions():
             metadatas=[],
             always_requires_shader_code_generation=False,
         ),
+        VariableDescription(
+            input_type=["TimeSpeed"],
+            cpp_type="Cool::TimeSpeed",
+            glsl_type="float",
+            include="<Cool/StrongTypes/TimeSpeed.h>",
+            metadatas=float_metadatas(),
+            always_requires_shader_code_generation=False,
+        ),
     ]
 
 

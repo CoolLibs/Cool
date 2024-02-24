@@ -145,11 +145,11 @@ void AudioManager::sync_with_clock(Cool::Clock const& clock, bool force_sync_tim
 
     force_sync_time |= !Audio::player().is_playing(); // While paused, we can force syncing without hearing audio glitches. And this helps making it smoother when we drag time on the timeline: the audio updates immediately and not through increments of 0.5 seconds.
     if (force_sync_time
-        || std::abs(clock.time() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
+        || std::abs(clock.time_in_seconds() - Audio::player().get_time()) > 0.5f // Syncing every frame sounds really bad, so we only sync when a gap has appeared.
     )
     {
         // NB: We sync the player even when it is paused because the audio features need the player to always be synced with the clock in order to get the data from the current time.
-        if (Audio::player().set_time(clock.time()))
+        if (Audio::player().set_time(clock.time_in_seconds()))
             _audio_data_has_been_invalidated = true;
     }
 }

@@ -14,10 +14,11 @@ static auto nb_digits(int n) -> int
 VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size)
     : _folder_path{folder_path}
     , _size{size}
-    , _clock{params.fps, params.beginning}
+    , _clock{params.fps}
     , _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
     , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
 {
+    _clock.set_time(params.beginning);
     _thread_pool.start();
 }
 
@@ -97,7 +98,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path const& file_path)
 {
-    polaroid.render(_clock.time(), _clock.delta_time(), _size);
+    polaroid.render(_clock.time_in_seconds(), _clock.delta_time_in_seconds(), _size);
 
     _thread_pool.push_job(ImageExportJob{
         file_path,

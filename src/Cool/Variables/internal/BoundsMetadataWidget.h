@@ -7,138 +7,129 @@
 
 namespace Cool::internal {
 
-inline auto imgui_drag(const char* label, int* val, float drag_speed) -> bool
+inline auto imgui_drag(const char* label, int* val, float drag_speed, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragInt(label, val, drag_speed);
+    return ImGui::DragInt(label, val, drag_speed, 0, 0, format.value_or("%d"));
 }
-inline auto imgui_drag(const char* label, float* val, float drag_speed) -> bool
+inline auto imgui_drag(const char* label, float* val, float drag_speed, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragFloat(label, val, drag_speed);
-}
-
-inline auto imgui_drag(const char* label, int* val, float drag_speed, const char* text_in_input) -> bool
-{
-    return ImGui::DragInt(label, val, drag_speed, 0, 0, text_in_input);
-}
-inline auto imgui_drag(const char* label, float* val, float drag_speed, const char* text_in_input) -> bool
-{
-    return ImGui::DragFloat(label, val, drag_speed, 0.f, 0.f, text_in_input);
+    return ImGui::DragFloat(label, val, drag_speed, 0.f, 0.f, format.value_or("%.3f"));
 }
 
-inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, int max) -> bool
+inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, int max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragInt(label, val, drag_speed, min, max);
+    return ImGui::DragInt(label, val, drag_speed, min, max, format.value_or("%d"));
 }
-inline auto imgui_drag(const char* label, float* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, float* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragFloat(label, val, drag_speed, min, max);
+    return ImGui::DragFloat(label, val, drag_speed, min, max, format.value_or("%.3f"));
 }
-inline auto imgui_drag(const char* label, glm::vec2* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::vec2* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragFloat2(label, glm::value_ptr(*val), drag_speed, min, max);
+    return ImGui::DragFloat2(label, glm::value_ptr(*val), drag_speed, min, max, format.value_or("%.3f"));
 }
-inline auto imgui_drag(const char* label, glm::vec3* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::vec3* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragFloat3(label, glm::value_ptr(*val), drag_speed, min, max);
+    return ImGui::DragFloat3(label, glm::value_ptr(*val), drag_speed, min, max, format.value_or("%.3f"));
 }
-inline auto imgui_drag(const char* label, glm::vec4* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::vec4* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::DragFloat4(label, glm::value_ptr(*val), drag_speed, min, max);
+    return ImGui::DragFloat4(label, glm::value_ptr(*val), drag_speed, min, max, format.value_or("%.3f"));
 }
-inline auto imgui_drag(const char* label, glm::mat2* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::mat2* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool b = false;
     ImGui::PushID(val);
     glm::mat2 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
-    b |= ImGui::DragFloat2(label, glm::value_ptr(mat[0]), drag_speed, min, max);
-    b |= ImGui::DragFloat2("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
+    b |= ImGui::DragFloat2(label, glm::value_ptr(mat[0]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat2("##1", glm::value_ptr(mat[1]), drag_speed, min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
     return b;
 }
-inline auto imgui_drag(const char* label, glm::mat3* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::mat3* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool b = false;
     ImGui::PushID(val);
     glm::mat3 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
-    b |= ImGui::DragFloat3(label, glm::value_ptr(mat[0]), drag_speed, min, max);
-    b |= ImGui::DragFloat3("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
-    b |= ImGui::DragFloat3("##2", glm::value_ptr(mat[2]), drag_speed, min, max);
+    b |= ImGui::DragFloat3(label, glm::value_ptr(mat[0]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat3("##1", glm::value_ptr(mat[1]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat3("##2", glm::value_ptr(mat[2]), drag_speed, min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
     return b;
 }
-inline auto imgui_drag(const char* label, glm::mat4* val, float drag_speed, float min, float max) -> bool
+inline auto imgui_drag(const char* label, glm::mat4* val, float drag_speed, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool b = false;
     ImGui::PushID(val);
     glm::mat4 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
-    b |= ImGui::DragFloat4(label, glm::value_ptr(mat[0]), drag_speed, min, max);
-    b |= ImGui::DragFloat4("##1", glm::value_ptr(mat[1]), drag_speed, min, max);
-    b |= ImGui::DragFloat4("##2", glm::value_ptr(mat[2]), drag_speed, min, max);
-    b |= ImGui::DragFloat4("##3", glm::value_ptr(mat[3]), drag_speed, min, max);
+    b |= ImGui::DragFloat4(label, glm::value_ptr(mat[0]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat4("##1", glm::value_ptr(mat[1]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat4("##2", glm::value_ptr(mat[2]), drag_speed, min, max, format.value_or("%.3f"));
+    b |= ImGui::DragFloat4("##3", glm::value_ptr(mat[3]), drag_speed, min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
     return b;
 }
 
-inline auto imgui_slider(const char* label, int* val, int min, int max) -> bool
+inline auto imgui_slider(const char* label, int* val, int min, int max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::SliderInt(label, val, min, max);
+    return ImGui::SliderInt(label, val, min, max, format.value_or("%d"));
 }
-inline auto imgui_slider(const char* label, float* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, float* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::SliderFloat(label, val, min, max);
+    return ImGui::SliderFloat(label, val, min, max, format.value_or("%.3f"));
 }
-inline auto imgui_slider(const char* label, glm::vec2* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::vec2* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::SliderFloat2(label, glm::value_ptr(*val), min, max);
+    return ImGui::SliderFloat2(label, glm::value_ptr(*val), min, max, format.value_or("%.3f"));
 }
-inline auto imgui_slider(const char* label, glm::vec3* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::vec3* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::SliderFloat3(label, glm::value_ptr(*val), min, max);
+    return ImGui::SliderFloat3(label, glm::value_ptr(*val), min, max, format.value_or("%.3f"));
 }
-inline auto imgui_slider(const char* label, glm::vec4* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::vec4* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
-    return ImGui::SliderFloat4(label, glm::value_ptr(*val), min, max);
+    return ImGui::SliderFloat4(label, glm::value_ptr(*val), min, max, format.value_or("%.3f"));
 }
-inline auto imgui_slider(const char* label, glm::mat2* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::mat2* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool      b   = false;
     glm::mat2 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
     ImGui::PushID(val);
-    b |= ImGui::SliderFloat2(label, glm::value_ptr(mat[0]), min, max);
-    b |= ImGui::SliderFloat2("##1", glm::value_ptr(mat[1]), min, max);
+    b |= ImGui::SliderFloat2(label, glm::value_ptr(mat[0]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat2("##1", glm::value_ptr(mat[1]), min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
     return b;
 }
-inline auto imgui_slider(const char* label, glm::mat3* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::mat3* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool      b   = false;
     glm::mat3 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
     ImGui::PushID(val);
-    b |= ImGui::SliderFloat3(label, glm::value_ptr(mat[0]), min, max);
-    b |= ImGui::SliderFloat3("##1", glm::value_ptr(mat[1]), min, max);
-    b |= ImGui::SliderFloat3("##2", glm::value_ptr(mat[2]), min, max);
+    b |= ImGui::SliderFloat3(label, glm::value_ptr(mat[0]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat3("##1", glm::value_ptr(mat[1]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat3("##2", glm::value_ptr(mat[2]), min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
     return b;
 }
-inline auto imgui_slider(const char* label, glm::mat4* val, float min, float max) -> bool
+inline auto imgui_slider(const char* label, glm::mat4* val, float min, float max, std::optional<const char*> format = {}) -> bool
 {
     bool      b   = false;
     glm::mat4 mat = glm::transpose(*val); // This is a simple way of having mat[0] return us a row and not a column
     ImGui::PushID(val);
-    b |= ImGui::SliderFloat4(label, glm::value_ptr(mat[0]), min, max);
-    b |= ImGui::SliderFloat4("##1", glm::value_ptr(mat[1]), min, max);
-    b |= ImGui::SliderFloat4("##2", glm::value_ptr(mat[2]), min, max);
-    b |= ImGui::SliderFloat4("##3", glm::value_ptr(mat[3]), min, max);
+    b |= ImGui::SliderFloat4(label, glm::value_ptr(mat[0]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat4("##1", glm::value_ptr(mat[1]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat4("##2", glm::value_ptr(mat[2]), min, max, format.value_or("%.3f"));
+    b |= ImGui::SliderFloat4("##3", glm::value_ptr(mat[3]), min, max, format.value_or("%.3f"));
     ImGui::PopID();
     if (b)
         *val = glm::transpose(mat);
@@ -162,7 +153,7 @@ constexpr auto biggest_number<int>() -> int
 
 /// E.g. ExactType is glm::vec3 and BaseType is float.
 template<typename ExactType, typename BaseType>
-auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> const& bounds) -> bool
+auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> const& bounds, std::optional<const char*> format = {}) -> bool
 {
     if (bounds.use_slider)
     {
@@ -170,7 +161,8 @@ auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> 
             label,
             value,
             bounds.min,
-            bounds.max
+            bounds.max,
+            format
         );
     }
     else // NOLINT(readability-else-after-return)
@@ -180,7 +172,8 @@ auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> 
             value,
             bounds.drag_speed,
             bounds.has_min_bound ? bounds.min : -biggest_number<BaseType>(),
-            bounds.has_max_bound ? bounds.max : +biggest_number<BaseType>()
+            bounds.has_max_bound ? bounds.max : +biggest_number<BaseType>(),
+            format
         );
     }
 }

@@ -27,4 +27,5 @@ Variable<bool>,
     Variable<glm::mat3>,
     Variable<glm::mat4>,
     Variable<Cool::MidiChannel>,
-    Variable<Cool::OSCChannel>
+    Variable<Cool::OSCChannel>,
+    Variable<Cool::TimeSpeed>

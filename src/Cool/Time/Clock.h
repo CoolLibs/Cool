@@ -1,4 +1,7 @@
 #pragma once
+#include <cstdint>
+#include "Cool/Dependencies/SharedVariable.h"
+#include "Cool/Variables/Variable_TimeSpeed.h"
 
 namespace Cool {
 
@@ -7,14 +10,17 @@ public:
     Clock()          = default;
     virtual ~Clock() = default;
 
-    [[nodiscard]] virtual auto delta_time() const -> float = 0;
-    [[nodiscard]] virtual auto time() const -> float       = 0;
+    [[nodiscard]] auto time_in_seconds() const -> float;
+    [[nodiscard]] auto delta_time_in_seconds() const -> float;
 
-    virtual void set_time(float new_time, bool force_delta_time_to_ignore_the_change = false) = 0;
-    virtual void update()                                                                     = 0;
+    /// Must be called once per frame
+    void update();
+    void set_time(float new_time_in_seconds, bool force_delta_time_to_ignore_the_change = false);
+    auto time_speed() const -> SharedVariable<TimeSpeed> const& { return _time_speed; }
+    auto time_speed() -> SharedVariable<TimeSpeed>& { return _time_speed; }
 
-    virtual void       play();
-    virtual void       pause();
+    void               play();
+    void               pause();
     void               set_playing(bool wants_to_play);
     void               toggle_play_pause();
     [[nodiscard]] auto is_playing() const -> bool { return _is_playing; }
@@ -23,8 +29,39 @@ public:
     void set_is_being_changed_in_GUI(bool state) { _is_being_changed_in_GUI = state; }
 
 private:
-    bool _is_playing{true};
-    bool _is_being_changed_in_GUI{false};
+    /// Called once every frame when the clock is playing
+    virtual auto update_and_get_delta_time_in_nanoseconds() -> int64_t = 0;
+    /// Called when the clock goes from paused to playing
+    virtual void on_play(){};
+
+private:
+    int64_t                   _time_in_nanoseconds{0};
+    int64_t                   _delta_time_in_nanoseconds{0};
+    int64_t                   _extra_delta_time_in_nanoseconds{0};
+    bool                      _used_extra_delta_time_in_nanoseconds{true};
+    bool                      _is_playing{true};
+    bool                      _is_being_changed_in_GUI{false};
+    SharedVariable<TimeSpeed> _time_speed{{VariableData<TimeSpeed>{
+                                              .name     = "Time Speed",
+                                              .value    = {1.f},
+                                              .metadata = {
+                                                  .bounds = {.has_min_bound = true},
+                                              },
+                                          }},
+                                          {} /*Empty DirtyFlag, we don't need to warn anyone when this changes*/};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+            cereal::make_nvp("Time (in nanoseconds)", _time_in_nanoseconds),
+            cereal::make_nvp("Speed", _time_speed),
+            cereal::make_nvp("Is playing", _is_playing)
+        );
+    }
 };
 
 } // namespace Cool
