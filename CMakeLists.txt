@@ -232,8 +232,8 @@ add_subdirectory(lib/wafl)
 target_link_libraries(Cool-PublicProperties INTERFACE wafl::wafl)
 
 # open_link
-add_subdirectory(lib/open_link)
-target_link_libraries(Cool-PublicProperties INTERFACE open_link::open_link)
+add_subdirectory(lib/open)
+target_link_libraries(Cool-PublicProperties INTERFACE Cool::open)
 
 # os_name
 add_subdirectory(lib/os_name)

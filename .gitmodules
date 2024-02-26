@@ -61,9 +61,6 @@
 [submodule "lib/imgui_gradient"]
 	path = lib/imgui_gradient
 	url = https://github.com/CoolLibs/imgui_gradient.git
-[submodule "lib/open_link"]
-	path = lib/open_link
-	url = https://github.com/CoolLibs/open_link
 [submodule "lib/expected"]
 	path = lib/expected
 	url = https://github.com/TartanLlama/expected
@@ -112,3 +109,6 @@
 [submodule "lib/oscpack"]
 	path = lib/oscpack
 	url = https://github.com/CoolLibs/oscpack
+[submodule "lib/open"]
+	path = lib/open
+	url = https://github.com/CoolLibs/open

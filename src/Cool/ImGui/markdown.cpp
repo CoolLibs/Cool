@@ -1,6 +1,6 @@
 #include "markdown.h"
 #include <imgui_markdown/imgui_markdown.h>
-#include <open_link/open_link.hpp>
+#include <open/open.hpp>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Fonts.h"
@@ -12,7 +12,7 @@ static void link_clicked_callback(ImGui::MarkdownLinkCallbackData data)
 {
     if (data.isImage)
         return;
-    open_link(std::string{data.link, static_cast<size_t>(data.linkLength)}.c_str()); // `link` is not a zero-terminated string, so we must construct a string from the pointer and the length.
+    open(std::string{data.link, static_cast<size_t>(data.linkLength)}.c_str()); // `link` is not a zero-terminated string, so we must construct a string from the pointer and the length.
 }
 
 static void format_callback(ImGui::MarkdownFormatInfo const& info, bool is_beginning);

@@ -4,7 +4,6 @@
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
-#include <open_link/open_link.hpp>
 #include <ostream>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
