@@ -11,7 +11,7 @@ namespace Cool {
 
 class VideoExportProcess {
 public:
-    VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size);
+    VideoExportProcess(VideoExportParams const& params, TimeSpeed time_speed, std::filesystem::path const& folder_path, img::Size size);
     auto update(Polaroid polaroid) -> bool;
     void imgui(std::function<void()> const& extra_widgets);
 

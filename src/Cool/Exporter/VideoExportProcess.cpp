@@ -11,7 +11,7 @@ static auto nb_digits(int n) -> int
     return static_cast<int>(std::ceil(std::log10(n)));
 }
 
-VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::filesystem::path folder_path, img::Size size)
+VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpeed time_speed, std::filesystem::path const& folder_path, img::Size size)
     : _folder_path{folder_path}
     , _size{size}
     , _clock{params.fps}
@@ -19,6 +19,7 @@ VideoExportProcess::VideoExportProcess(const VideoExportParams& params, std::fil
     , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
 {
     _clock.set_time(params.beginning);
+    _clock.time_speed().value() = time_speed;
     _thread_pool.start();
 }
 

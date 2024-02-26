@@ -31,7 +31,6 @@ void Clock::toggle_play_pause()
         play();
 }
 
-// TODO(TimeSpeed) ne pas utiliser nanosecnde, mais std::chrono::steady_clock::ratio
 static auto as_float_in_seconds_from_nanoseconds(int64_t time_in_nanoseconds) -> float
 {
     int64_t const bob = 1'000'000'000; // 10^9
@@ -53,7 +52,7 @@ void Clock::set_time(float new_time_in_seconds, bool force_delta_time_to_ignore_
 {
     auto const floor = std::floor(new_time_in_seconds);
     auto const fract = new_time_in_seconds - floor;
-    auto const bob   = static_cast<int64_t>(floor) * 1'000'000'000
+    auto const bob   = static_cast<int64_t>(floor) * 1'000'000'000 // TODO(TimeSpeed) Don't hardcode the 10^9
                      + static_cast<int64_t>(fract * 1'000'000'000);
     if (!force_delta_time_to_ignore_the_change)
     {
@@ -70,7 +69,9 @@ void Clock::update()
         _delta_time_in_nanoseconds = 0;
         return;
     }
-    _delta_time_in_nanoseconds = update_and_get_delta_time_in_nanoseconds() * _time_speed.value().value;
+    _delta_time_in_nanoseconds = static_cast<int64_t>(
+        static_cast<float>(update_and_get_delta_time_in_nanoseconds()) * _time_speed.value().value
+    );
     if (_used_extra_delta_time_in_nanoseconds)
         _extra_delta_time_in_nanoseconds = 0;
     _used_extra_delta_time_in_nanoseconds = true;

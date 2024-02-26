@@ -6,7 +6,7 @@ namespace Cool {
 class Clock_FixedTimestep : public Clock {
 public:
     explicit Clock_FixedTimestep(float fps)
-        : _delta_time_in_nanoseconds{static_cast<int64_t>(1'000'000'000.f / fps)} // TODO(TimeSpeed) Wrong speed
+        : _delta_time_in_nanoseconds{static_cast<int64_t>(1'000'000'000.f / fps)}
     {}
 
 private:
