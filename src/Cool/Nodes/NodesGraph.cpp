@@ -186,4 +186,14 @@ void NodesGraph::for_each_link_connected_to_pin(PinId const& pin_id, std::functi
     }
 }
 
+void NodesGraph::for_each_link_connected_to_input_pin(PinId const& pin_id, std::function<void(LinkId const&, Link const&)> const& callback) const
+{
+    std::shared_lock lock{_links.mutex()};
+    for (auto const& [id, link] : _links)
+    {
+        if (link.to_pin_id == pin_id)
+            callback(id, link);
+    }
+}
+
 } // namespace Cool

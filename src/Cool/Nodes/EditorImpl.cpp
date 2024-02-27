@@ -534,6 +534,16 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
         .from_pin_id = begin_pin->id(),
         .to_pin_id   = end_pin->id(),
     };
+    {
+        // Remove all links going into the same pin as the new link
+        // Must be done before adding the link, otherwise we would remove it too
+        auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't remove while iterating, so we delay it
+        _graph.for_each_link_connected_to_input_pin(link.to_pin_id, [&](LinkId const& link_id, Link const& link) {
+            links_to_remove.emplace_back(link_id, link);
+        });
+        for (auto const& [link_id, link] : links_to_remove)
+            nodes_cfg.remove_link(link_id, link);
+    }
     auto const link_id = nodes_cfg.add_link(link);
     nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
