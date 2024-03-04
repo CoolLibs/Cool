@@ -154,6 +154,9 @@ auto substring(
     std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
+/// Removes all characters in `string` between `start` (included) and `end` (excluded).
+void remove_substring(std::string& string, size_t start, size_t end);
+
 /// Returns the indices of the beginning and end of the next word in "text" after position "starting_pos".
 /// Words are considered to be separated by one or more characters of "delimiters".
 auto find_next_word_position(

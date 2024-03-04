@@ -290,6 +290,11 @@ auto substring(
     return substring_impl(text, begin, end);
 }
 
+void remove_substring(std::string& string, size_t start, size_t end)
+{
+    string.erase(start, end - start);
+}
+
 auto find_next_word_position(
     std::string_view text,
     size_t           starting_pos,
