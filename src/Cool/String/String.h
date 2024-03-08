@@ -173,6 +173,14 @@ auto find_previous_word_position(
     std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
 
+/// Returns the word in "text" before the position "ending_pos". Or nullopt if there is no such word.
+/// Words are considered to be separated by one or more characters of "delimiters".
+auto find_previous_word(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters = default_word_delimiters
+) -> std::optional<std::string>;
+
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.
 auto next_word(

@@ -333,6 +333,19 @@ auto find_previous_word_position(
     return std::make_pair(idx1, idx2 + 1);
 }
 
+auto find_previous_word(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters
+) -> std::optional<std::string>
+{
+    auto const position = find_previous_word_position(text, ending_pos, delimiters);
+    if (!position)
+        return std::nullopt;
+
+    return std::string{substring(text, *position)};
+}
+
 auto next_word(
     std::string_view text,
     size_t           starting_pos,
