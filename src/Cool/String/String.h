@@ -154,6 +154,9 @@ auto substring(
     std::pair<size_t, size_t> begin_end
 ) -> std::string_view;
 
+/// Removes all characters in `string` between `start` (included) and `end` (excluded).
+void remove_substring(std::string& string, size_t start, size_t end);
+
 /// Returns the indices of the beginning and end of the next word in "text" after position "starting_pos".
 /// Words are considered to be separated by one or more characters of "delimiters".
 auto find_next_word_position(
@@ -169,6 +172,14 @@ auto find_previous_word_position(
     size_t           ending_pos,
     std::string_view delimiters = default_word_delimiters
 ) -> std::optional<std::pair<size_t, size_t>>;
+
+/// Returns the word in "text" before the position "ending_pos". Or nullopt if there is no such word.
+/// Words are considered to be separated by one or more characters of "delimiters".
+auto find_previous_word(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters = default_word_delimiters
+) -> std::optional<std::string>;
 
 /// /!\ The returned string_view is only valid as long as the input string_view is valid!
 /// Returns the next word after `startingPos`. A word is a block of characters that doesn't contain any of the `delimiters`.

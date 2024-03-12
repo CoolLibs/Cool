@@ -55,7 +55,7 @@ void NodesDefinitionUpdater::add_definition(
 
     {
         auto const category_folder = File::without_file_name(path).string();
-        _library.add_definition(*definition, category_name, make_category_config(category_folder), get_category_order(path, root));
+        _library.add_definition(*definition, category_name, [&]() { return NodesCategory{category_name, make_category_config(category_folder), get_category_order(path, root)}; });
     }
 
     {

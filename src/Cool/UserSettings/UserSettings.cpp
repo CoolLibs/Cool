@@ -17,9 +17,6 @@ auto UserSettings::imgui() -> bool
     ImGuiExtras::separator_text("Miscellaneous");
     b |= imgui_single_click_to_input_in_drag_widgets();
     b |= imgui_enable_multi_viewport();
-    ImGui::NewLine();
-    ImGuiExtras::separator_text("Advanced");
-    b |= imgui_nodes_developer_mode();
 
     return b;
 }
@@ -76,13 +73,6 @@ void UserSettings::apply_multi_viewport_setting() const
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     else
         ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
-}
-
-auto UserSettings::imgui_nodes_developer_mode() -> bool
-{
-    bool const b = ImGuiExtras::toggle("Nodes developer mode", &nodes_developer_mode);
-    ImGuiExtras::help_marker("If you want to write your own nodes, enable this. It will enable hot reloading of the nodes files.");
-    return b;
 }
 
 auto should_enable_multi_viewport_by_default() -> bool

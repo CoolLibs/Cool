@@ -290,6 +290,11 @@ auto substring(
     return substring_impl(text, begin, end);
 }
 
+void remove_substring(std::string& string, size_t start, size_t end)
+{
+    string.erase(start, end - start);
+}
+
 auto find_next_word_position(
     std::string_view text,
     size_t           starting_pos,
@@ -326,6 +331,19 @@ auto find_previous_word_position(
         idx1 += 1;
 
     return std::make_pair(idx1, idx2 + 1);
+}
+
+auto find_previous_word(
+    std::string_view text,
+    size_t           ending_pos,
+    std::string_view delimiters
+) -> std::optional<std::string>
+{
+    auto const position = find_previous_word_position(text, ending_pos, delimiters);
+    if (!position)
+        return std::nullopt;
+
+    return std::string{substring(text, *position)};
 }
 
 auto next_word(

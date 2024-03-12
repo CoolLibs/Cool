@@ -68,6 +68,7 @@ public:
     }
     void for_each_link_connected_to_node(Node const&, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const&) const;
     void for_each_link_connected_to_pin(PinId const&, std::function<void(LinkId const&, Link const&, bool is_connected_to_input_pin)> const&) const;
+    void for_each_link_connected_to_input_pin(PinId const&, std::function<void(LinkId const&, Link const&)> const&) const;
 
 private:
     reg::RawRegistry<Node> _nodes;

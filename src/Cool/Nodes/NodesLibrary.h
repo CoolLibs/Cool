@@ -62,7 +62,7 @@ public:
 
     auto imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const&, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>;
 
-    void add_definition(NodeDefinition const&, std::string category_name, NodesCategoryConfig const&, int category_order);
+    void add_definition(NodeDefinition const& definition, std::string const& category_name, std::function<NodesCategory()> const& make_category);
 
     void remove_definition(NodeDefinitionIdentifier const&);
 

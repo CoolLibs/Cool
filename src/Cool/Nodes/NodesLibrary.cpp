@@ -90,10 +90,9 @@ auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, MaybeDisabl
 }
 
 void NodesLibrary::add_definition(
-    NodeDefinition const&      definition,
-    std::string                category_name,
-    NodesCategoryConfig const& category_config,
-    int                        category_order
+    NodeDefinition const&                 definition,
+    std::string const&                    category_name,
+    std::function<NodesCategory()> const& make_category // We take a function because we want to delay the creation of the category until we are sure we need to create one, which is rare (and otherwise would cause warning when two folders correspond to the same category, but only one of them contains the _category_config.json, which happens when reading nodes from both the app's root folder and the user-data folder)
 )
 {
     // Add definition to the corresponding category if it exists
@@ -108,7 +107,7 @@ void NodesLibrary::add_definition(
     }
 
     // Add new category if not found
-    _categories.push_back(NodesCategory{category_name, category_config, category_order});
+    _categories.push_back(make_category());
     _categories.back().definitions().push_back(definition);
     std::sort(
         _categories.begin(), _categories.end(),

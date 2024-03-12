@@ -70,6 +70,7 @@ static auto preprocess_shader_source_impl(std::string_view source, std::vector<s
     {
         String::replace_all_inplace(line, "_COOL_RES_", Path::cool_res().string());
         String::replace_all_inplace(line, "_ROOT_FOLDER_", Path::root().string());
+        String::replace_all_inplace(line, "_USER_DATA_", Path::user_data().string());
         auto const content = line_or_include(line, included_paths);
         if (!content)
             return content;

@@ -68,6 +68,7 @@ void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& e
 {
     with_dragged_gizmo([&](Gizmo_Point2D const& gizmo) {
         gizmo.set_position(ViewCoordinates{gizmo.get_position() + event.delta});
+        ImGui::WrapMousePos(ImGuiAxesMask_All);
     });
 }
 
