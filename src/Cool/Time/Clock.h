@@ -10,7 +10,10 @@ public:
     Clock()          = default;
     virtual ~Clock() = default;
 
+    /// Current time
     [[nodiscard]] auto time_in_seconds() const -> float;
+    /// Time elapsed since the last call to update() (or 0 if update() has not been called yet).
+    /// Guaranteed to be constant in-between two update() calls (only changes when update is called, so that you can properly integrate with your delta time and not miss any change).
     [[nodiscard]] auto delta_time_in_seconds() const -> float;
 
     /// Must be called once per frame
@@ -38,7 +41,6 @@ private:
     int64_t                   _time_in_nanoseconds{0};
     int64_t                   _delta_time_in_nanoseconds{0};
     int64_t                   _extra_delta_time_in_nanoseconds{0};
-    bool                      _used_extra_delta_time_in_nanoseconds{true};
     bool                      _is_playing{true};
     bool                      _is_being_changed_in_GUI{false};
     SharedVariable<TimeSpeed> _time_speed{{VariableData<TimeSpeed>{

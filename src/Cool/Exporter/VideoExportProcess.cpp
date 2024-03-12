@@ -18,7 +18,7 @@ VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpee
     , _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
     , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
 {
-    _clock.set_time(params.beginning);
+    _clock.set_time(params.beginning, true /* force_delta_time_to_ignore_the_change */);
     _clock.time_speed().value() = time_speed;
     _thread_pool.start();
 }
