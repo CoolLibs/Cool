@@ -43,7 +43,7 @@ private:
     int64_t                   _extra_delta_time_in_nanoseconds{0};
     bool                      _is_playing{true};
     bool                      _is_being_changed_in_GUI{false};
-    SharedVariable<TimeSpeed> _time_speed{{VariableData<TimeSpeed>{
+    SharedVariable<TimeSpeed> _time_speed{Variable<TimeSpeed>{VariableData<TimeSpeed>{
                                               .name     = "Time Speed",
                                               .value    = {1.f},
                                               .metadata = {
