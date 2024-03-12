@@ -12,6 +12,7 @@ void Variable<T>::imgui_reset_buttons(ImGuiVariableCallbacks const& callbacks)
             _value = _default_value;
             callbacks.on_value_changed();
             callbacks.on_value_editing_finished();
+            ImGui::CloseCurrentPopup();
         }
     });
 
