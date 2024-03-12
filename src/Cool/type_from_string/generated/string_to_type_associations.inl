@@ -179,3 +179,8 @@ template<>
 struct from_impl<"OSC"> {
     using type = Cool::OSCChannel;
 };
+
+template<>
+struct from_impl<"TimeSpeed"> {
+    using type = Cool::TimeSpeed;
+};

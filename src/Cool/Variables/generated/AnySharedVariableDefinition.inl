@@ -29,4 +29,5 @@ using AnySharedVariableDefinition = std::variant<
     SharedVariableDefinition<glm::mat3>,
     SharedVariableDefinition<glm::mat4>,
     SharedVariableDefinition<Cool::MidiChannel>,
-    SharedVariableDefinition<Cool::OSCChannel> >;
+    SharedVariableDefinition<Cool::OSCChannel>,
+    SharedVariableDefinition<Cool::TimeSpeed> >;

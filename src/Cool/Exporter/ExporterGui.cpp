@@ -45,7 +45,7 @@ void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspec
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
     imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_exported);
-    imgui_window_export_video(p.widgets_in_window_video_export_in_progress, p.on_video_export_start, video_export_process);
+    imgui_window_export_video(p.widgets_in_window_video_export_in_progress, p.on_video_export_start, video_export_process, p.time_speed);
 }
 
 auto ExporterGui::output_path() -> std::filesystem::path
@@ -133,14 +133,14 @@ auto ExporterGui::clear_export_folder() const -> bool
     }
 }
 
-void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, std::function<void()> const& on_video_export_start)
+void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed, std::function<void()> const& on_video_export_start)
 {
     if (!clear_export_folder())
         return;
 
     if (File::create_folders_if_they_dont_exist(folder_path_for_video()))
     {
-        video_export_process.emplace(_video_export_params, folder_path_for_video(), _export_size);
+        video_export_process.emplace(_video_export_params, time_speed, folder_path_for_video(), _export_size);
         on_video_export_start();
     }
     else
@@ -161,7 +161,7 @@ void ExporterGui::end_video_export(std::optional<VideoExportProcess>& video_expo
     video_export_process.reset();
 }
 
-void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>& video_export_process)
+void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed)
 {
     if (is_exporting(video_export_process))
     {
@@ -184,7 +184,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();
-                begin_video_export(video_export_process, on_video_export_start);
+                begin_video_export(video_export_process, time_speed, on_video_export_start);
             }
         });
     }

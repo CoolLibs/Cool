@@ -76,3 +76,6 @@ if constexpr (std::is_same_v<T, Cool::MidiChannel>)
 
 if constexpr (std::is_same_v<T, Cool::OSCChannel>)
     return false;
+
+if constexpr (std::is_same_v<T, Cool::TimeSpeed>)
+    return false;

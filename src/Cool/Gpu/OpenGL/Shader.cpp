@@ -230,6 +230,10 @@ void Shader::set_uniform(std::string_view uniform_name, OSCChannel const& channe
 {
     set_uniform(uniform_name, osc_manager().get_value(channel));
 }
+void Shader::set_uniform(std::string_view uniform_name, TimeSpeed const& time_speed) const
+{
+    set_uniform(uniform_name, time_speed.value);
+}
 
 } // namespace Cool::OpenGL
 
