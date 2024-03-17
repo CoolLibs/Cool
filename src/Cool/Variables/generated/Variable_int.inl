@@ -13,12 +13,13 @@ namespace Cool {
 template<>
 struct VariableMetadata<int> {
     internal::BoundsMetadata<int> bounds{
-        .min           = 0,
-        .max           = 12,
-        .has_min_bound = false,
-        .has_max_bound = false,
-        .drag_speed    = 0.02f,
-        .use_slider    = false,
+        .min            = 0,
+        .max            = 12,
+        .has_min_bound  = false,
+        .has_max_bound  = false,
+        .drag_speed     = 0.02f,
+        .use_slider     = false,
+        .is_logarithmic = false,
     };
 
     friend auto operator<=>(VariableMetadata<int> const&, VariableMetadata<int> const&) = default;

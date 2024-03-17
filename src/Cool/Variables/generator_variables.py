@@ -81,6 +81,7 @@ def float_metadatas():
                 .has_max_bound = false,
                 .drag_speed = 0.01f,
                 .use_slider = false,
+                .is_logarithmic = false,
             """,
         ),
     ]
@@ -120,6 +121,7 @@ def all_variable_descriptions():
                         .has_max_bound = false,
                         .drag_speed = 0.02f,
                         .use_slider = false,
+                        .is_logarithmic = false,
                     """,
                 ),
             ],
