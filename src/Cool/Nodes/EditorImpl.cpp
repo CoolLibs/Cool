@@ -488,6 +488,16 @@ static void render_frame_node(internal::FrameNode const& node)
     ed::EndGroupHint();
 }
 
+void NodesEditorImpl::remove_all_links_connected_to_input_pin(PinId const& input_pin_id, NodesConfig& nodes_cfg)
+{
+    auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't remove while iterating, so we delay it
+    _graph.for_each_link_connected_to_input_pin(input_pin_id, [&](LinkId const& old_link_id, Link const& old_link) {
+        links_to_remove.emplace_back(old_link_id, old_link);
+    });
+    for (auto const& [old_link_id, old_link] : links_to_remove)
+        nodes_cfg.remove_link(old_link_id, old_link);
+}
+
 auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
 {
     ed::PinId begin_pin_id;
@@ -534,16 +544,7 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
         .from_pin_id = begin_pin->id(),
         .to_pin_id   = end_pin->id(),
     };
-    {
-        // Remove all links going into the same pin as the new link
-        // Must be done before adding the link, otherwise we would remove it too
-        auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't remove while iterating, so we delay it
-        _graph.for_each_link_connected_to_input_pin(link.to_pin_id, [&](LinkId const& old_link_id, Link const& old_link) {
-            links_to_remove.emplace_back(old_link_id, old_link);
-        });
-        for (auto const& [old_link_id, old_link] : links_to_remove)
-            nodes_cfg.remove_link(old_link_id, old_link);
-    }
+    remove_all_links_connected_to_input_pin(link.to_pin_id, nodes_cfg); // Must be done before adding the link, otherwise we would remove it too
     auto const link_id = nodes_cfg.add_link(link);
     nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
@@ -765,6 +766,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
+                        remove_all_links_connected_to_input_pin(begin_pin->id(), nodes_cfg); // Must be done before adding the link, otherwise we would remove it too
                         nodes_cfg.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
                     }
                     else if (!new_node->input_pins().empty())

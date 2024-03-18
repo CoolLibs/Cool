@@ -73,6 +73,7 @@ private:
     auto imgui_nodes_menu(NodesLibrary const&, MaybeDisableNodeDefinition const& maybe_disable, bool just_opened) -> std::optional<NodeDefinitionAndCategoryName>;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
+    void remove_all_links_connected_to_input_pin(PinId const& input_pin_id, NodesConfig& nodes_cfg);
 
 private:
     internal::UniqueEdContext        _context{};
