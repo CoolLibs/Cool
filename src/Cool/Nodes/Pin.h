@@ -17,7 +17,7 @@ enum class PinKind {
 class Pin {
 public:
     Pin() = default;
-    explicit Pin(std::string_view name);
+    Pin(std::string name, std::string description);
     Pin(Pin const&)                    = default;
     Pin(Pin&&)                         = default;
     auto operator=(Pin const&) -> Pin& = default;
@@ -25,6 +25,7 @@ public:
     virtual ~Pin()                     = default;
 
     [[nodiscard]] auto name() const -> std::string const& { return _name; }
+    [[nodiscard]] auto description() const -> std::string const& { return _description; }
     [[nodiscard]] auto id() const -> PinId const& { return _id; }
 
     void set_id(PinId const& id) { _id = id; }
@@ -36,6 +37,7 @@ protected:
 
 private:
     std::string _name{};
+    std::string _description{};
     PinId       _id{};
 
 private:
@@ -46,6 +48,7 @@ private:
     {
         archive(
             cereal::make_nvp("Name", _name),
+            cereal::make_nvp("Description", _description),
             cereal::make_nvp("ID", _id)
         );
     }

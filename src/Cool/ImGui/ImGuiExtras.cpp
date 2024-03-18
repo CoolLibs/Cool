@@ -17,14 +17,24 @@ namespace Cool::ImGuiExtras {
 void help_marker(const char* text)
 {
     ImGui::SameLine();
-    ImGui::TextDisabled(" " ICOMOON_INFO);
+    help_marker_icon();
     if (ImGui::BeginItemTooltip())
     {
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
-        ImGui::TextUnformatted(text);
-        ImGui::PopTextWrapPos();
+        help_marker_tooltip_content(text);
         ImGui::EndTooltip();
     }
+}
+
+void help_marker_icon()
+{
+    ImGui::TextDisabled(" " ICOMOON_INFO);
+}
+
+void help_marker_tooltip_content(const char* text)
+{
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.f);
+    ImGui::TextUnformatted(text);
+    ImGui::PopTextWrapPos();
 }
 
 bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float snaps_offset, bool always_snap)
