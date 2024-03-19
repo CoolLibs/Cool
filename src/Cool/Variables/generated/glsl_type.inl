@@ -154,3 +154,9 @@ auto glsl_type<Cool::TimeSpeed>() -> std::string
 {
     return "float";
 }
+
+template<>
+auto glsl_type<Cool::TextureDescriptor_FromVideoFile>() -> std::string
+{
+    return "Cool_Texture";
+}

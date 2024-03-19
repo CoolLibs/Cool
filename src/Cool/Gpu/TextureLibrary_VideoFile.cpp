@@ -1,12 +1,18 @@
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
+#include "Cool/Gpu/TextureLibrary_VideoFile.h"
 #include <chrono>
 #include <filesystem>
+#include <opencv2/core/bindings_utils.hpp>
+#include <opencv2/core/utility.hpp>
+#include <opencv2/core/utils/logger.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 #include <optional>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiExtras.h"
-#include "TextureLibrary_FromFile.h"
+#include "Cool/TextureSource/set_texture_from_opencv_image.h"
+#include "TextureLibrary_VideoFile.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
 
@@ -19,7 +25,7 @@ static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_
     return std::chrono::steady_clock::now() - date_of_last_request > time_to_live;
 }
 
-auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture const*
+auto TextureLibrary_VideoFile::get(std::filesystem::path const& path) -> Texture const*
 {
     auto const it = _textures.find(path);
     // If this path is not known to the library, add it and try again.
@@ -29,32 +35,52 @@ auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture 
             .file_watcher         = FileWatcher{path, FileWatcher_NoCallbacks()},
             .date_of_last_request = clock::now(),
         };
-        reload_texture(path);
+        reload_file(path);
         return get(path);
     }
 
     // We have a new request
-    it->second.date_of_last_request = clock::now();
+    auto& data                = it->second;
+    data.date_of_last_request = clock::now();
 
-    auto const& maybe_tex = it->second.texture;
-    if (!maybe_tex && !it->second.error_message) // Texture is nullopt simply because it hasn't been used in a while. Reload the texture.
-        reload_texture(path);
+    auto const& maybe_capture = data.capture;
+    if (!maybe_capture && !data.error_message) // Capture is nullopt simply because it hasn't been used in a while. Reload the file.
+        reload_file(path);
 
-    if (!maybe_tex)
+    if (!maybe_capture)
         return nullptr;
-    return &*maybe_tex;
+
+    cv::Mat wip_image{};
+    // if (get_clock() && std::abs(capture.get(cv::CAP_PROP_POS_MSEC) - get_clock()->time_in_seconds() * 1000.) > 1.)
+    //    capture.set(cv::CAP_PROP_POS_MSEC, get_clock()->time_in_seconds() * 1000.);
+    *data.capture >> wip_image;
+    set_texture_from_opencv_image(data.texture, wip_image);
+    if (DebugOptions::log_when_creating_textures())
+        Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
+    return &*data.texture;
 }
 
-void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
+void TextureLibrary_VideoFile::reload_file(std::filesystem::path const& path)
 {
     auto& data         = _textures[path];
     data.error_message = std::nullopt;
     data.texture       = std::nullopt;
     try
     {
-        data.texture = Texture{img::load(path)};
-        if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
+        // cv::redirectError([](int status, const char* func_name,
+        //                      const char* err_msg, const char* file_name,
+        //                      int line, void* userdata) {
+        //     Cool::Log::ToUser::info("OpenCV", err_msg);
+        //     return 1;
+        // });
+        cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
+        // cv::utils::logging::internal::writeLogMessage(LogLevel logLevel, const char *message)
+        data.capture = cv::VideoCapture{path.string()};
+        if (data.capture->isOpened())
+        {
+            data.capture->setExceptionMode(true);
+            // capture.set(cv::CAP_PROP_FRAME_HEIGHT, resolution.height);
+        }
     }
     catch (std::exception const& e)
     {
@@ -62,11 +88,11 @@ void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
     }
 }
 
-auto TextureLibrary_FromFile::update() -> bool
+auto TextureLibrary_VideoFile::update() -> bool
 {
     bool       has_changed = false;
     auto const reload_tex  = [&](std::filesystem::path const& path) {
-        reload_texture(path);
+        reload_file(path);
         has_changed = true;
     };
     for (auto& kv : _textures)
@@ -79,12 +105,12 @@ auto TextureLibrary_FromFile::update() -> bool
     return has_changed;
 }
 
-auto TextureLibrary_FromFile::error_from(std::filesystem::path const& path) -> std::optional<std::string>
+auto TextureLibrary_VideoFile::error_from(std::filesystem::path const& path) -> std::optional<std::string>
 {
     return _textures[path].error_message;
 }
 
-void TextureLibrary_FromFile::imgui_debug_view() const
+void TextureLibrary_VideoFile::imgui_debug_view() const
 {
     static constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame
                                              | ImGuiTableFlags_Resizable

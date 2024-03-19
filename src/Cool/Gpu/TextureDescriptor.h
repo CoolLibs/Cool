@@ -1,7 +1,6 @@
 #pragma once
 #include <compare>
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureSource_FromWebcam.h"
 #include "Cool/Path/Path.h"
 #include "TextureSamplerDescriptor.h"
 #include "TextureSource.h"
@@ -37,6 +36,11 @@ struct TextureDescriptor_FromFile : public TextureDescriptor {
 struct TextureDescriptor_FromWebcam : public TextureDescriptor {
     TextureDescriptor_FromWebcam()
         : TextureDescriptor{TextureSource_FromWebcam{}, {}}
+    {}
+};
+struct TextureDescriptor_FromVideoFile : public TextureDescriptor {
+    TextureDescriptor_FromVideoFile()
+        : TextureDescriptor{TextureSource_FromVideoFile{}, {}}
     {}
 };
 
