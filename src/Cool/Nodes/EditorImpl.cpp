@@ -5,6 +5,7 @@
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Nodes/EditorImpl.h"
@@ -324,6 +325,13 @@ static auto output_pin_icon(size_t pin_index)
                : ax::Drawing::IconType::Circle;
 }
 
+void NodesEditorImpl::help_marker_for_pin(std::string text)
+{
+    ImGuiExtras::help_marker_icon();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip))
+        _deferred_tooltip_text = std::move(text); // HACK don't create the tooltip here, because imgui-node-editor doesn't support it (even when calling Suspend() and Resume()) because of a bug (https://github.com/thedmd/imgui-node-editor/issues/282)
+}
+
 void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library, ax::NodeEditor::Utilities::BlueprintNodeBuilder& builder)
 {
     auto const  color       = nodes_cfg.node_color(node, id);
@@ -375,6 +383,11 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
             ImGui::TextUnformatted(input_pin.name().c_str());
             ImGui::Spring(0);
         }
+        if (!input_pin.description().empty())
+        {
+            help_marker_for_pin(input_pin.description());
+            ImGui::Spring(0);
+        }
         ImGui::PopStyleVar();
         builder.EndInput();
     }
@@ -391,6 +404,11 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
         {
             ImGui::Spring(0);
             ImGui::TextUnformatted(output_pin.name().c_str());
+        }
+        if (!output_pin.description().empty())
+        {
+            ImGui::Spring(0);
+            help_marker_for_pin(output_pin.description());
         }
         ImGui::Spring(0);
         render_pin_icon(output_pin_icon(idx), alpha, nodes_cfg.pin_color(output_pin, idx, node, id));
@@ -488,6 +506,16 @@ static void render_frame_node(internal::FrameNode const& node)
     ed::EndGroupHint();
 }
 
+void NodesEditorImpl::remove_all_links_connected_to_input_pin(PinId const& input_pin_id, NodesConfig& nodes_cfg)
+{
+    auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't remove while iterating, so we delay it
+    _graph.for_each_link_connected_to_input_pin(input_pin_id, [&](LinkId const& old_link_id, Link const& old_link) {
+        links_to_remove.emplace_back(old_link_id, old_link);
+    });
+    for (auto const& [old_link_id, old_link] : links_to_remove)
+        nodes_cfg.remove_link(old_link_id, old_link);
+}
+
 auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
 {
     ed::PinId begin_pin_id;
@@ -534,16 +562,7 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
         .from_pin_id = begin_pin->id(),
         .to_pin_id   = end_pin->id(),
     };
-    {
-        // Remove all links going into the same pin as the new link
-        // Must be done before adding the link, otherwise we would remove it too
-        auto links_to_remove = std::vector<std::pair<LinkId, Link>>{}; // Can't remove while iterating, so we delay it
-        _graph.for_each_link_connected_to_input_pin(link.to_pin_id, [&](LinkId const& old_link_id, Link const& old_link) {
-            links_to_remove.emplace_back(old_link_id, old_link);
-        });
-        for (auto const& [old_link_id, old_link] : links_to_remove)
-            nodes_cfg.remove_link(old_link_id, old_link);
-    }
+    remove_all_links_connected_to_input_pin(link.to_pin_id, nodes_cfg); // Must be done before adding the link, otherwise we would remove it too
     auto const link_id = nodes_cfg.add_link(link);
     nodes_cfg.on_link_created_between_existing_nodes(link, link_id);
     return true;
@@ -710,11 +729,9 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     }
 
     bool graph_has_changed = false;
+    _deferred_tooltip_text.reset(); // Might be filled by one of the nodes, and will be rendered later
 
     ed::SetCurrentEditor(_context);
-    // GImGui->CurrentWindow->DrawList->AddRectFilled(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f},  ImGui::GetColorU32(ImGuiCol_SeparatorHovered), 0.0f); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
-    GImGui->CurrentWindow->DrawList->AddLine(ImVec2{0.f, 0.f}, ImVec2{0.f, 0.f}, ImGui::GetColorU32(ImGuiCol_SeparatorHovered)); // TODO(JF) Remove this. (But atm when removing it the view gets clipped when zooming in) EDIT this is caused by the suspend / resume
-
     ed::Begin("Node editor");
 
     render_editor(nodes_cfg, library);
@@ -739,6 +756,11 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
     }
 
     ed::Suspend();
+    if (_deferred_tooltip_text.has_value() && ImGui::BeginTooltip())
+    {
+        ImGuiExtras::help_marker_tooltip_content(_deferred_tooltip_text->c_str());
+        ImGui::EndTooltip();
+    }
     if (ImGui::BeginPopup("Nodes Library Menu"))
     {
         auto const new_node_def_id = imgui_nodes_menu(library, nodes_cfg.maybe_disable_node_definition(), _menu_just_opened);
@@ -765,6 +787,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
                 {
                     if (begin_pin->kind() == PinKind::Input && !new_node->output_pins().empty())
                     {
+                        remove_all_links_connected_to_input_pin(begin_pin->id(), nodes_cfg); // Must be done before adding the link, otherwise we would remove it too
                         nodes_cfg.add_link(Link{new_node->output_pins()[0].id(), begin_pin->id()});
                     }
                     else if (!new_node->input_pins().empty())

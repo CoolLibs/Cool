@@ -6,8 +6,13 @@
 
 namespace Cool::ImGuiExtras {
 
-/// A small "?" that displays some text when hovered.
+/// A small info icon that displays some text when hovered.
 void help_marker(const char* text);
+
+/// A building block for help_marker(). In most cases you should just use help_marker(). This is only needed when you need to customize how help_marker() is rendered.
+void help_marker_icon();
+/// A building block for help_marker(). In most cases you should just use help_marker(). This is only needed when you need to customize how help_marker() is rendered.
+void help_marker_tooltip_content(const char* text);
 
 /// A widget to pick an angle (in radians), displayed as a direction on a wheel
 /// When SHIFT is pressed (or `always_snap` is set to true) the angle will snap to some precise angles. `number_of_snaps` controls the number of such angles, and `snaps_offset` will offset these.

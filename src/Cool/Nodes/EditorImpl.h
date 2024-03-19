@@ -73,6 +73,8 @@ private:
     auto imgui_nodes_menu(NodesLibrary const&, MaybeDisableNodeDefinition const& maybe_disable, bool just_opened) -> std::optional<NodeDefinitionAndCategoryName>;
     auto wants_to_open_nodes_menu() const -> bool;
     void open_nodes_menu();
+    void remove_all_links_connected_to_input_pin(PinId const& input_pin_id, NodesConfig& nodes_cfg);
+    void help_marker_for_pin(std::string text);
 
 private:
     internal::UniqueEdContext        _context{};
@@ -87,7 +89,8 @@ private:
     Pin const*                       _new_link_pin            = nullptr;
     bool                             _link_has_just_been_released{false}; // HACK because we can't open the nodes menu just after a link has been released (otherwise _next_node_position is wrong). So we have to delay the opening.
 
-    int _frames_count{0};
+    int                        _frames_count{0};
+    std::optional<std::string> _deferred_tooltip_text{};
 
 private:
     // ImColor GetIconColor(PinType type);

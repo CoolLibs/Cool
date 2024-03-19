@@ -47,7 +47,11 @@ private:
                                               .name     = "Time Speed",
                                               .value    = {1.f},
                                               .metadata = {
-                                                  .bounds = {.has_min_bound = true},
+                                                  .bounds = {
+                                                      .has_min_bound  = true,
+                                                      .drag_speed     = 0.005f,
+                                                      .is_logarithmic = true,
+                                                  },
                                               },
                                           }},
                                           {} /*Empty DirtyFlag, we don't need to warn anyone when this changes*/};

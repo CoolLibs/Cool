@@ -10,6 +10,7 @@ struct BoundsMetadata {
     bool  has_max_bound{false};
     float drag_speed{0.01f};
     bool  use_slider{false};
+    bool  is_logarithmic{false};
 
     friend auto operator<=>(BoundsMetadata const&, BoundsMetadata const&) = default;
 
@@ -22,7 +23,8 @@ struct BoundsMetadata {
             cereal::make_nvp("Has max bound", has_max_bound),
             cereal::make_nvp("Max", max),
             cereal::make_nvp("Drag speed", drag_speed),
-            cereal::make_nvp("Use slider", use_slider)
+            cereal::make_nvp("Use slider", use_slider),
+            cereal::make_nvp("Is logarithmic", is_logarithmic)
         );
     }
 };
