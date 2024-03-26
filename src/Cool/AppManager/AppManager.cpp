@@ -27,6 +27,27 @@ namespace Cool {
 static void imgui_dockspace();
 static void imgui_new_frame();
 
+static AppManager& get_app_manager(GLFWwindow* window)
+{
+    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
+}
+
+void AppManager::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+{
+    auto& app_manager = get_app_manager(glfw_window);
+    if (app_manager._config.dispatch_keyboard_events_to_imgui
+        || ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
+    {
+        ImGui_ImplGlfw_KeyCallback(glfw_window, key, scancode, action, mods);
+    }
+    window().check_for_fullscreen_toggles(key, scancode, action, mods);
+}
+
+static void resize_callback(GLFWwindow* /* glfw_window */, int width, int height)
+{
+    webgpu_context().on_window_size_changed(width, height);
+}
+
 AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
     : _views{views}
     , _app{app}
@@ -36,15 +57,16 @@ AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
 
     // Set callbacks
     // clang-format off
-    glfwSetWindowUserPointer  (window().glfw(), reinterpret_cast<void*>(this));
-    glfwSetKeyCallback        (window().glfw(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
-    glfwSetScrollCallback     (window().glfw(), ImGui_ImplGlfw_ScrollCallback);
-    glfwSetCursorPosCallback  (window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
-    glfwSetCharCallback       (window().glfw(), ImGui_ImplGlfw_CharCallback);
-    glfwSetWindowFocusCallback(window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
-    glfwSetCursorEnterCallback(window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
-    glfwSetMonitorCallback    (                 ImGui_ImplGlfw_MonitorCallback);
+    glfwSetWindowUserPointer      (window().glfw(), reinterpret_cast<void*>(this));
+    glfwSetKeyCallback            (window().glfw(), AppManager::key_callback);
+    glfwSetMouseButtonCallback    (window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
+    glfwSetScrollCallback         (window().glfw(), ImGui_ImplGlfw_ScrollCallback);
+    glfwSetCursorPosCallback      (window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
+    glfwSetCharCallback           (window().glfw(), ImGui_ImplGlfw_CharCallback);
+    glfwSetWindowFocusCallback    (window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
+    glfwSetCursorEnterCallback    (window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
+    glfwSetMonitorCallback        (                 ImGui_ImplGlfw_MonitorCallback);
+    glfwSetFramebufferSizeCallback(window().glfw(), resize_callback);
     // clang-format on
 }
 
@@ -120,8 +142,7 @@ void AppManager::restore_imgui_ini_state_ifn()
 void AppManager::update()
 {
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
-    // window().check_for_swapchain_rebuild(); // TODO(WebGPU)
-    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
+    wgpu::TextureView nextTexture             = webgpu_context().swapChain.getCurrentTextureView();
     if (!nextTexture)
     {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl;
@@ -333,22 +354,6 @@ static void imgui_dockspace()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         ImGui::End();
     }
-}
-
-static AppManager& get_app_manager(GLFWwindow* window)
-{
-    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
-}
-
-void AppManager::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
-{
-    auto& app_manager = get_app_manager(glfw_window);
-    if (app_manager._config.dispatch_keyboard_events_to_imgui
-        || ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
-    {
-        ImGui_ImplGlfw_KeyCallback(glfw_window, key, scancode, action, mods);
-    }
-    window().check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
 void AppManager::dispatch_all_events()

@@ -17,10 +17,6 @@ public:
     auto glfw_window() -> GLFWwindow* { return _window.glfw(); }
 
 private:
-    void buildSwapChain();
-    void buildDepthBuffer();
-
-private:
     WebGPUContext _wgpu{};
     Window        _window{};
 

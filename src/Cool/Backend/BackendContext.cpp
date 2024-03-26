@@ -48,66 +48,6 @@ static void setup_webgpu_debugging()
 }
 #endif
 
-void BackendContext::buildSwapChain()
-{
-    int width, height;
-    glfwGetFramebufferSize(glfw_window(), &width, &height);
-
-    // Destroy previously allocated swap chain
-    if (_wgpu.swapChain != nullptr)
-        _wgpu.swapChain.release();
-
-    std::cout << "Creating swapchain..." << std::endl;
-#ifdef WEBGPU_BACKEND_WGPU
-    _wgpu.swapChainFormat = _wgpu.surface.getPreferredFormat(_wgpu.adapter);
-#else
-    _wgpu.swapChainFormat = wgpu::TextureFormat::BGRA8Unorm; // Dawn does not support getPreferredFormat() yet, (and I don't know what happens when building for the web)
-#endif
-    _wgpu.swapChainDesc.width       = static_cast<uint32_t>(width);
-    _wgpu.swapChainDesc.height      = static_cast<uint32_t>(height);
-    _wgpu.swapChainDesc.usage       = wgpu::TextureUsage::RenderAttachment;
-    _wgpu.swapChainDesc.format      = _wgpu.swapChainFormat;
-    _wgpu.swapChainDesc.presentMode = wgpu::PresentMode::Fifo;
-    _wgpu.swapChain                 = _wgpu.device.createSwapChain(_wgpu.surface, _wgpu.swapChainDesc);
-    std::cout << "Swapchain: " << _wgpu.swapChain << std::endl;
-}
-
-void BackendContext::buildDepthBuffer()
-{
-    // Destroy previously allocated texture
-    if (_wgpu.depthTexture != nullptr)
-    {
-        _wgpu.depthTextureView.release();
-        _wgpu.depthTexture.destroy();
-        _wgpu.depthTexture.release();
-    }
-
-    // Create the depth texture
-    wgpu::TextureDescriptor depthTextureDesc;
-    depthTextureDesc.dimension       = wgpu::TextureDimension::_2D;
-    depthTextureDesc.format          = _wgpu.depthTextureFormat;
-    depthTextureDesc.mipLevelCount   = 1;
-    depthTextureDesc.sampleCount     = 1;
-    depthTextureDesc.size            = {_wgpu.swapChainDesc.width, _wgpu.swapChainDesc.height, 1};
-    depthTextureDesc.usage           = wgpu::TextureUsage::RenderAttachment;
-    depthTextureDesc.viewFormatCount = 1;
-    depthTextureDesc.viewFormats     = (WGPUTextureFormat*)&_wgpu.depthTextureFormat;
-    _wgpu.depthTexture               = _wgpu.device.createTexture(depthTextureDesc);
-    std::cout << "Depth texture: " << _wgpu.depthTexture << std::endl;
-
-    // Create the view of the depth texture manipulated by the rasterizer
-    wgpu::TextureViewDescriptor depthTextureViewDesc;
-    depthTextureViewDesc.aspect          = wgpu::TextureAspect::DepthOnly;
-    depthTextureViewDesc.baseArrayLayer  = 0;
-    depthTextureViewDesc.arrayLayerCount = 1;
-    depthTextureViewDesc.baseMipLevel    = 0;
-    depthTextureViewDesc.mipLevelCount   = 1;
-    depthTextureViewDesc.dimension       = wgpu::TextureViewDimension::_2D;
-    depthTextureViewDesc.format          = _wgpu.depthTextureFormat;
-    _wgpu.depthTextureView               = _wgpu.depthTexture.createView(depthTextureViewDesc);
-    std::cout << "Depth texture view: " << _wgpu.depthTextureView << std::endl;
-}
-
 static void throw_error(std::string const& error_message)
 {
     // TODO(WebGPU) Log to a file too, so that we can debug when the app is shipped to end customers who don't have a debugger attached
@@ -236,8 +176,12 @@ BackendContext::BackendContext(WindowConfig const& config)
 
     _wgpu.queue = _wgpu.device.getQueue();
 
-    buildSwapChain();
-    buildDepthBuffer(); // TODO(WebGPU) Is this needed for Coollab?
+    {
+        // Create swapchain and depth buffer for the first time
+        int width, height; // NOLINT(*isolate-declaration, *init-variables)
+        glfwGetFramebufferSize(glfw_window(), &width, &height);
+        _wgpu.on_window_size_changed(width, height);
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

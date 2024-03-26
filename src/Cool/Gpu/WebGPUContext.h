@@ -4,6 +4,7 @@
 namespace Cool {
 
 struct WebGPUContext {
+    // TODO(WebGPU) Destroy the objects
     wgpu::Instance          instance{nullptr};
     wgpu::Surface           surface{nullptr};
     wgpu::Adapter           adapter{nullptr};
@@ -26,7 +27,11 @@ struct WebGPUContext {
     wgpu::TextureFormat       depthTextureFormat = wgpu::TextureFormat::Depth24Plus;
     wgpu::SwapChainDescriptor swapChainDesc;
 
-    // TODO(WebGPU) Destroy the objects
+    void on_window_size_changed(int width, int height);
+
+private:
+    void buildSwapChain(int width, int height);
+    void buildDepthBuffer(int width, int height);
 };
 
 auto webgpu_context() -> WebGPUContext&;
