@@ -115,8 +115,8 @@ install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
 
 # WebGPU (Must be after GLFW, otherwise Dawn uses its own version of glfw)
 set(WEBGPU_BACKEND "WGPU" CACHE STRING "" FORCE) # TODO(WebGPU) Use Dawn when creating Release, because it links statically, and WGPU when developping because if it faster and more lightweight
-add_subdirectory(lib/WebGPU/webgpu)
-add_subdirectory(lib/WebGPU/glfw3webgpu)
+add_subdirectory(lib/WebGPU-distribution)
+add_subdirectory(lib/glfw3webgpu)
 target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
 
 # folder_watcher

@@ -61,7 +61,7 @@ void BackendContext::buildSwapChain()
 #ifdef WEBGPU_BACKEND_WGPU
     _wgpu.swapChainFormat = _wgpu.surface.getPreferredFormat(_wgpu.adapter);
 #else
-    _wgpu.swapChainFormat = wgpu::TextureFormat::BGRA8Unorm;
+    _wgpu.swapChainFormat = wgpu::TextureFormat::BGRA8Unorm; // Dawn does not support getPreferredFormat() yet, (and I don't know what happens when building for the web)
 #endif
     _wgpu.swapChainDesc.width       = static_cast<uint32_t>(width);
     _wgpu.swapChainDesc.height      = static_cast<uint32_t>(height);
