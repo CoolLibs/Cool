@@ -50,7 +50,8 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
 # ---Add Cool sources---
 # ----------------------
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
-target_sources(Cool PRIVATE ${COOL_SOURCES})
+
+target_sources(Cool PRIVATE src/Cool/dummy.cpp)
 
 # -----------------------------
 # ---Set include directories---
@@ -99,45 +100,12 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
 )
 
-if(COOL_USE_VULKAN)
-    target_precompile_headers(Cool-PublicProperties INTERFACE
-        <vulkan/vulkan.hpp>
-        <vku/vku.hpp>
-    )
-elseif(COOL_USE_OPENGL)
-    target_precompile_headers(Cool-PublicProperties INTERFACE
-        <glad/gl.h>
-        <Cool/Gpu/OpenGL/GLDebug.h>
-    )
-endif()
-
 # -------------------------
-# ---Add Vulkan / OpenGL---
+# ---Add WebGPU---
 # -------------------------
-if(COOL_USE_VULKAN)
-    target_compile_definitions(Cool-PublicProperties INTERFACE
-        COOL_VULKAN
-        COOL_VULKAN_VERSION=${COOL_USE_VULKAN})
-    find_package(Vulkan REQUIRED)
-    target_link_libraries(Cool-PublicProperties INTERFACE Vulkan::Vulkan)
-    add_subdirectory(lib/Vookoo/include)
-    target_link_libraries(Cool-PublicProperties INTERFACE Vookoo::Vookoo)
-    install(FILES "lib/Vookoo/LICENSE" DESTINATION "license/Vookoo")
-    add_subdirectory(lib/easy-shaderc)
-    target_link_libraries(Cool-PublicProperties INTERFACE easy_shaderc::shaderc)
-elseif(COOL_USE_OPENGL)
-    target_compile_definitions(Cool-PublicProperties INTERFACE
-        COOL_OPENGL
-        COOL_OPENGL_VERSION=${COOL_USE_OPENGL})
-    add_subdirectory(lib/glpp-extended)
-    target_compile_definitions(glpp-extended PRIVATE $<$<CONFIG:Debug>:GLPP_SHOULD_CHECK_ERRORS>)
-    target_link_libraries(Cool-PublicProperties INTERFACE glpp::extended)
-
-    if(APPLE)
-        target_compile_definitions(Cool-PublicProperties INTERFACE
-            COOL_PARTICLES_DISABLED_REASON="Particles are not supported on MacOS for now.")
-    endif()
-endif()
+add_subdirectory(lib/WebGPU/webgpu)
+add_subdirectory(lib/WebGPU/glfw3webgpu)
+target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
 
 # -------------------
 # ---Add libraries---
@@ -252,9 +220,9 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
 # OpenCV
-include("lib/opencv_build_options.cmake")
-add_subdirectory(lib/easy_opencv)
-target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+# include("lib/opencv_build_options.cmake")
+# add_subdirectory(lib/easy_opencv)
+# target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
 
 # webcam_info
 add_subdirectory(lib/webcam_info)
@@ -267,6 +235,11 @@ target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
 # oscpack
 add_subdirectory(lib/oscpack)
 target_link_libraries(Cool-PrivateProperties INTERFACE oscpack)
+
+# glm
+add_subdirectory(lib/glm)
+target_link_libraries(Cool-PublicProperties INTERFACE glm)
+install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
 
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
@@ -303,6 +276,7 @@ include("CMakeUtils/files_and_folders.cmake")
 
 function(cool_setup TARGET_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
+    target_copy_webgpu_binaries(${TARGET_NAME})
     install(DIRECTORY ${COOL_PATH_INTERNAL}/res DESTINATION bin/${COOL_PATH_INTERNAL})
 endfunction()
 
@@ -337,12 +311,12 @@ endfunction()
 # ---------------------
 # ---Setup the tests---
 # ---------------------
-add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
-target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
-target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
-target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+# add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
+# target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
+# target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
+# target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 
-set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
-add_subdirectory(lib/doctest)
-target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
-install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")
+# set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
+# add_subdirectory(lib/doctest)
+# target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
+# install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")

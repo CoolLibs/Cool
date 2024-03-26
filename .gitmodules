@@ -10,9 +10,6 @@
 [submodule "lib/doctest"]
 	path = lib/doctest
 	url = https://github.com/onqtam/doctest
-[submodule "lib/Vookoo"]
-	path = lib/Vookoo
-	url = https://github.com/CoolLibs/Vookoo
 [submodule "lib/scope_guard"]
 	path = lib/scope_guard
 	url = https://github.com/ricab/scope_guard
@@ -67,9 +64,6 @@
 [submodule "lib/folder_watcher"]
 	path = lib/folder_watcher
 	url = https://github.com/CoolLibs/folder_watcher.git
-[submodule "lib/glpp-extended"]
-	path = lib/glpp-extended
-	url = https://github.com/CoolLibs/glpp-extended
 [submodule "lib/os_name"]
 	path = lib/os_name
 	url = https://github.com/CoolLibs/os_name
@@ -112,3 +106,6 @@
 [submodule "lib/open"]
 	path = lib/open
 	url = https://github.com/CoolLibs/open
+[submodule "lib/glm"]
+	path = lib/glm
+	url = https://github.com/CoolLibs/glm

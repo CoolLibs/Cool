@@ -14,7 +14,8 @@ auto gpu_api_version() -> std::string
 #elif COOL_VULKAN
     return format_version("Vulkan", COOL_VULKAN_VERSION);
 #else
-#error Unknown GPU API
+    return "WebGPU";
+// #error Unknown GPU API
 #endif
 }
 
