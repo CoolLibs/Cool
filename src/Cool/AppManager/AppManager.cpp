@@ -9,6 +9,7 @@
 #include "Audio/Audio.hpp"
 #include "Cool/Backend/Window.h"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
+#include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
@@ -120,9 +121,53 @@ void AppManager::update()
 {
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     // window().check_for_swapchain_rebuild(); // TODO(WebGPU)
+    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
+    if (!nextTexture)
+    {
+        std::cerr << "Cannot acquire next swap chain texture" << std::endl;
+        return;
+    }
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+
+    wgpu::CommandEncoderDescriptor commandEncoderDesc;
+    commandEncoderDesc.label     = "Command Encoder";
+    wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(commandEncoderDesc);
+
+    wgpu::RenderPassDescriptor renderPassDesc{};
+
+    wgpu::RenderPassColorAttachment renderPassColorAttachment{};
+    renderPassColorAttachment.view          = nextTexture;
+    renderPassColorAttachment.resolveTarget = nullptr;
+    renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
+    renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
+    renderPassColorAttachment.clearValue    = wgpu::Color{1., 0.05, 0.05, 1.0};
+    renderPassDesc.colorAttachmentCount     = 1;
+    renderPassDesc.colorAttachments         = &renderPassColorAttachment;
+
+    wgpu::RenderPassDepthStencilAttachment depthStencilAttachment;
+    depthStencilAttachment.view              = webgpu_context().depthTextureView;
+    depthStencilAttachment.depthClearValue   = 1.0f;
+    depthStencilAttachment.depthLoadOp       = wgpu::LoadOp::Clear;
+    depthStencilAttachment.depthStoreOp      = wgpu::StoreOp::Store;
+    depthStencilAttachment.depthReadOnly     = false;
+    depthStencilAttachment.stencilClearValue = 0;
+#ifdef WEBGPU_BACKEND_WGPU
+    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Clear;
+    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Store;
+#else
+    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Undefined;
+    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Undefined;
+#endif
+    depthStencilAttachment.stencilReadOnly = true;
+
+    renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
+
+    renderPassDesc.timestampWriteCount = 0;
+    renderPassDesc.timestampWrites     = nullptr;
+    webgpu_context().mainRenderPass    = encoder.beginRenderPass(renderPassDesc);
+
     midi_manager().check_for_devices();
     Audio::player().update_device_if_necessary();
     TextureLibrary_FromWebcam::instance().on_frame_begin();
@@ -146,11 +191,30 @@ void AppManager::update()
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
+    end_frame();
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
     for (auto& view : _views)
         view->on_frame_end();
     TextureLibrary_FromWebcam::instance().on_frame_end();
-    end_frame();
+    webgpu_context().mainRenderPass.end();
+    webgpu_context().mainRenderPass.release();
+
+    nextTexture.release();
+
+    wgpu::CommandBufferDescriptor cmdBufferDescriptor{};
+    cmdBufferDescriptor.label   = "Command buffer";
+    wgpu::CommandBuffer command = encoder.finish(cmdBufferDescriptor);
+    encoder.release();
+    webgpu_context().queue.submit(command);
+    command.release();
+#ifndef __EMSCRIPTEN__
+    webgpu_context().swapChain.present();
+#endif
+
+#ifdef WEBGPU_BACKEND_DAWN
+    // Check for pending error callbacks
+    webgpu_context().device.tick();
+#endif
 }
 
 static void imgui_new_frame()
@@ -244,9 +308,8 @@ void AppManager::end_frame()
     //     glfwSwapBuffers(window().glfw());
     // #endif
 
-    // TODO(WebGPU) Last step to draw imgui
-    // if (draw_data)
-    //     ImGui_ImplWGPU_RenderDrawData(draw_data, renderPass);
+    if (draw_data)
+        ImGui_ImplWGPU_RenderDrawData(draw_data, webgpu_context().mainRenderPass);
 }
 
 static void imgui_dockspace()

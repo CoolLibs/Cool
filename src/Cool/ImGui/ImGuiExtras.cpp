@@ -380,7 +380,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     auto const prev_pos = ImGui::GetCursorScreenPos();
 
     ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
-    ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
+    // ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col); // TODO(WebGPU) Reenable once we handle textures properly
 
     ImGui::SetCursorScreenPos(prev_pos);
 }
