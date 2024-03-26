@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Cool/Backend/BackendContext.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 
 namespace Cool {
@@ -48,7 +49,7 @@ void Window::escape_fullscreen()
     if (!_is_fullscreen)
         return;
 
-    glfwSetWindowMonitor(*_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, 0);
+    glfwSetWindowMonitor(_glfw_window, nullptr, _pos_x_before_fullscreen, _pos_y_before_fullscreen, _width_before_fullscreen, _height_before_fullscreen, 0);
     _is_fullscreen = false;
 }
 
@@ -61,9 +62,9 @@ void Window::turn_on_fullscreen()
     if (!monitor) // This can happen
         return;
     GLFWvidmode const* mode = glfwGetVideoMode(monitor);
-    glfwGetWindowPos(*_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
-    glfwGetWindowSize(*_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
-    glfwSetWindowMonitor(*_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    glfwGetWindowPos(_glfw_window, &_pos_x_before_fullscreen, &_pos_y_before_fullscreen);
+    glfwGetWindowSize(_glfw_window, &_width_before_fullscreen, &_height_before_fullscreen);
+    glfwSetWindowMonitor(_glfw_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 #if defined(COOL_OPENGL)
     cap_framerate_if(framerate_is_capped()); // Turning fullscreen disables VSync so we have to reenable it
 #endif
@@ -75,12 +76,12 @@ void Window::set_visibility(bool is_visible)
     _is_visible = is_visible;
     if (is_visible)
     {
-        glfwShowWindow(*_glfw_window);
+        glfwShowWindow(_glfw_window);
     }
     else
     {
         escape_fullscreen(); // If fullscreen, glfwHideWindow does nothing
-        glfwHideWindow(*_glfw_window);
+        glfwHideWindow(_glfw_window);
     }
 }
 
@@ -95,12 +96,14 @@ auto Window::imgui_cap_framerate() -> bool
 
 void Window::cap_framerate_if(bool should_cap)
 {
-    return _impl.cap_framerate_if(should_cap, *_glfw_window);
+    // TODO(WebGPU)
+    //  _impl.cap_framerate_if(should_cap, *_glfw_window);
 }
 
 auto Window::framerate_is_capped() const -> bool
 {
-    return _impl.framerate_is_capped();
+    return false; // TODO(WebGPU)
+    // return _impl.framerate_is_capped();
 }
 
 auto Window::current_monitor() const -> GLFWmonitor*
@@ -117,8 +120,8 @@ auto Window::current_monitor() const -> GLFWmonitor*
     best_overlap = 0;
     best_monitor = nullptr;
 
-    glfwGetWindowPos(*_glfw_window, &wx, &wy);
-    glfwGetWindowSize(*_glfw_window, &ww, &wh);
+    glfwGetWindowPos(_glfw_window, &wx, &wy);
+    glfwGetWindowSize(_glfw_window, &ww, &wh);
     monitors = glfwGetMonitors(&nb_monitors);
 
     for (i = 0; i < nb_monitors; i++)
@@ -139,6 +142,11 @@ auto Window::current_monitor() const -> GLFWmonitor*
     }
 
     return best_monitor;
+}
+
+auto window() -> Window&
+{
+    return backend_context()->window();
 }
 
 } // namespace Cool

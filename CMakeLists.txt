@@ -51,7 +51,7 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
 # ----------------------
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
 
-target_sources(Cool PRIVATE src/Cool/dummy.cpp)
+target_sources(Cool PRIVATE ${COOL_SOURCES})
 
 # -----------------------------
 # ---Set include directories---
@@ -100,16 +100,24 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <Cool/ostream/vector.h> # must be included after <vector> because it depends on it
 )
 
-# -------------------------
-# ---Add WebGPU---
-# -------------------------
-add_subdirectory(lib/WebGPU/webgpu)
-add_subdirectory(lib/WebGPU/glfw3webgpu)
-target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
-
 # -------------------
 # ---Add libraries---
 # -------------------
+
+# GLFW (Must be before WebGPU, otherwise Dawn uses its own version of glfw)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory(lib/glfw)
+target_link_libraries(Cool-PublicProperties INTERFACE glfw)
+install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
+
+# WebGPU (Must be after GLFW, otherwise Dawn uses its own version of glfw)
+set(WEBGPU_BACKEND "WGPU" CACHE STRING "" FORCE) # TODO(WebGPU) Use Dawn when creating Release, because it links statically, and WGPU when developping because if it faster and more lightweight
+add_subdirectory(lib/WebGPU/webgpu)
+add_subdirectory(lib/WebGPU/glfw3webgpu)
+target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
 
 # folder_watcher
 add_subdirectory(lib/folder_watcher)
@@ -126,15 +134,6 @@ target_link_libraries(Cool-PublicProperties INTERFACE algorithms::algorithms)
 
 # scope_guard
 install(FILES "lib/scope_guard/LICENSE" DESTINATION "license/scope_guard")
-
-# GLFW
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-add_subdirectory(lib/glfw)
-target_link_libraries(Cool-PublicProperties INTERFACE glfw)
-install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
 
 # cereal
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
@@ -214,15 +213,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE wants_dark_theme::wants_da
 # tl::expected
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/include)
 
-# Dear ImGui
-add_subdirectory(lib/imgui)
-target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
-install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
-
 # OpenCV
-# include("lib/opencv_build_options.cmake")
-# add_subdirectory(lib/easy_opencv)
-# target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
+include("lib/opencv_build_options.cmake")
+add_subdirectory(lib/easy_opencv)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
 
 # webcam_info
 add_subdirectory(lib/webcam_info)
@@ -241,18 +235,14 @@ add_subdirectory(lib/glm)
 target_link_libraries(Cool-PublicProperties INTERFACE glm)
 install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
 
-# Build ImGui with glfw
+# Dear ImGui
+add_subdirectory(lib/imgui)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
+install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
-
-# Build ImGui with Vulkan / OpenGL
-if(COOL_USE_VULKAN)
-    target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_vulkan.cpp)
-    target_link_libraries(ImGui PRIVATE Vulkan::Vulkan)
-elseif(COOL_USE_OPENGL)
-    target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_opengl3.cpp)
-endif()
-
+target_link_libraries(ImGui PRIVATE webgpu)
+target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_wgpu.cpp)
 target_link_libraries(Cool-PublicProperties INTERFACE ImGui::ImGui)
 
 # ImGuiNodeEditor
@@ -311,12 +301,12 @@ endfunction()
 # ---------------------
 # ---Setup the tests---
 # ---------------------
-# add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
-# target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
-# target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
-# target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
+target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
+target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
+target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
 
-# set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
-# add_subdirectory(lib/doctest)
-# target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
-# install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")
+set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
+add_subdirectory(lib/doctest)
+target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
+install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")

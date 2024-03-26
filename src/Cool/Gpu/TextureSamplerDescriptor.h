@@ -1,5 +1,5 @@
 #pragma once
-#include "glpp/glpp.hpp"
+#include "Texture.h" // TODO(WebGPU) Just include the Interpolation enum
 
 namespace Cool {
 
@@ -11,8 +11,8 @@ enum class TextureRepeatMode {
 };
 
 struct TextureSamplerDescriptor {
-    TextureRepeatMode   repeat_mode{TextureRepeatMode::None};
-    glpp::Interpolation interpolation_mode{glpp::Interpolation::Linear};
+    TextureRepeatMode repeat_mode{TextureRepeatMode::None};
+    Interpolation     interpolation_mode{Interpolation::Linear};
 
     friend auto operator<=>(TextureSamplerDescriptor const&, TextureSamplerDescriptor const&) = default;
     auto        imgui_widget() -> bool;

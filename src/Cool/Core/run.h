@@ -3,15 +3,10 @@
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/UserSettings/UserSettings.h>
-#include <Cool/Window/internal/WindowFactory.h>
 #include "Audio/Audio.hpp"
+#include "Cool/Backend/BackendContext.h"
 #include "Cool/ImGui/StyleEditor.h"
 #include "hide_console_in_release.h"
-
-#if defined(COOL_VULKAN)
-#include <Cool/Gpu/Vulkan/Context.h>
-#endif
-
 //
 #include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
@@ -25,9 +20,9 @@ void copy_default_user_data_ifn(int imgui_ini_version);
 } // namespace internal
 
 struct RunConfig {
-    std::vector<WindowConfig> windows_configs{};
-    AppManagerConfig          app_manager_config{};
-    int                       imgui_ini_version{};
+    WindowConfig     window_config{};
+    AppManagerConfig app_manager_config{};
+    int              imgui_ini_version{};
 };
 
 template<typename App>
@@ -36,12 +31,8 @@ void run(RunConfig const& config)
     bool const ignore_invalid_user_data_file = !std::filesystem::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
     // Make sure user_data() folder is populated with all the default_user_data() files.
     internal::copy_default_user_data_ifn(config.imgui_ini_version);
-    // Create window.s
-    assert(!config.windows_configs.empty());
-    auto window_factory = Cool::WindowFactory{};
-    window_factory.make_main_window(config.windows_configs[0]);
-    for (size_t i = 1; i < config.windows_configs.size(); ++i)
-        window_factory.make_secondary_window(config.windows_configs[i]);
+    // Create window
+    init_backend_context(config.window_config);
 
     {
         Cool::StyleEditor style_autoserializer{};
@@ -82,7 +73,7 @@ void run(RunConfig const& config)
         // Create and run the App
         const auto run_loop = [&](bool load_from_file) {
             auto views = ViewsManager{};
-            auto app   = App{window_factory.window_manager(), views};
+            auto app   = App{views};
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
             auto_serializer.init<App, cereal::JSONInputArchive>(
@@ -108,7 +99,7 @@ void run(RunConfig const& config)
                 load_from_file
             );
             // Run the app
-            auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, config.app_manager_config};
+            auto app_manager = Cool::AppManager{views, app, config.app_manager_config};
             app_manager.run(internal::create_autosaver(auto_serializer));
             app.on_shutdown();
 #if defined(COOL_VULKAN)

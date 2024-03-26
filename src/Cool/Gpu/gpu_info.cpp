@@ -1,18 +1,23 @@
-#include "OpenGL/gpu_info.h"
 #include "gpu_info.h"
 
 namespace Cool {
 
-auto gpu_name() -> std::string const&
+auto full_gpu_info() -> std::string
 {
-    static std::string const str = gpu_name_impl();
-    return str;
+    // TODO(WebGPU)
+    return "WebGPU";
+    //     const char* vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    //     const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+    //     const char* version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    //     return fmt::format(R"STR(GPU vendor        : {}
+    // GPU model         : {}
+    // GPU version       : {})STR",
+    //                        vendor, renderer, version);
 }
 
-auto full_gpu_info() -> std::string const&
+auto gpu_name() -> std::string
 {
-    static std::string const str = full_gpu_info_impl();
-    return str;
+    return "WebGPU"; // reinterpret_cast<const char*>(glGetString(GL_RENDERER)); // TODO(WebGPU)
 }
 
 } // namespace Cool

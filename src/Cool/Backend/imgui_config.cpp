@@ -1,31 +1,9 @@
-#include "WindowFactory.h"
-#include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
-#include <Cool/Path/Path.h>
-#include <GLFW/glfw3.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/imgui.h>
-#include <stdexcept>
+#include "imgui_config.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
-#include "Cool/Log/ToUser.h"
+#include "Cool/Path/Path.h"
 
 namespace Cool {
-
-static void glfw_error_callback(int error, const char* description)
-{
-    Log::Debug::error_without_breakpoint("glfw", fmt::format("Error {}:\n{}", error, description));
-}
-
-static void initialize_glfw()
-{
-    glfwSetErrorCallback(&glfw_error_callback);
-    if (!glfwInit())
-    {
-        const char* error_description; // NOLINT(*-init-variables)
-        glfwGetError(&error_description);
-        throw std::runtime_error{fmt::format("GLFW initialization failed:\n{}", error_description)};
-    }
-}
 
 static void set_imgui_ini_filepath()
 {
@@ -92,46 +70,18 @@ static void imgui_load_fonts()
     io.Fonts->Build();
 }
 
-static void initialize_imgui()
+void imgui_config()
 {
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
     set_imgui_ini_filepath();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigDockingAlwaysTabBar               = true;
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_Right;
-#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)        // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+#if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)        // Platform windows freeze if we are not rendering on the main thread (TODO(WebGPU) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Must be done here at creation of the App, otherwise we can't toggle it at runtime.
 #endif
     imgui_load_fonts();
-}
-
-WindowFactory::WindowFactory()
-{
-    initialize_glfw();
-    initialize_imgui();
-}
-
-WindowFactory::~WindowFactory()
-{
-    WindowFactory_Impl::shut_down(_window_manager);
-}
-
-auto WindowFactory::make_main_window(WindowConfig const& config) -> Window&
-{
-    auto& window = WindowFactory_Impl::make_window(config, _window_manager);
-    WindowFactory_Impl::setup_main_window(window);
-    _window_manager.set_main_window(window);
-    return window;
-}
-
-auto WindowFactory::make_secondary_window(const WindowConfig& config) -> Window&
-{
-    auto& window = WindowFactory_Impl::make_window(config, _window_manager);
-    WindowFactory_Impl::setup_secondary_window(window, _window_manager);
-    return window;
 }
 
 } // namespace Cool

@@ -62,10 +62,10 @@ void WebcamCapture::update_webcam_ifn()
         static_cast<unsigned int>(_available_image.cols),
         static_cast<unsigned int>(_available_image.rows),
     };
-    auto const layout = glpp::TextureLayout{
-        .internal_format = glpp::InternalFormat::RGBA,
-        .channels        = glpp::Channels::RGB,
-        .texel_data_type = glpp::TexelDataType::UnsignedByte,
+    auto const layout = TextureLayout{
+        .internal_format = InternalFormat::RGBA,
+        .channels        = Channels::RGB,
+        .texel_data_type = TexelDataType::UnsignedByte,
     };
     auto const* data = static_cast<uint8_t*>(_available_image.ptr());
 
