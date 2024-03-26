@@ -108,13 +108,20 @@ void BackendContext::buildDepthBuffer()
     std::cout << "Depth texture view: " << _wgpu.depthTextureView << std::endl;
 }
 
+static void throw_error(std::string const& error_message)
+{
+    // TODO(WebGPU) Log to a file too, so that we can debug when the app is shipped to end customers who don't have a debugger attached
+#if DEBUG
+    std::cerr << error_message << '\n';
+#endif
+    throw std::runtime_error{error_message};
+}
+
 static void throw_glfw_error(std::string_view message)
 {
     const char* err; // NOLINT(*-init-variables)
     glfwGetError(&err);
-    auto const error_message = fmt::format("{}:\n{}", message, err);
-    // TODO(WebGPU) Log to a file too, so that we can debug when the app is shipped to end customers who don't have a debugger attached
-    throw std::runtime_error{error_message};
+    throw_error(fmt::format("{}:\n{}", message, err));
 }
 
 static void set_window_icon(GLFWwindow* window)
@@ -145,6 +152,8 @@ void apply_config(WindowConfig const& config, Window& window)
     }
 }
 
+// TODO(WebGPU) Disable validation layers in release
+
 BackendContext::BackendContext(WindowConfig const& config)
 {
     // WebGPU
@@ -169,13 +178,16 @@ BackendContext::BackendContext(WindowConfig const& config)
     set_window_icon(glfw_window());
     apply_config(config, _window);
 
+    // WebGPU
     std::cout << "Requesting adapter..." << std::endl;
     _wgpu.surface = glfwGetWGPUSurface(_wgpu.instance, glfw_window());
     wgpu::RequestAdapterOptions adapterOpts{};
+    adapterOpts.powerPreference   = wgpu::PowerPreference::HighPerformance;
     adapterOpts.compatibleSurface = _wgpu.surface;
     _wgpu.adapter                 = _wgpu.instance.requestAdapter(adapterOpts);
     std::cout << "Got adapter: " << _wgpu.adapter << std::endl;
 
+    // TODO(WebGPU) Handle limits : https://eliemichel.github.io/LearnWebGPU/getting-started/the-device.html
     wgpu::SupportedLimits supportedLimits;
 #ifdef __EMSCRIPTEN__ // TODO(WebGPU) Check if this is still relevant
     // Error in Chrome: Aborted(TODO: wgpuAdapterGetLimits unimplemented)
@@ -188,11 +200,11 @@ BackendContext::BackendContext(WindowConfig const& config)
 #endif
 
     std::cout << "Requesting device..." << std::endl;
-    wgpu::RequiredLimits requiredLimits       = wgpu::Default;
-    requiredLimits.limits.maxVertexAttributes = 4;
-    requiredLimits.limits.maxVertexBuffers    = 1;
-    // requiredLimits.limits.maxBufferSize                   = 150000 * sizeof(VertexAttributes);
-    // requiredLimits.limits.maxVertexBufferArrayStride      = sizeof(VertexAttributes);
+    wgpu::RequiredLimits requiredLimits                   = wgpu::Default;
+    requiredLimits.limits.maxVertexAttributes             = 4;
+    requiredLimits.limits.maxVertexBuffers                = 1;
+    requiredLimits.limits.maxBufferSize                   = 150000 * 100 /* sizeof(VertexAttributes) */; // TODO(WebGPU)
+    requiredLimits.limits.maxVertexBufferArrayStride      = 100 /* sizeof(VertexAttributes) */;
     requiredLimits.limits.minStorageBufferOffsetAlignment = supportedLimits.limits.minStorageBufferOffsetAlignment;
     requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
     requiredLimits.limits.maxInterStageShaderComponents   = 8;
@@ -217,11 +229,8 @@ BackendContext::BackendContext(WindowConfig const& config)
 
     // Add an error callback for more debug info
 #if DEBUG
-    _wgpu_error_callback = _wgpu.device.setUncapturedErrorCallback([](wgpu::ErrorType type, char const* message) {
-        std::cout << "Device error: type " << type;
-        if (message)
-            std::cout << " (message: " << message << ")";
-        std::cout << std::endl;
+    _wgpu_error_callback = _wgpu.device.setUncapturedErrorCallback([](wgpu::ErrorType, char const* message) {
+        throw_error(fmt::format("WebGPU Error:\n{}", message)); // TODO(WebGPU) Don't throw on all errors ?
     });
 #endif
 
