@@ -1,6 +1,6 @@
 #include "TestPresets.h"
 
-namespace Lab {
+namespace Cool {
 
 void TestPresets::imgui()
 {
@@ -33,4 +33,4 @@ void TestPresets::imgui()
     }
 }
 
-} // namespace Lab
+} // namespace Cool
