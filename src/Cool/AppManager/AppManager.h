@@ -27,7 +27,7 @@ private:
     void imgui_windows();
     void end_frame();
 
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 
     void dispatch_all_events();
     void dispatch_mouse_movement();

@@ -43,11 +43,6 @@ void AppManager::key_callback(GLFWwindow* glfw_window, int key, int scancode, in
     window().check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
-static void resize_callback(GLFWwindow* /* glfw_window */, int width, int height)
-{
-    webgpu_context().on_window_size_changed(width, height);
-}
-
 AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
     : _views{views}
     , _app{app}
@@ -66,7 +61,6 @@ AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
     glfwSetWindowFocusCallback    (window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
     glfwSetCursorEnterCallback    (window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
     glfwSetMonitorCallback        (                 ImGui_ImplGlfw_MonitorCallback);
-    glfwSetFramebufferSizeCallback(window().glfw(), resize_callback);
     // clang-format on
 }
 
@@ -91,10 +85,8 @@ void AppManager::run(std::function<void()> const& on_update)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD::Guard nfd_guard{};
-        while (!glfwWindowShouldClose(_window().glfw()))
-        {
+        while (!glfwWindowShouldClose(window().glfw()))
             do_update();
-        }
         should_stop = true;
     }};
     while (!should_stop)
@@ -142,7 +134,8 @@ void AppManager::restore_imgui_ini_state_ifn()
 void AppManager::update()
 {
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
-    wgpu::TextureView nextTexture             = webgpu_context().swapChain.getCurrentTextureView();
+    webgpu_context().check_for_swapchain_rebuild(); // Make sure the swapchain has the right size before we grab its current texture // We check each frame instead of doing it in the glfw window resize callback, because we update on a separate thread, and events are handled on the main thread, which can cause data races and crashes.
+    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
     if (!nextTexture)
     {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl; // TODO(WebGPU) Can this legitimately happen, ot is this always an error we need to handle / report
@@ -164,7 +157,7 @@ void AppManager::update()
     renderPassColorAttachment.resolveTarget = nullptr;
     renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
     renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
-    renderPassColorAttachment.clearValue    = wgpu::Color{1., 0.05, 0.05, 1.0};
+    renderPassColorAttachment.clearValue    = wgpu::Color{std::sin(glfwGetTime()) * 0.5f + 0.5f, 0.05, 0.05, 1.0};
     renderPassDesc.colorAttachmentCount     = 1;
     renderPassDesc.colorAttachments         = &renderPassColorAttachment;
 

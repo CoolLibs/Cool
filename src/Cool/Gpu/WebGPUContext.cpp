@@ -61,10 +61,20 @@ void WebGPUContext::buildDepthBuffer(int width, int height)
     depthTextureView                     = depthTexture.createView(depthTextureViewDesc);
 }
 
+void WebGPUContext::check_for_swapchain_rebuild()
+{
+    int width, height; // NOLINT(*isolate-declaration, *init-variables)
+    glfwGetFramebufferSize(window().glfw(), &width, &height);
+    if (width != _swap_chain_width || height != _swap_chain_height)
+        on_window_size_changed(width, height);
+}
+
 void WebGPUContext::on_window_size_changed(int width, int height)
 {
     buildSwapChain(width, height);
     buildDepthBuffer(width, height); // TODO(WebGPU) Is this needed for Coollab?
+    _swap_chain_width  = width;
+    _swap_chain_height = height;
 }
 
 } // namespace Cool
