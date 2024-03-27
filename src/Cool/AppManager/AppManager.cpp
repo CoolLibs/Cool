@@ -145,8 +145,9 @@ void AppManager::update()
     wgpu::TextureView nextTexture             = webgpu_context().swapChain.getCurrentTextureView();
     if (!nextTexture)
     {
-        std::cerr << "Cannot acquire next swap chain texture" << std::endl;
-        return;
+        std::cerr << "Cannot acquire next swap chain texture" << std::endl; // TODO(WebGPU) Can this legitimately happen, ot is this always an error we need to handle / report
+
+        return; // TODO(WebGPU) We still want to update, but not render
     }
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);

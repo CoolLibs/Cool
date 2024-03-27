@@ -14,7 +14,6 @@ void WebGPUContext::buildSwapChain(int width, int height)
     if (swapChain != nullptr)
         swapChain.release();
 
-    std::cout << "Creating swapchain..." << std::endl;
 #ifdef WEBGPU_BACKEND_WGPU
     swapChainFormat = surface.getPreferredFormat(adapter);
 #else
@@ -26,7 +25,6 @@ void WebGPUContext::buildSwapChain(int width, int height)
     swapChainDesc.format      = swapChainFormat;
     swapChainDesc.presentMode = wgpu::PresentMode::Fifo;
     swapChain                 = device.createSwapChain(surface, swapChainDesc);
-    std::cout << "Swapchain: " << swapChain << std::endl;
 }
 
 void WebGPUContext::buildDepthBuffer(int width, int height)
@@ -50,7 +48,6 @@ void WebGPUContext::buildDepthBuffer(int width, int height)
     depthTextureDesc.viewFormatCount = 1;
     depthTextureDesc.viewFormats     = (WGPUTextureFormat*)&depthTextureFormat;
     depthTexture                     = device.createTexture(depthTextureDesc);
-    std::cout << "Depth texture: " << depthTexture << std::endl;
 
     // Create the view of the depth texture manipulated by the rasterizer
     wgpu::TextureViewDescriptor depthTextureViewDesc;
@@ -62,7 +59,6 @@ void WebGPUContext::buildDepthBuffer(int width, int height)
     depthTextureViewDesc.dimension       = wgpu::TextureViewDimension::_2D;
     depthTextureViewDesc.format          = depthTextureFormat;
     depthTextureView                     = depthTexture.createView(depthTextureViewDesc);
-    std::cout << "Depth texture view: " << depthTextureView << std::endl;
 }
 
 void WebGPUContext::on_window_size_changed(int width, int height)

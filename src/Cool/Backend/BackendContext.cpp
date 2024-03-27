@@ -99,9 +99,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     // WebGPU
     _wgpu.instance = wgpu::createInstance(wgpu::InstanceDescriptor{});
     if (!webgpu_context().instance)
-    {
-        std::cerr << "Could not initialize WebGPU!" << std::endl;
-    }
+        throw_error("WebGPU  initialization failed");
 
     // GLFW
     glfwSetErrorCallback(&glfw_error_callback);
@@ -119,13 +117,11 @@ BackendContext::BackendContext(WindowConfig const& config)
     apply_config(config, _window);
 
     // WebGPU
-    std::cout << "Requesting adapter..." << std::endl;
     _wgpu.surface = glfwGetWGPUSurface(_wgpu.instance, glfw_window());
     wgpu::RequestAdapterOptions adapterOpts{};
     adapterOpts.powerPreference   = wgpu::PowerPreference::HighPerformance;
     adapterOpts.compatibleSurface = _wgpu.surface;
     _wgpu.adapter                 = _wgpu.instance.requestAdapter(adapterOpts);
-    std::cout << "Got adapter: " << _wgpu.adapter << std::endl;
 
     // TODO(WebGPU) Handle limits : https://eliemichel.github.io/LearnWebGPU/getting-started/the-device.html
     wgpu::SupportedLimits supportedLimits;
@@ -139,7 +135,6 @@ BackendContext::BackendContext(WindowConfig const& config)
     _wgpu.adapter.getLimits(&supportedLimits);
 #endif
 
-    std::cout << "Requesting device..." << std::endl;
     wgpu::RequiredLimits requiredLimits                   = wgpu::Default;
     requiredLimits.limits.maxVertexAttributes             = 4;
     requiredLimits.limits.maxVertexBuffers                = 1;
@@ -165,7 +160,6 @@ BackendContext::BackendContext(WindowConfig const& config)
     deviceDesc.requiredLimits        = &requiredLimits;
     deviceDesc.defaultQueue.label    = "Default queue";
     _wgpu.device                     = _wgpu.adapter.requestDevice(deviceDesc);
-    std::cout << "Got device: " << _wgpu.device << std::endl;
 
     // Add an error callback for more debug info
 #if DEBUG
