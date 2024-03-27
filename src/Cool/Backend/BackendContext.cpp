@@ -123,7 +123,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     adapterOpts.compatibleSurface = _wgpu.surface;
     _wgpu.adapter                 = _wgpu.instance.requestAdapter(adapterOpts);
 
-    // TODO(WebGPU) Handle limits : https://eliemichel.github.io/LearnWebGPU/getting-started/the-device.html
+    // TODO(WebGPU) Handle limits (or disable them altogether) : https://eliemichel.github.io/LearnWebGPU/getting-started/the-device.html
     wgpu::SupportedLimits supportedLimits;
 #ifdef __EMSCRIPTEN__ // TODO(WebGPU) Check if this is still relevant
     // Error in Chrome: Aborted(TODO: wgpuAdapterGetLimits unimplemented)
@@ -157,9 +157,9 @@ BackendContext::BackendContext(WindowConfig const& config)
     wgpu::DeviceDescriptor deviceDesc;
     deviceDesc.label                 = "WebGPU Device";
     deviceDesc.requiredFeaturesCount = 0;
-    deviceDesc.requiredLimits        = &requiredLimits;
-    deviceDesc.defaultQueue.label    = "Default queue";
-    _wgpu.device                     = _wgpu.adapter.requestDevice(deviceDesc);
+    // deviceDesc.requiredLimits        = &requiredLimits; // TODO(WebGPU) Disable limits altogether ? https://github.com/ocornut/imgui/issues/7367
+    deviceDesc.defaultQueue.label = "Default queue";
+    _wgpu.device                  = _wgpu.adapter.requestDevice(deviceDesc);
 
     // Add an error callback for more debug info
 #if DEBUG
