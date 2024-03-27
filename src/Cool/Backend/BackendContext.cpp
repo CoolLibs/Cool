@@ -110,14 +110,14 @@ BackendContext::BackendContext(WindowConfig const& config)
     glfwWindowHint(GLFW_AUTO_ICONIFY, config.auto_iconify);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     _window = Window{glfwCreateWindow(config.initial_width, config.initial_height, config.title, nullptr, nullptr)};
-    if (!glfw_window())
+    if (!window().glfw())
         throw_glfw_error("Window creation failed");
 
-    set_window_icon(glfw_window());
+    set_window_icon(window().glfw());
     apply_config(config, _window);
 
     // WebGPU
-    _wgpu.surface = glfwGetWGPUSurface(_wgpu.instance, glfw_window());
+    _wgpu.surface = glfwGetWGPUSurface(_wgpu.instance, window().glfw());
     wgpu::RequestAdapterOptions adapterOpts{};
     adapterOpts.powerPreference   = wgpu::PowerPreference::HighPerformance;
     adapterOpts.compatibleSurface = _wgpu.surface;
@@ -173,7 +173,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     {
         // Create swapchain and depth buffer for the first time
         int width, height; // NOLINT(*isolate-declaration, *init-variables)
-        glfwGetFramebufferSize(glfw_window(), &width, &height);
+        glfwGetFramebufferSize(window().glfw(), &width, &height);
         _wgpu.on_window_size_changed(width, height);
     }
 

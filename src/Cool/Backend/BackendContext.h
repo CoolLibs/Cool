@@ -14,7 +14,6 @@ public:
 
     auto webgpu_context() -> WebGPUContext& { return _wgpu; }
     auto window() -> Window& { return _window; }
-    auto glfw_window() -> GLFWwindow* { return _window.glfw(); }
 
 private:
     WebGPUContext _wgpu{};
