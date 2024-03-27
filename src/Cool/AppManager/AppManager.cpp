@@ -322,7 +322,11 @@ void AppManager::end_frame()
     //     }
     //     glfwSwapBuffers(window().glfw());
     // #endif
-
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
     if (draw_data)
         ImGui_ImplWGPU_RenderDrawData(draw_data, webgpu_context().mainRenderPass);
 }

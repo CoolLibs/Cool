@@ -66,9 +66,9 @@ auto UserSettings::imgui_enable_multi_viewport() -> bool
 
 void UserSettings::apply_multi_viewport_setting() const
 {
-#if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
-    return; // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
-#endif
+    // #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
+    //     return; // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
+    // #endif
     if (enable_multi_viewport)
         ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     else
