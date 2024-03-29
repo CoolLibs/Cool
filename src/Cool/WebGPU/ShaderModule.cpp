@@ -4,7 +4,7 @@
 
 namespace Cool {
 
-static auto make(std::string_view wgsl_source_code) -> wgpu::ShaderModule
+static auto make_shader_module(std::string_view wgsl_source_code) -> wgpu::ShaderModule
 {
     wgpu::ShaderModuleDescriptor shaderDesc;
 #ifdef WEBGPU_BACKEND_WGPU
@@ -23,11 +23,11 @@ static auto make(std::string_view wgsl_source_code) -> wgpu::ShaderModule
     // Setup the actual payload of the shader code descriptor
     shaderCodeDesc.code = wgsl_source_code.data();
 
-    return webgpu_context().device.createShaderModule(shaderDesc);
+    return webgpu_context().device.createShaderModule(shaderDesc); // TODO(WebGPU) setLabel() when in debug, and get compilation info
 }
 
 ShaderModule::ShaderModule(std::string_view wgsl_source_code)
-    : _shader_module{make(wgsl_source_code)}
+    : WGPUUnique<wgpu::ShaderModule>{make_shader_module(wgsl_source_code)}
 {}
 
 } // namespace Cool
