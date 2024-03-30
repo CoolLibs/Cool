@@ -16,11 +16,17 @@ static auto make_fullscreen_pipeline(std::string_view wgsl_fragment_shader_sourc
 
     // Vertex shader
     ShaderModule vertex_shader{R"(
+struct VertexOutput {
+    @builtin(position) position: vec4f,
+    @location(0) uv: vec2f,
+};
 @vertex
-fn main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
+fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     const vertices = array(vec2f(-1., -1.), vec2f(3., -1.), vec2f(-1., 3.));
-    return vec4f(vertices[in_vertex_index], 0., 1.);
-    // _uv              = 0.5 * vertices[gl_VertexIndex] + vec2(0.5); //TODO(WebGPU)
+    var out: VertexOutput;
+    out.position = vec4f(vertices[in_vertex_index], 0., 1.);
+    out.uv = 0.5 * vertices[in_vertex_index] + vec2(0.5);
+    return out;
 })"};
     pipelineDesc.vertex.module        = vertex_shader.handle();
     pipelineDesc.vertex.entryPoint    = "main";
