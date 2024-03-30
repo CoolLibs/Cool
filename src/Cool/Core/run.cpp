@@ -1,5 +1,4 @@
 #include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/Serialization/Serialization.h>
@@ -24,7 +23,6 @@ void shut_down()
     Icons::shut_down();
     TextureLibrary_FromFile::instance().clear();
     TextureSamplerLibrary::instance().clear();
-    FullscreenPipeline::shut_down();
     Audio::shut_down();
 }
 

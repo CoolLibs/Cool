@@ -1,8 +1,8 @@
 #include "View.h"
 #include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
+#include <Cool/WebGPU/FullscreenPipeline.h>
 #include <img/src/SizeU.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/Debug.h"
@@ -13,8 +13,7 @@ namespace Cool {
 
 static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
 {
-    auto       pipeline = FullscreenPipeline{};
-    auto const err      = pipeline.compile(R"STR(#version 410
+    auto pipeline = FullscreenPipeline{R"STR(#version 410
 out vec4 out_Color;
 layout(location = 0) in vec2 _uv;
 uniform float _aspect_ratio;
@@ -27,21 +26,22 @@ void main()
     float grey = ((gid.x + gid.y) % 2 == 0) ? 0.25 : 0.5;
     out_Color = vec4(vec3(grey), 1.);
 }
-)STR");
-#if DEBUG
-    err.send_error_if_any(
-        [&](std::string const& message) {
-            return Message{
-                .category = "Alpha Checkerboard Shader",
-                .message  = message,
-                .severity = MessageSeverity::Error,
-            };
-        },
-        Cool::Log::Debug::console()
-    );
-#else
-    (void)err;
-#endif
+)STR"};
+    //     auto const err      = pipeline.compile();
+    // #if DEBUG
+    //     err.send_error_if_any(
+    //         [&](std::string const& message) {
+    //             return Message{
+    //                 .category = "Alpha Checkerboard Shader",
+    //                 .message  = message,
+    //                 .severity = MessageSeverity::Error,
+    //             };
+    //         },
+    //         Cool::Log::Debug::console()
+    //     );
+    // #else
+    //     (void)err;
+    // #endif
 
     return pipeline;
 }
@@ -235,9 +235,9 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
 
     render_target.set_size(size);
     render_target.render([&]() {
-        alpha_checkerboard_pipeline().shader()->bind();
-        alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::SizeU::aspect_ratio(size));
-        alpha_checkerboard_pipeline().draw();
+        // alpha_checkerboard_pipeline().shader()->bind();
+        // alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::SizeU::aspect_ratio(size));
+        // alpha_checkerboard_pipeline().draw();
     });
 
     if (Cool::DebugOptions::log_when_rendering_alpha_checkerboard_background())
