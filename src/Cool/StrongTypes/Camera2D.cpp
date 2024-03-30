@@ -56,7 +56,7 @@ auto imgui_widget(std::string_view name, Camera2D& cam, int number_of_snaps, flo
 
     b |= ImGui::DragFloat2("Translation", glm::value_ptr(cam.translation), 0.01f);
     b |= imgui_widget("Rotation", cam.rotation, number_of_snaps, snaps_offset, always_snap);
-    b |= ImGui::DragFloat("Zoom", &cam.zoom, 0.01f, 0.001f, FLT_MAX / static_cast<float>(INT_MAX));
+    b |= ImGui::DragFloat("Zoom", &cam.zoom, 0.01f, 0.001f, FLT_MAX, "%.3f", ImGuiSliderFlags_Logarithmic);
     if (ImGui::Button(icon_fmt("Reset Camera", ICOMOON_TARGET).c_str()))
     {
         cam = {};
