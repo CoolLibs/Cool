@@ -1,5 +1,7 @@
 #pragma once
-#include <webgpu/webgpu.hpp>
+#include <WebGPU/webgpu.hpp>
+#include "Cool/WebGPU/BindGroup.h"
+#include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/WGPUUnique.h"
 
 namespace Cool {
@@ -9,7 +11,12 @@ class FullscreenPipeline : public WGPUUnique<wgpu::RenderPipeline> {
 public:
     explicit FullscreenPipeline(std::string_view wgsl_fragment_shader_source_code);
 
+    void set_uniforms() const;
+    void draw(wgpu::RenderPassEncoder) const;
+
 private:
+    Buffer    _uniforms_buffer;
+    BindGroup _bind_group;
 };
 
 } // namespace Cool

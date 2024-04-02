@@ -35,7 +35,7 @@ private:
     void buildSwapChain(int width, int height);
     void buildDepthBuffer(int width, int height);
 
-private:
+public:
     int _swap_chain_width{};
     int _swap_chain_height{};
 };

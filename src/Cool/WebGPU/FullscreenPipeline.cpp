@@ -1,12 +1,39 @@
 #include "FullscreenPipeline.h"
-#include <webgpu/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/BindGroupLayout.h"
 #include "Cool/WebGPU/ShaderModule.h"
 
 namespace Cool {
 
-static auto make_fullscreen_pipeline(std::string_view wgsl_fragment_shader_source_code) -> wgpu::RenderPipeline
+static auto make_uniforms_buffer_descriptor() -> wgpu::BufferDescriptor
 {
+    wgpu::BufferDescriptor bufferDesc{};
+    bufferDesc.size             = sizeof(float);
+    bufferDesc.usage            = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
+    bufferDesc.mappedAtCreation = false;
+    return bufferDesc;
+}
+
+FullscreenPipeline::FullscreenPipeline(std::string_view wgsl_fragment_shader_source_code)
+    : _uniforms_buffer(make_uniforms_buffer_descriptor())
+{
+    // Create binding layout (don't forget to = Default)
+    wgpu::BindGroupLayoutEntry bindingLayout = wgpu::Default;
+
+    // The binding index as used in the @binding attribute in the shader
+    bindingLayout.binding = 0;
+
+    // The stage that needs to access this resource
+    bindingLayout.visibility            = wgpu::ShaderStage::Vertex;
+    bindingLayout.buffer.type           = wgpu::BufferBindingType::Uniform;
+    bindingLayout.buffer.minBindingSize = sizeof(float);
+
+    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
+    bindGroupLayoutDesc.entryCount = 1;
+    bindGroupLayoutDesc.entries    = &bindingLayout;
+
+    BindGroupLayout const bind_group_layout{bindGroupLayoutDesc};
+
     wgpu::RenderPipelineDescriptor pipelineDesc;
 
     // Vertex fetch
@@ -16,6 +43,8 @@ static auto make_fullscreen_pipeline(std::string_view wgsl_fragment_shader_sourc
 
     // Vertex shader
     ShaderModule vertex_shader{R"(
+@group(0) @binding(0) var<uniform> _aspect_ratio: f32;
+
 struct VertexOutput {
     @builtin(position) position: vec4f,
     @location(0) uv: vec2f,
@@ -25,10 +54,11 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     const vertices = array(vec2f(-1., -1.), vec2f(3., -1.), vec2f(-1., 3.));
     var out: VertexOutput;
     out.position = vec4f(vertices[in_vertex_index], 0., 1.);
-    out.uv = 0.5 * vertices[in_vertex_index] + vec2(0.5);
+    out.uv = vertices[in_vertex_index]; // -1 to 1
+    out.uv.x *= _aspect_ratio;
     return out;
 })"};
-    pipelineDesc.vertex.module        = vertex_shader.handle();
+    pipelineDesc.vertex.module        = vertex_shader;
     pipelineDesc.vertex.entryPoint    = "main";
     pipelineDesc.vertex.constantCount = 0;
     pipelineDesc.vertex.constants     = nullptr;
@@ -52,7 +82,7 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     ShaderModule        fragment_shader{wgsl_fragment_shader_source_code};
     wgpu::FragmentState fragmentState;
     pipelineDesc.fragment       = &fragmentState;
-    fragmentState.module        = fragment_shader.handle();
+    fragmentState.module        = fragment_shader;
     fragmentState.entryPoint    = "main";
     fragmentState.constantCount = 0;
     fragmentState.constants     = nullptr;
@@ -102,13 +132,50 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     pipelineDesc.multisample.alphaToCoverageEnabled = false;
 
     // Pipeline layout
-    pipelineDesc.layout = nullptr;
 
-    return Cool::webgpu_context().device.createRenderPipeline(pipelineDesc);
+    // Create the pipeline layout
+    wgpu::PipelineLayoutDescriptor layoutDesc{};
+    layoutDesc.bindGroupLayoutCount = 1;
+    layoutDesc.bindGroupLayouts     = (WGPUBindGroupLayout*)&bind_group_layout;
+    wgpu::PipelineLayout layout     = webgpu_context().device.createPipelineLayout(layoutDesc);
+
+    // Assign the PipelineLayout to the RenderPipelineDescriptor's layout field
+    pipelineDesc.layout = layout;
+
+    set_handle(Cool::webgpu_context().device.createRenderPipeline(pipelineDesc));
+
+    // Create a binding
+    wgpu::BindGroupEntry binding{};
+    // The index of the binding (the entries in bindGroupDesc can be in any order)
+    binding.binding = 0;
+    // The buffer it is actually bound to
+    binding.buffer = _uniforms_buffer;
+    // We can specify an offset within the buffer, so that a single buffer can hold
+    // multiple uniform blocks.
+    binding.offset = 0;
+    // And we specify again the size of the buffer.
+    binding.size = sizeof(float);
+
+    // A bind group contains one or multiple bindings
+    wgpu::BindGroupDescriptor bindGroupDesc{};
+    bindGroupDesc.layout = bind_group_layout;
+    // There must be as many bindings as declared in the layout!
+    bindGroupDesc.entryCount = bindGroupLayoutDesc.entryCount;
+    bindGroupDesc.entries    = &binding;
+    _bind_group              = BindGroup{bindGroupDesc};
 }
 
-FullscreenPipeline::FullscreenPipeline(std::string_view wgsl_fragment_shader_source_code)
-    : WGPUUnique<wgpu::RenderPipeline>{make_fullscreen_pipeline(wgsl_fragment_shader_source_code)}
-{}
+void FullscreenPipeline::set_uniforms() const
+{
+    float const aspect_ratio = static_cast<float>(webgpu_context()._swap_chain_width) / static_cast<float>(webgpu_context()._swap_chain_height);
+    webgpu_context().queue.writeBuffer(_uniforms_buffer, 0, &aspect_ratio, sizeof(float));
+}
+
+void FullscreenPipeline::draw(wgpu::RenderPassEncoder render_pass) const
+{
+    render_pass.setPipeline(*this);
+    render_pass.setBindGroup(0, _bind_group, 0, nullptr);
+    render_pass.draw(3, 1, 0, 0);
+}
 
 } // namespace Cool

@@ -10,7 +10,7 @@ concept WGPUObjectHasDestroyMethod = requires(WGPUObject handle) {
 template<typename WGPUObject>
 class WGPUUnique {
 public:
-    explicit WGPUUnique(WGPUObject handle)
+    explicit WGPUUnique(WGPUObject handle = nullptr)
         : _handle{handle}
     {}
     ~WGPUUnique()
@@ -34,17 +34,21 @@ public:
     {
         if (this != &o)
         {
-            ~WGPUUnique();
+            WGPUUnique::~WGPUUnique();
             _handle   = o._handle;
             o._handle = nullptr;
         }
         return *this;
     }
 
-    auto handle() const -> WGPUObject { return _handle; } // TODO(WebGPU) Is this indeed just an int that is cheap to copy around?
+    operator typename WGPUObject::W() const { return _handle; } // NOLINT(*explicit*)
+    operator typename WGPUObject::S() const { return _handle; } // NOLINT(*explicit*)
+
+protected:
+    void set_handle(WGPUObject handle) { _handle = handle; }
 
 private:
-    WGPUObject _handle;
+    WGPUObject _handle{};
 };
 
 } // namespace Cool
