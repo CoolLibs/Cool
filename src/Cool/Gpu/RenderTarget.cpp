@@ -21,7 +21,7 @@ void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass
     renderPassColorAttachment.resolveTarget = nullptr;
     renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear; // TODO(WebGPU) bool to choose if we want to clear or not
     renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
-    renderPassColorAttachment.clearValue    = wgpu::Color{0., 0., 0., 1.};
+    renderPassColorAttachment.clearValue    = wgpu::Color{0., 0., 0., 0.};
     renderPassDesc.colorAttachmentCount     = 1;
     renderPassDesc.colorAttachments         = &renderPassColorAttachment;
 
