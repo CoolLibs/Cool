@@ -99,7 +99,7 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     blendState.alpha.operation = wgpu::BlendOperation::Add;
 
     wgpu::ColorTargetState colorTarget;
-    colorTarget.format    = Cool::webgpu_context().swapChainFormat;
+    colorTarget.format    = wgpu::TextureFormat::RGBA8Unorm /* Cool::webgpu_context().swapChainFormat */; // TODO(WebGPU) share state description between RenderPipeline and RenderTarget
     colorTarget.blend     = &blendState;
     colorTarget.writeMask = wgpu::ColorWriteMask::All; // We could write to only some of the color channels.
 
@@ -109,19 +109,19 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     fragmentState.targets     = &colorTarget;
 
     // We setup a depth buffer state for the render pipeline
-    wgpu::DepthStencilState depthStencilState = wgpu::Default;
-    // Keep a fragment only if its depth is lower than the previously blended one
-    depthStencilState.depthCompare = wgpu::CompareFunction::Less;
-    // Each time a fragment is blended into the target, we update the value of the Z-buffer
-    depthStencilState.depthWriteEnabled = true;
-    // Store the format in a variable as later parts of the code depend on it
-    wgpu::TextureFormat depthTextureFormat = wgpu::TextureFormat::Depth24Plus;
-    depthStencilState.format               = depthTextureFormat;
-    // Deactivate the stencil alltogether
-    depthStencilState.stencilReadMask  = 0;
-    depthStencilState.stencilWriteMask = 0;
+    // wgpu::DepthStencilState depthStencilState = wgpu::Default;
+    // // Keep a fragment only if its depth is lower than the previously blended one
+    // depthStencilState.depthCompare = wgpu::CompareFunction::Less;
+    // // Each time a fragment is blended into the target, we update the value of the Z-buffer
+    // depthStencilState.depthWriteEnabled = true;
+    // // Store the format in a variable as later parts of the code depend on it
+    // wgpu::TextureFormat depthTextureFormat = wgpu::TextureFormat::Depth24Plus;
+    // depthStencilState.format               = depthTextureFormat;
+    // // Deactivate the stencil alltogether
+    // depthStencilState.stencilReadMask  = 0;
+    // depthStencilState.stencilWriteMask = 0;
 
-    pipelineDesc.depthStencil = &depthStencilState;
+    pipelineDesc.depthStencil = nullptr; // &depthStencilState;
 
     // Multi-sampling
     // Samples per pixel
@@ -165,9 +165,8 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     _bind_group              = BindGroup{bindGroupDesc};
 }
 
-void FullscreenPipeline::set_uniforms() const
+void FullscreenPipeline::set_uniforms(float aspect_ratio) const
 {
-    float const aspect_ratio = static_cast<float>(webgpu_context()._swap_chain_width) / static_cast<float>(webgpu_context()._swap_chain_height);
     webgpu_context().queue.writeBuffer(_uniforms_buffer, 0, &aspect_ratio, sizeof(float));
 }
 

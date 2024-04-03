@@ -43,7 +43,7 @@ auto ExportSize::imgui() -> bool
 
     if (b && !_aspect_ratio_is_locked)
     {
-        _aspect_ratio.set(img::SizeU::aspect_ratio(_size));
+        _aspect_ratio.set(img::aspect_ratio(_size));
     }
 
     ImGui::SameLine();

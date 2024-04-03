@@ -1,7 +1,6 @@
 #include "Shader.h"
 #include <string>
 #include <string_view>
-#include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Gpu/TextureSource.h"
@@ -9,6 +8,7 @@
 #include "Cool/OSC/OSCManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/WebGPU/Texture.h"
 #include "ShaderModule.h"
 
 namespace Cool {

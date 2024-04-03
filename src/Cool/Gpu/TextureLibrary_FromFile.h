@@ -3,7 +3,7 @@
 #include <map>
 #include <optional>
 #include "Cool/FileWatcher/FileWatcher.h"
-#include "Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "TextureDescriptor.h"
 
 namespace Cool {

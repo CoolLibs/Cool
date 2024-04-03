@@ -43,6 +43,7 @@ public:
 
     operator typename WGPUObject::W() const { return _handle; } // NOLINT(*explicit*)
     operator typename WGPUObject::S() const { return _handle; } // NOLINT(*explicit*)
+    auto handle() const -> WGPUObject { return _handle; }
 
 protected:
     void set_handle(WGPUObject handle) { _handle = handle; }

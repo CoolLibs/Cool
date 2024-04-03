@@ -25,14 +25,14 @@ auto DoubleBufferedRenderTarget::write_target() -> Cool::RenderTarget&
 void DoubleBufferedRenderTarget::clear_render_targets()
 {
     // TODO(WebGPU)
-    _rt1.render([]() {
-        // glClearColor(0.f, 0.f, 0.f, 0.f);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    });
-    _rt2.render([]() {
-        // glClearColor(0.f, 0.f, 0.f, 0.f);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    });
+    // _rt1.render([]() {
+    //     // glClearColor(0.f, 0.f, 0.f, 0.f);
+    //     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // });
+    // _rt2.render([]() {
+    //     // glClearColor(0.f, 0.f, 0.f, 0.f);
+    //     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // });
 }
 
 void DoubleBufferedRenderTarget::set_read_target_size_immediately(img::Size const& size)

@@ -1,6 +1,5 @@
 #pragma once
 #include <compare>
-#include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureSource_FromWebcam.h"
 #include "Cool/Path/Path.h"
 #include "TextureSamplerDescriptor.h"

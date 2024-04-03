@@ -1,6 +1,6 @@
 #pragma once
-#include "Cool/Gpu/Texture.h"
 #include "Cool/Path/Path.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 

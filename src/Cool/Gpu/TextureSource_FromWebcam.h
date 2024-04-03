@@ -1,7 +1,7 @@
 #pragma once
 #include <optional>
 #include <string>
-#include "Cool/Gpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "Cool/Webcam/WebcamsInfos.h"
 
 namespace Cool {

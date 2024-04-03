@@ -1,6 +1,6 @@
 #pragma once
 #include <optional>
-#include "Cool/Gpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "TextureSource_FromFile.h"
 #include "TextureSource_FromWebcam.h"
 

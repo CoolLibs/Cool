@@ -11,7 +11,7 @@ class FullscreenPipeline : public WGPUUnique<wgpu::RenderPipeline> {
 public:
     explicit FullscreenPipeline(std::string_view wgsl_fragment_shader_source_code);
 
-    void set_uniforms() const;
+    void set_uniforms(float aspect_ratio) const;
     void draw(wgpu::RenderPassEncoder) const;
 
 private:

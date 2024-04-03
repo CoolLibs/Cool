@@ -211,7 +211,9 @@ auto checkbox_button(const char* icon, bool* v) -> bool
 auto close_button() -> bool
 {
     return button_with_icon(
-        Icons::close_button().imgui_texture_id(),
+        // TODO(WebGPU)
+        // Icons::close_button().imgui_texture_id(),
+        ImGui::GetIO().Fonts->TexID,
         ImVec4(0.9f, 0.9f, 0.9f, 1.f),
         ImVec4(0.5f, 0.2f, 0.2f, 1.f),
         11.f, 11.f
@@ -380,7 +382,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     auto const prev_pos = ImGui::GetCursorScreenPos();
 
     ImGui::SetCursorPos((ImGui::GetWindowSize() + ImVec2{0.f, ImGui::GetCurrentWindow()->TitleBarHeight()} - size) * 0.5f);
-    // ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col); // TODO(WebGPU) Reenable once we handle textures properly
+    ImGui::Image(texture_id, size, uv0, uv1, tint_col, border_col);
 
     ImGui::SetCursorScreenPos(prev_pos);
 }

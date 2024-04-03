@@ -4,9 +4,9 @@
 #include <optional>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/FileWatcher/FileWatcher.h"
-#include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureDescriptor.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/WebGPU/Texture.h"
 #include "TextureLibrary_FromFile.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
@@ -52,7 +52,7 @@ void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
     {
         _textures[path].error_message = std::nullopt;
         _textures[path].texture       = std::nullopt;
-        _textures[path].texture       = Texture{img::load(path)};
+        _textures[path].texture       = Texture{/* img::load(path) */}; // TODO(WebGPU)
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
     }
@@ -101,7 +101,7 @@ void TextureLibrary_FromFile::imgui_debug_view() const
             {
                 ImGui::TableSetColumnIndex(0);
                 if (kv.second.texture)
-                    ImGuiExtras::image_framed(kv.second.texture->imgui_texture_id(), {100.f * kv.second.texture->aspect_ratio(), 100.f}, 2.f);
+                    ImGuiExtras::image_framed(kv.second.texture->imgui_texture_id(), {100.f * img::aspect_ratio(kv.second.texture->size()), 100.f}, 2.f);
                 else
                     ImGui::TextUnformatted("INVALID");
             }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Gpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "internal/WebcamRequest.h"
 
 namespace Cool {

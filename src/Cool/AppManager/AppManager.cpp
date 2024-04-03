@@ -157,7 +157,7 @@ void AppManager::update()
     renderPassColorAttachment.resolveTarget = nullptr;
     renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
     renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
-    renderPassColorAttachment.clearValue    = wgpu::Color{std::sin(glfwGetTime()) * 0.5f + 0.5f, 0.05, 0.05, 1.0};
+    renderPassColorAttachment.clearValue    = wgpu::Color{0., 0., 0., 1.};
     renderPassDesc.colorAttachmentCount     = 1;
     renderPassDesc.colorAttachments         = &renderPassColorAttachment;
 
@@ -180,6 +180,7 @@ void AppManager::update()
     renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
 
     renderPassDesc.timestampWriteCount = 0;
+    renderPassDesc.label               = "ImGui";
     renderPassDesc.timestampWrites     = nullptr;
     webgpu_context().mainRenderPass    = encoder.beginRenderPass(renderPassDesc);
 

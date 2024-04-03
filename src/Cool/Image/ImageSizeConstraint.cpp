@@ -21,7 +21,7 @@ auto ImageSizeConstraint::compute_constraints_on(img::Size frame_size) const -> 
 {
     float const aspect_ratio = _is_controlling_aspect_ratio
                                    ? _aspect_ratio.get()
-                                   : img::SizeU::aspect_ratio(frame_size);
+                                   : img::aspect_ratio(frame_size);
 
     auto const nb_pixels = static_cast<float>(
         _is_controlling_nb_pixels

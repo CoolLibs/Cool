@@ -1,5 +1,4 @@
 #pragma once
-#include "Texture.h" // TODO(WebGPU) Just include the Interpolation enum
 
 namespace Cool {
 
@@ -8,6 +7,12 @@ enum class TextureRepeatMode {
     Mirror,
     Mosaic,
     Clamp
+};
+
+enum class Interpolation {
+    NearestNeighbour,
+    Linear,
+    LinearMipmapLinear,
 };
 
 struct TextureSamplerDescriptor {

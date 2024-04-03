@@ -38,7 +38,7 @@ Ray ray_passing_through_pixel(const Camera& camera, glm::vec2 position_in_pixels
     const auto pixel_pos = glm::unProject(
         glm::vec3{position_in_pixels, 0.f},
         camera.view_matrix(),
-        camera.projection_matrix(img::SizeU::aspect_ratio(image_size)),
+        camera.projection_matrix(img::aspect_ratio(image_size)),
         glm::vec4{0.f, 0.f, image_size.width(), image_size.height()}
     );
     const auto dir = pixel_pos - pos;

@@ -1,8 +1,8 @@
 #include "TextureSource_FromFile.h"
-#include "Cool/Gpu/Texture.h"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 

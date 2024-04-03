@@ -5,28 +5,25 @@
 #include <Cool/WebGPU/FullscreenPipeline.h>
 #include <img/src/SizeU.h>
 #include "Cool/Input/MouseCoordinates.h"
-#include "Cool/Log/Debug.h"
 #include "Cool/Log/Message.h"
 #include "Cool/Log/ToUser.h"
+#include "WebGPU/webgpu.hpp"
 
 namespace Cool {
 
 static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
 {
-    auto pipeline = FullscreenPipeline{R"STR(#version 410
-out vec4 out_Color;
-layout(location = 0) in vec2 _uv;
-uniform float _aspect_ratio;
-
-void main()
-{
-    vec2 uv = _uv - 0.5;
-    uv.x *= _aspect_ratio;
-    ivec2 gid = ivec2(floor(uv * 20.));
-    float grey = ((gid.x + gid.y) % 2 == 0) ? 0.25 : 0.5;
-    out_Color = vec4(vec3(grey), 1.);
+    auto pipeline = FullscreenPipeline{R"wgsl(
+struct VertexOutput {
+    @location(0) uv: vec2f,
+};
+@fragment
+fn main(in: VertexOutput) -> @location(0) vec4f {
+    let gid = vec2i(floor(in.uv * 20.));
+    let grey = select(0.25, 0.5, (gid.x + gid.y) % 2 == 0);
+    return vec4(vec3(grey), 1.);
 }
-)STR"};
+)wgsl"};
     //     auto const err      = pipeline.compile();
     // #if DEBUG
     //     err.send_error_if_any(
@@ -50,6 +47,20 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
 {
     static auto pipeline = create_alpha_checkerboard_pipeline();
     return pipeline;
+}
+
+static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render_target)
+{
+    if (size == render_target.current_size())
+        return;
+    if (Cool::DebugOptions::log_when_rendering_alpha_checkerboard_background())
+        Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
+
+    render_target.set_size(size);
+    render_target.render([&](wgpu::RenderPassEncoder render_pass) {
+        alpha_checkerboard_pipeline().set_uniforms(img::aspect_ratio(render_target.desired_size()));
+        alpha_checkerboard_pipeline().draw(render_pass);
+    });
 }
 
 void View::imgui_window(ViewWindowParams const& params)
@@ -121,7 +132,7 @@ auto View::to_view_coordinates(ImGuiCoordinates const pos, bool should_apply_tra
     if (!_window_size)
         return ViewCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
-    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto const img_size    = img::fit_into(*_window_size, get_image_size());
 
     auto res = glm::vec2{pos};
     if (should_apply_translation)
@@ -137,7 +148,7 @@ auto View::to_imgui_coordinates(ViewCoordinates pos) const -> ImGuiCoordinates
     if (!_window_size)
         return ImGuiCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
-    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto const img_size    = img::fit_into(*_window_size, get_image_size());
     auto       res         = glm::vec2{pos};
 
     res.y *= -1.f;
@@ -228,29 +239,13 @@ static auto as_imvec2(img::SizeT<float> size) -> ImVec2
     return {size.width(), size.height()};
 }
 
-static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render_target)
-{
-    if (size == render_target.current_size())
-        return;
-
-    render_target.set_size(size);
-    render_target.render([&]() {
-        // alpha_checkerboard_pipeline().shader()->bind();
-        // alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::SizeU::aspect_ratio(size));
-        // alpha_checkerboard_pipeline().draw();
-    });
-
-    if (Cool::DebugOptions::log_when_rendering_alpha_checkerboard_background())
-        Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
-}
-
 void View::display_image(ImTextureID image_texture_id, img::Size image_size)
 {
     if (!_window_size.has_value())
         return;
 
-    auto const size       = img::SizeU::fit_into(*_window_size, image_size);
-    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_window_size);
+    auto const size       = img::fit_into(*_window_size, image_size);
+    _has_vertical_margins = img::aspect_ratio(size) < img::aspect_ratio(*_window_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 

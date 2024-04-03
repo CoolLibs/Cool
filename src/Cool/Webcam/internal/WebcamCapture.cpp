@@ -1,7 +1,7 @@
 #include "WebcamCapture.h"
 #include <opencv2/opencv.hpp>
 #include <webcam_info/webcam_info.hpp>
-#include "Cool/Gpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 
@@ -62,23 +62,24 @@ void WebcamCapture::update_webcam_ifn()
         static_cast<unsigned int>(_available_image.cols),
         static_cast<unsigned int>(_available_image.rows),
     };
-    auto const layout = TextureLayout{
-        .internal_format = InternalFormat::RGBA,
-        .channels        = Channels::RGB,
-        .texel_data_type = TexelDataType::UnsignedByte,
-    };
-    auto const* data = static_cast<uint8_t*>(_available_image.ptr());
+    // TODO(WebGPU)
+    // auto const layout = TextureLayout{
+    //     .internal_format = InternalFormat::RGBA,
+    //     .channels        = Channels::RGB,
+    //     .texel_data_type = TexelDataType::UnsignedByte,
+    // };
+    // auto const* data = static_cast<uint8_t*>(_available_image.ptr());
 
-    if (!_texture)
-    {
-        _texture = Texture{size, data, layout};
-    }
-    else
-    {
-        _texture->bind();
-        _texture->set_image(size, data, layout);
-        Cool::Texture::unbind();
-    }
+    // if (!_texture)
+    // {
+    //     _texture = Texture{size, data, layout};
+    // }
+    // else
+    // {
+    //     _texture->bind();
+    //     _texture->set_image(size, data, layout);
+    //     Cool::Texture::unbind();
+    // }
     _needs_to_create_texture_from_available_image = false;
 }
 

@@ -1,7 +1,8 @@
 #pragma once
-#include <Cool/Gpu/Texture.h>
 #include <opencv2/core.hpp>
 #include <webcam_info/webcam_info.hpp>
+#include "Cool/WebGPU/Texture.h"
+
 
 namespace Cool {
 

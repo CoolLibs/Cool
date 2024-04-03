@@ -4,7 +4,7 @@ namespace Cool {
 
 static auto dummy_texture() -> Texture const&
 {
-    static auto instance = Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
+    static auto instance = Texture{/* img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data() */}; // TODO(WebGPU)
     return instance;
 }
 

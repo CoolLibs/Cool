@@ -1,34 +1,28 @@
 #pragma once
 #include <img/img.hpp>
 #include "Cool/Path/Path.h"
+#include "Cool/WebGPU/Texture.h"
 #include "RenderTargetInfo.h"
 
 namespace Cool {
 
 class RenderTarget {
 public:
-    void             render(std::function<void()> const& render_fn);
-    img::Image       download_pixels() const { return img::load(Cool::Path::root() / "res/images/logo.png"); /*_impl.download_pixels();*/ }
-    ImTextureID      imgui_texture_id() const { return {}; /* _impl.imgui_texture_id(); */ }
-    RenderTargetInfo info() const { return {}; /* _impl.info(); */ }
-    img::Size        current_size() const { return {}; /* _impl.size(); */ }
-    img::Size        desired_size() const { return _desired_size; }
-    void             set_size(img::Size size) { _desired_size = size; }
-    void             set_size_immediately(img::Size size)
-    {
-        set_size(size);
-        resize_if_necessary();
-    }
-    // RenderTarget_Impl&       get() { return _impl; }       // TODO(JF) This is a temporary solution until the abstraction is fully done
-    // RenderTarget_Impl const& get() const { return _impl; } // TODO(JF) This is a temporary solution until the abstraction is fully done
-    auto needs_resizing() const -> bool { return {}; /* _impl.size() != desired_size(); */ }
+    void        render(std::function<void(wgpu::RenderPassEncoder render_pass)> const& render_fn);
+    img::Image  download_pixels() const { return img::load(Cool::Path::root() / "res/images/logo.png"); /*_impl.download_pixels();*/ }
+    ImTextureID imgui_texture_id() const { return _texture.imgui_texture_id(); }
+    img::Size   current_size() const { return _texture.size(); }
+    img::Size   desired_size() const { return _desired_size; }
+    void        set_size(img::Size size);
+    void        set_size_immediately(img::Size size);
+    auto        needs_resizing() const -> bool;
 
 private:
     void resize_if_necessary();
 
 private:
-    // RenderTarget_Impl _impl;
-    img::Size _desired_size;
+    Texture   _texture;
+    img::Size _desired_size{};
 };
 
 } // namespace Cool

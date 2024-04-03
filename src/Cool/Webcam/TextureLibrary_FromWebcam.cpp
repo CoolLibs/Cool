@@ -1,6 +1,6 @@
 #include "TextureLibrary_FromWebcam.h"
 #include <webcam_info/webcam_info.hpp>
-#include "Cool/Gpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "WebcamsConfigs.h"
 #include "WebcamsInfos.h"
 
