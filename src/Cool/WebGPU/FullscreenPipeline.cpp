@@ -89,13 +89,13 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
 
     // Configure blend state
     wgpu::BlendState blendState;
-    // Usual alpha blending for the color:
-    blendState.color.srcFactor = wgpu::BlendFactor::SrcAlpha;
+    // Usual alpha blending, using premultiplied alpha:
+    blendState.color.srcFactor = wgpu::BlendFactor::One;
     blendState.color.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
     blendState.color.operation = wgpu::BlendOperation::Add;
-    // alpha = src_alpha * (1 - dst_alpha) + dst_alpha
-    blendState.alpha.srcFactor = wgpu::BlendFactor::OneMinusDstAlpha;
-    blendState.alpha.dstFactor = wgpu::BlendFactor::One;
+    //
+    blendState.alpha.srcFactor = wgpu::BlendFactor::One;
+    blendState.alpha.dstFactor = wgpu::BlendFactor::OneMinusSrcAlpha;
     blendState.alpha.operation = wgpu::BlendOperation::Add;
 
     wgpu::ColorTargetState colorTarget;
