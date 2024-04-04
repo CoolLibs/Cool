@@ -163,7 +163,7 @@ void AppManager::update()
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);
-    imgui_end_frame();
+    bool const can_present = imgui_end_frame();
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
     for (auto& view : _views)
         view->on_frame_end();
@@ -176,7 +176,8 @@ void AppManager::update()
     webgpu_context().queue.submit(command);
     command.release();
 #ifndef __EMSCRIPTEN__
-    webgpu_context().swapChain.present();
+    if (can_present)
+        webgpu_context().swapChain.present();
 #endif
 
 #ifdef WEBGPU_BACKEND_DAWN
@@ -233,71 +234,73 @@ void AppManager::imgui_render(IApp& app)
     ImGui::GetStyle().FramePadding = ImGuiExtras::GetStyle().tab_bar_padding; // We need to apply the tab_bar_padding here because simply changing it when the style editor UI changes it doesn't work because it is in the middle of the ImGui::PushStyleVar(ImGuiStyleVar_FramePadding) that we do above.
 }
 
-void AppManager::imgui_end_frame()
+auto AppManager::imgui_end_frame() -> bool
 {
     ImGui::EndFrame();
     ImGui::Render();
-    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
-    if (!nextTexture)
-    {
-        std::cerr << "Cannot acquire next swap chain texture" << std::endl; // TODO(WebGPU) Can this legitimately happen, ot is this always an error we need to handle / report
-
-        return; // TODO(WebGPU) We still want to update, but not render
-    }
     ImDrawData* draw_data = ImGui::GetDrawData();
+    if (!draw_data)
+        return false;
     {
         // HACK(ImNodes) Since nodes' workspace is not rendered during the first frame,
         // to avoid a flash we skip ImGui display altogether for the first few frames.
         // NB: go check out the other "HACK(ImNodes)"
         _frames_count++;
         if (_frames_count <= 2)
-            draw_data = nullptr;
+            return false;
     }
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
-    if (draw_data)
+
+    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
+    if (!nextTexture)
     {
-        wgpu::RenderPassDescriptor renderPassDesc{};
+        std::cerr << "Cannot acquire next swap chain texture" << std::endl; // TODO(WebGPU) Can this legitimately happen, ot is this always an error we need to handle / report
 
-        wgpu::RenderPassColorAttachment renderPassColorAttachment{};
-        renderPassColorAttachment.view          = nextTexture;
-        renderPassColorAttachment.resolveTarget = nullptr;
-        renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
-        renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
-        renderPassColorAttachment.clearValue    = wgpu::Color{0., 0., 0., 1.};
-        renderPassDesc.colorAttachmentCount     = 1;
-        renderPassDesc.colorAttachments         = &renderPassColorAttachment;
-
-        wgpu::RenderPassDepthStencilAttachment depthStencilAttachment;
-        depthStencilAttachment.view              = webgpu_context().depthTextureView;
-        depthStencilAttachment.depthClearValue   = 1.0f;
-        depthStencilAttachment.depthLoadOp       = wgpu::LoadOp::Clear;
-        depthStencilAttachment.depthStoreOp      = wgpu::StoreOp::Store;
-        depthStencilAttachment.depthReadOnly     = false;
-        depthStencilAttachment.stencilClearValue = 0;
-#ifdef WEBGPU_BACKEND_WGPU
-        depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Clear;
-        depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Store;
-#else
-        depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Undefined;
-        depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Undefined;
-#endif
-        depthStencilAttachment.stencilReadOnly = true;
-
-        renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
-
-        renderPassDesc.timestampWriteCount = 0;
-        renderPassDesc.label               = "ImGui";
-        renderPassDesc.timestampWrites     = nullptr;
-        auto render_pass                   = webgpu_context().encoder.beginRenderPass(renderPassDesc);
-        ImGui_ImplWGPU_RenderDrawData(draw_data, render_pass);
-        render_pass.end();
-        render_pass.release();
-        nextTexture.release();
+        return false; // TODO(WebGPU) We still want to update, but not render
     }
+    wgpu::RenderPassDescriptor renderPassDesc{};
+
+    wgpu::RenderPassColorAttachment renderPassColorAttachment{};
+    renderPassColorAttachment.view          = nextTexture;
+    renderPassColorAttachment.resolveTarget = nullptr;
+    renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
+    renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
+    renderPassColorAttachment.clearValue    = wgpu::Color{0., 0., 0., 1.};
+    renderPassDesc.colorAttachmentCount     = 1;
+    renderPassDesc.colorAttachments         = &renderPassColorAttachment;
+
+    wgpu::RenderPassDepthStencilAttachment depthStencilAttachment;
+    depthStencilAttachment.view              = webgpu_context().depthTextureView;
+    depthStencilAttachment.depthClearValue   = 1.0f;
+    depthStencilAttachment.depthLoadOp       = wgpu::LoadOp::Clear;
+    depthStencilAttachment.depthStoreOp      = wgpu::StoreOp::Store;
+    depthStencilAttachment.depthReadOnly     = false;
+    depthStencilAttachment.stencilClearValue = 0;
+#ifdef WEBGPU_BACKEND_WGPU
+    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Clear;
+    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Store;
+#else
+    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Undefined;
+    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Undefined;
+#endif
+    depthStencilAttachment.stencilReadOnly = true;
+
+    renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
+
+    renderPassDesc.timestampWriteCount = 0;
+    renderPassDesc.label               = "ImGui";
+    renderPassDesc.timestampWrites     = nullptr;
+    auto render_pass                   = webgpu_context().encoder.beginRenderPass(renderPassDesc);
+    ImGui_ImplWGPU_RenderDrawData(draw_data, render_pass);
+    render_pass.end();
+    render_pass.release();
+    nextTexture.release();
+
+    return true;
 }
 
 static void imgui_dockspace()

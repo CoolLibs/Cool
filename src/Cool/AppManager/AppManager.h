@@ -25,7 +25,8 @@ private:
     void restore_imgui_ini_state_ifn();
     void imgui_render(IApp&);
     void imgui_windows();
-    void imgui_end_frame();
+    /// Returns true iff we can Present
+    [[nodiscard]] auto imgui_end_frame() -> bool;
 
     static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 
