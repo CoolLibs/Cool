@@ -11,10 +11,6 @@ void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass
     resize_if_necessary();
     assert(_texture.handle() != nullptr);
 
-    wgpu::CommandEncoderDescriptor commandEncoderDesc;
-    commandEncoderDesc.label     = "Command Encoder";
-    wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(commandEncoderDesc);
-
     wgpu::RenderPassDescriptor renderPassDesc{};
     TextureView const&         nextTexture{_texture.entire_texture_view()};
 
@@ -49,7 +45,7 @@ void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass
     renderPassDesc.timestampWriteCount = 0;
     renderPassDesc.timestampWrites     = nullptr;
 
-    wgpu::RenderPassEncoder render_pass = encoder.beginRenderPass(renderPassDesc);
+    wgpu::RenderPassEncoder render_pass = webgpu_context().encoder.beginRenderPass(renderPassDesc);
 
     render_fn(render_pass); // TODO(WebGPU) What happens if this function throws ?
 
@@ -58,13 +54,6 @@ void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass
 
     render_pass.end();
     render_pass.release();
-
-    wgpu::CommandBufferDescriptor cmdBufferDescriptor{};
-    cmdBufferDescriptor.label   = "Command buffer";
-    wgpu::CommandBuffer command = encoder.finish(cmdBufferDescriptor);
-    encoder.release();
-    webgpu_context().queue.submit(command);
-    command.release();
 }
 
 auto RenderTarget::texture_straight_alpha() const -> Texture const&
@@ -81,30 +70,18 @@ auto RenderTarget::texture_straight_alpha() const -> Texture const&
 
 void RenderTarget::make_texture_straight_alpha() const
 {
-    wgpu::TextureDescriptor textureDesc;
-    textureDesc.dimension     = wgpu::TextureDimension::_2D;
-    textureDesc.size          = {current_size().width(), current_size().height(), 1};
-    textureDesc.mipLevelCount = 1;
-    textureDesc.sampleCount   = 1;
-    textureDesc.format        = wgpu::TextureFormat::RGBA8Unorm;
-
-    textureDesc.usage = wgpu::TextureUsage::TextureBinding
-                        | wgpu::TextureUsage::StorageBinding;
-    textureDesc.viewFormatCount = 0;
-    textureDesc.viewFormats     = nullptr;
-
-    _texture_straight_alpha = Texture{textureDesc};
-
-    // Initialize a command encoder
-    wgpu::CommandEncoderDescriptor encoderDesc = wgpu::Default;
-    wgpu::CommandEncoder           encoder     = webgpu_context().device.createCommandEncoder(encoderDesc);
+    {
+        auto texture_desc = _texture.descriptor();
+        texture_desc.usage |= wgpu::TextureUsage::StorageBinding; // We need to write to the texture in the shader
+        _texture_straight_alpha = Texture{texture_desc};
+    }
 
     // Create and use compute pass here!
     // Create compute pass
     wgpu::ComputePassDescriptor computePassDesc;
     computePassDesc.timestampWriteCount  = 0;
     computePassDesc.timestampWrites      = nullptr;
-    wgpu::ComputePassEncoder computePass = encoder.beginComputePass(computePassDesc);
+    wgpu::ComputePassEncoder computePass = webgpu_context().encoder.beginComputePass(computePassDesc);
 
     // In initComputePipeline():
 
@@ -196,20 +173,8 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     // Finalize compute pass
     computePass.end();
 
-// Clean up
-#if !defined(WEBGPU_BACKEND_WGPU)
-    computePass.release();
-#endif
-
-    // Encode and submit the GPU commands
-    wgpu::CommandBuffer commands = encoder.finish(wgpu::CommandBufferDescriptor{});
-    webgpu_context().queue.submit(commands);
-
     // Clean up
-#if !defined(WEBGPU_BACKEND_WGPU)
-    commands.release();
-    encoder.release();
-#endif
+    computePass.release();
 }
 
 void RenderTarget::set_size(img::Size size)

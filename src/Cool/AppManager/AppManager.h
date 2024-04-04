@@ -25,7 +25,7 @@ private:
     void restore_imgui_ini_state_ifn();
     void imgui_render(IApp&);
     void imgui_windows();
-    void end_frame();
+    void imgui_end_frame();
 
     static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 

@@ -6,23 +6,15 @@ namespace Cool {
 struct WebGPUContext {
     // TODO(WebGPU) Destroy the objects
     // TODO(WebGPU) Remove all the unused objects
-    wgpu::Instance          instance{nullptr};
-    wgpu::Surface           surface{nullptr};
-    wgpu::Adapter           adapter{nullptr};
-    wgpu::Device            device{nullptr};
-    wgpu::Queue             queue{nullptr};
-    wgpu::SwapChain         swapChain{nullptr};
-    wgpu::ShaderModule      shaderModule{nullptr};
-    wgpu::RenderPipeline    pipeline{nullptr};
-    wgpu::Texture           depthTexture{nullptr};
-    wgpu::TextureView       depthTextureView{nullptr};
-    wgpu::Sampler           sampler{nullptr};
-    wgpu::TextureView       textureView{nullptr};
-    wgpu::Texture           texture{nullptr};
-    wgpu::Buffer            vertexBuffer{nullptr};
-    wgpu::Buffer            uniformBuffer{nullptr};
-    wgpu::BindGroup         bindGroup{nullptr};
-    wgpu::RenderPassEncoder mainRenderPass{nullptr}; // TODO(WebGPU) Does it belong here?
+    wgpu::Instance       instance{nullptr};
+    wgpu::Surface        surface{nullptr};
+    wgpu::Adapter        adapter{nullptr};
+    wgpu::Device         device{nullptr};
+    wgpu::Queue          queue{nullptr};
+    wgpu::SwapChain      swapChain{nullptr};
+    wgpu::Texture        depthTexture{nullptr};
+    wgpu::TextureView    depthTextureView{nullptr};
+    wgpu::CommandEncoder encoder{nullptr};
 
     wgpu::TextureFormat       swapChainFormat    = wgpu::TextureFormat::Undefined;
     wgpu::TextureFormat       depthTextureFormat = wgpu::TextureFormat::Depth24Plus;

@@ -15,6 +15,7 @@ public:
     [[nodiscard]] auto size() const -> img::Size { return img::Size{_desc.size.width, _desc.size.height}; }
 
     auto entire_texture_view() const -> TextureView const&; // TODO(WebGPU) When resizing the texture, we probably need to rebuild the view ?
+    auto descriptor() const -> wgpu::TextureDescriptor { return _desc; }
 
 private:
     // TODO(ColorSpaces) Store the color space of the texture (Oklab, sRGB, etc.) and use it to check / know if we need conversions etc.
