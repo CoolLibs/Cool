@@ -273,24 +273,6 @@ auto AppManager::imgui_end_frame() -> bool
     renderPassDesc.colorAttachmentCount     = 1;
     renderPassDesc.colorAttachments         = &renderPassColorAttachment;
 
-    wgpu::RenderPassDepthStencilAttachment depthStencilAttachment;
-    depthStencilAttachment.view              = webgpu_context().depthTextureView;
-    depthStencilAttachment.depthClearValue   = 1.0f;
-    depthStencilAttachment.depthLoadOp       = wgpu::LoadOp::Clear;
-    depthStencilAttachment.depthStoreOp      = wgpu::StoreOp::Store;
-    depthStencilAttachment.depthReadOnly     = false;
-    depthStencilAttachment.stencilClearValue = 0;
-#ifdef WEBGPU_BACKEND_WGPU
-    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Clear;
-    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Store;
-#else
-    depthStencilAttachment.stencilLoadOp  = wgpu::LoadOp::Undefined;
-    depthStencilAttachment.stencilStoreOp = wgpu::StoreOp::Undefined;
-#endif
-    depthStencilAttachment.stencilReadOnly = true;
-
-    renderPassDesc.depthStencilAttachment = &depthStencilAttachment;
-
     renderPassDesc.timestampWriteCount = 0;
     renderPassDesc.label               = "ImGui";
     renderPassDesc.timestampWrites     = nullptr;
