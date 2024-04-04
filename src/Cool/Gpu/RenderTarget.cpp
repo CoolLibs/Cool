@@ -99,7 +99,7 @@ static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePi
 @group(0) @binding(0) var in_tex_premultiplied: texture_2d<f32>;
 @group(0) @binding(1) var out_tex_straight: texture_storage_2d<rgba8unorm,write>;
 
-@compute @workgroup_size(8, 8) //TODO(WebGPU) Don't hardcode workgroup_size here, inject it in shader code in the constructor of ComputePipeline
+@compute
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     let color = textureLoad(in_tex_premultiplied, id.xy, 0);
     textureStore(out_tex_straight, id.xy, 
