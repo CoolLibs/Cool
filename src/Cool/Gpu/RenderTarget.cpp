@@ -1,5 +1,6 @@
 #include "RenderTarget.h"
 #include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/ComputePipeline.h"
 #include "Cool/WebGPU/ShaderModule.h"
 #include "Cool/WebGPU/Texture.h"
 #include "webgpu/webgpu.hpp"
@@ -68,42 +69,8 @@ auto RenderTarget::texture_straight_alpha() const -> Texture const&
     return *_texture_straight_alpha;
 }
 
-void RenderTarget::make_texture_straight_alpha() const
+static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline
 {
-    {
-        auto texture_desc = _texture.descriptor();
-        texture_desc.usage |= wgpu::TextureUsage::StorageBinding; // We need to write to the texture in the shader
-        _texture_straight_alpha = Texture{texture_desc};
-    }
-
-    // Create and use compute pass here!
-    // Create compute pass
-    wgpu::ComputePassDescriptor computePassDesc;
-    computePassDesc.timestampWriteCount  = 0;
-    computePassDesc.timestampWrites      = nullptr;
-    wgpu::ComputePassEncoder computePass = webgpu_context().encoder.beginComputePass(computePassDesc);
-
-    // In initComputePipeline():
-
-    // Load compute shader
-    ShaderModule computeShaderModule{
-        R"wgsl(
-@group(0) @binding(0) var in_tex_premultiplied: texture_2d<f32>;
-@group(0) @binding(1) var out_tex_straight: texture_storage_2d<rgba8unorm,write>;
-
-@compute @workgroup_size(8, 8)
-fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-    let color = textureLoad(in_tex_premultiplied, id.xy, 0);
-    textureStore(out_tex_straight, id.xy, 
-        vec4(
-            select(color.rgb / color.a, vec3(0.), abs(color.a) < 0.0000001f),
-            color.a
-        )
-    );
-}
-)wgsl",
-    };
-
     // Create bind group layout
     std::vector<wgpu::BindGroupLayoutEntry> bindings(2, wgpu::Default);
 
@@ -120,62 +87,55 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     bindings[1].storageTexture.viewDimension = wgpu::TextureViewDimension::_2D;
     bindings[1].visibility                   = wgpu::ShaderStage::Compute;
 
-    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc;
-    bindGroupLayoutDesc.entryCount          = (uint32_t)bindings.size();
-    bindGroupLayoutDesc.entries             = bindings.data();
-    wgpu::BindGroupLayout m_bindGroupLayout = webgpu_context().device.createBindGroupLayout(bindGroupLayoutDesc);
+    wgpu::BindGroupLayoutDescriptor bind_group_layout_desc;
+    bind_group_layout_desc.entryCount = (uint32_t)bindings.size();
+    bind_group_layout_desc.entries    = bindings.data();
 
-    // Create compute bind group
-    std::vector<wgpu::BindGroupEntry> entries(2, wgpu::Default);
+    return ComputePipeline{{
+        .label                    = "[RenderTarget] Convert premultiplied to straight alpha",
+        .bind_group_layout_desc   = bind_group_layout_desc,
+        .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
+        .wgsl_compute_shader_code = R"wgsl(
+@group(0) @binding(0) var in_tex_premultiplied: texture_2d<f32>;
+@group(0) @binding(1) var out_tex_straight: texture_storage_2d<rgba8unorm,write>;
 
-    // Input texture
-    entries[0].binding     = 0;
-    entries[0].textureView = _texture.entire_texture_view();
+@compute @workgroup_size(8, 8) //TODO(WebGPU) Don't hardcode workgroup_size here, inject it in shader code in the constructor of ComputePipeline
+fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+    let color = textureLoad(in_tex_premultiplied, id.xy, 0);
+    textureStore(out_tex_straight, id.xy, 
+        vec4(
+            select(color.rgb / color.a, vec3(0.), abs(color.a) < 0.0000001f),
+            color.a
+        )
+    );
+}
+)wgsl",
+    }};
+}
 
-    // Output texture
-    entries[1].binding     = 1;
-    entries[1].textureView = _texture_straight_alpha->entire_texture_view();
-
-    wgpu::BindGroupDescriptor bindGroupDesc;
-    bindGroupDesc.layout        = m_bindGroupLayout;
-    bindGroupDesc.entryCount    = (uint32_t)entries.size();
-    bindGroupDesc.entries       = (WGPUBindGroupEntry*)entries.data();
-    wgpu::BindGroup m_bindGroup = webgpu_context().device.createBindGroup(bindGroupDesc);
-    // Create compute pipeline
-    wgpu::ComputePipelineDescriptor computePipelineDesc = wgpu::Default;
-    computePipelineDesc.label                           = "[RenderTarget] Convert premultiplied to straight alpha";
-    computePipelineDesc.compute.entryPoint              = "main";
-    computePipelineDesc.compute.module                  = computeShaderModule;
-
-    // Create compute pipeline layout
-    wgpu::PipelineLayoutDescriptor pipelineLayoutDesc;
-    pipelineLayoutDesc.bindGroupLayoutCount = 1;
-    pipelineLayoutDesc.bindGroupLayouts     = (WGPUBindGroupLayout*)&m_bindGroupLayout;
-    wgpu::PipelineLayout m_pipelineLayout   = webgpu_context().device.createPipelineLayout(pipelineLayoutDesc);
-    computePipelineDesc.layout              = m_pipelineLayout;
-
-    wgpu::ComputePipeline computePipeline = webgpu_context().device.createComputePipeline(computePipelineDesc);
-
-    // Use compute pass
-    computePass.setPipeline(computePipeline);
-    // Set the bind group:
-    computePass.setBindGroup(0, m_bindGroup, 0, nullptr);
-    {
-        uint32_t invocationCountX    = _texture.size().width();
-        uint32_t invocationCountY    = _texture.size().height();
-        uint32_t workgroupSizePerDim = 8;
-        // This ceils invocationCountX / workgroupSizePerDim
-        uint32_t workgroupCountX = (invocationCountX + workgroupSizePerDim - 1) / workgroupSizePerDim;
-        uint32_t workgroupCountY = (invocationCountY + workgroupSizePerDim - 1) / workgroupSizePerDim;
-        computePass.dispatchWorkgroups(workgroupCountX, workgroupCountY, 1);
+void RenderTarget::make_texture_straight_alpha() const
+{
+    { // Recreate texture
+        auto texture_desc = _texture.descriptor();
+        texture_desc.usage |= wgpu::TextureUsage::StorageBinding; // We need to write to the texture in the shader
+        _texture_straight_alpha = Texture{texture_desc};
     }
 
-    // Finalize compute pass
-    computePass.end();
-
-    // Clean up
-    computePass.release();
+    { // Run compute pass to convert texture to straight alpha
+        _compute_pipeline_that_converts_to_straight_alpha.compute({
+            .invocation_count_x = _texture.size().width(),
+            .invocation_count_y = _texture.size().height(),
+            .bind_group         = {
+                /* @binding(0) = */ _texture.entire_texture_view(),
+                /* @binding(1) = */ _texture_straight_alpha->entire_texture_view()
+            },
+        });
+    }
 }
+
+RenderTarget::RenderTarget()
+    : _compute_pipeline_that_converts_to_straight_alpha{make_compute_pipeline_that_converts_to_straight_alpha()}
+{}
 
 void RenderTarget::set_size(img::Size size)
 {
