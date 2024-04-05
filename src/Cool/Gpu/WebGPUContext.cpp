@@ -27,39 +27,39 @@ void WebGPUContext::buildSwapChain(int width, int height)
     swapChain                 = device.createSwapChain(surface, swapChainDesc);
 }
 
-void WebGPUContext::buildDepthBuffer(int width, int height)
-{
-    // Destroy previously allocated texture
-    if (depthTexture != nullptr)
-    {
-        depthTextureView.release();
-        depthTexture.destroy();
-        depthTexture.release();
-    }
+// void WebGPUContext::buildDepthBuffer(int width, int height)
+// {
+//     // Destroy previously allocated texture
+//     if (depthTexture != nullptr)
+//     {
+//         depthTextureView.release();
+//         depthTexture.destroy();
+//         depthTexture.release();
+//     }
 
-    // Create the depth texture
-    wgpu::TextureDescriptor depthTextureDesc;
-    depthTextureDesc.dimension       = wgpu::TextureDimension::_2D;
-    depthTextureDesc.format          = depthTextureFormat;
-    depthTextureDesc.mipLevelCount   = 1;
-    depthTextureDesc.sampleCount     = 1;
-    depthTextureDesc.size            = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
-    depthTextureDesc.usage           = wgpu::TextureUsage::RenderAttachment;
-    depthTextureDesc.viewFormatCount = 1;
-    depthTextureDesc.viewFormats     = (WGPUTextureFormat*)&depthTextureFormat;
-    depthTexture                     = device.createTexture(depthTextureDesc);
+//     // Create the depth texture
+//     wgpu::TextureDescriptor depthTextureDesc;
+//     depthTextureDesc.dimension       = wgpu::TextureDimension::_2D;
+//     depthTextureDesc.format          = depthTextureFormat;
+//     depthTextureDesc.mipLevelCount   = 1;
+//     depthTextureDesc.sampleCount     = 1;
+//     depthTextureDesc.size            = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
+//     depthTextureDesc.usage           = wgpu::TextureUsage::RenderAttachment;
+//     depthTextureDesc.viewFormatCount = 1;
+//     depthTextureDesc.viewFormats     = (WGPUTextureFormat*)&depthTextureFormat;
+//     depthTexture                     = device.createTexture(depthTextureDesc);
 
-    // Create the view of the depth texture manipulated by the rasterizer
-    wgpu::TextureViewDescriptor depthTextureViewDesc;
-    depthTextureViewDesc.aspect          = wgpu::TextureAspect::DepthOnly;
-    depthTextureViewDesc.baseArrayLayer  = 0;
-    depthTextureViewDesc.arrayLayerCount = 1;
-    depthTextureViewDesc.baseMipLevel    = 0;
-    depthTextureViewDesc.mipLevelCount   = 1;
-    depthTextureViewDesc.dimension       = wgpu::TextureViewDimension::_2D;
-    depthTextureViewDesc.format          = depthTextureFormat;
-    depthTextureView                     = depthTexture.createView(depthTextureViewDesc);
-}
+//     // Create the view of the depth texture manipulated by the rasterizer
+//     wgpu::TextureViewDescriptor depthTextureViewDesc;
+//     depthTextureViewDesc.aspect          = wgpu::TextureAspect::DepthOnly;
+//     depthTextureViewDesc.baseArrayLayer  = 0;
+//     depthTextureViewDesc.arrayLayerCount = 1;
+//     depthTextureViewDesc.baseMipLevel    = 0;
+//     depthTextureViewDesc.mipLevelCount   = 1;
+//     depthTextureViewDesc.dimension       = wgpu::TextureViewDimension::_2D;
+//     depthTextureViewDesc.format          = depthTextureFormat;
+//     depthTextureView                     = depthTexture.createView(depthTextureViewDesc);
+// }
 
 void WebGPUContext::check_for_swapchain_rebuild()
 {
@@ -72,7 +72,6 @@ void WebGPUContext::check_for_swapchain_rebuild()
 void WebGPUContext::on_window_size_changed(int width, int height)
 {
     buildSwapChain(width, height);
-    buildDepthBuffer(width, height); // TODO(WebGPU) Is this needed for Coollab?
     _swap_chain_width  = width;
     _swap_chain_height = height;
 }

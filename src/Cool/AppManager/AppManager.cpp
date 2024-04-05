@@ -170,7 +170,7 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_end();
 
     wgpu::CommandBufferDescriptor cmdBufferDescriptor{};
-    cmdBufferDescriptor.label   = "Command buffer";
+    cmdBufferDescriptor.label   = "Cool Global Command Buffer";
     wgpu::CommandBuffer command = webgpu_context().encoder.finish(cmdBufferDescriptor);
     webgpu_context().encoder.release();
     webgpu_context().queue.submit(command);

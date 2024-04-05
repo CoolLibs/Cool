@@ -24,11 +24,14 @@ ComputePipeline::ComputePipeline(ComputePipeline_CreationArgs const& args)
     assert(_workgroup_size.y > 0);
     assert(_workgroup_size.z > 0);
 
-    auto const compute_shader = ShaderModule{String::replace_all_words(
-        std::string{args.wgsl_compute_shader_code},
-        "@compute",
-        fmt::format("@compute @workgroup_size({}, {}, {})", _workgroup_size.x, _workgroup_size.y, _workgroup_size.z)
-    )};
+    auto const compute_shader = ShaderModule{{
+        .label     = args.label,
+        .wgsl_code = String::replace_all_words(
+            std::string{args.wgsl_compute_shader_code},
+            "@compute",
+            fmt::format("@compute @workgroup_size({}, {}, {})", _workgroup_size.x, _workgroup_size.y, _workgroup_size.z)
+        ),
+    }};
 
     wgpu::ComputePipelineDescriptor computePipelineDesc = wgpu::Default;
     computePipelineDesc.label                           = args.label.data();

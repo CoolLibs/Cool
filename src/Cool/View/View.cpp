@@ -13,7 +13,9 @@ namespace Cool {
 
 static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
 {
-    auto pipeline = FullscreenPipeline{R"wgsl(
+    auto pipeline = FullscreenPipeline{{
+        .label     = "Create alpha checkerboard pattern",
+        .wgsl_code = R"wgsl(
 struct VertexOutput {
     @location(0) uv: vec2f,
 };
@@ -23,7 +25,8 @@ fn main(in: VertexOutput) -> @location(0) vec4f {
     let grey = select(0.25, 0.5, (gid.x + gid.y) % 2 == 0);
     return vec4(vec3(grey), 1.);
 }
-)wgsl"};
+)wgsl",
+    }};
     //     auto const err      = pipeline.compile();
     // #if DEBUG
     //     err.send_error_if_any(

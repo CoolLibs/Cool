@@ -101,6 +101,10 @@ static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePi
 
 @compute
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+    if(any(id.xy >= textureDimensions(in_tex_premultiplied)))
+    {
+        return;
+    }
     let color = textureLoad(in_tex_premultiplied, id.xy, 0);
     textureStore(out_tex_straight, id.xy, 
         vec4(

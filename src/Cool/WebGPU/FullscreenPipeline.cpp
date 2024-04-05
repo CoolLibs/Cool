@@ -14,7 +14,7 @@ static auto make_uniforms_buffer_descriptor() -> wgpu::BufferDescriptor
     return bufferDesc;
 }
 
-FullscreenPipeline::FullscreenPipeline(std::string_view wgsl_fragment_shader_source_code)
+FullscreenPipeline::FullscreenPipeline(ShaderModule_CreationArgs const& args)
     : _uniforms_buffer(make_uniforms_buffer_descriptor())
 {
     // Create binding layout (don't forget to = Default)
@@ -42,7 +42,9 @@ FullscreenPipeline::FullscreenPipeline(std::string_view wgsl_fragment_shader_sou
     pipelineDesc.vertex.buffers     = nullptr;
 
     // Vertex shader
-    ShaderModule vertex_shader{R"(
+    ShaderModule vertex_shader{{
+        .label     = "[FullscreenPipeline] Vertex Shader",
+        .wgsl_code = R"(
 @group(0) @binding(0) var<uniform> _aspect_ratio: f32;
 
 struct VertexOutput {
@@ -57,7 +59,8 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     out.uv = vertices[in_vertex_index]; // -1 to 1
     out.uv.x *= _aspect_ratio;
     return out;
-})"};
+})",
+    }};
     pipelineDesc.vertex.module        = vertex_shader;
     pipelineDesc.vertex.entryPoint    = "main";
     pipelineDesc.vertex.constantCount = 0;
@@ -79,7 +82,7 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     pipelineDesc.primitive.cullMode = wgpu::CullMode::None;
 
     // Fragment shader
-    ShaderModule        fragment_shader{wgsl_fragment_shader_source_code};
+    ShaderModule        fragment_shader{args};
     wgpu::FragmentState fragmentState;
     pipelineDesc.fragment       = &fragmentState;
     fragmentState.module        = fragment_shader;
