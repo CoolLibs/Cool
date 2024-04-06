@@ -1,4 +1,5 @@
 #pragma once
+#include <img/src/Size.h>
 #include <webgpu/webgpu.hpp>
 
 namespace Cool {
@@ -20,16 +21,13 @@ struct WebGPUContext {
     // wgpu::TextureFormat       depthTextureFormat = wgpu::TextureFormat::Depth24Plus;
     wgpu::SwapChainDescriptor swapChainDesc; // TODO move to local variable when creating swap chain
 
-    void check_for_swapchain_rebuild();
-    void on_window_size_changed(int width, int height);
+    void check_for_swapchain_rebuild(img::Size swapchain_size);
 
 private:
-    void buildSwapChain(int width, int height);
-    void buildDepthBuffer(int width, int height);
+    void build_swapchain(img::Size swapchain_size);
 
-public:
-    int _swap_chain_width{};
-    int _swap_chain_height{};
+private:
+    img::Size _swapchain_size{};
 };
 
 auto webgpu_context() -> WebGPUContext&;

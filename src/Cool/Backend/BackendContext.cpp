@@ -171,10 +171,10 @@ BackendContext::BackendContext(WindowConfig const& config)
     _wgpu.queue = _wgpu.device.getQueue();
 
     {
-        // Create swapchain and depth buffer for the first time
+        // Create swapchain for the first time
         int width, height; // NOLINT(*isolate-declaration, *init-variables)
         glfwGetFramebufferSize(window().glfw(), &width, &height);
-        _wgpu.on_window_size_changed(width, height);
+        _wgpu.check_for_swapchain_rebuild({static_cast<uint32_t>(width), static_cast<uint32_t>(height)});
     }
 
     IMGUI_CHECKVERSION();

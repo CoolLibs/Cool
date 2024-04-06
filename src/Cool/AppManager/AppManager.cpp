@@ -1,6 +1,7 @@
 #include "AppManager.h"
 #include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Gpu/Vulkan/Context.h>
+#include <img/src/Size.h>
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_wgpu.h>
@@ -131,11 +132,19 @@ void AppManager::restore_imgui_ini_state_ifn()
     _app._imgui_ini_state_to_restore.reset();
 }
 
+static auto imgui_viewport_size() -> img::Size
+{
+    auto const size = ImGui::GetIO().DisplayFramebufferScale * ImGui::GetIO().DisplaySize;
+    return {
+        static_cast<uint32_t>(size.x),
+        static_cast<uint32_t>(size.y),
+    };
+}
+
 void AppManager::update()
 {
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
-    webgpu_context().check_for_swapchain_rebuild(); // Make sure the swapchain has the right size before we grab its current texture // We check each frame instead of doing it in the glfw window resize callback, because we update on a separate thread, and events are handled on the main thread, which can cause data races and crashes.
-    webgpu_context().encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
+    webgpu_context().encoder                  = webgpu_context().device.createCommandEncoder(wgpu::Default);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
@@ -161,6 +170,7 @@ void AppManager::update()
 #endif
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
+    webgpu_context().check_for_swapchain_rebuild(imgui_viewport_size()); // Must be called after imgui_new_frame() because it sets up the imgui viewport size for the current frame // We check each frame instead of doing it in the glfw window resize callback, because we update on a separate thread, and events are handled on the main thread, which can cause data races and crashes.
     check_for_imgui_item_picker_request();
     imgui_render(_app);
     bool const can_present = imgui_end_frame();
@@ -188,11 +198,6 @@ void AppManager::update()
 
 static void imgui_new_frame()
 {
-    // #if defined(COOL_VULKAN)
-    //     ImGui_ImplVulkan_NewFrame();
-    // #elif defined(COOL_OPENGL)
-    //     ImGui_ImplOpenGL3_NewFrame();
-    // #endif
     ImGui_ImplWGPU_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
