@@ -195,7 +195,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOther(window().glfw(), /*install_callbacks=*/false);
-    ImGui_ImplWGPU_Init(webgpu_context().device, 3, webgpu_context().swapChainFormat); // TODO(WebGPU):if we dont pass depthTextureFormat here, does it allow us to not require depth in the rener pass used by ImGUI?
+    ImGui_ImplWGPU_Init(webgpu_context().device, 3, webgpu_context().swapChainFormat);
     imgui_config();
 }
 

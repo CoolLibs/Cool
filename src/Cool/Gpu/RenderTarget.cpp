@@ -162,17 +162,17 @@ void RenderTarget::resize_if_necessary()
     if (!needs_resizing())
         return;
 
-    wgpu::TextureDescriptor textureDesc;
-    textureDesc.dimension       = wgpu::TextureDimension::_2D;
-    textureDesc.size            = {_desired_size.width(), _desired_size.height(), 1};
-    textureDesc.mipLevelCount   = 1;
-    textureDesc.sampleCount     = 1;
-    textureDesc.format          = wgpu::TextureFormat::RGBA8Unorm;
-    textureDesc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment /*  | TextureUsage::CopyDst */;
-    textureDesc.viewFormatCount = 0;
-    textureDesc.viewFormats     = nullptr;
+    wgpu::TextureDescriptor texture_desc;
+    texture_desc.dimension       = wgpu::TextureDimension::_2D;
+    texture_desc.size            = {_desired_size.width(), _desired_size.height(), 1};
+    texture_desc.mipLevelCount   = 1;
+    texture_desc.sampleCount     = 1;
+    texture_desc.format          = wgpu::TextureFormat::RGBA8Unorm;
+    texture_desc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment /*  | TextureUsage::CopyDst */;
+    texture_desc.viewFormatCount = 0;
+    texture_desc.viewFormats     = nullptr;
 
-    _texture = Texture{textureDesc};
+    _texture = Texture{texture_desc};
     _texture_straight_alpha.reset();
 }
 

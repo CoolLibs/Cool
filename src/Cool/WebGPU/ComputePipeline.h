@@ -21,7 +21,6 @@ struct ComputePipeline_ComputeArgs {
     std::vector<std::reference_wrapper<TextureView const>> bind_group{}; // TODO(WebGPU) Allow buffers too
 };
 
-// TODO(WebGPU) Turn this into a compute shader? removes the need for the dummy vao. Problem: some effects need ddx() and ddy()
 class ComputePipeline : public WGPUUnique<wgpu::ComputePipeline> {
 public:
     ComputePipeline(ComputePipeline_CreationArgs const&); // NOLINT(*explicit*)

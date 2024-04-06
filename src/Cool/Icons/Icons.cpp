@@ -1,8 +1,7 @@
 #include "Icons.h"
 #include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/File/File.h>
 #include <Cool/Log/ToUser.h>
-#include "img/src/Load.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 
@@ -14,7 +13,7 @@ const Texture& Icons::get(std::filesystem::path image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        _map[path] = Texture{/* img::load(path) */}; // TODO(WebGPU)
+        _map[path] = load_texture(path);
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("Icons", fmt::format("Generated texture from {}", path));
         return _map[path];

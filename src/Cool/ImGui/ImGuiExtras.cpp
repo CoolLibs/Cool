@@ -211,9 +211,7 @@ auto checkbox_button(const char* icon, bool* v) -> bool
 auto close_button() -> bool
 {
     return button_with_icon(
-        // TODO(WebGPU)
-        // Icons::close_button().imgui_texture_id(),
-        ImGui::GetIO().Fonts->TexID,
+        Icons::close_button().imgui_texture_id(),
         ImVec4(0.9f, 0.9f, 0.9f, 1.f),
         ImVec4(0.5f, 0.2f, 0.2f, 1.f),
         11.f, 11.f
