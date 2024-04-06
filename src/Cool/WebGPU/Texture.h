@@ -10,8 +10,7 @@ class Texture : public WGPUUnique<wgpu::Texture> {
 public:
     Texture() = default; // TODO(WebGPU) Remove ?
     explicit Texture(wgpu::TextureDescriptor const&);
-    void set_image(uint32_t color_components_count, std::vector<uint8_t> const& data);
-    void set_image(uint32_t color_components_count, uint8_t const* data, size_t data_size);
+    void set_image(uint32_t color_components_count, std::span<uint8_t const> data);
 
     auto               imgui_texture_id() const -> ImTextureID { return entire_texture_view().handle(); }
     [[nodiscard]] auto size() const -> img::Size { return img::Size{_desc.size.width, _desc.size.height}; }
@@ -26,5 +25,6 @@ private:
 };
 
 auto load_texture(std::filesystem::path const& path) -> Texture;
+auto texture_from_pixels(img::Size size, std::span<uint8_t const> data) -> Texture;
 
 } // namespace Cool
