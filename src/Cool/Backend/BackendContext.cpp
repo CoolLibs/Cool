@@ -94,6 +94,22 @@ void apply_config(WindowConfig const& config, Window& window)
 
 // TODO(WebGPU) Disable validation layers in release
 
+static auto to_string(wgpu::ErrorType type) -> const char*
+{
+    switch (type)
+    {
+    case WGPUErrorType_Validation: return "Validation";
+    case WGPUErrorType_OutOfMemory: return "Out of memory";
+    case WGPUErrorType_Unknown: return "Unknown";
+    case WGPUErrorType_DeviceLost: return "Device lost";
+    default:
+    {
+        assert(false);
+        return "UNKNOWN";
+    }
+    }
+}
+
 BackendContext::BackendContext(WindowConfig const& config)
 {
     // WebGPU
@@ -155,7 +171,6 @@ BackendContext::BackendContext(WindowConfig const& config)
     requiredLimits.limits.maxSamplersPerShaderStage        = 1;
 
     wgpu::DeviceDescriptor deviceDesc;
-    deviceDesc.label                 = "WebGPU Device";
     deviceDesc.requiredFeaturesCount = 0;
     // deviceDesc.requiredLimits        = &requiredLimits; // TODO(WebGPU) Disable limits altogether ? https://github.com/ocornut/imgui/issues/7367
     deviceDesc.defaultQueue.label = "Default queue";
@@ -163,8 +178,8 @@ BackendContext::BackendContext(WindowConfig const& config)
 
     // Add an error callback for more debug info
 #if DEBUG
-    _wgpu_error_callback = _wgpu.device.setUncapturedErrorCallback([](wgpu::ErrorType, char const* message) {
-        throw_error(fmt::format("WebGPU Error:\n{}", message)); // TODO(WebGPU) Don't throw on all errors ?
+    _wgpu_error_callback = _wgpu.device.setUncapturedErrorCallback([](wgpu::ErrorType type, char const* message) {
+        throw_error(fmt::format("WebGPU {} error:\n{}", to_string(type), message)); // TODO(WebGPU) Don't throw on all errors?
     });
 #endif
 
