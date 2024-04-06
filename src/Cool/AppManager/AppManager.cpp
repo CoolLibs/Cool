@@ -170,7 +170,7 @@ void AppManager::update()
 #endif
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
-    webgpu_context().check_for_swapchain_rebuild(imgui_viewport_size()); // Must be called after imgui_new_frame() because it sets up the imgui viewport size for the current frame // We check each frame instead of doing it in the glfw window resize callback, because we update on a separate thread, and events are handled on the main thread, which can cause data races and crashes.
+    webgpu_context().check_for_swapchain_rebuild(imgui_viewport_size()); // Must be called after imgui_new_frame() because it sets up the imgui viewport size for the current frame // We can't use glfw's framebuffer size because when resizing the window it gets desynced for one frame with ImGui's viewport size (it only happens because we update the app on a separate thread, not on the main thread) // We check each frame instead of doing it in the glfw window resize callback, because we update on a separate thread, and events are handled on the main thread, which can cause data races and crashes.
     check_for_imgui_item_picker_request();
     imgui_render(_app);
     bool const can_present = imgui_end_frame();
