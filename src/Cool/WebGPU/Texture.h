@@ -2,7 +2,7 @@
 #include <img/src/Size.h>
 #include "Cool/WebGPU/TextureView.h"
 #include "Cool/WebGPU/WGPUUnique.h"
-#include "WebGPU/webgpu.hpp"
+#include "webgpu/webgpu.hpp"
 
 namespace Cool {
 

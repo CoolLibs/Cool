@@ -1,6 +1,6 @@
 #pragma once
 #include "Cool/WebGPU/WGPUUnique.h"
-#include "WebGPU/webgpu.hpp"
+#include "webgpu/webgpu.hpp"
 
 namespace Cool {
 

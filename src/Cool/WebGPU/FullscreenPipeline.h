@@ -1,5 +1,5 @@
 #pragma once
-#include <WebGPU/webgpu.hpp>
+#include <webgpu/webgpu.hpp>
 #include "Cool/WebGPU/BindGroup.h"
 #include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/ShaderModule.h"
