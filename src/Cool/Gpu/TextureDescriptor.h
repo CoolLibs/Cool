@@ -7,6 +7,7 @@
 
 namespace Cool {
 
+// TODO(WebGPU) Rename, as this can cause confusion with wgpu::TextureDescriptor
 struct TextureDescriptor {
     TextureSource            source;
     TextureSamplerDescriptor sampler{};

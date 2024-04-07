@@ -10,7 +10,7 @@ void save_png(
     bool                  flip_vertically
 )
 {
-    Cool::ImageU::save_png(file_path, image.size().width(), image.size().height(), image.data(), image.channels_count(), flip_vertically);
+    Cool::ImageU::save_png(file_path, image.width(), image.height(), image.data(), image.channels_count(), flip_vertically);
 }
 
 void save_png(

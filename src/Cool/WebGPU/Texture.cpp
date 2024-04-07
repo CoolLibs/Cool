@@ -13,7 +13,7 @@ Texture::Texture(wgpu::TextureDescriptor const& desc)
 auto load_texture(std::filesystem::path const& path) -> Texture
 {
     auto const image = img::load(path);
-    return texture_from_pixels(image.size(), std::span{image.data(), image.data_size()});
+    return texture_from_pixels(image.size(), image.data_span());
 }
 
 auto texture_from_pixels(img::Size size, std::span<uint8_t const> data) -> Texture
@@ -37,7 +37,7 @@ auto texture_from_pixels(img::Size size, std::span<uint8_t const> data) -> Textu
 void Texture::set_image(uint32_t color_components_count, std::span<uint8_t const> data)
 {
     assert(data.size() % color_components_count == 0);
-    assert(data.size() / color_components_count == _desc.size.width * _desc.size.height);
+    assert(data.size() / color_components_count == width() * height());
 
     wgpu::ImageCopyTexture destination;
     destination.texture  = handle();
@@ -47,8 +47,8 @@ void Texture::set_image(uint32_t color_components_count, std::span<uint8_t const
 
     wgpu::TextureDataLayout source;
     source.offset       = 0;
-    source.bytesPerRow  = color_components_count * _desc.size.width;
-    source.rowsPerImage = _desc.size.height;
+    source.bytesPerRow  = color_components_count * width();
+    source.rowsPerImage = height();
 
     webgpu_context().queue.writeTexture(destination, data.data(), data.size(), source, _desc.size);
 }

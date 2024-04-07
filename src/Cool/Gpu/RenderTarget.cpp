@@ -127,8 +127,8 @@ void RenderTarget::make_texture_straight_alpha() const
 
     { // Run compute pass to convert texture to straight alpha
         _compute_pipeline_that_converts_to_straight_alpha.compute({
-            .invocation_count_x = _texture.size().width(),
-            .invocation_count_y = _texture.size().height(),
+            .invocation_count_x = _texture.width(),
+            .invocation_count_y = _texture.height(),
             .bind_group         = {
                 /* @binding(0) = */ _texture.entire_texture_view(),
                 /* @binding(1) = */ _texture_straight_alpha->entire_texture_view()
@@ -168,7 +168,7 @@ void RenderTarget::resize_if_necessary()
     texture_desc.mipLevelCount   = 1;
     texture_desc.sampleCount     = 1;
     texture_desc.format          = wgpu::TextureFormat::RGBA8Unorm;
-    texture_desc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment /*  | TextureUsage::CopyDst */;
+    texture_desc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
     texture_desc.viewFormatCount = 0;
     texture_desc.viewFormats     = nullptr;
 

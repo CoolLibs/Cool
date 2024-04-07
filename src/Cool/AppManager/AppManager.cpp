@@ -190,8 +190,10 @@ void AppManager::update()
         webgpu_context().swapChain.present();
 #endif
 
-#ifdef WEBGPU_BACKEND_DAWN
-    // Check for pending error callbacks
+// Check for pending error callbacks, and handle async callbacks
+#ifdef WEBGPU_BACKEND_WGPU
+    webgpu_context().queue.submit(0, nullptr);
+#else
     webgpu_context().device.tick();
 #endif
 }
