@@ -181,6 +181,8 @@ BackendContext::BackendContext(WindowConfig const& config)
     _wgpu_error_callback = _wgpu.device.setUncapturedErrorCallback([](wgpu::ErrorType type, char const* message) {
         throw_error(fmt::format("WebGPU {} error:\n{}", to_string(type), message)); // TODO(WebGPU) Don't throw on all errors?
     });
+    // TODO(WebGPU)
+    // _wgpu.device.setDeviceLostCallback(DeviceLostCallback &&callback)
 #endif
 
     _wgpu.queue = _wgpu.device.getQueue();

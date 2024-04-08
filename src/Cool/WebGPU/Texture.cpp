@@ -116,40 +116,16 @@ void Texture::save(std::filesystem::path const& path) const
 
 void Texture::with_pixels(std::function<void(std::span<uint8_t const>)> const& callback) const
 {
-    // uint32_t channels          = 4; // TODO: infer from format
-    // uint32_t componentByteSize = 1; // TODO: infer from format
-
-    // uint32_t bytesPerRow = componentByteSize * channels * width();
-    // // Special case: WebGPU spec forbids texture-to-buffer copy with a
-    // // bytesPerRow lower than 256 so we first copy to a temporary texture.
-    // uint32_t paddedBytesPerRow = std::max(256u, bytesPerRow / 256u * 256u);
-
-    // Create a buffer to get pixels
     wgpu::BufferDescriptor pixelBufferDesc = wgpu::Default;
     pixelBufferDesc.mappedAtCreation       = false;
-    pixelBufferDesc.usage                  = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::Storage; // | wgpu::BufferUsage::CopyDst;
+    pixelBufferDesc.usage                  = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::Storage;
     pixelBufferDesc.size                   = width() * height() * 4;
-    Buffer                 pixelBuffer{pixelBufferDesc};
-    wgpu::BufferDescriptor pixelBufferDesc2 = wgpu::Default;
-    pixelBufferDesc2.mappedAtCreation       = false;
-    pixelBufferDesc2.usage                  = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead; // | wgpu::BufferUsage::CopyDst;
-    pixelBufferDesc2.size                   = pixelBufferDesc.size;
-    Buffer pixelBuffer2{pixelBufferDesc2};
+    Buffer pixelBuffer{pixelBufferDesc};
 
-    // Start encoding the commands
+    pixelBufferDesc.usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead;
+    Buffer pixelBuffer2{pixelBufferDesc};
+
     wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
-    // Get pixels from texture to buffer
-    // wgpu::ImageCopyTexture source     = wgpu::Default;
-    // source.texture                    = handle();
-    // source.mipLevel                   = 0;
-    // wgpu::ImageCopyBuffer destination = wgpu::Default;
-    // destination.buffer                = pixelBuffer;
-    // destination.layout.bytesPerRow    = paddedBytesPerRow;
-    // destination.layout.offset         = 0;
-    // destination.layout.rowsPerImage   = height();
-    // encoder.copyTextureToBuffer(source, destination, {width(), height(), 1});
-
-    // Issue commands
     compute_pipeline_to_copy_texture_to_buffer().compute({
         .invocation_count_x = width(),
         .invocation_count_y = height(),
@@ -165,7 +141,6 @@ void Texture::with_pixels(std::function<void(std::span<uint8_t const>)> const& c
     webgpu_context().queue.submit(encoder.finish(wgpu::Default));
 
     bool done{false};
-    // Map buffer
     auto callbackHandle = pixelBuffer2.handle().mapAsync(wgpu::MapMode::Read, 0, pixelBufferDesc.size, [&](wgpu::BufferMapAsyncStatus status) {
         if (status != wgpu::BufferMapAsyncStatus::Success)
         {
