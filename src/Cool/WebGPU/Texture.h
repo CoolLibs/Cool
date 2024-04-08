@@ -13,7 +13,8 @@ public:
     explicit Texture(wgpu::TextureDescriptor const&);
     void set_image(uint32_t color_components_count, std::span<uint8_t const> data);
 
-    /// NB: the callback will be called asynchronously, several frames later
+    void save(std::filesystem::path const&) const;
+    /// NB: the callback will be called asynchronously, several frames later // TODO(WebGPU) for now this isn't the case, we block until it is finished. Should we do async or not ?
     void with_pixels(std::function<void(std::span<uint8_t const>)> const& callback) const;
 
     auto               imgui_texture_id() const -> ImTextureID { return entire_texture_view().handle(); }

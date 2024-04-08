@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include <img/src/Load.h>
+#include <img/src/Save.h>
 #include <WebGPU/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/WebGPU/Buffer.h"
@@ -104,6 +105,13 @@ static auto compute_pipeline_to_copy_texture_to_buffer() -> ComputePipeline&
 {
     static auto instance = make_compute_pipeline_to_copy_texture_to_buffer();
     return instance;
+}
+
+void Texture::save(std::filesystem::path const& path) const
+{
+    with_pixels([&](std::span<uint8_t const> data) {
+        img::save_png(path, width(), height(), data.data(), 4);
+    });
 }
 
 void Texture::with_pixels(std::function<void(std::span<uint8_t const>)> const& callback) const
