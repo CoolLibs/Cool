@@ -115,3 +115,6 @@
 [submodule "lib/glfw3webgpu"]
 	path = lib/glfw3webgpu
 	url = https://github.com/eliemichel/glfw3webgpu
+[submodule "lib/magic_enum"]
+	path = lib/magic_enum
+	url = https://github.com/Neargye/magic_enum

@@ -1,5 +1,5 @@
 #include "BindGroup.h"
-#include <WebGPU/webgpu.hpp>
+#include <webgpu/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
 
 namespace Cool {

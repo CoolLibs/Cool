@@ -1,23 +1,26 @@
 #include "gpu_info.h"
+#include "Cool/Gpu/WebGPUContext.h"
+#include "magic_enum/include/magic_enum/magic_enum.hpp"
+#include "webgpu/webgpu.hpp"
 
 namespace Cool {
 
 auto full_gpu_info() -> std::string
 {
-    // TODO(WebGPU)
-    return "WebGPU";
-    //     const char* vendor   = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-    //     const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-    //     const char* version  = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-    //     return fmt::format(R"STR(GPU vendor        : {}
-    // GPU model         : {}
-    // GPU version       : {})STR",
-    //                        vendor, renderer, version);
-}
-
-auto gpu_name() -> std::string
-{
-    return "WebGPU"; // reinterpret_cast<const char*>(glGetString(GL_RENDERER)); // TODO(WebGPU)
+    wgpu::AdapterProperties props;
+    webgpu_context().adapter.getProperties(&props);
+    return fmt::format(
+        R"STR(GPU               : {} ({} {})
+GPU Type          : {}
+GPU Backend       : {}
+GPU Driver        : {})STR",
+        props.name,
+        props.vendorName,
+        props.architecture,
+        magic_enum::enum_name(props.adapterType),
+        magic_enum::enum_name(props.backendType),
+        props.driverDescription
+    );
 }
 
 } // namespace Cool
