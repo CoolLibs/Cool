@@ -1,4 +1,5 @@
 #include "AspectRatio.h"
+#include <cmath>
 #include <regex>
 #include <smart/smart.hpp>
 #include <stringify/stringify.hpp>
@@ -72,13 +73,13 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
 {
     bool b = false;
 
-    static constexpr auto ratios = std::array{
-        std::make_pair("  A4 Horizontal ", 1.41421356f),
+    static const auto ratios = std::array{
+        std::make_pair("  A4 Horizontal ", std::sqrt(2.f)),
         std::make_pair("     16 / 9     ", 16.f / 9.f),
         std::make_pair("      3 / 2     ", 3.f / 2.f),
         std::make_pair("      4 / 3     ", 4.f / 3.f),
         std::make_pair("      1 / 1     ", 1.f),
-        std::make_pair("   A4 Vertical  ", 0.70710678f),
+        std::make_pair("   A4 Vertical  ", 1.f / std::sqrt(2.f)),
         std::make_pair("      9 / 16    ", 9.f / 16.f),
         std::make_pair("      2 / 3     ", 2.f / 3.f),
         std::make_pair("      3 / 4     ", 3.f / 4.f),
