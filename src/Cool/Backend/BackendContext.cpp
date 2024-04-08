@@ -139,42 +139,9 @@ BackendContext::BackendContext(WindowConfig const& config)
     adapterOpts.compatibleSurface = _wgpu.surface;
     _wgpu.adapter                 = _wgpu.instance.requestAdapter(adapterOpts);
 
-    // TODO(WebGPU) Handle limits (or disable them altogether) : https://eliemichel.github.io/LearnWebGPU/getting-started/the-device.html
-    wgpu::SupportedLimits supportedLimits;
-#ifdef __EMSCRIPTEN__ // TODO(WebGPU) Check if this is still relevant
-    // Error in Chrome: Aborted(TODO: wgpuAdapterGetLimits unimplemented)
-    // (as of September 4, 2023), so we hardcode values:
-    // These work for 99.95% of clients (source: https://web3dsurvey.com/webgpu)
-    supportedLimits.limits.minStorageBufferOffsetAlignment = 256;
-    supportedLimits.limits.minUniformBufferOffsetAlignment = 256;
-#else
-    _wgpu.adapter.getLimits(&supportedLimits);
-#endif
-
-    wgpu::RequiredLimits requiredLimits                   = wgpu::Default;
-    requiredLimits.limits.maxVertexAttributes             = 4;
-    requiredLimits.limits.maxVertexBuffers                = 1;
-    requiredLimits.limits.maxBufferSize                   = 150000 * 100 /* sizeof(VertexAttributes) */; // TODO(WebGPU)
-    requiredLimits.limits.maxVertexBufferArrayStride      = 100 /* sizeof(VertexAttributes) */;
-    requiredLimits.limits.minStorageBufferOffsetAlignment = supportedLimits.limits.minStorageBufferOffsetAlignment;
-    requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
-    requiredLimits.limits.maxInterStageShaderComponents   = 8;
-    requiredLimits.limits.maxBindGroups                   = 2;
-    //                                    ^ This was a 1
-    requiredLimits.limits.maxUniformBuffersPerShaderStage = 1;
-    requiredLimits.limits.maxUniformBufferBindingSize     = 16 * 4 * sizeof(float);
-    // Allow textures up to 2K
-    requiredLimits.limits.maxTextureDimension1D            = 2048;
-    requiredLimits.limits.maxTextureDimension2D            = 2048;
-    requiredLimits.limits.maxTextureArrayLayers            = 1;
-    requiredLimits.limits.maxSampledTexturesPerShaderStage = 1;
-    requiredLimits.limits.maxSamplersPerShaderStage        = 1;
-
     wgpu::DeviceDescriptor deviceDesc;
     deviceDesc.requiredFeaturesCount = 0;
-    // deviceDesc.requiredLimits        = &requiredLimits; // TODO(WebGPU) Disable limits altogether ? https://github.com/ocornut/imgui/issues/7367
-    deviceDesc.defaultQueue.label = "Default queue";
-    _wgpu.device                  = _wgpu.adapter.requestDevice(deviceDesc);
+    _wgpu.device                     = _wgpu.adapter.requestDevice(deviceDesc);
 
     // Add an error callback for more debug info
 #if DEBUG
