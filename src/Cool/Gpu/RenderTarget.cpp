@@ -75,7 +75,7 @@ auto RenderTarget::texture_premultiplied_alpha() const -> Texture const&
     return _texture;
 }
 
-static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline // TODO(WebGPU) Only make one static instance of this pipeline
+static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline
 {
     return ComputePipeline{{
         .label                    = "[RenderTarget] Convert premultiplied to straight alpha",
@@ -103,6 +103,11 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
     }};
 }
 
+static auto compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline&
+{
+    static auto instance = make_compute_pipeline_that_converts_to_straight_alpha();
+    return instance;
+}
 void RenderTarget::make_texture_straight_alpha() const
 {
     { // Recreate texture
@@ -113,7 +118,7 @@ void RenderTarget::make_texture_straight_alpha() const
 
     { // Run compute pass to convert texture to straight alpha
         wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
-        _compute_pipeline_that_converts_to_straight_alpha.compute({
+        compute_pipeline_that_converts_to_straight_alpha().compute({
             .invocation_count_x = _texture.width(),
             .invocation_count_y = _texture.height(),
             .bind_group         = {
@@ -125,10 +130,6 @@ void RenderTarget::make_texture_straight_alpha() const
         webgpu_context().queue.submit(encoder.finish(wgpu::Default)); // Needs to be submitted immediately, otherwise when saving the image (which is submitted immediately) the texture won't be ready
     }
 }
-
-RenderTarget::RenderTarget()
-    : _compute_pipeline_that_converts_to_straight_alpha{make_compute_pipeline_that_converts_to_straight_alpha()}
-{}
 
 void RenderTarget::set_size(img::Size size)
 {
