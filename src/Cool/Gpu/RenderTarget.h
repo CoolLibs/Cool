@@ -22,9 +22,11 @@ public:
     void        set_size_immediately(img::Size size);
     auto        needs_resizing() const -> bool;
 
+    auto texture_straight_alpha() const -> Texture const&;
+    auto texture_premultiplied_alpha() const -> Texture const&;
+
 private:
     void resize_if_necessary();
-    auto texture_straight_alpha() const -> Texture const&;
     void make_texture_straight_alpha() const;
 
 private:

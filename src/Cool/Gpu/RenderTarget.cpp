@@ -1,5 +1,6 @@
 #include "RenderTarget.h"
 #include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/BindGroupLayout.h"
 #include "Cool/WebGPU/ComputePipeline.h"
 #include "Cool/WebGPU/ShaderModule.h"
 #include "Cool/WebGPU/Texture.h"
@@ -69,31 +70,16 @@ auto RenderTarget::texture_straight_alpha() const -> Texture const&
     return *_texture_straight_alpha;
 }
 
-static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline
+auto RenderTarget::texture_premultiplied_alpha() const -> Texture const&
 {
-    // Create bind group layout
-    std::vector<wgpu::BindGroupLayoutEntry> bindings(2, wgpu::Default);
+    return _texture;
+}
 
-    // Input texture
-    bindings[0].binding               = 0;
-    bindings[0].texture.sampleType    = wgpu::TextureSampleType::Float;
-    bindings[0].texture.viewDimension = wgpu::TextureViewDimension::_2D;
-    bindings[0].visibility            = wgpu::ShaderStage::Compute;
-
-    // Output texture
-    bindings[1].binding                      = 1;
-    bindings[1].storageTexture.access        = wgpu::StorageTextureAccess::WriteOnly;
-    bindings[1].storageTexture.format        = wgpu::TextureFormat::RGBA8Unorm;
-    bindings[1].storageTexture.viewDimension = wgpu::TextureViewDimension::_2D;
-    bindings[1].visibility                   = wgpu::ShaderStage::Compute;
-
-    wgpu::BindGroupLayoutDescriptor bind_group_layout_desc;
-    bind_group_layout_desc.entryCount = (uint32_t)bindings.size();
-    bind_group_layout_desc.entries    = bindings.data();
-
+static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline // TODO(WebGPU) Only make one static instance of this pipeline
+{
     return ComputePipeline{{
         .label                    = "[RenderTarget] Convert premultiplied to straight alpha",
-        .bind_group_layout_desc   = bind_group_layout_desc,
+        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Texture},
         .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
         .wgsl_compute_shader_code = R"wgsl(
 @group(0) @binding(0) var in_tex_premultiplied: texture_2d<f32>;
@@ -126,6 +112,7 @@ void RenderTarget::make_texture_straight_alpha() const
     }
 
     { // Run compute pass to convert texture to straight alpha
+        wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
         _compute_pipeline_that_converts_to_straight_alpha.compute({
             .invocation_count_x = _texture.width(),
             .invocation_count_y = _texture.height(),
@@ -133,7 +120,9 @@ void RenderTarget::make_texture_straight_alpha() const
                 /* @binding(0) = */ _texture.entire_texture_view(),
                 /* @binding(1) = */ _texture_straight_alpha->entire_texture_view()
             },
+            .encoder = encoder,
         });
+        webgpu_context().queue.submit(encoder.finish(wgpu::Default)); // Needs to be submitted immediately, otherwise when saving the image (which is submitted immediately) the texture won't be ready
     }
 }
 

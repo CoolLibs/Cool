@@ -18,7 +18,7 @@ namespace Cool {
 ComputePipeline::ComputePipeline(ComputePipeline_CreationArgs const& args)
     // : _uniforms_buffer(make_uniforms_buffer_descriptor())
     : _workgroup_size{args.workgroup_size}
-    , _bind_group_layout{webgpu_context().device.createBindGroupLayout(args.bind_group_layout_desc)}
+    , _bind_group_layout{args.bind_group_layout}
 {
     assert(_workgroup_size.x > 0);
     assert(_workgroup_size.y > 0);
@@ -54,6 +54,17 @@ ComputePipeline::ComputePipeline(ComputePipeline_CreationArgs const& args)
 //     webgpu_context().queue.writeBuffer(_uniforms_buffer, 0, &aspect_ratio, sizeof(float));
 // }
 
+static void set(wgpu::BindGroupEntry& entry, Buffer const& buffer)
+{
+    entry.buffer = buffer;
+    entry.offset = 0;
+    entry.size   = buffer.handle().getSize();
+}
+static void set(wgpu::BindGroupEntry& entry, TextureView const& texture)
+{
+    entry.textureView = texture;
+}
+
 void ComputePipeline::compute(ComputePipeline_ComputeArgs const& args) const
 {
     auto compute_pass = [&]() -> wgpu::ComputePassEncoder // IIFE
@@ -61,17 +72,18 @@ void ComputePipeline::compute(ComputePipeline_ComputeArgs const& args) const
         auto compute_pass_desc                = wgpu::ComputePassDescriptor{};
         compute_pass_desc.timestampWriteCount = 0;
         compute_pass_desc.timestampWrites     = nullptr;
-        return webgpu_context().encoder.beginComputePass(compute_pass_desc);
+        return args.encoder.value_or(webgpu_context().encoder).beginComputePass(compute_pass_desc);
     }();
 
     compute_pass.setPipeline(handle());
 
     // Create compute bind group
+    // TODO(WebGPU) Move to BindGroup file
     std::vector<wgpu::BindGroupEntry> entries(args.bind_group.size(), wgpu::Default);
     for (size_t i = 0; i < entries.size(); ++i)
     {
-        entries[i].binding     = i;
-        entries[i].textureView = args.bind_group[i].get();
+        entries[i].binding = i;
+        std::visit([&](auto&& truc) { set(entries[i], truc.get()); }, args.bind_group[i]);
     }
     wgpu::BindGroupDescriptor bindGroupDesc;
     bindGroupDesc.layout       = _bind_group_layout;

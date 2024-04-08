@@ -2,6 +2,8 @@
 #include <img/src/Load.h>
 #include <WebGPU/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/Buffer.h"
+#include "Cool/WebGPU/ComputePipeline.h"
 
 namespace Cool {
 
@@ -68,6 +70,115 @@ auto Texture::entire_texture_view() const -> TextureView const&
         _entire_texture_view.emplace(handle().createView(textureViewDesc));
     }
     return *_entire_texture_view;
+}
+
+static auto make_compute_pipeline_to_copy_texture_to_buffer() -> ComputePipeline
+{
+    return ComputePipeline{{
+        .label                    = "[Texture] Copy to buffer",
+        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Buffer},
+        .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
+        .wgsl_compute_shader_code = R"wgsl(
+@group(0) @binding(0) var in_texture: texture_2d<f32>;
+@group(0) @binding(1) var<storage, read_write> out_buffer: array<u32>;
+
+@compute
+fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+    if(any(id.xy >= textureDimensions(in_texture)))
+    {
+        return;
+    }
+    let color = textureLoad(in_texture, id.xy, 0);
+    out_buffer[id.x + id.y * textureDimensions(in_texture).x] =
+            u32(color.r * 255.)
+        |  (u32(color.g * 255.) <<8)
+        |  (u32(color.b * 255.) <<16)
+        |  (u32(color.a * 255.) <<24)
+        ;
+}
+)wgsl",
+    }};
+}
+
+static auto compute_pipeline_to_copy_texture_to_buffer() -> ComputePipeline&
+{
+    static auto instance = make_compute_pipeline_to_copy_texture_to_buffer();
+    return instance;
+}
+
+void Texture::with_pixels(std::function<void(std::span<uint8_t const>)> const& callback) const
+{
+    // uint32_t channels          = 4; // TODO: infer from format
+    // uint32_t componentByteSize = 1; // TODO: infer from format
+
+    // uint32_t bytesPerRow = componentByteSize * channels * width();
+    // // Special case: WebGPU spec forbids texture-to-buffer copy with a
+    // // bytesPerRow lower than 256 so we first copy to a temporary texture.
+    // uint32_t paddedBytesPerRow = std::max(256u, bytesPerRow / 256u * 256u);
+
+    // Create a buffer to get pixels
+    wgpu::BufferDescriptor pixelBufferDesc = wgpu::Default;
+    pixelBufferDesc.mappedAtCreation       = false;
+    pixelBufferDesc.usage                  = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::Storage; // | wgpu::BufferUsage::CopyDst;
+    pixelBufferDesc.size                   = width() * height() * 4;
+    Buffer                 pixelBuffer{pixelBufferDesc};
+    wgpu::BufferDescriptor pixelBufferDesc2 = wgpu::Default;
+    pixelBufferDesc2.mappedAtCreation       = false;
+    pixelBufferDesc2.usage                  = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead; // | wgpu::BufferUsage::CopyDst;
+    pixelBufferDesc2.size                   = pixelBufferDesc.size;
+    Buffer pixelBuffer2{pixelBufferDesc2};
+
+    // Start encoding the commands
+    wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
+    // Get pixels from texture to buffer
+    // wgpu::ImageCopyTexture source     = wgpu::Default;
+    // source.texture                    = handle();
+    // source.mipLevel                   = 0;
+    // wgpu::ImageCopyBuffer destination = wgpu::Default;
+    // destination.buffer                = pixelBuffer;
+    // destination.layout.bytesPerRow    = paddedBytesPerRow;
+    // destination.layout.offset         = 0;
+    // destination.layout.rowsPerImage   = height();
+    // encoder.copyTextureToBuffer(source, destination, {width(), height(), 1});
+
+    // Issue commands
+    compute_pipeline_to_copy_texture_to_buffer().compute({
+        .invocation_count_x = width(),
+        .invocation_count_y = height(),
+        .bind_group         = {
+            /* @binding(0) = */ entire_texture_view(),
+            /* @binding(1) = */ pixelBuffer
+        },
+        .encoder = encoder,
+    });
+
+    encoder.copyBufferToBuffer(pixelBuffer, 0, pixelBuffer2, 0, pixelBuffer.handle().getSize());
+
+    webgpu_context().queue.submit(encoder.finish(wgpu::Default));
+
+    bool done{false};
+    // Map buffer
+    auto callbackHandle = pixelBuffer2.handle().mapAsync(wgpu::MapMode::Read, 0, pixelBufferDesc.size, [&](wgpu::BufferMapAsyncStatus status) {
+        if (status != wgpu::BufferMapAsyncStatus::Success)
+        {
+            done = true;
+            // TODO(WebGPU) Error
+            return;
+        }
+        const unsigned char* pixelData = (const unsigned char*)pixelBuffer2.handle().getConstMappedRange(0, pixelBufferDesc.size);
+        callback(std::span{pixelData, width() * height() * 4});
+
+        pixelBuffer2.handle().unmap();
+        done = true;
+    });
+    while (!done) // TODO(WebGPU) Don't block here and provide an async API?
+    {
+#ifdef WEBGPU_BACKEND_WGPU
+        webgpu_context().queue.submit(0, nullptr);
+#else
+        webgpu_context().device.tick();
+#endif
+    }
 }
 
 } // namespace Cool
