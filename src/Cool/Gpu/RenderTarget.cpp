@@ -1,4 +1,5 @@
 #include "RenderTarget.h"
+#include "Cool/ColorSpaces/AlphaSpace.h"
 #include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/WebGPU/BindGroupLayout.h"
 #include "Cool/WebGPU/ComputePipeline.h"
@@ -8,7 +9,7 @@
 
 namespace Cool {
 
-void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass)> const& render_fn)
+void RenderTarget::render(AlphaSpace alpha_space, std::function<void(wgpu::RenderPassEncoder render_pass)> const& render_fn)
 {
     resize_if_necessary();
     assert(_texture.handle() != nullptr);
@@ -50,29 +51,35 @@ void RenderTarget::render(std::function<void(wgpu::RenderPassEncoder render_pass
     wgpu::RenderPassEncoder render_pass = webgpu_context().encoder.beginRenderPass(renderPassDesc);
 
     render_fn(render_pass); // TODO(WebGPU) What happens if this function throws ?
+    _texture.set_alpha_space(alpha_space);
 
-    // Render was successful, _texture has changed, so _texture_straight_alpha will need to update
-    _texture_straight_alpha.reset();
+    // Render was successful, _texture has changed, so _texture_in_other_alpha_space will need to update
+    _texture_in_other_alpha_space.reset();
 
     render_pass.end();
     render_pass.release();
 }
 
-auto RenderTarget::texture_straight_alpha() const -> Texture const&
+auto RenderTarget::texture_in(AlphaSpace alpha_space) const -> Texture const&
 {
-    // TODO(WebGPU)
-    // if (_texture.alpha_space == AlphaSpace::Straight())
-    //     return _texture;
+    if (_texture.alpha_space() == alpha_space)
+        return _texture;
 
-    if (!_texture_straight_alpha.has_value())
-        make_texture_straight_alpha();
-    assert(_texture_straight_alpha.has_value());
-    return *_texture_straight_alpha;
+    if (!_texture_in_other_alpha_space.has_value())
+        make_texture_in(alpha_space);
+    assert(_texture_in_other_alpha_space.has_value());
+    assert(_texture_in_other_alpha_space->alpha_space() == alpha_space);
+
+    return *_texture_in_other_alpha_space;
 }
 
+auto RenderTarget::texture_straight_alpha() const -> Texture const&
+{
+    return texture_in(AlphaSpace::Straight);
+}
 auto RenderTarget::texture_premultiplied_alpha() const -> Texture const&
 {
-    return _texture;
+    return texture_in(AlphaSpace::Premultiplied);
 }
 
 static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline
@@ -108,22 +115,71 @@ static auto compute_pipeline_that_converts_to_straight_alpha() -> ComputePipelin
     static auto instance = make_compute_pipeline_that_converts_to_straight_alpha();
     return instance;
 }
-void RenderTarget::make_texture_straight_alpha() const
+
+static auto make_compute_pipeline_that_converts_to_premultiplied_alpha() -> ComputePipeline
 {
-    { // Recreate texture
-        auto texture_desc = _texture.descriptor();
-        texture_desc.usage |= wgpu::TextureUsage::StorageBinding; // We need to write to the texture in the shader
-        _texture_straight_alpha = Texture{texture_desc};
+    return ComputePipeline{{
+        .label                    = "[RenderTarget] Convert straight to premultiplied alpha",
+        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Texture},
+        .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
+        .wgsl_compute_shader_code = R"wgsl(
+@group(0) @binding(0) var in_tex_straight: texture_2d<f32>;
+@group(0) @binding(1) var out_tex_premultiplied: texture_storage_2d<rgba8unorm,write>;
+
+@compute
+fn main(@builtin(global_invocation_id) id: vec3<u32>) {
+    if(any(id.xy >= textureDimensions(in_tex_premultiplied)))
+    {
+        return;
+    }
+    let color = textureLoad(in_tex_straight, id.xy, 0);
+    textureStore(out_tex_premultiplied, id.xy, 
+        vec4(
+            color.rgb * color.a,
+            color.a
+        )
+    );
+}
+)wgsl",
+    }};
+}
+
+static auto compute_pipeline_that_converts_to_premultiplied_alpha() -> ComputePipeline&
+{
+    static auto instance = make_compute_pipeline_that_converts_to_premultiplied_alpha();
+    return instance;
+}
+
+static auto compute_pipeline_that_converts_to(AlphaSpace alpha_space) -> ComputePipeline&
+{
+    switch (alpha_space)
+    {
+    case AlphaSpace::Premultiplied:
+        return compute_pipeline_that_converts_to_premultiplied_alpha();
+    case AlphaSpace::Straight:
+        return compute_pipeline_that_converts_to_straight_alpha();
+    default:
+        assert(false);
+        return compute_pipeline_that_converts_to_straight_alpha();
+    }
+}
+
+void RenderTarget::make_texture_in(AlphaSpace alpha_space) const
+{
+    { // Recreate _texture_in_other_alpha_space
+        auto desc = _texture.descriptor();
+        desc.usage |= wgpu::TextureUsage::StorageBinding; // We need to write to the texture in the shader
+        _texture_in_other_alpha_space = Texture{desc};
     }
 
-    { // Run compute pass to convert texture to straight alpha
+    { // Run compute pass to convert texture to desired alpha space
         wgpu::CommandEncoder encoder = webgpu_context().device.createCommandEncoder(wgpu::Default);
-        compute_pipeline_that_converts_to_straight_alpha().compute({
+        compute_pipeline_that_converts_to(alpha_space).compute({
             .invocation_count_x = _texture.width(),
             .invocation_count_y = _texture.height(),
             .bind_group         = {
                 /* @binding(0) = */ _texture.entire_texture_view(),
-                /* @binding(1) = */ _texture_straight_alpha->entire_texture_view()
+                /* @binding(1) = */ _texture_in_other_alpha_space->entire_texture_view(),
             },
             .encoder = encoder,
         });
@@ -163,7 +219,7 @@ void RenderTarget::resize_if_necessary()
     texture_desc.viewFormats     = nullptr;
 
     _texture = Texture{texture_desc};
-    _texture_straight_alpha.reset();
+    _texture_in_other_alpha_space.reset();
 }
 
 } // namespace Cool

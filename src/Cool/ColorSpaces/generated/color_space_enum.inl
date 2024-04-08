@@ -7,4 +7,4 @@
 Oklab,
     LinearRGB,
     sRGB,
-    Okhsl
+    Okhsl,

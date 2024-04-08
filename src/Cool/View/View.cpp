@@ -7,7 +7,7 @@
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/Message.h"
 #include "Cool/Log/ToUser.h"
-#include "WebGPU/webgpu.hpp"
+#include "webgpu/webgpu.hpp"
 
 namespace Cool {
 
@@ -60,7 +60,7 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
         Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
 
     render_target.set_size(size);
-    render_target.render([&](wgpu::RenderPassEncoder render_pass) {
+    render_target.render(AlphaSpace::Any, [&](wgpu::RenderPassEncoder render_pass) {
         alpha_checkerboard_pipeline().set_uniforms(img::aspect_ratio(render_target.desired_size()));
         alpha_checkerboard_pipeline().draw(render_pass);
     });

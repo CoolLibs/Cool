@@ -1,7 +1,8 @@
 #include "Texture.h"
 #include <img/src/Load.h>
 #include <img/src/Save.h>
-#include <WebGPU/webgpu.hpp>
+#include <webgpu/webgpu.hpp>
+#include "Cool/ColorSpaces/AlphaSpace.h"
 #include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/ComputePipeline.h"
@@ -13,13 +14,16 @@ Texture::Texture(wgpu::TextureDescriptor const& desc)
     , _desc{desc}
 {}
 
-auto load_texture(std::filesystem::path const& path) -> Texture
+auto load_texture(std::filesystem::path const& path, std::optional<AlphaSpace> alpha_space) -> Texture
 {
+    if (!alpha_space.has_value())
+        alpha_space = AlphaSpace::Straight; // By default most files should be in straight alpha
+
     auto const image = img::load(path);
-    return texture_from_pixels(image.size(), image.data_span());
+    return texture_from_pixels(image.size(), *alpha_space, image.data_span());
 }
 
-auto texture_from_pixels(img::Size size, std::span<uint8_t const> data) -> Texture
+auto texture_from_pixels(img::Size size, AlphaSpace alpha_space, std::span<uint8_t const> data) -> Texture
 {
     wgpu::TextureDescriptor texture_desc;
     texture_desc.dimension       = wgpu::TextureDimension::_2D;
@@ -31,16 +35,17 @@ auto texture_from_pixels(img::Size size, std::span<uint8_t const> data) -> Textu
     texture_desc.viewFormatCount = 0;
     texture_desc.viewFormats     = nullptr;
 
-    auto res = Texture{texture_desc};
-    res.set_image(/*channels count=*/data.size() / size.width() / size.height(), data);
+    auto       res            = Texture{texture_desc};
+    auto const channels_count = data.size() / static_cast<size_t>(size.width()) / static_cast<size_t>(size.height());
+    res.set_image(channels_count, alpha_space, data);
 
     return res;
 }
 
-void Texture::set_image(uint32_t color_components_count, std::span<uint8_t const> data)
+void Texture::set_image(uint32_t color_components_count, AlphaSpace alpha_space, std::span<uint8_t const> data)
 {
     assert(data.size() % color_components_count == 0);
-    assert(data.size() / color_components_count == width() * height());
+    assert(data.size() / color_components_count == static_cast<size_t>(width()) * static_cast<size_t>(height()));
 
     wgpu::ImageCopyTexture destination;
     destination.texture  = handle();
@@ -54,6 +59,7 @@ void Texture::set_image(uint32_t color_components_count, std::span<uint8_t const
     source.rowsPerImage = height();
 
     webgpu_context().queue.writeTexture(destination, data.data(), data.size(), source, _desc.size);
+    _alpha_space = alpha_space;
 }
 
 auto Texture::entire_texture_view() const -> TextureView const&

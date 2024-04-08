@@ -1,11 +1,12 @@
 #include "TextureSource.h"
+#include "Cool/ColorSpaces/AlphaSpace.h"
 #include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 
 static auto dummy_texture() -> Texture const&
 {
-    static auto instance = texture_from_pixels(img::Size{1, 1}, std::array<uint8_t, 3>{255, 0, 255});
+    static auto instance = texture_from_pixels(img::Size{1, 1}, AlphaSpace::Any, std::array<uint8_t, 3>{255, 0, 255});
     return instance;
 }
 

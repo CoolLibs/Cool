@@ -57,11 +57,15 @@ def color_and_alpha_spaces_names():
 
 
 def color_space_enum():
-    return ",\n".join(map(lambda x: x.name_in_code, color_spaces()))
+    return ",\n".join(map(lambda x: x.name_in_code, color_spaces())) + ",\n"
+
+
+def alpha_space_enum():
+    return ",\n".join(map(lambda x: x.name_in_code[:-1], alpha_spaces())) + ",\n"
 
 
 def color_and_alpha_space_enum():
-    return ",\n".join(color_and_alpha_spaces_names())
+    return ",\n".join(color_and_alpha_spaces_names()) + ",\n"
 
 
 def parse_color_space():
@@ -269,6 +273,7 @@ if __name__ == "__main__":
         folder="generated",
         files=[
             color_space_enum,
+            alpha_space_enum,
             color_and_alpha_space_enum,
             parse_color_space,
             parse_color_and_alpha_space,
