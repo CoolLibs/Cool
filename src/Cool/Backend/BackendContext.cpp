@@ -102,6 +102,7 @@ static auto to_string(wgpu::ErrorType type) -> const char*
     case WGPUErrorType_OutOfMemory: return "Out of memory";
     case WGPUErrorType_Unknown: return "Unknown";
     case WGPUErrorType_DeviceLost: return "Device lost";
+    case WGPUErrorType_Internal: return "Internal";
     default:
     {
         assert(false);

@@ -109,9 +109,6 @@
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/CoolLibs/glm
-[submodule "lib/WebGPU-distribution"]
-	path = lib/WebGPU-distribution
-	url = https://github.com/eliemichel/WebGPU-distribution
 [submodule "lib/glfw3webgpu"]
 	path = lib/glfw3webgpu
 	url = https://github.com/eliemichel/glfw3webgpu
@@ -121,3 +118,6 @@
 [submodule "lib/ShaderTranspiler"]
 	path = lib/ShaderTranspiler
 	url = https://github.com/CoolLibs/ShaderTranspiler
+[submodule "lib/WebGPU-distribution"]
+	path = lib/WebGPU-distribution
+	url = https://github.com/CoolLibs/WebGPU-distribution
