@@ -283,11 +283,13 @@ auto AppManager::imgui_end_frame() -> bool
     renderPassDesc.timestampWriteCount = 0;
     renderPassDesc.label               = "ImGui";
     renderPassDesc.timestampWrites     = nullptr;
-    auto render_pass                   = webgpu_context().encoder.beginRenderPass(renderPassDesc);
+    webgpu_context().encoder.pushDebugGroup("ImGui");
+    auto render_pass = webgpu_context().encoder.beginRenderPass(renderPassDesc);
     ImGui_ImplWGPU_RenderDrawData(draw_data, render_pass);
     render_pass.end();
     render_pass.release();
     nextTexture.release();
+    webgpu_context().encoder.popDebugGroup();
 
     return true;
 }

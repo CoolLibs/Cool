@@ -14,4 +14,6 @@ public:
     explicit ShaderModule(ShaderModule_CreationArgs const&);
 };
 
+auto transpile_glsl_to_wgsl(std::string_view glsl_code) -> std::string;
+
 } // namespace Cool

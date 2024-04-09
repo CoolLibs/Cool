@@ -8,7 +8,7 @@ namespace Cool {
 static auto make_uniforms_buffer_descriptor() -> wgpu::BufferDescriptor
 {
     wgpu::BufferDescriptor bufferDesc{};
-    bufferDesc.size             = sizeof(float);
+    bufferDesc.size             = 300 * sizeof(float);
     bufferDesc.usage            = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
     bufferDesc.mappedAtCreation = false;
     return bufferDesc;
@@ -24,9 +24,9 @@ FullscreenPipeline::FullscreenPipeline(ShaderModule_CreationArgs const& args)
     bindingLayout.binding = 0;
 
     // The stage that needs to access this resource
-    bindingLayout.visibility            = wgpu::ShaderStage::Vertex;
+    bindingLayout.visibility            = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
     bindingLayout.buffer.type           = wgpu::BufferBindingType::Uniform;
-    bindingLayout.buffer.minBindingSize = sizeof(float);
+    bindingLayout.buffer.minBindingSize = 300 * sizeof(float);
 
     wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
     bindGroupLayoutDesc.entryCount = 1;
@@ -53,7 +53,7 @@ struct VertexOutput {
 };
 @vertex
 fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
-    const vertices = array(vec2f(-1., -1.), vec2f(3., -1.), vec2f(-1., 3.));
+    var /*TODO(WebGPU) make this a const once wgpu-native supports it*/ vertices = array(vec2f(-1., -1.), vec2f(3., -1.), vec2f(-1., 3.));
     var out: VertexOutput;
     out.position = vec4f(vertices[in_vertex_index], 0., 1.);
     out.uv = vertices[in_vertex_index]; // -1 to 1
@@ -157,7 +157,7 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     // multiple uniform blocks.
     binding.offset = 0;
     // And we specify again the size of the buffer.
-    binding.size = sizeof(float);
+    binding.size = bindingLayout.buffer.minBindingSize;
 
     // A bind group contains one or multiple bindings
     wgpu::BindGroupDescriptor bindGroupDesc{};

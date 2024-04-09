@@ -118,3 +118,6 @@
 [submodule "lib/magic_enum"]
 	path = lib/magic_enum
 	url = https://github.com/Neargye/magic_enum
+[submodule "lib/ShaderTranspiler"]
+	path = lib/ShaderTranspiler
+	url = https://github.com/CoolLibs/ShaderTranspiler

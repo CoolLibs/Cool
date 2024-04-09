@@ -82,13 +82,13 @@ void ComputePipeline::compute(ComputePipeline_ComputeArgs const& args) const
     std::vector<wgpu::BindGroupEntry> entries(args.bind_group.size(), wgpu::Default);
     for (size_t i = 0; i < entries.size(); ++i)
     {
-        entries[i].binding = i;
+        entries[i].binding = static_cast<uint32_t>(i);
         std::visit([&](auto&& truc) { set(entries[i], truc.get()); }, args.bind_group[i]);
     }
     wgpu::BindGroupDescriptor bindGroupDesc;
     bindGroupDesc.layout       = _bind_group_layout;
-    bindGroupDesc.entryCount   = (uint32_t)entries.size();
-    bindGroupDesc.entries      = (WGPUBindGroupEntry*)entries.data();
+    bindGroupDesc.entryCount   = static_cast<uint32_t>(entries.size());
+    bindGroupDesc.entries      = static_cast<WGPUBindGroupEntry*>(entries.data());
     wgpu::BindGroup bind_group = webgpu_context().device.createBindGroup(bindGroupDesc);
 
     compute_pass.setBindGroup(0, bind_group, 0, nullptr);
