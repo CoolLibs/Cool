@@ -13,9 +13,6 @@
 [submodule "lib/scope_guard"]
 	path = lib/scope_guard
 	url = https://github.com/ricab/scope_guard
-[submodule "lib/easy-shaderc"]
-	path = lib/easy-shaderc
-	url = https://github.com/CoolLibs/easy-shaderc
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
 	url = https://github.com/CoolLibs/nativefiledialog-extended
