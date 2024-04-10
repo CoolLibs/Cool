@@ -16,7 +16,7 @@ static auto make_uniforms_buffer_descriptor(uint64_t size) -> wgpu::BufferDescri
 }
 
 FullscreenPipeline::FullscreenPipeline(ShaderModule_CreationArgs const& args)
-    : _uniforms_buffer_fragment_shader{make_uniforms_buffer_descriptor(300 * sizeof(float))}
+    : _uniforms_buffer_fragment_shader{make_uniforms_buffer_descriptor(300 * sizeof(float))} // TODO(WebGPU) Don't hardcode the 300
     , _uniforms_buffer_vertex_shader{make_uniforms_buffer_descriptor(sizeof(float))}
 {
     // Create binding layout (don't forget to = Default)
@@ -67,6 +67,7 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     out.position = vec4f(vertices[in_vertex_index], 0., 1.);
     out.uv = vertices[in_vertex_index]; // -1 to 1
     out.uv.x *= _aspect_ratio;
+    out.uv.y *= -1.; // We want y-axis going up
     return out;
 })",
     }};
