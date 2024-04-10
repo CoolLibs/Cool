@@ -2,35 +2,44 @@
 #include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/WebGPU/BindGroupLayout.h"
 #include "Cool/WebGPU/ShaderModule.h"
+#include "webgpu/webgpu.hpp"
 
 namespace Cool {
 
-static auto make_uniforms_buffer_descriptor() -> wgpu::BufferDescriptor
+static auto make_uniforms_buffer_descriptor(uint64_t size) -> wgpu::BufferDescriptor
 {
     wgpu::BufferDescriptor bufferDesc{};
-    bufferDesc.size             = 300 * sizeof(float);
+    bufferDesc.size             = size;
     bufferDesc.usage            = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform;
     bufferDesc.mappedAtCreation = false;
     return bufferDesc;
 }
 
 FullscreenPipeline::FullscreenPipeline(ShaderModule_CreationArgs const& args)
-    : _uniforms_buffer(make_uniforms_buffer_descriptor())
+    : _uniforms_buffer_fragment_shader{make_uniforms_buffer_descriptor(300 * sizeof(float))}
+    , _uniforms_buffer_vertex_shader{make_uniforms_buffer_descriptor(sizeof(float))}
 {
     // Create binding layout (don't forget to = Default)
-    wgpu::BindGroupLayoutEntry bindingLayout = wgpu::Default;
+    std::vector<wgpu::BindGroupLayoutEntry> entries(2, wgpu::Default);
 
     // The binding index as used in the @binding attribute in the shader
-    bindingLayout.binding = 0;
+    entries[0].binding = 0;
 
     // The stage that needs to access this resource
-    bindingLayout.visibility            = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
-    bindingLayout.buffer.type           = wgpu::BufferBindingType::Uniform;
-    bindingLayout.buffer.minBindingSize = 300 * sizeof(float);
+    entries[0].visibility            = wgpu::ShaderStage::Fragment;
+    entries[0].buffer.type           = wgpu::BufferBindingType::Uniform;
+    entries[0].buffer.minBindingSize = 300 * sizeof(float);
+
+    entries[1].binding = 1;
+
+    // The stage that needs to access this resource
+    entries[1].visibility            = wgpu::ShaderStage::Vertex;
+    entries[1].buffer.type           = wgpu::BufferBindingType::Uniform;
+    entries[1].buffer.minBindingSize = sizeof(float);
 
     wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
-    bindGroupLayoutDesc.entryCount = 1;
-    bindGroupLayoutDesc.entries    = &bindingLayout;
+    bindGroupLayoutDesc.entryCount = entries.size();
+    bindGroupLayoutDesc.entries    = entries.data();
 
     BindGroupLayout const bind_group_layout{bindGroupLayoutDesc};
 
@@ -43,9 +52,9 @@ FullscreenPipeline::FullscreenPipeline(ShaderModule_CreationArgs const& args)
 
     // Vertex shader
     ShaderModule vertex_shader{{
-        .label     = "[FullscreenPipeline] Vertex Shader",
-        .wgsl_code = R"(
-@group(0) @binding(0) var<uniform> _aspect_ratio: f32;
+        .label = "[FullscreenPipeline] Vertex Shader",
+        .code  = R"(
+@group(0) @binding(1) var<uniform> _aspect_ratio: f32;
 
 struct VertexOutput {
     @builtin(position) position: vec4f,
@@ -148,29 +157,39 @@ fn main(@builtin(vertex_index) in_vertex_index: u32) -> VertexOutput {
     set_handle(Cool::webgpu_context().device.createRenderPipeline(pipelineDesc));
 
     // Create a binding
-    wgpu::BindGroupEntry binding{};
+    std::vector<wgpu::BindGroupEntry> bindings(2, wgpu::Default);
     // The index of the binding (the entries in bindGroupDesc can be in any order)
-    binding.binding = 0;
+    bindings[0].binding = entries[0].binding;
     // The buffer it is actually bound to
-    binding.buffer = _uniforms_buffer;
+    bindings[0].buffer = _uniforms_buffer_fragment_shader;
     // We can specify an offset within the buffer, so that a single buffer can hold
     // multiple uniform blocks.
-    binding.offset = 0;
+    bindings[0].offset = 0;
     // And we specify again the size of the buffer.
-    binding.size = bindingLayout.buffer.minBindingSize;
+    bindings[0].size = entries[0].buffer.minBindingSize;
+
+    // The index of the binding (the entries in bindGroupDesc can be in any order)
+    bindings[1].binding = entries[1].binding;
+    // The buffer it is actually bound to
+    bindings[1].buffer = _uniforms_buffer_vertex_shader;
+    // We can specify an offset within the buffer, so that a single buffer can hold
+    // multiple uniform blocks.
+    bindings[1].offset = 0;
+    // And we specify again the size of the buffer.
+    bindings[1].size = entries[1].buffer.minBindingSize;
 
     // A bind group contains one or multiple bindings
     wgpu::BindGroupDescriptor bindGroupDesc{};
     bindGroupDesc.layout = bind_group_layout;
     // There must be as many bindings as declared in the layout!
     bindGroupDesc.entryCount = bindGroupLayoutDesc.entryCount;
-    bindGroupDesc.entries    = &binding;
+    bindGroupDesc.entries    = bindings.data();
     _bind_group              = BindGroup{bindGroupDesc};
 }
 
-void FullscreenPipeline::set_uniforms(float aspect_ratio) const
+void FullscreenPipeline::set_aspect_ratio_uniform(float aspect_ratio) const
 {
-    webgpu_context().queue.writeBuffer(_uniforms_buffer, 0, &aspect_ratio, sizeof(float));
+    webgpu_context().queue.writeBuffer(_uniforms_buffer_vertex_shader, 0, &aspect_ratio, sizeof(aspect_ratio));
 }
 
 void FullscreenPipeline::draw(wgpu::RenderPassEncoder render_pass) const

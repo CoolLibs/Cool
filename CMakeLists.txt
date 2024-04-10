@@ -121,15 +121,17 @@ if(WEBGPU_BACKEND STREQUAL "DAWN")
     # Needed by Dawn
     set(TINT_BUILD_WGSL_READER ON CACHE BOOL "" FORCE)
     set(TINT_BUILD_SPV_WRITER ON CACHE BOOL "" FORCE)
+
     # Needed by ShaderTranspiler
     set(TINT_BUILD_WGSL_WRITER ON CACHE BOOL "" FORCE)
     set(TINT_BUILD_SPV_READER ON CACHE BOOL "" FORCE)
-    
+
     set(TINT_BUILD_GLSL_WRITER OFF CACHE BOOL "" FORCE)
     set(TINT_BUILD_HLSL_WRITER OFF CACHE BOOL "" FORCE)
     set(TINT_BUILD_MSL_WRITER OFF CACHE BOOL "" FORCE)
     set(TINT_BUILD_IR OFF CACHE BOOL "" FORCE)
 endif()
+
 add_subdirectory(lib/WebGPU-distribution)
 add_subdirectory(lib/glfw3webgpu)
 target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
@@ -138,7 +140,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE webgpu glfw3webgpu)
 set(ST_ENABLE_TEST OFF CACHE BOOL "" FORCE)
 set(ST_ENABLE_WGSL ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/ShaderTranspiler)
-target_link_libraries(Cool-PrivateProperties INTERFACE ShaderTranspiler)
+target_link_libraries(Cool-PublicProperties INTERFACE ShaderTranspiler)
 
 # folder_watcher
 add_subdirectory(lib/folder_watcher)

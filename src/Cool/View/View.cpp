@@ -14,8 +14,8 @@ namespace Cool {
 static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
 {
     auto pipeline = FullscreenPipeline{{
-        .label     = "Create alpha checkerboard pattern",
-        .wgsl_code = R"wgsl(
+        .label = "Create alpha checkerboard pattern",
+        .code  = R"wgsl(
 struct VertexOutput {
     @location(0) uv: vec2f,
 };
@@ -61,7 +61,7 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
 
     render_target.set_size(size);
     render_target.render(AlphaSpace::Any, [&](wgpu::RenderPassEncoder render_pass) {
-        alpha_checkerboard_pipeline().set_uniforms(img::aspect_ratio(render_target.desired_size()));
+        alpha_checkerboard_pipeline().set_aspect_ratio_uniform(img::aspect_ratio(render_target.desired_size()));
         alpha_checkerboard_pipeline().draw(render_pass);
     });
 }
