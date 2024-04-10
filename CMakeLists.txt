@@ -256,6 +256,7 @@ target_link_libraries(Cool-PrivateProperties INTERFACE oscpack)
 # glm
 add_subdirectory(lib/glm)
 target_link_libraries(Cool-PublicProperties INTERFACE glm)
+target_compile_definitions(Cool-PublicProperties INTERFACE GLM_FORCE_DEPTH_ZERO_TO_ONE)
 install(FILES "lib/glm/copying.txt" DESTINATION "license/glm")
 
 # Dear ImGui
