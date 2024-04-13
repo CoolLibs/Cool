@@ -67,12 +67,12 @@ void TextureLibrary_VideoFile::reload_file(std::filesystem::path const& path)
     data.texture       = std::nullopt;
     try
     {
-        // cv::redirectError([](int status, const char* func_name,
-        //                      const char* err_msg, const char* file_name,
-        //                      int line, void* userdata) {
-        //     Cool::Log::ToUser::info("OpenCV", err_msg);
-        //     return 1;
-        // });
+        cv::redirectError([](int status, const char* func_name,
+                             const char* err_msg, const char* file_name,
+                             int line, void* userdata) {
+            Cool::Log::ToUser::warning("OpenCV", err_msg);
+            return 1;
+        });
         cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
         // cv::utils::logging::internal::writeLogMessage(LogLevel logLevel, const char *message)
         data.capture = cv::VideoCapture{path.string()};
