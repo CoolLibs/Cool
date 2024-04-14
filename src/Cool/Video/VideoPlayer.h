@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <opencv2/videoio.hpp>
 #include "Cool/Gpu/Texture.h"
 
@@ -11,12 +12,13 @@ struct CurrentImage {
 
 class VideoPlayer {
 public:
-    auto set_path(std::filesystem::path path)
+    auto path() const -> std::filesystem::path const& { return _path; }
+    void set_path(std::filesystem::path path)
     {
         _path = std::move(path);
         create_capture();
     }
-    auto get(float time_in_seconds) -> Texture const&;
+    auto get_texture(float time_in_seconds) -> Texture const*;
 
 private:
     void create_capture();
@@ -29,6 +31,25 @@ private:
     std::optional<cv::VideoCapture> _capture{};
     std::optional<Texture>          _current_texture{};
     int                             _current_frame{};
+
+private:
+    // Serialization
+    friend class cereal::access;
+    template<class Archive>
+    void save(Archive& archive) const
+    {
+        archive(
+            cereal::make_nvp("File Path", _path)
+        );
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        archive(
+            _path
+        );
+        create_capture();
+    }
 };
 
 } // namespace Cool
