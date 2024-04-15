@@ -1,7 +1,9 @@
 #include "WebcamCapture.h"
 #include <opencv2/opencv.hpp>
 #include <webcam_info/webcam_info.hpp>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Log/ToUser.h"
 #include "Cool/TextureSource/set_texture_from_opencv_image.h"
 
 namespace Cool {
@@ -60,6 +62,8 @@ void WebcamCapture::update_webcam_ifn()
         return;
 
     set_texture_from_opencv_image(_texture, _available_image);
+    if (DebugOptions::log_when_creating_textures())
+        Log::ToUser::info("Webcam", fmt::format("Generated texture for webcam {}", _webcam_index));
     _needs_to_create_texture_from_available_image = false;
 }
 

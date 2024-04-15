@@ -8,9 +8,9 @@ namespace Cool {
 namespace internal {
 class CaptureState {
 public:
-    static auto create(std::filesystem::path const& path) -> std::optional<internal::CaptureState>;
+    static auto create(std::filesystem::path const& path) -> tl::expected<internal::CaptureState, std::string>;
 
-    auto get_texture(float time_in_seconds) -> Texture const&;
+    [[nodiscard]] auto get_texture(float time_in_seconds) -> Texture const&;
 
 private:
     cv::VideoCapture       _capture{};
@@ -24,9 +24,11 @@ private:
 
 class VideoPlayer {
 public:
-    auto path() const -> std::filesystem::path const& { return _path; }
-    void set_path(std::filesystem::path path);
-    auto get_texture(float time_in_seconds) -> Texture const*;
+    [[nodiscard]] auto path() const -> std::filesystem::path const& { return _path; }
+    void               set_path(std::filesystem::path path);
+
+    [[nodiscard]] auto get_texture(float time_in_seconds) -> Texture const*;
+    [[nodiscard]] auto get_error() const -> std::optional<std::string> const& { return _error_message; }
 
 private:
     void create_capture();
@@ -34,6 +36,7 @@ private:
 private:
     std::filesystem::path                 _path{};
     std::optional<internal::CaptureState> _capture_state{};
+    std::optional<std::string>            _error_message{};
 
 private:
     // Serialization

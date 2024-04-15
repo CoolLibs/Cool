@@ -1,9 +1,7 @@
 #include "TextureSource_FromVideoFile.h"
-#include "Cool/Gpu/TextureLibrary_VideoFile.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/Video/hack_get_global_time_in_seconds.h"
-#include "TextureLibrary_VideoFile.h"
 
 namespace Cool {
 
@@ -36,7 +34,7 @@ auto TextureSource_FromVideoFile::imgui_widget() -> bool
 
 auto TextureSource_FromVideoFile::get_error() const -> std::optional<std::string>
 {
-    return {}; // Cool::TextureLibrary_FromWebcam::instance().error_from(webcam_name);
+    return _player->get_error();
 }
 
 } // namespace Cool
