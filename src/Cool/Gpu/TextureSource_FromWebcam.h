@@ -26,4 +26,5 @@ private:
         );
     }
 };
+
 } // namespace Cool

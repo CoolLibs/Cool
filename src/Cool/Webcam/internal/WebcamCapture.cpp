@@ -1,7 +1,10 @@
 #include "WebcamCapture.h"
 #include <opencv2/opencv.hpp>
 #include <webcam_info/webcam_info.hpp>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Log/ToUser.h"
+#include "Cool/TextureSource/set_texture_from_opencv_image.h"
 
 namespace Cool {
 
@@ -58,27 +61,9 @@ void WebcamCapture::update_webcam_ifn()
     if (!_needs_to_create_texture_from_available_image)
         return;
 
-    auto const size = img::Size{
-        static_cast<unsigned int>(_available_image.cols),
-        static_cast<unsigned int>(_available_image.rows),
-    };
-    auto const layout = glpp::TextureLayout{
-        .internal_format = glpp::InternalFormat::RGBA,
-        .channels        = glpp::Channels::RGB,
-        .texel_data_type = glpp::TexelDataType::UnsignedByte,
-    };
-    auto const* data = static_cast<uint8_t*>(_available_image.ptr());
-
-    if (!_texture)
-    {
-        _texture = Texture{size, data, layout};
-    }
-    else
-    {
-        _texture->bind();
-        _texture->set_image(size, data, layout);
-        Cool::Texture::unbind();
-    }
+    set_texture_from_opencv_image(_texture, _available_image);
+    if (DebugOptions::log_when_creating_textures())
+        Log::ToUser::info("Webcam", fmt::format("Generated texture for webcam {}", _webcam_index));
     _needs_to_create_texture_from_available_image = false;
 }
 

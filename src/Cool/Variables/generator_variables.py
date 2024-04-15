@@ -336,6 +336,14 @@ def all_variable_descriptions():
             metadatas=float_metadatas(),
             always_requires_shader_code_generation=False,
         ),
+        VariableDescription(
+            input_type=["Video"],
+            cpp_type="Cool::TextureDescriptor_VideoFile",
+            glsl_type="Cool_Texture",
+            include="<Cool/Gpu/TextureDescriptor.h>",
+            metadatas=[],
+            always_requires_shader_code_generation=False,
+        ),
     ]
 
 

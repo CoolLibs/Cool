@@ -11,8 +11,6 @@ class FullscreenPipeline {
 public:
     FullscreenPipeline() = default;
 
-    static void shut_down();
-
     /// Compiles the fragment shader source code and creates a new pipeline using this new shader.
     /// Returns an error message if the compilation failed.
     auto compile(std::string_view fragment_shader_source_code) -> OptionalErrorMessage;

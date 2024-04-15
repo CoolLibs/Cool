@@ -42,7 +42,7 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widge
     float t = clock.time_in_seconds();
     ImGui::PushFont(Font::monospace());
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    if (ImGui::DragFloat("##time", &t, 0.01f, 0.f, 0.f, "%.2f seconds"))
+    if (ImGuiExtras::drag_time("##time", &t))
         clock.set_time(t);
     clock.set_is_being_changed_in_GUI(ImGui::IsItemActive());
     ImGui::PopFont();

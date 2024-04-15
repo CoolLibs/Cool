@@ -79,3 +79,6 @@ if constexpr (std::is_same_v<T, Cool::OSCChannel>)
 
 if constexpr (std::is_same_v<T, Cool::TimeSpeed>)
     return false;
+
+if constexpr (std::is_same_v<T, Cool::TextureDescriptor_VideoFile>)
+    return false;

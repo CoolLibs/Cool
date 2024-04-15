@@ -49,7 +49,7 @@ private:
                                               .metadata = {
                                                   .bounds = {
                                                       .has_min_bound  = true,
-                                                      .drag_speed     = 0.005f,
+                                                      .drag_speed     = 0.001f,
                                                       .is_logarithmic = true,
                                                   },
                                               },

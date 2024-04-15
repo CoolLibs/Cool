@@ -5,8 +5,8 @@
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
-#include "Cool/Gpu/TextureDescriptor.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/Time/time_formatted_hms.h"
 #include "TextureLibrary_FromFile.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
@@ -48,17 +48,18 @@ auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture 
 
 void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
 {
+    auto& tex         = _textures[path];
+    tex.error_message = std::nullopt;
+    tex.texture       = std::nullopt;
     try
     {
-        _textures[path].error_message = std::nullopt;
-        _textures[path].texture       = std::nullopt;
-        _textures[path].texture       = Texture{img::load(path)};
+        tex.texture = Texture{img::load(path)};
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
     }
     catch (std::exception const& e)
     {
-        _textures[path].error_message = e.what();
+        tex.error_message = e.what();
     }
 }
 
@@ -115,7 +116,7 @@ void TextureLibrary_FromFile::imgui_debug_view() const
                 if (time_since_last_use < time_to_live)
                 {
                     auto const duration = std::chrono::duration<float>{time_to_live - time_since_last_use};
-                    ImGuiExtras::time_formated_hms(duration.count());
+                    ImGui::TextUnformatted(time_formatted_hms(duration.count()).c_str());
                 }
                 else
                 {

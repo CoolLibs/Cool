@@ -10,6 +10,8 @@
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
+#include "Cool/Time/parse_time.h"
+#include "Cool/Time/time_formatted_hms.h"
 #include "ImGuiExtrasStyle.h"
 
 namespace Cool::ImGuiExtras {
@@ -121,27 +123,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2)
     ImGui::PopID();
     ImGui::EndGroup();
     return b;
-}
-
-void time_formated_hms(float time_in_sec, float total_duration)
-{
-    if (total_duration == 0.f)
-    {
-        total_duration = time_in_sec;
-    }
-    auto t = static_cast<uint32_t>(time_in_sec);
-    if (total_duration < 60.f)
-    {
-        ImGui::Text("%us", t);
-    }
-    else if (total_duration < 3600.f)
-    {
-        ImGui::Text("%um %02us", t / 60, t % 60);
-    }
-    else
-    {
-        ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
-    }
 }
 
 void button_disabled(const char* label, const char* reason_for_disabling)
@@ -826,6 +807,13 @@ auto dropdown(const char* label, std::string* value, std::function<void(std::fun
 auto calc_custom_dropdown_input_width() -> float
 {
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
+}
+
+auto drag_time(const char* label, float* value) -> bool
+{
+    return ImGui::DragFloat(label, value, 0.01f, 0.f, 0.f, time_formatted_hms(*value, true /*show_milliseconds*/).c_str(), 0, [](const char* buf, void* data_p) {
+        *(static_cast<float*>(data_p)) = parse_time(buf);
+    });
 }
 
 } // namespace Cool::ImGuiExtras

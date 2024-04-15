@@ -21,10 +21,6 @@ void shut_down()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-    Icons::shut_down();
-    TextureLibrary_FromFile::instance().clear();
-    TextureSamplerLibrary::instance().clear();
-    FullscreenPipeline::shut_down();
     Audio::shut_down();
 }
 

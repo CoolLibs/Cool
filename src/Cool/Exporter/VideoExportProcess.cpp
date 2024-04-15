@@ -2,6 +2,7 @@
 #include <Cool/ImGui/Fonts.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/String/String.h>
+#include "Cool/Time/time_formatted_hms.h"
 #include "internal/origin_of_frames.h"
 
 namespace Cool {
@@ -83,7 +84,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
     );
 
     // Remaining time
-    ImGuiExtras::time_formated_hms(estimated_remaining_time());
+    ImGui::TextUnformatted(time_formatted_hms(estimated_remaining_time()).c_str());
     ImGui::SameLine();
     ImGui::TextUnformatted("remaining");
     ImGui::PopFont();

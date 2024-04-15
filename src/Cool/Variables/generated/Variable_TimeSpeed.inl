@@ -14,12 +14,13 @@ namespace Cool {
 template<>
 struct VariableMetadata<Cool::TimeSpeed> {
     internal::BoundsMetadata<float> bounds{
-        .min           = 0.f,
-        .max           = 1.f,
-        .has_min_bound = false,
-        .has_max_bound = false,
-        .drag_speed    = 0.01f,
-        .use_slider    = false,
+        .min            = 0.f,
+        .max            = 1.f,
+        .has_min_bound  = false,
+        .has_max_bound  = false,
+        .drag_speed     = 0.01f,
+        .use_slider     = false,
+        .is_logarithmic = false,
     };
 
     friend auto operator<=>(VariableMetadata<Cool::TimeSpeed> const&, VariableMetadata<Cool::TimeSpeed> const&) = default;

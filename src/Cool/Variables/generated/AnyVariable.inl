@@ -28,4 +28,5 @@ Variable<bool>,
     Variable<glm::mat4>,
     Variable<Cool::MidiChannel>,
     Variable<Cool::OSCChannel>,
-    Variable<Cool::TimeSpeed>
+    Variable<Cool::TimeSpeed>,
+    Variable<Cool::TextureDescriptor_VideoFile>

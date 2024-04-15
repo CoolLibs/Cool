@@ -30,4 +30,5 @@ using AnySharedVariable = std::variant<
     SharedVariable<glm::mat4>,
     SharedVariable<Cool::MidiChannel>,
     SharedVariable<Cool::OSCChannel>,
-    SharedVariable<Cool::TimeSpeed> >;
+    SharedVariable<Cool::TimeSpeed>,
+    SharedVariable<Cool::TextureDescriptor_VideoFile> >;

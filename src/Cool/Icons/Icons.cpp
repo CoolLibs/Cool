@@ -42,9 +42,4 @@ void Icons::cleanup_texture(std::filesystem::path image_path)
     }
 }
 
-void Icons::shut_down()
-{
-    _map.clear();
-}
-
 } // namespace Cool

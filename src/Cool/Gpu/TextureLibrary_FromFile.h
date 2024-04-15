@@ -22,7 +22,6 @@ public:
 
     [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const*;
 
-    void clear() { _textures.clear(); }
     /// Returns true iff at least one of the textures in the library has changed.
     auto update() -> bool;
     auto error_from(std::filesystem::path const&) -> std::optional<std::string>;

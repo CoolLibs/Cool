@@ -1,5 +1,4 @@
 #pragma once
-
 #include <reg/reg.hpp>
 #include "internal/MessageWithMetadata.h"
 
