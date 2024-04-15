@@ -9,8 +9,6 @@ class TextureSamplerLibrary {
 public:
     [[nodiscard]] auto get(TextureSamplerDescriptor const&) -> glpp::UniqueTextureSampler const&;
 
-    void clear() { _samplers.clear(); }
-
     [[nodiscard]] static auto instance() -> TextureSamplerLibrary&
     {
         static auto inst = TextureSamplerLibrary{};

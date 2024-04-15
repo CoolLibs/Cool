@@ -26,11 +26,6 @@ std::optional<ShaderModule>& vertex_module()
     return shader_module;
 }
 
-void FullscreenPipeline::shut_down()
-{
-    vertex_module().reset();
-}
-
 auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -> OptionalErrorMessage
 {
     const auto on_error = [&]() {
