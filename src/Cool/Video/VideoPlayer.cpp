@@ -84,7 +84,7 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     {
         auto const* res = &_capture_state->get_texture(time_in_seconds);
         if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", _path, time_formatted_hms(time_in_seconds)));
+            Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", _path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));
         return res;
     }
     catch (std::exception const& e)
