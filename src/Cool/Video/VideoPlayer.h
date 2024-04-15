@@ -5,23 +5,6 @@
 
 namespace Cool {
 
-namespace internal {
-class CaptureState {
-public:
-    static auto create(std::filesystem::path const& path) -> tl::expected<internal::CaptureState, std::string>;
-
-    [[nodiscard]] auto get_texture(float time_in_seconds) -> Texture const&;
-
-private:
-    cv::VideoCapture       _capture{};
-    std::optional<Texture> _texture{};
-    double                 _frames_per_second{};
-    int                    _frames_count{};
-    int                    _frame_in_texture{-1};
-    int                    _next_frame_in_capture{0};
-};
-} // namespace internal
-
 enum class VideoPlayerLoopMode {
     None,
     Loop,
@@ -49,6 +32,23 @@ private:
         );
     }
 };
+
+namespace internal {
+class CaptureState {
+public:
+    static auto create(std::filesystem::path const& path) -> tl::expected<internal::CaptureState, std::string>;
+
+    [[nodiscard]] auto get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&;
+
+private:
+    cv::VideoCapture       _capture{};
+    std::optional<Texture> _texture{};
+    double                 _frames_per_second{};
+    int                    _frames_count{};
+    int                    _frame_in_texture{-1};
+    int                    _next_frame_in_capture{0};
+};
+} // namespace internal
 
 class VideoPlayer {
 public:

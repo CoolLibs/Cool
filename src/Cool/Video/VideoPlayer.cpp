@@ -5,11 +5,13 @@
 #include <tl/expected.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/Gpu/default_textures.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/set_texture_from_opencv_image.h"
 #include "Cool/Time/time_formatted_hms.h"
+#include "smart/smart.hpp"
 
 namespace Cool {
 
@@ -109,9 +111,7 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     _error_message.reset(); // Clear message from previous failure of get_texture(), we will re-add one if an error gets thrown again.
     try
     {
-        auto const* res = &_capture_state->get_texture(time_in_seconds);
-        if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", _path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));
+        auto const* res = &_capture_state->get_texture(time_in_seconds, _settings, _path);
         return res;
     }
     catch (std::exception const& e)
@@ -121,10 +121,28 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     }
 }
 
-auto internal::CaptureState::get_texture(float time_in_seconds) -> Texture const&
+auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
 {
-    // TODO(Video) Respect looping option, and handle out of bounds properly (return a transparent texture when looping is None).
-    auto const desired_frame = static_cast<int>(std::floor(time_in_seconds * _frames_per_second)) % _frames_count; // TODO(Video) Handle start_time, speed, and looping options
+    auto desired_frame = static_cast<int>(std::floor((time_in_seconds - settings.start_time) * settings.playback_speed * _frames_per_second));
+    switch (settings.loop_mode)
+    {
+    case VideoPlayerLoopMode::None:
+    {
+        if (desired_frame < 0 || desired_frame >= _frames_count)
+            return transparent_texture();
+        break;
+    }
+    case VideoPlayerLoopMode::Loop:
+    {
+        desired_frame = smart::mod(desired_frame, _frames_count);
+        break;
+    }
+    case VideoPlayerLoopMode::Hold:
+    {
+        desired_frame = std::clamp(desired_frame, 0, _frames_count - 1);
+        break;
+    }
+    }
     if (_texture.has_value() && _frame_in_texture == desired_frame)
         return *_texture;
 
@@ -152,6 +170,9 @@ auto internal::CaptureState::get_texture(float time_in_seconds) -> Texture const
     _next_frame_in_capture++;
     set_texture_from_opencv_image(_texture, image);
     _frame_in_texture = desired_frame;
+    if (DebugOptions::log_when_creating_textures())
+        Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));
+
     return *_texture;
 }
 

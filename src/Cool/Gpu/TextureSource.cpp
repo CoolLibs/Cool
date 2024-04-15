@@ -1,12 +1,7 @@
 #include "TextureSource.h"
+#include "default_textures.h"
 
 namespace Cool {
-
-static auto dummy_texture() -> Texture const&
-{
-    static auto instance = Texture{img::Size{1, 1}, 3, std::array<uint8_t, 3>{255, 0, 255}.data()};
-    return instance;
-}
 
 auto get_texture(TextureSource const& source) -> Texture const&
 {
