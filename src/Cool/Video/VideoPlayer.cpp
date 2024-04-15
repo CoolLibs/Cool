@@ -111,8 +111,7 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     _error_message.reset(); // Clear message from previous failure of get_texture(), we will re-add one if an error gets thrown again.
     try
     {
-        auto const* res = &_capture_state->get_texture(time_in_seconds, _settings, _path);
-        return res;
+        return &_capture_state->get_texture(time_in_seconds, _settings, _path);
     }
     catch (std::exception const& e)
     {

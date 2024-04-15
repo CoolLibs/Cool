@@ -91,7 +91,7 @@ auto parse_time(const char* str) -> float
                 return 0.f;
             }
         }();
-        { // Then, read the string to get a word (minute / hour / etc/)
+        { // Then, read the string to get a word (minute / hour / etc.)
             std::string work_token{};
             for (; *str != 0 && !is_num(*str); str++) // NOLINT(*pointer-arithmetic)
             {
