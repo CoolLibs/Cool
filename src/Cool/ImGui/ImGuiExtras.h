@@ -222,4 +222,6 @@ auto dropdown(const char* label, std::string* value, std::function<void(std::fun
 
 auto calc_custom_dropdown_input_width() -> float;
 
+auto drag_time(const char* label, float* value) -> bool;
+
 } // namespace Cool::ImGuiExtras

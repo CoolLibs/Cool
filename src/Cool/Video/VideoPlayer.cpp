@@ -31,8 +31,8 @@ auto VideoPlayerSettings::imgui_widget() -> bool
     bool b = false;
     // b |= ImGuiExtras::toggle("Does loop", &do_loop);
     b |= ImGui::Combo("Loop mode", reinterpret_cast<int*>(&loop_mode), "None\0Loop\0Hold\0\0"); // NOLINT(*reinterpret-cast)
-    b |= ImGui::DragFloat("Playback speed", &playback_speed, 1.f, 0.f, FLT_MAX, "x%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_Logarithmic);
-    b |= ImGui::DragFloat("Start time", &start_time, 1.f, -FLT_MAX, FLT_MAX, "%.3f", ImGuiSliderFlags_NoRoundToFormat); // TODO(Video) Use same widget as timeline, with nice formatting
+    b |= ImGui::DragFloat("Playback speed", &playback_speed, 0.0005f, 0.f, FLT_MAX, "x%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_Logarithmic);
+    b |= ImGuiExtras::drag_time("Start time", &start_time);
     return b;
 }
 
