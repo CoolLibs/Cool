@@ -29,4 +29,4 @@ Variable<bool>,
     Variable<Cool::MidiChannel>,
     Variable<Cool::OSCChannel>,
     Variable<Cool::TimeSpeed>,
-    Variable<Cool::TextureDescriptor_FromVideoFile>
+    Variable<Cool::TextureDescriptor_VideoFile>

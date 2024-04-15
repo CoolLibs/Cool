@@ -187,5 +187,5 @@ struct from_impl<"TimeSpeed"> {
 
 template<>
 struct from_impl<"Video"> {
-    using type = Cool::TextureDescriptor_FromVideoFile;
+    using type = Cool::TextureDescriptor_VideoFile;
 };

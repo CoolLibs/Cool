@@ -338,7 +338,7 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             input_type=["Video"],
-            cpp_type="Cool::TextureDescriptor_FromVideoFile",
+            cpp_type="Cool::TextureDescriptor_VideoFile",
             glsl_type="Cool_Texture",
             include="<Cool/Gpu/TextureDescriptor.h>",
             metadatas=[],

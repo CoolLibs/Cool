@@ -156,7 +156,7 @@ auto glsl_type<Cool::TimeSpeed>() -> std::string
 }
 
 template<>
-auto glsl_type<Cool::TextureDescriptor_FromVideoFile>() -> std::string
+auto glsl_type<Cool::TextureDescriptor_VideoFile>() -> std::string
 {
     return "Cool_Texture";
 }

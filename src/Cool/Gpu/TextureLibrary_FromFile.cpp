@@ -48,18 +48,18 @@ auto TextureLibrary_FromFile::get(std::filesystem::path const& path) -> Texture 
 
 void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
 {
-    auto& data         = _textures[path];
-    data.error_message = std::nullopt;
-    data.texture       = std::nullopt;
+    auto& tex         = _textures[path];
+    tex.error_message = std::nullopt;
+    tex.texture       = std::nullopt;
     try
     {
-        data.texture = Texture{img::load(path)};
+        tex.texture = Texture{img::load(path)};
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
     }
     catch (std::exception const& e)
     {
-        data.error_message = e.what();
+        tex.error_message = e.what();
     }
 }
 
