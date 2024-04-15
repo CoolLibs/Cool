@@ -5,7 +5,9 @@
 #include <tl/expected.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/set_texture_from_opencv_image.h"
 #include "Cool/Time/time_formatted_hms.h"
 
@@ -21,6 +23,31 @@ namespace Cool {
 //     return 1;
 // });
 // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
+
+auto VideoPlayerSettings::imgui_widget() -> bool
+{
+    bool b = false;
+    // b |= ImGuiExtras::toggle("Does loop", &do_loop);
+    b |= ImGui::Combo("Loop mode", reinterpret_cast<int*>(&loop_mode), "None\0Loop\0Hold\0\0"); // NOLINT(*reinterpret-cast)
+    b |= ImGui::DragFloat("Playback speed", &playback_speed, 1.f, 0.f, FLT_MAX, "x%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_Logarithmic);
+    b |= ImGui::DragFloat("Start time", &start_time, 1.f, -FLT_MAX, FLT_MAX, "%.3f", ImGuiSliderFlags_NoRoundToFormat); // TODO(Video) Use same widget as timeline, with nice formatting
+    return b;
+}
+
+auto VideoPlayer::imgui_widget() -> bool
+{
+    bool b = false;
+    ImGui::SeparatorText("Select File");
+    if (ImGuiExtras::file_and_folder("File", &_path, NfdFileFilter::Video))
+    {
+        b = true;
+        set_path(_path);
+    }
+    ImGui::NewLine();
+    ImGui::SeparatorText("Playback options");
+    b |= _settings.imgui_widget();
+    return b;
+}
 
 void VideoPlayer::set_path(std::filesystem::path path)
 {
