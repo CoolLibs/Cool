@@ -4,13 +4,13 @@
 
 namespace Cool {
 
-class TextureSource_FromVideoFile {
+class TextureSource_VideoFile {
 public:
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> Texture const*;
     [[nodiscard]] auto get_error() const -> std::optional<std::string>;
 
-    friend auto operator==(TextureSource_FromVideoFile const& a, TextureSource_FromVideoFile const& b) -> bool
+    friend auto operator==(TextureSource_VideoFile const& a, TextureSource_VideoFile const& b) -> bool
     {
         return *a._player == *b._player;
     }

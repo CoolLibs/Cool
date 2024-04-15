@@ -40,7 +40,7 @@ struct TextureDescriptor_FromWebcam : public TextureDescriptor {
 };
 struct TextureDescriptor_FromVideoFile : public TextureDescriptor {
     TextureDescriptor_FromVideoFile()
-        : TextureDescriptor{TextureSource_FromVideoFile{}, {}}
+        : TextureDescriptor{TextureSource_VideoFile{}, {}}
     {}
 };
 
