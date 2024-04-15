@@ -6,6 +6,7 @@
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/Time/time_formatted_hms.h"
 #include "TextureLibrary_FromFile.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
@@ -115,7 +116,7 @@ void TextureLibrary_FromFile::imgui_debug_view() const
                 if (time_since_last_use < time_to_live)
                 {
                     auto const duration = std::chrono::duration<float>{time_to_live - time_since_last_use};
-                    ImGuiExtras::time_formated_hms(duration.count());
+                    ImGui::TextUnformatted(time_formatted_hms(duration.count()).c_str());
                 }
                 else
                 {

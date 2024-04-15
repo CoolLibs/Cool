@@ -24,14 +24,6 @@ auto angle_slider(const char* label, float* value_p) -> bool;
 bool direction_3d(const char* label, float* value_p1, float* value_p2);
 
 /**
- * @brief Writes some ImGui text : time is displayed as [hours]:[minutes]:[seconds]. Hours and minutes might not be displayed if they are 0 for both timeInSec and totalDuration
- *
- * @param time_in_sec The time to be displayed, expressed in seconds
- * @param total_duration Optionnal : the total length of the time interval that time_in_sec is part of, expressed in seconds. (for example time_in_sec might be a timestamp in a video, and total_duration would be the duration of the video). It allows the formating to know whether it should write hours and minutes or not, in order for the display to be consistent accross the wole duration of total_duration. Leave as 0.f if you don't want or need this behaviour.
- */
-void time_formated_hms(float time_in_sec, float total_duration = 0.f);
-
-/**
  * @brief A greyed out button that you can't click on.
  *
  * @param label The text inside the button

@@ -123,27 +123,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2)
     return b;
 }
 
-void time_formated_hms(float time_in_sec, float total_duration)
-{
-    if (total_duration == 0.f)
-    {
-        total_duration = time_in_sec;
-    }
-    auto t = static_cast<uint32_t>(time_in_sec);
-    if (total_duration < 60.f)
-    {
-        ImGui::Text("%us", t);
-    }
-    else if (total_duration < 3600.f)
-    {
-        ImGui::Text("%um %02us", t / 60, t % 60);
-    }
-    else
-    {
-        ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
-    }
-}
-
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
     disabled_if(true, reason_for_disabling, [&]() {
