@@ -3,7 +3,7 @@
 #include <Cool/Path/Path.h>
 #include <Cool/Variables/PresetManager.h>
 
-namespace Lab {
+namespace Cool {
 
 class TestPresets {
 public:
@@ -24,4 +24,4 @@ private:
     int _next_field_name = 0;
 };
 
-} // namespace Lab
+} // namespace Cool

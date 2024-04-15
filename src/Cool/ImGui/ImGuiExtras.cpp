@@ -102,9 +102,9 @@ auto angle_slider(const char* label, float* value_p) -> bool
     angle_in_deg       = angle_in_deg - std::floor(angle_in_deg);
     angle_in_deg *= 360.f;
 
-    if (ImGui::SliderFloat(label, &angle_in_deg, 0.f, 360.f, "%.0f deg"))
+    if (ImGui::DragFloat(label, &angle_in_deg, 1.f, 0.f, 0.f, "%.0f deg"))
     {
-        *value_p = angle_in_deg * tau / 360.f;
+        *value_p = fmod(angle_in_deg, 360.f) * tau / 360.f;
         return true;
     }
     return false;

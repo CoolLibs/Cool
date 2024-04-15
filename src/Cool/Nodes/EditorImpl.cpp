@@ -96,18 +96,17 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(NodeId const& 
     return !ImGui::GetIO().WantTextInput
            && ImGui::IsWindowFocused();
 }
-[[nodiscard]] static auto wants_to_delete_selection() -> bool
-{
-    return is_listening_to_keyboard_shortcuts()
-           && (ImGui::IsKeyReleased(ImGuiKey_Delete)
-               || ImGui::IsKeyReleased(ImGuiKey_Backspace)
-           );
-}
 [[nodiscard]] static auto wants_to_copy() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
            && ImGui::GetIO().KeyCtrl
            && ImGui::IsKeyReleased(ImGuiKey_C);
+}
+[[nodiscard]] static auto wants_to_cut() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && ImGui::GetIO().KeyCtrl
+           && ImGui::IsKeyReleased(ImGuiKey_X);
 }
 [[nodiscard]] static auto wants_to_paste() -> bool
 {
@@ -120,6 +119,14 @@ static auto dropdown_to_switch_between_nodes_of_the_same_category(NodeId const& 
     return is_listening_to_keyboard_shortcuts()
            && ImGui::GetIO().KeyCtrl
            && ImGui::IsKeyReleased(ImGuiKey_D);
+}
+[[nodiscard]] static auto wants_to_delete_selection() -> bool
+{
+    return (is_listening_to_keyboard_shortcuts()
+            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
+                || ImGui::IsKeyReleased(ImGuiKey_Backspace)
+            ))
+           || wants_to_cut();
 }
 
 auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
@@ -603,7 +610,7 @@ auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
 
 auto NodesEditorImpl::process_copy_paste(NodesConfig& nodes_cfg) -> bool
 {
-    if (wants_to_copy())
+    if (wants_to_copy() || wants_to_cut())
     {
         ImGui::SetClipboardText(nodes_cfg.copy_nodes().c_str());
         return false;
