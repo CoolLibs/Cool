@@ -11,6 +11,6 @@ vec4 sample_cool_texture(Cool_Texture tex, vec2 uv)
 }
 vec4 sample_opencv_texture(Cool_Texture tex, vec2 uv)
 {
-    uv.y *= -1.;                              // OpenCV textures are upside-down compared to what we expect
-    return sample_cool_texture(tex, uv).bgra; // Convert BGR -> RGB because OpenCV gives us textures in BGR
+    uv.y *= -1.; // OpenCV textures are upside-down compared to what we expect
+    return sample_cool_texture(tex, uv);
 }

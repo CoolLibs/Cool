@@ -9,8 +9,8 @@ void set_texture_from_opencv_image(std::optional<Texture>& texture, cv::Mat cons
         static_cast<unsigned int>(image.rows),
     };
     auto const layout = glpp::TextureLayout{
-        .internal_format = glpp::InternalFormat::RGBA, // TODO(Video) Indicate here that image is BGRA, instead of swizzling in the shader
-        .channels        = glpp::Channels::RGB,        // TODO(Video) Some video files might be RGBA (and we have a problem when importing gifs (e.g. Animation.gif), which might be caused by that too)
+        .internal_format = glpp::InternalFormat::RGBA,
+        .channels        = glpp::Channels::BGR, // TODO(Video) Some video files might be BGRA (and we have a problem when importing gifs (e.g. Animation.gif), which might be caused by that too)
         .texel_data_type = glpp::TexelDataType::UnsignedByte,
     };
     auto const* data = static_cast<uint8_t const*>(image.ptr());
