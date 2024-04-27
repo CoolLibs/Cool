@@ -198,6 +198,10 @@ install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 add_subdirectory(lib/img)
 target_link_libraries(Cool-PublicProperties INTERFACE img::img)
 
+# easy_ffmpeg
+add_subdirectory(lib/easy_ffmpeg)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_ffmpeg::easy_ffmpeg)
+
 # Audio
 add_subdirectory(lib/Audio)
 target_link_libraries(Cool-PublicProperties INTERFACE Cool::Audio)
@@ -303,6 +307,7 @@ include("CMakeUtils/files_and_folders.cmake")
 
 function(cool_setup TARGET_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
+    ffmeg_copy_libs(${TARGET_NAME})
     install(DIRECTORY ${COOL_PATH_INTERNAL}/res DESTINATION bin/${COOL_PATH_INTERNAL})
 endfunction()
 

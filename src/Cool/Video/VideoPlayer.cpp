@@ -1,4 +1,5 @@
 #include "VideoPlayer.h"
+#include <easy_ffmpeg/src/VideoDecoder.hpp>
 #include <exception>
 #include <opencv2/videoio.hpp>
 #include <string>
@@ -68,7 +69,7 @@ void VideoPlayer::create_capture()
     else
     {
         _capture_state.reset();
-        _error_message = fmt::format("Failed to open video file: {}", maybe.error());
+        _error_message = fmt::format("Failed to open video file {}:\n{}", _path, maybe.error());
     }
 }
 
@@ -76,20 +77,10 @@ auto internal::CaptureState::create(std::filesystem::path const& path) -> tl::ex
 {
     try
     {
-        auto res     = internal::CaptureState{};
-        res._capture = cv::VideoCapture{path.string()};
-        if (!res._capture.isOpened())
-        {
-            return tl::make_unexpected(
-                File::exists(path)
-                    ? fmt::format("The file is not a valid video file ({})", path)
-                    : fmt::format("The file does not exist ({})", path)
-            );
-        }
-        res._capture.setExceptionMode(true);
+        auto res = internal::CaptureState{path};
 
-        res._frames_per_second = res._capture.get(cv::CAP_PROP_FPS);
-        res._frames_count      = static_cast<int>(res._capture.get(cv::CAP_PROP_FRAME_COUNT));
+        res._frames_per_second = res._capture.fps();
+        res._frames_count      = res._capture.frames_count();
         if (res._frames_count <= 0)
             return tl::make_unexpected(fmt::format("Empty video ({} frames)", res._frames_count));
         if (res._frames_per_second <= 0.)
@@ -148,26 +139,27 @@ auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSetti
     if (_next_frame_in_capture > desired_frame)
     {
         // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
-        _capture.set(cv::CAP_PROP_POS_FRAMES, static_cast<double>(desired_frame)); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+        _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
         _next_frame_in_capture = desired_frame;
     }
     if (desired_frame - _next_frame_in_capture > 10) // TODO(Video) When is it better to do this than get frames one by one ? 10 is probably not the right number.
     {
-        _capture.set(cv::CAP_PROP_POS_FRAMES, static_cast<double>(desired_frame)); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+        _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
         _next_frame_in_capture = desired_frame;
     }
-    cv::Mat image{};
+
     while (_next_frame_in_capture < desired_frame)
     {
         // _capture->grab();
-        _capture >> image; // TODO(Video) Is it faster to call grab??
+        _capture.move_to_next_frame();
+        ; // TODO(Video) Is it faster to call grab??
         _next_frame_in_capture++;
     }
 
     assert(_next_frame_in_capture == desired_frame);
-    _capture >> image;
+    _capture.move_to_next_frame();
     _next_frame_in_capture++;
-    set_texture_from_opencv_image(_texture, image);
+    set_texture_from_ffmpeg_image(_texture, _capture.current_frame());
     _frame_in_texture = desired_frame;
     if (DebugOptions::log_when_creating_textures())
         Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));

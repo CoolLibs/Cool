@@ -112,3 +112,6 @@
 [submodule "lib/open"]
 	path = lib/open
 	url = https://github.com/CoolLibs/open
+[submodule "lib/easy_ffmpeg"]
+	path = lib/easy_ffmpeg
+	url = https://github.com/CoolLibs/easy_ffmpeg

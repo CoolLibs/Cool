@@ -1,7 +1,7 @@
 #pragma once
 #include <filesystem>
-#include <opencv2/videoio.hpp>
 #include "Cool/Gpu/Texture.h"
+#include "easy_ffmpeg/easy_ffmpeg.hpp"
 
 namespace Cool {
 
@@ -41,7 +41,12 @@ public:
     [[nodiscard]] auto get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&;
 
 private:
-    cv::VideoCapture       _capture{};
+    explicit CaptureState(std::filesystem::path const& path)
+        : _capture{path}
+    {}
+
+private:
+    ffmpeg::VideoDecoder   _capture;
     std::optional<Texture> _texture{};
     double                 _frames_per_second{};
     int                    _frames_count{};
