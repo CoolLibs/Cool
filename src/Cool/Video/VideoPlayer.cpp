@@ -1,4 +1,5 @@
 #include "VideoPlayer.h"
+#include <chrono>
 #include <easy_ffmpeg/src/VideoDecoder.hpp>
 #include <exception>
 #include <opencv2/videoio.hpp>
@@ -8,10 +9,12 @@
 #include "Cool/File/File.h"
 #include "Cool/Gpu/default_textures.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/Log/Debug.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/set_texture_from_opencv_image.h"
 #include "Cool/Time/time_formatted_hms.h"
+#include "hack_get_global_time_in_seconds.h"
 #include "smart/smart.hpp"
 
 namespace Cool {
@@ -26,6 +29,8 @@ namespace Cool {
 //     return 1;
 // });
 // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
+
+// TODO(Video) gets very laggy when two videos are open at once. We might be seeking too much ? Or maybe its only a pb when one of the videos is not actually played ? We need to not send it at all, not even load it
 
 auto VideoPlayerSettings::imgui_widget() -> bool
 {
@@ -79,12 +84,12 @@ auto internal::CaptureState::create(std::filesystem::path const& path) -> tl::ex
     {
         auto res = internal::CaptureState{path};
 
-        res._frames_per_second = res._capture.fps();
-        res._frames_count      = res._capture.frames_count();
-        if (res._frames_count <= 0)
-            return tl::make_unexpected(fmt::format("Empty video ({} frames)", res._frames_count));
-        if (res._frames_per_second <= 0.)
-            return tl::make_unexpected(fmt::format("Invalid framerate ({})", res._frames_per_second));
+        // res._frames_per_second = res._capture.fps();
+        // res._frames_count      = res._capture.frames_count();
+        // if (res._frames_count <= 0)
+        //     return tl::make_unexpected(fmt::format("Empty video ({} frames)", res._frames_count));
+        // if (res._frames_per_second <= 0.)
+        //     return tl::make_unexpected(fmt::format("Invalid framerate ({})", res._frames_per_second));
 
         return res;
     }
@@ -113,54 +118,59 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
 
 auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
 {
-    auto desired_frame = static_cast<int>(std::floor((time_in_seconds - settings.start_time) * settings.playback_speed * _frames_per_second));
-    switch (settings.loop_mode)
-    {
-    case VideoPlayerLoopMode::None:
-    {
-        if (desired_frame < 0 || desired_frame >= _frames_count)
-            return transparent_texture();
-        break;
-    }
-    case VideoPlayerLoopMode::Loop:
-    {
-        desired_frame = smart::mod(desired_frame, _frames_count);
-        break;
-    }
-    case VideoPlayerLoopMode::Hold:
-    {
-        desired_frame = std::clamp(desired_frame, 0, _frames_count - 1);
-        break;
-    }
-    }
-    if (_texture.has_value() && _frame_in_texture == desired_frame)
-        return *_texture;
+    // auto desired_frame = static_cast<int>(std::floor((time_in_seconds - settings.start_time) * settings.playback_speed * _frames_per_second));
+    // switch (settings.loop_mode)
+    // {
+    // case VideoPlayerLoopMode::None:
+    // {
+    //     if (desired_frame < 0 || desired_frame >= _frames_count)
+    //         return transparent_texture();
+    //     break;
+    // }
+    // case VideoPlayerLoopMode::Loop:
+    // {
+    //     desired_frame = smart::mod(desired_frame, _frames_count);
+    //     break;
+    // }
+    // case VideoPlayerLoopMode::Hold:
+    // {
+    //     desired_frame = std::clamp(desired_frame, 0, _frames_count - 1);
+    //     break;
+    // }
+    // }
+    // if (_texture.has_value() && _frame_in_texture == desired_frame)
+    //     return *_texture;
 
-    if (_next_frame_in_capture > desired_frame)
-    {
-        // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
-        _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
-        _next_frame_in_capture = desired_frame;
-    }
-    if (desired_frame - _next_frame_in_capture > 10) // TODO(Video) When is it better to do this than get frames one by one ? 10 is probably not the right number.
-    {
-        _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
-        _next_frame_in_capture = desired_frame;
-    }
+    // if (_next_frame_in_capture > desired_frame)
+    // {
+    //     // TODO debug option to log when seeking
+    //     Cool::Log::Debug::info("Video", "Seeking");
+    //     // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
+    //     _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+    //     _next_frame_in_capture = desired_frame;
+    // }
+    // if (desired_frame - _next_frame_in_capture > 10) // TODO(Video) When is it better to do this than get frames one by one ? 10 is probably not the right number.
+    // {
+    //     Cool::Log::Debug::info("Video", "Seeking");
+    //     _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+    //     _next_frame_in_capture = desired_frame;
+    // }
 
-    while (_next_frame_in_capture < desired_frame)
-    {
-        // _capture->grab();
-        _capture.move_to_next_frame();
-        ; // TODO(Video) Is it faster to call grab??
-        _next_frame_in_capture++;
-    }
+    // Cool::Log::Debug::info("Test", std::to_string((float)_capture.current_frame().pts * (float)_capture.video_stream().time_base.num / (float)_capture.video_stream().time_base.den));
 
-    assert(_next_frame_in_capture == desired_frame);
-    _capture.move_to_next_frame();
-    _next_frame_in_capture++;
-    set_texture_from_ffmpeg_image(_texture, _capture.current_frame());
-    _frame_in_texture = desired_frame;
+    // while (_next_frame_in_capture < desired_frame)
+    // {
+    //     // _capture->grab();
+    //     _capture.move_to_next_frame();
+    //     ; // TODO(Video) Is it faster to call grab??
+    //     _next_frame_in_capture++;
+    // }
+
+    // assert(_next_frame_in_capture == desired_frame);
+    // _capture.move_to_next_frame();
+    // _next_frame_in_capture++;
+    set_texture_from_ffmpeg_image(_texture, _capture->get_frame_at(time_in_seconds, hack_get_is_dragging_time_in_the_timeline() ? ffmpeg::SeekMode::Fast : ffmpeg::SeekMode::Exact)); // TODO if we have already received this frame, reuse the texture, don't recreate it
+    // _frame_in_texture = desired_frame;
     if (DebugOptions::log_when_creating_textures())
         Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));
 

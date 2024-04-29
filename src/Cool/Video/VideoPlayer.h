@@ -1,5 +1,7 @@
 #pragma once
+#include <easy_ffmpeg/src/VideoDecoder.hpp>
 #include <filesystem>
+#include <memory>
 #include "Cool/Gpu/Texture.h"
 #include "easy_ffmpeg/easy_ffmpeg.hpp"
 
@@ -42,16 +44,16 @@ public:
 
 private:
     explicit CaptureState(std::filesystem::path const& path)
-        : _capture{path}
+        : _capture{std::make_unique<ffmpeg::VideoDecoder>(path)}
     {}
 
 private:
-    ffmpeg::VideoDecoder   _capture;
-    std::optional<Texture> _texture{};
-    double                 _frames_per_second{};
-    int                    _frames_count{};
-    int                    _frame_in_texture{-1};
-    int                    _next_frame_in_capture{0};
+    std::unique_ptr<ffmpeg::VideoDecoder> _capture;
+    std::optional<Texture>                _texture{};
+    double                                _frames_per_second{};
+    int                                   _frames_count{};
+    int                                   _frame_in_texture{-1};
+    int                                   _next_frame_in_capture{0};
 };
 } // namespace internal
 

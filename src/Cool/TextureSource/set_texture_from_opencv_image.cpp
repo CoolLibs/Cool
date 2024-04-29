@@ -28,8 +28,10 @@ void set_texture_from_opencv_image(std::optional<Texture>& texture, cv::Mat cons
     }
 }
 
-void set_texture_from_ffmpeg_image(std::optional<Texture>& texture, AVFrame const& image)
+void set_texture_from_ffmpeg_image(std::optional<Texture>& texture, ffmpeg::Frame const& image)
 {
+    if (!image.is_different_from_previous_frame && texture.has_value())
+        return;
     auto const size = img::Size{
         static_cast<unsigned int>(image.width),
         static_cast<unsigned int>(image.height),
@@ -39,7 +41,7 @@ void set_texture_from_ffmpeg_image(std::optional<Texture>& texture, AVFrame cons
         .channels        = glpp::Channels::RGBA,
         .texel_data_type = glpp::TexelDataType::UnsignedByte,
     };
-    uint8_t const* const data = image.data[0];
+    uint8_t const* const data = image.data;
 
     if (!texture)
     {
