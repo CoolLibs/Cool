@@ -2,6 +2,7 @@
 #include <Cool/Log/ToUser.h>
 #include <Cool/String/String.h>
 #include <sys/stat.h>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <streambuf>
@@ -170,7 +171,7 @@ void set_content(std::filesystem::path const& file_path, std::string_view conten
 auto folder_dialog(folder_dialog_args const& args) -> std::optional<std::filesystem::path>
 {
     auto        path   = NFD::UniquePath{};
-    nfdresult_t result = NFD::PickFolder(path, std::filesystem::absolute(args.initial_folder).string().c_str());
+    nfdresult_t result = NFD::PickFolder(path, make_absolute(args.initial_folder).string().c_str());
     if (result != NFD_OKAY)
         return std::nullopt;
     return std::filesystem::path{path.get()};
@@ -183,7 +184,7 @@ auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::fil
         path,
         args.file_filters.data(),
         static_cast<nfdfiltersize_t>(args.file_filters.size()),
-        std::filesystem::absolute(args.initial_folder).string().c_str()
+        make_absolute(args.initial_folder).string().c_str()
     );
     if (result != NFD_OKAY)
         return std::nullopt;
@@ -192,7 +193,15 @@ auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::fil
 
 auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
 {
-    return path.empty() ? "" : std::filesystem::absolute(path);
+    try
+    {
+        return path.empty() ? "" : std::filesystem::absolute(path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File System", fmt::format("Failed to make absolute path:\n{}", e.what()));
+        return path;
+    }
 }
 
 auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>
