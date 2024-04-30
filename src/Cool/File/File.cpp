@@ -11,6 +11,19 @@
 
 namespace Cool::File {
 
+auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
+{
+    try
+    {
+        return path.empty() ? "" : std::filesystem::absolute(path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File System", fmt::format("Failed to make absolute path:\n{}", e.what()));
+        return path;
+    }
+}
+
 auto exists(std::filesystem::path const& file_path) -> bool
 {
     return std::filesystem::exists(file_path);
@@ -189,19 +202,6 @@ auto file_opening_dialog(file_dialog_args const& args) -> std::optional<std::fil
     if (result != NFD_OKAY)
         return std::nullopt;
     return std::filesystem::path{path.get()};
-}
-
-auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
-{
-    try
-    {
-        return path.empty() ? "" : std::filesystem::absolute(path);
-    }
-    catch (std::exception const& e)
-    {
-        Cool::Log::ToUser::warning("File System", fmt::format("Failed to make absolute path:\n{}", e.what()));
-        return path;
-    }
 }
 
 auto file_saving_dialog(file_dialog_args const& args) -> std::optional<std::filesystem::path>

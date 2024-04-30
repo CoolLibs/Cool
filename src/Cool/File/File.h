@@ -5,6 +5,8 @@
 
 namespace Cool::File {
 
+auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path;
+
 /// Returns true iff file_path corresponds to an existing file or folder
 auto exists(std::filesystem::path const& file_path) -> bool;
 
