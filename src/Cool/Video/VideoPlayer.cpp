@@ -51,6 +51,15 @@ auto VideoPlayer::imgui_widget() -> bool
         b = true;
         set_path(_path);
     }
+    if (_capture_state.has_value())
+    {
+        ImGui::NewLine();
+        ImGuiExtras::help_marker(fmt::format("(Click to copy)\n\n{}", _capture_state->detailed_video_info()).c_str());
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        if (ImGui::IsItemClicked())
+            ImGui::SetClipboardText(_capture_state->detailed_video_info().c_str());
+    }
     ImGui::NewLine();
     ImGui::SeparatorText("Playback options");
     b |= _settings.imgui_widget();
@@ -82,16 +91,7 @@ auto internal::CaptureState::create(std::filesystem::path const& path) -> tl::ex
 {
     try
     {
-        auto res = internal::CaptureState{path};
-
-        // res._frames_per_second = res._capture.fps();
-        // res._frames_count      = res._capture.frames_count();
-        // if (res._frames_count <= 0)
-        //     return tl::make_unexpected(fmt::format("Empty video ({} frames)", res._frames_count));
-        // if (res._frames_per_second <= 0.)
-        //     return tl::make_unexpected(fmt::format("Invalid framerate ({})", res._frames_per_second));
-
-        return res;
+        return internal::CaptureState{path};
     }
     catch (std::exception const& e)
     {
@@ -118,26 +118,27 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
 
 auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
 {
-    // auto desired_frame = static_cast<int>(std::floor((time_in_seconds - settings.start_time) * settings.playback_speed * _frames_per_second));
-    // switch (settings.loop_mode)
-    // {
-    // case VideoPlayerLoopMode::None:
-    // {
-    //     if (desired_frame < 0 || desired_frame >= _frames_count)
-    //         return transparent_texture();
-    //     break;
-    // }
-    // case VideoPlayerLoopMode::Loop:
-    // {
-    //     desired_frame = smart::mod(desired_frame, _frames_count);
-    //     break;
-    // }
-    // case VideoPlayerLoopMode::Hold:
-    // {
-    //     desired_frame = std::clamp(desired_frame, 0, _frames_count - 1);
-    //     break;
-    // }
-    // }
+    // TODO(Video) Test the various Settings
+    double desired_time = (time_in_seconds - settings.start_time) * settings.playback_speed;
+    switch (settings.loop_mode)
+    {
+    case VideoPlayerLoopMode::None:
+    {
+        if (desired_time < 0. || desired_time >= _capture->duration_in_seconds())
+            return transparent_texture();
+        break;
+    }
+    case VideoPlayerLoopMode::Loop:
+    {
+        desired_time = smart::mod(desired_time, _capture->duration_in_seconds());
+        break;
+    }
+    case VideoPlayerLoopMode::Hold:
+    {
+        desired_time = std::clamp(desired_time, 0., _capture->duration_in_seconds());
+        break;
+    }
+    }
     // if (_texture.has_value() && _frame_in_texture == desired_frame)
     //     return *_texture;
 

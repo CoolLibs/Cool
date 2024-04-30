@@ -11,6 +11,7 @@ enum class VideoPlayerLoopMode {
     None,
     Loop,
     Hold,
+    // TODO(Video) Mode Bounce (like mirror repeat for textures). But requires us to support playing videos backward
 };
 
 struct VideoPlayerSettings {
@@ -41,6 +42,8 @@ public:
     static auto create(std::filesystem::path const& path) -> tl::expected<internal::CaptureState, std::string>;
 
     [[nodiscard]] auto get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&;
+
+    [[nodiscard]] auto detailed_video_info() const -> std::string const& { return _capture->detailed_info(); }
 
 private:
     explicit CaptureState(std::filesystem::path const& path)
