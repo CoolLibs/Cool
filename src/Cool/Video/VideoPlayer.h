@@ -46,9 +46,7 @@ public:
     [[nodiscard]] auto detailed_video_info() const -> std::string const& { return _capture->detailed_info(); }
 
 private:
-    explicit CaptureState(std::filesystem::path const& path)
-        : _capture{std::make_unique<ffmpeg::VideoDecoder>(path)}
-    {}
+    explicit CaptureState(std::filesystem::path const& path);
 
 private:
     std::unique_ptr<ffmpeg::VideoDecoder> _capture;

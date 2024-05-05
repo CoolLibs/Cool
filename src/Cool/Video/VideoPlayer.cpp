@@ -99,6 +99,10 @@ auto internal::CaptureState::create(std::filesystem::path const& path) -> tl::ex
     }
 }
 
+internal::CaptureState::CaptureState(std::filesystem::path const& path)
+    : _capture{std::make_unique<ffmpeg::VideoDecoder>(path, AV_PIX_FMT_RGBA)}
+{}
+
 auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
 {
     if (!_capture_state.has_value())
