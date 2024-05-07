@@ -120,26 +120,25 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     }
 }
 
-auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
+auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
 {
-    // TODO(Video) Test the various Settings
-    double desired_time = (time_in_seconds - settings.start_time) * settings.playback_speed;
+    time_in_seconds = (time_in_seconds - settings.start_time) * settings.playback_speed;
     switch (settings.loop_mode)
     {
     case VideoPlayerLoopMode::None:
     {
-        if (desired_time < 0. || desired_time >= _capture->duration_in_seconds())
+        if (time_in_seconds < 0. || time_in_seconds >= _capture->duration_in_seconds())
             return transparent_texture();
         break;
     }
     case VideoPlayerLoopMode::Loop:
     {
-        desired_time = smart::mod(desired_time, _capture->duration_in_seconds());
+        time_in_seconds = smart::mod(time_in_seconds, _capture->duration_in_seconds()); // TODO(Video) seems broken
         break;
     }
     case VideoPlayerLoopMode::Hold:
     {
-        desired_time = std::clamp(desired_time, 0., _capture->duration_in_seconds());
+        time_in_seconds = std::clamp(time_in_seconds, 0., _capture->duration_in_seconds());
         break;
     }
     }
@@ -177,7 +176,7 @@ auto internal::CaptureState::get_texture(float time_in_seconds, VideoPlayerSetti
     set_texture_from_ffmpeg_image(_texture, _capture->get_frame_at(time_in_seconds, hack_get_is_dragging_time_in_the_timeline() ? ffmpeg::SeekMode::Fast : ffmpeg::SeekMode::Fast)); // TODO use Exact mode while exporting
     // _frame_in_texture = desired_frame;
     if (DebugOptions::log_when_creating_textures())
-        Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(time_in_seconds, true /*show_milliseconds*/)));
+        Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(static_cast<float>(time_in_seconds), true /*show_milliseconds*/)));
 
     return *_texture;
 }
