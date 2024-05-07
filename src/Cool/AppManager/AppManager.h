@@ -30,6 +30,8 @@ private:
     void imgui_windows();
     void end_frame(WindowManager& window_manager);
 
+    void request_rerender_thread_safe();
+
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void key_callback_for_secondary_windows(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void window_close_callback_for_secondary_windows(GLFWwindow* window);
@@ -48,6 +50,8 @@ private:
     Cool::StyleEditor _style_editor{};
 
     int _frames_count{0};
+
+    std::atomic<bool> _wants_to_request_rerender{false};
 };
 
 } // namespace Cool

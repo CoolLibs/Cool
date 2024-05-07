@@ -150,7 +150,7 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
     // assert(_next_frame_in_capture == desired_frame);
     // _capture.move_to_next_frame();
     // _next_frame_in_capture++;
-    set_texture_from_ffmpeg_image(_texture, _capture->get_frame_at(time_in_seconds, hack_get_is_dragging_time_in_the_timeline() ? ffmpeg::SeekMode::Fast : ffmpeg::SeekMode::Fast)); // TODO use Exact mode while exporting
+    set_texture_from_ffmpeg_image(_texture, _capture->get_frame_at(time_in_seconds, hack_get_is_exporting() ? ffmpeg::SeekMode::Exact : ffmpeg::SeekMode::Fast));
     // _frame_in_texture = desired_frame;
     if (DebugOptions::log_when_creating_textures())
         Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(static_cast<float>(time_in_seconds), true /*show_milliseconds*/)));
