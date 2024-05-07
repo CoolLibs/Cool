@@ -26,8 +26,6 @@ namespace Cool {
 // });
 // cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
 
-// TODO(Video) gets very laggy when two videos are open at once. We might be seeking too much ? Or maybe its only a pb when one of the videos is not actually played ? We need to not send it at all, not even load it
-
 VideoPlayer::VideoPlayer(VideoDescriptor desc)
     : _desc{std::move(desc)}
 {
