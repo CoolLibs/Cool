@@ -1,6 +1,5 @@
 #include "VideoPlayer.h"
 #include <chrono>
-#include <easy_ffmpeg/src/VideoDecoder.hpp>
 #include <exception>
 #include <opencv2/videoio.hpp>
 #include <string>
@@ -11,15 +10,12 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/Debug.h"
 #include "Cool/Log/ToUser.h"
-#include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/set_texture_from_opencv_image.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "hack_get_global_time_in_seconds.h"
 #include "smart/smart.hpp"
 
 namespace Cool {
-
-// TODO(Video) Don't load file unless actually used in current graph, to avoid having many captures that are not needed (although OpenCV's capture system might be smart enough to not take too much memory while not requested?)
 
 // TODO(Video):
 // cv::redirectError([](int status, const char* func_name,
@@ -32,49 +28,15 @@ namespace Cool {
 
 // TODO(Video) gets very laggy when two videos are open at once. We might be seeking too much ? Or maybe its only a pb when one of the videos is not actually played ? We need to not send it at all, not even load it
 
-auto VideoPlayerSettings::imgui_widget() -> bool
+VideoPlayer::VideoPlayer(VideoDescriptor desc)
+    : _desc{std::move(desc)}
 {
-    bool b = false;
-    // b |= ImGuiExtras::toggle("Does loop", &do_loop);
-    b |= ImGui::Combo("Loop mode", reinterpret_cast<int*>(&loop_mode), "None\0Loop\0Hold\0\0"); // NOLINT(*reinterpret-cast)
-    b |= ImGui::DragFloat("Playback speed", &playback_speed, 0.0005f, 0.f, FLT_MAX, "x%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_Logarithmic);
-    b |= ImGuiExtras::drag_time("Start time", &start_time);
-    return b;
-}
-
-auto VideoPlayer::imgui_widget() -> bool
-{
-    bool b = false;
-    ImGui::SeparatorText("Select File");
-    if (ImGuiExtras::file_and_folder("File", &_path, NfdFileFilter::Video))
-    {
-        b = true;
-        set_path(_path);
-    }
-    if (_capture_state.has_value())
-    {
-        ImGui::NewLine();
-        ImGuiExtras::help_marker(fmt::format("(Click to copy)\n\n{}", _capture_state->detailed_video_info()).c_str());
-        if (ImGui::IsItemHovered())
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-        if (ImGui::IsItemClicked())
-            ImGui::SetClipboardText(_capture_state->detailed_video_info().c_str());
-    }
-    ImGui::NewLine();
-    ImGui::SeparatorText("Playback options");
-    b |= _settings.imgui_widget();
-    return b;
-}
-
-void VideoPlayer::set_path(std::filesystem::path path)
-{
-    _path = std::move(path);
     create_capture();
 }
 
 void VideoPlayer::create_capture()
 {
-    auto maybe = internal::CaptureState::create(_path);
+    auto maybe = internal::CaptureState::create(path());
     if (maybe.has_value())
     {
         _capture_state = std::move(*maybe);
@@ -83,7 +45,7 @@ void VideoPlayer::create_capture()
     else
     {
         _capture_state.reset();
-        _error_message = fmt::format("Failed to open video file {}:\n{}", _path, maybe.error());
+        _error_message = fmt::format("Failed to open video file {}:\n{}", path(), maybe.error());
     }
 }
 
@@ -103,7 +65,7 @@ internal::CaptureState::CaptureState(std::filesystem::path const& path)
     : _capture{std::make_unique<ffmpeg::VideoDecoder>(path, AV_PIX_FMT_RGBA)}
 {}
 
-auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
+auto VideoPlayer::get_texture(double time_in_seconds) -> Texture const*
 {
     if (!_capture_state.has_value())
         return nullptr;
@@ -111,7 +73,7 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     _error_message.reset(); // Clear message from previous failure of get_texture(), we will re-add one if an error gets thrown again.
     try
     {
-        return &_capture_state->get_texture(time_in_seconds, _settings, _path);
+        return &_capture_state->get_texture(time_in_seconds, settings(), path());
     }
     catch (std::exception const& e)
     {
@@ -120,8 +82,26 @@ auto VideoPlayer::get_texture(float time_in_seconds) -> Texture const*
     }
 }
 
+auto VideoPlayer::get_current_texture() const -> Texture const*
+{
+    if (!_capture_state.has_value())
+        return nullptr;
+    auto const& maybe = _capture_state->get_current_texture();
+    if (!maybe.has_value())
+        return nullptr;
+    return &*maybe;
+}
+
+auto VideoPlayer::detailed_video_info() const -> std::string const*
+{
+    if (!_capture_state.has_value())
+        return nullptr;
+    return &_capture_state->detailed_video_info();
+}
+
 auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const&
 {
+    // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
     time_in_seconds = (time_in_seconds - settings.start_time) * settings.playback_speed;
     switch (settings.loop_mode)
     {
@@ -133,7 +113,7 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
     }
     case VideoPlayerLoopMode::Loop:
     {
-        time_in_seconds = smart::mod(time_in_seconds, _capture->duration_in_seconds()); // TODO(Video) seems broken
+        time_in_seconds = smart::mod(time_in_seconds, _capture->duration_in_seconds());
         break;
     }
     case VideoPlayerLoopMode::Hold:
@@ -142,6 +122,7 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
         break;
     }
     }
+
     // if (_texture.has_value() && _frame_in_texture == desired_frame)
     //     return *_texture;
 
@@ -149,14 +130,13 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
     // {
     //     // TODO debug option to log when seeking
     //     Cool::Log::Debug::info("Video", "Seeking");
-    //     // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
-    //     _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+    //     _capture.seek_to(time_in_seconds * 1'000'000'000);
     //     _next_frame_in_capture = desired_frame;
     // }
-    // if (desired_frame - _next_frame_in_capture > 10) // TODO(Video) When is it better to do this than get frames one by one ? 10 is probably not the right number.
+    // if (desired_frame - _next_frame_in_capture > 10)
     // {
     //     Cool::Log::Debug::info("Video", "Seeking");
-    //     _capture.seek_to(time_in_seconds * 1'000'000'000); // TODO(Video) is it more performant to set CAP_PROP_POS_MSEC?
+    //     _capture.seek_to(time_in_seconds * 1'000'000'000);
     //     _next_frame_in_capture = desired_frame;
     // }
 
@@ -166,7 +146,6 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
     // {
     //     // _capture->grab();
     //     _capture.move_to_next_frame();
-    //     ; // TODO(Video) Is it faster to call grab??
     //     _next_frame_in_capture++;
     // }
 

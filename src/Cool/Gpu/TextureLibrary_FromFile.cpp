@@ -102,7 +102,7 @@ void TextureLibrary_FromFile::imgui_debug_view() const
             {
                 ImGui::TableSetColumnIndex(0);
                 if (kv.second.texture)
-                    ImGuiExtras::image_framed(kv.second.texture->imgui_texture_id(), {100.f * kv.second.texture->aspect_ratio(), 100.f}, 2.f);
+                    ImGuiExtras::image_framed(kv.second.texture->imgui_texture_id(), {100.f * kv.second.texture->aspect_ratio(), 100.f}, {.frame_thickness = 2.f});
                 else
                     ImGui::TextUnformatted("INVALID");
             }
