@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
+#include <easy_ffmpeg/callbacks.hpp>
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
@@ -17,7 +18,7 @@
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
-#include "easy_ffmpeg/set_fast_seeking_callback.hpp"
+#include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -63,6 +64,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     // clang-format on
 
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
+    ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
 }
 
 void AppManager::run(std::function<void()> on_update)
@@ -308,7 +310,6 @@ static AppManager& get_app_manager(GLFWwindow* window)
 {
     return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
 }
-
 
 void AppManager::request_rerender_thread_safe()
 {

@@ -11,6 +11,7 @@ namespace internal {
 using RawMessageId = reg::Id<internal::MessageWithMetadata>;
 } // namespace internal
 
+/// Thread-safe
 class MessageConsole {
 public:
     explicit MessageConsole(std::string name = "Console")
