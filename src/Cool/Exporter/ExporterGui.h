@@ -60,7 +60,7 @@ private:
     auto               output_path() -> std::filesystem::path;
     void               imgui_window_export_image(Polaroid polaroid, float time, float delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported);
     void               imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>&, TimeSpeed time_speed);
-    [[nodiscard]] auto clear_export_folder() const -> bool;
+    [[nodiscard]] auto user_accepted_our_frames_overwrite_behaviour() -> bool;
 
     [[nodiscard]] auto folder_path_for_image() const -> std::filesystem::path;
     [[nodiscard]] auto folder_path_for_video() const -> std::filesystem::path;
