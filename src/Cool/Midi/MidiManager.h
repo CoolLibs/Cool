@@ -31,6 +31,9 @@ public:
     void imgui_controllers_dropdown();
     void imgui_emulate_midi_keyboard();
 
+    auto all_values() const -> auto const& { return _value_from_index; }
+    auto all_values() -> auto& { return _value_from_index; }
+
 private:
     friend auto midi_manager() -> MidiManager&;
     MidiManager(); // Use `mini_manager()` to get the unique instance of MidiManager.
