@@ -21,11 +21,13 @@ public:
     /// You can use this if you want to emulate a midi keyboard.
     /// `value` should be between 0 and 1, since this is what people expect to receive back from `get_value()`.
     void set_value(MidiChannel const&, float value);
+    void reset_all_channels();
 
     void open_config_window() { _config_window.open(); }
 
     void imgui_window();
     void imgui_visualize_channels();
+    void imgui_reset_all_channels();
     void imgui_controllers_dropdown();
     void imgui_emulate_midi_keyboard();
 
