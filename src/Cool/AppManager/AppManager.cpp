@@ -7,6 +7,7 @@
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Gpu/TextureLibrary_FromFile.h"
+#include "Cool/Gpu/TextureLibrary_VideoFile.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
@@ -16,6 +17,7 @@
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
+#include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -59,6 +61,9 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     glfwSetCursorEnterCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
     glfwSetMonitorCallback    (                                      ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
+
+    ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
+    ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
 }
 
 void AppManager::run(std::function<void()> on_update)
@@ -144,6 +149,12 @@ void AppManager::update()
         _app.request_rerender();
     if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
         _app.request_rerender();
+    TextureLibrary_VideoFile::instance().update();
+    if (_wants_to_request_rerender.load())
+    {
+        _app.request_rerender();
+        _wants_to_request_rerender.store(false);
+    }
 #if !DEBUG
     try
 #endif
@@ -297,6 +308,11 @@ static void imgui_dockspace()
 static AppManager& get_app_manager(GLFWwindow* window)
 {
     return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
+}
+
+void AppManager::request_rerender_thread_safe()
+{
+    _wants_to_request_rerender.store(true);
 }
 
 void AppManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
