@@ -41,7 +41,7 @@ jobs:
             }
           - {
               name: MacOS Clang,
-              os: macos-latest,
+              os: macos-12,
               cmake_configure_args: -D CMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang -D CMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++,
             }
         build_type:
