@@ -26,7 +26,7 @@ auto TextureLibrary_VideoFile::get(VideoRequest const& request) -> Texture const
     if (it == _videos.end())
     {
         it = _videos.insert({key, Cool::TextureLibrary_VideoFile::Data{
-                                      .player{request.video_descriptor},
+                                      .player{Cool::VideoPlayer{request.video_descriptor}},
                                       .date_of_last_request = clock::now(),
                                   }})
                  .first;
