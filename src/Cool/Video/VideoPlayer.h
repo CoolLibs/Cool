@@ -21,10 +21,6 @@ private:
 private:
     std::unique_ptr<ffmpeg::VideoDecoder> _capture;
     std::optional<Texture>                _texture{};
-    double                                _frames_per_second{};
-    int                                   _frames_count{};
-    int                                   _frame_in_texture{-1};
-    int                                   _next_frame_in_capture{0};
 };
 } // namespace internal
 

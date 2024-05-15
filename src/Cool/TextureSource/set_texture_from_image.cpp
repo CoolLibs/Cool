@@ -1,5 +1,6 @@
-#include "set_texture_from_opencv_image.h"
+#include "set_texture_from_image.h"
 #include "easy_ffmpeg/easy_ffmpeg.hpp"
+#include "opencv2/opencv.hpp"
 
 namespace Cool {
 
@@ -32,6 +33,7 @@ void set_texture_from_ffmpeg_image(std::optional<Texture>& texture, ffmpeg::Fram
 {
     if (!image.is_different_from_previous_frame && texture.has_value())
         return;
+
     auto const size = img::Size{
         static_cast<unsigned int>(image.width),
         static_cast<unsigned int>(image.height),

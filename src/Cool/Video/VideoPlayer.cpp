@@ -1,16 +1,11 @@
 #include "VideoPlayer.h"
-#include <chrono>
 #include <exception>
-#include <opencv2/videoio.hpp>
 #include <string>
 #include <tl/expected.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
-#include "Cool/File/File.h"
 #include "Cool/Gpu/default_textures.h"
-#include "Cool/ImGui/ImGuiExtras.h"
-#include "Cool/Log/Debug.h"
 #include "Cool/Log/ToUser.h"
-#include "Cool/TextureSource/set_texture_from_opencv_image.h"
+#include "Cool/TextureSource/set_texture_from_image.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "hack_get_global_time_in_seconds.h"
 #include "smart/smart.hpp"

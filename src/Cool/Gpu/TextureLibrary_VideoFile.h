@@ -43,7 +43,7 @@ private:
         uint32_t              id;
         std::filesystem::path path;
 
-        friend auto operator<=>(Key const&, Key const&) = default;
+        friend auto operator<(Key const& a, Key const& b) -> bool { return a.id < b.id || (a.id == b.id && a.path < b.path); }
     };
     std::map<Key, Data> _videos;
 };

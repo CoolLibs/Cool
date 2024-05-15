@@ -1,6 +1,9 @@
 #pragma once
 #include "Cool/Gpu/Texture.h"
-#include "opencv2/opencv.hpp"
+
+namespace cv {
+class Mat;
+}
 namespace ffmpeg {
 struct Frame;
 }

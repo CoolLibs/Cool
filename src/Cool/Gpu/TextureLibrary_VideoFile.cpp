@@ -1,4 +1,4 @@
-#include "Cool/Gpu/TextureLibrary_VideoFile.h"
+#include "TextureLibrary_VideoFile.h"
 #include <chrono>
 #include <filesystem>
 #include <optional>
@@ -7,7 +7,6 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "Cool/Video/hack_get_global_time_in_seconds.h"
-#include "TextureLibrary_VideoFile.h"
 #include "imgui.h"
 
 namespace Cool {
