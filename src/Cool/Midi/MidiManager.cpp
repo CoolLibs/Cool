@@ -6,6 +6,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/Utils/app_name.h"
 #include "MidiChannel.h"
 
 namespace Cool {
@@ -203,9 +204,16 @@ void MidiManager::midi_callback(double /* delta_time */, std::vector<unsigned ch
     }
 }
 
-void MidiManager::midi_error_callback(RtMidiError::Type /* type */, const std::string& error_text, void* /* user_data */)
+void MidiManager::midi_error_callback(RtMidiError::Type type, std::string const& error_text, void* /* user_data */)
 {
-    Cool::Log::ToUser::warning("MIDI", error_text);
+    if (type == RtMidiError::Type::DRIVER_ERROR)
+    {
+        Cool::Log::ToUser::warning("MIDI", fmt::format("Failed to connect to the device. Maybe it is already used in another software? You will need to restart {} to try to reconnect to the MIDI device.\n\n{}", app_name(), error_text));
+    }
+    else
+    {
+        Cool::Log::ToUser::warning("MIDI", error_text);
+    }
 }
 
 void MidiManager::open_port(unsigned int index)
