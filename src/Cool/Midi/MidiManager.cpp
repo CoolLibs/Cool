@@ -354,7 +354,8 @@ void MidiManager::imgui_controllers_dropdown()
 
 void MidiManager::imgui_emulate_midi_keyboard()
 {
-    static auto values = std::vector<float>(31);
+    static auto values        = std::vector<float>(31);
+    static auto buttons_count = 10;
     for (int i = 0; i < static_cast<int>(values.size()); ++i)
     {
         ImGui::PushID(i);
@@ -368,10 +369,32 @@ void MidiManager::imgui_emulate_midi_keyboard()
             ImGui::SameLine();
         ImGui::PopID();
     }
-    if (ImGui::Button("Add channel"))
+    ImGui::TextUnformatted("Buttons:");
+    for (int i = 0; i < buttons_count; ++i)
+    {
+        ImGui::SameLine();
+        ImGui::Button(fmt::format("{}", i).c_str());
+        if (ImGui::IsItemActivated())
+        {
+            auto message = std::vector<unsigned char>{144 /*button pressed*/, static_cast<unsigned char>(i), 0};
+            midi_callback(0., &message, this);
+        }
+        if (ImGui::IsItemDeactivated())
+        {
+            auto message = std::vector<unsigned char>{128 /*button released*/, static_cast<unsigned char>(i), 0};
+            midi_callback(0., &message, this);
+        }
+    }
+    if (ImGui::Button("Add fader"))
         values.push_back(0.f);
-    if (ImGui::Button("Remove channel") && !values.empty())
+    ImGui::SameLine();
+    if (ImGui::Button("Remove fader") && !values.empty())
         values.pop_back();
+    if (ImGui::Button("Add button"))
+        buttons_count++;
+    ImGui::SameLine();
+    if (ImGui::Button("Remove button") && buttons_count > 0)
+        buttons_count--;
 }
 
 } // namespace Cool
