@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <mutex>
 #include <optional>
 #include <set>
@@ -8,6 +9,7 @@
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
 #include "cereal/types/array.hpp"
+#include "cereal/types/chrono.hpp"
 
 namespace Cool {
 
@@ -16,12 +18,16 @@ public:
     auto get_map(MidiChannelKind kind) -> std::unordered_map<int, float>&;
     auto get_map(MidiChannelKind kind) const -> std::unordered_map<int, float> const&;
 
-    auto last_button_pressed() -> int& { return _last_button_pressed; }
-    auto last_button_pressed() const -> int { return _last_button_pressed; }
+    auto last_button_pressed() const -> int;
+    auto last_last_button_pressed() const -> int;
+    auto time_since_last_button_pressed_in_seconds() const -> float;
+    void set_last_button_pressed(int button);
 
 private:
     std::array<std::unordered_map<int, float>, static_cast<size_t>(MidiChannelKind::COUNT)> _maps{};
     int                                                                                     _last_button_pressed{-1};
+    int                                                                                     _last_last_button_pressed{-1};
+    std::chrono::steady_clock::time_point                                                   _time_of_last_button_pressed{};
 
 private:
     // Serialization
@@ -31,7 +37,9 @@ private:
     {
         archive(
             cereal::make_nvp("Values", _maps),
-            cereal::make_nvp("Last button pressed", _last_button_pressed)
+            cereal::make_nvp("Last button pressed", _last_button_pressed),
+            cereal::make_nvp("Last last button pressed", _last_last_button_pressed),
+            cereal::make_nvp("Time of last button pressed", _time_of_last_button_pressed)
         );
     }
 };
@@ -41,7 +49,6 @@ public:
     /// Returns a number between 0 and 1 representing the current state of the controller.
     /// /!\ Note that if a knob hasn't been used yet we won't know it's current state and will return 0 instead.
     [[nodiscard]] auto get_value(MidiChannel const&) const -> float;
-    [[nodiscard]] auto last_button_pressed() const -> int { return _all_values.last_button_pressed(); }
     /// The `callback` will be called once for each channel whose value has changed since the last call to `for_each_channel_that_has_changed()`.
     void               for_each_channel_that_has_changed(std::function<void(MidiChannel const&)> const& callback);
     [[nodiscard]] auto last_button_pressed_has_changed() -> bool;
