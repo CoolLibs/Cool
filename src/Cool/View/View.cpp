@@ -72,15 +72,15 @@ void View::imgui_window(ViewWindowParams const& params)
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.f, 0.f}); // TODO add a parameter in the UI to control the padding specifically for the views
     {                                                             // Begin window, maybe in fullscreen
         bool* const            p_open = _is_closable ? &_is_open : nullptr;
-        ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+        ImGuiWindowFlags const flags  = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | (_is_output_view ? ImGuiWindowFlags_NoTitleBar : 0);
         if (params.fullscreen)
             ImGuiExtras::begin_fullscreen(_name.c_str(), p_open, flags);
         else
             ImGui::Begin(_name.c_str(), p_open, flags);
     }
     ImGui::PopStyleVar();
-    ImGui::PushStyleColor(ImGuiCol_NavHighlight, {0.f, 0.f, 0.f, 0.f});             // Hack because when escaping view's fullscreen with the ESCAPE key it gets nav-highlighted.
-    ImGui::BeginChild("##ChildWindow", {0.f, 0.f}, false, ImGuiWindowFlags_NoMove); // Hack to emulate `ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;` for this window only. Since we can drag a camera in a View we don't want the window to move at the same time.
+    ImGui::PushStyleColor(ImGuiCol_NavHighlight, {0.f, 0.f, 0.f, 0.f});                                   // Hack because when escaping view's fullscreen with the ESCAPE key it gets nav-highlighted.
+    ImGui::BeginChild("##ChildWindow", {0.f, 0.f}, false, _is_output_view ? 0 : ImGuiWindowFlags_NoMove); // Hack to emulate `ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;` for this window only. Since we can drag a camera in a View we don't want the window to move at the same time.
     {
         store_window_size();
         store_window_position();
@@ -92,6 +92,15 @@ void View::imgui_window(ViewWindowParams const& params)
         _accepts_mouse_events = !params.extra_widgets(); // When widgets are used, don't dispatch events on the View.
     }
     ImGui::EndChild();
+    if (_is_output_view)
+    {
+        if (ImGui::BeginPopupContextItem("##close"))
+        {
+            if (ImGui::Button("Close window"))
+                close();
+            ImGui::EndPopup();
+        }
+    }
     ImGui::PopStyleColor();
     ImGui::End();
 }
@@ -109,6 +118,11 @@ void View::open()
 void View::close()
 {
     _is_open = false;
+}
+
+void View::toggle_open_close()
+{
+    _is_open = !_is_open;
 }
 
 auto View::mouse_is_in_view() const -> bool
