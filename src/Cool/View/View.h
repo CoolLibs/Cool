@@ -22,9 +22,9 @@ struct ViewWindowParams {
 
 struct ViewCreationParams {
     std::string_view name{};
+    bool             is_output_view{false}; /// Makes it with no title bar, and tweaks a few behaviours to make this work nicely
     bool             is_closable{false};
     bool             start_open{true};
-    bool             is_output_view{false}; /// Makes it with no title bar, and tweaks a few behaviours to make this work nicely
 };
 
 /// A view is a window displaying an image.
