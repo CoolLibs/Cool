@@ -28,19 +28,19 @@ private:
     }
 };
 
-struct TextureDescriptor_FromFile : public TextureDescriptor {
-    TextureDescriptor_FromFile()
-        : TextureDescriptor{TextureSource_FromFile{}, {}}
+struct TextureDescriptor_Image : public TextureDescriptor {
+    TextureDescriptor_Image()
+        : TextureDescriptor{TextureSource_Image{}, {}}
     {}
 };
-struct TextureDescriptor_FromWebcam : public TextureDescriptor {
-    TextureDescriptor_FromWebcam()
-        : TextureDescriptor{TextureSource_FromWebcam{}, {}}
+struct TextureDescriptor_Webcam : public TextureDescriptor {
+    TextureDescriptor_Webcam()
+        : TextureDescriptor{TextureSource_Webcam{}, {}}
     {}
 };
-struct TextureDescriptor_VideoFile : public TextureDescriptor {
-    TextureDescriptor_VideoFile()
-        : TextureDescriptor{TextureSource_VideoFile{}, {}}
+struct TextureDescriptor_Video : public TextureDescriptor {
+    TextureDescriptor_Video()
+        : TextureDescriptor{TextureSource_Video{}, {}}
     {}
 };
 

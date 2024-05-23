@@ -12,11 +12,11 @@ namespace Cool {
 /// images will be found nor that they will stay the same forever.
 /// This is why it adds checks to see if the texture exists, and
 /// re-loads it if the source file changes.
-class TextureLibrary_FromFile {
+class TextureLibrary_Image {
 public:
-    [[nodiscard]] static auto instance() -> TextureLibrary_FromFile&
+    [[nodiscard]] static auto instance() -> TextureLibrary_Image&
     {
-        static auto inst = TextureLibrary_FromFile{};
+        static auto inst = TextureLibrary_Image{};
         return inst;
     }
 
@@ -29,7 +29,7 @@ public:
     void imgui_debug_view() const;
 
 private:
-    TextureLibrary_FromFile() = default; // This is a singleton. Get the global instance with `instance()` instead.
+    TextureLibrary_Image() = default; // This is a singleton. Get the global instance with `instance()` instead.
     void reload_texture(std::filesystem::path const& path);
 
 private:

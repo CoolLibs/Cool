@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 #include "Cool/Gpu/OpenGL/Texture.h"
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
+#include "Cool/Gpu/TextureLibrary_Image.h"
 #include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Gpu/TextureSource.h"
 #include "Cool/Midi/MidiManager.h"

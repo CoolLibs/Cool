@@ -14,11 +14,11 @@ struct VideoRequest {
     VideoDescriptor video_descriptor{};
 };
 
-class TextureLibrary_VideoFile {
+class TextureLibrary_Video {
 public:
-    [[nodiscard]] static auto instance() -> TextureLibrary_VideoFile&
+    [[nodiscard]] static auto instance() -> TextureLibrary_Video&
     {
-        static auto inst = TextureLibrary_VideoFile{};
+        static auto inst = TextureLibrary_Video{};
         return inst;
     }
 
@@ -31,7 +31,7 @@ public:
     void imgui_debug_view() const;
 
 private:
-    TextureLibrary_VideoFile() = default; // This is a singleton. Get the global instance with `instance()` instead.
+    TextureLibrary_Video() = default; // This is a singleton. Get the global instance with `instance()` instead.
 
 private:
     using clock = std::chrono::steady_clock;

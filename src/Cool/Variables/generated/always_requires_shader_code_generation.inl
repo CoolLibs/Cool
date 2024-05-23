@@ -53,10 +53,10 @@ if constexpr (std::is_same_v<T, Cool::ColorPalette>)
 if constexpr (std::is_same_v<T, Cool::Gradient>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::TextureDescriptor_FromFile>)
+if constexpr (std::is_same_v<T, Cool::TextureDescriptor_Image>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::TextureDescriptor_FromWebcam>)
+if constexpr (std::is_same_v<T, Cool::TextureDescriptor_Webcam>)
     return false;
 
 if constexpr (std::is_same_v<T, Cool::MathExpression>)
@@ -80,5 +80,5 @@ if constexpr (std::is_same_v<T, Cool::OSCChannel>)
 if constexpr (std::is_same_v<T, Cool::TimeSpeed>)
     return false;
 
-if constexpr (std::is_same_v<T, Cool::TextureDescriptor_VideoFile>)
+if constexpr (std::is_same_v<T, Cool::TextureDescriptor_Video>)
     return false;

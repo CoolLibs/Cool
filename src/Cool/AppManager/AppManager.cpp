@@ -6,8 +6,8 @@
 #include <imgui/imgui_internal.h>
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
-#include "Cool/Gpu/TextureLibrary_VideoFile.h"
+#include "Cool/Gpu/TextureLibrary_Image.h"
+#include "Cool/Gpu/TextureLibrary_Video.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
@@ -147,9 +147,9 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.request_rerender();
-    if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
+    if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
         _app.request_rerender();
-    TextureLibrary_VideoFile::instance().update();
+    TextureLibrary_Video::instance().update();
     if (_wants_to_request_rerender.load())
     {
         _app.request_rerender();

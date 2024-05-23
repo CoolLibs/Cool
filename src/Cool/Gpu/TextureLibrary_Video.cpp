@@ -1,4 +1,4 @@
-#include "TextureLibrary_VideoFile.h"
+#include "TextureLibrary_Video.h"
 #include <chrono>
 #include <filesystem>
 #include <optional>
@@ -18,13 +18,13 @@ static auto time_to_live_has_expired(std::chrono::steady_clock::time_point date_
     return std::chrono::steady_clock::now() - date_of_last_request > time_to_live;
 }
 
-auto TextureLibrary_VideoFile::get(VideoRequest const& request) -> Texture const*
+auto TextureLibrary_Video::get(VideoRequest const& request) -> Texture const*
 {
     auto const key = Key{request.id, request.video_descriptor.path};
     auto       it  = _videos.find(key);
     if (it == _videos.end())
     {
-        it = _videos.insert({key, Cool::TextureLibrary_VideoFile::Data{
+        it = _videos.insert({key, Cool::TextureLibrary_Video::Data{
                                       .player{Cool::VideoPlayer{request.video_descriptor}},
                                       .date_of_last_request = clock::now(),
                                   }})
@@ -41,14 +41,14 @@ auto TextureLibrary_VideoFile::get(VideoRequest const& request) -> Texture const
     return it->second.player.get_texture(hack_get_global_time_in_seconds());
 }
 
-void TextureLibrary_VideoFile::update()
+void TextureLibrary_Video::update()
 {
     std::erase_if(_videos, [&](auto const& kv) {
         return time_to_live_has_expired(kv.second.date_of_last_request);
     });
 }
 
-auto TextureLibrary_VideoFile::error_from(VideoRequest const& request) -> std::optional<std::string>
+auto TextureLibrary_Video::error_from(VideoRequest const& request) -> std::optional<std::string>
 {
     auto it = _videos.find({request.id, request.video_descriptor.path});
     if (it == _videos.end())
@@ -56,7 +56,7 @@ auto TextureLibrary_VideoFile::error_from(VideoRequest const& request) -> std::o
     return it->second.player.get_error();
 }
 
-auto TextureLibrary_VideoFile::detailed_video_info(std::filesystem::path const& path) const -> std::string const*
+auto TextureLibrary_Video::detailed_video_info(std::filesystem::path const& path) const -> std::string const*
 {
     for (auto const& kv : _videos)
     {
@@ -72,7 +72,7 @@ auto TextureLibrary_VideoFile::detailed_video_info(std::filesystem::path const& 
     return nullptr;
 }
 
-void TextureLibrary_VideoFile::imgui_debug_view() const
+void TextureLibrary_Video::imgui_debug_view() const
 {
     static constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame
                                              | ImGuiTableFlags_Resizable
