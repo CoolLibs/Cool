@@ -5,7 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 
-#include <Cool/Gpu/TextureDescriptor.h>
+#include <Cool/TextureSource/TextureDescriptor.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/internal/BoundsMetadata.h>
 

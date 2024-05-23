@@ -1,7 +1,7 @@
 #include "VideoDescriptor.h"
-#include "Cool/Gpu/TextureLibrary_Video.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
+#include "Cool/TextureSource/TextureLibrary_Video.h"
 
 namespace Cool {
 

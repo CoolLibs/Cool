@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <map>
 #include <optional>
+#include "Cool/Gpu/Texture.h"
 #include "Cool/Video/VideoDescriptor.h"
 #include "Cool/Video/VideoPlayer.h"
-#include "Texture.h"
 
 namespace Cool {
 

@@ -3,12 +3,13 @@
 #include <string>
 #include <tl/expected.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
-#include "Cool/Gpu/default_textures.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/TextureSource/default_textures.h"
 #include "Cool/TextureSource/set_texture_from_image.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "hack_get_global_time_in_seconds.h"
 #include "smart/smart.hpp"
+
 
 namespace Cool {
 

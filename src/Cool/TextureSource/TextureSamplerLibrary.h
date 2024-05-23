@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include "Cool/Gpu/TextureSamplerDescriptor.h"
+#include "TextureSamplerDescriptor.h"
 #include "glpp/UniqueHandles/UniqueTextureSampler.h"
 
 namespace Cool {

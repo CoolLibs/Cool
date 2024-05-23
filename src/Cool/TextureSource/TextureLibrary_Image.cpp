@@ -1,4 +1,4 @@
-#include "Cool/Gpu/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
 #include <chrono>
 #include <filesystem>
 #include <optional>

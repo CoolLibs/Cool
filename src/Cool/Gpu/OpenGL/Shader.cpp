@@ -3,13 +3,13 @@
 #include <string>
 #include <string_view>
 #include "Cool/Gpu/OpenGL/Texture.h"
-#include "Cool/Gpu/TextureLibrary_Image.h"
-#include "Cool/Gpu/TextureSamplerLibrary.h"
-#include "Cool/Gpu/TextureSource.h"
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/OSC/OSCManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureSamplerLibrary.h"
+#include "Cool/TextureSource/TextureSource.h"
 #include "ShaderModule.h"
 #include "imgui.h"
 

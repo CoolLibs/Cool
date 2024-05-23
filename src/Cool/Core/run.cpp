@@ -9,9 +9,9 @@
 #include <fstream>
 #include "Audio/Audio.hpp"
 #include "Cool/File/File.h"
-#include "Cool/Gpu/TextureLibrary_Image.h"
-#include "Cool/Gpu/TextureSamplerLibrary.h"
 #include "Cool/Path/Path.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureSamplerLibrary.h"
 #include "Cool/View/ViewsManager.h"
 
 namespace Cool::internal {

@@ -1,9 +1,9 @@
 #include "debug_options_windows.h"
-#include <Cool/Gpu/TextureLibrary_Image.h>
-#include <Cool/Gpu/TextureLibrary_Video.h>
 #include <Cool/ImGui/test_markdown_formatting.h>
 #include <Cool/Log/TestMessageConsole.h>
 #include <Cool/Midi/MidiManager.h>
+#include <Cool/TextureSource/TextureLibrary_Image.h>
+#include <Cool/TextureSource/TextureLibrary_Video.h>
 #include <Cool/Tips/test_tips.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Variables/TestPresets.h>

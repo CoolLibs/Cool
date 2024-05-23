@@ -2,7 +2,6 @@
 #include "Cool/StrongTypes/TimeSpeed.h"
 #if COOL_OPENGL
 
-#include <Cool/Gpu/TextureDescriptor.h>
 #include <Cool/Midi/MidiChannel.h>
 #include <Cool/OSC/OSCChannel.h>
 #include <Cool/StrongTypes/Angle.h>
@@ -14,6 +13,7 @@
 #include <Cool/StrongTypes/Gradient.h>
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
+#include <Cool/TextureSource/TextureDescriptor.h>
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
