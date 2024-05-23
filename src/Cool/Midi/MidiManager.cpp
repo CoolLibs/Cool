@@ -299,9 +299,9 @@ void MidiManager::imgui_visualize_channels()
     ImGuiExtras::markdown("*Use your knob / fader / button and you will see the value changing in the histograms below. You can then hover it to see the index that you need to specify to select a MIDI channel. NOTE: if you want to use a Button, don't forget to change the Channel Kind on the MIDI input!*");
     ImGui::PopFont();
 
-    for (int i = 0; i < static_cast<int>(MidiChannelKind::COUNT); ++i)
+    for (int k = 0; k < static_cast<int>(MidiChannelKind::COUNT); ++k)
     {
-        auto const kind = static_cast<MidiChannelKind>(i);
+        auto const kind = static_cast<MidiChannelKind>(k);
 
         auto values = std::vector<float>{};
         {
