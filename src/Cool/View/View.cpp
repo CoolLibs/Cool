@@ -4,6 +4,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <img/src/SizeU.h>
+#include <imgui.h>
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/Debug.h"
 #include "Cool/Log/Message.h"
@@ -52,6 +53,19 @@ static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
     return pipeline;
 }
 
+void View::check_for_fullscreen_toggle() const
+{
+    // if (!_is_output_view)
+    //     return;
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+        return;
+
+    if (ImGui::IsKeyPressed(ImGuiKey_F10))
+        ImGui::ToggleWindowFullscreen();
+    if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+        ImGui::ExitWindowFullscreen();
+}
+
 void View::imgui_window(ViewWindowParams const& params)
 {
     if (_is_open != _was_open_last_frame)
@@ -79,6 +93,7 @@ void View::imgui_window(ViewWindowParams const& params)
             ImGui::Begin(_name.c_str(), p_open, flags);
     }
     ImGui::PopStyleVar();
+    check_for_fullscreen_toggle();
     ImGui::PushStyleColor(ImGuiCol_NavHighlight, {0.f, 0.f, 0.f, 0.f});                                   // Hack because when escaping view's fullscreen with the ESCAPE key it gets nav-highlighted.
     ImGui::BeginChild("##ChildWindow", {0.f, 0.f}, false, _is_output_view ? 0 : ImGuiWindowFlags_NoMove); // Hack to emulate `ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;` for this window only. Since we can drag a camera in a View we don't want the window to move at the same time.
     {
@@ -94,12 +109,17 @@ void View::imgui_window(ViewWindowParams const& params)
     ImGui::EndChild();
     if (_is_output_view)
     {
+        bool wants_to_toggle_fullscreen{false};
         if (ImGui::BeginPopupContextItem("##close"))
         {
+            if (ImGui::Button("Toggle Fullscreen (F10)"))
+                wants_to_toggle_fullscreen = true; // Can't call ToggleWindowFullscreen() here because it would affect the popup and not the actual window
             if (ImGui::Button("Close window"))
                 close();
             ImGui::EndPopup();
         }
+        if (wants_to_toggle_fullscreen)
+            ImGui::ToggleWindowFullscreen();
     }
     ImGui::PopStyleColor();
     ImGui::End();
