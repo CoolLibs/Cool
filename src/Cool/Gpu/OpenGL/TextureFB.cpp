@@ -11,8 +11,8 @@ void TextureFB::createAttachments(img::Size size)
     m_colorTextureId.emplace();
     GLDebug(glBindTexture(GL_TEXTURE_2D, m_colorTextureId->id()));
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(size.width()), static_cast<GLsizei>(size.height()), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr));
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));  // TODO should be nearest ?
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)); // TODO should be linear ?
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
