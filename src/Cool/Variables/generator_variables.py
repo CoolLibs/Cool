@@ -68,15 +68,15 @@ def angle_metadatas():
     ]
 
 
-def float_metadatas():
+def float_metadatas(is_double = False):
     return [
         VariableMetadata(
             field_name="bounds",
             pretty_name="Bounds",
-            type="internal::BoundsMetadata<float>",
-            default_value="""
-                .min = 0.f,
-                .max = 1.f,
+            type=f"internal::BoundsMetadata<{"double" if is_double else "float"}>",
+            default_value=f"""
+                .min = 0.{"" if is_double else "f"},
+                .max = 1.{"" if is_double else "f"},
                 .has_min_bound = false,
                 .has_max_bound = false,
                 .drag_speed = 0.01f,
@@ -85,7 +85,6 @@ def float_metadatas():
             """,
         ),
     ]
-
 
 def hdr_metadata():
     return VariableMetadata(
@@ -329,11 +328,11 @@ def all_variable_descriptions():
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type=["TimeSpeed"],
+            input_type=["TimeSpeed"],   
             cpp_type="Cool::TimeSpeed",
             glsl_type="float",
-            include="<Cool/StrongTypes/TimeSpeed.h>",
-            metadatas=float_metadatas(),
+            include="<Cool/Time/TimeSpeed.h>",
+            metadatas=float_metadatas(is_double=True),
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(

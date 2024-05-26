@@ -1,4 +1,6 @@
 #pragma once
+#include "Cool/Time/Time.h"
+#include "Cool/Time/TimeSpeed.h"
 
 namespace Cool {
 
@@ -11,8 +13,8 @@ enum class VideoPlayerLoopMode {
 
 struct VideoPlayerSettings {
     VideoPlayerLoopMode loop_mode{VideoPlayerLoopMode::Loop};
-    float               playback_speed{1.f};
-    float               start_time{0.f};
+    TimeSpeed           playback_speed{1.};
+    Time                start_time{0s};
 
     friend auto operator==(VideoPlayerSettings const&, VideoPlayerSettings const&) -> bool = default;
     auto        imgui_widget() -> bool;

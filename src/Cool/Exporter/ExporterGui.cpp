@@ -82,7 +82,7 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, float delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
 {
     _image_export_window.show([&]() {
         _export_size.imgui();

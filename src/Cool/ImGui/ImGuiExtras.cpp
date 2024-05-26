@@ -809,11 +809,19 @@ auto calc_custom_dropdown_input_width() -> float
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
 }
 
-auto drag_time(const char* label, float* value) -> bool
+auto drag_time(const char* label, Time* value, bool show_milliseconds) -> bool
 {
-    return ImGui::DragFloat(label, value, 0.01f, 0.f, 0.f, time_formatted_hms(*value, true /*show_milliseconds*/).c_str(), 0, [](const char* buf, void* data_p) {
-        *(static_cast<float*>(data_p)) = parse_time(buf);
+    double min     = 0.;
+    double max     = 0.;
+    double seconds = value->as_seconds_double();
+
+    bool const b = ImGui::DragScalar(label, ImGuiDataType_Double, &seconds, 0.01f, &min, &max, time_formatted_hms(*value, show_milliseconds).c_str(), 0, [](const char* buf, void* data_p) {
+        *(static_cast<double*>(data_p)) = parse_time(buf);
     });
+    if (b)
+        *value = Time::seconds(seconds);
+
+    return b;
 }
 
 } // namespace Cool::ImGuiExtras

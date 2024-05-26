@@ -115,8 +115,8 @@ void TextureLibrary_Image::imgui_debug_view() const
                 auto const time_since_last_use = std::chrono::steady_clock::now() - kv.second.date_of_last_request;
                 if (time_since_last_use < time_to_live)
                 {
-                    auto const duration = std::chrono::duration<float>{time_to_live - time_since_last_use};
-                    ImGui::TextUnformatted(time_formatted_hms(duration.count()).c_str());
+                    auto const duration = time_to_live - time_since_last_use;
+                    ImGui::TextUnformatted(time_formatted_hms(duration).c_str());
                 }
                 else
                 {

@@ -1,7 +1,5 @@
 #pragma once
-#include "Cool/StrongTypes/TimeSpeed.h"
 #if COOL_OPENGL
-
 #include <Cool/Midi/MidiChannel.h>
 #include <Cool/OSC/OSCChannel.h>
 #include <Cool/StrongTypes/Angle.h>
@@ -14,6 +12,7 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/TextureSource/TextureDescriptor.h>
+#include "Cool/Time/TimeSpeed.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
 
@@ -34,6 +33,7 @@ public:
     void set_uniform(std::string_view uniform_name, unsigned int) const;
     void set_uniform(std::string_view uniform_name, bool) const;
     void set_uniform(std::string_view uniform_name, float) const;
+    void set_uniform(std::string_view uniform_name, double) const;
     void set_uniform(std::string_view uniform_name, const glm::vec2&) const;
     void set_uniform(std::string_view uniform_name, const glm::vec3&) const;
     void set_uniform(std::string_view uniform_name, const glm::vec4&) const;

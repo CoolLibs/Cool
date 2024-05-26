@@ -10,7 +10,7 @@ class CaptureState {
 public:
     static auto create(std::filesystem::path const& path) -> tl::expected<internal::CaptureState, std::string>;
 
-    [[nodiscard]] auto get_texture(double time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const*;
+    [[nodiscard]] auto get_texture(Time time, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const*;
     [[nodiscard]] auto get_current_texture() const -> std::optional<Texture> const& { return _texture; }
 
     [[nodiscard]] auto detailed_video_info() const -> std::string const& { return _capture->detailed_info(); }
@@ -32,7 +32,7 @@ public:
     [[nodiscard]] auto settings() const -> VideoPlayerSettings const& { return _desc.settings; }
     [[nodiscard]] auto settings() -> VideoPlayerSettings& { return _desc.settings; }
 
-    [[nodiscard]] auto get_texture(double time_in_seconds) -> Texture const*;
+    [[nodiscard]] auto get_texture(Time time) -> Texture const*;
     [[nodiscard]] auto get_current_texture() const -> Texture const*;
     [[nodiscard]] auto get_error() const -> std::optional<std::string> const& { return _error_message; }
     [[nodiscard]] auto detailed_video_info() const -> std::string const*;

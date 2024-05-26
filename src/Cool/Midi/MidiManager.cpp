@@ -42,9 +42,9 @@ auto MidiValues::last_last_button_pressed() const -> int
 {
     return _last_last_button_pressed;
 }
-auto MidiValues::time_since_last_button_pressed_in_seconds() const -> float
+auto MidiValues::time_since_last_button_pressed() const -> Time
 {
-    return std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now() - _time_of_last_button_pressed).count();
+    return std::chrono::steady_clock::now() - _time_of_last_button_pressed;
 }
 void MidiValues::set_last_button_pressed(int button)
 {
@@ -319,7 +319,7 @@ void MidiManager::imgui_visualize_channels()
     }
     ImGui::TextUnformatted(fmt::format("Last button pressed: {}", all_values().last_button_pressed()).c_str());
     ImGui::TextUnformatted(fmt::format("Last last button pressed: {}", all_values().last_last_button_pressed()).c_str());
-    ImGui::TextUnformatted(fmt::format("Time since last button pressed: {}", time_formatted_hms(all_values().time_since_last_button_pressed_in_seconds())).c_str());
+    ImGui::TextUnformatted(fmt::format("Time since last button pressed: {}", time_formatted_hms(all_values().time_since_last_button_pressed())).c_str());
 }
 
 void MidiManager::imgui_reset_all(MidiChannelKind kind, std::string_view label)

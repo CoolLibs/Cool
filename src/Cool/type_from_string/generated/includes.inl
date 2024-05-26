@@ -17,6 +17,6 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/MathExpression.h>
 #include <Cool/StrongTypes/Point2D.h>
-#include <Cool/StrongTypes/TimeSpeed.h>
 #include <Cool/TextureSource/TextureDescriptor.h>
+#include <Cool/Time/TimeSpeed.h>
 #include <glm/glm.hpp>

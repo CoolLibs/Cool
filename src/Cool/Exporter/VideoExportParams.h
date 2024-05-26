@@ -1,11 +1,12 @@
 #pragma once
+#include "Cool/Time/Time.h"
 
 namespace Cool {
 
 struct VideoExportParams {
-    float fps       = 30.f;
-    float beginning = 0.f;
-    float end       = 10.f;
+    double fps       = 30.;
+    Time   beginning = 0s;
+    Time   end       = 10s;
 
     void imgui();
 

@@ -66,6 +66,10 @@ void Shader::set_uniform(std::string_view uniform_name, float v) const
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform1f(uniform_location(uniform_name), v));
 }
+void Shader::set_uniform(std::string_view uniform_name, double v) const
+{
+    set_uniform(uniform_name, static_cast<float>(v));
+}
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v) const
 {
     assert_shader_is_bound(_shader.id());

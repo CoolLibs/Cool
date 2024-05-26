@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/Time/Time.h"
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
 #include "cereal/types/array.hpp"
@@ -20,7 +21,7 @@ public:
 
     auto last_button_pressed() const -> int;
     auto last_last_button_pressed() const -> int;
-    auto time_since_last_button_pressed_in_seconds() const -> float;
+    auto time_since_last_button_pressed() const -> Time;
     void set_last_button_pressed(int button);
 
 private:

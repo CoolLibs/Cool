@@ -5,7 +5,7 @@
  * -----------------------------------------------------------------------------
  */
 
-#include <Cool/StrongTypes/TimeSpeed.h>
+#include <Cool/Time/TimeSpeed.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/internal/BoundsMetadata.h>
 
@@ -13,9 +13,9 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::TimeSpeed> {
-    internal::BoundsMetadata<float> bounds{
-        .min            = 0.f,
-        .max            = 1.f,
+    internal::BoundsMetadata<double> bounds{
+        .min            = 0.,
+        .max            = 1.,
         .has_min_bound  = false,
         .has_max_bound  = false,
         .drag_speed     = 0.01f,

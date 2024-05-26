@@ -10,7 +10,6 @@
 #include "hack_get_global_time_in_seconds.h"
 #include "smart/smart.hpp"
 
-
 namespace Cool {
 
 // TODO(Video):
@@ -59,7 +58,7 @@ internal::CaptureState::CaptureState(std::filesystem::path const& path)
     : _capture{std::make_unique<ffmpeg::VideoDecoder>(path, AV_PIX_FMT_RGBA)}
 {}
 
-auto VideoPlayer::get_texture(double time_in_seconds) -> Texture const*
+auto VideoPlayer::get_texture(Time time) -> Texture const*
 {
     if (!_capture_state.has_value())
         return nullptr;
@@ -67,7 +66,7 @@ auto VideoPlayer::get_texture(double time_in_seconds) -> Texture const*
     _error_message.reset(); // Clear message from previous failure of get_texture(), we will re-add one if an error gets thrown again.
     try
     {
-        return _capture_state->get_texture(time_in_seconds, settings(), path());
+        return _capture_state->get_texture(time, settings(), path());
     }
     catch (std::exception const& e)
     {
@@ -93,10 +92,10 @@ auto VideoPlayer::detailed_video_info() const -> std::string const*
     return &_capture_state->detailed_video_info();
 }
 
-auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const*
+auto internal::CaptureState::get_texture(Time time, VideoPlayerSettings const& settings, std::filesystem::path const& path) -> Texture const*
 {
     // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
-    time_in_seconds = (time_in_seconds - settings.start_time) * settings.playback_speed;
+    double time_in_seconds = (time - settings.start_time).as_seconds_double() * settings.playback_speed.value;
     switch (settings.loop_mode)
     {
     case VideoPlayerLoopMode::None:
@@ -124,7 +123,7 @@ auto internal::CaptureState::get_texture(double time_in_seconds, VideoPlayerSett
 
     set_texture_from_ffmpeg_image(_texture, *maybe_frame);
     if (DebugOptions::log_when_creating_textures())
-        Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(static_cast<float>(time_in_seconds), true /*show_milliseconds*/)));
+        Log::ToUser::info("Video File", fmt::format("Generated texture for {} at {}", path, time_formatted_hms(Time::seconds(time_in_seconds), true /*show_milliseconds*/)));
 
     return &*_texture;
 }

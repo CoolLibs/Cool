@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
+#include "Cool/Time/Time.h"
 
 namespace Cool::ImGuiExtras {
 
@@ -229,6 +230,6 @@ auto dropdown(const char* label, std::string* value, std::function<void(std::fun
 
 auto calc_custom_dropdown_input_width() -> float;
 
-auto drag_time(const char* label, float* value) -> bool;
+auto drag_time(const char* label, Time* value, bool show_milliseconds = true) -> bool;
 
 } // namespace Cool::ImGuiExtras

@@ -15,6 +15,10 @@ inline auto imgui_drag(const char* label, float* val, float drag_speed, std::opt
 {
     return ImGui::DragFloat(label, val, drag_speed, 0.f, 0.f, format.value_or("%.3f"), flags);
 }
+inline auto imgui_drag(const char* label, double* val, float drag_speed, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::DragScalar(label, ImGuiDataType_Double, val, drag_speed, nullptr, nullptr, format.value_or("%.3f"), flags);
+}
 
 inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, int max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
@@ -23,6 +27,10 @@ inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, i
 inline auto imgui_drag(const char* label, float* val, float drag_speed, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
     return ImGui::DragFloat(label, val, drag_speed, min, max, format.value_or("%.3f"), flags);
+}
+inline auto imgui_drag(const char* label, double* val, float drag_speed, double min, double max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::DragScalar(label, ImGuiDataType_Double, val, drag_speed, &min, &max, format.value_or("%.3f"), flags);
 }
 inline auto imgui_drag(const char* label, glm::vec2* val, float drag_speed, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
@@ -84,6 +92,10 @@ inline auto imgui_slider(const char* label, float* val, float min, float max, st
 {
     return ImGui::SliderFloat(label, val, min, max, format.value_or("%.3f"), flags);
 }
+inline auto imgui_slider(const char* label, double* val, double min, double max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::SliderScalar(label, ImGuiDataType_Double, val, &min, &max, format.value_or("%.3f"), flags);
+}
 inline auto imgui_slider(const char* label, glm::vec2* val, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
     return ImGui::SliderFloat2(label, glm::value_ptr(*val), min, max, format.value_or("%.3f"), flags);
@@ -143,6 +155,11 @@ template<>
 constexpr auto biggest_number<float>() -> float
 {
     return FLT_MAX;
+}
+template<>
+constexpr auto biggest_number<double>() -> double
+{
+    return DBL_MAX;
 }
 
 template<>

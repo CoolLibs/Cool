@@ -9,7 +9,7 @@ auto VideoPlayerSettings::imgui_widget() -> bool
 {
     bool b = false;
     b |= ImGui::Combo("Loop mode", reinterpret_cast<int*>(&loop_mode), "None\0Loop\0Hold\0\0"); // NOLINT(*reinterpret-cast)
-    b |= ImGui::DragFloat("Playback speed", &playback_speed, 0.0005f, 0.f, FLT_MAX, "x%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_Logarithmic);
+    b |= Cool::imgui_widget("Playback speed", &playback_speed);
     b |= ImGuiExtras::drag_time("Start time", &start_time);
     return b;
 }
