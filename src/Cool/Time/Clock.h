@@ -45,7 +45,7 @@ private:
     bool                      _is_playing{true};
     bool                      _is_being_changed_in_GUI{false};
     SharedVariable<TimeSpeed> _time_speed{Variable<TimeSpeed>{VariableData<TimeSpeed>{
-                                              .name     = "",
+                                              .name     = "##TimeSpeed",
                                               .value    = {1.f},
                                               .metadata = {
                                                   .bounds = {
