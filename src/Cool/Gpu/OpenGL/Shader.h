@@ -12,6 +12,7 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/TextureSource/TextureDescriptor.h>
+#include "Cool/Time/Time.h"
 #include "Cool/Time/TimeSpeed.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"
@@ -60,6 +61,7 @@ public:
     void set_uniform(std::string_view uniform_name, MidiChannel const&) const;
     void set_uniform(std::string_view uniform_name, OSCChannel const&) const;
     void set_uniform(std::string_view uniform_name, TimeSpeed const&) const;
+    void set_uniform(std::string_view uniform_name, Time const&) const;
 
 private:
     GLint uniform_location(std::string_view uniform_name) const;

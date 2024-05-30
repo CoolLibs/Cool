@@ -89,6 +89,14 @@ void test_variables()
         static auto var = Cool::Variable<Cool::OSCChannel>{{"OSC"}};
         var.imgui();
     }
+    {
+        static auto var = Cool::Variable<Cool::Time>{{"Time"}};
+        var.imgui();
+    }
+    {
+        static auto var = Cool::Variable<Cool::TimeSpeed>{{"Time Speed"}};
+        var.imgui();
+    }
 }
 
 } // namespace Cool

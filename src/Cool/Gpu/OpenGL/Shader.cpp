@@ -238,6 +238,10 @@ void Shader::set_uniform(std::string_view uniform_name, TimeSpeed const& time_sp
 {
     set_uniform(uniform_name, time_speed.value);
 }
+void Shader::set_uniform(std::string_view uniform_name, Time const& time) const
+{
+    set_uniform(uniform_name, time.as_seconds_double());
+}
 
 } // namespace Cool::OpenGL
 

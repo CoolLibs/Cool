@@ -21,6 +21,7 @@
 #include <Cool/Variables/Variable_TextureDescriptor_Image.h>
 #include <Cool/Variables/Variable_TextureDescriptor_Video.h>
 #include <Cool/Variables/Variable_TextureDescriptor_Webcam.h>
+#include <Cool/Variables/Variable_Time.h>
 #include <Cool/Variables/Variable_TimeSpeed.h>
 #include <Cool/Variables/Variable_bool.h>
 #include <Cool/Variables/Variable_float.h>

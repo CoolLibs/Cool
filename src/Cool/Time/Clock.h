@@ -50,7 +50,7 @@ private:
                                               .metadata = {
                                                   .bounds = {
                                                       .min           = 0.,
-                                                      .max           = DBL_MAX,
+                                                      .max           = 1.,
                                                       .has_min_bound = true,
                                                       .has_max_bound = false,
                                                       .drag_speed    = 0.001f,

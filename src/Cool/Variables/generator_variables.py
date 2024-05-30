@@ -343,6 +343,14 @@ def all_variable_descriptions():
             metadatas=[],
             always_requires_shader_code_generation=False,
         ),
+        VariableDescription(
+            input_type=["Time"],   
+            cpp_type="Cool::Time",
+            glsl_type="float",
+            include="<Cool/Time/Time.h>",
+            metadatas=float_metadatas(is_double=True),
+            always_requires_shader_code_generation=False,
+        ),
     ]
 
 

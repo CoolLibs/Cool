@@ -23,6 +23,6 @@ private:
 };
 
 auto to_string(TimeSpeed time_speed) -> std::string;
-auto imgui_widget(const char* label, TimeSpeed* time_speed, float v_speed = 0.0005f, double v_min = 0., double v_max = DBL_MAX, ImGuiSliderFlags flags = 0) -> bool;
+auto imgui_widget(const char* label, TimeSpeed* time_speed, float v_speed = 0.0005f, double v_min = -DBL_MAX, double v_max = DBL_MAX, ImGuiSliderFlags flags = 0) -> bool;
 
 } // namespace Cool

@@ -82,3 +82,6 @@ if constexpr (std::is_same_v<T, Cool::TimeSpeed>)
 
 if constexpr (std::is_same_v<T, Cool::TextureDescriptor_Video>)
     return false;
+
+if constexpr (std::is_same_v<T, Cool::Time>)
+    return false;

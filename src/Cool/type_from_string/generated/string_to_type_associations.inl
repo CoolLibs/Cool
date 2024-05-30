@@ -189,3 +189,8 @@ template<>
 struct from_impl<"Video"> {
     using type = Cool::TextureDescriptor_Video;
 };
+
+template<>
+struct from_impl<"Time"> {
+    using type = Cool::Time;
+};

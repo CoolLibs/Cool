@@ -31,4 +31,5 @@ using AnySharedVariableDefinition = std::variant<
     SharedVariableDefinition<Cool::MidiChannel>,
     SharedVariableDefinition<Cool::OSCChannel>,
     SharedVariableDefinition<Cool::TimeSpeed>,
-    SharedVariableDefinition<Cool::TextureDescriptor_Video> >;
+    SharedVariableDefinition<Cool::TextureDescriptor_Video>,
+    SharedVariableDefinition<Cool::Time> >;

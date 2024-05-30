@@ -160,3 +160,9 @@ auto glsl_type<Cool::TextureDescriptor_Video>() -> std::string
 {
     return "Cool_Texture";
 }
+
+template<>
+auto glsl_type<Cool::Time>() -> std::string
+{
+    return "float";
+}
