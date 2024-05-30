@@ -5,7 +5,6 @@
 #include "Clock.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
-#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 namespace Cool::ClockU {
 
@@ -42,7 +41,7 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widge
     ImGui::PushFont(Font::monospace());
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     auto t = clock.time();
-    if (ImGuiExtras::drag_time("##time", &t))
+    if (imgui_drag_time("##time", &t))
         clock.set_time(t);
     clock.set_is_being_changed_in_GUI(ImGui::IsItemActive());
     ImGui::PopFont();

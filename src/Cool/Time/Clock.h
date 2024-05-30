@@ -48,13 +48,8 @@ private:
                                               .name     = "##TimeSpeed",
                                               .value    = {1.f},
                                               .metadata = {
-                                                  .bounds = {
-                                                      .min           = 0.,
-                                                      .max           = 1.,
-                                                      .has_min_bound = true,
-                                                      .has_max_bound = false,
-                                                      .drag_speed    = 0.001f,
-                                                  },
+                                                  .min           = 0.,
+                                                  .has_min_bound = true,
                                               },
                                           }},
                                           {} /*Empty DirtyFlag, we don't need to warn anyone when this changes*/};

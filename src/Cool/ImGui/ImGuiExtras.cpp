@@ -10,8 +10,6 @@
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
-#include "Cool/Time/parse_time.h"
-#include "Cool/Time/time_formatted_hms.h"
 #include "ImGuiExtrasStyle.h"
 
 namespace Cool::ImGuiExtras {
@@ -807,21 +805,6 @@ auto dropdown(const char* label, std::string* value, std::function<void(std::fun
 auto calc_custom_dropdown_input_width() -> float
 {
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
-}
-
-auto drag_time(const char* label, Time* value, bool show_milliseconds) -> bool
-{
-    double min     = 0.;
-    double max     = 0.;
-    double seconds = value->as_seconds_double();
-
-    bool const b = ImGui::DragScalar(label, ImGuiDataType_Double, &seconds, 0.01f, &min, &max, time_formatted_hms(*value, show_milliseconds).c_str(), 0, [](const char* buf, void* data_p) {
-        *(static_cast<double*>(data_p)) = parse_time(buf);
-    });
-    if (b)
-        *value = Time::seconds(seconds);
-
-    return b;
 }
 
 } // namespace Cool::ImGuiExtras

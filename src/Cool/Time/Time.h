@@ -48,4 +48,13 @@ private:
     }
 };
 
+struct imgui_drag_time_params {
+    bool   show_milliseconds = true;
+    float  drag_speed        = 0.01f;
+    double min               = -DBL_MAX;
+    double max               = +DBL_MAX;
+};
+auto imgui_drag_time(const char* label, Time* value, imgui_drag_time_params const& = {}) -> bool;
+auto to_string(Time) -> std::string;
+
 } // namespace Cool

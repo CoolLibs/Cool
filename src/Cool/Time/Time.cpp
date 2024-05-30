@@ -1,4 +1,7 @@
 #include "Time.h"
+#include "Cool/Time/time_formatted_hms.h"
+#include "parse_time.h"
+#include "time_formatted_hms.h"
 
 namespace Cool {
 
@@ -67,6 +70,24 @@ auto operator*(TimeSpeed speed, Time time) -> Time
     if (speed.value == 1.) // This is the most common case, and we don't want to waste precision by converting back and forth between double and int64_t.
         return time;
     return Time::nanoseconds(static_cast<int64_t>(time.as_nanoseconds_double() * speed.value));
+}
+
+auto imgui_drag_time(const char* label, Time* value, imgui_drag_time_params const& p) -> bool
+{
+    double seconds = value->as_seconds_double();
+
+    bool const b = ImGui::DragScalar(label, ImGuiDataType_Double, &seconds, p.drag_speed, &p.min, &p.max, time_formatted_hms(*value, p.show_milliseconds).c_str(), 0, [](const char* buf, void* data_p) {
+        *(static_cast<double*>(data_p)) = parse_time(buf);
+    });
+    if (b)
+        *value = Time::seconds(seconds);
+
+    return b;
+}
+
+auto to_string(Time time) -> std::string
+{
+    return time_formatted_hms(time, true);
 }
 
 } // namespace Cool

@@ -200,6 +200,48 @@ auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> 
 }
 
 template<typename T>
+auto imgui_min_max_bounds(T& min, T& max, bool& has_min_bound, bool& has_max_bound, float& drag_speed) -> bool
+{
+    bool b = false;
+
+    b |= ImGui::Checkbox("##1", &has_min_bound);
+    ImGui::SameLine();
+
+    if (has_min_bound)
+    {
+        b |= imgui_drag("##2", &min, 0.01f);
+    }
+    else
+    {
+        ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a min value.", [&]() {
+            b |= imgui_drag("##3", &min, 0.01f, "-infinity");
+        });
+    }
+
+    ImGui::SameLine();
+    ImGui::TextDisabled("to");
+    ImGui::SameLine();
+
+    b |= ImGui::Checkbox("##4", &has_max_bound);
+    ImGui::SameLine();
+
+    if (has_max_bound)
+    {
+        b |= imgui_drag("##5", &max, 0.01f);
+    }
+    else
+    {
+        ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a max value.", [&]() {
+            b |= imgui_drag("##6", &max, 0.01f, "+infinity");
+        });
+    }
+
+    b |= ImGui::DragFloat("Drag speed", &drag_speed, 0.0001f, 0.000001f, biggest_number<float>(), "%.6f");
+
+    return b;
+}
+
+template<typename T>
 auto imgui_widget(BoundsMetadata<T>& meta) -> bool
 {
     bool b = false;
@@ -214,39 +256,7 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
     }
     else
     {
-        b |= ImGui::Checkbox("##1", &meta.has_min_bound);
-        ImGui::SameLine();
-
-        if (meta.has_min_bound)
-        {
-            b |= imgui_drag("##2", &meta.min, 0.01f);
-        }
-        else
-        {
-            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a min value.", [&]() {
-                b |= imgui_drag("##3", &meta.min, 0.01f, "-infinity");
-            });
-        }
-
-        ImGui::SameLine();
-        ImGui::TextDisabled("to");
-        ImGui::SameLine();
-
-        b |= ImGui::Checkbox("##4", &meta.has_max_bound);
-        ImGui::SameLine();
-
-        if (meta.has_max_bound)
-        {
-            b |= imgui_drag("##5", &meta.max, 0.01f);
-        }
-        else
-        {
-            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a max value.", [&]() {
-                b |= imgui_drag("##6", &meta.max, 0.01f, "+infinity");
-            });
-        }
-
-        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.0001f, 0.000001f, biggest_number<float>(), "%.6f");
+        b |= imgui_min_max_bounds(meta.min, meta.max, meta.has_min_bound, meta.has_max_bound, meta.drag_speed);
     }
 
     b |= ImGuiExtras::toggle("Use a slider", &meta.use_slider);

@@ -13,15 +13,12 @@ namespace Cool {
 
 template<>
 struct VariableMetadata<Cool::Time> {
-    internal::BoundsMetadata<double> bounds{
-        .min            = 0.,
-        .max            = 1.,
-        .has_min_bound  = false,
-        .has_max_bound  = false,
-        .drag_speed     = 0.01f,
-        .use_slider     = false,
-        .is_logarithmic = false,
-    };
+    double min{0.};
+    double max{10.};
+    bool   has_min_bound{false};
+    bool   has_max_bound{false};
+    float  drag_speed{0.01f};
+    bool   show_milliseconds{true};
 
     friend auto operator<=>(VariableMetadata<Cool::Time> const&, VariableMetadata<Cool::Time> const&) = default;
 
@@ -32,7 +29,12 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Bounds", bounds)
+            cereal::make_nvp("Min", min),
+            cereal::make_nvp("Max", max),
+            cereal::make_nvp("Has min bound", has_min_bound),
+            cereal::make_nvp("Has max bound", has_max_bound),
+            cereal::make_nvp("Drag speed", drag_speed),
+            cereal::make_nvp("Show milliseconds", show_milliseconds)
         );
     }
 };

@@ -332,7 +332,38 @@ def all_variable_descriptions():
             cpp_type="Cool::TimeSpeed",
             glsl_type="float",
             include="<Cool/Time/TimeSpeed.h>",
-            metadatas=float_metadatas(is_double=True),
+            metadatas=[
+                VariableMetadata(
+                    field_name="min",
+                    pretty_name="Min",
+                    type="double",
+                    default_value="0.",
+                ),
+                VariableMetadata(
+                    field_name="max",
+                    pretty_name="Max",
+                    type="double",
+                    default_value="1.",
+                ),
+                VariableMetadata(
+                    field_name="has_min_bound",
+                    pretty_name="Has min bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="has_max_bound",
+                    pretty_name="Has max bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.001f",
+                ),
+            ],
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(
@@ -348,7 +379,44 @@ def all_variable_descriptions():
             cpp_type="Cool::Time",
             glsl_type="float",
             include="<Cool/Time/Time.h>",
-            metadatas=float_metadatas(is_double=True),
+            metadatas=[
+                VariableMetadata(
+                    field_name="min",
+                    pretty_name="Min",
+                    type="double",
+                    default_value="0.",
+                ),
+                VariableMetadata(
+                    field_name="max",
+                    pretty_name="Max",
+                    type="double",
+                    default_value="10.",
+                ),
+                VariableMetadata(
+                    field_name="has_min_bound",
+                    pretty_name="Has min bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="has_max_bound",
+                    pretty_name="Has max bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+                VariableMetadata(
+                    field_name="show_milliseconds",
+                    pretty_name="Show milliseconds",
+                    type="bool",
+                    default_value="true",
+                ),
+            ],
             always_requires_shader_code_generation=False,
         ),
     ]

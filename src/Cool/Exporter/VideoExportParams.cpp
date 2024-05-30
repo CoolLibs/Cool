@@ -26,11 +26,11 @@ void VideoExportParams::imgui()
     ImGui::PushItemWidth(0.4f * (ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Fromto").x));
     ImGui::Text("From");
     ImGui::SameLine();
-    ImGuiExtras::drag_time("##beginning", &beginning);
+    imgui_drag_time("##beginning", &beginning);
     ImGui::SameLine();
     ImGui::Text("to");
     ImGui::SameLine();
-    ImGuiExtras::drag_time("##end", &end);
+    imgui_drag_time("##end", &end);
     ImGui::PopItemWidth();
 
     ImGui::PushItemWidth(75);
