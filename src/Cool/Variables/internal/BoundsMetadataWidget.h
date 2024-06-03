@@ -15,6 +15,10 @@ inline auto imgui_drag(const char* label, float* val, float drag_speed, std::opt
 {
     return ImGui::DragFloat(label, val, drag_speed, 0.f, 0.f, format.value_or("%.3f"), flags);
 }
+inline auto imgui_drag(const char* label, double* val, float drag_speed, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::DragScalar(label, ImGuiDataType_Double, val, drag_speed, nullptr, nullptr, format.value_or("%.3f"), flags);
+}
 
 inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, int max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
@@ -23,6 +27,10 @@ inline auto imgui_drag(const char* label, int* val, float drag_speed, int min, i
 inline auto imgui_drag(const char* label, float* val, float drag_speed, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
     return ImGui::DragFloat(label, val, drag_speed, min, max, format.value_or("%.3f"), flags);
+}
+inline auto imgui_drag(const char* label, double* val, float drag_speed, double min, double max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::DragScalar(label, ImGuiDataType_Double, val, drag_speed, &min, &max, format.value_or("%.3f"), flags);
 }
 inline auto imgui_drag(const char* label, glm::vec2* val, float drag_speed, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
@@ -84,6 +92,10 @@ inline auto imgui_slider(const char* label, float* val, float min, float max, st
 {
     return ImGui::SliderFloat(label, val, min, max, format.value_or("%.3f"), flags);
 }
+inline auto imgui_slider(const char* label, double* val, double min, double max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
+{
+    return ImGui::SliderScalar(label, ImGuiDataType_Double, val, &min, &max, format.value_or("%.3f"), flags);
+}
 inline auto imgui_slider(const char* label, glm::vec2* val, float min, float max, std::optional<const char*> format = {}, ImGuiSliderFlags flags = 0) -> bool
 {
     return ImGui::SliderFloat2(label, glm::value_ptr(*val), min, max, format.value_or("%.3f"), flags);
@@ -144,6 +156,11 @@ constexpr auto biggest_number<float>() -> float
 {
     return FLT_MAX;
 }
+template<>
+constexpr auto biggest_number<double>() -> double
+{
+    return DBL_MAX;
+}
 
 template<>
 constexpr auto biggest_number<int>() -> int
@@ -183,6 +200,48 @@ auto imgui_widget(const char* label, ExactType* value, BoundsMetadata<BaseType> 
 }
 
 template<typename T>
+auto imgui_min_max_bounds(T& min, T& max, bool& has_min_bound, bool& has_max_bound, float& drag_speed) -> bool
+{
+    bool b = false;
+
+    b |= ImGui::Checkbox("##1", &has_min_bound);
+    ImGui::SameLine();
+
+    if (has_min_bound)
+    {
+        b |= imgui_drag("##2", &min, 0.01f);
+    }
+    else
+    {
+        ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a min value.", [&]() {
+            b |= imgui_drag("##3", &min, 0.01f, "-infinity");
+        });
+    }
+
+    ImGui::SameLine();
+    ImGui::TextDisabled("to");
+    ImGui::SameLine();
+
+    b |= ImGui::Checkbox("##4", &has_max_bound);
+    ImGui::SameLine();
+
+    if (has_max_bound)
+    {
+        b |= imgui_drag("##5", &max, 0.01f);
+    }
+    else
+    {
+        ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a max value.", [&]() {
+            b |= imgui_drag("##6", &max, 0.01f, "+infinity");
+        });
+    }
+
+    b |= ImGui::DragFloat("Drag speed", &drag_speed, 0.0001f, 0.000001f, biggest_number<float>(), "%.6f");
+
+    return b;
+}
+
+template<typename T>
 auto imgui_widget(BoundsMetadata<T>& meta) -> bool
 {
     bool b = false;
@@ -197,39 +256,7 @@ auto imgui_widget(BoundsMetadata<T>& meta) -> bool
     }
     else
     {
-        b |= ImGui::Checkbox("##1", &meta.has_min_bound);
-        ImGui::SameLine();
-
-        if (meta.has_min_bound)
-        {
-            b |= imgui_drag("##2", &meta.min, 0.01f);
-        }
-        else
-        {
-            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a min value.", [&]() {
-                b |= imgui_drag("##3", &meta.min, 0.01f, "-infinity");
-            });
-        }
-
-        ImGui::SameLine();
-        ImGui::TextDisabled("to");
-        ImGui::SameLine();
-
-        b |= ImGui::Checkbox("##4", &meta.has_max_bound);
-        ImGui::SameLine();
-
-        if (meta.has_max_bound)
-        {
-            b |= imgui_drag("##5", &meta.max, 0.01f);
-        }
-        else
-        {
-            ImGuiExtras::disabled_if(true, "Toggle the checkbox on the left to set a max value.", [&]() {
-                b |= imgui_drag("##6", &meta.max, 0.01f, "+infinity");
-            });
-        }
-
-        b |= ImGui::DragFloat("Drag speed", &meta.drag_speed, 0.0001f, 0.000001f, biggest_number<float>(), "%.6f");
+        b |= imgui_min_max_bounds(meta.min, meta.max, meta.has_min_bound, meta.has_max_bound, meta.drag_speed);
     }
 
     b |= ImGuiExtras::toggle("Use a slider", &meta.use_slider);

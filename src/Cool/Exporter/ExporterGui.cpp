@@ -6,7 +6,9 @@
 #include <imgui.h>
 #include <exception>
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/UserSettings/UserSettings.h"
 #include "ExporterU.h"
+#include "VideoExportOverwriteBehaviour.h"
 
 namespace Cool {
 
@@ -80,7 +82,7 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, float delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
 {
     _image_export_window.show([&]() {
         _export_size.imgui();
@@ -111,31 +113,53 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, float time, float
     });
 }
 
-auto ExporterGui::clear_export_folder() const -> bool
+auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
 {
     if (!File::exists(folder_path_for_video())
         || std::filesystem::is_empty(folder_path_for_video()))
-        return true; // Nothing to do, there was no previous content
-
-    if (boxer::show(fmt::format("You are about the delete all the previous content of {}.\nAre you sure?", folder_path_for_video()).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
-        != boxer::Selection::OK)
-        return false; // User doesn't want to delete the previous content of the export folder
-
-    try
     {
-        std::filesystem::remove_all(folder_path_for_video());
-        return true;
+        return true; // Nothing to do, no frame is going to be overwritten
     }
-    catch (std::exception& e)
+
+    switch (user_settings().video_export_overwrite_behaviour)
     {
-        Cool::Log::ToUser::warning("Export failed", fmt::format("{} is already used in another software. You need to close it before exporting.\n{}", folder_path_for_video(), e.what()));
-        return false;
+    case VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder:
+    case VideoExportOverwriteBehaviour::AlwaysCreateNewFolder:
+    {
+        auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "");
+        if (user_settings().video_export_overwrite_behaviour == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
+        {
+            if (boxer::show(fmt::format("There are already some frames in {}.\nDo you want to export in another folder? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)
+                != boxer::Selection::OK)
+            {
+                return false;
+            }
+        }
+
+        _folder_path_for_video = new_folder_name;
+        break;
     }
+    case VideoExportOverwriteBehaviour::AskBeforeOverwritingPreviousFrames:
+    {
+        if (boxer::show(fmt::format("You are about to overwrite the frames in {}.\nDo you want to continue?", folder_path_for_video()).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
+            != boxer::Selection::OK)
+        {
+            return false;
+        }
+        break;
+    }
+    case VideoExportOverwriteBehaviour::AlwaysOverwritePreviousFrames:
+    {
+        break; // Nothing to do
+    }
+    }
+
+    return true;
 }
 
 void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed, std::function<void()> const& on_video_export_start)
 {
-    if (!clear_export_folder())
+    if (!user_accepted_our_frames_overwrite_behaviour())
         return;
 
     if (File::create_folders_if_they_dont_exist(folder_path_for_video()))
@@ -179,6 +203,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
                     _folder_path_for_video = path;
             }
             _video_export_params.imgui();
+            imgui_widget(user_settings().video_export_overwrite_behaviour);
             // Validation
             ImGui::SeparatorText("");
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))

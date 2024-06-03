@@ -1,6 +1,7 @@
 #include "PathsConfig.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Path/PathsConfig.h"
+#include "Cool/Utils/app_name.h"
 #include "Path.h"
 #include "exe_path/exe_path.h"
 
@@ -9,6 +10,7 @@ namespace Cool {
 PathsConfig::PathsConfig(std::string app_name)
     : _app_name{std::move(app_name)}
 {
+    Cool::app_name() = _app_name;
 }
 
 auto PathsConfig::root() const -> std::filesystem::path

@@ -4,7 +4,7 @@
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Log/ToUser.h"
-#include "Cool/TextureSource/set_texture_from_opencv_image.h"
+#include "Cool/TextureSource/set_texture_from_image.h"
 
 namespace Cool {
 

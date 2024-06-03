@@ -1,5 +1,5 @@
 #pragma once
-#include "Texture.h"
+#include "Cool/Gpu/Texture.h"
 
 namespace Cool {
 

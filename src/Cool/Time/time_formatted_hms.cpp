@@ -3,24 +3,28 @@
 
 namespace Cool {
 
-auto time_formatted_hms(float time_in_sec, bool show_milliseconds, float total_duration) -> std::string
+auto time_formatted_hms(Time time, bool show_milliseconds, Time total_duration) -> std::string
 {
-    const char* sign = time_in_sec < 0.f ? "-" : "";
-    time_in_sec      = std::abs(time_in_sec);
+    auto nanoseconds = time.as_nanoseconds_int64_t();
 
-    if (total_duration == 0.f)
-        total_duration = time_in_sec;
+    const char* sign = nanoseconds < 0 ? "-" : "";
+    nanoseconds      = std::abs(nanoseconds);
 
-    auto const t = static_cast<uint32_t>(time_in_sec);
+    if (total_duration == Time{})
+        total_duration = time;
+    auto const total_nanoseconds = total_duration.as_nanoseconds_int64_t();
+
+    static constexpr int64_t s       = 1'000'000'000; // Converts seconds to nanoseconds;
+    auto const               seconds = nanoseconds / s;
     return sign
-           + (total_duration < 60.f
-                  ? fmt::format("{}s", t)
-              : total_duration < 3600.f
-                  ? fmt::format("{}m {:02}s", t / 60, t % 60)
-                  : fmt::format("{}h {:02}m {:02}s", t / 3600, (t % 3600) / 60, t % 60)
+           + (total_nanoseconds < 60 * s
+                  ? fmt::format("{}s", seconds)
+              : total_nanoseconds < 3600 * s
+                  ? fmt::format("{}m {:02}s", seconds / 60, seconds % 60)
+                  : fmt::format("{}h {:02}m {:02}s", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
            )
            + (show_milliseconds
-                  ? fmt::format(" {:03}ms", static_cast<uint32_t>(time_in_sec * 1000.f) % 1000)
+                  ? fmt::format(" {:03}ms", (nanoseconds / 1'000'000) % 1000)
                   : "");
 }
 

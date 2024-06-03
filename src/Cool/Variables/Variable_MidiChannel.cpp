@@ -12,7 +12,10 @@ auto imgui_widget(Variable<MidiChannel>& var) -> bool
         midi_manager().open_config_window();
     ImGui::SetItemTooltip("%s", "Open MIDI config to find out which Index corresponds to which knob / slider / button on your controller.");
 
-    return ImGui::InputScalar(var.name().c_str(), ImGuiDataType_S32, &var.value().index);
+    bool b = false;
+    b |= ImGui::InputScalar(fmt::format("{} Index", var.name()).c_str(), ImGuiDataType_S32, &var.value().index);
+    b |= imgui_widget(fmt::format("{} Kind", var.name()).c_str(), var.value().kind);
+    return b;
 }
 
 auto imgui_widget(VariableMetadata<MidiChannel>&) -> bool

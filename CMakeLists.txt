@@ -198,6 +198,10 @@ install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 add_subdirectory(lib/img)
 target_link_libraries(Cool-PublicProperties INTERFACE img::img)
 
+# easy_ffmpeg
+add_subdirectory(lib/easy_ffmpeg)
+target_link_libraries(Cool-PublicProperties INTERFACE easy_ffmpeg::easy_ffmpeg)
+
 # Audio
 add_subdirectory(lib/Audio)
 target_link_libraries(Cool-PublicProperties INTERFACE Cool::Audio)
@@ -303,6 +307,7 @@ include("CMakeUtils/files_and_folders.cmake")
 
 function(cool_setup TARGET_NAME)
     Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
+    ffmpeg_copy_libs(${TARGET_NAME})
     install(DIRECTORY ${COOL_PATH_INTERNAL}/res DESTINATION bin/${COOL_PATH_INTERNAL})
 endfunction()
 
@@ -341,6 +346,7 @@ add_executable(Tests-Cool tests/tests.cpp ${COOL_SOURCES})
 target_link_libraries(Tests-Cool PRIVATE Cool-PublicProperties)
 target_link_libraries(Tests-Cool PRIVATE Cool-PrivateProperties)
 target_compile_definitions(Tests-Cool PRIVATE COOL_ENABLE_TESTS)
+ffmpeg_copy_libs(Tests-Cool)
 
 set(DOCTEST_NO_INSTALL ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/doctest)

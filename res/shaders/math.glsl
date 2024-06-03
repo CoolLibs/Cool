@@ -83,4 +83,26 @@ vec2 complex_division(vec2 n, vec2 d)
     return vec2(n.x * d.x + n.y * d.y, n.y * d.x - n.x * d.y) / (d.x * d.x + d.y * d.y);
 }
 
+vec2 Cool_apply_matrix_to_position_2D(mat3 matrix, vec2 pos)
+{
+    vec3 tmp = matrix * vec3(pos, 1.);
+    return tmp.xy / tmp.z;
+}
+vec2 Cool_apply_matrix_to_normalized_direction_2D(mat3 matrix, vec2 dir)
+{
+    vec3 tmp = matrix * vec3(dir, 0.);
+    return normalize(tmp.xy);
+}
+
+vec3 Cool_apply_matrix_to_position_3D(mat4 matrix, vec3 pos)
+{
+    vec4 tmp = matrix * vec4(pos, 1.);
+    return tmp.xyz / tmp.w;
+}
+vec3 Cool_apply_matrix_to_normalized_direction_2D(mat4 matrix, vec3 dir)
+{
+    vec4 tmp = matrix * vec4(dir, 0.);
+    return normalize(tmp.xyz);
+}
+
 #define saturate(v) clamp(v, 0., 1.)

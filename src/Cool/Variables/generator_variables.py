@@ -68,15 +68,15 @@ def angle_metadatas():
     ]
 
 
-def float_metadatas():
+def float_metadatas(is_double = False):
     return [
         VariableMetadata(
             field_name="bounds",
             pretty_name="Bounds",
-            type="internal::BoundsMetadata<float>",
-            default_value="""
-                .min = 0.f,
-                .max = 1.f,
+            type=f"internal::BoundsMetadata<{"double" if is_double else "float"}>",
+            default_value=f"""
+                .min = 0.{"" if is_double else "f"},
+                .max = 1.{"" if is_double else "f"},
                 .has_min_bound = false,
                 .has_max_bound = false,
                 .drag_speed = 0.01f,
@@ -85,7 +85,6 @@ def float_metadatas():
             """,
         ),
     ]
-
 
 def hdr_metadata():
     return VariableMetadata(
@@ -266,17 +265,17 @@ def all_variable_descriptions():
         ),
         VariableDescription(
             input_type=["Texture"],
-            cpp_type="Cool::TextureDescriptor_FromFile",
+            cpp_type="Cool::TextureDescriptor_Image",
             glsl_type="Cool_Texture",
-            include="<Cool/Gpu/TextureDescriptor.h>",
+            include="<Cool/TextureSource/TextureDescriptor.h>",
             metadatas=[],
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Webcam"],
-            cpp_type="Cool::TextureDescriptor_FromWebcam",
+            cpp_type="Cool::TextureDescriptor_Webcam",
             glsl_type="Cool_Texture",
-            include="<Cool/Gpu/TextureDescriptor.h>",
+            include="<Cool/TextureSource/TextureDescriptor.h>",
             metadatas=[],
             always_requires_shader_code_generation=False,
         ),
@@ -329,19 +328,95 @@ def all_variable_descriptions():
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(
-            input_type=["TimeSpeed"],
+            input_type=["TimeSpeed"],   
             cpp_type="Cool::TimeSpeed",
             glsl_type="float",
-            include="<Cool/StrongTypes/TimeSpeed.h>",
-            metadatas=float_metadatas(),
+            include="<Cool/Time/TimeSpeed.h>",
+            metadatas=[
+                VariableMetadata(
+                    field_name="min",
+                    pretty_name="Min",
+                    type="double",
+                    default_value="0.",
+                ),
+                VariableMetadata(
+                    field_name="max",
+                    pretty_name="Max",
+                    type="double",
+                    default_value="1.",
+                ),
+                VariableMetadata(
+                    field_name="has_min_bound",
+                    pretty_name="Has min bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="has_max_bound",
+                    pretty_name="Has max bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.001f",
+                ),
+            ],
             always_requires_shader_code_generation=False,
         ),
         VariableDescription(
             input_type=["Video"],
-            cpp_type="Cool::TextureDescriptor_VideoFile",
+            cpp_type="Cool::TextureDescriptor_Video",
             glsl_type="Cool_Texture",
-            include="<Cool/Gpu/TextureDescriptor.h>",
+            include="<Cool/TextureSource/TextureDescriptor.h>",
             metadatas=[],
+            always_requires_shader_code_generation=False,
+        ),
+        VariableDescription(
+            input_type=["Time"],   
+            cpp_type="Cool::Time",
+            glsl_type="float",
+            include="<Cool/Time/Time.h>",
+            metadatas=[
+                VariableMetadata(
+                    field_name="min",
+                    pretty_name="Min",
+                    type="double",
+                    default_value="0.",
+                ),
+                VariableMetadata(
+                    field_name="max",
+                    pretty_name="Max",
+                    type="double",
+                    default_value="10.",
+                ),
+                VariableMetadata(
+                    field_name="has_min_bound",
+                    pretty_name="Has min bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="has_max_bound",
+                    pretty_name="Has max bound",
+                    type="bool",
+                    default_value="false",
+                ),
+                VariableMetadata(
+                    field_name="drag_speed",
+                    pretty_name="Drag speed",
+                    type="float",
+                    default_value="0.01f",
+                ),
+                VariableMetadata(
+                    field_name="show_milliseconds",
+                    pretty_name="Show milliseconds",
+                    type="bool",
+                    default_value="true",
+                ),
+            ],
             always_requires_shader_code_generation=False,
         ),
     ]

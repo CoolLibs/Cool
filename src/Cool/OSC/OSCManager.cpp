@@ -20,12 +20,12 @@ namespace Cool {
 
 OSCManager::OSCManager()
     : _config_window{
-        Cool::icon_fmt("OSC", ICOMOON_CONNECTION),
-        Cool::ImGuiWindowConfig{
-            .is_modal   = false,
-            .start_open = false,
-        }
-    }
+          Cool::icon_fmt("OSC", ICOMOON_CONNECTION),
+          Cool::ImGuiWindowConfig{
+              .is_modal   = false,
+              .start_open = false,
+          }
+      }
 {}
 
 OSCManager::~OSCManager()
@@ -204,8 +204,9 @@ void OSCManager::imgui_button_to_reset_values()
     if (values_are_empty())
         return;
 
-    if (ImGui::Button("Reset values"))
+    if (ImGuiExtras::button_with_text_icon(ICOMOON_UNDO))
         reset_values();
+    ImGui::SetItemTooltip("Reset all values");
 }
 
 auto OSCManager::values_are_empty() const -> bool

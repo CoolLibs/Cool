@@ -3,13 +3,13 @@
 #include <string>
 #include <string_view>
 #include "Cool/Gpu/OpenGL/Texture.h"
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
-#include "Cool/Gpu/TextureSamplerLibrary.h"
-#include "Cool/Gpu/TextureSource.h"
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/OSC/OSCManager.h"
 #include "Cool/StrongTypes/Camera2D.h"
 #include "Cool/StrongTypes/ColorAndAlpha.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureSamplerLibrary.h"
+#include "Cool/TextureSource/TextureSource.h"
 #include "ShaderModule.h"
 #include "imgui.h"
 
@@ -65,6 +65,10 @@ void Shader::set_uniform(std::string_view uniform_name, float v) const
 {
     assert_shader_is_bound(_shader.id());
     GLDebug(glUniform1f(uniform_location(uniform_name), v));
+}
+void Shader::set_uniform(std::string_view uniform_name, double v) const
+{
+    set_uniform(uniform_name, static_cast<float>(v));
 }
 void Shader::set_uniform(std::string_view uniform_name, const glm::vec2& v) const
 {
@@ -233,6 +237,10 @@ void Shader::set_uniform(std::string_view uniform_name, OSCChannel const& channe
 void Shader::set_uniform(std::string_view uniform_name, TimeSpeed const& time_speed) const
 {
     set_uniform(uniform_name, time_speed.value);
+}
+void Shader::set_uniform(std::string_view uniform_name, Time const& time) const
+{
+    set_uniform(uniform_name, time.as_seconds_double());
 }
 
 } // namespace Cool::OpenGL

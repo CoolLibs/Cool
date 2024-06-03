@@ -7,7 +7,7 @@
 
 namespace Cool {
 
-static auto nb_digits(int n) -> int
+static auto nb_digits(int64_t n) -> int
 {
     return static_cast<int>(std::ceil(std::log10(n)));
 }
@@ -16,8 +16,8 @@ VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpee
     : _folder_path{folder_path}
     , _size{size}
     , _clock{params.fps}
-    , _total_nb_of_frames_in_sequence{static_cast<int>(std::ceil((params.end - params.beginning) * params.fps))}
-    , _frame_numbering_offset{static_cast<int>(std::ceil(params.beginning * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
+    , _total_nb_of_frames_in_sequence{static_cast<int64_t>(std::ceil((params.end - params.beginning).as_seconds_double() * params.fps))}
+    , _frame_numbering_offset{static_cast<int64_t>(std::ceil(params.beginning.as_seconds_double() * params.fps))} // Makes sure than if we export frames from 0 to 10 seconds, and then decide to extend that video and export frames from 10 to 20 seconds, that second batch of frames will have numbers that follow the ones of the first batch, allowing us to create a unified image sequence with numbers that match up.
 {
     _clock.set_time(params.beginning, true /* force_delta_time_to_ignore_the_change */);
     _clock.time_speed().value() = time_speed;
@@ -46,30 +46,32 @@ bool VideoExportProcess::update(Polaroid polaroid)
 
 void VideoExportProcess::update_time_estimate()
 {
-    const auto now        = std::chrono::steady_clock::now();
-    const auto delta_time = std::chrono::duration<float>{now - _last_render};
+    auto const now        = std::chrono::steady_clock::now();
+    auto const delta_time = Time{now - _last_render};
     _last_render          = now;
 
-    if (_nb_frames_sent_to_thread_pool < 3 * static_cast<int>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
-        return;                                                                     // Technically this should be 2 * _thread_pool.size() (the time to give a job to each thread + fill the queue) but we use 3 to give us some margin, because pushing wrong numbers into our average messes it up for a while, whereas waiting a little longer before we start having an estimate is not a big deal.
-    _average_time_between_two_renders.push(delta_time.count());
+    if (_nb_frames_sent_to_thread_pool < 3 * static_cast<int64_t>(_thread_pool.size())) // Ignore the first few frames, as their timing isn't representative (the queue of the thread pool isn't full yet so exporting goes faster)
+        return;                                                                         // Technically this should be 2 * _thread_pool.size() (the time to give a job to each thread + fill the queue) but we use 3 to give us some margin, because pushing wrong numbers into our average messes it up for a while, whereas waiting a little longer before we start having an estimate is not a big deal.
+    _average_time_between_two_renders.push(delta_time.as_seconds_double());
 }
 
-auto VideoExportProcess::estimated_remaining_time() -> float
+auto VideoExportProcess::estimated_remaining_time() -> Time
 {
-    const auto nb_frames_to_render = static_cast<float>(_total_nb_of_frames_in_sequence - _nb_frames_sent_to_thread_pool);
+    auto const nb_frames_to_render = static_cast<double>(_total_nb_of_frames_in_sequence - _nb_frames_sent_to_thread_pool);
 
-    return nb_frames_to_render * _average_time_between_two_renders
-           + (static_cast<float>(_thread_pool.nb_jobs_in_queue()) + static_cast<float>(_thread_pool.size()) / 2.f) * _average_export_time / static_cast<float>(_thread_pool.size())
-           + 1.f;
+    return Time::seconds(
+        nb_frames_to_render * _average_time_between_two_renders
+        + (static_cast<double>(_thread_pool.nb_jobs_in_queue()) + static_cast<double>(_thread_pool.size()) / 2.) * _average_export_time / static_cast<double>(_thread_pool.size())
+        + 1.
+    );
 }
 
 void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 {
-    const int frame_count = _nb_frames_which_finished_exporting.load();
+    auto const frame_count = _nb_frames_which_finished_exporting.load();
 
     // Progress bar
-    const float progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
+    float const progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
     ImGui::ProgressBar(progress, ImVec2(-1.f, 0.f));
 
     ImGui::PushFont(Font::monospace());
@@ -100,7 +102,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 
 void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path const& file_path)
 {
-    polaroid.render(_clock.time_in_seconds(), _clock.delta_time_in_seconds(), _size);
+    polaroid.render(_clock.time(), _clock.delta_time(), _size);
 
     _thread_pool.push_job(ImageExportJob{
         file_path,

@@ -106,4 +106,9 @@ auto should_enable_multi_viewport_by_default() -> bool
 #endif
 }
 
+auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
+{
+    return imgui_widget(video_export_overwrite_behaviour);
+}
+
 } // namespace Cool

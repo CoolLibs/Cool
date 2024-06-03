@@ -9,6 +9,6 @@ namespace Cool::ExporterU {
  *
  * @param file_path The name of the file that you want to create
  */
-void export_image(img::Size size, float time, float delta_time, Polaroid polaroid, std::filesystem::path file_path);
+void export_image(img::Size size, Time time, Time delta_time, Polaroid polaroid, std::filesystem::path const& file_path);
 
 } // namespace Cool::ExporterU
