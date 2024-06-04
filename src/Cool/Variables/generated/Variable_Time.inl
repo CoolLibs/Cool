@@ -5,9 +5,9 @@
  * -----------------------------------------------------------------------------
  */
 
-#include <Cool/Time/Time.h>
 #include <Cool/Variables/Variable.h>
 #include <Cool/Variables/internal/BoundsMetadata.h>
+#include <Cool/Time/Time.hpp>
 
 namespace Cool {
 

@@ -2,7 +2,7 @@
 #include <cstdint>
 #include "Cool/Dependencies/SharedVariable.h"
 #include "Cool/Variables/Variable_TimeSpeed.h"
-#include "Time.h"
+#include "Time.hpp"
 
 namespace Cool {
 

@@ -378,7 +378,7 @@ def all_variable_descriptions():
             input_type=["Time"],   
             cpp_type="Cool::Time",
             glsl_type="float",
-            include="<Cool/Time/Time.h>",
+            include="<Cool/Time/Time.hpp>",
             metadatas=[
                 VariableMetadata(
                     field_name="min",

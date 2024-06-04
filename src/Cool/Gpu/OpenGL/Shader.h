@@ -12,7 +12,7 @@
 #include <Cool/StrongTypes/Hue.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/TextureSource/TextureDescriptor.h>
-#include "Cool/Time/Time.h"
+#include "Cool/Time/Time.hpp"
 #include "Cool/Time/TimeSpeed.h"
 #include "ShaderModule.h"
 #include "UniqueShader.h"

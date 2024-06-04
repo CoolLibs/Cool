@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include "Cool/ImGui/ImGuiWindow.h"
-#include "Cool/Time/Time.h"
+#include "Cool/Time/Time.hpp"
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
 #include "cereal/types/array.hpp"

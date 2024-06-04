@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Time/Time.h"
+#include "Cool/Time/Time.hpp"
 #include "Cool/Time/TimeSpeed.h"
 
 namespace Cool {
