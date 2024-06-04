@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/Gpu/RenderTarget.h>
-#include "Cool/Time/Time.h"
+#include "Cool/Time/Time.hpp"
 
 namespace Cool {
 

@@ -3,7 +3,7 @@
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
-#include "Cool/Time/Time.h"
+#include "Cool/Time/Time.hpp"
 
 namespace Cool::ImGuiExtras {
 

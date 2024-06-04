@@ -18,6 +18,6 @@
 #include <Cool/StrongTypes/MathExpression.h>
 #include <Cool/StrongTypes/Point2D.h>
 #include <Cool/TextureSource/TextureDescriptor.h>
-#include <Cool/Time/Time.h>
 #include <Cool/Time/TimeSpeed.h>
+#include <Cool/Time/Time.hpp>
 #include <glm/glm.hpp>
