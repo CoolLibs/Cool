@@ -123,7 +123,7 @@ void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text
 
 void OSCManager::imgui_window()
 {
-    _config_window.show([&]() {
+    _config_window.show([&](bool /*is_opening*/) {
         imgui_select_connection_endpoint();
         imgui_show_all_values(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
         ImGui::SameLine();

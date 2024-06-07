@@ -12,13 +12,6 @@
 
 namespace Cool {
 
-ExporterGui::ExporterGui()
-{
-    _image_export_window.on_open().subscribe([&](auto&&) {
-        set_file_name_to_an_unused_name();
-    });
-}
-
 void ExporterGui::set_file_name_to_an_unused_name()
 {
     _file_name = File::find_available_name(folder_path_for_image(), _file_name, ".png");
@@ -84,7 +77,9 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
 
 void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
 {
-    _image_export_window.show([&]() {
+    _image_export_window.show([&](bool is_opening) {
+        if (is_opening)
+            set_file_name_to_an_unused_name();
         _export_size.imgui();
         // File and Folders
         ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
@@ -195,7 +190,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
     }
     else
     {
-        _video_export_window.show([&]() {
+        _video_export_window.show([&](bool /*is_opening*/) {
             _export_size.imgui();
             {
                 auto path = folder_path_for_video();

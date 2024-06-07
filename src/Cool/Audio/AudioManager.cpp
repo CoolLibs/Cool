@@ -245,7 +245,7 @@ void AudioManager::imgui_window()
     if (needs_to_highlight_error)
         _window.open();
 
-    _window.show([&]() {
+    _window.show([&](bool /*is_opening*/) {
         ImGui::SeparatorText("Input Selection");
         // Select the input mode
         if (ImGui::BeginCombo("Input Mode", to_string(_current_input_mode)))

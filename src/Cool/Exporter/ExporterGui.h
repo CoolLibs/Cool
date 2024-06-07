@@ -33,8 +33,6 @@ struct exporter_imgui_windows_Params {
 
 class ExporterGui {
 public:
-    ExporterGui();
-
     [[nodiscard]] static auto is_exporting(std::optional<VideoExportProcess> const& video_export_process) -> bool { return video_export_process.has_value(); }
 
     auto image_export_window() -> ImGuiWindow& { return _image_export_window; }

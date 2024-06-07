@@ -14,6 +14,7 @@ public:
     static const std::vector<nfdfilteritem_t> FragmentShader;
     static const std::vector<nfdfilteritem_t> VertexShader;
     static const std::vector<nfdfilteritem_t> ComputeShader;
+    static const std::vector<nfdfilteritem_t> Mesh;
 };
 
 } // namespace Cool
