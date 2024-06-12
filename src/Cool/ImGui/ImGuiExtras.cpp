@@ -5,9 +5,11 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <ostream>
+#include <wafl/wafl.hpp>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
@@ -283,7 +285,7 @@ auto folder_dialog_button(
     return true;
 }
 
-auto file_dialog_button(
+auto file_opening_dialog_button(
     std::filesystem::path*        out_path,
     File::file_dialog_args const& args
 ) -> bool
@@ -292,6 +294,22 @@ auto file_dialog_button(
         return false;
 
     auto const maybe_path = File::file_opening_dialog(args);
+    if (!maybe_path)
+        return false;
+
+    *out_path = *maybe_path;
+    return true;
+}
+
+auto file_saving_dialog_button(
+    std::filesystem::path*        out_path,
+    File::file_dialog_args const& args
+) -> bool
+{
+    if (!button_with_text_icon(ICOMOON_FOLDER_OPEN))
+        return false;
+
+    auto const maybe_path = File::file_saving_dialog(args);
     if (!maybe_path)
         return false;
 
@@ -328,14 +346,20 @@ auto folder(const char* label, std::filesystem::path* folder_path, bool show_dia
     });
 }
 
-auto file(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
+auto file_opening(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
 {
     return folder_file_impl(label, file_path, show_dialog_button, [&]() {
-        return ImGuiExtras::file_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
+        return ImGuiExtras::file_opening_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
+    });
+}
+auto file_saving(const char* label, std::filesystem::path* file_path, std::vector<nfdfilteritem_t> const& file_filters, std::filesystem::path initial_folder, bool show_dialog_button) -> bool
+{
+    return folder_file_impl(label, file_path, show_dialog_button, [&]() {
+        return ImGuiExtras::file_saving_dialog_button(file_path, {.file_filters = file_filters, .initial_folder = !initial_folder.empty() ? initial_folder : *file_path});
     });
 }
 
-auto file_and_folder(
+auto file_and_folder_opening(
     const char*                         label,
     std::filesystem::path*              path,
     std::vector<nfdfilteritem_t> const& file_filters
@@ -345,13 +369,70 @@ auto file_and_folder(
     auto folder_path = File::without_file_name(*path);
     auto file_path   = File::file_name(*path);
 
-    b |= file((label + " (file)"s).c_str(), &file_path, file_filters, folder_path);
+    b |= file_opening((label + " (file)"s).c_str(), &file_path, file_filters, folder_path);
     b |= folder((label + " (folder)"s).c_str(), &folder_path, false);
 
     if (b)
         *path = folder_path / file_path;
 
     return b;
+}
+
+auto file_and_folder_saving(
+    std::filesystem::path&              path,
+    std::vector<const char*> const&     extensions,
+    std::vector<nfdfilteritem_t> const& file_filters
+) -> bool
+{
+    bool b = false;
+    if (path.is_relative())
+    {
+        path = std::filesystem::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / path);
+        b    = true;
+    }
+
+    auto folder              = File::without_file_name(path);
+    auto file_with_extension = File::file_name(path);
+    auto extension           = File::extension(path);
+
+    b |= ImGuiExtras::file_saving("File", &file_with_extension, file_filters, folder, true /*Show dialog button*/);
+    if (ImGuiExtras::folder("Folder", &folder))
+    {
+        b                   = true;
+        file_with_extension = File::find_available_name(folder, File::file_name_without_extension(path), extension);
+    }
+
+    const char* best_matching_extension = wafl::find_best_match(extensions, extension.string());
+    if (ImGui::BeginCombo("Format", best_matching_extension))
+    {
+        for (const char* ext : extensions)
+        {
+            auto const is_selected = ext == extension;
+            if (ImGui::Selectable(ext, is_selected))
+            {
+                b = true;
+                file_with_extension.replace_extension(ext);
+            }
+            if (is_selected)
+                ImGui::SetKeyboardFocusHere();
+        }
+        ImGui::EndCombo();
+    }
+    if (b)
+        path = folder / file_with_extension;
+    return b;
+}
+
+void before_export_button()
+{
+    ImGui::SeparatorText("");
+}
+
+void before_export_button(std::filesystem::path const& file_to_be_exported)
+{
+    before_export_button();
+    if (File::exists(file_to_be_exported))
+        ImGuiExtras::warning_text(Cool::icon_fmt("This file already exists. Are you sure you want to overwrite it?", ICOMOON_WARNING).c_str());
 }
 
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)

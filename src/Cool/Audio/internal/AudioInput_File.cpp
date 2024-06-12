@@ -72,7 +72,7 @@ auto AudioInput_File::imgui(bool needs_to_highlight_error) -> bool
     Cool::ImGuiExtras::bring_attention_if(
         needs_to_highlight_error,
         [&]() {
-            if (ImGuiExtras::file("Audio file", &_path, NfdFileFilter::Audio))
+            if (ImGuiExtras::file_opening("Audio file", &_path, NfdFileFilter::Audio))
             {
                 try_load_current_file();
                 b = true;

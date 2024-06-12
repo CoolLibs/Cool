@@ -55,20 +55,16 @@ private:
     void begin_video_export(std::optional<VideoExportProcess>&, TimeSpeed time_speed, std::function<void()> const& on_video_export_start);
     /// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export.
     static void        end_video_export(std::optional<VideoExportProcess>&);
-    auto               output_path() -> std::filesystem::path;
     void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported);
     void               imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>&, TimeSpeed time_speed);
     [[nodiscard]] auto user_accepted_our_frames_overwrite_behaviour() -> bool;
 
-    [[nodiscard]] auto folder_path_for_image() const -> std::filesystem::path;
     [[nodiscard]] auto folder_path_for_video() const -> std::filesystem::path;
-    void               set_file_name_to_an_unused_name();
 
 private:
-    ExportSize                           _export_size;
-    std::optional<std::filesystem::path> _folder_path_for_image;
-    std::filesystem::path                _file_name{"img(0)"};
-    ImGuiWindow                          _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
+    ExportSize            _export_size;
+    std::filesystem::path _image_file{"images/img(0).png"};
+    ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
 
     std::optional<std::filesystem::path> _folder_path_for_video;
     ImGuiWindow                          _video_export_window{icon_fmt("Export a Video", ICOMOON_FILM), ImGuiWindowConfig{.is_modal = true}};
@@ -83,7 +79,7 @@ private:
         archive(
             cereal::make_nvp("Video Settings", _video_export_params),
             cereal::make_nvp("Image Size", _export_size),
-            cereal::make_nvp("Image Output Folder", _folder_path_for_image),
+            cereal::make_nvp("Image Output File", _image_file),
             cereal::make_nvp("Video Output Folder", _folder_path_for_video)
         );
     }

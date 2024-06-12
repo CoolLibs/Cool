@@ -32,10 +32,10 @@ void export_mesh(Mesh const& mesh, MeshExportSettings const& settings)
 {
     if (!File::create_folders_for_file_if_they_dont_exist(settings.path))
     {
-        Cool::Log::ToUser::warning("[Mesh Export]", fmt::format("Failed to create the folder {}", settings.path));
+        Cool::Log::ToUser::warning("[3D Model Export]", fmt::format("Failed to create the folder {}", settings.path));
         return;
     }
-    switch (settings.format)
+    switch (settings.format())
     {
     case MeshExportFormat::ply:
     {
