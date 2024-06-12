@@ -413,8 +413,9 @@ auto file_and_folder_saving(
                 b = true;
                 file_with_extension.replace_extension(ext);
             }
+            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
             if (is_selected)
-                ImGui::SetKeyboardFocusHere();
+                ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
     }
