@@ -286,7 +286,7 @@ auto MidiManager::max_index(MidiChannelKind kind) const -> int
 
 void MidiManager::imgui_window()
 {
-    _config_window.show([&]() {
+    _config_window.show([&](bool /*is_opening*/) {
         imgui_controllers_dropdown();
         ImGui::NewLine();
         imgui_visualize_channels();

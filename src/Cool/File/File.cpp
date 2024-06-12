@@ -169,6 +169,14 @@ auto find_available_name(std::filesystem::path const& folder_path, std::filesyst
     return out_name;
 }
 
+auto find_available_path(std::filesystem::path const& path) -> std::filesystem::path
+{
+    auto const folder    = without_file_name(path);
+    auto const file      = file_name_without_extension(path);
+    auto const extension = File::extension(path);
+    return folder / find_available_name(folder, file, extension);
+}
+
 void set_content(std::filesystem::path const& file_path, std::string_view content)
 {
     if (!create_folders_for_file_if_they_dont_exist(file_path))

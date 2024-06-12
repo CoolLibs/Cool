@@ -6,28 +6,13 @@
 #include <imgui.h>
 #include <exception>
 #include "Cool/ImGui/icon_fmt.h"
+#include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "ExporterU.h"
 #include "VideoExportOverwriteBehaviour.h"
 
 namespace Cool {
 
-ExporterGui::ExporterGui()
-{
-    _image_export_window.on_open().subscribe([&](auto&&) {
-        set_file_name_to_an_unused_name();
-    });
-}
-
-void ExporterGui::set_file_name_to_an_unused_name()
-{
-    _file_name = File::find_available_name(folder_path_for_image(), _file_name, ".png");
-}
-
-auto ExporterGui::folder_path_for_image() const -> std::filesystem::path
-{
-    return std::filesystem::weakly_canonical(_folder_path_for_image.value_or(Path::project_folder().value_or(Path::user_data()) / "images"));
-}
 auto ExporterGui::folder_path_for_video() const -> std::filesystem::path
 {
     return std::filesystem::weakly_canonical(_folder_path_for_video.value_or(Path::project_folder().value_or(Path::user_data()) / "video frames"));
@@ -48,11 +33,6 @@ void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::opt
 {
     imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_exported);
     imgui_window_export_video(p.widgets_in_window_video_export_in_progress, p.on_video_export_start, video_export_process, p.time_speed);
-}
-
-auto ExporterGui::output_path() -> std::filesystem::path
-{
-    return folder_path_for_image() / _file_name.replace_extension("png");
 }
 
 void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, std::optional<std::string> longest_text)
@@ -84,31 +64,19 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
 
 void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
 {
-    _image_export_window.show([&]() {
+    _image_export_window.show([&](bool is_opening) {
+        if (is_opening)
+            _image_file = File::find_available_path(_image_file);
         _export_size.imgui();
         // File and Folders
-        ImGuiExtras::file("File Name", &_file_name, {}, {}, false /*No dialog button*/);
-        {
-            auto path = folder_path_for_image();
-            if (ImGuiExtras::folder("Folder", &path))
-            {
-                _folder_path_for_image = path;
-                set_file_name_to_an_unused_name();
-            }
-        }
-
-        ImGui::SeparatorText("");
-        // Warning file exists
-        if (File::exists(output_path()))
-        {
-            ImGuiExtras::warning_text("This file already exists. Are you sure you want to overwrite it?");
-        }
+        ImGuiExtras::file_and_folder_saving(_image_file, {".png"}, NfdFileFilter::Png);
         // Validation
-        if (ImGui::Button(icon_fmt("Export as PNG", ICOMOON_UPLOAD2).c_str()))
+        ImGuiExtras::before_export_button(_image_file);
+        if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
-            ExporterU::export_image(_export_size, time, delta_time, polaroid, output_path());
-            on_image_exported(output_path());
+            ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file);
+            on_image_exported(_image_file);
         }
     });
 }
@@ -195,7 +163,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
     }
     else
     {
-        _video_export_window.show([&]() {
+        _video_export_window.show([&](bool /*is_opening*/) {
             _export_size.imgui();
             {
                 auto path = folder_path_for_video();
@@ -205,7 +173,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             _video_export_params.imgui();
             imgui_widget(user_settings().video_export_overwrite_behaviour);
             // Validation
-            ImGui::SeparatorText("");
+            ImGuiExtras::before_export_button();
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
                 _video_export_window.close();

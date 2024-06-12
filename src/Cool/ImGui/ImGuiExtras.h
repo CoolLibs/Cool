@@ -132,9 +132,16 @@ auto folder_dialog_button(
     File::folder_dialog_args const& = {}
 ) -> bool;
 
-/// Adds a button that opens a file dialog.
+/// Adds a button that opens a file opening dialog.
 /// Returns true iff out_path was modified.
-auto file_dialog_button(
+auto file_opening_dialog_button(
+    std::filesystem::path* out_path,
+    File::file_dialog_args const& = {}
+) -> bool;
+
+/// Adds a button that opens a file saving dialog.
+/// Returns true iff out_path was modified.
+auto file_saving_dialog_button(
     std::filesystem::path* out_path,
     File::file_dialog_args const& = {}
 ) -> bool;
@@ -149,7 +156,14 @@ auto folder(
 /// UI for a file path. Creates a text input and a button to open a file explorer.
 /// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
 /// `initial_folder` is the folder that the dialog window should open at. Leave empty to use `file_path` as the initial folder.
-auto file(
+auto file_opening(
+    const char*                         label,
+    std::filesystem::path*              file_path,
+    std::vector<nfdfilteritem_t> const& file_filters       = {},
+    std::filesystem::path               initial_folder     = {},
+    bool                                show_dialog_button = true
+) -> bool;
+auto file_saving(
     const char*                         label,
     std::filesystem::path*              file_path,
     std::vector<nfdfilteritem_t> const& file_filters       = {},
@@ -159,11 +173,20 @@ auto file(
 
 /// UI for a file path that shows the file and its folder on two separate lines.
 /// `file_filters` is a set of filters for the file types that should be selectable. Something like { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } }. You can find predefined filters in <Cool/NfdFileFilter/NfdFileFilter.h>.
-auto file_and_folder(
+auto file_and_folder_opening(
     const char*                         label,
     std::filesystem::path*              path,
     std::vector<nfdfilteritem_t> const& file_filters = {}
 ) -> bool;
+
+auto file_and_folder_saving(
+    std::filesystem::path&              path,
+    std::vector<const char*> const&     extensions,
+    std::vector<nfdfilteritem_t> const& file_filters = {}
+) -> bool;
+
+void before_export_button();
+void before_export_button(std::filesystem::path const& file_to_be_exported);
 
 /// Equivalent to ImGui::Image except the image will be centered in the window
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));

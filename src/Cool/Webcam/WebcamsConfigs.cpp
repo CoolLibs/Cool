@@ -56,7 +56,7 @@ void WebcamsConfigs::imgui_window()
         );
     };
 
-    _window.show([&]() {
+    _window.show([&](bool /*is_opening*/) {
         WebcamsInfos::instance().for_each_webcam_info([&](webcam_info::Info const& info) {
             auto&      config        = get_config(info.name, /*do_lock=*/false /*for_each_webcam_info already locks*/);
             auto const combo_preview = format_resolution(config.resolution);
