@@ -1,4 +1,5 @@
 #pragma once
+#include <img/src/Image.h>
 #include <set>
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "OSCChannel.h"
@@ -38,6 +39,8 @@ public:
 
     void open_config_window() { _config_window.open(); }
     void imgui_window();
+
+    void send_leds(img::Image const&) const;
 
 private:
     OSCManager(); // This is private, because all instances of OSCManager must be guaranteed to have a fixed address in memory. Use osc_manager() to access the global OSCManager.

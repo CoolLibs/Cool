@@ -1,5 +1,9 @@
 #include "OSCManager.h"
+#include <img/src/Save.h>
+#include <cstdlib>
+#include <cstring>
 #include <exception>
+#include <iostream>
 #include <mutex>
 #include <regex>
 #include <sstream>
@@ -13,7 +17,9 @@
 #include "Cool/Log/OptionalErrorMessage.h"
 #include "Cool/OSC/OSCChannel.h"
 #include "Cool/OSC/OSCConnectionEndpoint.h"
+#include "ip/IpEndpointName.h"
 #include "ip/UdpSocket.h"
+#include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPacketListener.h"
 
 namespace Cool {
@@ -119,16 +125,6 @@ void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text
     ImGui::PushFont(Font::italic());
     ImGui::TextUnformatted(("OSC listener is OFF. " + _error_message_for_endpoint_creation + extra_text).c_str());
     ImGui::PopFont();
-}
-
-void OSCManager::imgui_window()
-{
-    _config_window.show([&]() {
-        imgui_select_connection_endpoint();
-        imgui_show_all_values(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
-        ImGui::SameLine();
-        imgui_button_to_reset_values();
-    });
 }
 
 void OSCManager::imgui_show_all_values()
@@ -302,6 +298,58 @@ static auto get_ip_endpoint_name(OSCConnectionEndpoint const& endpoint) -> tl::e
     return tl::make_unexpected(fmt::format(R"STR(Select a valid IPv4 address to start listening to OSC messages.
 Allowed addresses are "{}", "localhost", or something of the form "192.168.1.1".)STR",
                                            OSC_EVERY_AVAILABLE_ADDRESS));
+}
+
+#define IP_MTU_SIZE 1536
+
+void OSCManager::send_leds(img::Image const& image) const
+{
+    // img::save_png("C:/Users/fouch/Downloads/bob.png", image);
+    IpEndpointName host{*get_ip_endpoint_name(_endpoint)};
+
+    char hostIpAddress[IpEndpointName::ADDRESS_STRING_LENGTH];
+    host.AddressAsString(hostIpAddress);
+
+    // std::cout << "sending test messages to " << hostName
+    //           << " (" << hostIpAddress << ") on port " << port << "...\n\n";
+
+    char                      buffer[IP_MTU_SIZE];
+    osc::OutboundPacketStream p(buffer, IP_MTU_SIZE);
+    UdpTransmitSocket         socket(host);
+
+    // p.Clear();
+    // blob
+    {
+        std::vector<char> blob(690);
+        char const*       data_as_char{reinterpret_cast<char const*>(image.data())};
+        for (size_t i = 0; i < 230; ++i)
+        {
+            float const t     = static_cast<float>(i) / 229.f;
+            auto        pixel = std::clamp(static_cast<size_t>(std::floor(t * image.width())), 0ull, (size_t)(image.width() - 1));
+            blob[3 * i + 0]   = data_as_char[3 * pixel + 0];
+            blob[3 * i + 1]   = data_as_char[3 * pixel + 1];
+            blob[3 * i + 2]   = data_as_char[3 * pixel + 2];
+            // std::cout << t << " " << pixel << "\n";
+        }
+        // Cool::Log::Debug::info("LED 1", fmt::format("{} {} {}", (unsigned char)blob[0], (unsigned char)blob[1], (unsigned char)blob[2]));
+        // Cool::Log::Debug::info("LED 2", fmt::format("{} {} {}", (unsigned char)blob[897], (unsigned char)blob[898], (unsigned char)blob[899]));
+
+        p << osc::BeginMessage("/leds")
+          << osc::Blob(blob.data(), blob.size())
+          << osc::EndMessage;
+    }
+
+    socket.Send(p.Data(), p.Size());
+}
+
+void OSCManager::imgui_window()
+{
+    _config_window.show([&]() {
+        imgui_select_connection_endpoint();
+        imgui_show_all_values(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
+        ImGui::SameLine();
+        imgui_button_to_reset_values();
+    });
 }
 
 void OSCManager::start_listening()

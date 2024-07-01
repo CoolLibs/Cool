@@ -10,6 +10,7 @@ class RenderTarget_Base {
 public:
     void             render(typename RenderTarget_Impl::RenderFuncType render_fn);
     img::Image       download_pixels() const { return _impl.download_pixels(); }
+    img::Image       download_led_pixels() const { return _impl.download_led_pixels(); }
     ImTextureID      imgui_texture_id() const { return _impl.imgui_texture_id(); }
     RenderTargetInfo info() const { return _impl.info(); }
     img::Size        current_size() const { return _impl.size(); }
