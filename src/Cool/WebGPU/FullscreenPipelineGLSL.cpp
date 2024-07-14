@@ -1,12 +1,13 @@
 #include "FullscreenPipelineGLSL.h"
 #include <tl/expected.hpp>
+#include "FullscreenPipeline.h"
 #include "preprocess_shader_source.h"
 
 namespace Cool {
 
-auto make_fullscreen_pipeline_glsl(ShaderModule_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>
+auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>
 {
-    auto const preprocessed = preprocess_shader_source(args.code);
+    auto const preprocessed = preprocess_shader_source(args.fragment_shader_module_creation_args.code);
     // TODO(WebGPU) Handle error properly
     if (!preprocessed)
     {
@@ -32,7 +33,7 @@ auto make_fullscreen_pipeline_glsl(ShaderModule_CreationArgs args) -> tl::expect
     {
         shadert::CompileResult result = s.CompileTo(task, shadert::TargetAPI::WGSL, opt);
         std::cout << result.data.sourceData << '\n';
-        args.code = std::move(result.data.sourceData);
+        args.fragment_shader_module_creation_args.code = std::move(result.data.sourceData);
         return FullscreenPipelineGLSL{args, std::move(result.data.uniformData)};
     }
     catch (std::exception& e)
@@ -44,7 +45,7 @@ auto make_fullscreen_pipeline_glsl(ShaderModule_CreationArgs args) -> tl::expect
     }
 }
 
-FullscreenPipelineGLSL::FullscreenPipelineGLSL(ShaderModule_CreationArgs const& args, std::vector<shadert::Uniform> uniforms_locations)
+FullscreenPipelineGLSL::FullscreenPipelineGLSL(FullscreenPipeline_CreationArgs const& args, std::vector<shadert::Uniform> uniforms_locations)
     : FullscreenPipeline{args}
     , _uniforms_locations{std::move(uniforms_locations)}
 {

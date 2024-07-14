@@ -24,11 +24,11 @@ static void assert_compute_shader_is_bound(GLuint id)
 
 ComputeShader::ComputeShader(glm::uvec3 working_group_size, std::string_view source_code)
     : Shader(
-        ShaderModule{ShaderDescription{
-            .kind        = ShaderKind::Compute,
-            .source_code = generate_boilerplate_for_size(working_group_size) + std::string(source_code),
-        }}
-    )
+          ShaderModule{ShaderDescription{
+              .kind        = ShaderKind::Compute,
+              .source_code = generate_boilerplate_for_size(working_group_size) + std::string(source_code),
+          }}
+      )
     , _working_group_size(working_group_size)
 {}
 
@@ -56,7 +56,7 @@ auto load_compute_shader_from_file(glm::uvec3 working_group_size, const std::fil
 auto generate_boilerplate_for_size(glm::uvec3 working_group_size) -> std::string
 {
     return std::string(R"V0G0N(
-#version 430
+#version 460
 #define COOL_COMPUTE_SHADER // Used to know if we can use some functions that are specific to compute shaders / fragment shaders.
 
 uniform uvec3 DispatchSize;

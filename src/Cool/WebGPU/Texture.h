@@ -38,7 +38,7 @@ private:
     mutable std::optional<TextureView> _entire_texture_view{};
 };
 
-auto load_texture(std::filesystem::path const& path, std::optional<AlphaSpace> = {}) -> Texture;
-auto texture_from_pixels(img::Size size, AlphaSpace, std::span<uint8_t const> data) -> Texture;
+auto load_texture(std::filesystem::path const& path, wgpu::TextureFormat texture_format, std::optional<AlphaSpace> = {}) -> Texture;
+auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace, std::span<uint8_t const> data) -> Texture;
 
 } // namespace Cool

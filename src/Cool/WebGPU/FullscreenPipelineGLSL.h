@@ -7,7 +7,7 @@ namespace Cool {
 
 class FullscreenPipelineGLSL : public FullscreenPipeline {
 public:
-    explicit FullscreenPipelineGLSL(ShaderModule_CreationArgs const& args, std::vector<shadert::Uniform> uniforms_locations);
+    explicit FullscreenPipelineGLSL(FullscreenPipeline_CreationArgs const& args, std::vector<shadert::Uniform> uniforms_locations);
 
     template<typename T>
     void set_uniform_with_name(std::string_view name, T const& value) const
@@ -29,6 +29,6 @@ private:
     std::vector<shadert::Uniform> _uniforms_locations{};
 };
 
-auto make_fullscreen_pipeline_glsl(ShaderModule_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>; // TODO(WebGPU) Return our official error type instead of string
+auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>; // TODO(WebGPU) Return our official error type instead of string
 
 } // namespace Cool

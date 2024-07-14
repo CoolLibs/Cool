@@ -96,6 +96,7 @@ auto Window::imgui_cap_framerate() -> bool
 
 void Window::cap_framerate_if(bool should_cap)
 {
+    // TODO(WebGPU) Maybe we don't need to disable vsync ? Instead just measure framerate properly, by measuring time at begin and end of update() function. (And also, show framerate in milliseconds, not fps)
     // TODO(WebGPU)
     //  _impl.cap_framerate_if(should_cap, *_glfw_window);
 }

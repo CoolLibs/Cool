@@ -6,7 +6,7 @@ namespace Cool {
 
 static auto dummy_texture() -> Texture const&
 {
-    static auto instance = texture_from_pixels(img::Size{1, 1}, AlphaSpace::Any, std::array<uint8_t, 3>{255, 0, 255});
+    static auto instance = texture_from_pixels(img::Size{1, 1}, wgpu::TextureFormat::RGBA8Unorm, AlphaSpace::Any, std::array<uint8_t, 4>{255, 0, 255, 255});
     return instance;
 }
 

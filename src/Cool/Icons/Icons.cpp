@@ -13,7 +13,7 @@ const Texture& Icons::get(std::filesystem::path image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        _map[path] = load_texture(path);
+        _map[path] = load_texture(path, wgpu::TextureFormat::RGBA8Unorm);
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("Icons", fmt::format("Generated texture from {}", path));
         return _map[path];

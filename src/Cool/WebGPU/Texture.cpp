@@ -14,23 +14,23 @@ Texture::Texture(wgpu::TextureDescriptor const& desc)
     , _desc{desc}
 {}
 
-auto load_texture(std::filesystem::path const& path, std::optional<AlphaSpace> alpha_space) -> Texture
+auto load_texture(std::filesystem::path const& path, wgpu::TextureFormat texture_format, std::optional<AlphaSpace> alpha_space) -> Texture
 {
     if (!alpha_space.has_value())
         alpha_space = AlphaSpace::Straight; // By default most files should be in straight alpha
 
     auto const image = img::load(path);
-    return texture_from_pixels(image.size(), *alpha_space, image.data_span());
+    return texture_from_pixels(image.size(), texture_format, *alpha_space, image.data_span());
 }
 
-auto texture_from_pixels(img::Size size, AlphaSpace alpha_space, std::span<uint8_t const> data) -> Texture
+auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace alpha_space, std::span<uint8_t const> data) -> Texture
 {
     wgpu::TextureDescriptor texture_desc;
     texture_desc.dimension       = wgpu::TextureDimension::_2D;
     texture_desc.size            = {size.width(), size.height(), 1};
     texture_desc.mipLevelCount   = 1;
     texture_desc.sampleCount     = 1;
-    texture_desc.format          = wgpu::TextureFormat::RGBA8Unorm;
+    texture_desc.format          = texture_format;
     texture_desc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst;
     texture_desc.viewFormatCount = 0;
     texture_desc.viewFormats     = nullptr;
@@ -54,8 +54,9 @@ void Texture::set_image(uint32_t color_components_count, AlphaSpace alpha_space,
     destination.aspect   = wgpu::TextureAspect::All; // only relevant for depth/stencil textures
 
     wgpu::TextureDataLayout source;
-    source.offset       = 0;
-    source.bytesPerRow  = color_components_count * width();
+    source.offset      = 0;
+    source.bytesPerRow = color_components_count * width();
+    // source.bytesPerRow  = std::max(color_components_count * width(), 256u); // TODO(WebGPU) Apparently there is a minimum of 256 https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/texturing/a-first-texture.html#source
     source.rowsPerImage = height();
 
     webgpu_context().queue.writeTexture(destination, data.data(), data.size(), source, _desc.size);
@@ -66,15 +67,15 @@ auto Texture::entire_texture_view() const -> TextureView const&
 {
     if (!_entire_texture_view.has_value())
     {
-        wgpu::TextureViewDescriptor textureViewDesc;
-        textureViewDesc.aspect          = wgpu::TextureAspect::All;
-        textureViewDesc.baseArrayLayer  = 0;
-        textureViewDesc.arrayLayerCount = 1;
-        textureViewDesc.baseMipLevel    = 0;
-        textureViewDesc.mipLevelCount   = 1;
-        textureViewDesc.dimension       = wgpu::TextureViewDimension::_2D;
-        textureViewDesc.format          = _desc.format;
-        _entire_texture_view.emplace(handle().createView(textureViewDesc));
+        wgpu::TextureViewDescriptor texture_view_desc;
+        texture_view_desc.aspect          = wgpu::TextureAspect::All;
+        texture_view_desc.baseArrayLayer  = 0;
+        texture_view_desc.arrayLayerCount = 1;
+        texture_view_desc.baseMipLevel    = 0;
+        texture_view_desc.mipLevelCount   = 1;
+        texture_view_desc.dimension       = wgpu::TextureViewDimension::_2D;
+        texture_view_desc.format          = _desc.format;
+        _entire_texture_view.emplace(handle().createView(texture_view_desc));
     }
     return *_entire_texture_view;
 }

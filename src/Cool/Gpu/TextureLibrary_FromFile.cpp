@@ -52,7 +52,7 @@ void TextureLibrary_FromFile::reload_texture(std::filesystem::path const& path)
     {
         _textures[path].error_message = std::nullopt;
         _textures[path].texture       = std::nullopt;
-        _textures[path].texture       = load_texture(path);
+        _textures[path].texture       = load_texture(path, wgpu::TextureFormat::RGBA8Unorm);
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary_FromFile", fmt::format("Generated texture from {}", path));
     }

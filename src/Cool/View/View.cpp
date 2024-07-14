@@ -13,7 +13,7 @@ namespace Cool {
 
 static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
 {
-    auto pipeline = FullscreenPipeline{{
+    auto pipeline = FullscreenPipeline{{{
         .label = "Create alpha checkerboard pattern",
         .code  = R"wgsl(
 struct VertexOutput {
@@ -26,7 +26,7 @@ fn main(in: VertexOutput) -> @location(0) vec4f {
     return vec4(vec3(grey), 1.);
 }
 )wgsl",
-    }};
+    }}};
     //     auto const err      = pipeline.compile();
     // #if DEBUG
     //     err.send_error_if_any(
