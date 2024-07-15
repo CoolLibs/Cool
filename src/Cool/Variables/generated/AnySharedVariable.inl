@@ -22,12 +22,14 @@ using AnySharedVariable = std::variant<
     SharedVariable<Cool::Hue>,
     SharedVariable<Cool::ColorPalette>,
     SharedVariable<Cool::Gradient>,
-    SharedVariable<Cool::TextureDescriptor_FromFile>,
-    SharedVariable<Cool::TextureDescriptor_FromWebcam>,
+    SharedVariable<Cool::TextureDescriptor_Image>,
+    SharedVariable<Cool::TextureDescriptor_Webcam>,
     SharedVariable<Cool::MathExpression>,
     SharedVariable<glm::mat2>,
     SharedVariable<glm::mat3>,
     SharedVariable<glm::mat4>,
     SharedVariable<Cool::MidiChannel>,
     SharedVariable<Cool::OSCChannel>,
-    SharedVariable<Cool::TimeSpeed> >;
+    SharedVariable<Cool::TimeSpeed>,
+    SharedVariable<Cool::TextureDescriptor_Video>,
+    SharedVariable<Cool::Time> >;

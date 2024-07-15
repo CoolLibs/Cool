@@ -22,6 +22,7 @@ struct ViewWindowParams {
 
 struct ViewCreationParams {
     std::string_view name{};
+    bool             is_output_view{false}; /// Makes it with no title bar, and tweaks a few behaviours to make this work nicely
     bool             is_closable{false};
     bool             start_open{true};
 };
@@ -35,6 +36,7 @@ public:
         : _name{p.name}
         , _is_closable{p.is_closable}
         , _is_open{p.start_open}
+        , _is_output_view{p.is_output_view}
     {
         _mouse_event_dispatcher.drag()
             .subscribe({
@@ -56,6 +58,7 @@ public:
 
     void open();
     void close();
+    void toggle_open_close();
 
     /// Returns the size of the window.
     /// /!\ This is not the size of the image in the View, this is the size of the full window, including the potential margins around the image.
@@ -91,11 +94,13 @@ private:
     void store_window_size();
     void store_window_position();
     void display_image(ImTextureID image_texture_id, img::Size image_size);
+    void check_for_fullscreen_toggle() const;
 
 private:
     std::string                           _name;
     bool                                  _is_closable;
     bool                                  _is_open;
+    bool                                  _is_output_view;
     bool                                  _was_open_last_frame{false};
     bool                                  _window_is_hovered{false};
     std::optional<img::Size>              _window_size{std::nullopt}; // Can be nullopt when the window is closed

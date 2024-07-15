@@ -28,6 +28,8 @@ private:
     /// Returns true iff we can Present
     [[nodiscard]] auto imgui_end_frame() -> bool;
 
+    void request_rerender_thread_safe();
+
     static void key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods);
 
     void dispatch_all_events();
@@ -43,6 +45,8 @@ private:
     Cool::StyleEditor _style_editor{};
 
     int _frames_count{0};
+
+    std::atomic<bool> _wants_to_request_rerender{false};
 };
 
 } // namespace Cool

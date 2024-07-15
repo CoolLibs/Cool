@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
+#include "Cool/Time/Time.hpp"
 
 namespace Cool::ImGuiExtras {
 
@@ -22,14 +23,6 @@ auto angle_wheel(const char* label, float* value_p, int number_of_snaps = 24, fl
 auto angle_slider(const char* label, float* value_p) -> bool;
 
 bool direction_3d(const char* label, float* value_p1, float* value_p2);
-
-/**
- * @brief Writes some ImGui text : time is displayed as [hours]:[minutes]:[seconds]. Hours and minutes might not be displayed if they are 0 for both timeInSec and totalDuration
- *
- * @param time_in_sec The time to be displayed, expressed in seconds
- * @param total_duration Optionnal : the total length of the time interval that time_in_sec is part of, expressed in seconds. (for example time_in_sec might be a timestamp in a video, and total_duration would be the duration of the video). It allows the formating to know whether it should write hours and minutes or not, in order for the display to be consistent accross the wole duration of total_duration. Leave as 0.f if you don't want or need this behaviour.
- */
-void time_formated_hms(float time_in_sec, float total_duration = 0.f);
 
 /**
  * @brief A greyed out button that you can't click on.
@@ -75,6 +68,13 @@ auto checkbox_button(const char* icon, bool* v) -> bool;
 /// Draws a clickable red cross.
 auto close_button() -> bool;
 
+struct image_framed_options {
+    std::optional<float> frame_thickness  = std::nullopt;
+    ImVec4               frame_color      = ImVec4(0, 0, 0, 0);
+    ImVec4               background_color = ImVec4(0, 0, 0, 1);
+    ImVec4               tint_color       = ImVec4(1, 1, 1, 1);
+    bool                 flip_y           = false;
+};
 /**
  * @brief Displays an image with a frame around it
  *
@@ -85,7 +85,7 @@ auto close_button() -> bool;
  * @param background_color Color that will appear in places where your image is transparent
  * @param tint_color You can tint your image
  */
-void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness = std::nullopt, const ImVec4& frame_color = ImVec4(0, 0, 0, 0), const ImVec4& background_color = ImVec4(0, 0, 0, 1), const ImVec4& tint_color = ImVec4(1, 1, 1, 1));
+void image_framed(ImTextureID tex_id, const ImVec2& size, image_framed_options const& = {});
 
 /**
  * @brief Like ImGui::InputInt, but for an unsigned int

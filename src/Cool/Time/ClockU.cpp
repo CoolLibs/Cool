@@ -5,7 +5,6 @@
 #include "Clock.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
-#include "Cool/ImGui/ImGuiExtrasStyle.h"
 
 namespace Cool::ClockU {
 
@@ -18,7 +17,7 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widge
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {12.f, ImGui::GetStyle().FramePadding.y}); // HACK to force the icon to be centered.
         if (ImGui::Button(ICOMOON_PREVIOUS2, button_size, ImDrawFlags_RoundCornersLeft))
         {
-            clock.set_time(0.f, /*force_delta_time_to_ignore_the_change=*/true);
+            clock.set_time(0s, /*force_delta_time_to_ignore_the_change=*/true);
             on_time_reset();
         }
         ImGui::PopStyleVar();
@@ -39,18 +38,13 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widge
     ImGui::SameLine();
 
     // Timeline
-    float t = clock.time_in_seconds();
     ImGui::PushFont(Font::monospace());
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    if (ImGui::DragFloat("##time", &t, 0.01f, 0.f, 0.f, "%.2f seconds"))
+    auto t = clock.time();
+    if (imgui_drag_time("##time", &t))
         clock.set_time(t);
     clock.set_is_being_changed_in_GUI(ImGui::IsItemActive());
     ImGui::PopFont();
-}
-
-void imgui_display_time(Cool::Clock& clock)
-{
-    ImGui::Text("%.2f seconds", clock.time_in_seconds());
 }
 
 } // namespace Cool::ClockU

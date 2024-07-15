@@ -9,7 +9,6 @@
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Backend/Window.h"
-#include "Cool/Gpu/TextureLibrary_FromFile.h"
 #include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -17,9 +16,12 @@
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Midi/MidiManager.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
+#include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
 
@@ -27,22 +29,6 @@ namespace Cool {
 
 static void imgui_dockspace();
 static void imgui_new_frame();
-
-static AppManager& get_app_manager(GLFWwindow* window)
-{
-    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(window)); // NOLINT
-}
-
-void AppManager::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
-{
-    auto& app_manager = get_app_manager(glfw_window);
-    if (app_manager._config.dispatch_keyboard_events_to_imgui
-        || ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
-    {
-        ImGui_ImplGlfw_KeyCallback(glfw_window, key, scancode, action, mods);
-    }
-    window().check_for_fullscreen_toggles(key, scancode, action, mods);
-}
 
 AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
     : _views{views}
@@ -63,6 +49,9 @@ AppManager::AppManager(ViewsManager& views, IApp& app, AppManagerConfig config)
     glfwSetCursorEnterCallback    (window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
     glfwSetMonitorCallback        (                 ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
+
+    ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
+    ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
 }
 
 void AppManager::run(std::function<void()> const& on_update)
@@ -154,8 +143,14 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.request_rerender();
-    if (TextureLibrary_FromFile::instance().update()) // update() needs to be called because update has side effect
+    if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
         _app.request_rerender();
+    TextureLibrary_Video::instance().update();
+    if (_wants_to_request_rerender.load())
+    {
+        _app.request_rerender();
+        _wants_to_request_rerender.store(false);
+    }
 #if !DEBUG
     try
 #endif
@@ -315,6 +310,27 @@ static void imgui_dockspace()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         ImGui::End();
     }
+}
+
+void AppManager::request_rerender_thread_safe()
+{
+    _wants_to_request_rerender.store(true);
+}
+
+static AppManager& get_app_manager(GLFWwindow* glfw_window)
+{
+    return *reinterpret_cast<AppManager*>(glfwGetWindowUserPointer(glfw_window)); // NOLINT
+}
+
+void AppManager::key_callback(GLFWwindow* glfw_window, int key, int scancode, int action, int mods)
+{
+    auto& app_manager = get_app_manager(glfw_window);
+    if (app_manager._config.dispatch_keyboard_events_to_imgui
+        || ImGui::GetIO().WantTextInput) // We still want to allow shortcuts while in text input, like CTRL + SUPPR
+    {
+        ImGui_ImplGlfw_KeyCallback(glfw_window, key, scancode, action, mods);
+    }
+    window().check_for_fullscreen_toggles(key, scancode, action, mods);
 }
 
 void AppManager::dispatch_all_events()

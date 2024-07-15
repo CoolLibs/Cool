@@ -6,6 +6,7 @@ namespace Cool {
 
 template<typename T>
 concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin const& pin_const, Node& node, Node const& node_const, NodeId const& node_id, Link const& link_const, LinkId const& link_id, NodeDefinition const& node_def, NodesGraph& graph, Cool::NodeDefinitionAndCategoryName const& def_and_cat, Pin const* pin_linked_to_new_node) { // clang-format off
+    cfg.node_context_menu(node, node_id);
     cfg.imgui_above_node_pins(node, node_id);
     cfg.imgui_below_node_pins(node, node_id);
     cfg.imgui_in_inspector_above_node_info(node, node_id);
@@ -29,6 +30,7 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin
 
 class NodesConfig {
 public:
+    void               node_context_menu(Node& node, NodeId const& id) { _pimpl->node_context_menu(node, id); }
     void               imgui_above_node_pins(Node& node, NodeId const& id) { _pimpl->imgui_above_node_pins(node, id); }
     void               imgui_below_node_pins(Node& node, NodeId const& id) { _pimpl->imgui_below_node_pins(node, id); }
     void               imgui_in_inspector_above_node_info(Node& node, NodeId const& id) { _pimpl->imgui_in_inspector_above_node_info(node, id); }
@@ -67,6 +69,7 @@ private:
     struct Concept { // NOLINT(*-special-member-functions)
         virtual ~Concept() = default;
 
+        virtual void               node_context_menu(Node&, Cool::NodeId const&)                                                  = 0;
         virtual void               imgui_above_node_pins(Node&, Cool::NodeId const&)                                              = 0;
         virtual void               imgui_below_node_pins(Node&, Cool::NodeId const&)                                              = 0;
         virtual void               imgui_in_inspector_above_node_info(Node&, Cool::NodeId const&)                                 = 0;
@@ -94,6 +97,10 @@ private:
             : _cfg{std::move(cfg)}
         {}
 
+        void node_context_menu(Node& node, Cool::NodeId const& id) override
+        {
+            _cfg.node_context_menu(node, id);
+        }
         void imgui_above_node_pins(Node& node, Cool::NodeId const& id) override
         {
             _cfg.imgui_above_node_pins(node, id);

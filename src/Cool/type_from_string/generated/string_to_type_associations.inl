@@ -142,12 +142,12 @@ struct from_impl<"Gradient"> {
 
 template<>
 struct from_impl<"Texture"> {
-    using type = Cool::TextureDescriptor_FromFile;
+    using type = Cool::TextureDescriptor_Image;
 };
 
 template<>
 struct from_impl<"Webcam"> {
-    using type = Cool::TextureDescriptor_FromWebcam;
+    using type = Cool::TextureDescriptor_Webcam;
 };
 
 template<>
@@ -183,4 +183,14 @@ struct from_impl<"OSC"> {
 template<>
 struct from_impl<"TimeSpeed"> {
     using type = Cool::TimeSpeed;
+};
+
+template<>
+struct from_impl<"Video"> {
+    using type = Cool::TextureDescriptor_Video;
+};
+
+template<>
+struct from_impl<"Time"> {
+    using type = Cool::Time;
 };

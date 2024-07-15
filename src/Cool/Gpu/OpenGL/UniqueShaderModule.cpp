@@ -41,6 +41,7 @@ UniqueShaderModule& UniqueShaderModule::operator=(UniqueShaderModule&& rhs) noex
 {
     if (&rhs != this)
     {
+        GLDebug(glDeleteShader(_id));
         _id     = rhs._id;
         rhs._id = decltype(rhs._id){};
     }

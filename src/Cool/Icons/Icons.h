@@ -29,12 +29,6 @@ public:
      */
     static void cleanup_texture(std::filesystem::path image_path);
 
-    /**
-     * @brief Cleans up all the textures
-     *
-     */
-    static void shut_down();
-
 private:
     static std::map<std::filesystem::path, Texture> _map;
 };

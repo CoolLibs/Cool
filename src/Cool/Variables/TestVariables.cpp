@@ -74,11 +74,11 @@ void test_variables()
         var.imgui();
     }
     {
-        static auto var = Cool::Variable<Cool::TextureDescriptor_FromFile>{{"Texture"}};
+        static auto var = Cool::Variable<Cool::TextureDescriptor_Image>{{"Texture"}};
         var.imgui();
     }
     {
-        static auto var = Cool::Variable<Cool::TextureDescriptor_FromWebcam>{{"Webcam"}};
+        static auto var = Cool::Variable<Cool::TextureDescriptor_Webcam>{{"Webcam"}};
         var.imgui();
     }
     {
@@ -87,6 +87,14 @@ void test_variables()
     }
     {
         static auto var = Cool::Variable<Cool::OSCChannel>{{"OSC"}};
+        var.imgui();
+    }
+    {
+        static auto var = Cool::Variable<Cool::Time>{{"Time"}};
+        var.imgui();
+    }
+    {
+        static auto var = Cool::Variable<Cool::TimeSpeed>{{"Time Speed"}};
         var.imgui();
     }
 }

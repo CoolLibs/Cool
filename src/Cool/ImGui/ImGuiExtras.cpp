@@ -123,27 +123,6 @@ bool direction_3d(const char* label, float* value_p1, float* value_p2)
     return b;
 }
 
-void time_formated_hms(float time_in_sec, float total_duration)
-{
-    if (total_duration == 0.f)
-    {
-        total_duration = time_in_sec;
-    }
-    auto t = static_cast<uint32_t>(time_in_sec);
-    if (total_duration < 60.f)
-    {
-        ImGui::Text("%us", t);
-    }
-    else if (total_duration < 3600.f)
-    {
-        ImGui::Text("%um %02us", t / 60, t % 60);
-    }
-    else
-    {
-        ImGui::Text("%uh %02um %02us", t / 3600, (t % 3600) / 60, t % 60);
-    }
-}
-
 void button_disabled(const char* label, const char* reason_for_disabling)
 {
     disabled_if(true, reason_for_disabling, [&]() {
@@ -169,7 +148,7 @@ bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4
 void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabling, float button_width, float button_height, std::optional<float> frame_padding)
 {
     const ImVec4 grey = ImVec4(0.35f, 0.35f, 0.35f, 1.f);
-    image_framed(tex_id, ImVec2(button_width, button_height), frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey);
+    image_framed(tex_id, ImVec2(button_width, button_height), {frame_padding, grey, ImVec4(0.f, 0.f, 0.f, 1.f), grey});
     ImGui::SetItemTooltip("%s", reason_for_disabling);
 }
 
@@ -218,7 +197,7 @@ auto close_button() -> bool
     );
 }
 
-void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> frame_thickness, const ImVec4& frame_color, const ImVec4& background_color, const ImVec4& tint_color)
+void image_framed(ImTextureID tex_id, const ImVec2& size, image_framed_options const& o)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -234,7 +213,7 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
     ImGui::PushID(tex_id);
     const ImGuiID id = window->GetID("#image");
     ImGui::PopID();
-    const ImVec2 padding = frame_thickness ? ImVec2(*frame_thickness, *frame_thickness) : style.FramePadding;
+    const ImVec2 padding = o.frame_thickness ? ImVec2(*o.frame_thickness, *o.frame_thickness) : style.FramePadding;
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2);
     const ImRect image_bb(window->DC.CursorPos + padding, window->DC.CursorPos + padding + size);
     ImGui::ItemSize(bb);
@@ -244,11 +223,11 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, std::optional<float> f
     }
 
     // Render
-    const ImU32 frameCol = frame_color.w > 0.0f ? ImGui::GetColorU32(frame_color) : ImGui::GetColorU32(ImGuiCol_Button);
+    const ImU32 frameCol = o.frame_color.w > 0.0f ? ImGui::GetColorU32(o.frame_color) : ImGui::GetColorU32(ImGuiCol_Button);
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp(ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
-    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, 1), ImVec2(1, 0), ImGui::GetColorU32(tint_color));
+    ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(o.background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+    window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, o.flip_y ? 0.f : 1.f), ImVec2(1, o.flip_y ? 1.f : 0.f), ImGui::GetColorU32(o.tint_color));
 }
 
 bool input_uint(const char* label, unsigned int* value_p)

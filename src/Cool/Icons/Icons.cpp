@@ -9,7 +9,7 @@ std::map<std::filesystem::path, Texture> Icons::_map;
 
 const Texture& Icons::get(std::filesystem::path image_path)
 {
-    const auto path = std::filesystem::absolute(image_path);
+    const auto path = File::make_absolute(image_path);
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
@@ -26,7 +26,7 @@ const Texture& Icons::get(std::filesystem::path image_path)
 
 void Icons::cleanup_texture(std::filesystem::path image_path)
 {
-    const auto path = std::filesystem::absolute(image_path);
+    const auto path = File::make_absolute(image_path);
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
@@ -39,11 +39,6 @@ void Icons::cleanup_texture(std::filesystem::path image_path)
     {
         _map.erase(path);
     }
-}
-
-void Icons::shut_down()
-{
-    _map.clear();
 }
 
 } // namespace Cool

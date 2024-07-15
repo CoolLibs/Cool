@@ -6,7 +6,7 @@ namespace Cool {
 
 class Clock_Realtime : public Clock {
 private:
-    auto update_and_get_delta_time_in_nanoseconds() -> int64_t override;
+    auto update_and_get_delta_time() -> Time override;
     void on_play() override;
 
 private:

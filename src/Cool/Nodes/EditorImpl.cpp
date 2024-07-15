@@ -816,6 +816,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         auto*      node = _graph.nodes().get_mutable_ref(id);
         if (node)
         {
+            nodes_cfg.node_context_menu(*node, id);
             auto const* category = library.get_category(node->category_name());
             if (category)
                 graph_has_changed |= imgui_all_definitions_selectables(id, *node, *category, nodes_cfg);

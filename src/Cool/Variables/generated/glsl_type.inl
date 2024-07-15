@@ -102,13 +102,13 @@ auto glsl_type<Cool::Gradient>() -> std::string
 }
 
 template<>
-auto glsl_type<Cool::TextureDescriptor_FromFile>() -> std::string
+auto glsl_type<Cool::TextureDescriptor_Image>() -> std::string
 {
     return "Cool_Texture";
 }
 
 template<>
-auto glsl_type<Cool::TextureDescriptor_FromWebcam>() -> std::string
+auto glsl_type<Cool::TextureDescriptor_Webcam>() -> std::string
 {
     return "Cool_Texture";
 }
@@ -151,6 +151,18 @@ auto glsl_type<Cool::OSCChannel>() -> std::string
 
 template<>
 auto glsl_type<Cool::TimeSpeed>() -> std::string
+{
+    return "float";
+}
+
+template<>
+auto glsl_type<Cool::TextureDescriptor_Video>() -> std::string
+{
+    return "Cool_Texture";
+}
+
+template<>
+auto glsl_type<Cool::Time>() -> std::string
 {
     return "float";
 }

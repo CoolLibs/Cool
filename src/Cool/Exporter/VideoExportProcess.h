@@ -18,7 +18,7 @@ public:
     auto clock() const -> Clock const& { return _clock; }
 
 private:
-    auto estimated_remaining_time() -> float;
+    auto estimated_remaining_time() -> Time;
     void update_time_estimate();
     void export_frame(Polaroid polaroid, std::filesystem::path const& file_path);
 
@@ -27,14 +27,14 @@ private:
     img::Size             _size;
     Clock_FixedTimestep   _clock;
 
-    int              _nb_frames_sent_to_thread_pool{0};
-    std::atomic<int> _nb_frames_which_finished_exporting{0};
-    int              _total_nb_of_frames_in_sequence;
-    int              _frame_numbering_offset;
+    int64_t              _nb_frames_sent_to_thread_pool{0};
+    std::atomic<int64_t> _nb_frames_which_finished_exporting{0};
+    int64_t              _total_nb_of_frames_in_sequence;
+    int64_t              _frame_numbering_offset;
 
     std::chrono::steady_clock::time_point _last_render{};
-    Averager<float>                       _average_time_between_two_renders{};
-    Averager<float>                       _average_export_time{};
+    Averager<double>                      _average_time_between_two_renders{};
+    Averager<double>                      _average_export_time{};
     std::mutex                            _average_export_time_mutex;
 
     bool                       _should_stop_asap = false;

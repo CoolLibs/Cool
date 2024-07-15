@@ -1,8 +1,9 @@
 #include "debug_options_windows.h"
-#include <Cool/Gpu/TextureLibrary_FromFile.h>
 #include <Cool/ImGui/test_markdown_formatting.h>
 #include <Cool/Log/TestMessageConsole.h>
 #include <Cool/Midi/MidiManager.h>
+#include <Cool/TextureSource/TextureLibrary_Image.h>
+#include <Cool/TextureSource/TextureLibrary_Video.h>
 #include <Cool/Tips/test_tips.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Variables/TestPresets.h>
@@ -13,7 +14,10 @@ namespace Cool {
 void debug_options_windows(TipsManager& tips_manager)
 {
     DebugOptions::texture_library_debug_view([&] {
-        TextureLibrary_FromFile::instance().imgui_debug_view();
+        ImGui::SeparatorText("Image");
+        TextureLibrary_Image::instance().imgui_debug_view();
+        ImGui::SeparatorText("Video");
+        TextureLibrary_Video::instance().imgui_debug_view();
     });
 
     DebugOptions::test_message_console__window([]() {

@@ -22,6 +22,7 @@ public:
     [[nodiscard]] auto size() const -> img::Size { return img::Size{width(), height()}; }
     [[nodiscard]] auto width() const -> uint32_t { return _desc.size.width; }
     [[nodiscard]] auto height() const -> uint32_t { return _desc.size.height; }
+    [[nodiscard]] auto aspect_ratio() const -> float { return static_cast<float>(width()) / static_cast<float>(height()); }
     [[nodiscard]] auto alpha_space() const -> AlphaSpace { return _alpha_space; }
 
     auto entire_texture_view() const -> TextureView const&; // TODO(WebGPU) When resizing the texture, we probably need to rebuild the view ?

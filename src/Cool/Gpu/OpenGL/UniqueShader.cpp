@@ -23,6 +23,7 @@ UniqueShader& UniqueShader::operator=(UniqueShader&& rhs) noexcept
 {
     if (&rhs != this)
     {
+        GLDebug(glDeleteProgram(_id));
         _id     = rhs._id;
         rhs._id = decltype(rhs._id){};
     }
