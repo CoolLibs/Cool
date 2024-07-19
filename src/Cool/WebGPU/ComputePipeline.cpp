@@ -18,7 +18,7 @@ namespace Cool {
 ComputePipeline::ComputePipeline(ComputePipeline_CreationArgs const& args)
     // : _uniforms_buffer(make_uniforms_buffer_descriptor())
     : _workgroup_size{args.workgroup_size}
-    , _bind_group_layout{args.bind_group_layout}
+    , _bind_group_layout{args.bind_group_layout.build()}
 {
     assert(_workgroup_size.x > 0);
     assert(_workgroup_size.y > 0);

@@ -85,8 +85,10 @@ auto RenderTarget::texture_premultiplied_alpha() const -> Texture const&
 static auto make_compute_pipeline_that_converts_to_straight_alpha() -> ComputePipeline
 {
     return ComputePipeline{{
-        .label                    = "[RenderTarget] Convert premultiplied to straight alpha",
-        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Texture},
+        .label             = "[RenderTarget] Convert premultiplied to straight alpha",
+        .bind_group_layout = BindGroupLayoutBuilder{wgpu::ShaderStage::Compute}
+                                 .read_texture_2D(0)
+                                 .write_texture_2D(1),
         .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
         .wgsl_compute_shader_code = R"wgsl(
 @group(0) @binding(0) var in_tex_premultiplied: texture_2d<f32>;
@@ -119,8 +121,10 @@ static auto compute_pipeline_that_converts_to_straight_alpha() -> ComputePipelin
 static auto make_compute_pipeline_that_converts_to_premultiplied_alpha() -> ComputePipeline
 {
     return ComputePipeline{{
-        .label                    = "[RenderTarget] Convert straight to premultiplied alpha",
-        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Texture},
+        .label             = "[RenderTarget] Convert straight to premultiplied alpha",
+        .bind_group_layout = BindGroupLayoutBuilder{wgpu::ShaderStage::Compute}
+                                 .read_texture_2D(0)
+                                 .write_texture_2D(1),
         .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
         .wgsl_compute_shader_code = R"wgsl(
 @group(0) @binding(0) var in_tex_straight: texture_2d<f32>;

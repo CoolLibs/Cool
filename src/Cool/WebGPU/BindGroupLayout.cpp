@@ -1,60 +1,69 @@
 #include "BindGroupLayout.h"
-#include <WebGPU/webgpu.hpp>
+#include <webgpu/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
 
 namespace Cool {
-
-static auto make_bind_group_layout(std::span<BindGroupLayoutEntry const> entries)
-{
-    std::vector<wgpu::BindGroupLayoutEntry> bindings(entries.size(), wgpu::Default);
-
-    for (size_t i = 0; i < entries.size(); ++i)
-    {
-        bindings[i].binding    = i;
-        bindings[i].visibility = wgpu::ShaderStage::Compute;
-
-        switch (entries[i])
-        {
-        case BindGroupLayoutEntry::Read_Buffer:
-        {
-            bindings[i].buffer.type = wgpu::BufferBindingType::ReadOnlyStorage;
-            break;
-        }
-        case BindGroupLayoutEntry::ReadWrite_Buffer:
-        case BindGroupLayoutEntry::Write_Buffer: // There is no such thing as a write-only buffer
-        {
-            bindings[i].buffer.type = wgpu::BufferBindingType::Storage;
-            break;
-        }
-        case BindGroupLayoutEntry::Read_Texture:
-        {
-            bindings[i].texture.sampleType    = wgpu::TextureSampleType::Float;
-            bindings[i].texture.viewDimension = wgpu::TextureViewDimension::_2D;
-            break;
-        }
-        case BindGroupLayoutEntry::Write_Texture:
-        {
-            bindings[i].storageTexture.access        = wgpu::StorageTextureAccess::WriteOnly;
-            bindings[i].storageTexture.format        = wgpu::TextureFormat::RGBA8Unorm;
-            bindings[i].storageTexture.viewDimension = wgpu::TextureViewDimension::_2D;
-            break;
-        }
-        }
-    }
-
-    wgpu::BindGroupLayoutDescriptor bind_group_layout_desc;
-    bind_group_layout_desc.entryCount = static_cast<uint32_t>(bindings.size());
-    bind_group_layout_desc.entries    = bindings.data();
-
-    return webgpu_context().device.createBindGroupLayout(bind_group_layout_desc);
-}
 
 BindGroupLayout::BindGroupLayout(wgpu::BindGroupLayoutDescriptor const& desc)
     : WGPUUnique<wgpu::BindGroupLayout>{webgpu_context().device.createBindGroupLayout(desc)}
 {}
 
-BindGroupLayout::BindGroupLayout(std::span<BindGroupLayoutEntry const> entries)
-    : WGPUUnique<wgpu::BindGroupLayout>{make_bind_group_layout(entries)}
-{}
+#define BUILDER(x)                                                                        \
+    _layout_entries.emplace_back(wgpu::Default);                                          \
+    _layout_entries.back().binding = binding;                                             \
+    assert(visibility.has_value() || _default_visibility.has_value());                    \
+    _layout_entries.back().visibility = visibility.value_or(_default_visibility.value()); \
+    x return *this;
+
+auto BindGroupLayoutBuilder::read_texture_2D(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    BUILDER(
+        _layout_entries.back().texture.sampleType    = wgpu::TextureSampleType::Float;
+        _layout_entries.back().texture.viewDimension = wgpu::TextureViewDimension::_2D;
+    )
+}
+
+auto BindGroupLayoutBuilder::sampler(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    BUILDER(
+        _layout_entries.back().sampler.type = wgpu::SamplerBindingType::Filtering;
+    )
+}
+
+auto BindGroupLayoutBuilder::write_texture_2D(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    BUILDER(
+        _layout_entries.back().storageTexture.access        = wgpu::StorageTextureAccess::WriteOnly;
+        _layout_entries.back().storageTexture.format        = wgpu::TextureFormat::RGBA8Unorm;
+        _layout_entries.back().storageTexture.viewDimension = wgpu::TextureViewDimension::_2D;
+    )
+}
+
+auto BindGroupLayoutBuilder::read_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    BUILDER(
+        _layout_entries.back().buffer.type = wgpu::BufferBindingType::ReadOnlyStorage;
+    )
+}
+
+auto BindGroupLayoutBuilder::write_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    return read_write_buffer(binding, visibility); // There is no such thing as a write-only buffer in WebGPU
+}
+
+auto BindGroupLayoutBuilder::read_write_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility) -> BindGroupLayoutBuilder&
+{
+    BUILDER(
+        _layout_entries.back().buffer.type = wgpu::BufferBindingType::Storage;
+    )
+}
+
+auto BindGroupLayoutBuilder::build() const -> BindGroupLayout
+{
+    auto bind_group_layout_desc       = wgpu::BindGroupLayoutDescriptor{};
+    bind_group_layout_desc.entryCount = _layout_entries.size();
+    bind_group_layout_desc.entries    = _layout_entries.data();
+    return Cool::BindGroupLayout{bind_group_layout_desc};
+}
 
 } // namespace Cool

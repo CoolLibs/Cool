@@ -4,18 +4,29 @@
 
 namespace Cool {
 
-enum class BindGroupLayoutEntry {
-    Read_Buffer,
-    ReadWrite_Buffer,
-    Write_Buffer,
-    Read_Texture,
-    Write_Texture,
-};
-
 class BindGroupLayout : public WGPUUnique<wgpu::BindGroupLayout> {
 public:
     explicit BindGroupLayout(wgpu::BindGroupLayoutDescriptor const&);
-    explicit BindGroupLayout(std::span<BindGroupLayoutEntry const> entries);
+};
+
+class BindGroupLayoutBuilder {
+public:
+    explicit BindGroupLayoutBuilder(std::optional<wgpu::ShaderStageFlags> default_visibility = {})
+        : _default_visibility{default_visibility}
+    {}
+
+    auto read_texture_2D(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+    auto sampler(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+    auto write_texture_2D(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+    auto read_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+    auto write_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+    auto read_write_buffer(int binding, std::optional<wgpu::ShaderStageFlags> visibility = {}) -> BindGroupLayoutBuilder&;
+
+    auto build() const -> BindGroupLayout;
+
+private:
+    std::vector<wgpu::BindGroupLayoutEntry> _layout_entries{};
+    std::optional<wgpu::ShaderStageFlags>   _default_visibility{};
 };
 
 } // namespace Cool

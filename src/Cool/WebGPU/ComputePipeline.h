@@ -8,11 +8,11 @@
 namespace Cool {
 
 struct ComputePipeline_CreationArgs {
-    std::string_view                      label{"Compute Pass"};
-    std::span<BindGroupLayoutEntry const> bind_group_layout{};
-    glm::uvec3                            workgroup_size{32, 1, 1}; // NB: prefer {32, 1, 1} for 1D operations, and {8, 8, 1} for 2D operations. See https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
-    std::string_view                      entry_point{"main"};
-    std::string_view                      wgsl_compute_shader_code{};
+    std::string_view              label{"Compute Pass"};
+    BindGroupLayoutBuilder const& bind_group_layout;
+    glm::uvec3                    workgroup_size{32, 1, 1}; // NB: prefer {32, 1, 1} for 1D operations, and {8, 8, 1} for 2D operations. See https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
+    std::string_view              entry_point{"main"};
+    std::string_view              wgsl_compute_shader_code{};
 };
 
 // TODO(WebGPU) Move to BindGroup file

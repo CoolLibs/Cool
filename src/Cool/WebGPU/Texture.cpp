@@ -4,6 +4,7 @@
 #include <webgpu/webgpu.hpp>
 #include "Cool/ColorSpaces/AlphaSpace.h"
 #include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/BindGroupLayout.h"
 #include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/ComputePipeline.h"
 
@@ -83,8 +84,10 @@ auto Texture::entire_texture_view() const -> TextureView const&
 static auto make_compute_pipeline_to_copy_texture_to_buffer() -> ComputePipeline
 {
     return ComputePipeline{{
-        .label                    = "[Texture] Copy to buffer",
-        .bind_group_layout        = std::vector{BindGroupLayoutEntry::Read_Texture, BindGroupLayoutEntry::Write_Buffer},
+        .label             = "[Texture] Copy to buffer",
+        .bind_group_layout = BindGroupLayoutBuilder{wgpu::ShaderStage::Compute}
+                                 .read_texture_2D(0)
+                                 .write_buffer(1),
         .workgroup_size           = glm::uvec3{8, 8, 1}, // "I suggest we use a workgroup size of 8x8: this treats both X and Y axes symmetrically and sums up to 64 threads, which is a reasonable multiple of a typical warp size." from https://eliemichel.github.io/LearnWebGPU/basic-compute/image-processing/mipmap-generation.html#dispatch
         .wgsl_compute_shader_code = R"wgsl(
 @group(0) @binding(0) var in_texture: texture_2d<f32>;
