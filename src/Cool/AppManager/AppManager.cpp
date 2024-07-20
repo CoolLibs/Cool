@@ -16,7 +16,7 @@
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Midi/MidiManager.h"
-#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Image.hpp"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
@@ -143,7 +143,7 @@ void AppManager::update()
     TextureLibrary_FromWebcam::instance().on_frame_begin();
     if (TextureLibrary_FromWebcam::instance().has_active_webcams())
         _app.request_rerender();
-    if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
+    if (texture_library_image().update()) // update() needs to be called because update has side effect
         _app.request_rerender();
     TextureLibrary_Video::instance().update();
     if (_wants_to_request_rerender.load())

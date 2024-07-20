@@ -1,4 +1,4 @@
-#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "TextureLibrary_Image.hpp"
 #include <chrono>
 #include <filesystem>
 #include <optional>
@@ -7,7 +7,6 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "Cool/Webgpu/Texture.h"
-#include "TextureLibrary_Image.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
 

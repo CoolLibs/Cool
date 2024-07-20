@@ -25,7 +25,7 @@ public:
     auto build() const -> BindGroupLayout;
 
 private:
-    std::vector<wgpu::BindGroupLayoutEntry> _layout_entries{};
+    std::vector<wgpu::BindGroupLayoutEntry> _entries{};
     std::optional<wgpu::ShaderStageFlags>   _default_visibility{};
 };
 

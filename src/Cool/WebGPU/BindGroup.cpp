@@ -1,4 +1,4 @@
-#include "BindGroup.h"
+#include "BindGroup.hpp"
 #include <webgpu/webgpu.hpp>
 #include "Cool/Gpu/WebGPUContext.h"
 

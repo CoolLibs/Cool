@@ -14,12 +14,6 @@ namespace Cool {
 /// re-loads it if the source file changes.
 class TextureLibrary_Image {
 public:
-    [[nodiscard]] static auto instance() -> TextureLibrary_Image&
-    {
-        static auto inst = TextureLibrary_Image{};
-        return inst;
-    }
-
     [[nodiscard]] auto get(std::filesystem::path const&) -> Texture const*;
 
     /// Returns true iff at least one of the textures in the library has changed.
@@ -29,7 +23,6 @@ public:
     void imgui_debug_view() const;
 
 private:
-    TextureLibrary_Image() = default; // This is a singleton. Get the global instance with `instance()` instead.
     void reload_texture(std::filesystem::path const& path);
 
 private:
@@ -42,5 +35,11 @@ private:
     };
     std::map<std::filesystem::path, Data> _textures;
 };
+
+[[nodiscard]] inline auto texture_library_image() -> TextureLibrary_Image&
+{
+    static auto inst = TextureLibrary_Image{};
+    return inst;
+}
 
 } // namespace Cool

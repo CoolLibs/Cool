@@ -1,6 +1,6 @@
 #pragma once
 #include <webgpu/webgpu.hpp>
-#include "Cool/WebGPU/BindGroupLayout.h"
+#include "Cool/WebGPU/BindGroupLayout.hpp"
 #include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/TextureView.h"
 #include "Cool/WebGPU/WGPUUnique.h"

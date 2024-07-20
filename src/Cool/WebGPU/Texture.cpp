@@ -4,7 +4,7 @@
 #include <webgpu/webgpu.hpp>
 #include "Cool/ColorSpaces/AlphaSpace.h"
 #include "Cool/Gpu/WebGPUContext.h"
-#include "Cool/WebGPU/BindGroupLayout.h"
+#include "Cool/WebGPU/BindGroupLayout.hpp"
 #include "Cool/WebGPU/Buffer.h"
 #include "Cool/WebGPU/ComputePipeline.h"
 

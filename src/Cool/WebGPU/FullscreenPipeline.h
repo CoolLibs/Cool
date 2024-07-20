@@ -1,11 +1,11 @@
 #pragma once
 #include <webgpu/webgpu.hpp>
-#include "BindGroupLayout.h"
+#include "BindGroup.hpp"
+#include "BindGroupLayout.hpp"
+#include "Buffer.h"
 #include "Cool/Gpu/WebGPUContext.h"
-#include "Cool/WebGPU/BindGroup.h"
-#include "Cool/WebGPU/Buffer.h"
-#include "Cool/WebGPU/ShaderModule.h"
-#include "Cool/WebGPU/WGPUUnique.h"
+#include "ShaderModule.h"
+#include "WGPUUnique.h"
 #include "glm/glm.hpp"
 
 namespace Cool {

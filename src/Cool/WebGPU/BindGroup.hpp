@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/WebGPU/WGPUUnique.h"
+#include "WGPUUnique.h"
 #include "webgpu/webgpu.hpp"
 
 namespace Cool {

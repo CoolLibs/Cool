@@ -9,7 +9,7 @@
 #include "Audio/Audio.hpp"
 #include "Cool/File/File.h"
 #include "Cool/Path/Path.h"
-#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Image.hpp"
 #include "Cool/TextureSource/TextureSamplerLibrary.hpp"
 #include "Cool/View/ViewsManager.h"
 
