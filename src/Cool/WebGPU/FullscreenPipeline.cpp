@@ -193,15 +193,16 @@ void FullscreenPipeline::draw(wgpu::RenderPassEncoder& render_pass, BindGroup co
 {
     render_pass.setPipeline(*this);
     render_pass.setBindGroup(0, _bind_group, 0, nullptr);
-    if (_has_extra_bind_group)
-    {
-        assert(extra_bind_group != nullptr);
-        render_pass.setBindGroup(1, *extra_bind_group, 0, nullptr);
-    }
-    else
-    {
-        assert(extra_bind_group == nullptr);
-    }
+    // TODO(WebGPU) Cleanup :
+    // if (_has_extra_bind_group)
+    // {
+    //     assert(extra_bind_group != nullptr);
+    //     render_pass.setBindGroup(1, *extra_bind_group, 0, nullptr);
+    // }
+    // else
+    // {
+    //     assert(extra_bind_group == nullptr);
+    // }
     render_pass.draw(3, 1, 0, 0);
 }
 
