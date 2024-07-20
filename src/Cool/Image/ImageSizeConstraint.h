@@ -1,6 +1,5 @@
 #pragma once
-
-#include <Cool/Gpu/InterpolationMode.h>
+#include <Cool/WebGPU/InterpolationMode.hpp>
 #include <img/img.hpp>
 #include "AspectRatio.h"
 
@@ -36,7 +35,7 @@ private:
 private:
     bool              _is_controlling_nb_pixels    = false;
     bool              _is_controlling_aspect_ratio = true;
-    InterpolationMode _interpolation_mode          = InterpolationMode::NearestNeighbor;
+    InterpolationMode _interpolation_mode          = InterpolationMode::NearestNeighbour;
     uint32_t          _nb_pixels                   = 250'000;
     AspectRatio       _aspect_ratio;
 

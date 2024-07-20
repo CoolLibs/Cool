@@ -2,7 +2,7 @@
 #include <compare>
 #include "Cool/Path/Path.h"
 #include "Cool/Webgpu/Texture.h"
-#include "TextureSamplerDescriptor.h"
+#include "Cool/Webgpu/TextureSamplerDescriptor.hpp"
 #include "TextureSource.h"
 
 namespace Cool {

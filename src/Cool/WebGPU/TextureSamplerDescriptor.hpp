@@ -1,23 +1,12 @@
 #pragma once
+#include "InterpolationMode.hpp"
+#include "RepeatMode.hpp"
 
 namespace Cool {
 
-enum class TextureRepeatMode {
-    None,
-    Mirror,
-    Mosaic,
-    Clamp
-};
-
-enum class Interpolation {
-    NearestNeighbour,
-    Linear,
-    LinearMipmapLinear,
-};
-
 struct TextureSamplerDescriptor {
-    TextureRepeatMode repeat_mode{TextureRepeatMode::None};
-    Interpolation     interpolation_mode{Interpolation::Linear};
+    RepeatMode        repeat_mode{RepeatMode::None};
+    InterpolationMode interpolation_mode{InterpolationMode::Linear};
 
     friend auto operator<=>(TextureSamplerDescriptor const&, TextureSamplerDescriptor const&) = default;
     auto        imgui_widget() -> bool;

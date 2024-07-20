@@ -10,7 +10,7 @@
 #include "Cool/File/File.h"
 #include "Cool/Path/Path.h"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
-#include "Cool/TextureSource/TextureSamplerLibrary.h"
+#include "Cool/TextureSource/TextureSamplerLibrary.hpp"
 #include "Cool/View/ViewsManager.h"
 
 namespace Cool::internal {
