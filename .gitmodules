@@ -114,4 +114,4 @@
 	url = https://github.com/CoolLibs/easy_ffmpeg
 [submodule "lib/ser20"]
 	path = lib/ser20
-	url = https://github.com/royjacobson/ser20
+	url = https://github.com/CoolLibs/ser20
