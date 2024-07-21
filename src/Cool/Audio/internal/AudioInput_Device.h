@@ -2,13 +2,13 @@
 #include "Audio/Audio.hpp"
 #include "IAudioInput.h"
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive>
 void serialize(Archive& archive, Audio::UseGivenDevice& device)
 {
     archive(
-        cereal::make_nvp("Name", device.name)
+        ser20::make_nvp("Name", device.name)
     );
 }
 template<class Archive>
@@ -16,7 +16,7 @@ void serialize(Archive&, Audio::UseDefaultDevice&)
 {
 }
 
-} // namespace cereal
+} // namespace ser20
 
 namespace Cool::internal {
 
@@ -48,13 +48,13 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Input Device", get_selected_input_device()),
-            cereal::make_nvp("Volume", _volume)
+            ser20::make_nvp("Input Device", get_selected_input_device()),
+            ser20::make_nvp("Volume", _volume)
         );
     }
     template<class Archive>

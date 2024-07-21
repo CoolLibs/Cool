@@ -48,12 +48,12 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Video", _desc)
+            ser20::make_nvp("Video", _desc)
         );
     }
     template<class Archive>

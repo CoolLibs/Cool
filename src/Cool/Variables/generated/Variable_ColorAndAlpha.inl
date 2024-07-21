@@ -19,12 +19,12 @@ struct VariableMetadata<Cool::ColorAndAlpha> {
 
 private:
     // Serialisation
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Is HDR", is_hdr)
+            ser20::make_nvp("Is HDR", is_hdr)
         );
     }
 };

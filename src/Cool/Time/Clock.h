@@ -56,14 +56,14 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Time", _time),
-            cereal::make_nvp("Speed", _time_speed),
-            cereal::make_nvp("Is playing", _is_playing)
+            ser20::make_nvp("Time", _time),
+            ser20::make_nvp("Speed", _time_speed),
+            ser20::make_nvp("Is playing", _is_playing)
         );
     }
 };

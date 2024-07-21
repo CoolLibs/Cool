@@ -78,15 +78,15 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Video Settings", _video_export_params),
-            cereal::make_nvp("Image Size", _export_size),
-            cereal::make_nvp("Image Output Folder", _folder_path_for_image),
-            cereal::make_nvp("Video Output Folder", _folder_path_for_video)
+            ser20::make_nvp("Video Settings", _video_export_params),
+            ser20::make_nvp("Image Size", _export_size),
+            ser20::make_nvp("Image Output Folder", _folder_path_for_image),
+            ser20::make_nvp("Video Output Folder", _folder_path_for_video)
         );
     }
 };

@@ -20,13 +20,13 @@ struct VariableMetadata<Cool::Gradient> {
 
 private:
     // Serialisation
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Is HDR", is_hdr),
-            cereal::make_nvp("Randomize new marks' colors", randomize_new_marks_colors)
+            ser20::make_nvp("Is HDR", is_hdr),
+            ser20::make_nvp("Randomize new marks' colors", randomize_new_marks_colors)
         );
     }
 };

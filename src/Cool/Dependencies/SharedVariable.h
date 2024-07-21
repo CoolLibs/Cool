@@ -17,15 +17,15 @@ struct SharedVariableStrongRef {
     auto id() const -> uintptr_t { return reinterpret_cast<uintptr_t>(variable.get()); } // NOLINT(*reinterpret-cast)
 
 private:
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Variable", variable),
-            cereal::make_nvp("Dirty flag", dirty_flag),
-            cereal::make_nvp("Secondary dirty flag", secondary_dirty_flag),
-            cereal::make_nvp("Desired color space", desired_color_space)
+            ser20::make_nvp("Variable", variable),
+            ser20::make_nvp("Dirty flag", dirty_flag),
+            ser20::make_nvp("Secondary dirty flag", secondary_dirty_flag),
+            ser20::make_nvp("Desired color space", desired_color_space)
         );
     }
 };
@@ -41,10 +41,10 @@ public:
         DirtyFlag                  secondary_dirty_flag = {}
     )
         : _ref{
-            std::make_shared<Variable<T>>(variable),
-            std::move(dirty_flag),
-            std::move(secondary_dirty_flag),
-        }
+              std::make_shared<Variable<T>>(variable),
+              std::move(dirty_flag),
+              std::move(secondary_dirty_flag),
+          }
         , _description{std::move(description)}
     {}
     SharedVariable(
@@ -53,11 +53,11 @@ public:
         DirtyFlag                   secondary_dirty_flag = {}
     )
         : _ref{
-            std::make_shared<Variable<T>>(def.var_data),
-            std::move(dirty_flag),
-            std::move(secondary_dirty_flag),
-            def.desired_color_space,
-        }
+              std::make_shared<Variable<T>>(def.var_data),
+              std::move(dirty_flag),
+              std::move(secondary_dirty_flag),
+              def.desired_color_space,
+          }
         , _description{def.description}
     {}
 
@@ -81,13 +81,13 @@ private:
     mutable MessageId          _message_id{};
 
 private:
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            // cereal::make_nvp("Description", _description), // (JF): I don't think there is a need to serialize the description since it will be parsed from the shader each time, and applying presets and the like only affect the value of the variable.
-            cereal::make_nvp("Ref", _ref)
+            // ser20::make_nvp("Description", _description), // (JF): I don't think there is a need to serialize the description since it will be parsed from the shader each time, and applying presets and the like only affect the value of the variable.
+            ser20::make_nvp("Ref", _ref)
         );
     }
 };

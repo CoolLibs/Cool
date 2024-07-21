@@ -1,6 +1,3 @@
-[submodule "lib/cereal"]
-	path = lib/cereal
-	url = https://github.com/USCiLab/cereal
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw
@@ -121,3 +118,6 @@
 [submodule "lib/WebGPU-distribution"]
 	path = lib/WebGPU-distribution
 	url = https://github.com/CoolLibs/WebGPU-distribution
+[submodule "lib/ser20"]
+	path = lib/ser20
+	url = https://github.com/CoolLibs/ser20

@@ -49,7 +49,7 @@ public: // Type-erasure implementation details
     auto operator=(NodesCategoryConfig&&) noexcept -> NodesCategoryConfig& = default;
     ~NodesCategoryConfig()                                                 = default;
 
-public:              // Must be public in order for Cereal to register the polymorphic types
+public:              // Must be public in order for ser20 to register the polymorphic types
     struct Concept { // NOLINT(*-special-member-functions)
         virtual ~Concept() = default;
 
@@ -89,12 +89,12 @@ public:              // Must be public in order for Cereal to register the polym
 
     private:
         // Serialization
-        friend class cereal::access;
+        friend class ser20::access;
         template<class Archive>
         void serialize(Archive& archive)
         {
             archive(
-                cereal::make_nvp("NodesCategoryConfigT", _nodes_category_config)
+                ser20::make_nvp("NodesCategoryConfigT", _nodes_category_config)
             );
         }
     };
@@ -104,12 +104,12 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("pimpl", _pimpl)
+            ser20::make_nvp("pimpl", _pimpl)
         );
     }
 };

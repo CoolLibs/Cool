@@ -18,14 +18,14 @@ struct Camera2D {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Translation", translation),
-            cereal::make_nvp("Zoom", zoom),
-            cereal::make_nvp("Rotation", rotation)
+            ser20::make_nvp("Translation", translation),
+            ser20::make_nvp("Zoom", zoom),
+            ser20::make_nvp("Rotation", rotation)
         );
     }
 };

@@ -200,7 +200,7 @@ def style_declaration():
 
 def style_serialization():
     def code(s: StyleSetting):
-        return f'cereal::make_nvp("{s.name_in_ui}", {s.name_in_code})'
+        return f'ser20::make_nvp("{s.name_in_ui}", {s.name_in_code})'
 
     return ",\n".join(map(code, all_style_settings()))
 

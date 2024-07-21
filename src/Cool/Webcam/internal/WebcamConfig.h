@@ -8,13 +8,13 @@ struct WebcamConfig {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Width", resolution.width),
-            cereal::make_nvp("Height", resolution.height)
+            ser20::make_nvp("Width", resolution.width),
+            ser20::make_nvp("Height", resolution.height)
         );
     }
 };

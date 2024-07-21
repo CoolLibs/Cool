@@ -148,46 +148,46 @@ private:
 
     private:
         // Serialization
-        friend class cereal::access;
+        friend class ser20::access;
         template<class Archive>
         void serialize(Archive& archive)
         {
             archive(
 #if DEBUG
-                cereal::make_nvp("Test Message Console", test_message_console__window),
-                cereal::make_nvp("Log when autosaving", log_when_autosaving),
-                cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
-                cereal::make_nvp("Log when creating textures", log_when_creating_textures),
-                cereal::make_nvp("Log when computing audio features", log_when_computing_audio_features),
-                cereal::make_nvp("View Texture Library", texture_library_debug_view),
-                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
-                cereal::make_nvp("Log OpenGL info", log_opengl_info),
-                cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
-                cereal::make_nvp("Test Presets", test_presets__window),
-                cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
-                cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
-                cereal::make_nvp("Test tips", test_tips),
-                cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
-                cereal::make_nvp("Style Editor", style_editor),
-                cereal::make_nvp("Color Themes: Editor", color_themes_editor),
-                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
+                ser20::make_nvp("Test Message Console", test_message_console__window),
+                ser20::make_nvp("Log when autosaving", log_when_autosaving),
+                ser20::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
+                ser20::make_nvp("Log when creating textures", log_when_creating_textures),
+                ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
+                ser20::make_nvp("View Texture Library", texture_library_debug_view),
+                ser20::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                ser20::make_nvp("Log OpenGL info", log_opengl_info),
+                ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
+                ser20::make_nvp("Test Presets", test_presets__window),
+                ser20::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                ser20::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
+                ser20::make_nvp("Test tips", test_tips),
+                ser20::make_nvp("Public exhibition mode", public_exhibition_mode),
+                ser20::make_nvp("Style Editor", style_editor),
+                ser20::make_nvp("Color Themes: Editor", color_themes_editor),
+                ser20::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #else
-                cereal::make_nvp("Test Message Console", test_message_console__window),
-                cereal::make_nvp("Log when autosaving", log_when_autosaving),
-                cereal::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
-                cereal::make_nvp("Log when creating textures", log_when_creating_textures),
-                cereal::make_nvp("Log when computing audio features", log_when_computing_audio_features),
-                cereal::make_nvp("View Texture Library", texture_library_debug_view),
-                cereal::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
-                cereal::make_nvp("Log mouse position in View", log_mouse_position_in_view),
-                cereal::make_nvp("Test Presets", test_presets__window),
-                cereal::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
-                cereal::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
-                cereal::make_nvp("Test tips", test_tips),
-                cereal::make_nvp("Public exhibition mode", public_exhibition_mode),
-                cereal::make_nvp("Style Editor", style_editor),
-                cereal::make_nvp("Color Themes: Editor", color_themes_editor),
-                cereal::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
+                ser20::make_nvp("Test Message Console", test_message_console__window),
+                ser20::make_nvp("Log when autosaving", log_when_autosaving),
+                ser20::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
+                ser20::make_nvp("Log when creating textures", log_when_creating_textures),
+                ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
+                ser20::make_nvp("View Texture Library", texture_library_debug_view),
+                ser20::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
+                ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
+                ser20::make_nvp("Test Presets", test_presets__window),
+                ser20::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
+                ser20::make_nvp("Emulate midi keyboard", emulate_midi_keyboard),
+                ser20::make_nvp("Test tips", test_tips),
+                ser20::make_nvp("Public exhibition mode", public_exhibition_mode),
+                ser20::make_nvp("Style Editor", style_editor),
+                ser20::make_nvp("Color Themes: Editor", color_themes_editor),
+                ser20::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
 #endif
 
             );

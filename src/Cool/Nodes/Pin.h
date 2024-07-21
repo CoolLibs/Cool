@@ -1,7 +1,6 @@
 #pragma once
-
-#include <reg/cereal.hpp>
 #include <reg/reg.hpp>
+#include <reg/ser20.hpp>
 #include "Cool/Nodes/utilities/drawing.h"
 #include "utilities/drawing.h"
 
@@ -42,14 +41,14 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", _name),
-            cereal::make_nvp("Description", _description),
-            cereal::make_nvp("ID", _id)
+            ser20::make_nvp("Name", _name),
+            ser20::make_nvp("Description", _description),
+            ser20::make_nvp("ID", _id)
         );
     }
 };
@@ -63,12 +62,12 @@ public:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
+            ser20::make_nvp("Base Pin", ser20::base_class<Pin>(this))
         );
     }
 };
@@ -82,12 +81,12 @@ public:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Base Pin", cereal::base_class<Pin>(this))
+            ser20::make_nvp("Base Pin", ser20::base_class<Pin>(this))
         );
     }
 };

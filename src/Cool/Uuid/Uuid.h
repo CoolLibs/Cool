@@ -16,11 +16,11 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Value", _uuid));
+        archive(ser20::make_nvp("Value", _uuid));
     }
 };
 

@@ -2,14 +2,14 @@
 
 #include <img/img.hpp>
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive, typename T>
 void save(Archive& archive, img::SizeT<T> size)
 {
     archive(
-        cereal::make_nvp("w", size.width()),
-        cereal::make_nvp("h", size.height())
+        ser20::make_nvp("w", size.width()),
+        ser20::make_nvp("h", size.height())
     );
 }
 
@@ -23,4 +23,4 @@ void load(Archive& archive, img::SizeT<T>& size)
     size.set_height(tmpH);
 }
 
-} // namespace cereal
+} // namespace ser20

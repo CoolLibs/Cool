@@ -12,13 +12,13 @@ struct OSCConnectionEndpoint {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Port", port),
-            cereal::make_nvp("IP Address", ip_address)
+            ser20::make_nvp("Port", port),
+            ser20::make_nvp("IP Address", ip_address)
         );
     }
 };
