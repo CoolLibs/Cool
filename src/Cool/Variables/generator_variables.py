@@ -549,19 +549,19 @@ def glsl_type():
     )
 
 
-def cereal_make_nvp(metadatas: List[VariableMetadata]):
+def ser20_make_nvp(metadatas: List[VariableMetadata]):
     return ",\n".join(
         map(
-            lambda meta: f'cereal::make_nvp("{meta.pretty_name}", {meta.field_name})',
+            lambda meta: f'ser20::make_nvp("{meta.pretty_name}", {meta.field_name})',
             metadatas,
         )
     )
 
 
-def cereal_serialize_body(metadatas: List[VariableMetadata]):
+def ser20_serialize_body(metadatas: List[VariableMetadata]):
     return f"""
         archive(
-{cereal_make_nvp(metadatas)}
+{ser20_make_nvp(metadatas)}
         );
 """
 
@@ -593,10 +593,10 @@ def variable_definition_factory(variable_type_and_metadatas):
 
             private:
                 // Serialisation
-                friend class cereal::access;
+                friend class ser20::access;
                 template<class Archive>
                 void serialize(Archive&{" archive" if has_metadatas else ""})
-                {{{cereal_serialize_body(variable_type_and_metadatas.metadatas) if has_metadatas else ""}
+                {{{ser20_serialize_body(variable_type_and_metadatas.metadatas) if has_metadatas else ""}
                 }}
             }};
 

@@ -33,19 +33,19 @@ struct UserSettings {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Autosave enabled", autosave_enabled),
-            cereal::make_nvp("Autosave delay in seconds", autosave_delay_in_seconds),
-            cereal::make_nvp("Extra icons", extra_icons),
-            cereal::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
-            cereal::make_nvp("Use OS color theme", color_themes),
-            cereal::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets),
-            cereal::make_nvp("Enable multi-viewport", enable_multi_viewport),
-            cereal::make_nvp("Video export overwrite behaviour", video_export_overwrite_behaviour)
+            ser20::make_nvp("Autosave enabled", autosave_enabled),
+            ser20::make_nvp("Autosave delay in seconds", autosave_delay_in_seconds),
+            ser20::make_nvp("Extra icons", extra_icons),
+            ser20::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
+            ser20::make_nvp("Use OS color theme", color_themes),
+            ser20::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets),
+            ser20::make_nvp("Enable multi-viewport", enable_multi_viewport),
+            ser20::make_nvp("Video export overwrite behaviour", video_export_overwrite_behaviour)
         );
     }
 };

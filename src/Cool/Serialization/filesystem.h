@@ -6,11 +6,11 @@ namespace CoolInternal {
 template<typename T>
 concept filesystem_path = std::is_same_v<T, std::filesystem::path>; // If we don't use that concept, std::string implicitly converts to std::filesystem::path
                                                                     // and finds these serialization functions.
-                                                                    // cereal then complains that std::string has two different serialization functions.
+                                                                    // ser20 then complains that std::string has two different serialization functions.
                                                                     // This concept prevents implicit conversions.
 }
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive, CoolInternal::filesystem_path Path>
 inline std::string save_minimal(
@@ -31,4 +31,4 @@ inline void load_minimal(
     path = std::filesystem::path{path_as_str};
 }
 
-} // namespace cereal
+} // namespace ser20

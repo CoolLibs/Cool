@@ -18,13 +18,13 @@ struct BoundsMetadata {
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Has min bound", has_min_bound),
-            cereal::make_nvp("Min", min),
-            cereal::make_nvp("Has max bound", has_max_bound),
-            cereal::make_nvp("Max", max),
-            cereal::make_nvp("Drag speed", drag_speed),
-            cereal::make_nvp("Use slider", use_slider),
-            cereal::make_nvp("Is logarithmic", is_logarithmic)
+            ser20::make_nvp("Has min bound", has_min_bound),
+            ser20::make_nvp("Min", min),
+            ser20::make_nvp("Has max bound", has_max_bound),
+            ser20::make_nvp("Max", max),
+            ser20::make_nvp("Drag speed", drag_speed),
+            ser20::make_nvp("Use slider", use_slider),
+            ser20::make_nvp("Is logarithmic", is_logarithmic)
         );
     }
 };

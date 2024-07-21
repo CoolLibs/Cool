@@ -17,7 +17,7 @@ struct VariableMetadata<Cool::TextureDescriptor_Image> {
 
 private:
     // Serialisation
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive&)
     {

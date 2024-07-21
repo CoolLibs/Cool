@@ -9,8 +9,8 @@
 #include "Cool/Time/Time.hpp"
 #include "MidiChannel.h"
 #include "RtMidiW/RtMidiW.hpp"
-#include "cereal/types/array.hpp"
-#include "cereal/types/chrono.hpp"
+#include "ser20/types/array.hpp"
+#include "ser20/types/chrono.hpp"
 
 namespace Cool {
 
@@ -32,15 +32,15 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Values", _maps),
-            cereal::make_nvp("Last button pressed", _last_button_pressed),
-            cereal::make_nvp("Last last button pressed", _last_last_button_pressed),
-            cereal::make_nvp("Time of last button pressed", _time_of_last_button_pressed)
+            ser20::make_nvp("Values", _maps),
+            ser20::make_nvp("Last button pressed", _last_button_pressed),
+            ser20::make_nvp("Last last button pressed", _last_last_button_pressed),
+            ser20::make_nvp("Time of last button pressed", _time_of_last_button_pressed)
         );
     }
 };
@@ -99,12 +99,12 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Window", _config_window)
+            ser20::make_nvp("Window", _config_window)
         );
     }
 };

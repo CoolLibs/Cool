@@ -13,7 +13,8 @@ inline auto constexpr get_angle_from_vector(glm::vec2 direction) -> Cool::Angle
         std::atan2(
             direction.y,
             direction.x
-        )}};
+        )
+    }};
 }
 
 class Direction2D
@@ -35,7 +36,8 @@ public:
     {
         return glm::vec2{
             glm::cos(value.as_radians()),
-            glm::sin(value.as_radians())};
+            glm::sin(value.as_radians())
+        };
     }
 
     auto as_angle() const -> Cool::Angle
@@ -56,11 +58,11 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Angle", value));
+        archive(ser20::make_nvp("Angle", value));
     }
 };
 

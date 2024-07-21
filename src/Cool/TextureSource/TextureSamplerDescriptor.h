@@ -19,13 +19,13 @@ struct TextureSamplerDescriptor {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Repeat Mode", repeat_mode),
-            cereal::make_nvp("Interpolation Mode", interpolation_mode)
+            ser20::make_nvp("Repeat Mode", repeat_mode),
+            ser20::make_nvp("Interpolation Mode", interpolation_mode)
         );
     }
 };

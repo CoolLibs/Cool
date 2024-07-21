@@ -21,12 +21,12 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Pimpl", _pimpl)
+            ser20::make_nvp("Pimpl", _pimpl)
         );
     }
 };

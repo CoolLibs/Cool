@@ -13,7 +13,7 @@
 #endif
 
 //
-#include <cereal/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
+#include <ser20/archives/json.hpp> // Must be included last because the more files it sees, the more it slows down compilation (by A LOT)
 
 namespace Cool {
 
@@ -48,7 +48,7 @@ void run(RunConfig const& config)
 
         // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
         auto auto_serializer_user_settings = Cool::AutoSerializer{};
-        auto_serializer_user_settings.init<UserSettings, cereal::JSONInputArchive>(
+        auto_serializer_user_settings.init<UserSettings, ser20::JSONInputArchive>(
             Cool::Path::user_data() / "user-settings.json",
             user_settings(),
             [&](OptionalErrorMessage const& error) {
@@ -66,7 +66,7 @@ void run(RunConfig const& config)
                 );
             },
             [&](std::filesystem::path const& path) {
-                Serialization::save<UserSettings, cereal::JSONOutputArchive>(user_settings(), path, "User Settings");
+                Serialization::save<UserSettings, ser20::JSONOutputArchive>(user_settings(), path, "User Settings");
             }
         );
         user_settings().apply_multi_viewport_setting();
@@ -85,7 +85,7 @@ void run(RunConfig const& config)
             auto app   = App{window_factory.window_manager(), views};
             // Auto serialize the App
             Cool::AutoSerializer auto_serializer;
-            auto_serializer.init<App, cereal::JSONInputArchive>(
+            auto_serializer.init<App, ser20::JSONInputArchive>(
                 Cool::Path::user_data() / "last-session.json", app,
                 [&](OptionalErrorMessage const& error) {
                     if (ignore_invalid_user_data_file)
@@ -103,7 +103,7 @@ void run(RunConfig const& config)
                     throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
                 },
                 [&](std::filesystem::path const& path) {
-                    Serialization::save<App, cereal::JSONOutputArchive>(app, path, "App");
+                    Serialization::save<App, ser20::JSONOutputArchive>(app, path, "App");
                 },
                 load_from_file
             );

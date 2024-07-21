@@ -42,16 +42,16 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Is controlling the number of pixels", _is_controlling_nb_pixels),
-            cereal::make_nvp("Number of pixels", _nb_pixels),
-            cereal::make_nvp("Is controlling the aspect ratio", _is_controlling_aspect_ratio),
-            cereal::make_nvp("Aspect ratio", _aspect_ratio),
-            cereal::make_nvp("Interpolation mode", _interpolation_mode)
+            ser20::make_nvp("Is controlling the number of pixels", _is_controlling_nb_pixels),
+            ser20::make_nvp("Number of pixels", _nb_pixels),
+            ser20::make_nvp("Is controlling the aspect ratio", _is_controlling_aspect_ratio),
+            ser20::make_nvp("Aspect ratio", _aspect_ratio),
+            ser20::make_nvp("Interpolation mode", _interpolation_mode)
         );
     }
 };

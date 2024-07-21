@@ -11,14 +11,14 @@ struct Projection_Perspective {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Field of View (in radians)", field_of_view_in_radians),
-            cereal::make_nvp("Near Plane", near_plane),
-            cereal::make_nvp("Far Plane", far_plane)
+            ser20::make_nvp("Field of View (in radians)", field_of_view_in_radians),
+            ser20::make_nvp("Near Plane", near_plane),
+            ser20::make_nvp("Far Plane", far_plane)
         );
     }
 };

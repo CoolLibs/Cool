@@ -1,6 +1,6 @@
 #pragma once
 #include <Cool/Serialization/SerializerOnDemand.h>
-#include <reg/cereal.hpp>
+#include <reg/ser20.hpp>
 #include "Settings.h"
 #include "Settings_Ref.h"
 
@@ -14,13 +14,13 @@ struct Preset {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", name),
-            cereal::make_nvp("Values", values)
+            ser20::make_nvp("Name", name),
+            ser20::make_nvp("Values", values)
         );
     }
 };

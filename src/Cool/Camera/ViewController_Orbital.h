@@ -51,15 +51,15 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Mode", _mode),
-            cereal::make_nvp("Translation Speed", _translation_speed),
-            cereal::make_nvp("Rotation Speed", _rotation_speed),
-            cereal::make_nvp("Distance to Orbit Center", _distance_to_orbit_center)
+            ser20::make_nvp("Mode", _mode),
+            ser20::make_nvp("Translation Speed", _translation_speed),
+            ser20::make_nvp("Rotation Speed", _rotation_speed),
+            ser20::make_nvp("Distance to Orbit Center", _distance_to_orbit_center)
         );
     }
 };

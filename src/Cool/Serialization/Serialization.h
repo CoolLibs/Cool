@@ -9,7 +9,7 @@ namespace Cool::Serialization {
 /**
  * @brief Loads data from a JSON file.
  *
- * @tparam T A type that implements the Cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html
+ * @tparam T A type that implements the cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html
  * @param data A reference to the data to initialize
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
@@ -41,7 +41,7 @@ auto load(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessa
 /**
  * @brief Saves data to a JSON file.
  *
- * @tparam T A type that implements the Cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html
+ * @tparam T A type that implements the cereal serialization functions described here : https://uscilab.github.io/cereal/serialization_functions.html
  * @param data The data to save
  * @param file_path The path to the JSON file. It will be created if it doesn't exist already.
  * @param field_name An optional name that will be given to data inside the JSON file (for readability purposes).
@@ -60,7 +60,7 @@ auto save(const T& data, std::filesystem::path const& file_path, std::string_vie
     {
         auto archive = OutputArchive{os};
         archive(
-            cereal::make_nvp(field_name.data(), data)
+            ser20::make_nvp(field_name.data(), data)
         );
     }
     return true;

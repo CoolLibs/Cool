@@ -32,13 +32,13 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Path", _path),
-            cereal::make_nvp("Properties", _properties)
+            ser20::make_nvp("Path", _path),
+            ser20::make_nvp("Properties", _properties)
         );
     }
 };

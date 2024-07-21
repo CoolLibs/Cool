@@ -4,8 +4,8 @@
  * Instead, go to "style_generator.py" and edit the "style_serialization" function there.
  * -----------------------------------------------------------------------------
  */
-cereal::make_nvp("Floating buttons spacing", floating_buttons_spacing),
-    cereal::make_nvp("Frame padding", frame_padding),
-    cereal::make_nvp("Tab bar padding", tab_bar_padding),
-    cereal::make_nvp("Menu bar spacing", menu_bar_spacing),
-    cereal::make_nvp("Node title vertical alignment", node_title_vertical_alignment)
+ser20::make_nvp("Floating buttons spacing", floating_buttons_spacing),
+    ser20::make_nvp("Frame padding", frame_padding),
+    ser20::make_nvp("Tab bar padding", tab_bar_padding),
+    ser20::make_nvp("Menu bar spacing", menu_bar_spacing),
+    ser20::make_nvp("Node title vertical alignment", node_title_vertical_alignment)

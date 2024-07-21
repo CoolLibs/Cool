@@ -17,14 +17,14 @@ struct VariableData {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", name),
-            cereal::make_nvp("Value", value),
-            cereal::make_nvp("Metadata", metadata)
+            ser20::make_nvp("Name", name),
+            ser20::make_nvp("Value", value),
+            ser20::make_nvp("Metadata", metadata)
         );
     }
 };
@@ -79,16 +79,16 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", _name),
-            cereal::make_nvp("Value", _value),
-            cereal::make_nvp("Metadata", _metadata),
-            cereal::make_nvp("Default Value", _default_value),
-            cereal::make_nvp("Default Metadata", _default_metadata)
+            ser20::make_nvp("Name", _name),
+            ser20::make_nvp("Value", _value),
+            ser20::make_nvp("Metadata", _metadata),
+            ser20::make_nvp("Default Value", _default_value),
+            ser20::make_nvp("Default Metadata", _default_metadata)
         );
     }
 };

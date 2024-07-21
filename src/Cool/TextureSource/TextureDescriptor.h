@@ -17,13 +17,13 @@ struct TextureDescriptor {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Source", source),
-            cereal::make_nvp("Sampler", sampler)
+            ser20::make_nvp("Source", source),
+            ser20::make_nvp("Sampler", sampler)
         );
     }
 };
