@@ -115,7 +115,7 @@ install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
 
 # WebGPU (Must be after GLFW, otherwise Dawn uses its own version of glfw)
 # NB : for now WGPU doesn't compile wgsl properly, it is not up-to-date with the official syntax.
-set(WEBGPU_BACKEND "WGPU" CACHE STRING "" FORCE) # TODO(WebGPU) Use Dawn when creating Release, because it links statically, and WGPU when developping because if it faster and more lightweight
+set(WEBGPU_BACKEND "DAWN" CACHE STRING "" FORCE) # TODO(WebGPU) Use Dawn when creating Release, because it links statically, and WGPU when developping because if it faster and more lightweight
 
 if(WEBGPU_BACKEND STREQUAL "DAWN")
     # Needed by Dawn

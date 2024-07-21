@@ -4,7 +4,6 @@
 #include "TextureSampler.hpp"
 #include "TextureSamplerDescriptor.hpp"
 
-
 namespace Cool {
 
 #define BUILDER(x)                        \
@@ -12,7 +11,7 @@ namespace Cool {
     _entries.back().binding = binding;    \
     x return *this;
 
-auto BindGroupBuilder::read_texture_2D(int binding, Texture const& texture) -> BindGroupBuilder&
+auto BindGroupBuilder::read_texture(int binding, Texture const& texture) -> BindGroupBuilder&
 {
     BUILDER(
         _entries.back().textureView = texture.entire_texture_view();

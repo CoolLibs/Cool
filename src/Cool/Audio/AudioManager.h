@@ -3,10 +3,8 @@
 #include <Audio/Audio.hpp>
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
-#include "Cool/Log/MessageId.h"
 #include "Cool/Time/Clock.h"
 #include "Cool/Utils/Cached.h"
-// #include "glpp-extended/src/Texture1D.h"
 #include "internal/AudioInput_Device.h"
 #include "internal/AudioInput_File.h"
 #include "internal/IAudioInput.h"
@@ -39,11 +37,11 @@ public:
     /// Returns an array containing the raw audio samples, with values between -1 and 1. There is only one channel, so each sample corresponds to the next moment in time.
     [[nodiscard]] auto waveform() const -> std::vector<float> const&;
     /// Returns a 1D texture with all the waveform going from UV 0 to UV 1. Contains values between -1 and 1.
-    // [[nodiscard]] auto waveform_texture() const -> glpp::Texture1D const&;
+    [[nodiscard]] auto waveform_texture() const -> Texture const&;
     /// Returns an array where the values correspond to the amplitudes of frequencies evenly spaced between 0 and sample_rate / 2. Where sample_rate is the sample rate of the analysed audio.
     [[nodiscard]] auto spectrum() const -> Audio::Spectrum const&;
     /// Returns a 1D texture with all the spectrum going from UV 0 to UV 1. Contains values between 0 and +infinity.
-    // [[nodiscard]] auto spectrum_texture() const -> glpp::Texture1D const&;
+    [[nodiscard]] auto spectrum_texture() const -> Texture const&;
     ///
     [[nodiscard]] auto volume() const -> float;
 
@@ -78,8 +76,8 @@ private:
     mutable Cached<std::vector<float>> _current_waveform{};
     mutable Cached<Audio::Spectrum>    _current_spectrum{};
     mutable Cached<float>              _current_volume{};
-    // mutable Cached<glpp::Texture1D>    _current_waveform_texture{};
-    // mutable Cached<glpp::Texture1D>    _current_spectrum_texture{};
+    mutable Cached<Texture>            _current_waveform_texture{};
+    mutable Cached<Texture>            _current_spectrum_texture{};
 
     float _window_size_in_seconds_for_waveform{0.05f};
     float _window_size_in_seconds_for_spectrum{0.015f};

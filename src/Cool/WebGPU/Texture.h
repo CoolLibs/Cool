@@ -12,7 +12,7 @@ class Texture : public WGPUUnique<wgpu::Texture> {
 public:
     Texture() = default; // TODO(WebGPU) Remove ?
     explicit Texture(wgpu::TextureDescriptor const&);
-    void set_image(uint32_t color_components_count, AlphaSpace, std::span<uint8_t const> data);
+    void set_image(uint32_t color_components_count, AlphaSpace, void const* data, size_t data_size, size_t data_element_size);
 
     void save(std::filesystem::path const&) const;
     /// NB: the callback will be called asynchronously, several frames later // TODO(WebGPU) for now this isn't the case, we block until it is finished. Should we do async or not ?
@@ -40,6 +40,18 @@ private:
 };
 
 auto load_texture(std::filesystem::path const& path, wgpu::TextureFormat texture_format, std::optional<AlphaSpace> = {}) -> Texture;
-auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace, std::span<uint8_t const> data) -> Texture;
+auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace, void const* data, size_t data_size, size_t data_element_size) -> Texture;
+auto texture_1D_from_data(uint32_t width, wgpu::TextureFormat texture_format, size_t channels_count, void const* data, size_t data_size, size_t data_element_size) -> Texture;
+
+template<typename Container>
+auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace alpha_space, Container const& data) -> Texture
+{
+    return texture_from_pixels(size, texture_format, alpha_space, reinterpret_cast<void const*>(data.data()), data.size(), sizeof(Container::value_type)); // NOLINT(*reinterpret-cast)
+}
+template<typename Container>
+auto texture_1D_from_data(uint32_t width, wgpu::TextureFormat texture_format, size_t channels_count, Container const& data) -> Texture
+{
+    return texture_1D_from_data(width, texture_format, channels_count, reinterpret_cast<void const*>(data.data()), data.size(), sizeof(Container::value_type)); // NOLINT(*reinterpret-cast)
+}
 
 } // namespace Cool

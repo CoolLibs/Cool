@@ -4,6 +4,7 @@
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Log/ToUser.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 
@@ -81,44 +82,39 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
     });
 }
 
-// static void set_texture_data(glpp::Texture1D& tex, std::vector<float> const& data, bool display_as_bars)
-// {
-//     tex.upload_data(
-//         static_cast<GLsizei>(data.size()), data.data(),
-//         glpp::TextureLayout{
-//             .internal_format = glpp::InternalFormat::R16F,
-//             .channels        = glpp::Channels::R,
-//             .texel_data_type = glpp::TexelDataType::Float,
-//         }
-//     );
-//     if (display_as_bars)
-//     {
-//         tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);
-//         tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
-//     }
-//     else
-//     {
-//         tex.set_magnification_filter(glpp::Interpolation::Linear);
-//         tex.set_minification_filter(glpp::Interpolation::Linear);
-//     }
-//     tex.set_wrap(glpp::Wrap::ClampToBorder);
-//     GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
-//     GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
-// }
+static void set_texture_data(Texture& tex, std::vector<float> data, bool display_as_bars) // TODO webgpu we are copying the vector !!!
+{
+    data.insert(data.begin(), 0.f);
+    data.push_back(0.f);
+    tex = texture_1D_from_data(data.size(), wgpu::TextureFormat::R32Float, 1, data); // TODO(WebGPU) don't recreate texture each time, just set its data
+    // if (display_as_bars)
+    // {
+    //     tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);
+    //     tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
+    // }
+    // else
+    // {
+    //     tex.set_magnification_filter(glpp::Interpolation::Linear);
+    //     tex.set_minification_filter(glpp::Interpolation::Linear);
+    // }
+    // tex.set_wrap(glpp::Wrap::ClampToBorder);
+    // GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
+    // GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
+}
 
-// auto AudioManager::waveform_texture() const -> glpp::Texture1D const&
-// {
-//     return _current_waveform_texture.get_value([&](glpp::Texture1D& tex) {
-//         set_texture_data(tex, waveform(), false /*display_as_bars*/);
-//     });
-// }
+auto AudioManager::waveform_texture() const -> Texture const&
+{
+    return _current_waveform_texture.get_value([&](Texture& tex) {
+        set_texture_data(tex, waveform(), false /*display_as_bars*/);
+    });
+}
 
-// auto AudioManager::spectrum_texture() const -> glpp::Texture1D const&
-// {
-//     return _current_spectrum_texture.get_value([&](glpp::Texture1D& tex) {
-//         set_texture_data(tex, spectrum().data, _spectrum_display_as_bars);
-//     });
-// }
+auto AudioManager::spectrum_texture() const -> Texture const&
+{
+    return _current_spectrum_texture.get_value([&](Texture& tex) {
+        set_texture_data(tex, spectrum().data, _spectrum_display_as_bars);
+    });
+}
 
 auto AudioManager::nb_frames_for_feature_computation(float window_size_in_seconds) const -> int64_t
 {
@@ -158,8 +154,8 @@ void AudioManager::invalidate_caches()
 {
     _current_waveform.invalidate_cache();
     _current_spectrum.invalidate_cache();
-    // _current_waveform_texture.invalidate_cache();
-    // _current_spectrum_texture.invalidate_cache();
+    _current_waveform_texture.invalidate_cache();
+    _current_spectrum_texture.invalidate_cache();
     _current_volume.invalidate_cache();
 }
 

@@ -9,7 +9,7 @@ namespace Cool {
 
 class BindGroupBuilder {
 public:
-    auto read_texture_2D(int binding, Texture const&) -> BindGroupBuilder&;
+    auto read_texture(int binding, Texture const&) -> BindGroupBuilder&;
     auto sampler(int binding, TextureSampler const&) -> BindGroupBuilder&;
     auto sampler(int binding, TextureSamplerDescriptor const&) -> BindGroupBuilder&;
     auto write_texture_2D(int binding) -> BindGroupBuilder&;

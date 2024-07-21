@@ -24,7 +24,7 @@ auto load_texture(std::filesystem::path const& path, wgpu::TextureFormat texture
     return texture_from_pixels(image.size(), texture_format, *alpha_space, image.data_span());
 }
 
-auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace alpha_space, std::span<uint8_t const> data) -> Texture
+auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, AlphaSpace alpha_space, void const* data, size_t data_size, size_t data_element_size) -> Texture
 {
     wgpu::TextureDescriptor texture_desc;
     texture_desc.dimension       = wgpu::TextureDimension::_2D;
@@ -37,16 +37,34 @@ auto texture_from_pixels(img::Size size, wgpu::TextureFormat texture_format, Alp
     texture_desc.viewFormats     = nullptr;
 
     auto       res            = Texture{texture_desc};
-    auto const channels_count = data.size() / static_cast<size_t>(size.width()) / static_cast<size_t>(size.height());
-    res.set_image(channels_count, alpha_space, data);
+    auto const channels_count = data_size / static_cast<size_t>(size.width()) / static_cast<size_t>(size.height());
+    res.set_image(channels_count, alpha_space, data, data_size, data_element_size);
 
     return res;
 }
 
-void Texture::set_image(uint32_t color_components_count, AlphaSpace alpha_space, std::span<uint8_t const> data)
+auto texture_1D_from_data(uint32_t width, wgpu::TextureFormat texture_format, size_t channels_count, void const* data, size_t data_size, size_t data_element_size) -> Texture
 {
-    assert(data.size() % color_components_count == 0);
-    assert(data.size() / color_components_count == static_cast<size_t>(width()) * static_cast<size_t>(height()));
+    wgpu::TextureDescriptor texture_desc;
+    texture_desc.dimension       = wgpu::TextureDimension::_1D;
+    texture_desc.size            = {width, 1, 1};
+    texture_desc.mipLevelCount   = 1;
+    texture_desc.sampleCount     = 1;
+    texture_desc.format          = texture_format;
+    texture_desc.usage           = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst;
+    texture_desc.viewFormatCount = 0;
+    texture_desc.viewFormats     = nullptr;
+
+    auto res = Texture{texture_desc};
+    res.set_image(channels_count, AlphaSpace::Any, data, data_size, data_element_size);
+
+    return res;
+}
+
+void Texture::set_image(uint32_t color_components_count, AlphaSpace alpha_space, void const* data, size_t data_size, size_t data_element_size)
+{
+    assert(data_size % color_components_count == 0);
+    assert(data_size / color_components_count == static_cast<size_t>(width()) * static_cast<size_t>(height()));
 
     wgpu::ImageCopyTexture destination;
     destination.texture  = handle();
@@ -56,11 +74,11 @@ void Texture::set_image(uint32_t color_components_count, AlphaSpace alpha_space,
 
     wgpu::TextureDataLayout source;
     source.offset      = 0;
-    source.bytesPerRow = color_components_count * width();
+    source.bytesPerRow = color_components_count * width() * data_element_size;
     // source.bytesPerRow  = std::max(color_components_count * width(), 256u); // TODO(WebGPU) Apparently there is a minimum of 256 https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/texturing/a-first-texture.html#source
     source.rowsPerImage = height();
 
-    webgpu_context().queue.writeTexture(destination, data.data(), data.size(), source, _desc.size);
+    webgpu_context().queue.writeTexture(destination, data, data_size * data_element_size, source, _desc.size);
     _alpha_space = alpha_space;
 }
 
@@ -74,7 +92,7 @@ auto Texture::entire_texture_view() const -> TextureView const&
         texture_view_desc.arrayLayerCount = 1;
         texture_view_desc.baseMipLevel    = 0;
         texture_view_desc.mipLevelCount   = 1;
-        texture_view_desc.dimension       = wgpu::TextureViewDimension::_2D;
+        texture_view_desc.dimension       = _desc.dimension == wgpu::TextureDimension::_2D ? wgpu::TextureViewDimension::_2D : wgpu::TextureViewDimension::_1D;
         texture_view_desc.format          = _desc.format;
         _entire_texture_view.emplace(handle().createView(texture_view_desc));
     }
@@ -126,6 +144,8 @@ void Texture::save(std::filesystem::path const& path) const
 
 void Texture::with_pixels(std::function<void(std::span<uint8_t const>)> const& callback) const
 {
+    // TODO(WebGPU) if the texture stores floats, we shouldn't use a span of uint8_t but floats
+    assert(_desc.dimension == wgpu::TextureDimension::_2D && "We need to tweak a few things to implement the 1D version");
     wgpu::BufferDescriptor pixelBufferDesc = wgpu::Default;
     pixelBufferDesc.mappedAtCreation       = false;
     pixelBufferDesc.usage                  = wgpu::BufferUsage::CopySrc | wgpu::BufferUsage::Storage;
