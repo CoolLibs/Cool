@@ -235,6 +235,6 @@ auto find_word(std::string_view word, std::string_view text, size_t offset = 0, 
 auto find_beginning_of_word(std::string_view word, std::string_view text, size_t offset = 0, std::string_view delimiters = default_word_delimiters) -> size_t;
 
 /// Removes all `//` and `/* */` comments
-auto remove_comments(std::string const&) -> std::string;
+auto remove_comments(std::string_view) -> std::string;
 
 } // namespace Cool::String

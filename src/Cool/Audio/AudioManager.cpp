@@ -1,6 +1,7 @@
 #include "AudioManager.h"
 // #include <glpp-extended/src/TextureLayout.h>
 #include <imgui.h>
+#include <optional>
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Log/ToUser.h"
@@ -82,37 +83,18 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
     });
 }
 
-static void set_texture_data(Texture& tex, std::vector<float> data, bool display_as_bars) // TODO webgpu we are copying the vector !!!
+// TODO(WebGPU) Take _display_spectrum_as_bars into account
+auto AudioManager::waveform_buffer() const -> Buffer const&
 {
-    data.insert(data.begin(), 0.f);
-    data.push_back(0.f);
-    tex = texture_1D_from_data(data.size(), wgpu::TextureFormat::R32Float, 1, data); // TODO(WebGPU) don't recreate texture each time, just set its data
-    // if (display_as_bars)
-    // {
-    //     tex.set_magnification_filter(glpp::Interpolation::NearestNeighbour);
-    //     tex.set_minification_filter(glpp::Interpolation::NearestNeighbour);
-    // }
-    // else
-    // {
-    //     tex.set_magnification_filter(glpp::Interpolation::Linear);
-    //     tex.set_minification_filter(glpp::Interpolation::Linear);
-    // }
-    // tex.set_wrap(glpp::Wrap::ClampToBorder);
-    // GLfloat color[4] = {0.f, 0.f, 0.f, 0.f};                                  // NOLINT(*-avoid-c-arrays)
-    // GLDebug(glTexParameterfv(GL_TEXTURE_1D, GL_TEXTURE_BORDER_COLOR, color)); // TODO(JF) Wrap into glpp
-}
-
-auto AudioManager::waveform_texture() const -> Texture const&
-{
-    return _current_waveform_texture.get_value([&](Texture& tex) {
-        set_texture_data(tex, waveform(), false /*display_as_bars*/);
+    return *_current_waveform_buffer.get_value([&]() {
+        return buffer_from_data(waveform().empty() ? std::vector{0.f} : waveform());
     });
 }
 
-auto AudioManager::spectrum_texture() const -> Texture const&
+auto AudioManager::spectrum_buffer() const -> Buffer const&
 {
-    return _current_spectrum_texture.get_value([&](Texture& tex) {
-        set_texture_data(tex, spectrum().data, _spectrum_display_as_bars);
+    return *_current_spectrum_buffer.get_value([&]() {
+        return buffer_from_data(spectrum().data.empty() ? std::vector{0.f} : spectrum().data);
     });
 }
 
@@ -154,8 +136,8 @@ void AudioManager::invalidate_caches()
 {
     _current_waveform.invalidate_cache();
     _current_spectrum.invalidate_cache();
-    _current_waveform_texture.invalidate_cache();
-    _current_spectrum_texture.invalidate_cache();
+    _current_waveform_buffer.invalidate_cache();
+    _current_spectrum_buffer.invalidate_cache();
     _current_volume.invalidate_cache();
 }
 

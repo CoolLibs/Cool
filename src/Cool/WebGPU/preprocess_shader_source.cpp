@@ -81,7 +81,7 @@ static auto preprocess_shader_source_impl(std::string_view source, std::vector<s
 auto preprocess_shader_source(std::string_view source) -> tl::expected<std::string, std::string>
 {
     auto included_paths = std::vector<std::filesystem::path>{};
-    return preprocess_shader_source_impl(source, included_paths);
+    return preprocess_shader_source_impl(Cool::String::remove_comments(source), included_paths);
 }
 
 } // namespace Cool

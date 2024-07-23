@@ -39,24 +39,13 @@ auto BindGroupBuilder::sampler(int binding, TextureSamplerDescriptor const& samp
 //     )
 // }
 
-// auto BindGroupBuilder::read_buffer(int binding) -> BindGroupBuilder&
-// {
-//     BUILDER(
-//         _entries.back().buffer.type = wgpu::BufferBindingType::ReadOnlyStorage;
-//     )
-// }
-
-// auto BindGroupBuilder::write_buffer(int binding) -> BindGroupBuilder&
-// {
-//     return read_write_buffer(binding, visibility); // There is no such thing as a write-only buffer in WebGPU
-// }
-
-// auto BindGroupBuilder::read_write_buffer(int binding) -> BindGroupBuilder&
-// {
-//     BUILDER(
-//         _entries.back().buffer.type = wgpu::BufferBindingType::Storage;
-//     )
-// }
+auto BindGroupBuilder::buffer(int binding, Buffer const& buffer) -> BindGroupBuilder&
+{
+    BUILDER(
+        _entries.back().buffer = buffer;
+        _entries.back().size   = buffer.size_in_bytes();
+    )
+}
 
 auto BindGroupBuilder::build(BindGroupLayout const& layout) const -> BindGroup
 {

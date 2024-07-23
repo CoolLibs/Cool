@@ -526,7 +526,7 @@ static auto is_not_inside_comment(CommentParsingState state) -> bool
            || state == CommentParsingState::JustSawASlash;
 }
 
-auto remove_comments(std::string const& str) -> std::string
+auto remove_comments(std::string_view str) -> std::string
 {
     std::string res{};
     res.reserve(str.length());
