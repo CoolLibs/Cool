@@ -1,6 +1,7 @@
 #pragma once
 #include <ShaderTranspiler/ShaderTranspiler.hpp>
 #include <tl/expected.hpp>
+#include "Cool/Log/OptionalErrorMessage.h"
 #include "FullscreenPipeline.h"
 
 namespace Cool {
@@ -29,6 +30,6 @@ private:
     std::vector<shadert::Uniform> _uniforms_locations{};
 };
 
-auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>; // TODO(WebGPU) Return our official error type instead of string
+auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, OptionalErrorMessage>;
 
 } // namespace Cool

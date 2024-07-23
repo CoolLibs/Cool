@@ -5,22 +5,23 @@
 
 namespace Cool {
 
-auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, std::string>
+auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::expected<FullscreenPipelineGLSL, OptionalErrorMessage>
 {
     auto const preprocessed = preprocess_shader_source(args.fragment_shader_module_creation_args.code);
-    // TODO(WebGPU) Handle error properly
     if (!preprocessed)
     {
-        std::cerr << preprocessed.error() << '\n';
-        throw preprocessed.error();
+        return tl::make_unexpected(OptionalErrorMessage{
+            fmt::format("Preprocessing failed:\n{}\n\nThe source code we tried to preprocess was:\n{}", preprocessed.error(), args.fragment_shader_module_creation_args.code),
+            std::vector<ClipboardContent>{
+                {.title = "shader code", .content = std::string{args.fragment_shader_module_creation_args.code}},
+                {.title = "error message", .content = preprocessed.error()},
+            }
+        });
     }
 
-    // ImGui::SetClipboardText(preprocessed.value().c_str());
-    shadert::ShaderTranspiler s;
-
+    shadert::ShaderTranspiler  s;
     shadert::MemoryCompileTask task{preprocessed.value(), shadert::ShaderStage::Fragment};
-
-    shadert::Options opt;
+    shadert::Options           opt;
     opt.enableInclude   = false;
     opt.debug           = false;
     opt.entryPoint      = "main";
@@ -36,12 +37,15 @@ auto make_fullscreen_pipeline_glsl(FullscreenPipeline_CreationArgs args) -> tl::
         args.fragment_shader_module_creation_args.code = std::move(result.data.sourceData);
         return FullscreenPipelineGLSL{args, std::move(result.data.uniformData)};
     }
-    catch (std::exception& e)
+    catch (std::exception& e) // The transpiler will throw on errors
     {
-        // library will throw on errors
-        // TODO(WebGPU) handle error properly
-        std::cerr << e.what() << '\n';
-        return tl::make_unexpected("ERR");
+        return tl::make_unexpected(OptionalErrorMessage{
+            fmt::format("Compilation failed:\n{}The source code we tried to compile was:\n{}", e.what(), *preprocessed),
+            std::vector<ClipboardContent>{
+                {.title = "shader code", .content = *preprocessed},
+                {.title = "error message", .content = e.what()},
+            }
+        });
     }
 }
 

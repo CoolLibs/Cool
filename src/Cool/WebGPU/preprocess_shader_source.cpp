@@ -33,7 +33,7 @@ static auto line_or_include(std::string const& line, std::vector<std::filesystem
     catch (std::exception& e)
     {
         return tl::make_unexpected(fmt::format(
-            "Failed to #include file {}.\n{}",
+            "Failed to #include file \"{}\".\n{}",
             *path, e.what()
         ));
     }
@@ -42,7 +42,7 @@ static auto line_or_include(std::string const& line, std::vector<std::filesystem
     if (!file_content)
     {
         return tl::make_unexpected(fmt::format(
-            "Failed to #include file {}.\n{}",
+            "Failed to #include file \"{}\".\n{}",
             *path, file_content.error()
         ));
     }
