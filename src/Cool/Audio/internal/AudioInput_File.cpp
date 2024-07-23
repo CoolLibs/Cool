@@ -38,6 +38,7 @@ void AudioInput_File::start()
 void AudioInput_File::stop()
 {
     Audio::player().pause(); // Stop the playing of the audio
+    Cool::Log::ToUser::console().remove(_error_id);
 }
 
 auto AudioInput_File::does_need_to_highlight_error() const -> bool

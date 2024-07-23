@@ -86,6 +86,7 @@ void AudioInput_Device::stop()
 {
     input_stream().close();
     _has_started = false;
+    Cool::Log::ToUser::console().remove(_error_id_device_invalid);
 }
 
 auto AudioInput_Device::does_need_to_highlight_error() const -> bool
