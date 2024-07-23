@@ -45,6 +45,8 @@ public:
     [[nodiscard]] auto spectrum_buffer() const -> Buffer const&;
     ///
     [[nodiscard]] auto volume() const -> float;
+    ///
+    [[nodiscard]] auto wants_to_display_audio_spectrum_as_bars() const -> bool { return _spectrum_display_as_bars; }
 
     void sync_with_clock(Cool::Clock const&, bool force_sync_time = false);
     /// Must be called every frame. Will do some internal bookkeeping, and call `on_audio_data_changed` iff the audio data has changed (e.g. music player is playing, or a microphone is beeing used).

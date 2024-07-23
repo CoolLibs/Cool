@@ -83,7 +83,6 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
     });
 }
 
-// TODO(WebGPU) Take _display_spectrum_as_bars into account
 auto AudioManager::waveform_buffer() const -> Buffer const&
 {
     return *_current_waveform_buffer.get_value([&]() {
