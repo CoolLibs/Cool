@@ -6,7 +6,9 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_wgpu.h>
 #include <imgui/imgui_internal.h>
+#include <webgpu/webgpu.h>
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
+#include <webgpu/webgpu.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Backend/Window.h"
 #include "Cool/Gpu/WebGPUContext.h"
@@ -182,7 +184,7 @@ void AppManager::update()
     command.release();
 #ifndef __EMSCRIPTEN__
     if (can_present)
-        webgpu_context().swapChain.present();
+        webgpu_context().surface.present();
 #endif
 
 // Check for pending error callbacks, and handle async callbacks
@@ -256,18 +258,28 @@ auto AppManager::imgui_end_frame() -> bool
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
-
-    wgpu::TextureView nextTexture = webgpu_context().swapChain.getCurrentTextureView();
-    if (!nextTexture)
+    wgpu::SurfaceTexture surface_texture;
+    webgpu_context().surface.getCurrentTexture(&surface_texture);
+    if (surface_texture.status != wgpu::SurfaceGetCurrentTextureStatus::Success) // TODO(WebGPU) Handle the various failure cases
     {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl; // TODO(WebGPU) Can this legitimately happen, ot is this always an error we need to handle / report
 
         return false; // TODO(WebGPU) We still want to update, but not render
     }
+    auto view_descriptor                  = wgpu::TextureViewDescriptor{};
+    view_descriptor.label                 = "Surface texture view";
+    view_descriptor.format                = wgpuTextureGetFormat(surface_texture.texture);
+    view_descriptor.dimension             = WGPUTextureViewDimension_2D;
+    view_descriptor.baseMipLevel          = 0;
+    view_descriptor.mipLevelCount         = 1;
+    view_descriptor.baseArrayLayer        = 0;
+    view_descriptor.arrayLayerCount       = 1;
+    view_descriptor.aspect                = wgpu::TextureAspect::All;
+    wgpu::TextureView          targetView = wgpuTextureCreateView(surface_texture.texture, &view_descriptor);
     wgpu::RenderPassDescriptor renderPassDesc{};
 
     wgpu::RenderPassColorAttachment renderPassColorAttachment{};
-    renderPassColorAttachment.view          = nextTexture;
+    renderPassColorAttachment.view          = targetView;
     renderPassColorAttachment.resolveTarget = nullptr;
     renderPassColorAttachment.loadOp        = wgpu::LoadOp::Clear;
     renderPassColorAttachment.storeOp       = wgpu::StoreOp::Store;
@@ -275,16 +287,15 @@ auto AppManager::imgui_end_frame() -> bool
     renderPassDesc.colorAttachmentCount     = 1;
     renderPassDesc.colorAttachments         = &renderPassColorAttachment;
 
-    renderPassDesc.timestampWriteCount = 0;
-    renderPassDesc.label               = "ImGui";
-    renderPassDesc.timestampWrites     = nullptr;
+    renderPassDesc.label           = "ImGui";
+    renderPassDesc.timestampWrites = nullptr;
     webgpu_context().encoder.pushDebugGroup("ImGui");
     auto render_pass = webgpu_context().encoder.beginRenderPass(renderPassDesc);
     ImGui_ImplWGPU_RenderDrawData(draw_data, render_pass);
     render_pass.end();
-    render_pass.release();
-    nextTexture.release();
     webgpu_context().encoder.popDebugGroup();
+    render_pass.release();
+    targetView.release();
 
     return true;
 }

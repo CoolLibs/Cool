@@ -1,4 +1,3 @@
-
 #define WEBGPU_CPP_IMPLEMENTATION
 #include <webgpu/webgpu.hpp>
 //
@@ -116,7 +115,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     // WebGPU
     _wgpu.instance = wgpu::createInstance(wgpu::InstanceDescriptor{});
     if (!webgpu_context().instance)
-        throw_error("WebGPU  initialization failed");
+        throw_error("WebGPU initialization failed");
 
     // GLFW
     glfwSetErrorCallback(&glfw_error_callback);
@@ -139,10 +138,11 @@ BackendContext::BackendContext(WindowConfig const& config)
     adapterOpts.powerPreference   = wgpu::PowerPreference::HighPerformance;
     adapterOpts.compatibleSurface = _wgpu.surface;
     _wgpu.adapter                 = _wgpu.instance.requestAdapter(adapterOpts);
+    _wgpu.surface_format          = _wgpu.surface.getPreferredFormat(_wgpu.adapter);
 
     wgpu::DeviceDescriptor deviceDesc;
-    deviceDesc.requiredFeaturesCount = 0;
-    _wgpu.device                     = _wgpu.adapter.requestDevice(deviceDesc);
+    deviceDesc.requiredFeatureCount = 0;
+    _wgpu.device                    = _wgpu.adapter.requestDevice(deviceDesc);
 
     // Add an error callback for more debug info
 #if DEBUG
@@ -165,7 +165,7 @@ BackendContext::BackendContext(WindowConfig const& config)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOther(window().glfw(), /*install_callbacks=*/false);
-    ImGui_ImplWGPU_Init(webgpu_context().device, 3, webgpu_context().swapChainFormat);
+    ImGui_ImplWGPU_Init(webgpu_context().device, 3, webgpu_context().surface_format);
     imgui_config();
 }
 

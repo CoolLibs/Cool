@@ -9,8 +9,6 @@
 
 namespace Cool {
 
-// TODO(Audio) When waveform's window size is too big, then we can't fit all the samples in an OpenGL texture // TODO(WebGPU) Does this work better with WebGPU?
-
 // TODO(Audio) Average the spectrum across several frames, to make it look smoother.
 
 AudioManager::AudioManager()

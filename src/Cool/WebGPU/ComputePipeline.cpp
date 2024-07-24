@@ -69,9 +69,8 @@ void ComputePipeline::compute(ComputePipeline_ComputeArgs const& args) const
 {
     auto compute_pass = [&]() -> wgpu::ComputePassEncoder // IIFE
     {
-        auto compute_pass_desc                = wgpu::ComputePassDescriptor{};
-        compute_pass_desc.timestampWriteCount = 0;
-        compute_pass_desc.timestampWrites     = nullptr;
+        auto compute_pass_desc            = wgpu::ComputePassDescriptor{};
+        compute_pass_desc.timestampWrites = nullptr;
         return args.encoder.value_or(webgpu_context().encoder).beginComputePass(compute_pass_desc);
     }();
 

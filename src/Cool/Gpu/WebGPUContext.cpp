@@ -1,4 +1,5 @@
 #include "WebGPUContext.h"
+#include <webgpu/webgpu.hpp>
 #include "Cool/Backend/BackendContext.h"
 
 namespace Cool {
@@ -10,21 +11,21 @@ auto webgpu_context() -> WebGPUContext&
 
 void WebGPUContext::build_swapchain(img::Size size)
 {
+    // TODO(WebGPU) Do we need to unconfigure the surface before configuring it again ?
     // Destroy previously allocated swap chain
-    if (swapChain != nullptr)
-        swapChain.release();
-
-#ifdef WEBGPU_BACKEND_WGPU
-    swapChainFormat = surface.getPreferredFormat(adapter);
-#else
-    swapChainFormat = wgpu::TextureFormat::BGRA8Unorm; // Dawn does not support getPreferredFormat() yet, (and I don't know what happens when building for the web)
-#endif
-    swapChainDesc.width       = size.width();
-    swapChainDesc.height      = size.height();
-    swapChainDesc.usage       = wgpu::TextureUsage::RenderAttachment;
-    swapChainDesc.format      = swapChainFormat;
-    swapChainDesc.presentMode = wgpu::PresentMode::Fifo;
-    swapChain                 = device.createSwapChain(surface, swapChainDesc);
+    // if (swapChain != nullptr)
+    //     swapChain.release();
+    auto config            = wgpu::SurfaceConfiguration{};
+    config.width           = size.width();
+    config.height          = size.height();
+    config.format          = surface_format;
+    config.viewFormatCount = 0;
+    config.viewFormats     = nullptr;
+    config.usage           = wgpu::TextureUsage::RenderAttachment;
+    config.device          = device;
+    config.presentMode     = wgpu::PresentMode::Fifo;
+    config.alphaMode       = wgpu::CompositeAlphaMode::Auto; // TODO(WebGPU) If we switch to rendering our images in premultiplied mode, we need to change that (although we don't really care about transparent windows)
+    surface.configure(config);
 }
 
 void WebGPUContext::check_for_swapchain_rebuild(img::Size swapchain_size)

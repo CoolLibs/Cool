@@ -45,8 +45,7 @@ void RenderTarget::render(AlphaSpace alpha_space, std::function<void(wgpu::Rende
 
     renderPassDesc.depthStencilAttachment = nullptr; //&depthStencilAttachment;
 
-    renderPassDesc.timestampWriteCount = 0;
-    renderPassDesc.timestampWrites     = nullptr;
+    renderPassDesc.timestampWrites = nullptr;
 
     wgpu::RenderPassEncoder render_pass = webgpu_context().encoder.beginRenderPass(renderPassDesc);
 
