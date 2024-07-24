@@ -11,7 +11,6 @@
 #include <webgpu/webgpu.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/Backend/Window.h"
-#include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
@@ -21,6 +20,7 @@
 #include "Cool/TextureSource/TextureLibrary_Image.hpp"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/UserSettings/UserSettings.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "Cool/Webcam/TextureLibrary_FromWebcam.h"
 #include "GLFW/glfw3.h"
 #include "easy_ffmpeg/callbacks.hpp"

@@ -1,5 +1,5 @@
 #include "ShaderModule.h"
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 
 namespace Cool {
 

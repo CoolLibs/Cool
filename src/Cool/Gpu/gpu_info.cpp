@@ -1,5 +1,5 @@
 #include "gpu_info.h"
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "magic_enum/include/magic_enum/magic_enum.hpp"
 #include "webgpu/webgpu.hpp"
 

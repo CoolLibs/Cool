@@ -1,6 +1,6 @@
 #include "Buffer.h"
 #include <webgpu/webgpu.hpp>
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 
 namespace Cool {
 

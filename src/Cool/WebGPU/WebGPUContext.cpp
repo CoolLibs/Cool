@@ -1,4 +1,4 @@
-#include "WebGPUContext.h"
+#include "WebGPUContext.hpp"
 #include <webgpu/webgpu.hpp>
 #include "Cool/Backend/BackendContext.h"
 

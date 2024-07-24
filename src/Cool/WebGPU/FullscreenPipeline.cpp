@@ -1,7 +1,7 @@
 #include "FullscreenPipeline.h"
 #include "BindGroup.hpp"
 #include "BindGroupLayout.hpp"
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "ShaderModule.h"
 #include "Texture.h"
 #include "webgpu/webgpu.hpp"

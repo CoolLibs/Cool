@@ -1,6 +1,6 @@
 #include "TextureSampler.hpp"
 #include <webgpu/webgpu.hpp>
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "TextureSamplerDescriptor.hpp"
 
 namespace Cool {

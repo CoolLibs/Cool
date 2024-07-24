@@ -1,11 +1,12 @@
 #include "RenderTarget.h"
 #include "Cool/ColorSpaces/AlphaSpace.h"
-#include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/WebGPU/BindGroupLayout.hpp"
 #include "Cool/WebGPU/ComputePipeline.h"
 #include "Cool/WebGPU/ShaderModule.h"
 #include "Cool/WebGPU/Texture.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "webgpu/webgpu.hpp"
+
 
 namespace Cool {
 

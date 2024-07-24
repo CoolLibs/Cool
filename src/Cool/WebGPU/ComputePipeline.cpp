@@ -1,8 +1,9 @@
 #include "ComputePipeline.h"
-#include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/String/String.h"
 #include "Cool/WebGPU/ShaderModule.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "webgpu/webgpu.hpp"
+
 
 namespace Cool {
 

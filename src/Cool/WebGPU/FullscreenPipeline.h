@@ -3,7 +3,7 @@
 #include "BindGroup.hpp"
 #include "BindGroupLayout.hpp"
 #include "Buffer.h"
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "ShaderModule.h"
 #include "WGPUUnique.h"
 #include "glm/glm.hpp"

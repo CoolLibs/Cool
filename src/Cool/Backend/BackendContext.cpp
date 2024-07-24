@@ -11,9 +11,10 @@
 #include "BackendContext.h"
 #include "Cool/Backend/WindowConfig.h"
 #include "Cool/Backend/imgui_config.h"
-#include "Cool/Gpu/WebGPUContext.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Path/Path.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
+
 
 namespace Cool {
 

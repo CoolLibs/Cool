@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Gpu/WebGPUContext.h"
+#include "Cool/WebGPU/WebGPUContext.hpp"
 #include "GLFW/glfw3.h"
 #include "Window.h"
 #include "WindowConfig.h"
