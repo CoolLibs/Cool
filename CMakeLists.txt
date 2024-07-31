@@ -7,6 +7,8 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+option(COOL_USE_INSTALLER "Turn this on if you are using an installer for your application (NB: you still need to generate the installer yourself)" OFF)
+
 add_library(Cool)
 add_library(Cool::Core ALIAS Cool)
 add_library(Cool-PublicProperties INTERFACE) # This is needed by both Cool and its tests
@@ -45,6 +47,12 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
     IMGUI_DEFINE_MATH_OPERATORS
 )
+
+if(COOL_USE_INSTALLER)
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_INSTALLER=1)
+else()
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_INSTALLER=0)
+endif()
 
 # ----------------------
 # ---Add Cool sources---
