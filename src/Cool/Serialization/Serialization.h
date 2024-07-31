@@ -3,6 +3,7 @@
 #include <Cool/File/File.h>
 #include <Cool/Log/OptionalErrorMessage.h>
 #include <fstream>
+#include <string>
 
 namespace Cool::Serialization {
 
@@ -14,11 +15,13 @@ namespace Cool::Serialization {
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
 template<typename T, typename InputArchive>
-auto load(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessage
+auto load(T& data, std::filesystem::path const& file_path, std::string* extra_line_at_the_beginning_of_the_file = {}) -> OptionalErrorMessage
 {
     if (File::exists(file_path))
     {
         std::ifstream is(file_path);
+        if (extra_line_at_the_beginning_of_the_file != nullptr)
+            std::getline(is, *extra_line_at_the_beginning_of_the_file);
         try
         {
             auto archive = InputArchive{is};
@@ -48,7 +51,7 @@ auto load(T& data, std::filesystem::path const& file_path) -> OptionalErrorMessa
  * return true iff the save was successful.
  */
 template<typename T, typename OutputArchive>
-auto save(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0") -> bool
+auto save(const T& data, std::filesystem::path const& file_path, std::string_view field_name = "value0", std::optional<std::string> const& extra_line_at_the_beginning_of_the_file = {}) -> bool
 {
     if (!File::create_folders_for_file_if_they_dont_exist(file_path))
         return false;
@@ -57,6 +60,11 @@ auto save(const T& data, std::filesystem::path const& file_path, std::string_vie
     if (!os.is_open())
         return false;
 
+    if (extra_line_at_the_beginning_of_the_file.has_value())
+    {
+        assert(extra_line_at_the_beginning_of_the_file->find('\n') == std::string::npos); // extra_line_at_the_beginning_of_the_file must be a single line, with no \n at the end
+        os << extra_line_at_the_beginning_of_the_file.value() << '\n';
+    }
     {
         auto archive = OutputArchive{os};
         archive(
