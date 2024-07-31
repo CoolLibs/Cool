@@ -30,7 +30,7 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     auto save_minimal(Archive const&) const -> float
     {

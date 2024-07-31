@@ -5,7 +5,7 @@
 #include "Cool/ImGui/ImGuiWindow.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Tips/TipsManager.h"
-#include "cereal/types/chrono.hpp"
+#include "ser20/types/chrono.hpp"
 
 namespace Cool {
 
@@ -39,14 +39,14 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Current tip", _current_tip_index),
-            cereal::make_nvp("Wants to show all tips", _show_all_tips),
-            cereal::make_nvp("Time when app was last closed", _time_when_app_was_last_closed)
+            ser20::make_nvp("Current tip", _current_tip_index),
+            ser20::make_nvp("Wants to show all tips", _show_all_tips),
+            ser20::make_nvp("Time when app was last closed", _time_when_app_was_last_closed)
         );
     }
 

@@ -1,13 +1,13 @@
 #pragma once
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive>
 void serialize(Archive& archive, glm::vec2& v)
 {
     archive(
-        cereal::make_nvp("x", v.x),
-        cereal::make_nvp("y", v.y)
+        ser20::make_nvp("x", v.x),
+        ser20::make_nvp("y", v.y)
     );
 }
 
@@ -15,9 +15,9 @@ template<class Archive>
 void serialize(Archive& archive, glm::vec3& v)
 {
     archive(
-        cereal::make_nvp("x", v.x),
-        cereal::make_nvp("y", v.y),
-        cereal::make_nvp("z", v.z)
+        ser20::make_nvp("x", v.x),
+        ser20::make_nvp("y", v.y),
+        ser20::make_nvp("z", v.z)
     );
 }
 
@@ -25,10 +25,10 @@ template<class Archive>
 void serialize(Archive& archive, glm::vec4& v)
 {
     archive(
-        cereal::make_nvp("x", v.x),
-        cereal::make_nvp("y", v.y),
-        cereal::make_nvp("z", v.z),
-        cereal::make_nvp("w", v.w)
+        ser20::make_nvp("x", v.x),
+        ser20::make_nvp("y", v.y),
+        ser20::make_nvp("z", v.z),
+        ser20::make_nvp("w", v.w)
     );
 }
 
@@ -62,4 +62,4 @@ void serialize(Archive& archive, glm::mat4& m)
     );
 }
 
-} // namespace cereal
+} // namespace ser20

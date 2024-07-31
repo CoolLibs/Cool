@@ -53,13 +53,13 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Transform", _transform_matrix),
-            cereal::make_nvp("Projection", _projection)
+            ser20::make_nvp("Transform", _transform_matrix),
+            ser20::make_nvp("Projection", _projection)
         );
     }
 };

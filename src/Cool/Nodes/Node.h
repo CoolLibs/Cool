@@ -56,7 +56,7 @@ public: // Type-erasure implementation details
     auto operator=(Node&&) noexcept -> Node& = default;
     ~Node()                                  = default;
 
-public:              // Must be public in order for Cereal to register the polymorphic types
+public:              // Must be public in order for ser20 to register the polymorphic types
     struct Concept { // NOLINT(*-special-member-functions)
         virtual ~Concept() = default;
 
@@ -111,12 +111,12 @@ public:              // Must be public in order for Cereal to register the polym
 
     private:
         // Serialization
-        friend class cereal::access;
+        friend class ser20::access;
         template<class Archive>
         void serialize(Archive& archive)
         {
             archive(
-                cereal::make_nvp("Node", _node)
+                ser20::make_nvp("Node", _node)
             );
         }
     };
@@ -126,12 +126,12 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("pimpl", _pimpl)
+            ser20::make_nvp("pimpl", _pimpl)
         );
     }
 };

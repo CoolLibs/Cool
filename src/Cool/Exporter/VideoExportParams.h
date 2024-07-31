@@ -12,14 +12,14 @@ struct VideoExportParams {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("FPS", fps),
-            cereal::make_nvp("Beginning", beginning),
-            cereal::make_nvp("End", end)
+            ser20::make_nvp("FPS", fps),
+            ser20::make_nvp("Beginning", beginning),
+            ser20::make_nvp("End", end)
         );
     }
 };

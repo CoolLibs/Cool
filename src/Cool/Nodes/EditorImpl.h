@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui-node-editor/imgui_node_editor.h>
-#include <cereal/types/vector.hpp>
 #include <reg/src/AnyId.hpp>
+#include <ser20/types/vector.hpp>
 #include "Cool/Nodes/UniqueEdContext.h"
 #include "IEditor.h"
 #include "Node.h"
@@ -40,13 +40,13 @@ struct FrameNode {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Name", name),
-            cereal::make_nvp("ID", id)
+            ser20::make_nvp("Name", name),
+            ser20::make_nvp("ID", id)
         );
     }
 };
@@ -107,14 +107,14 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Graph", _graph),
-            cereal::make_nvp("Frame nodes", _frame_nodes),
-            cereal::make_nvp("Context", _context)
+            ser20::make_nvp("Graph", _graph),
+            ser20::make_nvp("Frame nodes", _frame_nodes),
+            ser20::make_nvp("Context", _context)
         );
     }
 };

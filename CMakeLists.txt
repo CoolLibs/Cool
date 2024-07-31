@@ -76,10 +76,10 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <imgui/misc/cpp/imgui_stdlib.h>
     <glm/glm.hpp>
     <glm/gtc/type_ptr.hpp>
-    <cereal/access.hpp>
-    <cereal/types/vector.hpp>
-    <cereal/types/string.hpp>
-    <cereal/types/variant.hpp>
+    <ser20/access.hpp>
+    <ser20/types/vector.hpp>
+    <ser20/types/string.hpp>
+    <ser20/types/variant.hpp>
     <boxer/boxer.h>
     <nfd.hpp>
     <IconFontCppHeaders/IconsFontAwesome6.h>
@@ -168,9 +168,10 @@ add_subdirectory(lib/glfw)
 target_link_libraries(Cool-PublicProperties INTERFACE glfw)
 install(FILES "lib/glfw/LICENSE.md" DESTINATION "license/glfw")
 
-# cereal
-target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/cereal/include)
-install(FILES "lib/cereal/LICENSE" DESTINATION "license/cereal")
+# ser20
+add_subdirectory(lib/ser20)
+target_link_libraries(Cool-PublicProperties INTERFACE ser20::ser20)
+install(FILES "lib/ser20/LICENSE" DESTINATION "license/ser20")
 
 # smart
 add_subdirectory(lib/smart)

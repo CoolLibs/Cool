@@ -17,7 +17,7 @@ struct VariableMetadata<Cool::OSCChannel> {
 
 private:
     // Serialisation
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive&)
     {

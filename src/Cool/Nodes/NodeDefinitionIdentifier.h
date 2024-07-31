@@ -8,13 +8,13 @@ struct NodeDefinitionIdentifier {
     std::string category_name;
 
 private:
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Definition name", definition_name),
-            cereal::make_nvp("Category name", category_name)
+            ser20::make_nvp("Definition name", definition_name),
+            ser20::make_nvp("Category name", category_name)
         );
     }
 };

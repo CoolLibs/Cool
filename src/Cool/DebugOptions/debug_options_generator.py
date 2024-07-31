@@ -135,11 +135,11 @@ def filter_out_buttons(debug_options: list[DebugOption]):
     return filter(lambda dbg: dbg.kind != Kind.BUTTON, debug_options)
 
 
-def cereal_make_nvp(debug_options: list[DebugOption]):
+def ser20_make_nvp(debug_options: list[DebugOption]):
     def code(options):
         return ",\n".join(
             map(
-                lambda debug_option: f'cereal::make_nvp("{debug_option.name_in_ui}", {debug_option.name_in_code})',
+                lambda debug_option: f'ser20::make_nvp("{debug_option.name_in_ui}", {debug_option.name_in_code})',
                 filter_out_buttons(options),
             )
         )
@@ -192,12 +192,12 @@ private:
 
     private:
         // Serialization
-        friend class cereal::access;
+        friend class ser20::access;
         template<class Archive>
         void serialize(Archive& archive)
         {{
             archive(
-                {cereal_make_nvp(debug_options)}
+                {ser20_make_nvp(debug_options)}
             );
         }}
     }};
@@ -241,13 +241,13 @@ def DebugOptionsCpp(
     return f"""
 #include <Cool/Path/Path.h>
 #include <Cool/Serialization/Serialization.h>
-#include <cereal/archives/json.hpp>
+#include <ser20/archives/json.hpp>
 
 namespace {namespace} {{
 
 void DebugOptions::save_to_file()
 {{
-    Cool::Serialization::save<DebugOptions::Instance, cereal::JSONOutputArchive>(
+    Cool::Serialization::save<DebugOptions::Instance, ser20::JSONOutputArchive>(
         instance(),
         Cool::Path::user_data() / "{cache_file_name}.json",
         "Debug Options"
@@ -257,7 +257,7 @@ void DebugOptions::save_to_file()
 auto DebugOptions::load_debug_options() -> Instance
 {{
     auto the_instance = Instance{{}};
-    auto const err = Cool::Serialization::load<DebugOptions::Instance, cereal::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json");
+    auto const err = Cool::Serialization::load<DebugOptions::Instance, ser20::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json");
     std::ignore = err; // We don't care about preserving the backward compatibility of debug options. If we break it, we can ignore it.
     return the_instance;
 }}

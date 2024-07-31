@@ -28,13 +28,13 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Camera", _camera),
-            cereal::make_nvp("ViewController", _view_controller)
+            ser20::make_nvp("Camera", _camera),
+            ser20::make_nvp("ViewController", _view_controller)
         );
     }
 };

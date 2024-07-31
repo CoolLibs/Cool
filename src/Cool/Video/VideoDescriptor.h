@@ -21,14 +21,14 @@ struct VideoPlayerSettings {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Loop mode", loop_mode),
-            cereal::make_nvp("Playback speed", playback_speed),
-            cereal::make_nvp("Start time", start_time)
+            ser20::make_nvp("Loop mode", loop_mode),
+            ser20::make_nvp("Playback speed", playback_speed),
+            ser20::make_nvp("Start time", start_time)
         );
     }
 };
@@ -43,13 +43,13 @@ struct VideoDescriptor {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("File Path", path),
-            cereal::make_nvp("Settings", settings)
+            ser20::make_nvp("File Path", path),
+            ser20::make_nvp("Settings", settings)
         );
     }
 };

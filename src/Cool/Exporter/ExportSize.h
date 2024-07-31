@@ -23,14 +23,14 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
         archive(
-            cereal::make_nvp("Size", _size),
-            cereal::make_nvp("Aspect Ratio is Locked", _aspect_ratio_is_locked),
-            cereal::make_nvp("Aspect Ratio", _aspect_ratio)
+            ser20::make_nvp("Size", _size),
+            ser20::make_nvp("Aspect Ratio is Locked", _aspect_ratio_is_locked),
+            ser20::make_nvp("Aspect Ratio", _aspect_ratio)
         );
     }
 };

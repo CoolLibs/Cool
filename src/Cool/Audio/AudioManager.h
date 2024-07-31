@@ -11,19 +11,19 @@
 #include "internal/AudioInput_File.h"
 #include "internal/IAudioInput.h"
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive>
 void serialize(Archive& archive, Audio::PlayerProperties& properties)
 {
     archive(
-        cereal::make_nvp("Volume", properties.volume),
-        cereal::make_nvp("Is muted", properties.is_muted),
-        cereal::make_nvp("Does loop", properties.does_loop)
+        ser20::make_nvp("Volume", properties.volume),
+        ser20::make_nvp("Is muted", properties.is_muted),
+        ser20::make_nvp("Does loop", properties.does_loop)
     );
 }
 
-} // namespace cereal
+} // namespace ser20
 
 namespace Cool {
 
@@ -93,21 +93,21 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void save(Archive& archive) const
     {
         archive(
-            cereal::make_nvp("Window", _window),
-            cereal::make_nvp("File input", _file_input),
-            cereal::make_nvp("Device input", _device_input),
-            cereal::make_nvp("Current input mode", _current_input_mode),
-            cereal::make_nvp("Window size for waveform", _window_size_in_seconds_for_waveform),
-            cereal::make_nvp("Window size for spectrum", _window_size_in_seconds_for_spectrum),
-            cereal::make_nvp("Window size for volume", _window_size_in_seconds_for_volume),
-            cereal::make_nvp("Spectrum max frequency in Hz", _spectrum_max_frequency_in_hz),
-            cereal::make_nvp("Spectrum height scale", _spectrum_height_scale),
-            cereal::make_nvp("Spectrum display as bars", _spectrum_display_as_bars)
+            ser20::make_nvp("Window", _window),
+            ser20::make_nvp("File input", _file_input),
+            ser20::make_nvp("Device input", _device_input),
+            ser20::make_nvp("Current input mode", _current_input_mode),
+            ser20::make_nvp("Window size for waveform", _window_size_in_seconds_for_waveform),
+            ser20::make_nvp("Window size for spectrum", _window_size_in_seconds_for_spectrum),
+            ser20::make_nvp("Window size for volume", _window_size_in_seconds_for_volume),
+            ser20::make_nvp("Spectrum max frequency in Hz", _spectrum_max_frequency_in_hz),
+            ser20::make_nvp("Spectrum height scale", _spectrum_height_scale),
+            ser20::make_nvp("Spectrum display as bars", _spectrum_display_as_bars)
         );
     }
     template<class Archive>

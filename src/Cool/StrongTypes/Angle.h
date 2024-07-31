@@ -22,11 +22,11 @@ struct Radians
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Radians", value));
+        archive(ser20::make_nvp("Radians", value));
     }
 };
 
@@ -74,11 +74,11 @@ private:
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void serialize(Archive& archive)
     {
-        archive(cereal::make_nvp("Radians", value));
+        archive(ser20::make_nvp("Radians", value));
     }
 };
 

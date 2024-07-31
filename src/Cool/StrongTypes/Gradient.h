@@ -1,8 +1,7 @@
 #pragma once
-
-#include <cereal/types/list.hpp>
 #include <imgui_gradient/imgui_gradient.hpp>
-#include "ImStyleEd/cereal_style.hpp" // To serialize ImGui types
+#include <ser20/types/list.hpp>
+#include "ImStyleEd/ser20_style.hpp" // To serialize ImGui types
 
 namespace Cool {
 struct Gradient {
@@ -13,19 +12,19 @@ struct Gradient {
 
 private:
     // Serialization
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void save(Archive& archive) const
     {
         const auto wrap_mode_size_t          = static_cast<size_t>(wrap_mode);
         const auto interpolation_mode_size_t = static_cast<size_t>(value.gradient().interpolation_mode());
         archive(
-            cereal::make_nvp("Gradient", value.gradient().get_marks()),
-            cereal::make_nvp("Wrap Mode", wrap_mode_size_t),
-            cereal::make_nvp("Interpolation Mode", interpolation_mode_size_t)
+            ser20::make_nvp("Gradient", value.gradient().get_marks()),
+            ser20::make_nvp("Wrap Mode", wrap_mode_size_t),
+            ser20::make_nvp("Interpolation Mode", interpolation_mode_size_t)
         );
     }
-    friend class cereal::access;
+    friend class ser20::access;
     template<class Archive>
     void load(Archive& archive)
     {
@@ -49,21 +48,21 @@ auto gradient_marks_array_name(std::string_view name) -> std::string;
 
 } // namespace Cool
 
-namespace cereal {
+namespace ser20 {
 
 template<class Archive>
 void serialize(Archive& archive, ImGG::Mark& mark)
 {
     archive(
-        cereal::make_nvp("Mark position", mark.position),
-        cereal::make_nvp("Mark color", mark.color)
+        ser20::make_nvp("Mark position", mark.position),
+        ser20::make_nvp("Mark color", mark.color)
     );
 }
 
 template<class Archive>
 void save(Archive& archive, ImGG::RelativePosition const& position)
 {
-    archive(cereal::make_nvp("Relative position", position.get()));
+    archive(ser20::make_nvp("Relative position", position.get()));
 }
 
 template<class Archive>
@@ -74,4 +73,4 @@ void load(Archive& archive, ImGG::RelativePosition& position)
     position = ImGG::RelativePosition{position_loaded};
 }
 
-} // namespace cereal
+} // namespace ser20
