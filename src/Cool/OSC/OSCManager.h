@@ -75,8 +75,10 @@ private:
     template<class Archive>
     void serialize(Archive& archive)
     {
+        std::lock_guard lock{_s.values_mutex};
         archive(
-            ser20::make_nvp("Window", _config_window)
+            ser20::make_nvp("Window", _config_window),
+            ser20::make_nvp("Values", _s.values)
         );
     }
 };
