@@ -224,9 +224,8 @@ add_subdirectory(lib/fix-tdr-delay)
 target_link_libraries(Cool-PrivateProperties INTERFACE fix_tdr_delay::fix_tdr_delay)
 
 # serv
-# ## Disabled for now, we will reintroduce it when we will use it
-# add_subdirectory(lib/serv)
-# target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
+add_subdirectory(lib/serv)
+target_link_libraries(Cool-PublicProperties INTERFACE serv::serv)
 
 # stringify
 add_subdirectory(lib/stringify)

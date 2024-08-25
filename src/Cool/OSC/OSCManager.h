@@ -8,10 +8,15 @@ namespace Cool {
 
 namespace internal {
 struct SharedWithThread {
-    mutable std::mutex                         values_mutex{};
-    std::vector<std::pair<std::string, float>> values{};
-    std::mutex                                 channels_that_have_changed_mutex{};
-    std::set<OSCChannel>                       channels_that_have_changed{};
+    mutable std::mutex                        values_mutex{};
+    std::vector<std::pair<OSCChannel, float>> values{};
+    std::mutex                                channels_that_have_changed_mutex{};
+    std::set<OSCChannel>                      channels_that_have_changed{};
+
+    void set_value(OSCChannel const& channel, float value);
+
+private:
+    auto find_index(OSCChannel const& channel) -> size_t;
 };
 } // namespace internal
 
@@ -38,6 +43,8 @@ public:
 
     void open_config_window() { _config_window.open(); }
     void imgui_window();
+
+    void set_value(OSCChannel const&, float);
 
 private:
     OSCManager(); // This is private, because all instances of OSCManager must be guaranteed to have a fixed address in memory. Use osc_manager() to access the global OSCManager.

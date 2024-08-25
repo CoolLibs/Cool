@@ -1,9 +1,7 @@
 #pragma once
-
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
-#include "Cool/Time/Time.hpp"
 
 namespace Cool::ImGuiExtras {
 
@@ -229,5 +227,7 @@ auto input_text_with_dropdown(const char* label, std::string* value, std::functi
 auto dropdown(const char* label, std::string* value, std::function<void(std::function<void(std::string const&)>)> const& for_each_dropdown_entry) -> bool;
 
 auto calc_custom_dropdown_input_width() -> float;
+
+auto input_port(const char* label, int* port, ImGuiInputTextFlags = 0) -> bool;
 
 } // namespace Cool::ImGuiExtras

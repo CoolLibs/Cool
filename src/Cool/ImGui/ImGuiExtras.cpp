@@ -807,4 +807,10 @@ auto calc_custom_dropdown_input_width() -> float
     return ImGui::CalcItemWidth() - ImGui::GetFrameHeight();
 }
 
+auto input_port(const char* label, int* port, ImGuiInputTextFlags flags) -> bool
+{
+    ImGui::SetNextItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
+    return ImGui::InputInt(label, port, -1, -1, ImGuiInputTextFlags_AutoSelectAll | flags);
+}
+
 } // namespace Cool::ImGuiExtras
