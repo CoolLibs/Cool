@@ -2,20 +2,20 @@
 
 namespace Cool {
 
-void RenderView::update_size(ImageSizeConstraint const& constraint)
+auto RenderView::desired_image_size(ImageSizeConstraint const& constraint) const -> img::Size
 {
     if (!window_size().has_value())
-        return;
-    _render_target.set_size(constraint.applied_to(*window_size()));
+        return {};
+    return constraint.applied_to(*window_size());
 }
 
 auto RenderView::get_image_texture_id() const -> ImTextureID
 {
-    return _render_target.imgui_texture_id();
+    return _texture.imgui_texture_id();
 }
 auto RenderView::get_image_size() const -> img::Size
 {
-    return _render_target.current_size();
+    return _texture.size;
 }
 
 } // namespace Cool

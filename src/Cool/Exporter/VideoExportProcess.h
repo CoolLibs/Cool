@@ -12,7 +12,7 @@ namespace Cool {
 class VideoExportProcess {
 public:
     VideoExportProcess(VideoExportParams const& params, TimeSpeed time_speed, std::filesystem::path const& folder_path, img::Size size);
-    auto update(Polaroid polaroid) -> bool;
+    auto update(Polaroid const& polaroid) -> bool;
     void imgui(std::function<void()> const& extra_widgets);
 
     auto clock() const -> Clock const& { return _clock; }
@@ -20,7 +20,7 @@ public:
 private:
     auto estimated_remaining_time() -> Time;
     void update_time_estimate();
-    void export_frame(Polaroid polaroid, std::filesystem::path const& file_path);
+    void export_frame(Polaroid const& polaroid, std::filesystem::path const& file_path);
 
 private:
     std::filesystem::path _folder_path;

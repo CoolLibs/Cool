@@ -11,17 +11,20 @@ class RenderView : public View {
 public:
     using View::View;
 
-    void update_size(ImageSizeConstraint const&);
+    void set_texture(TextureRef texture) { _texture = texture; }
 
-    auto render_target() -> RenderTarget& { return _render_target; }
-    auto render_target() const -> RenderTarget const& { return _render_target; }
+    auto desired_image_size(ImageSizeConstraint const&) const -> img::Size;
+
+    // auto render_target() -> RenderTarget& { return _render_target; }
+    // auto render_target() const -> RenderTarget const& { return _render_target; }
 
 protected:
     auto get_image_texture_id() const -> ImTextureID override;
     auto get_image_size() const -> img::Size override;
 
 private:
-    RenderTarget _render_target;
+    // RenderTarget _render_target;
+    TextureRef _texture{};
 };
 
 } // namespace Cool

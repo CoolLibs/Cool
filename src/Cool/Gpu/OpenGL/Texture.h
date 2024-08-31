@@ -1,9 +1,11 @@
 #if defined(COOL_OPENGL)
 #pragma once
 #include <glpp/glpp.hpp>
+#include "TextureRef.hpp"
 #include "glpp-extended/src/Texture2D.h"
 #include "img/src/Image.h"
 #include "img/src/Size.h"
+
 
 namespace Cool::OpenGL {
 

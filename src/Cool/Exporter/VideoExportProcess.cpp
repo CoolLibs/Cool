@@ -24,7 +24,7 @@ VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpee
     _thread_pool.start();
 }
 
-bool VideoExportProcess::update(Polaroid polaroid)
+bool VideoExportProcess::update(Polaroid const& polaroid)
 {
     if (_should_stop_asap || _nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
         return true; // The export is finished
@@ -100,13 +100,13 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
     extra_widgets();
 }
 
-void VideoExportProcess::export_frame(Polaroid polaroid, std::filesystem::path const& file_path)
+void VideoExportProcess::export_frame(Polaroid const& polaroid, std::filesystem::path const& file_path)
 {
-    polaroid.render(_clock.time(), _clock.delta_time(), _size);
+    polaroid.render(_size, _clock.time(), _clock.delta_time());
 
     _thread_pool.push_job(ImageExportJob{
         file_path,
-        polaroid.render_target.download_pixels(),
+        polaroid.texture.download_pixels(),
         _average_export_time,
         _average_export_time_mutex,
         _nb_frames_which_finished_exporting
