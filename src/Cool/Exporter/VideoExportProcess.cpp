@@ -106,7 +106,7 @@ void VideoExportProcess::export_frame(Polaroid const& polaroid, std::filesystem:
 
     _thread_pool.push_job(ImageExportJob{
         file_path,
-        polaroid.texture.download_pixels(),
+        polaroid.texture().download_pixels(),
         _average_export_time,
         _average_export_time_mutex,
         _nb_frames_which_finished_exporting

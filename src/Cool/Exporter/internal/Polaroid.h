@@ -6,7 +6,7 @@ namespace Cool {
 
 struct Polaroid {
     // The texture that we will render to
-    TextureRef texture;
+    std::function<TextureRef()> texture;
     // The function that renders the desired image
     std::function<void(img::Size size, Time time, Time delta_time)> render;
 };
