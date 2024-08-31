@@ -23,7 +23,7 @@ ServerManager::ServerManager()
 
 void ServerManager::imgui_window()
 {
-    _window.show([&]() {
+    _window.show([&](bool /* is_opening */) {
         // Port
         ImGuiExtras::input_port("Port", &_port);
         if (ImGui::IsItemDeactivated()) // Since setting the port is laggy, we only do it once, when the user has finished typing

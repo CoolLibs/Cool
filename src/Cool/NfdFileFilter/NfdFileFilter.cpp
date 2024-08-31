@@ -38,4 +38,9 @@ const std::vector<nfdfilteritem_t> NfdFileFilter::FragmentShader = {NfdFileFilte
 const std::vector<nfdfilteritem_t> NfdFileFilter::VertexShader   = {NfdFileFilter::Shader[2]};
 const std::vector<nfdfilteritem_t> NfdFileFilter::ComputeShader  = {NfdFileFilter::Shader[3]};
 
+const std::vector<nfdfilteritem_t> NfdFileFilter::Mesh = {
+    {"Mesh", "ply"},
+    {"ply", "ply"},
+};
+
 } // namespace Cool
