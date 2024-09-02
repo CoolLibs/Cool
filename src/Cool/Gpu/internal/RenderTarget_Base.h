@@ -1,7 +1,7 @@
 #pragma once
-
 #include <img/img.hpp>
 #include "../RenderTargetInfo.h"
+#include "Cool/Gpu/OpenGL/TextureRef.hpp"
 
 namespace Cool {
 
@@ -11,6 +11,7 @@ public:
     void             render(typename RenderTarget_Impl::RenderFuncType render_fn);
     img::Image       download_pixels() const { return _impl.download_pixels(); }
     ImTextureID      imgui_texture_id() const { return _impl.imgui_texture_id(); }
+    auto             texture_ref() const -> TextureRef { return _impl.texture_ref(); }
     RenderTargetInfo info() const { return _impl.info(); }
     img::Size        current_size() const { return _impl.size(); }
     img::Size        desired_size() const { return _desired_size; }

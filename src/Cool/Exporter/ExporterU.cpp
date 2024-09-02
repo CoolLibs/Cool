@@ -5,10 +5,10 @@
 
 namespace Cool::ExporterU {
 
-void export_image(img::Size size, Time time, Time delta_time, Polaroid polaroid, std::filesystem::path const& file_path)
+void export_image(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path)
 {
-    polaroid.render(time, delta_time, size);
-    ImageU::save_png(file_path, polaroid.render_target.download_pixels());
+    polaroid.render(size, time, delta_time);
+    ImageU::save_png(file_path, polaroid.texture().download_pixels());
 }
 
 } // namespace Cool::ExporterU
