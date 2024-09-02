@@ -78,7 +78,7 @@ public:
     auto is_open() const -> bool { return _is_open; }
 
 private: /// Child classes need to implement these functions in order for us to display their image in the View.
-    friend class ForwardingOrRenderView;
+    friend class ForwardingOrTextureView;
     virtual auto get_image_texture_id() const -> ImTextureID = 0;
     virtual auto get_image_size() const -> img::Size         = 0;
 

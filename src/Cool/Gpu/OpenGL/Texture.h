@@ -6,7 +6,6 @@
 #include "img/src/Image.h"
 #include "img/src/Size.h"
 
-
 namespace Cool::OpenGL {
 
 struct TextureConfig {
