@@ -121,17 +121,22 @@ void OSCManager::imgui_error_message_for_invalid_endpoint(const char* extra_text
     ImGui::PopFont();
 }
 
+void OSCManager::imgui_show_all_values() // This function is also called by the ServerManager window to display the values
+{
+    imgui_values_table(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
+    ImGui::SameLine();
+    imgui_button_to_reset_values();
+}
+
 void OSCManager::imgui_window()
 {
     _config_window.show([&](bool /*is_opening*/) {
         imgui_select_connection_endpoint();
-        imgui_show_all_values(); // TODO(OSC) For each channel, add a From Min / Max (and To Min / Max ?) to remap values + display a progress bar on the side to better see values changing, from 0 to 1
-        ImGui::SameLine();
-        imgui_button_to_reset_values();
+        imgui_show_all_values();
     });
 }
 
-void OSCManager::imgui_show_all_values()
+void OSCManager::imgui_values_table()
 {
     std::lock_guard       lock{_s.values_mutex};
     static constexpr auto table_flags = ImGuiTableFlags_RowBg

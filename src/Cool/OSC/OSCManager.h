@@ -40,6 +40,7 @@ public:
 
     auto imgui_channel_widget(const char* label, OSCChannel&) -> bool;
     void imgui_error_message_for_invalid_endpoint(const char* extra_text = "") const;
+    void imgui_show_all_values();
 
     void open_config_window() { _config_window.open(); }
     void imgui_window();
@@ -53,7 +54,7 @@ private:
     void start_listening();
     void stop_listening();
 
-    void imgui_show_all_values();
+    void imgui_values_table();
     void imgui_select_connection_endpoint();
     void imgui_button_to_reset_values();
 

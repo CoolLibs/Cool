@@ -35,6 +35,8 @@ void ServerManager::imgui_window()
         else
             ImGui::TextUnformatted("The server is closed");
         ImGui::PopFont();
+        // Values
+        osc_manager().imgui_show_all_values();
     });
 }
 
