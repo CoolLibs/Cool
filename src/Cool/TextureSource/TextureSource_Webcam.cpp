@@ -6,7 +6,7 @@ namespace Cool {
 
 auto TextureSource_Webcam::imgui_widget() -> bool
 {
-    return WebcamsInfos::instance().imgui_widget_webcam_name(webcam_name);
+    return imgui_widget_webcam_name(webcam_name);
 }
 
 [[nodiscard]] auto TextureSource_Webcam::get_texture() const -> Texture const*

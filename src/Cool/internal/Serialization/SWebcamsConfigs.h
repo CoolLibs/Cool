@@ -5,7 +5,7 @@
 
 namespace Cool {
 
-auto do_save(WebcamsConfigsMap const&, Cool::SerializerOnDemand const&) -> bool;
-auto do_load(WebcamsConfigsMap&, Cool::SerializerOnDemand const&) -> Cool::OptionalErrorMessage;
+// auto do_save(WebcamsConfigsMap const&, Cool::SerializerOnDemand const&) -> bool;
+// auto do_load(WebcamsConfigsMap&, Cool::SerializerOnDemand const&) -> Cool::OptionalErrorMessage;
 
 } // namespace Cool

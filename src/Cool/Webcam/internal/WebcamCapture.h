@@ -1,15 +1,15 @@
 #pragma once
 #include <Cool/Gpu/Texture.h>
 #include <opencv2/core.hpp>
-#include <webcam_info/webcam_info.hpp>
+#include <wcam/wcam.hpp>
 
 namespace Cool {
 
 class WebcamCapture {
 public:
-    WebcamCapture(size_t index, webcam_info::Resolution resolution)
+    WebcamCapture(size_t index)
         : _webcam_index{index}
-        , _thread{&WebcamCapture::thread_job, std::ref(*this), resolution}
+        , _thread{&WebcamCapture::thread_job, std::ref(*this)}
     {}
     ~WebcamCapture();
     WebcamCapture(WebcamCapture const&)                        = delete;
@@ -22,7 +22,7 @@ public:
     [[nodiscard]] auto webcam_index() const -> size_t { return _webcam_index; }
 
 private:
-    static void thread_job(WebcamCapture& This, webcam_info::Resolution);
+    static void thread_job(WebcamCapture& This);
     void        update_webcam_ifn();
 
 private:

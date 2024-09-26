@@ -1,42 +1,45 @@
 #pragma once
-#include <webcam_info/webcam_info.hpp>
+// #include <wcam/wcam.hpp>
 
 namespace Cool {
 
-class WebcamsInfos {
-public:
-    ~WebcamsInfos();
-    WebcamsInfos(WebcamsInfos const&)                        = delete;
-    auto operator=(WebcamsInfos const&) -> WebcamsInfos&     = delete;
-    WebcamsInfos(WebcamsInfos&&) noexcept                    = delete;
-    auto operator=(WebcamsInfos&&) noexcept -> WebcamsInfos& = delete;
+auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
+auto default_webcam_name() -> std::string;
 
-    [[nodiscard]] static auto instance() -> WebcamsInfos&;
+// class WebcamsInfos {
+// public:
+//     ~WebcamsInfos();
+//     WebcamsInfos(WebcamsInfos const&)                        = delete;
+//     auto operator=(WebcamsInfos const&) -> WebcamsInfos&     = delete;
+//     WebcamsInfos(WebcamsInfos&&) noexcept                    = delete;
+//     auto operator=(WebcamsInfos&&) noexcept -> WebcamsInfos& = delete;
 
-    [[nodiscard]] auto index(std::string const& webcam_name) -> std::optional<size_t>;
-    [[nodiscard]] auto name(size_t webcam_index) -> std::optional<std::string>;
+//     [[nodiscard]] static auto instance() -> WebcamsInfos&;
 
-    [[nodiscard]] auto default_webcam_name() -> std::string;
-    [[nodiscard]] auto default_resolution(std::string const& webcam_name, bool do_lock = true) -> webcam_info::Resolution;
+//     [[nodiscard]] auto index(std::string const& webcam_name) -> std::optional<size_t>;
+//     [[nodiscard]] auto name(size_t webcam_index) -> std::optional<std::string>;
 
-    auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
+//     [[nodiscard]] auto default_webcam_name() -> std::string;
+//     [[nodiscard]] auto default_resolution(std::string const& webcam_name, bool do_lock = true) -> wcam::Resolution;
 
-    void for_each_webcam_info(std::function<void(webcam_info::Info const&)> const&);
+//     auto imgui_widget_webcam_name(std::string& webcam_name) -> bool;
 
-private:
-    WebcamsInfos() // This is a singleton. Get the global instance with `instance()` instead.
-        : _thread(&WebcamsInfos::thread_job, std::ref(*this))
-    {}
-    static void thread_job(WebcamsInfos& This);
+//     void for_each_webcam_info(std::function<void(wcam::Info const&)> const&);
 
-    [[nodiscard]] auto default_resolution_locking(std::string const& webcam_name) -> webcam_info::Resolution;
-    [[nodiscard]] auto default_resolution_non_locking(std::string const& webcam_name) -> webcam_info::Resolution;
+// private:
+//     WebcamsInfos() // This is a singleton. Get the global instance with `instance()` instead.
+//         : _thread(&WebcamsInfos::thread_job, std::ref(*this))
+//     {}
+//     static void thread_job(WebcamsInfos& This);
 
-private:
-    std::vector<webcam_info::Info> _webcams_infos;
-    std::mutex                     _mutex;
-    std::atomic<bool>              _wants_to_stop_thread{false};
-    std::thread                    _thread;
-};
+//     [[nodiscard]] auto default_resolution_locking(std::string const& webcam_name) -> wcam::Resolution;
+//     [[nodiscard]] auto default_resolution_non_locking(std::string const& webcam_name) -> wcam::Resolution;
+
+// private:
+//     std::vector<wcam::Info> _webcams_infos;
+//     std::mutex              _mutex;
+//     std::atomic<bool>       _wants_to_stop_thread{false};
+//     std::thread             _thread;
+// };
 
 } // namespace Cool

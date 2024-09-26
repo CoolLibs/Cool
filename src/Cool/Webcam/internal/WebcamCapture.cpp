@@ -1,6 +1,6 @@
 #include "WebcamCapture.h"
 #include <opencv2/opencv.hpp>
-#include <webcam_info/webcam_info.hpp>
+#include <wcam/wcam.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Log/ToUser.h"
@@ -14,23 +14,23 @@ WebcamCapture::~WebcamCapture()
     _thread.join();
 }
 
-static auto create_opencv_capture(size_t webcam_index, webcam_info::Resolution resolution) -> cv::VideoCapture
+static auto create_opencv_capture(size_t webcam_index) -> cv::VideoCapture
 {
     auto capture = cv::VideoCapture{static_cast<int>(webcam_index)};
     if (capture.isOpened())
     {
         capture.setExceptionMode(true);
-        capture.set(cv::CAP_PROP_FRAME_WIDTH, resolution.width);
-        capture.set(cv::CAP_PROP_FRAME_HEIGHT, resolution.height);
+        capture.set(cv::CAP_PROP_FRAME_WIDTH, 100);
+        capture.set(cv::CAP_PROP_FRAME_HEIGHT, 100);
     }
     return capture;
 }
 
-void WebcamCapture::thread_job(WebcamCapture& This, webcam_info::Resolution resolution)
+void WebcamCapture::thread_job(WebcamCapture& This)
 {
     try
     {
-        cv::VideoCapture capture = create_opencv_capture(This.webcam_index(), resolution);
+        cv::VideoCapture capture = create_opencv_capture(This.webcam_index());
         cv::Mat          wip_image{};
         while (!This._wants_to_stop_thread.load() && capture.isOpened())
         {

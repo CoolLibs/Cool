@@ -9,8 +9,8 @@ WebcamRequest::WebcamRequest(std::optional<size_t> index, std::string const& web
     if (index.has_value())
     {
         capture = std::make_unique<WebcamCapture>(
-            *index,
-            WebcamsConfigs::instance().selected_resolution(webcam_name)
+            *index
+            // WebcamsConfigs::instance().selected_resolution(webcam_name)
         );
     }
 }

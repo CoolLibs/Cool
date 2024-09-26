@@ -1,10 +1,10 @@
 #pragma once
-#include <webcam_info/webcam_info.hpp>
+#include <wcam/wcam.hpp>
 
 namespace Cool {
 
 struct WebcamConfig {
-    webcam_info::Resolution resolution;
+    wcam::Resolution resolution;
 
 private:
     // Serialization
@@ -13,8 +13,8 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            ser20::make_nvp("Width", resolution.width),
-            ser20::make_nvp("Height", resolution.height)
+            ser20::make_nvp("Width", resolution.width()),
+            ser20::make_nvp("Height", resolution.height())
         );
     }
 };

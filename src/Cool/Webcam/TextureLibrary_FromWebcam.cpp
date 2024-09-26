@@ -1,5 +1,5 @@
 #include "TextureLibrary_FromWebcam.h"
-#include <webcam_info/webcam_info.hpp>
+#include <optional>
 #include "Cool/Gpu/Texture.h"
 #include "WebcamsConfigs.h"
 #include "WebcamsInfos.h"
@@ -35,7 +35,7 @@ auto TextureLibrary_FromWebcam::get_request(std::string const& webcam_name) cons
 auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> Texture const*
 {
     auto*      request      = get_request(webcam_name);
-    auto const webcam_index = WebcamsInfos::instance().index(webcam_name);
+    auto const webcam_index = std::make_optional(0); // WebcamsInfos::instance().index(webcam_name);
 
     if (request == nullptr)
     {
@@ -55,8 +55,7 @@ auto TextureLibrary_FromWebcam::get_texture(std::string const& webcam_name) -> T
     if (!request->capture || request->capture->webcam_index() != *webcam_index)
     {
         request->capture = std::make_unique<WebcamCapture>(
-            *webcam_index,
-            WebcamsConfigs::instance().selected_resolution(webcam_name)
+            *webcam_index
         );
     }
 

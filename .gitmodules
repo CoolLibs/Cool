@@ -91,9 +91,6 @@
 [submodule "lib/easy_opencv"]
 	path = lib/easy_opencv
 	url = https://github.com/CoolLibs/easy_opencv.git
-[submodule "lib/webcam_info"]
-	path = lib/webcam_info
-	url = https://github.com/CoolLibs/webcam_info.git
 [submodule "lib/RtMidiWrapper"]
 	path = lib/RtMidiWrapper
 	url = https://github.com/CoolLibs/RtMidiWrapper
@@ -115,3 +112,6 @@
 [submodule "lib/ser20"]
 	path = lib/ser20
 	url = https://github.com/CoolLibs/ser20
+[submodule "lib/wcam"]
+	path = lib/wcam
+	url = https://github.com/CoolLibs/wcam
