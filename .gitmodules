@@ -115,3 +115,9 @@
 [submodule "lib/ser20"]
 	path = lib/ser20
 	url = https://github.com/CoolLibs/ser20
+[submodule "lib/Lua"]
+	path = lib/Lua
+	url = https://github.com/walterschell/Lua
+[submodule "lib/sol2"]
+	path = lib/sol2
+	url = https://github.com/ThePhD/sol2

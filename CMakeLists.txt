@@ -272,6 +272,17 @@ target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
 add_subdirectory(lib/webcam_info)
 target_link_libraries(Cool-PublicProperties INTERFACE webcam_info::webcam_info)
 
+# Lua
+set(LUA_SUPPORT_DL OFF CACHE BOOL "Support dynamic loading of compiled modules" FORCE)
+set(LUA_BUILD_AS_CXX OFF CACHE BOOL "Build lua as C++" FORCE)
+set(LUA_ENABLE_SHARED OFF CACHE BOOL "Build dynamic liblua" FORCE)
+set(LUA_ENABLE_TESTING OFF CACHE BOOL "Build and run tests" FORCE)
+set(LUA_BUILD_BINARY OFF CACHE BOOL "Build lua binary" FORCE)
+set(LUA_BUILD_COMPILER ON CACHE BOOL "Build luac compiler" FORCE)
+add_subdirectory(lib/Lua)
+target_link_libraries(Cool-PublicProperties INTERFACE Lua::Library)
+target_include_directories(Cool-PublicProperties INTERFACE lib/sol2/include)
+
 # RtMidi
 add_subdirectory(lib/RtMidiWrapper)
 target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
