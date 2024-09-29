@@ -263,11 +263,6 @@ add_subdirectory(lib/imgui)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
-# OpenCV
-include("lib/opencv_build_options.cmake")
-add_subdirectory(lib/easy_opencv)
-target_link_libraries(Cool-PublicProperties INTERFACE easy_opencv::easy_opencv)
-
 # wcam
 add_subdirectory(lib/wcam)
 target_link_libraries(Cool-PublicProperties INTERFACE wcam::wcam)

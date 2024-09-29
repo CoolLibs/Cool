@@ -5,6 +5,7 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/imgui_internal.h>
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
+#include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -15,7 +16,7 @@
 #include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/UserSettings/UserSettings.h"
-#include "Cool/Webcam/TextureLibrary_FromWebcam.h"
+#include "Cool/Webcam/WebcamImage.hpp"
 #include "GLFW/glfw3.h"
 #include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
@@ -64,6 +65,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
 
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
     ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
+    wcam::set_image_type<WebcamImage>();
 }
 
 void AppManager::run(std::function<void()> on_update)
@@ -144,9 +146,6 @@ void AppManager::update()
 #endif
     midi_manager().check_for_devices();
     Audio::player().update_device_if_necessary();
-    TextureLibrary_FromWebcam::instance().on_frame_begin();
-    if (TextureLibrary_FromWebcam::instance().has_active_webcams())
-        _app.request_rerender();
     if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
         _app.request_rerender();
     TextureLibrary_Video::instance().update();
@@ -174,7 +173,6 @@ void AppManager::update()
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
     for (auto& view : _views)
         view->on_frame_end();
-    TextureLibrary_FromWebcam::instance().on_frame_end();
     end_frame(_window_manager);
 }
 
