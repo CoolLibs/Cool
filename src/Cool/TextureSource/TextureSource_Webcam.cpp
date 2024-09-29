@@ -1,6 +1,9 @@
 #include "TextureSource_Webcam.h"
 #include <wcam/wcam.hpp>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Webcam/WebcamImage.hpp"
+#include "Cool/Webcam/WebcamsConfigs.hpp"
 
 namespace Cool {
 
@@ -21,6 +24,10 @@ auto TextureSource_Webcam::imgui_widget() -> bool
         return info.id == _device_id;
     });
     auto const name = it != webcam_infos.end() ? it->name : ""s;
+
+    if (ImGuiExtras::button_with_text_icon(ICOMOON_COG))
+        WebcamsConfigs::instance().open_imgui_window();
+    ImGui::SetItemTooltip("%s", "Open webcam config to choose its resolution. This can help if the refresh rate of your webcam is too slow.");
 
     if (ImGui::BeginCombo("Webcam", name.c_str()))
     {
