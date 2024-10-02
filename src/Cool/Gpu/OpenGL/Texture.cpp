@@ -51,7 +51,7 @@ static auto img_to_glpp_size(img::Size const& size) -> glpp::ImageSize
 
 void Texture::set_size(img::Size const& size)
 {
-    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _size = size;
     _tex.resize(img_to_glpp_size(size));
 #if DEBUG
     _data_has_been_uploaded = true;
@@ -79,7 +79,7 @@ void Texture::set_image(img::Size const& size, int channels_count, uint8_t const
 
 void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout)
 {
-    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _size = size;
     _tex.upload_data(
         img_to_glpp_size(size),
         data,

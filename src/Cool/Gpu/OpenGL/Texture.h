@@ -1,5 +1,6 @@
 #if defined(COOL_OPENGL)
 #pragma once
+#include <img/src/SizeU.h>
 #include <glpp/glpp.hpp>
 #include "TextureRef.hpp"
 #include "glpp-extended/src/Texture2D.h"
@@ -43,7 +44,8 @@ public:
     /// The ID that ImGui expects
     [[nodiscard]] auto imgui_texture_id() const -> ImTextureID { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(id())); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 
-    [[nodiscard]] auto aspect_ratio() const -> float { return _aspect_ratio; }
+    [[nodiscard]] auto aspect_ratio() const -> float { return img::SizeU::aspect_ratio(_size); }
+    [[nodiscard]] auto size() const -> img::Size { return _size; }
 
     /// Attaches your texture to a slot, so that it is ready to be read by a shader.
     /// This `slot` is the value that you should also send to your shader as the value of a "uniform sampler2D u_YourTextureUniform"
@@ -51,7 +53,7 @@ public:
 
 private:
     glpp::Texture2D _tex{};
-    float           _aspect_ratio{};
+    img::Size       _size{};
 #if DEBUG
     bool _data_has_been_uploaded{false};
 #endif

@@ -6,6 +6,8 @@ namespace Cool {
 
 class WebcamImage : public wcam::Image {
 public:
+    ~WebcamImage() override;
+
     auto get_texture() const -> Texture const&;
 
     void set_data(wcam::ImageDataView<wcam::RGB24> rgb_data) override;

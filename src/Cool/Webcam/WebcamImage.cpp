@@ -3,68 +3,48 @@
 
 namespace Cool {
 
-// class TexturePool { // TODO not needed, Image can create their own texture (deferred, on the main thread)
-// public:
-//     TexturePool()
-//     {
-//         _ids.resize(20);
-//         for (auto& id : _ids)
-//         {
-//             glGenTextures(1, &id);
-//             glBindTexture(GL_TEXTURE_2D, id);
+class TexturePool { // Pool to avoid to recreate the textures all the time, which costs a lost. Just setting the data each time is much cheaper
+public:
+    auto take(img::Size size) -> Texture
+    {
+        auto it = std::find_if(_textures.begin(), _textures.end(), [&](Texture const& texture) {
+            return texture.size() == size;
+        });
+        if (it == _textures.end())
+        {
+            _textures.emplace_back();
+            auto texture = std::move(_textures.back());
+            _textures.pop_back();
+            return texture;
+        }
+        else
+        {
+            auto texture = std::move(*it);
+            _textures.erase(it);
+            return texture;
+        }
+    }
 
-//             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//         }
-//     }
+    void give_back(Texture texture)
+    {
+        _textures.push_back(std::move(texture));
+    }
 
-//     auto take() -> GLuint
-//     {
-//         std::scoped_lock lock{_mutex};
+private:
+    std::list<Texture> _textures{};
+};
 
-//         if (_ids.empty())
-//         {
-//             assert(false);
-//             return 0;
-//         }
-//         auto const res = _ids.back();
-//         _ids.pop_back();
-//         return res;
-//     }
+auto texture_pool() -> TexturePool&
+{
+    static auto instance = TexturePool{};
+    return instance;
+}
 
-//     void give_back(GLuint id)
-//     {
-//         std::scoped_lock lock{_mutex};
-//         _ids.push_back(id);
-//     }
-
-//     // ~TexturePool{
-//     // TODO
-//     // glDeleteTextures(1, &_texture_id);
-//     // }
-
-// private:
-//     std::vector<GLuint> _ids{};
-//     std::mutex          _mutex{};
-// };
-
-// auto texture_pool() -> TexturePool&
-// {
-//     static auto instance = TexturePool{};
-//     return instance;
-// }
-
-// Image()
-//     : _texture_id{texture_pool().take()}
-// {
-// }
-
-// ~Image() override
-// {
-//     texture_pool().give_back(_texture_id);
-// }
+WebcamImage::~WebcamImage()
+{
+    if (_texture)
+        texture_pool().give_back(std::move(*_texture));
+}
 
 auto WebcamImage::get_texture() const -> Texture const&
 {
@@ -91,13 +71,8 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> rgb_data)
         auto const* data = owned_rgb_data.data();
 
         if (!_texture)
-        {
-            _texture = Texture{size, data, layout};
-        }
-        else
-        {
-            _texture->set_image(size, data, layout);
-        }
+            _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
+        _texture->set_image(size, data, layout);
     };
 }
 
@@ -116,13 +91,8 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::BGR24> bgr_data)
         auto const* data = owned_bgr_data.data();
 
         if (!_texture)
-        {
-            _texture = Texture{size, data, layout};
-        }
-        else
-        {
-            _texture->set_image(size, data, layout);
-        }
+            _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
+        _texture->set_image(size, data, layout);
     };
 }
 
