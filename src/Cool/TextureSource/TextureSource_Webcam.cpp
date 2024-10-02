@@ -4,6 +4,7 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Webcam/WebcamImage.hpp"
 #include "Cool/Webcam/WebcamsConfigs.hpp"
+#include "TextureLibrary_Webcam.hpp"
 
 namespace Cool {
 
@@ -60,10 +61,11 @@ auto TextureSource_Webcam::get_texture() const -> Texture const*
         _webcam = wcam::open_webcam(_device_id);
 
     auto const maybe_image = _webcam->image();
+    auto       img         = std::shared_ptr<wcam::Image const>{};
     std::visit(
         wcam::overloaded{
             [&](std::shared_ptr<wcam::Image const> const& image) {
-                _image = image;
+                img = image;
             },
             [&](wcam::CaptureError const& error) {
                 _error_message = wcam::to_string(error);
@@ -73,14 +75,14 @@ auto TextureSource_Webcam::get_texture() const -> Texture const*
             },
             [&](wcam::ImageNotInitYet) {
                 _error_message.reset();
-                _image = nullptr; // Reset the image, otherwise it will show briefly when opening the next webcam (while the new capture hasn't returned any image yet) / when a capture needs to restart because the camera was unplugged and then plugged back
             }
         },
         maybe_image
     );
-    if (_image == nullptr)
+    if (img == nullptr)
         return nullptr;
-    return &static_cast<WebcamImage const*>(_image.get())->get_texture();
+    TextureLibrary_Webcam::instance().keep_image_alive_this_frame(img); // Otherwise the image can get freed, apparently sometimes the TextureSource_Webcam get destroyed before we render the image, so storing the image in the TextureSource wouldn't solve it
+    return &static_cast<WebcamImage const*>(img.get())->get_texture();
 }
 
 auto TextureSource_Webcam::get_error() const -> std::optional<std::string>

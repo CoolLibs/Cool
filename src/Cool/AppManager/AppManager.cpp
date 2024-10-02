@@ -15,6 +15,7 @@
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
+#include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/WebcamImage.hpp"
 #include "GLFW/glfw3.h"
@@ -173,6 +174,7 @@ void AppManager::update()
     dispatch_all_events(); // Must be after `imgui_render()` in order for the extra_widgets on the Views to tell us wether we are allowed to dispatch View events.
     for (auto& view : _views)
         view->on_frame_end();
+    TextureLibrary_Webcam::instance().on_frame_end();
     end_frame(_window_manager);
 }
 
