@@ -1,4 +1,5 @@
 #include "WebcamImage.hpp"
+#include <wcam/src/FirstRowIs.hpp>
 #include "Cool/Gpu/Texture.h"
 
 namespace Cool {
@@ -72,7 +73,7 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> rgb_data)
 
         if (!_texture)
             _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
-        _texture->set_image(size, data, layout);
+        _texture->set_image(size, data, layout, row_order() == wcam::FirstRowIs::Top);
     };
 }
 
@@ -92,7 +93,7 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::BGR24> bgr_data)
 
         if (!_texture)
             _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
-        _texture->set_image(size, data, layout);
+        _texture->set_image(size, data, layout, row_order() == wcam::FirstRowIs::Top);
     };
 }
 

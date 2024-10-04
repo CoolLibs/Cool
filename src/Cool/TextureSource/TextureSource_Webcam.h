@@ -22,7 +22,7 @@ private:
     void set_device_id(wcam::DeviceId const& id) const;
 
 private:
-    mutable wcam::DeviceId                    _device_id{/* TODO(Webcam) Cool::default_webcam_name() */}; // TODO(Webcam) update this comment // NB: most of the time a Source is created too early for this to have any effect (the thread that finds the webcam's names hasn't had time to do its job yet). This is why we have a HACK in TextureLibrary_FromWebcam::imgui_widget_webcam_name to still init with a proper webcam name.
+    mutable wcam::DeviceId                    _device_id{};
     mutable std::optional<wcam::SharedWebcam> _webcam{};
     mutable std::optional<std::string>        _error_message{};
     wcam::KeepLibraryAlive                    _keep_wcam_library_alive{};

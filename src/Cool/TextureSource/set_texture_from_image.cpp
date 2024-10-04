@@ -21,12 +21,12 @@ void set_texture_from_ffmpeg_image(std::optional<Texture>& texture, ffmpeg::Fram
 
     if (!texture)
     {
-        texture = Texture{size, data, layout};
+        texture = Texture{size, data, layout, true /*need_to_flip_y*/};
     }
     else
     {
         texture->bind(); // TODO(Video) API texture->while_bound(callback), that automatically rebinds the texture that was previously bound
-        texture->set_image(size, data, layout);
+        texture->set_image(size, data, layout, true /*need_to_flip_y*/);
         Cool::Texture::unbind();
     }
 }
