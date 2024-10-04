@@ -15,6 +15,9 @@ public:
     void open_imgui_window();
     void imgui_window();
 
+    void load();
+    void save();
+
 private:
     WebcamsConfigs() = default; // This is a singleton. Get the global instance with `instance()` instead.
     static auto gen_instance() -> WebcamsConfigs&;

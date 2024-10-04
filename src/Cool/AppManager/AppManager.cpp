@@ -18,6 +18,7 @@
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/WebcamImage.hpp"
+#include "Cool/Webcam/WebcamsConfigs.hpp"
 #include "GLFW/glfw3.h"
 #include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
@@ -67,6 +68,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
     ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
     wcam::set_image_type<WebcamImage>();
+    WebcamsConfigs::instance().load();
 }
 
 void AppManager::run(std::function<void()> on_update)

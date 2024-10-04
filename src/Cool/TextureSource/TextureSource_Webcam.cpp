@@ -85,6 +85,8 @@ auto TextureSource_Webcam::get_texture() const -> Texture const*
     return &static_cast<WebcamImage const*>(img.get())->get_texture();
 }
 
+// TODO(Webcam) When the webcam node is not used in the graph, we must release the SharedWebcam to stop capturing it
+
 auto TextureSource_Webcam::get_error() const -> std::optional<std::string>
 {
     return _error_message;

@@ -4,18 +4,21 @@
 
 namespace Cool {
 
-auto WebcamsConfigs::gen_instance() -> WebcamsConfigs&
+auto WebcamsConfigs::instance() -> WebcamsConfigs&
 {
-    static auto inst = WebcamsConfigs{};
-    // auto const  maybe_err = do_load(inst._configs, inst._serializer);
-    // std::ignore           = maybe_err; // Ignore errors when file not found
+    static auto inst = WebcamsConfigs{}; // NOLINT(*avoid-non-const-global-variables)
     return inst;
 }
 
-auto WebcamsConfigs::instance() -> WebcamsConfigs&
+void WebcamsConfigs::load()
 {
-    static auto& inst = gen_instance(); // NOLINT(*avoid-non-const-global-variables)
-    return inst;
+    auto const maybe_err = do_load(wcam::get_resolutions_map(), _serializer);
+    std::ignore          = maybe_err; // Ignore errors when file not found
+}
+
+void WebcamsConfigs::save()
+{
+    do_save(wcam::get_resolutions_map(), _serializer);
 }
 
 void WebcamsConfigs::open_imgui_window()
@@ -40,7 +43,10 @@ void WebcamsConfigs::imgui_window()
                 {
                     bool const is_selected = resolution == selected_resolution;
                     if (ImGui::Selectable(wcam::to_string(resolution).c_str(), is_selected))
+                    {
                         wcam::set_selected_resolution(info.id, resolution);
+                        save();
+                    }
 
                     if (is_selected) // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         ImGui::SetItemDefaultFocus();

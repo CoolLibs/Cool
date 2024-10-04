@@ -3,6 +3,7 @@
 #include <string>
 #include <wcam/wcam.hpp>
 #include "Cool/Gpu/Texture.h"
+#include "Cool/Serialization/wcam_serialization.h"
 
 namespace Cool {
 
@@ -30,11 +31,19 @@ private:
     // Serialization
     friend class ser20::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    void save(Archive& archive) const
     {
         archive(
-            // ser20::make_nvp("Device ID", _device_id) // TODO(Webcam)
+            ser20::make_nvp("Device ID", _device_id)
         );
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        archive(
+            _device_id
+        );
+        _webcam = wcam::open_webcam(_device_id);
     }
 };
 
