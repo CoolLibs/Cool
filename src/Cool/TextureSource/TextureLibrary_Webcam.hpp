@@ -1,4 +1,5 @@
 #pragma once
+#include "Cool/Gpu/Texture.h"
 #include "wcam/wcam.hpp"
 
 namespace Cool {
@@ -7,7 +8,10 @@ class TextureLibrary_Webcam {
 public:
     [[nodiscard]] static auto instance() -> TextureLibrary_Webcam&;
 
-    void keep_image_alive_this_frame(std::shared_ptr<wcam::Image const> const&);
+    [[nodiscard]] auto get_texture(wcam::DeviceId const&) -> Texture const*;
+    [[nodiscard]] auto get_error(wcam::DeviceId const&) const -> std::optional<std::string>;
+
+    void shut_down();
 
 private:
     friend class AppManager;
@@ -17,7 +21,13 @@ private:
     TextureLibrary_Webcam() = default; // This is a singleton. Get the global instance with `instance()` instead.
 
 private:
-    std::vector<std::shared_ptr<wcam::Image const>> _images_to_keep_alive_for_this_frame{};
+    struct WebcamData {
+        wcam::SharedWebcam                 webcam;
+        std::shared_ptr<wcam::Image const> image{};
+        std::optional<std::string>         error_message{};
+        bool                               has_been_requested_this_frame{false};
+    };
+    std::vector<WebcamData> _webcams{};
 };
 
 } // namespace Cool

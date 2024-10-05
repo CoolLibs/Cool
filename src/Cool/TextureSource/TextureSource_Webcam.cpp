@@ -2,7 +2,6 @@
 #include <wcam/wcam.hpp>
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
-#include "Cool/Webcam/WebcamImage.hpp"
 #include "Cool/Webcam/WebcamsConfigs.hpp"
 #include "TextureLibrary_Webcam.hpp"
 
@@ -11,14 +10,13 @@ namespace Cool {
 void TextureSource_Webcam::set_device_id(wcam::DeviceId const& id) const
 {
     _device_id = id;
-    _webcam    = wcam::open_webcam(_device_id);
 }
 
 auto TextureSource_Webcam::imgui_widget() -> bool
 {
     bool       b            = false;
     auto const webcam_infos = wcam::all_webcams_info();
-    if (_device_id == wcam::DeviceId{} && !webcam_infos.empty())
+    if (_device_id == wcam::DeviceId{} && !webcam_infos.empty()) // When creating a new webcam we want it to use the default webcam, but we might not know what the available webcams are at that point (if the wcam library has just been initialized). So we defer that to here
         set_device_id(webcam_infos[0].id);
 
     auto const it   = std::find_if(webcam_infos.begin(), webcam_infos.end(), [&](wcam::Info const& info) {
@@ -51,45 +49,18 @@ auto TextureSource_Webcam::imgui_widget() -> bool
 
 auto TextureSource_Webcam::get_texture() const -> Texture const*
 {
-    if (_device_id == wcam::DeviceId{})
+    if (_device_id == wcam::DeviceId{}) // When creating a new webcam we want it to use the default webcam, but we might not know what the available webcams are at that point (if the wcam library has just been initialized). So we defer that to here
     {
         auto const webcam_infos = wcam::all_webcams_info();
         if (!webcam_infos.empty())
             set_device_id(webcam_infos[0].id);
     }
-    if (!_webcam.has_value())
-        _webcam = wcam::open_webcam(_device_id);
-
-    auto const maybe_image = _webcam->image();
-    auto       img         = std::shared_ptr<wcam::Image const>{};
-    std::visit(
-        wcam::overloaded{
-            [&](std::shared_ptr<wcam::Image const> const& image) {
-                img = image;
-            },
-            [&](wcam::CaptureError const& error) {
-                _error_message = wcam::to_string(error);
-            },
-            [&](wcam::NoNewImageAvailableYet) {
-                _error_message.reset();
-            },
-            [&](wcam::ImageNotInitYet) {
-                _error_message.reset();
-            }
-        },
-        maybe_image
-    );
-    if (img == nullptr)
-        return nullptr;
-    TextureLibrary_Webcam::instance().keep_image_alive_this_frame(img); // Otherwise the image can get freed, apparently sometimes the TextureSource_Webcam get destroyed before we render the image, so storing the image in the TextureSource wouldn't solve it
-    return &static_cast<WebcamImage const*>(img.get())->get_texture();
+    return TextureLibrary_Webcam::instance().get_texture(_device_id);
 }
-
-// TODO(Webcam) When the webcam node is not used in the graph, we must release the SharedWebcam to stop capturing it
 
 auto TextureSource_Webcam::get_error() const -> std::optional<std::string>
 {
-    return _error_message;
+    return TextureLibrary_Webcam::instance().get_error(_device_id);
 }
 
 } // namespace Cool

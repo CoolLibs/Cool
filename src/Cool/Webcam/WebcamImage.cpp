@@ -18,7 +18,7 @@ public:
             _textures.pop_back();
             return texture;
         }
-        else
+        else // NOLINT(*else-after-return)
         {
             auto texture = std::move(*it);
             _textures.erase(it);
@@ -57,9 +57,9 @@ auto WebcamImage::get_texture() const -> Texture const&
     return *_texture;
 }
 
-void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> rgb_data)
+void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> const& rgb_data)
 {
-    _gen_texture = [owned_rgb_data = rgb_data.copy(), this]() {
+    _gen_texture = [owned_rgb_data = rgb_data.to_owning(), this]() {
         auto const size = img::Size{
             owned_rgb_data.resolution().width(),
             owned_rgb_data.resolution().height()
@@ -77,9 +77,9 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> rgb_data)
     };
 }
 
-void WebcamImage::set_data(wcam::ImageDataView<wcam::BGR24> bgr_data)
+void WebcamImage::set_data(wcam::ImageDataView<wcam::BGR24> const& bgr_data)
 {
-    _gen_texture = [owned_bgr_data = bgr_data.copy(), this]() {
+    _gen_texture = [owned_bgr_data = bgr_data.to_owning(), this]() {
         auto const size = img::Size{
             owned_bgr_data.resolution().width(),
             owned_bgr_data.resolution().height()

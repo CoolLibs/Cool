@@ -4,14 +4,14 @@
 
 namespace Cool {
 
-class WebcamImage : public wcam::Image {
+class WebcamImage : public wcam::Image { // NOLINT(*special-member-functions)
 public:
     ~WebcamImage() override;
 
     auto get_texture() const -> Texture const&;
 
-    void set_data(wcam::ImageDataView<wcam::RGB24> rgb_data) override;
-    void set_data(wcam::ImageDataView<wcam::BGR24> bgr_data) override;
+    void set_data(wcam::ImageDataView<wcam::RGB24> const& rgb_data) override;
+    void set_data(wcam::ImageDataView<wcam::BGR24> const& bgr_data) override;
 
 private:
     mutable std::optional<Texture>               _texture{};

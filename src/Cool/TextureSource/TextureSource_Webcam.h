@@ -22,28 +22,18 @@ private:
     void set_device_id(wcam::DeviceId const& id) const;
 
 private:
-    mutable wcam::DeviceId                    _device_id{};
-    mutable std::optional<wcam::SharedWebcam> _webcam{};
-    mutable std::optional<std::string>        _error_message{};
-    wcam::KeepLibraryAlive                    _keep_wcam_library_alive{};
+    mutable wcam::DeviceId _device_id{};
+    wcam::KeepLibraryAlive _keep_wcam_library_alive{};
 
 private:
     // Serialization
     friend class ser20::access;
     template<class Archive>
-    void save(Archive& archive) const
+    void serialize(Archive& archive)
     {
         archive(
             ser20::make_nvp("Device ID", _device_id)
         );
-    }
-    template<class Archive>
-    void load(Archive& archive)
-    {
-        archive(
-            _device_id
-        );
-        _webcam = wcam::open_webcam(_device_id);
     }
 };
 
