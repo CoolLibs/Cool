@@ -22,10 +22,9 @@ private:
 
 private:
     struct WebcamData {
-        wcam::SharedWebcam                 webcam;
-        std::shared_ptr<wcam::Image const> image{};
-        std::optional<std::string>         error_message{};
-        bool                               has_been_requested_this_frame{false};
+        wcam::SharedWebcam webcam;
+        wcam::MaybeImage   maybe_image{};
+        bool               has_been_requested_this_frame{false};
     };
     std::vector<WebcamData> _webcams{};
 };

@@ -73,7 +73,7 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::RGB24> const& rgb_data)
 
         if (!_texture)
             _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
-        _texture->set_image(size, data, layout, row_order() == wcam::FirstRowIs::Top);
+        _texture->set_image(size, data, layout, owned_rgb_data.row_order() == wcam::FirstRowIs::Top);
     };
 }
 
@@ -93,7 +93,7 @@ void WebcamImage::set_data(wcam::ImageDataView<wcam::BGR24> const& bgr_data)
 
         if (!_texture)
             _texture = texture_pool().take(size); // Take a texture of the right size, so that we won't have to resize it, which saves perfs
-        _texture->set_image(size, data, layout, row_order() == wcam::FirstRowIs::Top);
+        _texture->set_image(size, data, layout, owned_bgr_data.row_order() == wcam::FirstRowIs::Top);
     };
 }
 

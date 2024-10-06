@@ -33,30 +33,12 @@ auto TextureLibrary_Webcam::get_texture(wcam::DeviceId const& id) -> Texture con
     if (!webcam_data.has_been_requested_this_frame)
     {
         webcam_data.has_been_requested_this_frame = true;
-        std::visit(
-            wcam::overloaded{
-                [&](std::shared_ptr<wcam::Image const> const& image) {
-                    webcam_data.image = image;
-                    webcam_data.error_message.reset();
-                },
-                [&](wcam::CaptureError const& error) {
-                    webcam_data.image         = nullptr;
-                    webcam_data.error_message = wcam::to_string(error);
-                },
-                [&](wcam::NoNewImageAvailableYet) {
-                    webcam_data.error_message.reset();
-                },
-                [&](wcam::ImageNotInitYet) {
-                    webcam_data.image = nullptr;
-                    webcam_data.error_message.reset();
-                }
-            },
-            webcam_data.webcam.image()
-        );
+        webcam_data.maybe_image                   = webcam_data.webcam.image(); // We need to keep the image alive till the end of the frame, so we take a copy of the shared_ptr. The image stored in the webcam_data.webcam can be destroyed at any time if a new image is created by the background thread
     }
-    if (webcam_data.image == nullptr)
+    auto const* image = std::get_if<std::shared_ptr<wcam::Image const>>(&webcam_data.maybe_image);
+    if (!image)
         return nullptr;
-    return &static_cast<WebcamImage const*>(webcam_data.image.get())->get_texture(); // NOLINT(*static-cast-downcast)
+    return &static_cast<WebcamImage const*>(image->get())->get_texture(); // NOLINT(*static-cast-downcast)
 }
 
 auto TextureLibrary_Webcam::get_error(wcam::DeviceId const& id) const -> std::optional<std::string>
@@ -66,7 +48,11 @@ auto TextureLibrary_Webcam::get_error(wcam::DeviceId const& id) const -> std::op
     });
     if (it == _webcams.end())
         return std::nullopt;
-    return it->error_message;
+
+    auto const* error = std::get_if<wcam::CaptureError>(&it->maybe_image);
+    if (!error)
+        return std::nullopt;
+    return wcam::to_string(*error);
 }
 
 void TextureLibrary_Webcam::shut_down()
