@@ -1,6 +1,5 @@
 #include <glpp-extended/src/TextureLayout.h>
 #if defined(COOL_OPENGL)
-
 #include <img/img.hpp>
 #include "../Texture.h"
 #include "glpp-extended/src/ImageSize.h"
@@ -26,22 +25,22 @@ Texture::Texture(img::Size const& size, TextureConfig config)
     set_size(size);
 }
 
-Texture::Texture(img::Image const& image, TextureConfig config)
+Texture::Texture(img::Image const& image, bool need_to_flip_y, TextureConfig config)
     : Texture{config}
 {
-    set_image(image);
+    set_image(image, need_to_flip_y);
 }
 
-Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, TextureConfig config)
+Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, bool need_to_flip_y, TextureConfig config)
     : Texture{config}
 {
-    set_image(size, channels_count, data);
+    set_image(size, channels_count, data, need_to_flip_y);
 }
 
-Texture::Texture(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout, TextureConfig config)
+Texture::Texture(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout, bool need_to_flip_y, TextureConfig config)
     : Texture{config}
 {
-    set_image(size, data, layout);
+    set_image(size, data, layout, need_to_flip_y);
 }
 
 static auto img_to_glpp_size(img::Size const& size) -> glpp::ImageSize
@@ -51,19 +50,19 @@ static auto img_to_glpp_size(img::Size const& size) -> glpp::ImageSize
 
 void Texture::set_size(img::Size const& size)
 {
-    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _size = size;
     _tex.resize(img_to_glpp_size(size));
 #if DEBUG
     _data_has_been_uploaded = true;
 #endif
 }
 
-void Texture::set_image(img::Image const& img)
+void Texture::set_image(img::Image const& img, bool need_to_flip_y)
 {
-    set_image(img.size(), img.channels_count(), img.data());
+    set_image(img.size(), img.channels_count(), img.data(), need_to_flip_y);
 }
 
-void Texture::set_image(img::Size const& size, int channels_count, uint8_t const* data)
+void Texture::set_image(img::Size const& size, int channels_count, uint8_t const* data, bool need_to_flip_y)
 {
     assert(channels_count == 3 || channels_count == 4);
     set_image(
@@ -73,13 +72,15 @@ void Texture::set_image(img::Size const& size, int channels_count, uint8_t const
             .internal_format = channels_count == 3 ? glpp::InternalFormat::RGB : glpp::InternalFormat::RGBA,
             .channels        = channels_count == 3 ? glpp::Channels::RGB : glpp::Channels::RGBA,
             .texel_data_type = glpp::TexelDataType::UnsignedByte,
-        }
+        },
+        need_to_flip_y
     );
 }
 
-void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout)
+void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::TextureLayout const& layout, bool need_to_flip_y)
 {
-    _aspect_ratio = img::SizeU::aspect_ratio(size);
+    _size           = size;
+    _need_to_flip_y = need_to_flip_y;
     _tex.upload_data(
         img_to_glpp_size(size),
         data,

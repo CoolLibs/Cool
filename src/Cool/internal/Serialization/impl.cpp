@@ -28,13 +28,13 @@ auto do_load(StyleEditor& editor, std::filesystem::path const& path) -> Cool::Op
     return Cool::Serialization::load<StyleEditor, ser20::JSONInputArchive>(editor, path);
 }
 
-auto do_save(WebcamsConfigsMap const& configs, Cool::SerializerOnDemand const& serializer) -> bool
+auto do_save(wcam::ResolutionsMap const& configs, Cool::SerializerOnDemand const& serializer) -> bool
 {
-    return serializer.save<WebcamsConfigsMap, ser20::JSONOutputArchive>(configs);
+    return serializer.save<wcam::ResolutionsMap, ser20::JSONOutputArchive>(configs);
 }
-auto do_load(WebcamsConfigsMap& configs, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
+auto do_load(wcam::ResolutionsMap& configs, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
 {
-    return serializer.load<WebcamsConfigsMap, ser20::JSONInputArchive>(configs);
+    return serializer.load<wcam::ResolutionsMap, ser20::JSONInputArchive>(configs);
 }
 
 auto do_save(reg::RawOrderedRegistry<Preset> const& data, Cool::SerializerOnDemand const& serializer) -> bool

@@ -11,6 +11,7 @@
 #include "Cool/File/File.h"
 #include "Cool/Path/Path.h"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
 #include "Cool/TextureSource/TextureSamplerLibrary.h"
 #include "Cool/View/ViewsManager.h"
 
@@ -22,6 +23,7 @@ void shut_down()
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     Audio::shut_down();
+    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
 }
 
 auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>
