@@ -264,6 +264,7 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/imgui)
 install(FILES "lib/imgui/LICENSE.txt" DESTINATION "license/imgui")
 
 # wcam
+set(WCAM_DONT_INCLUDE_FMT ON)
 add_subdirectory(lib/wcam)
 target_link_libraries(Cool-PublicProperties INTERFACE wcam::wcam)
 
