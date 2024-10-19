@@ -30,11 +30,9 @@ void WebcamsConfigs::imgui_window()
 {
     _window.show([&](bool /*is_opening*/) {
         auto const webcam_infos = wcam::all_webcams_info();
-        int        imgui_id{0};
         for (auto const& info : webcam_infos)
         {
-            ImGui::PushID(imgui_id++);
-
+            ImGui::PushID(info.id.as_string().c_str());
             ImGui::SeparatorText(info.name.c_str());
             auto const selected_resolution = wcam::get_selected_resolution(info.id);
             if (ImGui::BeginCombo("Resolution", wcam::to_string(selected_resolution).c_str()))
