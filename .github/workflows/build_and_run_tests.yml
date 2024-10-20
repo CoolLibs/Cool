@@ -91,4 +91,4 @@ jobs:
           buildDirectory: ${{github.workspace}}/build
 
       - name: Run
-        run: ${{github.workspace}}/bin/tests/${{matrix.build_type}}/${{env.cmake_target}}
+        run: ${{github.workspace}}/tests/bin/${{matrix.build_type}}/${{env.cmake_target}}

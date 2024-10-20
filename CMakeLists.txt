@@ -357,4 +357,4 @@ add_subdirectory(lib/doctest)
 target_link_libraries(Tests-Cool PRIVATE doctest::doctest)
 install(FILES "lib/doctest/LICENSE.txt" DESTINATION "license/doctest")
 
-set_target_properties(Tests-Cool PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/tests/${CMAKE_BUILD_TYPE})
+set_target_properties(Tests-Cool PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
