@@ -25,6 +25,10 @@ private:
         wcam::SharedWebcam webcam;
         wcam::MaybeImage   maybe_image{};
         bool               has_been_requested_this_frame{false};
+
+        explicit WebcamData(wcam::SharedWebcam webcam)
+            : webcam{std::move(webcam)}
+        {}
     };
     std::vector<WebcamData> _webcams{};
 };
