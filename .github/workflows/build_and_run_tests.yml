@@ -91,4 +91,4 @@ jobs:
           buildDirectory: ${{github.workspace}}/build
 
       - name: Run
-        run: ${{github.workspace}}/tests/build/Cool/${{env.cmake_target}}
+        run: ${{github.workspace}}/bin/tests/${{matrix.build_type}}/${{env.cmake_target}}
