@@ -313,8 +313,8 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 include("CMakeUtils/files_and_folders.cmake")
 
 function(cool_setup TARGET_NAME)
-    Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
     ffmpeg_copy_libs(${TARGET_NAME})
+    Cool__target_copy_folder(${TARGET_NAME} ${COOL_PATH_INTERNAL}/res)
     install(DIRECTORY ${COOL_PATH_INTERNAL}/res DESTINATION bin/${COOL_PATH_INTERNAL})
 endfunction()
 
