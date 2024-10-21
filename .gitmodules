@@ -112,3 +112,6 @@
 [submodule "lib/wcam"]
 	path = lib/wcam
 	url = https://github.com/CoolLibs/wcam
+[submodule "res/shaders/GLSL-Color-Functions"]
+	path = res/shaders/GLSL-Color-Functions
+	url = https://github.com/Rachmanin0xFF/GLSL-Color-Functions

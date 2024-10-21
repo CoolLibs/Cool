@@ -276,6 +276,9 @@ target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)
 add_subdirectory(lib/oscpack)
 target_link_libraries(Cool-PrivateProperties INTERFACE oscpack)
 
+# GLSL-Color-Functions
+install(FILES "res/shaders/GLSL-Color-Functions/LICENSE" DESTINATION "license/GLSL-Color-Functions")
+
 # Build ImGui with glfw
 target_link_libraries(ImGui PRIVATE glfw)
 target_sources(ImGui PRIVATE lib/imgui/backends/imgui_impl_glfw.cpp)
