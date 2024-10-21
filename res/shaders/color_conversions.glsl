@@ -569,13 +569,13 @@ vec2 Cool_apply_premultiplied_alpha_to_greyscale_and_alpha(vec2 greyscale, float
 #include "_COOL_RES_/shaders/generated/conversions_glsl.inl"
 
 // Start of [Block N]
-vec3 Cool_Oklab_from_Float(float x)
+vec3 Cool_Okhsl_from_Float(float x)
 {
-    return vec3(saturate(x), 0., 0.);
+    return vec3(0., 0., saturate(x));
 }
-float Cool_Float_from_Oklab(vec3 lab)
+float Cool_Float_from_Okhsl(vec3 hsl)
 {
-    return lab.x;
+    return hsl.z;
 }
 #include "_COOL_RES_/shaders/generated/conversions_glsl_with_float.inl"
 
