@@ -1,4 +1,8 @@
 #include "ParticleSystem.h"
+#include <imgui.h>
+#include <cmath>
+#include "Cool/Log/Debug.h"
+#include "Mouse.hpp"
 
 namespace Cool {
 
@@ -6,51 +10,22 @@ ParticleSystem::ParticleSystem(int dimension, ParticlesShadersCode const& shader
     : _particles_count{particles_count}
     , _dimension(dimension)
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
-    , _render_shader{
-          Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
-              .kind        = Cool::ShaderKind::Vertex,
-              .source_code = shader_code.vertex,
-          }},
-          Cool::OpenGL::ShaderModule{Cool::ShaderDescription{
-              .kind        = Cool::ShaderKind::Fragment,
-              .source_code = shader_code.fragment,
-          }}
-      }
+    , _rendering_shader{}
     , _simulation_shader{64, shader_code.simulation}
     , _init_shader{64, shader_code.init}
 #endif
 {
+    _rendering_shader.compile(shader_code.fragment);
     set_particles_count(_particles_count); // Will init all the particles attributes (by calling the init shader)
-#if !defined(COOL_PARTICLES_DISABLED_REASON)
-    glpp::bind_vertex_array(_render_vao);
-    glpp::bind_vertex_buffer(_render_vbo);
-    glpp::set_vertex_buffer_attribute(_render_vbo, 0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);                          // Vertices positions
-    glpp::set_vertex_buffer_attribute(_render_vbo, 1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // Vertices UVs
-    glpp::set_vertex_buffer_data(
-        _render_vbo, glpp::DataAccessFrequency::Static,
-        std::array{
-            -1.f, -1.f, 0.0f, 0.0f,
-            +1.f, -1.f, 1.0f, 0.0f,
-            +1.f, +1.f, 1.0f, 1.0f,
-
-            -1.f, -1.f, 0.0f, 0.0f,
-            +1.f, +1.f, 1.0f, 1.0f,
-            -1.f, +1.f, 0.0f, 1.0f
-        }
-    );
-#else
-    Cool::Log::ToUser::error("Particles", "Particles are not supported on MacOS for now.");
-    std::ignore = shader_code;
-#endif
 }
 
 void ParticleSystem::render()
 {
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
-    _render_shader.bind();
-    glpp::bind_vertex_array(_render_vao);
-    glpp::draw_arrays_instanced(_render_vao, glpp::PrimitiveDrawMode::Triangles, 0, 6, static_cast<GLsizei>(_particles_count));
+    _rendering_shader.shader()->set_uniform("_size", (int)_particles_count);
+    _rendering_shader.shader()->set_uniform("_first_frame", _first_frame);
+    _rendering_shader.draw();
 #endif
 }
 
@@ -59,7 +34,13 @@ void ParticleSystem::update()
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _simulation_shader.bind();
-    _simulation_shader.compute({_particles_count, 1, 1});
+    _simulation_shader.set_uniform("_add_thing", mouse_pressed());
+    _simulation_shader.set_uniform("_mouse_pos", mouse_pos());
+    _simulation_shader.set_uniform("_aspect_ratio", std::sqrt(2.f));
+    _simulation_shader.set_uniform("_first_frame", _first_frame);
+    // Cool::Log::Debug::info("xdf", ImGui::GetIO().MouseDown[ImGuiMouseButton_Left] ? "oui" : "non");
+    _simulation_shader.compute({_particles_count, _particles_count, 1});
+    _first_frame = !_first_frame;
 #endif
 }
 
@@ -77,23 +58,21 @@ void ParticleSystem::reset()
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
     _init_shader.bind();
-    _init_shader.compute({_particles_count, 1, 1});
+    _init_shader.compute({_particles_count, _particles_count, 1});
 #endif
 }
 
 void ParticleSystem::set_particles_count(size_t particles_count)
 {
-    _particles_count = particles_count;
+    _particles_count = 400;
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
-    _positions.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
-    _velocities.upload_data(_particles_count * static_cast<size_t>(_dimension), nullptr);
-    _sizes.upload_data(_particles_count, nullptr);
-    _lifetimes.upload_data(_particles_count, nullptr);
-    _lifetime_maxs.upload_data(_particles_count, nullptr);
-    _colors.upload_data(_particles_count * 4, nullptr);
+    _concentration_a.upload_data(_particles_count * _particles_count, nullptr);
+    _concentration_b.upload_data(_particles_count * _particles_count, nullptr);
+    _concentration_a2.upload_data(_particles_count * _particles_count, nullptr);
+    _concentration_b2.upload_data(_particles_count * _particles_count, nullptr);
     _init_shader.bind();
-    _init_shader.compute({_particles_count, 1, 1});
+    _init_shader.compute({_particles_count, _particles_count, 1});
 #else
     std::ignore = particles_count;
 #endif
@@ -102,13 +81,10 @@ void ParticleSystem::set_particles_count(size_t particles_count)
 void ParticleSystem::bind_SSBOs()
 {
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
-    _positions.bind();
-    _velocities.bind();
-    _sizes.bind();
-    _lifetimes.bind();
-    _lifetime_maxs.bind();
-    _sizes.bind();
-    _colors.bind();
+    _concentration_a.bind();
+    _concentration_b.bind();
+    _concentration_a2.bind();
+    _concentration_b2.bind();
 #endif
 }
 

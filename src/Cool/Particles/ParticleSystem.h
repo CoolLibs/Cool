@@ -1,6 +1,7 @@
 #pragma once
 #include <glpp/extended.hpp>
 #include "Cool/Gpu/OpenGL/ComputeShader.h"
+#include "Cool/Gpu/OpenGL/FullscreenPipeline.h"
 #include "Cool/Gpu/OpenGL/SSBO.h"
 #include "Cool/Gpu/OpenGL/Shader.h"
 
@@ -27,8 +28,8 @@ public:
     auto init_shader() -> OpenGL::ComputeShader& { return _init_shader; }
     auto init_shader() const -> OpenGL::ComputeShader const& { return _init_shader; }
 
-    auto render_shader() -> OpenGL::Shader& { return _render_shader; }
-    auto render_shader() const -> OpenGL::Shader const& { return _render_shader; }
+    auto render_shader() -> OpenGL::Shader& { return *_rendering_shader.shader(); }
+    auto render_shader() const -> OpenGL::Shader const& { return *_rendering_shader.shader(); }
 #endif
     auto dimension() const -> int { return _dimension; }
 
@@ -45,16 +46,13 @@ private:
     size_t _particles_count{};
     int    _dimension{}; // 2 for 2D particles, and 3 for 3D particles
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
-    SSBO<float> _positions{0};
-    SSBO<float> _velocities{1};
-    SSBO<float> _sizes{2};
-    SSBO<float> _lifetimes{3};
-    SSBO<float> _lifetime_maxs{4};
-    SSBO<float> _colors{5};
+    SSBO<float> _concentration_a{0};
+    SSBO<float> _concentration_b{1};
+    SSBO<float> _concentration_a2{2};
+    SSBO<float> _concentration_b2{3};
+    bool        _first_frame{true};
 
-    OpenGL::Shader          _render_shader;
-    glpp::UniqueVertexArray _render_vao{};
-    glpp::UniqueBuffer      _render_vbo{};
+    OpenGL::FullscreenPipeline _rendering_shader;
 
     OpenGL::ComputeShader _simulation_shader;
     OpenGL::ComputeShader _init_shader;

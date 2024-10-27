@@ -3,6 +3,7 @@
 #include <imgui_internal.h>
 #include "Cool/Geometry/imvec_glm_conversions.h"
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Particles/Mouse.hpp"
 #include "Cool/View/Gizmos.h"
 #include "View.h"
 
@@ -54,30 +55,21 @@ auto GizmoManager::is_dragging_gizmo() const -> bool
     return _dragged_gizmo_id.has_value();
 }
 
-auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const&, View const& view) -> bool
+auto GizmoManager::on_drag_start(MouseDragStartEvent<ViewCoordinates> const& e, View const& view) -> bool
 {
-    assert(!is_dragging_gizmo());
-    auto const* gizmo = hovered_gizmo(view);
-    if (!gizmo)
-        return false;
-    _dragged_gizmo_id = gizmo->id;
+    mouse_pos()     = e.position;
+    mouse_pressed() = true;
     return true;
 }
 
-void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& event)
+void GizmoManager::on_drag_update(MouseDragUpdateEvent<ViewCoordinates> const& e)
 {
-    with_dragged_gizmo([&](Gizmo_Point2D const& gizmo) {
-        gizmo.set_position(ViewCoordinates{gizmo.get_position() + event.delta});
-        ImGui::WrapMousePos(ImGuiAxesMask_All);
-    });
+    mouse_pos() = e.position;
 }
 
 void GizmoManager::on_drag_stop(MouseDragStopEvent<ViewCoordinates> const&)
 {
-    with_dragged_gizmo([](Gizmo_Point2D const& gizmo) {
-        gizmo.on_drag_stop();
-    });
-    _dragged_gizmo_id.reset();
+    mouse_pressed() = false;
 }
 
 void GizmoManager::with_dragged_gizmo(std::function<void(Gizmo_Point2D const&)> const& callback)

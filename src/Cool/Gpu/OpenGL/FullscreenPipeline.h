@@ -17,6 +17,7 @@ public:
     void reset() { _shader.reset(); }
     void draw() const;
     auto shader() const -> const std::optional<Shader>& { return _shader; }
+    auto shader() -> std::optional<Shader>& { return _shader; }
 
 private:
     std::optional<Shader> _shader{};
