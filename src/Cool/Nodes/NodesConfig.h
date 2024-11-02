@@ -11,6 +11,7 @@ concept NodesConfig_Concept = requires(T const const_cfg, T cfg, size_t idx, Pin
     cfg.imgui_below_node_pins(node, node_id);
     cfg.imgui_in_inspector_above_node_info(node, node_id);
     cfg.imgui_in_inspector_below_node_info(node, node_id);
+    cfg.imgui_inspector_content_when_no_node_is_selected();
     { const_cfg.node_color(node_const, node_id) } -> std::convertible_to<Cool::Color>;
     { const_cfg.pin_color(pin_const, idx, node_const, node_id) } -> std::convertible_to<Cool::Color>;
     cfg.on_link_created_between_existing_nodes(link_const, link_id);
@@ -35,6 +36,7 @@ public:
     void               imgui_below_node_pins(Node& node, NodeId const& id) { _pimpl->imgui_below_node_pins(node, id); }
     void               imgui_in_inspector_above_node_info(Node& node, NodeId const& id) { _pimpl->imgui_in_inspector_above_node_info(node, id); }
     void               imgui_in_inspector_below_node_info(Node& node, NodeId const& id) { _pimpl->imgui_in_inspector_below_node_info(node, id); }
+    void               imgui_inspector_content_when_no_node_is_selected() { _pimpl->imgui_inspector_content_when_no_node_is_selected(); }
     [[nodiscard]] auto node_color(Node const& node, NodeId const& id) const -> Cool::Color { return _pimpl->node_color(node, id); }
     [[nodiscard]] auto pin_color(Pin const& pin, size_t pin_index, Node const& node, NodeId const& id) const -> Cool::Color { return _pimpl->pin_color(pin, pin_index, node, id); }
     /// Doesn't get called when a link is released on the workspace and creates a new node (If you want to handle that, you already have on_node_created(): if pin_linked_to_new_node is not null then this means said event occurred).
@@ -74,6 +76,7 @@ private:
         virtual void               imgui_below_node_pins(Node&, Cool::NodeId const&)                                              = 0;
         virtual void               imgui_in_inspector_above_node_info(Node&, Cool::NodeId const&)                                 = 0;
         virtual void               imgui_in_inspector_below_node_info(Node&, Cool::NodeId const&)                                 = 0;
+        virtual void               imgui_inspector_content_when_no_node_is_selected()                                             = 0;
         [[nodiscard]] virtual auto node_color(Node const&, Cool::NodeId const&) const -> Cool::Color                              = 0;
         [[nodiscard]] virtual auto pin_color(Pin const&, size_t pin_index, Node const&, Cool::NodeId const&) const -> Cool::Color = 0;
         virtual void               on_link_created_between_existing_nodes(Link const&, Cool::LinkId const&)                       = 0;
@@ -116,6 +119,10 @@ private:
         void imgui_in_inspector_below_node_info(Node& node, Cool::NodeId const& id) override
         {
             _cfg.imgui_in_inspector_below_node_info(node, id);
+        }
+        void imgui_inspector_content_when_no_node_is_selected() override
+        {
+            _cfg.imgui_inspector_content_when_no_node_is_selected();
         }
         [[nodiscard]] auto node_color(Node const& node, Cool::NodeId const& id) const -> Cool::Color override
         {

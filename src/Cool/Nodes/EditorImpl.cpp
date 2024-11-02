@@ -215,13 +215,9 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
     {
         auto const selected_nodes_ids = get_selected_nodes_ids();
 
-        // Message when no node is selected
+        // Content when no node is selected
         if (selected_nodes_ids.empty())
-        {
-            ImGui::PushFont(Font::italic());
-            ImGui::TextUnformatted("Select a node to edit its parameters.");
-            ImGui::PopFont();
-        }
+            nodes_cfg.imgui_inspector_content_when_no_node_is_selected();
 
         // Show all selected nodes
         for (auto const& ed_node_id : selected_nodes_ids)
