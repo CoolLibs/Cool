@@ -41,16 +41,10 @@ public:
     }
     [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 #if DEBUG
-    [[nodiscard]] static auto log_opengl_info() -> bool&
-    {
-        return instance().log_opengl_info;
-    }
+    [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
 #endif
-    [[nodiscard]] static auto log_mouse_position_in_view() -> bool&
-    {
-        return instance().log_mouse_position_in_view;
-    }
-    static void test_presets__window(std::function<void()> callback)
+    [[nodiscard]] static auto log_mouse_position_in_view() -> bool& { return instance().log_mouse_position_in_view; }
+    static void               test_presets__window(std::function<void()> callback)
     {
         if (instance().test_presets__window)
         {
@@ -115,10 +109,18 @@ public:
         }
     }
 #if DEBUG
-    [[nodiscard]] static auto imgui_item_picker() -> bool&
+    static void show_all_icons(std::function<void()> callback)
     {
-        return instance().imgui_item_picker;
+        if (instance().show_all_icons)
+        {
+            ImGui::Begin(Cool::icon_fmt("Show all icons", ICOMOON_WRENCH).c_str(), &instance().show_all_icons, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
     }
+#endif
+#if DEBUG
+    [[nodiscard]] static auto imgui_item_picker() -> bool& { return instance().imgui_item_picker; }
 #endif
 
 private:
@@ -142,6 +144,9 @@ private:
         bool style_editor{false};
         bool color_themes_editor{false};
         bool color_themes_advanced_config_window{false};
+#if DEBUG
+        bool show_all_icons{false};
+#endif
 #if DEBUG
         bool imgui_item_picker{false};
 #endif
@@ -170,7 +175,8 @@ private:
                 ser20::make_nvp("Public exhibition mode", public_exhibition_mode),
                 ser20::make_nvp("Style Editor", style_editor),
                 ser20::make_nvp("Color Themes: Editor", color_themes_editor),
-                ser20::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window)
+                ser20::make_nvp("Color Themes: Advanced Config", color_themes_advanced_config_window),
+                ser20::make_nvp("Show all icons", show_all_icons)
 #else
                 ser20::make_nvp("Test Message Console", test_message_console__window),
                 ser20::make_nvp("Log when autosaving", log_when_autosaving),
@@ -215,6 +221,9 @@ private:
         instance().style_editor                        = false;
         instance().color_themes_editor                 = false;
         instance().color_themes_advanced_config_window = false;
+#if DEBUG
+        instance().show_all_icons = false;
+#endif
     }
 
     static void save_to_file();
@@ -321,6 +330,14 @@ private:
             Cool::ImGuiExtras::toggle("Color Themes: Advanced Config", &instance().color_themes_advanced_config_window);
         }
 
+#if DEBUG
+
+        if (wafl::similarity_match({filter, "Show all icons"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Show all icons", &instance().show_all_icons);
+        }
+
+#endif
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)
@@ -445,6 +462,15 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
+#if DEBUG
+
+        if (wafl::similarity_match({filter, "Show all icons"}) >= wafl::Matches::Strongly)
+        {
+            instance().show_all_icons = !instance().show_all_icons;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+#endif
 #if DEBUG
 
         if (wafl::similarity_match({filter, "ImGui Item Picker"}) >= wafl::Matches::Strongly)

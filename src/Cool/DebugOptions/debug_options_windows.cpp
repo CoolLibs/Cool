@@ -7,6 +7,7 @@
 #include <Cool/Tips/test_tips.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Variables/TestPresets.h>
+#include "Cool/ImGui/imgui_show_all_icons.hpp"
 #include "DebugOptions.h"
 
 namespace Cool {
@@ -46,6 +47,10 @@ void debug_options_windows(TipsManager& tips_manager)
 
     DebugOptions::color_themes_advanced_config_window([]() {
         user_settings().color_themes.imgui_advanced_config();
+    });
+
+    DebugOptions::show_all_icons([]() {
+        imgui_show_all_icons();
     });
 
     DebugOptions::color_themes_editor([]() {

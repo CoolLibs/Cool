@@ -5,6 +5,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <ostream>
+#include <smart/smart.hpp>
 #include <wafl/wafl.hpp>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
@@ -446,7 +447,7 @@ void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv
     ImGui::SetCursorScreenPos(prev_pos);
 }
 
-auto checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
+auto toggle_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu) -> bool
 {
     bool was_used = false;
     ImGui::PushID(label);
@@ -893,6 +894,18 @@ auto input_port(const char* label, int* port, ImGuiInputTextFlags flags) -> bool
 {
     ImGui::SetNextItemWidth(ImGui::CalcTextSize("00000").x + ImGui::GetStyle().FramePadding.x); // Enough width for any 5-digit number.
     return ImGui::InputInt(label, port, -1, -1, ImGuiInputTextFlags_AutoSelectAll | flags);
+}
+
+void fill_layout(const char* str_id, float item_width, std::function<void(std::function<void()> const&)> const& callback)
+{
+    auto const available_width = ImGui::GetContentRegionAvail().x;
+    auto const items_per_row   = smart::keep_above(1, static_cast<int>(std::floor(available_width / item_width)));
+    if (ImGui::BeginTable(str_id, items_per_row))
+    {
+        callback([]() { ImGui::TableNextColumn(); });
+        ImGui::EndTable();
+    }
+    ImGui::SameLine();
 }
 
 } // namespace Cool::ImGuiExtras

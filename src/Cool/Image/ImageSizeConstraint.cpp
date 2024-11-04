@@ -36,11 +36,11 @@ auto ImageSizeConstraint::imgui() -> bool
 {
     bool was_triggered = false;
     // Aspect Ratio
-    was_triggered |= ImGuiExtras::checkbox_with_submenu("Fixed aspect ratio", &_is_controlling_aspect_ratio, [&]() {
+    was_triggered |= ImGuiExtras::toggle_with_submenu("Fixed aspect ratio", &_is_controlling_aspect_ratio, [&]() {
         return _aspect_ratio.imgui();
     });
     // Nb Pixels
-    was_triggered |= ImGuiExtras::checkbox_with_submenu("Fixed number of pixels", &_is_controlling_nb_pixels, [&]() {
+    was_triggered |= ImGuiExtras::toggle_with_submenu("Fixed number of pixels", &_is_controlling_nb_pixels, [&]() {
         auto previewNbPixels = _nb_pixels;
         if (ImGuiExtras::slider_uint32("Number of Pixels", &previewNbPixels, 10'000, 500'000))
         {

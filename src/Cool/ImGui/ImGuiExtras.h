@@ -190,10 +190,10 @@ void before_export_button(std::filesystem::path const& file_to_be_exported);
 /// Equivalent to ImGui::Image except the image will be centered in the window
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
 
-/// A checkbox that, when ticked, displays a menu on the side.
+/// A toggle that, when set to on, displays a menu on the side.
 /// `submenu` is a function that calls the imgui widgets that should appear in the submenu, and returns true iff one of these widgets returned true.
-/// returns true iff the checkbox or a widget in the submenu was used this frame.
-bool checkbox_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
+/// returns true iff the toggle or a widget in the submenu was used this frame.
+bool toggle_with_submenu(const char* label, bool* bool_p, std::function<bool()> const& submenu);
 
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> const& widgets);
@@ -253,5 +253,7 @@ auto dropdown(const char* label, std::string* value, std::function<void(std::fun
 auto calc_custom_dropdown_input_width() -> float;
 
 auto input_port(const char* label, int* port, ImGuiInputTextFlags = 0) -> bool;
+
+void fill_layout(const char* str_id, float item_width, std::function<void(std::function<void()> const&)> const& callback);
 
 } // namespace Cool::ImGuiExtras

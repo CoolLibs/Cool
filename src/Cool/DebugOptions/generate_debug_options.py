@@ -104,6 +104,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="show_all_icons",
+            name_in_ui="Show all icons",
+            available_in_release=False,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="imgui_item_picker",
             name_in_ui="ImGui Item Picker",
             available_in_release=False,
