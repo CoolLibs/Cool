@@ -14,10 +14,10 @@ static auto make_valid_ratio(float ratio) -> float
 
 static auto parse_ratio(std::string const& input) -> float
 {
-    if (input == "A4 Horizontal")
-        return 1.41421356f;
     if (input == "A4 Vertical")
         return 0.70710678f;
+    if (!input.empty() && (input[0] == 'A' || input[0] == 'a')) // "A4 Horizontal"
+        return 1.41421356f;
 
     float value = 1.f;
 
@@ -91,7 +91,7 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
             : ImGuiExtras::calc_custom_dropdown_input_width()
     );
 
-    if (ImGui::InputText("##aspect_ratio_input", &_input, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr, ImDrawFlags_RoundCornersLeft))
+    if (ImGui::InputText("##aspect_ratio_input", &_input, ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr, ImDrawFlags_RoundCornersLeft))
     {
         _ratio = parse_ratio(_input);
         b      = true;
