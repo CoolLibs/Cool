@@ -194,6 +194,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE Boxer)
 install(FILES "lib/Boxer/LICENSE" DESTINATION "license/Boxer")
 
 # Native File Dialog
+set(NFD_OVERRIDE_RECENT_WITH_DEFAULT ON CACHE BOOL "" FORCE)
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 target_link_libraries(Cool-PublicProperties INTERFACE nfd)
 install(FILES "lib/nativefiledialog-extended/LICENSE" DESTINATION "license/nativefiledialog-extended")
