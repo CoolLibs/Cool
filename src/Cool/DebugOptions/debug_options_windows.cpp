@@ -49,9 +49,11 @@ void debug_options_windows(TipsManager& tips_manager)
         user_settings().color_themes.imgui_advanced_config();
     });
 
+#if defined(DEBUG)
     DebugOptions::show_all_icons([]() {
         imgui_show_all_icons();
     });
+#endif
 
     DebugOptions::color_themes_editor([]() {
         user_settings().color_themes.imgui_basic_theme_editor();
