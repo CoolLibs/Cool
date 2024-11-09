@@ -1,16 +1,17 @@
 #include "NodesLibrary.h"
 #include <Cool/String/String.h>
+#include <imgui.h>
 #include <wafl/wafl.hpp>
+#include "Cool/Icons/Icons.h"
+#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 
 namespace Cool {
 
-namespace internal {
-auto name_matches_filter(std::string const& name, std::string const& filter) -> bool
+static auto name_matches_filter(std::string const& name, std::string const& filter) -> bool
 {
     return wafl::similarity_match({.input = filter, .reference = name}) >= wafl::Matches::Strongly;
 }
-} // namespace internal
 
 auto NodesLibrary::get_category(std::string const& category_name) const -> NodesCategory const*
 {
@@ -34,58 +35,122 @@ auto NodesLibrary::get_category(std::string const& category_name) -> NodesCatego
     return nullptr;
 }
 
-auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const& maybe_disable, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
+static auto bob(NodesCategory& category, std::string const& nodes_filter, MaybeDisableNodeDefinition const& maybe_disable, bool select_first, bool open_all_categories, bool menu_just_opened)
+    -> std::optional<NodeDefinitionAndCategoryName>
 {
-    for (auto& category : _categories)
+    ImGui::PushID(&category);
+    auto const pop_automatically = sg::make_scope_guard([]() { ImGui::PopID(); });
+
+    bool is_open    = false;
+    bool is_visible = true;
+    if (!nodes_filter.empty())
     {
-        ImGui::PushID(&category);
-        auto const pop_automatically = sg::make_scope_guard([]() { ImGui::PopID(); });
-
-        bool is_open    = false;
-        bool is_visible = true;
-        if (!nodes_filter.empty())
+        is_visible = false;
+        for (NodeDefinition const& def : category.definitions())
         {
-            is_visible = false;
-            for (NodeDefinition const& def : category.definitions())
+            if (name_matches_filter(def.name(), nodes_filter))
             {
-                if (internal::name_matches_filter(def.name(), nodes_filter))
-                {
-                    is_open    = true;
-                    is_visible = true;
-                }
-            }
-        }
-
-        if (!is_visible)
-            continue;
-
-        if (open_all_categories || menu_just_opened)
-            ImGui::SetNextItemOpen(is_open);
-
-        ImGui::PushID(13452);
-        bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().color());
-        ImGui::PopID();
-
-        category.config().imgui_popup();
-
-        if (collapsing_header_clicked)
-        {
-            for (NodeDefinition const& def : category.definitions())
-            {
-                if (!internal::name_matches_filter(def.name(), nodes_filter))
-                    continue;
-
-                auto selected_definition = std::optional<NodeDefinitionAndCategoryName>{};
-                Cool::ImGuiExtras::disabled_if(maybe_disable(def, category), [&]() {
-                    if (select_first || ImGui::Selectable(def.name().c_str()))
-                        selected_definition = NodeDefinitionAndCategoryName{def, category.name()};
-                });
-
-                if (selected_definition.has_value())
-                    return selected_definition;
+                is_open    = true;
+                is_visible = true;
             }
         }
     }
+
+    if (!is_visible)
+        return std::nullopt;
+
+    if (open_all_categories || menu_just_opened)
+        ImGui::SetNextItemOpen(is_open);
+
+    ImGui::PushID(13452);
+    bool const collapsing_header_clicked = ImGuiExtras::colored_collapsing_header(category.name(), category.config().color());
+    ImGui::PopID();
+
+    category.config().imgui_popup();
+
+    auto const button_size = 50.f;
+
+    if (collapsing_header_clicked)
+    {
+        // ImGui::BeginHorizontal(&category);
+        bool first = true;
+        ImGuiExtras::fill_layout("##nodes", button_size, [&](std::function<void()> const& next_item) {
+            for (NodeDefinition const& def : category.definitions())
+            {
+                if (!name_matches_filter(def.name(), nodes_filter))
+                    continue;
+
+                if (!first && !(button_size > ImGui::GetContentRegionAvail().x))
+                    ImGui::SameLine();
+                first = false;
+
+                auto selected_definition = std::optional<NodeDefinitionAndCategoryName>{};
+                Cool::ImGuiExtras::disabled_if(maybe_disable(def, category), [&]() {
+                    bool b = ImGuiExtras::button_with_icon(Cool::Icons::close_button().imgui_texture_id(), ImVec4(1., 1., 1., 1.), ImVec4(0., 0., 0, 1), button_size, button_size);
+                    b |= select_first;
+                    if (b)
+                        selected_definition = NodeDefinitionAndCategoryName{def, category.name()};
+                });
+
+                // if (selected_definition.has_value()) // TODO
+                //     return selected_definition;
+
+                next_item();
+            }
+        });
+        // ImGui::EndHorizontal();
+    }
+    return std::nullopt;
+}
+
+auto NodesLibrary::imgui_nodes_menu(std::string const& nodes_filter, MaybeDisableNodeDefinition const& maybe_disable, bool select_first, bool open_all_categories, bool menu_just_opened) const -> std::optional<NodeDefinitionAndCategoryName>
+{
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
+    ImGui::BeginGroup();
+    ImGui::PushFont(Font::window_title());
+    ImGui::SeparatorText("Images");
+    ImGui::PopFont();
+
+    ImGui::BeginChild("1", ImVec2(300, 260), ImGuiChildFlags_None, window_flags);
+    for (size_t i = 0; i < 3; ++i)
+    {
+        auto bob2 = bob(_categories[i], nodes_filter, maybe_disable, select_first, open_all_categories, menu_just_opened);
+        if (bob2)
+            return bob2;
+    }
+    ImGui::EndChild();
+    ImGui::EndGroup();
+    ImGui::SameLine();
+    ImGui::BeginGroup();
+    ImGui::PushFont(Font::window_title());
+    ImGui::SeparatorText("Greyscale");
+    ImGui::PopFont();
+
+    ImGui::BeginChild("2", ImVec2(300, 260), ImGuiChildFlags_None, window_flags);
+    for (size_t i = 3; i < 6; ++i)
+    {
+        auto bob2 = bob(_categories[i], nodes_filter, maybe_disable, select_first, open_all_categories, menu_just_opened);
+        if (bob2)
+            return bob2;
+    }
+    ImGui::EndChild();
+    ImGui::EndGroup();
+    ImGui::SameLine();
+    ImGui::BeginGroup();
+    ImGui::PushFont(Font::window_title());
+    ImGui::SeparatorText("Shapes");
+    ImGui::PopFont();
+
+    ImGui::BeginChild("3", ImVec2(300, 260), ImGuiChildFlags_None, window_flags);
+    for (size_t i = 6; i < 9; ++i)
+    {
+        auto bob2 = bob(_categories[i], nodes_filter, maybe_disable, select_first, open_all_categories, menu_just_opened);
+        if (bob2)
+            return bob2;
+    }
+    ImGui::EndChild();
+    ImGui::EndGroup();
+
     return std::nullopt;
 }
 

@@ -12,10 +12,6 @@
 
 namespace Cool {
 
-namespace internal {
-auto name_matches_filter(std::string const& _name, std::string const& filter) -> bool;
-} // namespace internal
-
 class NodesCategory {
 public:
     NodesCategory(std::string name, NodesCategoryConfig config, int order)
