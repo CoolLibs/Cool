@@ -74,22 +74,22 @@ static auto imgui_all_definitions_selectables(NodeId const& node_id, Node& node,
     return graph_has_changed;
 }
 
-static auto dropdown_to_switch_between_nodes_of_the_same_category(NodeId const& node_id, Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
-{
-    auto const* category = library.get_category(node.category_name());
-    if (!category)
-        return false;
+// static auto dropdown_to_switch_between_nodes_of_the_same_category(NodeId const& node_id, Cool::Node& node, NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
+// {
+//     auto const* category = library.get_category(node.category_name());
+//     if (!category)
+//         return false;
 
-    bool graph_has_changed = false;
+//     bool graph_has_changed = false;
 
-    if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
-    {
-        graph_has_changed |= imgui_all_definitions_selectables(node_id, node, *category, nodes_cfg);
-        ImGui::EndCombo();
-    }
+//     if (ImGui::BeginCombo(category->name().c_str(), node.definition_name().c_str()))
+//     {
+//         graph_has_changed |= imgui_all_definitions_selectables(node_id, node, *category, nodes_cfg);
+//         ImGui::EndCombo();
+//     }
 
-    return graph_has_changed;
-}
+//     return graph_has_changed;
+// }
 
 [[nodiscard]] static auto is_listening_to_keyboard_shortcuts() -> bool
 {
@@ -191,21 +191,24 @@ static auto get_selected_links_ids() -> std::vector<ed::LinkId>
     return links;
 }
 
-static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& library)
+static auto imgui_node_in_inspector(Node& node, NodeId const& id, NodesConfig& nodes_cfg, NodesLibrary const& /* library */)
     -> bool
 {
-    ImGuiExtras::separator_text(node.definition_name());
     ImGui::PushID(&node);
-
+    ImGuiExtras::separator_text(node.definition_name());
     nodes_cfg.imgui_in_inspector_above_node_info(node, id);
-
-    nodes_cfg.widget_to_rename_node(node);
-    bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(id, node, nodes_cfg, library);
-
+    // bool const graph_has_changed = dropdown_to_switch_between_nodes_of_the_same_category(id, node, nodes_cfg, library);
     nodes_cfg.imgui_in_inspector_below_node_info(node, id);
-
     ImGui::PopID();
-    return graph_has_changed;
+    return false /* graph_has_changed */;
+}
+
+static void imgui_rename_node(std::string& node_name)
+{
+    if (ImGui::IsWindowAppearing())
+        ImGui::SetKeyboardFocusHere();
+    if (ImGui::InputText("Title", &node_name, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
+        ImGui::CloseCurrentPopup();
 }
 
 auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool
@@ -235,7 +238,7 @@ auto NodesEditorImpl::imgui_window_inspector(NodesConfig& nodes_cfg, NodesLibrar
                 {
                     if (ed::NodeId{as_ed_id(frame_node.id)} != ed_node_id)
                         continue;
-                    ImGui::InputText("Title", &frame_node.name);
+                    imgui_rename_node(frame_node.name);
                 }
             }
         }
@@ -751,7 +754,11 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         _link_has_just_been_released = false;
     }
 
-    if (ed::ShowNodeContextMenu(&_id_of_node_whose_context_menu_is_open))
+    bool const has_pressed_F2_on_node = ImGui::IsKeyPressed(ImGuiKey_F2) && ed::GetSelectedObjectCount() > 0;
+    if (has_pressed_F2_on_node)
+        ed::GetSelectedNodes(&_id_of_node_whose_context_menu_is_open, 1); // Need to set the selected node as the one whose context menu should be open
+
+    if (ed::ShowNodeContextMenu(&_id_of_node_whose_context_menu_is_open) || has_pressed_F2_on_node)
     {
         ed::Suspend();
         ImGui::OpenPopup("Node Context Menu");
@@ -812,6 +819,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         auto*      node = _graph.nodes().get_mutable_ref(id);
         if (node)
         {
+            imgui_rename_node(node->name_ref());
             nodes_cfg.node_context_menu(*node, id);
             auto const* category = library.get_category(node->category_name());
             if (category)
@@ -823,8 +831,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
             {
                 if (ed::NodeId{as_ed_id(frame_node.id)} != _id_of_node_whose_context_menu_is_open)
                     continue;
-                if (ImGui::InputText("##frame_title", &frame_node.name, ImGuiInputTextFlags_EnterReturnsTrue))
-                    ImGui::CloseCurrentPopup();
+                imgui_rename_node(frame_node.name);
             }
         }
 
