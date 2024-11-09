@@ -38,9 +38,6 @@ public:
     auto image_export_window() -> ImGuiWindow& { return _image_export_window; }
     auto video_export_window() -> ImGuiWindow& { return _video_export_window; }
 
-    void set_aspect_ratio(AspectRatio const&);
-    void maybe_set_aspect_ratio(std::optional<AspectRatio> const&);
-
     /// Displays all the currently active windows.
     void imgui_windows(exporter_imgui_windows_Params const&, std::optional<VideoExportProcess>&);
 
@@ -49,6 +46,8 @@ public:
 
     /// Call this after your rendering code. If we are exporting it will export the current frame and decide if the export should continue.
     void update(Polaroid const&, std::optional<VideoExportProcess>&);
+
+    void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _export_size.set_shared_aspect_ratio(shared_aspect_ratio); }
 
 private:
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
@@ -62,7 +61,7 @@ private:
     [[nodiscard]] auto folder_path_for_video() const -> std::filesystem::path;
 
 private:
-    ExportSize            _export_size;
+    ExportSize            _export_size{};
     std::filesystem::path _image_file{"images/img(0).png"};
     ImGuiWindow           _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
 

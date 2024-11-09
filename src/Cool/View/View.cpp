@@ -284,7 +284,7 @@ void View::display_image(ImTextureID image_texture_id, img::Size image_size)
         return;
 
     auto const size       = img::SizeU::fit_into(*_window_size, image_size);
-    _has_vertical_margins = img::SizeU::aspect_ratio(size) < img::SizeU::aspect_ratio(*_window_size);
+    _has_vertical_margins = img::SizeU::aspect_ratio(size) <= img::SizeU::aspect_ratio(*_window_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 
@@ -292,6 +292,13 @@ void View::display_image(ImTextureID image_texture_id, img::Size image_size)
     ImGuiExtras::image_centered(_render_target.imgui_texture_id(), as_imvec2(size));
     // Actual image. It needs to use straight alpha as this is what ImGui expects.
     ImGuiExtras::image_centered(image_texture_id, as_imvec2(size));
+}
+
+auto View::aspect_ratio() const -> float
+{
+    if (!_window_size.has_value())
+        return 1.f;
+    return img::SizeU::aspect_ratio(*_window_size);
 }
 
 } // namespace Cool

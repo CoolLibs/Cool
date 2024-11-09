@@ -19,9 +19,6 @@ public:
     auto image_export_window() -> ImGuiWindow& { return _gui.image_export_window(); }
     auto video_export_window() -> ImGuiWindow& { return _gui.video_export_window(); }
 
-    void set_aspect_ratio(AspectRatio const& aspect_ratio) { _gui.set_aspect_ratio(aspect_ratio); }
-    void maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspect_ratio) { _gui.maybe_set_aspect_ratio(aspect_ratio); }
-
     /// Displays all the currently active windows.
     void imgui_windows(exporter_imgui_windows_Params const& p) { _gui.imgui_windows(p, _video_export_process); }
 
@@ -33,6 +30,8 @@ public:
 
     /// Can only be called if `is_exporting()` is true.
     auto clock() const -> Clock const&;
+
+    void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _gui.set_shared_aspect_ratio(shared_aspect_ratio); }
 
 private:
     ExporterGui                       _gui{};

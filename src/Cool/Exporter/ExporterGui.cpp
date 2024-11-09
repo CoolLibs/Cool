@@ -18,17 +18,6 @@ auto ExporterGui::folder_path_for_video() const -> std::filesystem::path
     return std::filesystem::weakly_canonical(_folder_path_for_video.value_or(Path::project_folder().value_or(Path::user_data()) / "video frames"));
 }
 
-void ExporterGui::set_aspect_ratio(AspectRatio const& aspect_ratio)
-{
-    _export_size.set_aspect_ratio(aspect_ratio);
-}
-
-void ExporterGui::maybe_set_aspect_ratio(std::optional<AspectRatio> const& aspect_ratio)
-{
-    if (aspect_ratio)
-        set_aspect_ratio(*aspect_ratio);
-}
-
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
     imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_exported);
