@@ -25,18 +25,12 @@ namespace Cool {
 
 namespace internal {
 
-void SearchBarState::on_nodes_menu_open()
-{
-    _nodes_filter.clear();
-    _should_be_focused = true;
-}
-
 auto SearchBarState::imgui_widget() -> bool
 {
-    if (_should_be_focused)
+    if (ImGui::IsWindowAppearing())
     {
+        _nodes_filter.clear();
         ImGui::SetKeyboardFocusHere();
-        _should_be_focused = false;
     }
     ImGui::PushID(868686);
     bool const b = ImGui::InputTextWithHint("##Filter", icon_fmt("Search for a node or category", ICOMOON_SEARCH).c_str(), &_nodes_filter, ImGuiInputTextFlags_EnterReturnsTrue);
@@ -141,7 +135,6 @@ void NodesEditorImpl::open_nodes_menu()
 {
     _menu_just_opened   = true;
     _next_node_position = ImGui::GetMousePos();
-    _search_bar.on_nodes_menu_open();
     ed::Suspend();
     ImGui::OpenPopup("Nodes Library Menu");
     ed::Resume();

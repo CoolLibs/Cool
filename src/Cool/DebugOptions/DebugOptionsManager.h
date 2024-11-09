@@ -12,9 +12,9 @@ namespace Cool {
 template<typename... Ts>
 class DebugOptionsManager {
 public:
-    static void imgui_ui_for_all_options(bool was_just_open = false)
+    static void imgui_ui_for_all_options()
     {
-        if (was_just_open)
+        if (ImGui::IsWindowAppearing())
         {
             reset_filter();
             ImGui::SetKeyboardFocusHere();
