@@ -121,10 +121,10 @@ auto AspectRatio::imgui(float width, const char* label) -> bool
     if ((input_text_is_hovered || ImGui::IsItemHovered()) && ImGui::GetIO().MouseWheel != 0.f)
     {
         bool const find_bigger = ImGui::GetIO().MouseWheel > 0.f;
-        int const  sz          = ratios.size();
+        int const  sz          = static_cast<int>(ratios.size());
         for (int i = find_bigger ? sz - 1 : 0; find_bigger ? (i >= 0) : (i < sz); i += find_bigger ? -1 : 1)
         {
-            float const ratio = ratios.at(i).second;
+            float const ratio = ratios.at(static_cast<size_t>(i)).second;
             if (find_bigger ? (ratio > _ratio) : (ratio < _ratio))
             {
                 set(ratio);
