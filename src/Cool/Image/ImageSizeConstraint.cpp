@@ -10,7 +10,7 @@ auto ImageSizeConstraint::applied_to(img::Size frame_size) const -> img::Size
         return frame_size;
 
     float const aspect_ratio = _shared_aspect_ratio->fill_the_view
-                                   ? img::SizeU::aspect_ratio(frame_size)
+                                   ? img::aspect_ratio(frame_size)
                                    : _shared_aspect_ratio->aspect_ratio.get();
 
     auto const nb_pixels = static_cast<float>(

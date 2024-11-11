@@ -25,7 +25,7 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
 void set_window_icon(GLFWwindow* window)
 {
 #ifdef COOL_APP_ICON_FILE // Don't do anything if no icon has been set
-    auto icon  = img::load(Cool::Path::root() / COOL_APP_ICON_FILE, 4, false);
+    auto icon  = *img::load(Cool::Path::root() / COOL_APP_ICON_FILE, 4, img::FirstRowIs::Top);
     auto image = GLFWimage{
         .width  = static_cast<int>(icon.width()),
         .height = static_cast<int>(icon.height()),

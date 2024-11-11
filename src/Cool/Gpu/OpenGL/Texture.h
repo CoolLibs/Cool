@@ -44,7 +44,7 @@ public:
     /// The ID that ImGui expects
     [[nodiscard]] auto imgui_texture_id() const -> ImTextureID { return reinterpret_cast<ImTextureID>(static_cast<uint64_t>(id())); } // Double-cast to fix a warning : first we convert to the correct size (uint32_t -> uint64_t) then from integral type to pointer type (uint64_t -> ImTextureID)
 
-    [[nodiscard]] auto aspect_ratio() const -> float { return img::SizeU::aspect_ratio(_size); }
+    [[nodiscard]] auto aspect_ratio() const -> float { return img::aspect_ratio(_size); }
     [[nodiscard]] auto size() const -> img::Size { return _size; }
 
     [[nodiscard]] auto need_to_flip_y() const -> bool { return _need_to_flip_y; }

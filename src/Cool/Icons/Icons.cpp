@@ -2,6 +2,7 @@
 #include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/File/File.h>
 #include <Cool/Log/ToUser.h>
+#include "Cool/TextureSource/default_textures.h"
 #include "img/src/Load.h"
 
 namespace Cool {
@@ -14,7 +15,8 @@ const Texture& Icons::get(std::filesystem::path image_path)
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        _map[path] = Texture{img::load(path)};
+        auto const image = img::load(path);
+        _map[path]       = Texture{image.has_value() ? *image : dummy_image()};
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("Icons", fmt::format("Generated texture from {}", path));
         return _map[path];

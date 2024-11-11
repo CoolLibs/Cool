@@ -21,7 +21,8 @@ auto TextureRef::download_pixels() const -> img::Image
     });
     return img::Image{
         img::Size{width(), height()},
-        4,
+        img::PixelFormat::RGBA,
+        img::FirstRowIs::Bottom,
         data.release()
     };
 }

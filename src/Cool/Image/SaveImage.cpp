@@ -22,10 +22,13 @@ void save_png(
     bool                         flip_vertically
 )
 {
-    if (File::create_folders_for_file_if_they_dont_exist(file_path))
-        img::save_png(file_path, width, height, data, channels_count, flip_vertically);
-    else
-        Log::ToUser::warning("ImageU::save_png", "Couldn't export because folder creation failed!");
+    if (!File::create_folders_for_file_if_they_dont_exist(file_path))
+    {
+        Log::ToUser::warning("Export", "Failed to export because folder creation failed!");
+        return;
+    }
+    if (!img::save_png(file_path, width, height, data, channels_count, flip_vertically))
+        Log::ToUser::warning("Export", "Failed to save image");
 }
 
 } // namespace Cool::ImageU

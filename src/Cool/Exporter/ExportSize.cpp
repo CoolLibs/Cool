@@ -45,7 +45,7 @@ auto ExportSize::imgui() -> bool
     if (b && !_aspect_ratio_is_locked)
     {
         _shared_aspect_ratio->fill_the_view = false;
-        _shared_aspect_ratio->aspect_ratio.set(img::SizeU::aspect_ratio(_size));
+        _shared_aspect_ratio->aspect_ratio.set(img::aspect_ratio(_size));
     }
 
     ImGui::SameLine();

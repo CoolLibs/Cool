@@ -155,7 +155,7 @@ auto View::to_view_coordinates(ImGuiCoordinates const pos, bool should_apply_tra
     if (!_window_size)
         return ViewCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
-    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto const img_size    = img::fit_into(*_window_size, get_image_size());
 
     auto res = glm::vec2{pos};
     if (should_apply_translation)
@@ -171,7 +171,7 @@ auto View::to_imgui_coordinates(ViewCoordinates pos) const -> ImGuiCoordinates
     if (!_window_size)
         return ImGuiCoordinates{};
     auto const window_size = glm::vec2{_window_size->width(), _window_size->height()};
-    auto const img_size    = img::SizeU::fit_into(*_window_size, get_image_size());
+    auto const img_size    = img::fit_into(*_window_size, get_image_size());
     auto       res         = glm::vec2{pos};
 
     res.y *= -1.f;
@@ -270,7 +270,7 @@ static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render
     render_target.set_size(size);
     render_target.render([&]() {
         alpha_checkerboard_pipeline().shader()->bind();
-        alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::SizeU::aspect_ratio(size));
+        alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::aspect_ratio(size));
         alpha_checkerboard_pipeline().draw();
     });
 
@@ -283,8 +283,8 @@ void View::display_image(ImTextureID image_texture_id, img::Size image_size)
     if (!_window_size.has_value())
         return;
 
-    auto const size       = img::SizeU::fit_into(*_window_size, image_size);
-    _has_vertical_margins = img::SizeU::aspect_ratio(size) <= img::SizeU::aspect_ratio(*_window_size);
+    auto const size       = img::fit_into(*_window_size, image_size);
+    _has_vertical_margins = img::aspect_ratio(size) <= img::aspect_ratio(*_window_size);
 
     rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
 
@@ -298,7 +298,7 @@ auto View::aspect_ratio() const -> float
 {
     if (!_window_size.has_value())
         return 1.f;
-    return img::SizeU::aspect_ratio(*_window_size);
+    return img::aspect_ratio(*_window_size);
 }
 
 } // namespace Cool

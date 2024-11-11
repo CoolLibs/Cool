@@ -39,7 +39,8 @@ img::Image RenderTarget_ImplOpenGL::download_pixels() const
     _texture_fb.unbind();
     return img::Image{
         img::Size{width(), height()},
-        4,
+        img::PixelFormat::RGBA,
+        img::FirstRowIs::Bottom,
         data.release()
     };
 }

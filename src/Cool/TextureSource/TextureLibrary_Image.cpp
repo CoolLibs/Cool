@@ -51,15 +51,17 @@ void TextureLibrary_Image::reload_texture(std::filesystem::path const& path)
     auto& tex         = _textures[path];
     tex.error_message = std::nullopt;
     tex.texture       = std::nullopt;
-    try
+
+    auto image = img::load(path);
+    if (image.has_value())
     {
-        tex.texture = Texture{img::load(path)};
+        tex.texture = Texture{*image};
         if (DebugOptions::log_when_creating_textures())
             Log::ToUser::info("TextureLibrary_Image", fmt::format("Generated texture from {}", path));
     }
-    catch (std::exception const& e)
+    else
     {
-        tex.error_message = e.what();
+        tex.error_message = image.error();
     }
 }
 
