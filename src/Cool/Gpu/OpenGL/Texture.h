@@ -31,7 +31,7 @@ public:
     void set_size(img::Size const&);
     void set_image(img::Image const&, bool need_to_flip_y = false);
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
-    void set_image(img::Size const&, int channels_count, uint8_t const* data, bool need_to_flip_y = false);
+    void set_image(img::Size const&, size_t channels_count, uint8_t const* data, bool need_to_flip_y = false);
     void set_image(img::Size const&, uint8_t const* data, glpp::TextureLayout const&, bool need_to_flip_y = false);
     void set_interpolation_mode(glpp::Interpolation interpolation_mode);
     void set_wrap_mode(glpp::Wrap wrap_mode);

@@ -62,7 +62,7 @@ void Texture::set_image(img::Image const& img, bool need_to_flip_y)
     set_image(img.size(), img.channels_count(), img.data(), need_to_flip_y);
 }
 
-void Texture::set_image(img::Size const& size, int channels_count, uint8_t const* data, bool need_to_flip_y)
+void Texture::set_image(img::Size const& size, size_t channels_count, uint8_t const* data, bool need_to_flip_y)
 {
     assert(channels_count == 3 || channels_count == 4);
     set_image(
