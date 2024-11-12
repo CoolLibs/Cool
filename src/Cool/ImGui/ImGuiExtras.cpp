@@ -388,7 +388,7 @@ auto file_and_folder_saving(
     bool b = false;
     if (path.is_relative())
     {
-        path = std::filesystem::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / path);
+        path = Cool::File::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / path);
         b    = true;
     }
 

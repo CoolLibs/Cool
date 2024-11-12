@@ -6,7 +6,7 @@ namespace Cool {
 
 static auto get_category_name(std::filesystem::path const& path, std::filesystem::path const& root) -> std::string
 {
-    std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+    std::string category_name = File::without_file_name(Cool::File::relative(path, root)).string();
     auto const  pos           = category_name.find_first_not_of("0123456789");
     if (pos != std::string::npos)
     {
@@ -18,7 +18,7 @@ static auto get_category_name(std::filesystem::path const& path, std::filesystem
 
 static auto get_category_order(std::filesystem::path const& path, std::filesystem::path const& root) -> int
 {
-    std::string category_name = File::without_file_name(std::filesystem::relative(path, root)).string();
+    std::string category_name = File::without_file_name(Cool::File::relative(path, root)).string();
     auto const  pos           = category_name.find_first_not_of("0123456789");
     if (pos != std::string::npos)
         category_name = Cool::String::substring(category_name, 0, pos);

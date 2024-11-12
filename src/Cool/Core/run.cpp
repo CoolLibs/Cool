@@ -85,11 +85,11 @@ void copy_default_user_data_ifn(int imgui_ini_version)
         for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
         {
             auto const& default_path = entry.path();
-            if (!std::filesystem::is_regular_file(default_path))
+            if (!Cool::File::is_regular_file(default_path))
                 continue;
 
-            auto const path = Cool::Path::user_data() / std::filesystem::relative(default_path, Cool::Path::default_user_data());
-            if (std::filesystem::exists(path))
+            auto const path = Cool::Path::user_data() / Cool::File::relative(default_path, Cool::Path::default_user_data());
+            if (Cool::File::exists(path))
                 continue;
 
             try
@@ -98,7 +98,7 @@ void copy_default_user_data_ifn(int imgui_ini_version)
             }
             catch (std::exception const& e)
             {
-                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", std::filesystem::weakly_canonical(default_path), std::filesystem::weakly_canonical(path), e.what()));
+                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
             }
         }
     }

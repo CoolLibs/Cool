@@ -33,7 +33,7 @@ struct RunConfig {
 template<typename App>
 void run(RunConfig const& config)
 {
-    bool const ignore_invalid_user_data_file = !std::filesystem::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
+    bool const ignore_invalid_user_data_file = !Cool::File::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
     // Make sure user_data() folder is populated with all the default_user_data() files.
     internal::copy_default_user_data_ifn(config.imgui_ini_version);
     // Create window.s

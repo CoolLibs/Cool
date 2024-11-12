@@ -15,7 +15,7 @@ namespace Cool {
 
 auto ExporterGui::folder_path_for_video() const -> std::filesystem::path
 {
-    return std::filesystem::weakly_canonical(_folder_path_for_video.value_or(Path::project_folder().value_or(Path::user_data()) / "video frames"));
+    return Cool::File::weakly_canonical(_folder_path_for_video.value_or(Path::project_folder().value_or(Path::user_data()) / "video frames"));
 }
 
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
@@ -73,7 +73,7 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time d
 auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
 {
     if (!File::exists(folder_path_for_video())
-        || std::filesystem::is_empty(folder_path_for_video()))
+        || Cool::File::is_empty(folder_path_for_video()))
     {
         return true; // Nothing to do, no frame is going to be overwritten
     }

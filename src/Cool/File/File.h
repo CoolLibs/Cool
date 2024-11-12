@@ -10,8 +10,7 @@ auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path;
 /// Returns true iff file_path corresponds to an existing file or folder
 auto exists(std::filesystem::path const& file_path) -> bool;
 
-/// Returns true iff the operation was successful.
-auto remove(std::filesystem::path const& file_path) -> bool;
+void remove(std::filesystem::path const& file_path);
 
 /// Returns the name of the file + its extension (removes parent folders)
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
@@ -27,6 +26,11 @@ auto without_extension(std::filesystem::path file_path) -> std::filesystem::path
 
 /// Returns the folders in the path, removes the file name if there is one at the end
 auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
+
+auto weakly_canonical(std::filesystem::path const& path) -> std::filesystem::path;
+auto relative(std::filesystem::path const& path, std::filesystem::path const& base) -> std::filesystem::path;
+auto is_regular_file(std::filesystem::path const& path) -> bool;
+auto is_empty(std::filesystem::path const& path) -> bool;
 
 /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode = std::ios_base::in) -> tl::expected<std::string, std::string>;

@@ -5,7 +5,6 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
-#include <streambuf>
 #include "Cool/File/File.h"
 #include "nfd.hpp"
 
@@ -19,26 +18,33 @@ auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File System", fmt::format("Failed to make absolute path:\n{}", e.what()));
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to make absolute path from \"{}\":\n{}", path, e.what()));
         return path;
     }
 }
 
 auto exists(std::filesystem::path const& file_path) -> bool
 {
-    return std::filesystem::exists(file_path);
+    try
+    {
+        return std::filesystem::exists(file_path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, e.what()));
+        return false;
+    }
 }
 
-auto remove(std::filesystem::path const& file_path) -> bool
+void remove(std::filesystem::path const& file_path)
 {
     try
     {
         std::filesystem::remove(file_path);
-        return true;
     }
     catch (...)
     {
-        return false;
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, 1));
     }
 }
 
@@ -66,8 +72,59 @@ auto without_file_name(std::filesystem::path const& file_path) -> std::filesyste
 {
     if (!file_path.has_filename())
         return file_path;
-    else
-        return file_path.parent_path();
+    return file_path.parent_path();
+}
+
+auto weakly_canonical(std::filesystem::path const& path) -> std::filesystem::path
+{
+    try
+    {
+        return std::filesystem::weakly_canonical(path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to get canonical path for \"{}\":\n{}", path, e.what()));
+        return path;
+    }
+}
+
+auto relative(std::filesystem::path const& path, std::filesystem::path const& base) -> std::filesystem::path
+{
+    try
+    {
+        return std::filesystem::relative(path, base);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to make path \"{}\" relative to \"{}\":\n{}", path, base, e.what()));
+        return path;
+    }
+}
+
+auto is_regular_file(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return std::filesystem::is_regular_file(path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a regular file:\n{}", path, e.what()));
+        return false;
+    }
+}
+
+auto is_empty(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return std::filesystem::is_empty(path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is empty:\n{}", path, e.what()));
+        return false;
+    }
 }
 
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode) -> tl::expected<std::string, std::string>
@@ -77,7 +134,7 @@ auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode m
     if (!stream.is_open())
     {
         return tl::make_unexpected(
-            fmt::format("Failed to open file {}", file_path)
+            fmt::format("Failed to open file \"{}\"", file_path)
         );
     }
     stream.seekg(0, std::ios::end);
@@ -93,20 +150,19 @@ auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode m
 
 auto create_folders_if_they_dont_exist(std::filesystem::path const& folder_path) -> bool
 {
-    if (!File::exists(folder_path))
+    if (File::exists(folder_path))
+        return true;
+
+    try
     {
-        try
-        {
-            std::filesystem::create_directories(folder_path);
-            return true;
-        }
-        catch (const std::exception& e)
-        {
-            Log::ToUser::warning("File::create_folders_if_they_dont_exist", fmt::format("Failed:\n{}", e.what()));
-            return false;
-        }
+        std::filesystem::create_directories(folder_path);
+        return true;
     }
-    return true;
+    catch (std::exception const& e)
+    {
+        Log::ToUser::warning("File", fmt::format("Failed to create folder \"{}\":\n{}", folder_path, e.what()));
+        return false;
+    }
 }
 
 auto create_folders_for_file_if_they_dont_exist(std::filesystem::path const& file_path) -> bool
@@ -130,11 +186,19 @@ auto copy_file(std::filesystem::path const& from, std::filesystem::path const& t
     if (!create_folders_for_file_if_they_dont_exist(to))
         return false;
 
-    std::filesystem::copy_file(from, to);
-    return true;
+    try
+    {
+        std::filesystem::copy_file(from, to);
+        return true;
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to copy file from \"{}\" to \"{}\":\n{}", from, to, e.what()));
+        return false;
+    }
 }
 
-auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path
+auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path // NOLINT(*easily-swappable-parameters)
 {
     std::string const name = Cool::File::without_extension(file_name).string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
