@@ -26,6 +26,11 @@ VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpee
 
 bool VideoExportProcess::update(Polaroid const& polaroid)
 {
+    if (_failure_has_been_reported.load())
+    {
+        Cool::Log::ToUser::warning("Export", "Aborting because we failed to export an image");
+        return true; // Abort the export
+    }
     if (_should_stop_asap || _nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
         return true; // The export is finished
 
@@ -109,7 +114,8 @@ void VideoExportProcess::export_frame(Polaroid const& polaroid, std::filesystem:
         polaroid.texture().download_pixels(),
         _average_export_time,
         _average_export_time_mutex,
-        _nb_frames_which_finished_exporting
+        _nb_frames_which_finished_exporting,
+        _failure_has_been_reported
     });
 }
 

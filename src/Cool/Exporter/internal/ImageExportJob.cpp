@@ -5,12 +5,18 @@ namespace Cool {
 
 void ImageExportJob::operator()()
 {
-    const auto begin = std::chrono::steady_clock::now();
-    ImageU::save_png(_file_path, *_image);
-    const auto end        = std::chrono::steady_clock::now();
-    const auto delta_time = std::chrono::duration<float>{end - begin};
+    auto const begin = std::chrono::steady_clock::now();
+
+    if (!ImageU::save_png(_file_path, *_image))
     {
-        std::unique_lock lock{*_average_export_time_mutex};
+        *_report_failure = true;
+        return;
+    }
+
+    auto const end        = std::chrono::steady_clock::now();
+    auto const delta_time = std::chrono::duration<float>{end - begin};
+    {
+        auto lock = std::unique_lock{*_average_export_time_mutex};
         _average_export_time->push(delta_time.count());
     }
     (*_nb_frames_which_finished_exporting)++;

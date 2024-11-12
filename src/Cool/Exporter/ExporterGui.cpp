@@ -64,8 +64,8 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time d
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
-            ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file);
-            on_image_exported(_image_file);
+            if (ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file))
+                on_image_exported(_image_file);
         }
     });
 }

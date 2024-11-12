@@ -32,6 +32,8 @@ private:
     int64_t              _total_nb_of_frames_in_sequence;
     int64_t              _frame_numbering_offset;
 
+    std::atomic<bool> _failure_has_been_reported{false};
+
     std::chrono::steady_clock::time_point _last_render{};
     Averager<double>                      _average_time_between_two_renders{};
     Averager<double>                      _average_export_time{};
