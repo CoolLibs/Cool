@@ -25,7 +25,7 @@ public:
     explicit Texture(img::Image const&, bool need_to_flip_y = false, TextureConfig = {});
     /// Create a texture containing a copy of data.
     /// `channels_count` should be 3 for RGB and 4 for RGBA.
-    Texture(img::Size const&, int channels_count, uint8_t const* data, bool need_to_flip_y = false, TextureConfig = {});
+    Texture(img::Size const&, size_t channels_count, uint8_t const* data, bool need_to_flip_y = false, TextureConfig = {});
     Texture(img::Size const&, uint8_t const* data, glpp::TextureLayout const&, bool need_to_flip_y = false, TextureConfig = {});
 
     void set_size(img::Size const&);

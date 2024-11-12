@@ -31,7 +31,7 @@ Texture::Texture(img::Image const& image, bool need_to_flip_y, TextureConfig con
     set_image(image, need_to_flip_y);
 }
 
-Texture::Texture(img::Size const& size, int channels_count, uint8_t const* data, bool need_to_flip_y, TextureConfig config)
+Texture::Texture(img::Size const& size, size_t channels_count, uint8_t const* data, bool need_to_flip_y, TextureConfig config)
     : Texture{config}
 {
     set_image(size, channels_count, data, need_to_flip_y);
