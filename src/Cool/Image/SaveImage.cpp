@@ -18,7 +18,7 @@ auto save_png(
     img::Size::DataType          width,
     img::Size::DataType          height,
     const void*                  data,
-    int                          channels_count,
+    size_t                       channels_count,
     bool                         flip_vertically
 ) -> bool
 {
