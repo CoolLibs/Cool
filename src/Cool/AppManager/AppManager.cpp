@@ -20,6 +20,7 @@
 #include "Cool/Webcam/WebcamImage.hpp"
 #include "Cool/Webcam/WebcamsConfigs.hpp"
 #include "GLFW/glfw3.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 #include "easy_ffmpeg/callbacks.hpp"
 #include "nfd.hpp"
 #include "should_we_use_a_separate_thread_for_update.h"
@@ -142,6 +143,13 @@ void AppManager::restore_imgui_ini_state_ifn()
 
 void AppManager::update()
 {
+    // Cache these colors for the frame, because we don't want to query the Theme all the time.
+    // They will be reused by a few things event outside of ImGui::Notify
+    ImGui::Notify::style().success = user_settings().color_themes.editor().get_color("Success").as_imvec4();
+    ImGui::Notify::style().warning = user_settings().color_themes.editor().get_color("Warning").as_imvec4();
+    ImGui::Notify::style().error   = user_settings().color_themes.editor().get_color("Error").as_imvec4();
+    ImGui::Notify::style().info    = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
+
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
@@ -235,6 +243,7 @@ void AppManager::imgui_render(IApp& app)
     // Windows
     app.imgui_windows();
     imgui_windows();
+    ImGui::Notify::render_windows();
 
     ImGui::PopStyleVar();
     ImGui::PopFont();

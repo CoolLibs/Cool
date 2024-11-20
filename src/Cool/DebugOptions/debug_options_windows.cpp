@@ -9,6 +9,7 @@
 #include <Cool/Variables/TestPresets.h>
 #include "Cool/ImGui/imgui_show_all_icons.hpp"
 #include "DebugOptions.h"
+#include "TestNotification.h"
 
 namespace Cool {
 
@@ -26,6 +27,11 @@ void debug_options_windows(TipsManager& tips_manager)
         test_message_console.imgui(
             Log::ToUser::console()
         );
+    });
+
+    DebugOptions::test_notifications__window([]() {
+        static auto test_notification = TestNotification{};
+        test_notification.imgui();
     });
 
     DebugOptions::test_presets__window([]() {

@@ -8,6 +8,7 @@
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/Log/ToUser.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool {
 
@@ -79,14 +80,15 @@ static void imgui_load_fonts()
         Font::italic()  = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         merge_icons_into_current_font();
     }
+    { // Monospace font
+        auto const path   = Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-Regular.ttf";
+        Font::monospace() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+    }
     { // Regular font
         auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Regular.otf";
         Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         merge_icons_into_current_font();
-    }
-    { // Monospace font
-        auto const path   = Cool::Path::cool_res() / "fonts/Roboto_Mono/RobotoMono-Regular.ttf";
-        Font::monospace() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
+        ImGui::Notify::add_icons_to_current_font(icons_size);
     }
 
     io.Fonts->Build();

@@ -26,6 +26,15 @@ public:
             ImGui::End();
         }
     }
+    static void test_notifications__window(std::function<void()> callback)
+    {
+        if (instance().test_notifications__window)
+        {
+            ImGui::Begin(Cool::icon_fmt("Test Notifications", ICOMOON_WRENCH).c_str(), &instance().test_notifications__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+        }
+    }
     [[nodiscard]] static auto log_when_autosaving() -> bool& { return instance().log_when_autosaving; }
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
@@ -126,6 +135,7 @@ public:
 private:
     struct Instance {
         bool test_message_console__window{false};
+        bool test_notifications__window{false};
         bool log_when_autosaving{false};
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_textures{false};
@@ -160,6 +170,7 @@ private:
             archive(
 #if DEBUG
                 ser20::make_nvp("Test Message Console", test_message_console__window),
+                ser20::make_nvp("Test Notifications", test_notifications__window),
                 ser20::make_nvp("Log when autosaving", log_when_autosaving),
                 ser20::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 ser20::make_nvp("Log when creating textures", log_when_creating_textures),
@@ -179,6 +190,7 @@ private:
                 ser20::make_nvp("Show all icons", show_all_icons)
 #else
                 ser20::make_nvp("Test Message Console", test_message_console__window),
+                ser20::make_nvp("Test Notifications", test_notifications__window),
                 ser20::make_nvp("Log when autosaving", log_when_autosaving),
                 ser20::make_nvp("Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background),
                 ser20::make_nvp("Log when creating textures", log_when_creating_textures),
@@ -203,6 +215,7 @@ private:
     static void reset_all()
     {
         instance().test_message_console__window                     = false;
+        instance().test_notifications__window                       = false;
         instance().log_when_autosaving                              = false;
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_textures                       = false;
@@ -243,6 +256,11 @@ private:
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test Message Console", &instance().test_message_console__window);
+        }
+
+        if (wafl::similarity_match({filter, "Test Notifications"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Test Notifications", &instance().test_notifications__window);
         }
 
         if (wafl::similarity_match({filter, "Log when autosaving"}) >= wafl::Matches::Strongly)
@@ -359,6 +377,12 @@ private:
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console__window = !instance().test_message_console__window;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test Notifications"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_notifications__window = !instance().test_notifications__window;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

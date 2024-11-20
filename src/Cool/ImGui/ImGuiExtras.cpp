@@ -1,10 +1,8 @@
 #include "ImGuiExtras.h"
-#include <Cool/Constants/Constants.h>
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
-#include <ostream>
 #include <smart/smart.hpp>
 #include <wafl/wafl.hpp>
 #include "Cool/ImGui/Fonts.h"
@@ -14,6 +12,7 @@
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
 #include "ImGuiExtrasStyle.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool::ImGuiExtras {
 
@@ -245,7 +244,7 @@ bool slider_uint32(const char* label, uint32_t* v, uint32_t v_min, uint32_t v_ma
 
 void warning_text(const char* text)
 {
-    ImGui::TextColored(Cool::Constants::imvec4_red, "%s", text);
+    ImGui::TextColored(ImGui::Notify::style().warning, "%s", text);
 }
 
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)

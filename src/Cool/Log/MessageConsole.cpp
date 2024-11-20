@@ -1,7 +1,7 @@
 #include "MessageConsole.h"
-#include <Cool/Constants/Constants.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/ImGui/ImGuiExtras.h>
+#include <ImGuiNotify/ImGuiNotify.hpp>
 #include <stringify/stringify.hpp>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/markdown.h"
@@ -118,11 +118,11 @@ static auto color(MessageSeverity severity) -> ImVec4
     switch (severity)
     {
     case MessageSeverity::Info:
-        return Constants::imvec4_green;
+        return ImGui::Notify::style().success;
     case MessageSeverity::Warning:
-        return Constants::imvec4_yellow;
+        return ImGui::Notify::style().warning;
     case MessageSeverity::Error:
-        return Constants::imvec4_red;
+        return ImGui::Notify::style().error;
     default:
         Log::Debug::error("MessageConsole::color", "Unknown enum value");
         return ImVec4{0, 0, 0, 0};

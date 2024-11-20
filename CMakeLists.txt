@@ -308,6 +308,12 @@ add_subdirectory(lib/ImGui_StyleEditor)
 target_include_directories(ImStyleEd SYSTEM PRIVATE lib)
 target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 
+# ImGuiNotify
+add_subdirectory(lib/ImGuiNotify)
+target_include_directories(ImGuiNotify SYSTEM PRIVATE lib/imgui)
+target_link_libraries(Cool-PublicProperties INTERFACE ImGuiNotify::ImGuiNotify)
+install(FILES "lib/ImGuiNotify/LICENSE" DESTINATION "license/ImGuiNotify")
+
 # ----------------
 # ---Copy files---
 # ----------------

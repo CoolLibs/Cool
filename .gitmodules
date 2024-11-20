@@ -115,3 +115,6 @@
 [submodule "res/shaders/GLSL-Color-Functions"]
 	path = res/shaders/GLSL-Color-Functions
 	url = https://github.com/Rachmanin0xFF/GLSL-Color-Functions
+[submodule "lib/ImGuiNotify"]
+	path = lib/ImGuiNotify
+	url = https://github.com/CoolLibs/ImGuiNotify
