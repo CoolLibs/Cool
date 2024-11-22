@@ -42,7 +42,6 @@ private:
             ser20::make_nvp("Autosave delay in seconds", autosave_delay_in_seconds),
             ser20::make_nvp("Extra icons", extra_icons),
             ser20::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
-            ser20::make_nvp("Use OS color theme", color_themes),
             ser20::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets),
             ser20::make_nvp("Enable multi-viewport", enable_multi_viewport),
             ser20::make_nvp("Video export overwrite behaviour", video_export_overwrite_behaviour)
