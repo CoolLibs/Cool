@@ -621,7 +621,7 @@ static auto highlight_color(float opacity) -> ImVec4
     return col;
 }
 
-void background(std::function<void()> widget, ImVec4 color)
+void background(std::function<void()> const& widget, ImVec4 color)
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
     draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the widget,
@@ -643,7 +643,7 @@ void background(std::function<void()> widget, ImVec4 color)
     draw_list.ChannelsMerge();
 }
 
-void highlight(std::function<void()> widget, float opacity)
+void highlight(std::function<void()> const& widget, float opacity)
 {
     background(
         widget,
@@ -664,7 +664,7 @@ void link(std::string_view url, std::string_view label)
     ImGuiExtras::markdown(fmt::format("[{}]({})", label, url));
 }
 
-void bring_attention_if(bool should_bring_attention, std::function<void()> widget)
+void bring_attention_if(bool should_bring_attention, std::function<void()> const& widget)
 {
     if (should_bring_attention)
     {

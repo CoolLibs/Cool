@@ -118,3 +118,6 @@
 [submodule "lib/ImGuiNotify"]
 	path = lib/ImGuiNotify
 	url = https://github.com/CoolLibs/ImGuiNotify
+[submodule "lib/no-sleep"]
+	path = lib/no-sleep
+	url = https://github.com/CoolLibs/no-sleep

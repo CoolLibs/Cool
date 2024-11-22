@@ -205,11 +205,11 @@ auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
 
 /// Renders `widget` with a colored background.
 /// `widget` must be a function that draws some ImGui widgets.
-void background(std::function<void()> widget, ImVec4 color);
+void background(std::function<void()> const& widget, ImVec4 color);
 
 /// Renders `widget` with a highlighted background.
 /// `widget` must be a function that draws some ImGui widgets.
-void highlight(std::function<void()> widget, float opacity = 1.f);
+void highlight(std::function<void()> const& widget, float opacity = 1.f);
 
 /// Creates a clickable link that opens the given url in the user's default web browser.
 void link(std::string_view url);
@@ -221,7 +221,7 @@ void link(std::string_view url, std::string_view label);
 /// Brings attention to the given widget (highlight, bring window to front, scroll to right position, etc.).
 /// `widget` must be a function that draws some ImGui widgets.
 /// If `should_bring_attention` is false, just renders the widget as usual. This is a convenience that makes calling code nicer.
-void bring_attention_if(bool should_bring_attention, std::function<void()> widget);
+void bring_attention_if(bool should_bring_attention, std::function<void()> const& widget);
 
 ///
 auto colored_collapsing_header(std::string_view name, Cool::Color const& color) -> bool;

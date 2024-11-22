@@ -1,17 +1,10 @@
 #include "PathsConfig.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Path/PathsConfig.h"
-#include "Cool/Utils/app_name.h"
 #include "Path.h"
 #include "exe_path/exe_path.h"
 
 namespace Cool {
-
-PathsConfig::PathsConfig(std::string app_name)
-    : _app_name{std::move(app_name)}
-{
-    Cool::app_name() = _app_name;
-}
 
 auto PathsConfig::root() const -> std::filesystem::path
 {
@@ -43,7 +36,7 @@ auto PathsConfig::user_data() const -> std::filesystem::path
 #if DEBUG                                    // Make sure you don't mess up your installed app while developing.
     return Cool::Path::root() / "User data"; // And also, make sure it won't be shared with other repositories of the same project, that could break serialization at any time: we don't want them affecting each other.
 #else
-    return exe_path::user_data() / _app_name;
+    return exe_path::user_data() / COOL_APP_NAME;
 #endif
 }
 

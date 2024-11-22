@@ -46,6 +46,7 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
     IMGUI_DEFINE_MATH_OPERATORS
+    COOL_APP_NAME=\"${APP_NAME}\"
 )
 
 if(COOL_USE_INSTALLER)
@@ -312,7 +313,10 @@ target_link_libraries(Cool-PublicProperties INTERFACE ImStyleEd::ImStyleEd)
 add_subdirectory(lib/ImGuiNotify)
 target_include_directories(ImGuiNotify SYSTEM PRIVATE lib/imgui)
 target_link_libraries(Cool-PublicProperties INTERFACE ImGuiNotify::ImGuiNotify)
-install(FILES "lib/ImGuiNotify/LICENSE" DESTINATION "license/ImGuiNotify")
+
+# no-sleep
+add_subdirectory(lib/no-sleep)
+target_link_libraries(Cool-PublicProperties INTERFACE no_sleep::no_sleep)
 
 # ----------------
 # ---Copy files---

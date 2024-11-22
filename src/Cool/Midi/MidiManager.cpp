@@ -8,7 +8,6 @@
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Time/time_formatted_hms.h"
-#include "Cool/Utils/app_name.h"
 #include "MidiChannel.h"
 
 namespace Cool {
@@ -229,7 +228,7 @@ void MidiManager::midi_error_callback(RtMidiError::Type type, std::string const&
 {
     if (type == RtMidiError::Type::DRIVER_ERROR)
     {
-        Cool::Log::ToUser::warning("MIDI", fmt::format("Failed to connect to the device. Maybe it is already used in another software? You will need to restart {} to try to reconnect to the MIDI device.\n\n{}", app_name(), error_text));
+        Cool::Log::ToUser::warning("MIDI", fmt::format("Failed to connect to the device. Maybe it is already used in another software? You will need to restart {} to try to reconnect to the MIDI device.\n\n{}", COOL_APP_NAME, error_text));
     }
     else
     {
