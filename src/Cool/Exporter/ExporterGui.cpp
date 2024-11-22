@@ -4,7 +4,6 @@
 #include <Cool/Log/ToUser.h>
 #include <Cool/Path/Path.h>
 #include <imgui.h>
-#include <exception>
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/UserSettings/UserSettings.h"
@@ -170,6 +169,12 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             }
         });
     }
+}
+
+auto ExporterGui::image_export_path() -> std::filesystem::path const&
+{
+    _image_file = File::find_available_path(_image_file);
+    return _image_file;
 }
 
 } // namespace Cool

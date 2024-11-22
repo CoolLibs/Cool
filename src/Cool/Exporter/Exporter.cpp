@@ -1,4 +1,5 @@
 #include "Exporter.h"
+#include "ExporterU.h"
 
 namespace Cool {
 
@@ -19,6 +20,11 @@ auto Exporter::clock() const -> Clock const&
 {
     assert(_video_export_process.has_value() && "Can only be called if `is_exporting()` is true");
     return _video_export_process->clock(); // NOLINT(bugprone-unchecked-optional-access)
+}
+
+auto Exporter::export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid) -> bool
+{
+    return ExporterU::export_image(_gui.export_size(), time, delta_time, polaroid, _gui.image_export_path());
 }
 
 } // namespace Cool

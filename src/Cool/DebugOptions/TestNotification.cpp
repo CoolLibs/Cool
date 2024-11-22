@@ -13,7 +13,7 @@ void TestNotification::imgui()
     if (ImGui::Button("Send "))
         ImGui::Notify::add({.type = _type, .content = std::to_string(i++)});
     if (ImGui::Button("Error"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Error, .content = "Hello"});
+        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Error, .content = "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"});
     if (ImGui::Button("Warning"))
         ImGui::Notify::add({.type = ImGui::Notify::ToastType::Warning, .content = "Hello"});
     if (ImGui::Button("Success"))

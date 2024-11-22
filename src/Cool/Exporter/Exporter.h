@@ -1,4 +1,5 @@
 #pragma once
+#include "Cool/Exporter/internal/Polaroid.h"
 #include "ExporterGui.h"
 #include "VideoExportProcess.h"
 
@@ -32,6 +33,8 @@ public:
     auto clock() const -> Clock const&;
 
     void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _gui.set_shared_aspect_ratio(shared_aspect_ratio); }
+
+    [[nodiscard]] auto export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid) -> bool;
 
 private:
     ExporterGui                       _gui{};

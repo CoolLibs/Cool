@@ -3,6 +3,7 @@
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/String/String.h>
 #include "Cool/Time/time_formatted_hms.h"
+#include "ExporterU.h"
 #include "internal/origin_of_frames.h"
 
 namespace Cool {
@@ -29,10 +30,19 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
     if (_failure_has_been_reported.load())
     {
         Cool::Log::ToUser::warning("Export", "Aborting because we failed to export an image");
+        ExporterU::notification_after_export_failure();
         return true; // Abort the export
     }
-    if (_should_stop_asap || _nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
+    if (_should_stop_asap)
+    {
+        ExporterU::notification_after_export_interrupted();
+        return true; // The export has been cancelled
+    }
+    if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
+    {
+        ExporterU::notification_after_export_success(_folder_path, true);
         return true; // The export is finished
+    }
 
     if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || !_thread_pool.has_available_worker())
         return false; // The export is not finished but we can't send work to the thread pool right now, or we have already send the last bits of work to the threads and just have to wait for them to finish
