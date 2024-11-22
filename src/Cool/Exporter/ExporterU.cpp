@@ -8,15 +8,20 @@
 
 namespace Cool::ExporterU {
 
-auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path) -> bool
+auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool
 {
     no_sleep::Scoped disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting an image", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
     polaroid.render(size, time, delta_time);
     bool const success = ImageU::save_png(file_path, polaroid.texture().download_pixels());
     if (success)
+    {
+        on_image_exported(file_path);
         notification_after_export_success(file_path, false);
+    }
     else
+    {
         notification_after_export_failure();
+    }
     return success;
 }
 

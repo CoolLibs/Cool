@@ -63,8 +63,7 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time d
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
-            if (ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file))
-                on_image_exported(_image_file);
+            ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file, on_image_exported);
         }
     });
 }
@@ -124,7 +123,10 @@ void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_ex
         on_video_export_start();
     }
     else
+    {
         Log::ToUser::warning("ExporterGui::begin_video_export", "Couldn't start exporting because folder creation failed!");
+        ExporterU::notification_after_export_failure();
+    }
 }
 
 void ExporterGui::update(Polaroid const& polaroid, std::optional<VideoExportProcess>& video_export_process)

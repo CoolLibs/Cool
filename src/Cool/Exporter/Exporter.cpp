@@ -22,9 +22,9 @@ auto Exporter::clock() const -> Clock const&
     return _video_export_process->clock(); // NOLINT(bugprone-unchecked-optional-access)
 }
 
-auto Exporter::export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid) -> bool
+auto Exporter::export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool
 {
-    return ExporterU::export_image(_gui.export_size(), time, delta_time, polaroid, _gui.image_export_path());
+    return ExporterU::export_image(_gui.export_size(), time, delta_time, polaroid, _gui.image_export_path(), on_image_exported);
 }
 
 } // namespace Cool
