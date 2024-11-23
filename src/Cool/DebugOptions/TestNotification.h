@@ -10,9 +10,9 @@ public:
     void imgui();
 
 private:
-    std::string              _message{"Hello"};
-    ImGui::Notify::ToastType _type{ImGui::Notify::ToastType::Success};
-    int                      i{0};
+    std::string       _message{"Hello"};
+    ImGuiNotify::Type _type{ImGuiNotify::Type::Success};
+    int               i{0};
 };
 
 } // namespace Cool

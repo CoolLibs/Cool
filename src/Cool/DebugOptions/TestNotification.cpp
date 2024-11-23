@@ -11,17 +11,15 @@ TestNotification::TestNotification()
 void TestNotification::imgui()
 {
     if (ImGui::Button("Send "))
-        ImGui::Notify::add({.type = _type, .content = std::to_string(i++)});
+        ImGuiNotify::send({.type = _type, .content = std::to_string(i++)});
     if (ImGui::Button("Error"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Error, .content = "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Error, .content = "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"});
     if (ImGui::Button("Warning"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Warning, .content = "Hello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Warning, .title = "Warning", .content = "Hello"});
     if (ImGui::Button("Success"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Success, .content = "Hello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Success, .content = "Hello"});
     if (ImGui::Button("Info"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::Info, .content = "Hello"});
-    if (ImGui::Button("None"))
-        ImGui::Notify::add({.type = ImGui::Notify::ToastType::None, .content = "Hello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Info, .content = "Hello"});
 }
 
 } // namespace Cool

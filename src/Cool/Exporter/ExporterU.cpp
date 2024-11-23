@@ -27,8 +27,8 @@ auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& po
 
 void notification_after_export_success(std::filesystem::path const& path, bool is_video)
 {
-    ImGui::Notify::add({
-        .type                 = ImGui::Notify::ToastType::Success,
+    ImGuiNotify::send({
+        .type                 = ImGuiNotify::Type::Success,
         .title                = "Export Success",
         .custom_imgui_content = [=]() {
             ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
@@ -40,8 +40,8 @@ void notification_after_export_success(std::filesystem::path const& path, bool i
 
 void notification_after_export_failure()
 {
-    ImGui::Notify::add({
-        .type    = ImGui::Notify::ToastType::Error,
+    ImGuiNotify::send({
+        .type    = ImGuiNotify::Type::Error,
         .title   = "Export Failed",
         .content = "Maybe you are not allowed to save files in this folder?",
     });
@@ -49,8 +49,8 @@ void notification_after_export_failure()
 
 void notification_after_export_interrupted()
 {
-    ImGui::Notify::add({
-        .type  = ImGui::Notify::ToastType::Warning,
+    ImGuiNotify::send({
+        .type  = ImGuiNotify::Type::Warning,
         .title = "Export Cancelled",
     });
 }

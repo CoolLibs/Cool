@@ -47,7 +47,7 @@ static void imgui_load_fonts()
         config.MergeMode   = true;
         config.PixelSnapH  = true;
         config.GlyphOffset = ImVec2{-4.f, +1.f};
-        // config.GlyphMinAdvanceX            = font_size;                                   // Use if you want to make the icon monospaced
+        // config.GlyphMinAdvanceX = icons_size; // Use if you want to make the icons monospaced
         static const ImWchar icon_ranges[]          = {BEGIN_RANGE_ICOMOON, END_RANGE_ICOMOON, 0};     // NOLINT(*-avoid-c-arrays)
         static const ImWchar icon_ranges_for_info[] = {INFO_RANGE_ICOMOON, INFO_RANGE_ICOMOON + 1, 0}; // NOLINT(*-avoid-c-arrays)
 
@@ -88,7 +88,7 @@ static void imgui_load_fonts()
         auto const path = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Regular.otf";
         Font::regular() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), font_size);
         merge_icons_into_current_font();
-        ImGui::Notify::add_icons_to_current_font(icons_size);
+        ImGuiNotify::add_icons_to_current_font(icons_size, ImVec2{0.f, 0.f});
     }
 
     io.Fonts->Build();

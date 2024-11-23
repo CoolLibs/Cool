@@ -34,7 +34,7 @@ public:
 
     void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _gui.set_shared_aspect_ratio(shared_aspect_ratio); }
 
-    [[nodiscard]] auto export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool;
+    auto export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool;
 
 private:
     ExporterGui                       _gui{};

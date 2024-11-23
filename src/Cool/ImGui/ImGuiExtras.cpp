@@ -244,7 +244,7 @@ bool slider_uint32(const char* label, uint32_t* v, uint32_t v_min, uint32_t v_ma
 
 void warning_text(const char* text)
 {
-    ImGui::TextColored(ImGui::Notify::style().warning, "%s", text);
+    ImGui::TextColored(ImGuiNotify::get_style().color_warning, "%s", text);
 }
 
 bool begin_popup_context_menu_from_button(const char* label, ImGuiPopupFlags popup_flags)
@@ -621,19 +621,19 @@ static auto highlight_color(float opacity) -> ImVec4
     return col;
 }
 
-void background(std::function<void()> const& widget, ImVec4 color)
+void background(ImVec4 color, std::function<void()> const& widget)
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
-    draw_list.ChannelsSplit(2);                                   // Allows us to draw the highlight rectangle behind the widget,
-    draw_list.ChannelsSetCurrent(1);                              // even though the widget is drawn first.
-    const auto rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widget before drawing the rectangle.
+    draw_list.ChannelsSplit(2);                                     // Allows us to draw the background rectangle behind the widget,
+    draw_list.ChannelsSetCurrent(1);                                // even though the widget is drawn first.
+    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widget before drawing the rectangle.
 
     widget();
 
-    const auto rectangle_end_pos = ImVec2(
+    auto const rectangle_end_pos = ImVec2{
         rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
-        ImGui::GetCursorScreenPos().y
-    );
+        ImGui::GetCursorScreenPos().y,
+    };
     draw_list.ChannelsSetCurrent(0);
     draw_list.AddRectFilled(
         rectangle_start_pos,
@@ -646,8 +646,8 @@ void background(std::function<void()> const& widget, ImVec4 color)
 void highlight(std::function<void()> const& widget, float opacity)
 {
     background(
-        widget,
-        highlight_color(opacity)
+        highlight_color(opacity),
+        widget
     );
 }
 

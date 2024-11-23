@@ -205,7 +205,7 @@ auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
 
 /// Renders `widget` with a colored background.
 /// `widget` must be a function that draws some ImGui widgets.
-void background(std::function<void()> const& widget, ImVec4 color);
+void background(ImVec4 color, std::function<void()> const& widget);
 
 /// Renders `widget` with a highlighted background.
 /// `widget` must be a function that draws some ImGui widgets.

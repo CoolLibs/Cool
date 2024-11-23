@@ -145,10 +145,11 @@ void AppManager::update()
 {
     // Cache these colors for the frame, because we don't want to query the Theme all the time.
     // They will be reused by a few things event outside of ImGui::Notify
-    ImGui::Notify::style().success = user_settings().color_themes.editor().get_color("Success").as_imvec4();
-    ImGui::Notify::style().warning = user_settings().color_themes.editor().get_color("Warning").as_imvec4();
-    ImGui::Notify::style().error   = user_settings().color_themes.editor().get_color("Error").as_imvec4();
-    ImGui::Notify::style().info    = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
+    ImGuiNotify::get_style().color_success          = user_settings().color_themes.editor().get_color("Success").as_imvec4();
+    ImGuiNotify::get_style().color_warning          = user_settings().color_themes.editor().get_color("Warning").as_imvec4();
+    ImGuiNotify::get_style().color_error            = user_settings().color_themes.editor().get_color("Error").as_imvec4();
+    ImGuiNotify::get_style().color_info             = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
+    ImGuiNotify::get_style().color_title_background = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
@@ -243,7 +244,7 @@ void AppManager::imgui_render(IApp& app)
     // Windows
     app.imgui_windows();
     imgui_windows();
-    ImGui::Notify::render_windows();
+    ImGuiNotify::render_windows();
 
     ImGui::PopStyleVar();
     ImGui::PopFont();

@@ -118,11 +118,11 @@ static auto color(MessageSeverity severity) -> ImVec4
     switch (severity)
     {
     case MessageSeverity::Info:
-        return ImGui::Notify::style().success;
+        return ImGuiNotify::get_style().color_success;
     case MessageSeverity::Warning:
-        return ImGui::Notify::style().warning;
+        return ImGuiNotify::get_style().color_warning;
     case MessageSeverity::Error:
-        return ImGui::Notify::style().error;
+        return ImGuiNotify::get_style().color_error;
     default:
         Log::Debug::error("MessageConsole::color", "Unknown enum value");
         return ImVec4{0, 0, 0, 0};
@@ -132,7 +132,7 @@ static auto color(MessageSeverity severity) -> ImVec4
 static auto fade_out_if(bool condition, ImVec4 color) -> ImVec4
 {
     if (condition)
-        color.w = 0.75f;
+        color = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
 
     return color;
 }
@@ -218,8 +218,8 @@ void MessageConsole::imgui_window()
 
         // Menu bar
         ImGuiExtras::background(
-            [&]() { imgui_menu_bar(); },
-            ImVec4{0.3f, 0.3f, 0.3f, 0.5f}
+            ImGuiNotify::get_style().color_title_background,
+            [&]() { imgui_menu_bar(); }
         );
         ImGui::Separator();
 
