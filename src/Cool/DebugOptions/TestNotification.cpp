@@ -19,7 +19,7 @@ void TestNotification::imgui()
     if (ImGui::Button("Success"))
         ImGuiNotify::send({.type = ImGuiNotify::Type::Success, .content = "Hello"});
     if (ImGui::Button("Info"))
-        ImGuiNotify::send({.type = ImGuiNotify::Type::Info, .content = "Hello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Info, .title = "Hello"});
 }
 
 } // namespace Cool
