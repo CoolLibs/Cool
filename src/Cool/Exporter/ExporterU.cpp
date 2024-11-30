@@ -33,7 +33,7 @@ void notification_after_export_success(std::filesystem::path const& path, bool i
         .custom_imgui_content = [=]() {
             ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
             if (ImGui::Button("Open folder"))
-                Cool::open((is_video ? path : Cool::File::without_file_name(path)).string().c_str());
+                Cool::open(is_video ? path : Cool::File::without_file_name(path));
         },
     });
 }
