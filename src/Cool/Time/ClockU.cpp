@@ -21,7 +21,7 @@ void imgui_timeline(Cool::Clock& clock, std::function<void()> const& extra_widge
             on_time_reset();
         }
         ImGui::PopStyleVar();
-        ImGui::SetItemTooltip("%s", "Reset time to 0.");
+        ImGui::SetItemTooltip("%s", "Reset time to 0");
 
         ImGuiExtras::join_buttons();
 

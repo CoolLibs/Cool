@@ -84,7 +84,7 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
         auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "");
         if (user_settings().video_export_overwrite_behaviour == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
         {
-            if (boxer::show(fmt::format("There are already some frames in {}.\nDo you want to export in another folder? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)
+            if (boxer::show(fmt::format("There are already some frames in {}.\nDo you want to export in this folder instead? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)
                 != boxer::Selection::OK)
             {
                 return false;
@@ -92,24 +92,24 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
         }
 
         _folder_path_for_video = new_folder_name;
-        break;
+        return true;
     }
     case VideoExportOverwriteBehaviour::AskBeforeOverwritingPreviousFrames:
     {
-        if (boxer::show(fmt::format("You are about to overwrite the frames in {}.\nDo you want to continue?", folder_path_for_video()).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
-            != boxer::Selection::OK)
-        {
-            return false;
-        }
-        break;
+        return boxer::show(fmt::format("You are about to overwrite the frames in {}.\nDo you want to continue?", folder_path_for_video()).c_str(), "Overwriting previous export", boxer::Style::Warning, boxer::Buttons::OKCancel)
+               == boxer::Selection::OK;
     }
     case VideoExportOverwriteBehaviour::AlwaysOverwritePreviousFrames:
     {
-        break; // Nothing to do
+        // Nothing to do
+        return true;
+    }
+    default:
+    {
+        assert(false);
+        return true;
     }
     }
-
-    return true;
 }
 
 void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed, std::function<void()> const& on_video_export_start)

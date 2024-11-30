@@ -35,7 +35,7 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
     }
     if (_should_stop_asap)
     {
-        ExporterU::notification_after_export_interrupted();
+        ExporterU::notification_after_export_interrupted(_folder_path);
         return true; // The export has been cancelled
     }
     if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)

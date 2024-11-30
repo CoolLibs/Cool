@@ -47,11 +47,16 @@ void notification_after_export_failure()
     });
 }
 
-void notification_after_export_interrupted()
+void notification_after_export_interrupted(std::filesystem::path const& path)
 {
     ImGuiNotify::send({
-        .type  = ImGuiNotify::Type::Warning,
-        .title = "Export Cancelled",
+        .type                 = ImGuiNotify::Type::Warning,
+        .title                = "Export Cancelled",
+        .custom_imgui_content = [=]() {
+            ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
+            if (ImGui::Button("Open folder"))
+                Cool::open(path);
+        },
     });
 }
 

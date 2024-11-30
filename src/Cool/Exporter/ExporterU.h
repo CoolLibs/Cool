@@ -9,6 +9,6 @@ auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& po
 
 void notification_after_export_success(std::filesystem::path const& path, bool is_video);
 void notification_after_export_failure();
-void notification_after_export_interrupted();
+void notification_after_export_interrupted(std::filesystem::path const& path);
 
 } // namespace Cool::ExporterU
