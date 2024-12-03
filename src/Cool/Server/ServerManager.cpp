@@ -82,6 +82,12 @@ void ServerManager::set_port(int port)
                         }
                     },
                 },
+                {
+                    "/",
+                    [](serv::Request const& req) {
+                        Cool::Log::ToUser::error("Server", fmt::format("Invalid request ({}). Use /set instead", req.route()));
+                    },
+                },
             }
         };
     }
