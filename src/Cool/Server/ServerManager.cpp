@@ -57,28 +57,28 @@ void ServerManager::set_port(int port)
             _port,
             {
                 {
-                    "/osc",
+                    "/set",
                     [](serv::Request const& req) {
-                        auto const address = req.get("address");
-                        if (!address.has_value())
+                        auto const name = req.get("name");
+                        if (!name.has_value())
                         {
-                            Cool::Log::ToUser::error("Server", "When making a request to /osc, you need to specify an address, e.g. http://localhost:1234/osc?value=35&address=my_address`");
+                            Cool::Log::ToUser::error("Server", "When making a request to /set, you need to specify a name, e.g. http://localhost:1234/set?name=my_name&value=35");
                             return;
                         }
                         auto const value = req.get("value");
                         if (!value.has_value())
                         {
-                            Cool::Log::ToUser::error("Server", "When making a request to /osc, you need to specify a value, e.g. http://localhost:1234/osc?value=35&address=my_address`");
+                            Cool::Log::ToUser::error("Server", "When making a request to /set, you need to specify a value, e.g. http://localhost:1234/set?name=my_name&value=35");
                             return;
                         }
                         try
                         {
                             float const val = std::stof(*value);
-                            osc_manager().set_value(OSCChannel{*address}, val);
+                            osc_manager().set_value(OSCChannel{*name}, val);
                         }
                         catch (std::exception const&)
                         {
-                            Cool::Log::ToUser::error("Server", fmt::format("/osc request had an invalid \"value\" param ({}). It must be a number.", *value));
+                            Cool::Log::ToUser::error("Server", fmt::format("/set request had an invalid \"value\" param ({}). It must be a number.", *value));
                         }
                     },
                 },
