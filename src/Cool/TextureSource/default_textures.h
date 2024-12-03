@@ -5,7 +5,7 @@ namespace Cool {
 
 inline auto dummy_image() -> img::Image const&
 {
-    static auto instance = img::Image{img::Size{1, 1}, img::PixelFormat::RGB, img::FirstRowIs::Bottom, std::array<uint8_t, 3>{255, 0, 255}.data()};
+    static auto instance = img::Image{img::Size{1, 1}, img::PixelFormat::RGB, img::FirstRowIs::Bottom, new uint8_t[]{255, 0, 255}};
     return instance;
 }
 inline auto dummy_texture() -> Texture const&
