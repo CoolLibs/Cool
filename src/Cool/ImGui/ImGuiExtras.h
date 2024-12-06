@@ -211,6 +211,8 @@ void background(ImVec4 color, std::function<void()> const& widget);
 /// `widget` must be a function that draws some ImGui widgets.
 void highlight(std::function<void()> const& widget, float opacity = 1.f);
 
+auto big_selectable(std::function<void()> const& widgets) -> bool;
+
 /// Creates a clickable link that opens the given url in the user's default web browser.
 void link(std::string_view url);
 

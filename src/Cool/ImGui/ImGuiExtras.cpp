@@ -651,6 +651,37 @@ void highlight(std::function<void()> const& widget, float opacity)
     );
 }
 
+auto big_selectable(std::function<void()> const& widgets) -> bool
+{
+    ImDrawList& draw_list = *ImGui::GetWindowDrawList();
+    draw_list.ChannelsSplit(2);                                     // Allows us to draw the background rectangle behind the widgets,
+    draw_list.ChannelsSetCurrent(1);                                // even though the widgets are drawn first.
+    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widgets before drawing the rectangle.
+
+    widgets();
+
+    auto const rectangle_end_pos = ImVec2{
+        rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
+        ImGui::GetCursorScreenPos().y,
+    };
+
+    ImGui::SetCursorScreenPos(rectangle_start_pos);
+    bool const pressed = ImGui::InvisibleButton("", rectangle_end_pos - rectangle_start_pos);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+        draw_list.ChannelsSetCurrent(0);
+        draw_list.AddRectFilled(
+            rectangle_start_pos,
+            rectangle_end_pos,
+            ImGui::GetColorU32(ImGui::IsItemActive() ? ImGuiCol_HeaderActive : ImGuiCol_HeaderHovered)
+        );
+    }
+    draw_list.ChannelsMerge();
+    return pressed;
+}
+
 void link(std::string_view url)
 {
     link(url, url);
