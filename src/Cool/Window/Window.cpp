@@ -70,6 +70,11 @@ void Window::turn_on_fullscreen()
     _is_fullscreen = true;
 }
 
+void Window::close()
+{
+    glfwSetWindowShouldClose(glfw(), true);
+}
+
 void Window::set_visibility(bool is_visible)
 {
     _is_visible = is_visible;

@@ -16,6 +16,7 @@ public:
     void set_fullscreen(bool is_fullscreen);
     void escape_fullscreen();
     void turn_on_fullscreen();
+    void close();
 
     [[nodiscard]] auto is_visible() const -> bool { return _is_visible; }
     void               set_visibility(bool is_visible);
