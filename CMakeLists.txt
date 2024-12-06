@@ -46,7 +46,7 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     COOL_PATH=\"${COOL_PATH}\" # This is useful to set the path to Cool's res directory
     $<$<CONFIG:Debug>:COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\"> # This is useful to set the current working directory in debug mode.
     IMGUI_DEFINE_MATH_OPERATORS
-    COOL_APP_NAME=\"${APP_NAME}\"
+    COOL_APP_NAME=\"${COOL_APP_NAME}\"
 )
 
 if(COOL_USE_INSTALLER)
