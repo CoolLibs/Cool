@@ -624,15 +624,15 @@ static auto highlight_color(float opacity) -> ImVec4
 void background(ImVec4 color, std::function<void()> const& widget)
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
-    draw_list.ChannelsSplit(2);                                     // Allows us to draw the background rectangle behind the widget,
-    draw_list.ChannelsSetCurrent(1);                                // even though the widget is drawn first.
-    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widget before drawing the rectangle.
+    draw_list.ChannelsSplit(2);      // Allows us to draw the background rectangle behind the widget, even though the widget is drawn first.
+    draw_list.ChannelsSetCurrent(1); // We must draw them in that order because we need to know the height of the widget before drawing the rectangle.
+    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos() - ImVec2{0.f, ImGui::GetStyle().ItemSpacing.y / 2.f};
 
     widget();
 
     auto const rectangle_end_pos = ImVec2{
         rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
-        ImGui::GetCursorScreenPos().y,
+        ImGui::GetCursorScreenPos().y - ImGui::GetStyle().ItemSpacing.y / 2.f,
     };
     draw_list.ChannelsSetCurrent(0);
     draw_list.AddRectFilled(
@@ -654,15 +654,15 @@ void highlight(std::function<void()> const& widget, float opacity)
 auto big_selectable(std::function<void()> const& widgets) -> bool
 {
     ImDrawList& draw_list = *ImGui::GetWindowDrawList();
-    draw_list.ChannelsSplit(2);                                     // Allows us to draw the background rectangle behind the widgets,
-    draw_list.ChannelsSetCurrent(1);                                // even though the widgets are drawn first.
-    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos(); // We must draw them in that order because we need to know the height of the widgets before drawing the rectangle.
+    draw_list.ChannelsSplit(2);      // Allows us to draw the background rectangle behind the widgets, even though the widgets are drawn first.
+    draw_list.ChannelsSetCurrent(1); // We must draw them in that order because we need to know the height of the widgets before drawing the rectangle.
+    ImVec2 const rectangle_start_pos = ImGui::GetCursorScreenPos() - ImVec2{0.f, ImGui::GetStyle().ItemSpacing.y / 2.f};
 
     widgets();
 
     auto const rectangle_end_pos = ImVec2{
         rectangle_start_pos.x + ImGui::GetContentRegionAvail().x,
-        ImGui::GetCursorScreenPos().y,
+        ImGui::GetCursorScreenPos().y - ImGui::GetStyle().ItemSpacing.y / 2.f,
     };
 
     ImGui::SetCursorScreenPos(rectangle_start_pos);
