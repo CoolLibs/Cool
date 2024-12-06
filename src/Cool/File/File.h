@@ -10,7 +10,8 @@ auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path;
 /// Returns true iff file_path corresponds to an existing file or folder
 auto exists(std::filesystem::path const& file_path) -> bool;
 
-void remove(std::filesystem::path const& file_path);
+void remove_file(std::filesystem::path const& file_path);
+void remove_folder(std::filesystem::path const& folder_path);
 
 /// Returns the name of the file + its extension (removes parent folders)
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path;

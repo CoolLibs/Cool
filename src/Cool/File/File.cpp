@@ -36,15 +36,27 @@ auto exists(std::filesystem::path const& file_path) -> bool
     }
 }
 
-void remove(std::filesystem::path const& file_path)
+void remove_file(std::filesystem::path const& file_path)
 {
     try
     {
         std::filesystem::remove(file_path);
     }
-    catch (...)
+    catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, 1));
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to remove file \"{}\":\n{}", file_path, e.what()));
+    }
+}
+
+void remove_folder(std::filesystem::path const& folder_path)
+{
+    try
+    {
+        std::filesystem::remove_all(folder_path);
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to remove folder \"{}\":\n{}", folder_path, e.what()));
     }
 }
 
