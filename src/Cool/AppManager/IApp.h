@@ -7,6 +7,13 @@ namespace Cool {
 
 class IApp {
 public:
+    IApp()                           = default;
+    virtual ~IApp()                  = default;
+    IApp(IApp const&)                = delete;
+    IApp& operator=(IApp const&)     = delete;
+    IApp(IApp&&) noexcept            = delete;
+    IApp& operator=(IApp&&) noexcept = delete;
+
     /// Update function that will be called repeatedly
     virtual void update() {}
 
@@ -16,10 +23,10 @@ public:
 
     /// User inputs are only dispatched to the app when this returns true.
     /// It can be useful to set if to false for example while you are exporting a video and you want to prevent the user accidentally changing parameters.
-    virtual bool inputs_are_allowed() const { return true; }
+    virtual auto inputs_are_allowed() const -> bool { return true; }
 
     /// While this returns false the menu bar won't be shown
-    virtual bool wants_to_show_menu_bar() const { return true; }
+    virtual auto wants_to_show_menu_bar() const -> bool { return true; }
 
     /// All ImGui windows should be created inside this function (it allows the dockspace to work properly)
     virtual void imgui_windows() {}
