@@ -20,6 +20,21 @@ void TestNotification::imgui()
         ImGuiNotify::send({.type = ImGuiNotify::Type::Success, .content = "Hello"});
     if (ImGui::Button("Info"))
         ImGuiNotify::send({.type = ImGuiNotify::Type::Info, .title = "Hello"});
+    if (ImGui::Button("Long text"))
+        ImGuiNotify::send({
+            .type    = ImGuiNotify::Type::Info,
+            .title   = "Long text",
+            .content = "jxdhfg sdfhg sufgze jxcgfh uyzey gjg yuezg jxhgdv ukezyg hv eizag jvgh ezug fxjvb uezg fsdkfbkhjzeg fusgfv jhgur gdsjfhv ezf dsufdhfgseifuzgeurfgjdsvbkxjhgfzeiugrzekhddjvfgzeyuig sjdhfgezyu gjsdf guezygr djsf gyuezg sfhj",
+        });
+    if (ImGui::Button("Long text and Longer button"))
+        ImGuiNotify::send({
+            .type                 = ImGuiNotify::Type::Info,
+            .title                = "Long text",
+            .content              = "jxdhfg sdfhg sufgze jxcgfh uyzey gjg yuezg jxhgdv ukezyg hv eizag jvgh ezug fxjvb uezg fsdkfbkhjzeg fusgfv jhgur gdsjfhv ezf dsufdhfgseifuzgeurfgjdsvbkxjhgfzeiugrzekhddjvfgzeyuig sjdhfgezyu gjsdf guezygr djsf gyuezg sfhj",
+            .custom_imgui_content = [&]() {
+                ImGui::Button("sdkjfh sdkfjh iuez kjdsf gsdfjh ksghdf uyzeg sdjkfg yuzeg ksdhgfyu e");
+            },
+        });
 }
 
 } // namespace Cool
