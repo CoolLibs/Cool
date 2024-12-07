@@ -1,12 +1,7 @@
-#include "TestNotification.h"
-#include <imgui.h>
-#include <ImGuiNotify/ImGuiNotify.hpp>
+#include "TestNotification.hpp"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool {
-
-TestNotification::TestNotification()
-{
-}
 
 void TestNotification::imgui()
 {

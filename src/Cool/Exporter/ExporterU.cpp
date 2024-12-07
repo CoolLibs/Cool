@@ -12,7 +12,7 @@ auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& po
 {
     no_sleep::Scoped disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting an image", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
     polaroid.render(size, time, delta_time);
-    bool const success = ImageU::save_png(file_path, polaroid.texture().download_pixels());
+    bool const success = ImageU::save_png(file_path, polaroid.texture().download_pixels()); // TODO(Tasks) Do this in a task
     if (success)
     {
         on_image_exported(file_path);

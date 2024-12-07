@@ -20,6 +20,12 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
+            name_in_code="test_tasks__window",
+            name_in_ui="Test Tasks",
+            available_in_release=True,
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
             name_in_code="log_when_autosaving",
             name_in_ui="Log when autosaving",
             available_in_release=True,
