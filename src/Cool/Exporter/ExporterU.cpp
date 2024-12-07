@@ -30,7 +30,7 @@ void notification_after_export_success(std::filesystem::path const& path, bool i
     ImGuiNotify::send({
         .type                 = ImGuiNotify::Type::Success,
         .title                = "Export Success",
-        .custom_imgui_content = [=]() {
+        .custom_imgui_content = [path, is_video]() {
             ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
             if (ImGui::Button("Open folder"))
                 Cool::open(is_video ? path : Cool::File::without_file_name(path));
@@ -52,7 +52,7 @@ void notification_after_export_interrupted(std::filesystem::path const& path)
     ImGuiNotify::send({
         .type                 = ImGuiNotify::Type::Warning,
         .title                = "Export Cancelled",
-        .custom_imgui_content = [=]() {
+        .custom_imgui_content = [path]() {
             ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
             if (ImGui::Button("Open folder"))
                 Cool::open(path);

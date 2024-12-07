@@ -1,6 +1,8 @@
 #pragma once
+#include <chrono>
 #include <condition_variable>
 #include <thread>
+#include "Cool/Utils/Delay.hpp"
 #include "Task.hpp"
 
 namespace Cool {
@@ -18,10 +20,18 @@ public:
     TaskManager& operator=(TaskManager&&) noexcept = delete;
 
     void submit(std::shared_ptr<Task> const& task);
+    /// These tasks will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
+    /// So they must run very quickly, in order to not block the main thread
+    void run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
 
     auto tasks_waiting_count() const -> size_t;
     auto tasks_processing_count() const -> size_t { return _tasks_processing_count.load(); }
     auto threads_count() const -> size_t { return _threads.size(); }
+    auto small_delayed_tasks_count() const -> size_t;
+
+private:
+    friend class AppManager;
+    void update_on_main_thread();
 
 private:
     void thread_update_loop();
@@ -36,6 +46,13 @@ private:
     std::atomic<bool>           _is_shutting_down{false};
 
     std::atomic<size_t> _tasks_processing_count{0};
+
+    struct TaskAndDelay {
+        std::shared_ptr<Task> task;
+        Delay                 delay;
+    };
+    std::list<TaskAndDelay>   _small_tasks_with_delay;
+    mutable std::shared_mutex _small_tasks_with_delay_mutex;
 };
 
 inline auto task_manager() -> TaskManager&

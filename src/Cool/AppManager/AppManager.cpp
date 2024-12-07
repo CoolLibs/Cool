@@ -13,6 +13,7 @@
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Midi/MidiManager.h"
+#include "Cool/Task/TaskManager.hpp"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
@@ -178,6 +179,8 @@ void AppManager::update()
         Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
     }
 #endif
+    task_manager().update_on_main_thread();
+
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
