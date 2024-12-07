@@ -1,10 +1,8 @@
 #pragma once
-#include <Cool/MultiThread/ThreadPool.h>
 #include <Cool/Time/Clock_FixedTimestep.h>
 #include <Cool/Utils/Averager.h>
+#include "Polaroid.hpp"
 #include "VideoExportParams.h"
-#include "internal/ImageExportJob.h"
-#include "internal/Polaroid.h"
 #include "no_sleep/no_sleep.hpp"
 
 namespace Cool {
@@ -41,8 +39,7 @@ private:
 
     no_sleep::Scoped _disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting a video", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
 
-    bool                       _should_stop_asap = false;
-    ThreadPool<ImageExportJob> _thread_pool; // Needs to be last, in order to be destroyed first (because it needs the other members to still be alive in order to finish its jobs properly)
+    bool _should_stop_asap = false;
 };
 
 } // namespace Cool

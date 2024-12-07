@@ -57,7 +57,6 @@ public:
             ImGui::End();
         }
     }
-    [[nodiscard]] static auto log_number_of_threads_in_the_thread_pool() -> bool& { return instance().log_number_of_threads_in_the_thread_pool; }
 #if DEBUG
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
 #endif
@@ -151,7 +150,6 @@ private:
         bool log_when_creating_textures{false};
         bool log_when_computing_audio_features{false};
         bool texture_library_debug_view{false};
-        bool log_number_of_threads_in_the_thread_pool{false};
 #if DEBUG
         bool log_opengl_info{false};
 #endif
@@ -187,7 +185,6 @@ private:
                 ser20::make_nvp("Log when creating textures", log_when_creating_textures),
                 ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 ser20::make_nvp("View Texture Library", texture_library_debug_view),
-                ser20::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 ser20::make_nvp("Log OpenGL info", log_opengl_info),
                 ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 ser20::make_nvp("Test Presets", test_presets__window),
@@ -208,7 +205,6 @@ private:
                 ser20::make_nvp("Log when creating textures", log_when_creating_textures),
                 ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 ser20::make_nvp("View Texture Library", texture_library_debug_view),
-                ser20::make_nvp("Log the number of threads in the thread pool", log_number_of_threads_in_the_thread_pool),
                 ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 ser20::make_nvp("Test Presets", test_presets__window),
                 ser20::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
@@ -234,7 +230,6 @@ private:
         instance().log_when_creating_textures                       = false;
         instance().log_when_computing_audio_features                = false;
         instance().texture_library_debug_view                       = false;
-        instance().log_number_of_threads_in_the_thread_pool         = false;
 #if DEBUG
         instance().log_opengl_info = false;
 #endif
@@ -304,11 +299,6 @@ private:
         if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("View Texture Library", &instance().texture_library_debug_view);
-        }
-
-        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
-        {
-            Cool::ImGuiExtras::toggle("Log the number of threads in the thread pool", &instance().log_number_of_threads_in_the_thread_pool);
         }
 
 #if DEBUG
@@ -437,12 +427,6 @@ private:
         if (wafl::similarity_match({filter, "View Texture Library"}) >= wafl::Matches::Strongly)
         {
             instance().texture_library_debug_view = !instance().texture_library_debug_view;
-            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
-        }
-
-        if (wafl::similarity_match({filter, "Log the number of threads in the thread pool"}) >= wafl::Matches::Strongly)
-        {
-            instance().log_number_of_threads_in_the_thread_pool = !instance().log_number_of_threads_in_the_thread_pool;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <img/img.hpp>
-#include "internal/Polaroid.h"
+#include "Polaroid.hpp"
 
 namespace Cool::ExporterU {
 

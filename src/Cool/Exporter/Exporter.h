@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Exporter/internal/Polaroid.h"
+#include "Cool/Exporter/Polaroid.hpp"
 #include "ExporterGui.h"
 #include "VideoExportProcess.h"
 

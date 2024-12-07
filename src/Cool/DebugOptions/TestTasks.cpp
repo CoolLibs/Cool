@@ -1,8 +1,7 @@
 #include "TestTasks.hpp"
-#include <imgui.h>
 #include <memory>
 #include "Cool/Log/ToUser.h"
-#include "Cool/MultiThread/TaskManager.hpp"
+#include "Cool/Task/TaskManager.hpp"
 
 namespace Cool {
 
@@ -36,7 +35,7 @@ void TestTasks::imgui()
     ImGui::TextUnformatted(fmt::format("Processing: {}", task_manager().tasks_processing_count()).c_str());
     if (ImGui::Button("Task 1"))
     {
-        task_manager().add(std::make_shared<Task_Test1>());
+        task_manager().submit(std::make_shared<Task_Test1>());
     }
 }
 

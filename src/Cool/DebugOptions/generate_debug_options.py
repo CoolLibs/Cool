@@ -53,11 +53,6 @@ def all_debug_options():
             kind=Kind.WINDOW,
         ),
         DebugOption(
-            name_in_code="log_number_of_threads_in_the_thread_pool",
-            name_in_ui="Log the number of threads in the thread pool",
-            available_in_release=True,
-        ),
-        DebugOption(
             name_in_code="log_opengl_info",
             name_in_ui="Log OpenGL info",
             available_in_release=False,
