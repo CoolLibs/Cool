@@ -31,9 +31,16 @@ void notification_after_export_success(std::filesystem::path const& path, bool i
         .type                 = ImGuiNotify::Type::Success,
         .title                = "Export Success",
         .custom_imgui_content = [path, is_video]() {
-            ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
-            if (ImGui::Button("Open folder"))
-                Cool::open(is_video ? path : Cool::File::without_file_name(path));
+            if (is_video)
+            {
+                if (ImGui::Button(fmt::format("Open \"{}\" folder", Cool::File::file_name(path)).c_str()))
+                    open_folder_in_explorer(path);
+            }
+            else
+            {
+                if (ImGui::Button(fmt::format("Open \"{}\" in file explorer", Cool::File::file_name(path)).c_str()))
+                    open_focused_in_explorer(path);
+            }
         },
     });
 }
@@ -53,9 +60,8 @@ void notification_after_export_interrupted(std::filesystem::path const& path)
         .type                 = ImGuiNotify::Type::Warning,
         .title                = "Export Cancelled",
         .custom_imgui_content = [path]() {
-            ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
-            if (ImGui::Button("Open folder"))
-                Cool::open(path);
+            if (ImGui::Button(fmt::format("Open \"{}\" folder", Cool::File::file_name(path)).c_str()))
+                Cool::open_folder_in_explorer(path);
         },
     });
 }
