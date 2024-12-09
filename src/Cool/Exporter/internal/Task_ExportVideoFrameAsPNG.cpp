@@ -1,13 +1,13 @@
-#include "Task_SaveImageAsPNG.hpp"
 #include "Cool/Image/SaveImage.h"
+#include "Task_ExportVideoFrameAsPNG.hpp"
 
 namespace Cool {
 
-void Task_SaveImageAsPNG::do_work()
+void Task_ExportVideoFrameAsPNG::do_work()
 {
     auto const begin = std::chrono::steady_clock::now();
 
-    if (!ImageU::save_png(_file_path, *_image))
+    if (!ImageU::save_png(_file_path, *_image, {.cancel = &_cancel}))
     {
         *_report_failure = true;
         return;

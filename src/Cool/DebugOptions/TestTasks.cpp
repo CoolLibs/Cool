@@ -12,21 +12,6 @@ namespace Cool {
 
 namespace {
 
-class Task_CloseNotification : public Task {
-public:
-    explicit Task_CloseNotification(ImGuiNotify::NotificationId id)
-        : _id{id}
-    {}
-
-    void do_work() override
-    {
-        ImGuiNotify::close(_id);
-    }
-
-private:
-    ImGuiNotify::NotificationId _id;
-};
-
 auto next_id() -> int&
 {
     static int instance{0};
@@ -56,20 +41,35 @@ public:
         Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Started");
 
         for (int _ = 0; _ < _count_max; ++_)
+        {
+            if (_cancel.load())
+            {
+                Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Canceled");
+                ImGuiNotify::close(notification_id, 1s);
+                return;
+            }
             count->fetch_add(1);
+        }
 
         Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Stopped");
+        ImGuiNotify::close(notification_id, 1s);
+    }
 
-        task_manager().run_small_task_in(1s, std::make_shared<Task_CloseNotification>(notification_id));
-        // NB: it would be better to just do
-        // ImGuiNotify::close(notification_id, 1s);
-        // but this is a way of showcasing run_small_task_in()
+    void cancel() override
+    {
+        _cancel.store(true);
+    }
+
+    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override
+    {
+        return true;
     }
 
 private:
     int _id{next_id()++};
 
-    int _count_max;
+    std::atomic<bool> _cancel{false};
+    int               _count_max;
 };
 
 class Task_SayHello : public Task {
@@ -87,6 +87,16 @@ public:
         });
         if (_loop)
             task_manager().run_small_task_in(2s, std::make_shared<Task_SayHello>(true));
+    }
+
+    void cancel() override
+    {
+        // Nothing to do, this task runs instantly anyways
+    }
+
+    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override
+    {
+        return false;
     }
 
 private:
@@ -113,7 +123,11 @@ void TestTasks::imgui()
     if (ImGui::Button("Run in 2 seconds"))
         task_manager().run_small_task_in(2s, std::make_shared<Task_SayHello>());
     if (ImGui::Button("Loop every 2 seconds"))
-        task_manager().run_small_task_in(2s, std::make_shared<Task_SayHello>(true));
+        task_manager().run_small_task_in(0s, std::make_shared<Task_SayHello>(true));
+
+    ImGui::NewLine();
+    if (ImGui::Button("Cancel all tasks"))
+        task_manager().cancel_all_tasks();
 }
 
 } // namespace Cool

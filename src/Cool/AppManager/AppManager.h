@@ -25,6 +25,7 @@ public:
 
 private:
     void update();
+    auto should_close_window() const -> bool;
     void restore_imgui_ini_state_ifn();
     void imgui_render(IApp&);
     void imgui_windows();

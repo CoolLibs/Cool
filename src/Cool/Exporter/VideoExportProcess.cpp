@@ -7,7 +7,7 @@
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/Time/time_formatted_hms.h"
 #include "ExporterU.h"
-#include "internal/Task_SaveImageAsPNG.hpp"
+#include "internal/Task_ExportVideoFrameAsPNG.hpp"
 #include "internal/origin_of_frames.h"
 
 namespace Cool {
@@ -39,6 +39,7 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
     if (_should_stop_asap)
     {
         ExporterU::notification_after_export_interrupted(_folder_path);
+        task_manager().cancel_all_tasks(_tasks_owner_id);
         return true; // The export has been cancelled
     }
     if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
@@ -47,7 +48,7 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
         return true; // The export is finished
     }
 
-    if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || task_manager().tasks_waiting_count() >= task_manager().threads_count())
+    if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || task_manager().tasks_waiting_count(_tasks_owner_id) >= task_manager().threads_count())
         return false; // The export is not finished but we can't send work to the thread pool right now, or we have already send the last bits of work to the threads and just have to wait for them to finish
 
     // Actual export of one frame
@@ -79,15 +80,16 @@ auto VideoExportProcess::estimated_remaining_time() -> Time
 
     return Time::seconds(
         nb_frames_to_render * _average_time_between_two_renders
-        + (static_cast<double>(task_manager().tasks_waiting_count()) + static_cast<double>(task_manager().threads_count()) / 2.) * _average_export_time / static_cast<double>(task_manager().threads_count())
+        + (static_cast<double>(task_manager().tasks_waiting_count(_tasks_owner_id)) + static_cast<double>(task_manager().threads_count()) / 2.) * _average_export_time / static_cast<double>(task_manager().threads_count())
         + 1.
     );
 }
 
 void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 {
-    // ImGui::TextUnformatted(fmt::format("Waiting: {}", task_manager().tasks_waiting_count()).c_str());
-    // ImGui::TextUnformatted(fmt::format("Processing: {}", task_manager().tasks_processing_count()).c_str());
+    /// Debug info:
+    // ImGui::TextUnformatted(fmt::format("Waiting: {}", task_manager().tasks_waiting_count(_tasks_owner_id)).c_str());
+    // ImGui::TextUnformatted(fmt::format("Processing: {}", task_manager().tasks_processing_count(_tasks_owner_id)).c_str());
 
     auto const frame_count = _nb_frames_which_finished_exporting.load();
 
@@ -125,7 +127,8 @@ void VideoExportProcess::export_frame(Polaroid const& polaroid, std::filesystem:
 {
     polaroid.render(_size, _clock.time(), _clock.delta_time());
 
-    task_manager().submit(std::make_shared<Task_SaveImageAsPNG>(
+    task_manager().submit(std::make_shared<Task_ExportVideoFrameAsPNG>(
+        _tasks_owner_id,
         file_path,
         polaroid.texture().download_pixels(),
         _average_export_time,

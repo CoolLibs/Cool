@@ -39,7 +39,8 @@ private:
 
     no_sleep::Scoped _disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting a video", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
 
-    bool _should_stop_asap = false;
+    bool       _should_stop_asap = false;
+    reg::AnyId _tasks_owner_id{reg::generate_uuid()};
 };
 
 } // namespace Cool

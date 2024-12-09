@@ -1,4 +1,5 @@
 #include "TaskManager.hpp"
+#include <algorithm>
 
 namespace Cool {
 
@@ -10,15 +11,75 @@ TaskManager::TaskManager()
         _threads.emplace_back([&]() { thread_update_loop(); });
 }
 
-TaskManager::~TaskManager()
+void TaskManager::shut_down()
 {
+    // Make sure we don't accept tasks anymore, tell threads to stop asap
     _is_shutting_down.store(true);
-    { // Wait for the jobs queue to be empty
-        auto lock = std::unique_lock{_tasks_queue_mutex};
+    // Remove waiting tasks, tell processing tasks to finish asap
+    cancel_all_tasks();
+    { // Wait for threads that are processing a task to finish
+        auto lock = std::unique_lock{_tasks_mutex};
+        _wait_for_threads_to_finish.wait(lock, [&] { return _tasks_processing.empty(); });
     }
-    _wake_up_thread.notify_all(); // Wake up all threads and let them realize that _is_shutting_down == true
+    // Wake up all threads that were not processing a task and let them realize that _is_shutting_down == true
+    _wake_up_thread.notify_all();
+    // Close all threads
     for (std::thread& thread : _threads)
         thread.join();
+}
+
+void TaskManager::submit(std::shared_ptr<Task> const& task)
+{
+    if (_is_shutting_down.load())
+        return;
+    {
+        auto lock = std::unique_lock{_tasks_mutex};
+        _tasks_waiting.push_back(task);
+    }
+    _wake_up_thread.notify_one();
+}
+
+void TaskManager::run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
+{
+    if (_is_shutting_down.load())
+        return;
+    auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
+    _small_tasks_with_delay.push_back({task, Delay{delay}});
+}
+
+void TaskManager::cancel_all_tasks()
+{
+    {
+        auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
+        _small_tasks_with_delay.clear();
+    }
+    {
+        auto lock = std::unique_lock{_tasks_mutex};
+        _tasks_waiting.clear();
+        for (auto& task : _tasks_processing)
+            task->cancel();
+    }
+}
+
+void TaskManager::cancel_all_tasks(reg::AnyId const& owner_id)
+{
+    {
+        auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
+        std::erase_if(_small_tasks_with_delay, [&](TaskAndDelay const& task) {
+            return task.task->owner_id() == owner_id;
+        });
+    }
+    {
+        auto lock = std::unique_lock{_tasks_mutex};
+        std::erase_if(_tasks_waiting, [&](std::shared_ptr<Task> const& task) {
+            return task->owner_id() == owner_id;
+        });
+        for (auto& task : _tasks_processing)
+        {
+            if (task->owner_id() == owner_id)
+                task->cancel();
+        }
+    }
 }
 
 static void execute_task(Task& task)
@@ -26,40 +87,31 @@ static void execute_task(Task& task)
     task.do_work();
 }
 
-void TaskManager::submit(std::shared_ptr<Task> const& task)
-{
-    {
-        auto lock = std::unique_lock{_tasks_queue_mutex};
-        _tasks_queue.push_back(task);
-    }
-    _wake_up_thread.notify_one();
-}
-
 void TaskManager::thread_update_loop()
 {
     while (true)
     {
-        {
-            auto task = std::shared_ptr<Task>{};
-            { // Grab a task from the queue
-                auto lock = std::unique_lock{_tasks_queue_mutex};
-                _wake_up_thread.wait(lock, [&] { return !_tasks_queue.empty() || _is_shutting_down.load(); });
-                if (_is_shutting_down.load())
-                    break; // TODO(Tasks) shouldn't we actually wait until all tasks have been processed?
-                task = std::move(_tasks_queue.front());
-                _tasks_queue.pop_front();
-                _tasks_processing_count.fetch_add(1);
-            }
-            execute_task(*task);
+        auto task = std::shared_ptr<Task>{};
+        { // Grab a task from the queue
+            auto lock = std::unique_lock{_tasks_mutex};
+            _wake_up_thread.wait(lock, [&] { return !_tasks_waiting.empty() || _is_shutting_down.load(); });
+            if (_is_shutting_down.load())
+                break;
+            task = std::move(_tasks_waiting.front());
+            _tasks_waiting.pop_front();
+            _tasks_processing.push_back(task);
         }
-        _tasks_processing_count.fetch_sub(1);
+        execute_task(*task);
+        {
+            auto lock = std::unique_lock{_tasks_mutex};
+            std::erase_if(_tasks_processing, [&](std::shared_ptr<Task> const& t) { return t.get() == task.get(); });
+        }
+        if (_is_shutting_down.load())
+        {
+            _wait_for_threads_to_finish.notify_one();
+            break;
+        }
     }
-}
-
-void TaskManager::run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
-{
-    auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
-    _small_tasks_with_delay.push_back({task, Delay{delay}});
 }
 
 void TaskManager::update_on_main_thread()
@@ -81,14 +133,54 @@ void TaskManager::update_on_main_thread()
 
 auto TaskManager::tasks_waiting_count() const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_queue_mutex};
-    return _tasks_queue.size();
+    auto lock = std::shared_lock{_tasks_mutex};
+    return _tasks_waiting.size();
 }
-
+auto TaskManager::tasks_processing_count() const -> size_t
+{
+    auto lock = std::shared_lock{_tasks_mutex};
+    return _tasks_processing.size();
+}
 auto TaskManager::small_delayed_tasks_count() const -> size_t
 {
     auto lock = std::shared_lock{_small_tasks_with_delay_mutex};
     return _small_tasks_with_delay.size();
+}
+auto TaskManager::tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t
+{
+    auto lock = std::shared_lock{_tasks_mutex};
+    return std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
+        return task->owner_id() == owner_id;
+    });
+}
+auto TaskManager::tasks_processing_count(reg::AnyId const& owner_id) const -> size_t
+{
+    auto lock = std::shared_lock{_tasks_mutex};
+    return std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
+        return task->owner_id() == owner_id;
+    });
+}
+auto TaskManager::small_delayed_tasks_count(reg::AnyId const& owner_id) const -> size_t
+{
+    auto lock = std::shared_lock{_small_tasks_with_delay_mutex};
+    return std::count_if(_small_tasks_with_delay.begin(), _small_tasks_with_delay.end(), [&](TaskAndDelay const& task) {
+        return task.task->owner_id() == owner_id;
+    });
+}
+
+auto TaskManager::has_tasks_that_need_user_confirmation_before_killing() const -> bool
+{
+    auto lock1 = std::shared_lock{_tasks_mutex};
+    auto lock2 = std::shared_lock{_small_tasks_with_delay_mutex};
+    return std::any_of(_tasks_processing.begin(), _tasks_processing.end(), [](std::shared_ptr<Task> const& task) {
+               return task->needs_user_confirmation_to_cancel_when_closing_app();
+           })
+           || std::any_of(_tasks_waiting.begin(), _tasks_waiting.end(), [](std::shared_ptr<Task> const& task) {
+                  return task->needs_user_confirmation_to_cancel_when_closing_app();
+              })
+           || std::any_of(_small_tasks_with_delay.begin(), _small_tasks_with_delay.end(), [](TaskAndDelay const& task) {
+                  return task.task->needs_user_confirmation_to_cancel_when_closing_app();
+              });
 }
 
 } // namespace Cool

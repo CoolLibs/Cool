@@ -73,6 +73,27 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     WebcamsConfigs::instance().load();
 }
 
+auto AppManager::should_close_window() const -> bool
+{
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+        return false;
+
+    if (!task_manager().has_tasks_that_need_user_confirmation_before_killing())
+        return true;
+
+    auto const choice = boxer::show(
+        "There are some tasks in progress, if you exit now they will not be able to complete successfully.",
+        "Kill tasks in progress?",
+        boxer::Style::Warning,
+        boxer::Buttons::OKCancel
+    );
+    if (choice == boxer::Selection::OK)
+        return true;
+
+    glfwSetWindowShouldClose(_window_manager.main_window().glfw(), false);
+    return false;
+}
+
 void AppManager::run(std::function<void()> on_update)
 {
     auto const do_update = [&]() {
@@ -94,7 +115,7 @@ void AppManager::run(std::function<void()> on_update)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD::Guard nfd_guard{};
-        while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+        while (!should_close_window())
         {
             do_update();
         }
@@ -106,7 +127,7 @@ void AppManager::run(std::function<void()> on_update)
     }
 #else
     NFD::Guard nfd_guard{};
-    while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+    while (!should_close_window())
     {
         glfwPollEvents();
         do_update();
@@ -115,6 +136,8 @@ void AppManager::run(std::function<void()> on_update)
     // Restore any ImGui ini state that might have been stored
     _app._wants_to_restore_ini_state = true;
     restore_imgui_ini_state_ifn();
+    // Make sure no tasks are running, as they might need things to still be alive in order to finish their job
+    task_manager().shut_down();
 }
 
 static void check_for_imgui_item_picker_request()
