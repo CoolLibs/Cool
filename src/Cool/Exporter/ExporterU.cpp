@@ -2,6 +2,7 @@
 #include <Cool/File/File.h>
 #include <Cool/Image/SaveImage.h>
 #include <Cool/Log/ToUser.h>
+#include <memory>
 #include <open/open.hpp>
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Task/Task.hpp"
@@ -23,38 +24,45 @@ public:
 
     void do_work() override
     {
-        auto progress = std::atomic<float>{0.f};
-
         auto const notification_id = ImGuiNotify::send({
             .type                 = ImGuiNotify::Type::Info,
             .title                = fmt::format("Exporting Image \"{}\"", Cool::File::file_name(_file_path)),
-            .custom_imgui_content = [cancel = &_cancel, progress = &progress]() { // It's okay to capture by pointer, we will change the notification and remove this lambda before exiting the do_work() function
-                // ImGuiExtras::disabled_if(cancel->load(), "Canceled", [&]() {
-                ImGuiExtras::progress_bar(progress->load());
-                if (ImGui::Button("Cancel"))
-                    cancel->store(true);
-                // });
+            .custom_imgui_content = [data = _data]() {
+                ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
+                    ImGuiExtras::progress_bar(data->progress.load());
+                    if (ImGui::Button("Cancel"))
+                        data->cancel.store(true);
+                });
             },
             .duration = std::nullopt,
         });
 
-        auto const result = ImageU::save(_file_path, _image, {.cancel = &_cancel, .progress = &progress});
-        ImGuiNotify::change(
-            notification_id, _cancel.load()       ? notification_after_image_export_canceled()
-                             : result.has_value() ? notification_after_export_success(_file_path, false)
-                                                  : notification_after_export_failure(result.error(), false)
-        );
+        auto const result = ImageU::save(_file_path, _image, {.cancel = &_data->cancel, .progress = &_data->progress});
+        if (_data->cancel.load())
+        {
+            ImGuiNotify::close_immediately(notification_id);
+        }
+        else
+        {
+            ImGuiNotify::change(
+                notification_id, result.has_value() ? notification_after_export_success(_file_path, false)
+                                                    : notification_after_export_failure(result.error(), false)
+            );
+        }
     }
-    void cancel() override { _cancel.store(true); }
+    void cancel() override { _data->cancel.store(true); }
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return true; }
 
 private:
     std::filesystem::path _file_path;
     img::Image            _image;
+    no_sleep::Scoped      _disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting an image", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
 
-    std::atomic<bool> _cancel{false};
-
-    no_sleep::Scoped _disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting an image", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
+    struct DataSharedWithNotification {
+        std::atomic<bool>  cancel{false};
+        std::atomic<float> progress{0.f};
+    };
+    std::shared_ptr<DataSharedWithNotification> _data{std::make_shared<DataSharedWithNotification>()};
 };
 } // namespace
 
@@ -99,14 +107,6 @@ auto notification_after_export_failure(std::string const& error_message, bool is
         .type    = ImGuiNotify::Type::Error,
         .title   = is_video ? "Video Export Failed" : "Image Export Failed",
         .content = error_message,
-    };
-}
-
-auto notification_after_image_export_canceled() -> ImGuiNotify::Notification
-{
-    return {
-        .type  = ImGuiNotify::Type::Warning,
-        .title = "Image Export Canceled",
     };
 }
 

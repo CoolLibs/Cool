@@ -5,8 +5,8 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include "Cool/Log/ToUser.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/Log/ToUser.h"
 #include "Cool/Task/TaskManager.hpp"
 
 namespace Cool {
@@ -27,29 +27,32 @@ public:
 
     void do_work() override
     {
-        auto count = std::make_shared<std::atomic<int>>(0); // Needs to be a shared_ptr because the Notification will need to keep it alive after this task is done
-                                                            // Needs to be an atomic because it will be used on several threads (by the Task and by the Notification)
-
         auto const notification_id = ImGuiNotify::send({
             .type                 = ImGuiNotify::Type::Info,
             .title                = fmt::format("Task {}", _id),
-            .custom_imgui_content = [count, count_max = static_cast<float>(_count_max)]() { // The lambda needs to capture everything by copy
-                ImGuiExtras::progress_bar(static_cast<float>(count->load()) / count_max);
+            .custom_imgui_content = [data = _data]() { // The lambda needs to capture everything by copy
+                ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
+                    ImGuiExtras::progress_bar(data->progress.load());
+                    if (ImGui::Button("Cancel"))
+                        data->cancel.store(true);
+                });
             },
             .duration = std::nullopt,
         });
 
         Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Started");
 
+        int count{0};
         for (int _ = 0; _ < _count_max; ++_)
         {
-            if (_cancel.load())
+            if (_data->cancel.load())
             {
                 Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Canceled");
-                ImGuiNotify::close_after_small_delay(notification_id);
+                ImGuiNotify::close_immediately(notification_id);
                 return;
             }
-            count->fetch_add(1);
+            count++;
+            _data->progress.store(static_cast<float>(count) / static_cast<float>(_count_max));
         }
 
         Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Stopped");
@@ -58,7 +61,7 @@ public:
 
     void cancel() override
     {
-        _cancel.store(true);
+        _data->cancel.store(true);
     }
 
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override
@@ -68,9 +71,12 @@ public:
 
 private:
     int _id{next_id()++};
-
-    std::atomic<bool> _cancel{false};
-    int               _count_max;
+    int _count_max;
+    struct DataSharedWithNotification {
+        std::atomic<bool>  cancel{false}; // Needs to be an atomic because it will be used on several threads (by the Task and by the Notification)
+        std::atomic<float> progress{0.f};
+    };
+    std::shared_ptr<DataSharedWithNotification> _data{std::make_shared<DataSharedWithNotification>()}; // Needs to be a shared_ptr because the Notification will need to keep it alive after this task is done
 };
 
 class Task_SayHello : public Task {

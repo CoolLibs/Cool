@@ -1,7 +1,6 @@
 #include "ImGuiExtras.h"
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
-#include "Fonts.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <smart/smart.hpp>
@@ -12,6 +11,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
+#include "Fonts.h"
 #include "ImGuiExtrasStyle.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 
@@ -490,7 +490,8 @@ void disabled_if(std::optional<const char*> reason_to_disable, std::function<voi
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGui::SetItemTooltip("%s", reason_to_disable.value());
+        if (/*!reason_to_disable.empty()*/ (*reason_to_disable)[0] != '\0')
+            ImGui::SetItemTooltip("%s", reason_to_disable.value());
     }
     else
     {
