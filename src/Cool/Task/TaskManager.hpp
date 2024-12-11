@@ -21,9 +21,12 @@ public:
     TaskManager& operator=(TaskManager&&) noexcept = delete;
 
     void submit(std::shared_ptr<Task> const& task);
-    /// These tasks will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
-    /// So they must run very quickly, in order to not block the main thread
+    /// This task will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
+    /// So it must run very quickly, in order to not block the main thread
     void run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
+    /// Wraps the lambda in a task and calls `run_small_task_in()`
+    /// ⚠ The lambda must capture everything by copy, it will be stored
+    void run_small_lambda_in(std::chrono::milliseconds delay, std::function<void()> const& lambda);
     void cancel_all_tasks(reg::AnyId const& owner_id);
 
     auto tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t;

@@ -1,5 +1,6 @@
 #include "TaskManager.hpp"
 #include <algorithm>
+#include <memory>
 
 namespace Cool {
 
@@ -45,6 +46,27 @@ void TaskManager::run_small_task_in(std::chrono::milliseconds delay, std::shared
         return;
     auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
     _small_tasks_with_delay.push_back({task, Delay{delay}});
+}
+
+namespace {
+class Task_Lambda : public Task {
+public:
+    explicit Task_Lambda(std::function<void()> const& lambda)
+        : _lambda{lambda}
+    {}
+
+    void do_work() override { _lambda(); }
+    void cancel() override {}
+    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return false; }
+
+private:
+    std::function<void()> _lambda;
+};
+} // namespace
+
+void TaskManager::run_small_lambda_in(std::chrono::milliseconds delay, std::function<void()> const& lambda)
+{
+    run_small_task_in(delay, std::make_shared<Task_Lambda>(lambda));
 }
 
 void TaskManager::cancel_all_tasks()
