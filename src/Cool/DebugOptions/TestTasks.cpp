@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include "Cool/Log/ToUser.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Task/TaskManager.hpp"
 
 namespace Cool {
@@ -33,7 +34,7 @@ public:
             .type                 = ImGuiNotify::Type::Info,
             .title                = fmt::format("Task {}", _id),
             .custom_imgui_content = [count, count_max = static_cast<float>(_count_max)]() { // The lambda needs to capture everything by copy
-                ImGui::ProgressBar(static_cast<float>(count->load()) / count_max);
+                ImGuiExtras::progress_bar(static_cast<float>(count->load()) / count_max);
             },
             .duration = std::nullopt,
         });
@@ -45,14 +46,14 @@ public:
             if (_cancel.load())
             {
                 Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Canceled");
-                ImGuiNotify::close(notification_id, 1s);
+                ImGuiNotify::close_after_small_delay(notification_id);
                 return;
             }
             count->fetch_add(1);
         }
 
         Cool::Log::ToUser::info(fmt::format("Task {}", _id), "Stopped");
-        ImGuiNotify::close(notification_id, 1s);
+        ImGuiNotify::close_after_small_delay(notification_id);
     }
 
     void cancel() override

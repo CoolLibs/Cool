@@ -1,14 +1,14 @@
 #include "ExporterGui.h"
-#include <Cool/File/File.h>
-#include <Cool/ImGui/ImGuiExtras.h>
-#include <Cool/Log/ToUser.h>
-#include <Cool/Path/Path.h>
-#include <imgui.h>
+#include "Cool/File/File.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
+#include "Cool/Path/Path.h"
 #include "Cool/UserSettings/UserSettings.h"
 #include "ExporterU.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 #include "VideoExportOverwriteBehaviour.h"
+#include "imgui.h"
 
 namespace Cool {
 
@@ -19,7 +19,7 @@ auto ExporterGui::folder_path_for_video() const -> std::filesystem::path
 
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
-    imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_exported);
+    imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_export_start);
     imgui_window_export_video(p.widgets_in_window_video_export_in_progress, p.on_video_export_start, video_export_process, p.time_speed);
 }
 
@@ -50,20 +50,21 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start)
 {
     _image_export_window.show([&](bool is_opening) {
         if (is_opening)
             _image_file = File::find_available_path(_image_file);
         _export_size.imgui();
-        // File and Folders
-        ImGuiExtras::file_and_folder_saving(_image_file, {".png"}, NfdFileFilter::Png);
+        // File and Folder
+        ImGuiExtras::file_and_folder_saving(_image_file, {".png", ".jpeg"}, NfdFileFilter::ImageSave);
         // Validation
         ImGuiExtras::before_export_button(_image_file);
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
             _image_export_window.close();
-            ExporterU::export_image(_export_size, time, delta_time, polaroid, _image_file, on_image_exported);
+            on_image_export_start(_image_file);
+            ExporterU::export_image_using_a_task(_export_size, time, delta_time, polaroid, _image_file);
         }
     });
 }
@@ -124,8 +125,7 @@ void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_ex
     }
     else
     {
-        Log::ToUser::warning("ExporterGui::begin_video_export", "Couldn't start exporting because folder creation failed!");
-        ExporterU::notification_after_export_failure();
+        ImGuiNotify::send(ExporterU::notification_after_export_failure("Maybe you are not allowed to save files in this folder?", true));
     }
 }
 

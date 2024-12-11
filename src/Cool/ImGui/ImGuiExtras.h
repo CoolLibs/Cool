@@ -2,7 +2,6 @@
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
-#include "Cool/Time/Time.hpp"
 
 namespace Cool::ImGuiExtras {
 
@@ -257,5 +256,7 @@ auto calc_custom_dropdown_input_width() -> float;
 auto input_port(const char* label, int* port, ImGuiInputTextFlags = 0) -> bool;
 
 void fill_layout(const char* str_id, float item_width, std::function<void(std::function<void()> const&)> const& callback);
+
+void progress_bar(float fraction, const ImVec2& size_arg = ImVec2{-FLT_MIN, 0}, const char* overlay = nullptr);
 
 } // namespace Cool::ImGuiExtras

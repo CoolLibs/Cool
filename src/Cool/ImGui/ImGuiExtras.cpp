@@ -1,6 +1,7 @@
 #include "ImGuiExtras.h"
 #include <Cool/File/File.h>
 #include <Cool/Icons/Icons.h>
+#include "Fonts.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <smart/smart.hpp>
@@ -933,6 +934,13 @@ void fill_layout(const char* str_id, float item_width, std::function<void(std::f
         ImGui::EndTable();
     }
     ImGui::SameLine();
+}
+
+void progress_bar(float fraction, const ImVec2& size_arg, const char* overlay)
+{
+    ImGui::PushFont(Font::monospace());
+    ImGui::ProgressBar(fraction, size_arg, overlay);
+    ImGui::PopFont();
 }
 
 } // namespace Cool::ImGuiExtras

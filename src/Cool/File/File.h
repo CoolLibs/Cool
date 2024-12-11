@@ -67,7 +67,7 @@ struct folder_dialog_args {
     /// Folder that the dialog window should open at. Leave blank for default (platform-specific) behaviour.
     std::filesystem::path initial_folder = "";
 };
-/// Opens a folder dialog UI, and returns the selected path, or nullopt if the dialog is cancelled / closed by the user.
+/// Opens a folder dialog UI, and returns the selected path, or nullopt if the dialog is canceled / closed by the user.
 auto folder_dialog(folder_dialog_args const& = {}) -> std::optional<std::filesystem::path>;
 
 struct file_dialog_args {
@@ -77,9 +77,9 @@ struct file_dialog_args {
     /// Folder that the dialog window should open at. Leave blank for default (platform-specific) behaviour.
     std::filesystem::path initial_folder = "";
 };
-/// Opens a file dialog UI, and returns the selected path, or nullopt if the dialog is cancelled / closed by the user.
+/// Opens a file dialog UI, and returns the selected path, or nullopt if the dialog is canceled / closed by the user.
 auto file_opening_dialog(file_dialog_args const& = {}) -> std::optional<std::filesystem::path>;
-/// Opens a file dialog UI, and returns the selected path, or nullopt if the dialog is cancelled / closed by the user.
+/// Opens a file dialog UI, and returns the selected path, or nullopt if the dialog is canceled / closed by the user.
 auto file_saving_dialog(file_dialog_args const& = {}) -> std::optional<std::filesystem::path>;
 
 } // namespace Cool::File

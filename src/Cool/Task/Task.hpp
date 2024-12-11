@@ -18,7 +18,7 @@ public:
     virtual void do_work() = 0;
     /// Request to finish the task as quickly as possible
     virtual void cancel() = 0;
-    /// When the user tries to close the app, should we warn them that this task is in progress and would be cancelled?
+    /// When the user tries to close the app, should we warn them that this task is in progress and would be canceled?
     virtual auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool = 0;
 
     auto owner_id() const -> reg::AnyId const& { return _owner_id; }

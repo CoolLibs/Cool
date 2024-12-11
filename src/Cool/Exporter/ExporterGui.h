@@ -1,8 +1,7 @@
 #pragma once
-
-#include <Cool/ImGui/IcoMoonCodepoints.h>
-#include <Cool/ImGui/ImGuiWindow.h>
-#include <Cool/ImGui/icon_fmt.h>
+#include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/ImGui/ImGuiWindow.h"
+#include "Cool/ImGui/icon_fmt.h"
 #include "ExportSize.h"
 #include "VideoExportParams.h"
 #include "VideoExportProcess.h"
@@ -19,11 +18,12 @@ struct exporter_imgui_menu_items_Params {
 };
 
 struct exporter_imgui_windows_Params {
-    Polaroid                                          polaroid;
-    Time                                              time;
-    Time                                              delta_time;
-    TimeSpeed                                         time_speed;
-    std::function<void(std::filesystem::path const&)> on_image_exported = [](std::filesystem::path const&) {
+    Polaroid  polaroid;
+    Time      time;
+    Time      delta_time;
+    TimeSpeed time_speed;
+    /// Note that by the time this function is called, the image will not have been exported yet since this is done in a task
+    std::function<void(std::filesystem::path const&)> on_image_export_start = [](std::filesystem::path const&) {
     };
     std::function<void()> on_video_export_start = []() {
     };
@@ -57,7 +57,7 @@ private:
     void begin_video_export(std::optional<VideoExportProcess>&, TimeSpeed time_speed, std::function<void()> const& on_video_export_start);
     /// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export.
     static void        end_video_export(std::optional<VideoExportProcess>&);
-    void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_exported);
+    void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start);
     void               imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>&, TimeSpeed time_speed);
     [[nodiscard]] auto user_accepted_our_frames_overwrite_behaviour() -> bool;
 

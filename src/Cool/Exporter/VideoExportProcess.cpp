@@ -1,5 +1,4 @@
 #include "VideoExportProcess.h"
-#include <memory>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Log/ToUser.h"
@@ -7,7 +6,7 @@
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/Time/time_formatted_hms.h"
 #include "ExporterU.h"
-#include "internal/Task_ExportVideoFrameAsPNG.hpp"
+#include "internal/Task_SaveVideoFrame.hpp"
 #include "internal/origin_of_frames.h"
 
 namespace Cool {
@@ -31,20 +30,17 @@ VideoExportProcess::VideoExportProcess(VideoExportParams const& params, TimeSpee
 bool VideoExportProcess::update(Polaroid const& polaroid)
 {
     if (_failure_has_been_reported.load())
-    {
-        Cool::Log::ToUser::warning("Export", "Aborting because we failed to export an image");
-        ExporterU::notification_after_export_failure();
         return true; // Abort the export
-    }
+
     if (_should_stop_asap)
     {
-        ExporterU::notification_after_export_interrupted(_folder_path);
+        ImGuiNotify::send(ExporterU::notification_after_video_export_canceled(_folder_path));
         task_manager().cancel_all_tasks(_tasks_owner_id);
-        return true; // The export has been cancelled
+        return true; // The export has been canceled
     }
     if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
     {
-        ExporterU::notification_after_export_success(_folder_path, true);
+        ImGuiNotify::send(ExporterU::notification_after_export_success(_folder_path, true));
         return true; // The export is finished
     }
 
@@ -95,7 +91,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 
     // Progress bar
     float const progress = static_cast<float>(frame_count) / static_cast<float>(_total_nb_of_frames_in_sequence);
-    ImGui::ProgressBar(progress, ImVec2(-1.f, 0.f));
+    ImGuiExtras::progress_bar(progress);
 
     ImGui::PushFont(Font::monospace());
     // Frames count
@@ -127,7 +123,7 @@ void VideoExportProcess::export_frame(Polaroid const& polaroid, std::filesystem:
 {
     polaroid.render(_size, _clock.time(), _clock.delta_time());
 
-    task_manager().submit(std::make_shared<Task_ExportVideoFrameAsPNG>(
+    task_manager().submit(std::make_shared<Task_SaveVideoFrame>(
         _tasks_owner_id,
         file_path,
         polaroid.texture().download_pixels(),

@@ -4,9 +4,9 @@
 
 namespace Cool {
 
-class Task_ExportVideoFrameAsPNG : public Task {
+class Task_SaveVideoFrame : public Task {
 public:
-    Task_ExportVideoFrameAsPNG(reg::AnyId const& owner_id, std::filesystem::path file_path, img::Image&& image, Averager<double>& average_export_time, std::mutex& average_export_time_mutex, std::atomic<int64_t>& nb_frames_which_finished_exporting, std::atomic<bool>& report_failure)
+    Task_SaveVideoFrame(reg::AnyId const& owner_id, std::filesystem::path file_path, img::Image&& image, Averager<double>& average_export_time, std::mutex& average_export_time_mutex, std::atomic<int64_t>& nb_frames_which_finished_exporting, std::atomic<bool>& report_failure)
         : Task{owner_id}
         , _file_path{std::move(file_path)}
         , _image{std::move(image)}

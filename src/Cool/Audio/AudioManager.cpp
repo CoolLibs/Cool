@@ -270,7 +270,7 @@ void AudioManager::imgui_window()
         {
             if (ImGui::BeginTabItem("Volume"))
             {
-                ImGui::ProgressBar(volume(), {0.f, 0.f});
+                ImGuiExtras::progress_bar(volume(), {0.f, 0.f});
                 _audio_data_has_been_invalidated |= ImGui::SliderFloat("Window size##Volume", &_window_size_in_seconds_for_volume, 0.f, 1.f, "%.3f seconds");
                 ImGui::EndTabItem();
             }

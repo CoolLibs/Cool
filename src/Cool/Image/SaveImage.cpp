@@ -1,19 +1,18 @@
 #include "SaveImage.h"
-#include <Cool/File/File.h>
-#include <Cool/Log/ToUser.h>
+#include "Cool/File/File.h"
 
 namespace Cool::ImageU {
 
-auto save_png(
+auto save(
     std::filesystem::path const& file_path,
     img::Image const&            image,
     img::SaveOptions const&      options
-) -> bool
+) -> tl::expected<void, std::string>
 {
-    return Cool::ImageU::save_png(file_path, image.size().width(), image.size().height(), image.data(), image.channels_count(), image.row_order(), options);
+    return Cool::ImageU::save(file_path, image.size().width(), image.size().height(), image.data(), image.channels_count(), image.row_order(), options);
 }
 
-auto save_png(
+auto save(
     std::filesystem::path const& file_path,
     img::Size::DataType          width,
     img::Size::DataType          height,
@@ -21,20 +20,30 @@ auto save_png(
     size_t                       channels_count,
     img::FirstRowIs              row_order,
     img::SaveOptions const&      options
-) -> bool
+) -> tl::expected<void, std::string>
 {
     if (!File::create_folders_for_file_if_they_dont_exist(file_path))
+        return tl::make_unexpected("Maybe you are not allowed to save files in this folder?");
+
+    std::string const extension = Cool::File::extension(file_path).string();
+
+    bool success{};
+    if (extension == ".png" || extension == ".PNG")
+        success = img::save_png(file_path, width, height, data, channels_count, row_order, options);
+    else if (extension == ".jpg" || extension == ".jpeg" || extension == ".JPG" || extension == ".JPEG")
+        success = img::save_jpeg(file_path, width, height, data, channels_count, row_order, options);
+    else
+        return tl::make_unexpected(fmt::format("Unsupported format \"{}\"\nPlease use \".png\" or \".jpeg\"", extension));
+
+    if (!success)
     {
-        Log::ToUser::warning("Export", "Failed to export because folder creation failed!");
-        return false;
+        return tl::make_unexpected(
+            (options.cancel && options.cancel->load())
+                ? "Canceled"
+                : "Maybe you are not allowed to save files in this folder?"
+        );
     }
-    if (!img::save_png(file_path, width, height, data, channels_count, row_order, options))
-    {
-        if (!(options.cancel && options.cancel->load())) // Don't log warning if the export has been intentionally cancelled
-            Log::ToUser::warning("Export", "Failed to save image");
-        return false;
-    }
-    return true;
+    return {};
 }
 
 } // namespace Cool::ImageU
