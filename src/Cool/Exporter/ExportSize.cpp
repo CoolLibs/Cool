@@ -32,29 +32,23 @@ auto ExportSize::imgui() -> bool
 {
     if (ImGui::IsWindowAppearing() || _aspect_ratio_is_locked)
         apply_aspect_ratio();
+    _shared_aspect_ratio->fill_the_view = false; // Fixed aspect ratio as soon as we open the export window. This avoids the case where we open the export window, then resize the main window which makes the View change aspect ratio. In that case we don't want the current aspect ratio and size that we see in the export window to change. And to preserve the consistency between the aspect ratio in the exporter window and in the View, we have to keep the aspect ratio fixed.
 
     bool b = false;
 
-    const ImageSizeU::WH changed_side = ImageSizeU::imgui(_size);
+    auto const changed_side = ImageSizeU::imgui(_size);
     if (changed_side != ImageSizeU::WH::None)
     {
         _last_changed_side = changed_side; // Only update if changed_side != ImageSizeU::WH::None because we want to remember the last side that actually changed.
-        b                  = true;
-    }
+        if (!_aspect_ratio_is_locked)
+            _shared_aspect_ratio->aspect_ratio.set(img::aspect_ratio(_size));
 
-    if (b && !_aspect_ratio_is_locked)
-    {
-        _shared_aspect_ratio->fill_the_view = false;
-        _shared_aspect_ratio->aspect_ratio.set(img::aspect_ratio(_size));
+        b = true;
     }
 
     ImGui::SameLine();
     ImGuiExtras::disabled_if(!_aspect_ratio_is_locked, "Ratio is not locked, you cannot edit it directly. Lock it with the button on the right.", [&]() {
-        if (_shared_aspect_ratio->aspect_ratio.imgui(150.f))
-        {
-            _shared_aspect_ratio->fill_the_view = false;
-            b                                   = true;
-        }
+        b |= _shared_aspect_ratio->aspect_ratio.imgui(150.f);
     });
     ImGui::SameLine();
     b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
