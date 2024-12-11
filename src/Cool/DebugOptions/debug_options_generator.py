@@ -19,7 +19,8 @@ class DebugOption:
     available_in_release: bool
     window_name: str = ""
     kind: Kind = Kind.CHECKBOX
-    default_value: bool = False
+    default_value_in_debug: bool = False
+    default_value_in_release: bool = False
     detailed_description: str = ""
 
 
@@ -32,11 +33,26 @@ def build_type(code: str, debug_option: DebugOption) -> str:
 #endif"""
 
 
+def default_value(debug_option: DebugOption):
+    if (
+        not debug_option.available_in_release
+        or debug_option.default_value_in_release == debug_option.default_value_in_debug
+    ):
+        return "true" if debug_option.default_value_in_debug else "false"
+    return f"""
+#if defined(DEBUG)
+{"true" if debug_option.default_value_in_debug else "false"}
+#else
+{"true" if debug_option.default_value_in_release else "false"}
+#endif
+"""
+
+
 def debug_options_variables(debug_options: list[DebugOption]):
     return "\n".join(
         map(
             lambda debug_option: build_type(
-                f"bool {debug_option.name_in_code}{{{'true' if debug_option.default_value else 'false'}}};",
+                f"bool {debug_option.name_in_code}{{{default_value(debug_option)}}};",
                 debug_option,
             ),
             debug_options,
@@ -159,7 +175,7 @@ def reset_all(debug_options: list[DebugOption]):
     return "\n".join(
         map(
             lambda debug_option: build_type(
-                f'instance().{debug_option.name_in_code} = {"true" if debug_option.default_value else "false"};',
+                f"instance().{debug_option.name_in_code} = {default_value(debug_option)};",
                 debug_option,
             ),
             filter_out_buttons(debug_options),
