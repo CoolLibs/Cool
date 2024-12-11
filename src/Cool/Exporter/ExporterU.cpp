@@ -17,7 +17,9 @@ public:
     Task_SaveImage(std::filesystem::path const& file_path, img::Image image)
         : _file_path{file_path}
         , _image{std::move(image)}
-    {}
+    {
+        File::mark_file_path_unavailable(file_path); // The file will not be created immediately, but we must know that it is already taken so that we don't try to create another image with the same path
+    }
 
     void do_work() override
     {

@@ -253,6 +253,11 @@ auto find_available_path(std::filesystem::path const& path) -> std::filesystem::
     return folder / find_available_name(folder, file, extension);
 }
 
+void mark_file_path_unavailable(std::filesystem::path const& path)
+{
+    create_file_if_it_doesnt_exist(path);
+}
+
 void set_content(std::filesystem::path const& file_path, std::string_view content)
 {
     if (!create_folders_for_file_if_they_dont_exist(file_path))
