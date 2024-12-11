@@ -60,6 +60,7 @@ public:
 #if DEBUG
     [[nodiscard]] static auto log_opengl_info() -> bool& { return instance().log_opengl_info; }
 #endif
+    [[nodiscard]] static auto log_debug_warnings() -> bool& { return instance().log_debug_warnings; }
     [[nodiscard]] static auto log_mouse_position_in_view() -> bool& { return instance().log_mouse_position_in_view; }
     static void               test_presets__window(std::function<void()> callback)
     {
@@ -153,6 +154,14 @@ private:
 #if DEBUG
         bool log_opengl_info{false};
 #endif
+        bool log_debug_warnings
+        {
+#if defined(DEBUG)
+            true
+#else
+            false
+#endif
+        };
         bool log_mouse_position_in_view{false};
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
@@ -186,6 +195,7 @@ private:
                 ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 ser20::make_nvp("View Texture Library", texture_library_debug_view),
                 ser20::make_nvp("Log OpenGL info", log_opengl_info),
+                ser20::make_nvp("Log debug warnings", log_debug_warnings),
                 ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 ser20::make_nvp("Test Presets", test_presets__window),
                 ser20::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
@@ -205,6 +215,7 @@ private:
                 ser20::make_nvp("Log when creating textures", log_when_creating_textures),
                 ser20::make_nvp("Log when computing audio features", log_when_computing_audio_features),
                 ser20::make_nvp("View Texture Library", texture_library_debug_view),
+                ser20::make_nvp("Log debug warnings", log_debug_warnings),
                 ser20::make_nvp("Log mouse position in View", log_mouse_position_in_view),
                 ser20::make_nvp("Test Presets", test_presets__window),
                 ser20::make_nvp("Test Markdown Formatting", test_markdown_formatting_window),
@@ -233,6 +244,13 @@ private:
 #if DEBUG
         instance().log_opengl_info = false;
 #endif
+        instance().log_debug_warnings =
+#if defined(DEBUG)
+            true
+#else
+            false
+#endif
+            ;
         instance().log_mouse_position_in_view          = false;
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
@@ -309,6 +327,11 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Log debug warnings"}) >= wafl::Matches::Strongly)
+        {
+            Cool::ImGuiExtras::toggle("Log debug warnings", &instance().log_debug_warnings);
+        }
 
         if (wafl::similarity_match({filter, "Log mouse position in View"}) >= wafl::Matches::Strongly)
         {
@@ -439,6 +462,12 @@ private:
         }
 
 #endif
+
+        if (wafl::similarity_match({filter, "Log debug warnings"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_debug_warnings = !instance().log_debug_warnings;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
 
         if (wafl::similarity_match({filter, "Log mouse position in View"}) >= wafl::Matches::Strongly)
         {
