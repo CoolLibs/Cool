@@ -31,12 +31,16 @@ void enable_long_paths_by_asking_user_permission()
 {
     auto const path = std::filesystem::weakly_canonical(Path::cool_res() / "LongPathsEnabled.reg").wstring();
 
-    SHELLEXECUTEINFOW sei = {sizeof(SHELLEXECUTEINFOW)};
-
-    sei.lpVerb       = L"runas";       // Request elevated privileges
-    sei.lpFile       = L"regedit.exe"; // Registry Editor application
-    sei.lpParameters = path.c_str();   // Path to the .reg file
-    sei.nShow        = SW_SHOWNORMAL;
+    SHELLEXECUTEINFOW sei = {};
+    sei.cbSize            = sizeof(SHELLEXECUTEINFOW);
+    sei.fMask             = 0;
+    sei.hwnd              = nullptr;
+    sei.lpDirectory       = nullptr;
+    sei.hInstApp          = nullptr;
+    sei.lpVerb            = L"runas";       // Request elevated privileges
+    sei.lpFile            = L"regedit.exe"; // Registry Editor application
+    sei.lpParameters      = path.c_str();   // Path to the .reg file
+    sei.nShow             = SW_SHOWNORMAL;
 
     ShellExecuteExW(&sei);
 }
