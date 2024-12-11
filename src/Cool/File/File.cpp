@@ -139,6 +139,19 @@ auto is_empty(std::filesystem::path const& path) -> bool
     }
 }
 
+auto is_absolute(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return path.is_absolute();
+    }
+    catch (std::exception const& e)
+    {
+        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is an absolute path:\n{}", path, e.what()));
+        return true;
+    }
+}
+
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode) -> tl::expected<std::string, std::string>
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
