@@ -5,8 +5,8 @@
 
 namespace Cool::ExporterU {
 
-/// Exports an image as PNG
 void export_image_using_a_task(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path);
+auto user_accepted_to_overwrite_image(std::filesystem::path const& file_path) -> bool;
 
 [[nodiscard]] auto notification_after_export_success(std::filesystem::path const& path, bool is_video) -> ImGuiNotify::Notification;
 [[nodiscard]] auto notification_after_export_failure(std::string const& error_message, bool is_video) -> ImGuiNotify::Notification;

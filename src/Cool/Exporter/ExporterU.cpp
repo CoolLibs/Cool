@@ -62,6 +62,15 @@ void export_image_using_a_task(img::Size size, Time time, Time delta_time, Polar
     task_manager().submit(std::make_shared<Task_SaveImage>(file_path, polaroid.texture().download_pixels()));
 }
 
+auto user_accepted_to_overwrite_image(std::filesystem::path const& file_path) -> bool
+{
+    if (!Cool::File::exists(file_path))
+        return true;
+
+    return boxer::show(fmt::format("\"{}\" already exists. Are you sure you want to overwrite it?", file_path).c_str(), "Overwrite image?", boxer::Style::Warning, boxer::Buttons::OKCancel)
+           == boxer::Selection::OK;
+}
+
 auto notification_after_export_success(std::filesystem::path const& path, bool is_video) -> ImGuiNotify::Notification
 {
     return {

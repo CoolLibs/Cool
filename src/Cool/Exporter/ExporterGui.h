@@ -50,7 +50,7 @@ public:
     void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _export_size.set_shared_aspect_ratio(shared_aspect_ratio); }
 
     auto export_size() const -> img::Size { return _export_size; }
-    auto image_export_path() -> std::filesystem::path const&;
+    auto image_export_path() -> std::filesystem::path const& { return _image_file; }
 
 private:
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.

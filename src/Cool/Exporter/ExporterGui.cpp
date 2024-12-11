@@ -62,9 +62,12 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time d
         ImGuiExtras::before_export_button(_image_file);
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
-            _image_export_window.close();
-            on_image_export_start(_image_file);
-            ExporterU::export_image_using_a_task(_export_size, time, delta_time, polaroid, _image_file);
+            if (ExporterU::user_accepted_to_overwrite_image(_image_file))
+            {
+                _image_export_window.close();
+                on_image_export_start(_image_file);
+                ExporterU::export_image_using_a_task(_export_size, time, delta_time, polaroid, _image_file);
+            }
         }
     });
 }
@@ -171,12 +174,6 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             }
         });
     }
-}
-
-auto ExporterGui::image_export_path() -> std::filesystem::path const&
-{
-    _image_file = File::find_available_path(_image_file);
-    return _image_file;
 }
 
 } // namespace Cool
