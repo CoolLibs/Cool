@@ -5,6 +5,7 @@
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
 #include "Audio/Audio.hpp"
+#include "Cool/AppManager/internal/get_app_manager.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
 #include "Cool/Core/set_utf8_locale.hpp"
 #include "Cool/ImGui/StyleEditor.h"
@@ -113,8 +114,10 @@ void run(int argc, char** argv, RunConfig const& config)
                 load_from_file
             );
             // Run the app
-            auto app_manager = Cool::AppManager{window_factory.window_manager(), views, app, config.app_manager_config};
+            auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, app, config.app_manager_config};
+            internal::get_app_manager() = &app_manager;
             app_manager.run(internal::create_autosaver(auto_serializer));
+            internal::get_app_manager() = nullptr;
             app.on_shutdown();
 #if defined(COOL_VULKAN)
             vkDeviceWaitIdle(Vulkan::context().g_Device);

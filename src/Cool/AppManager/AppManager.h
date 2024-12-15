@@ -23,6 +23,11 @@ public:
     /// Also calls `on_update()` after every update.
     void run(std::function<void()> on_update);
 
+    /// Equivalent to the user clicking the close button or pressing ALT+F4
+    void close_application();
+    /// Does nothing if some tasks that need user confirmation to cancel are still running
+    void close_application_if_all_tasks_are_done();
+
 private:
     void update();
     auto should_close_window() const -> bool;

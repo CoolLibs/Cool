@@ -94,6 +94,18 @@ auto AppManager::should_close_window() const -> bool
     return false;
 }
 
+void AppManager::close_application()
+{
+    _window_manager.main_window().close();
+}
+
+void AppManager::close_application_if_all_tasks_are_done()
+{
+    if (task_manager().has_tasks_that_need_user_confirmation_before_killing())
+        return;
+    close_application();
+}
+
 void AppManager::run(std::function<void()> on_update)
 {
     auto const do_update = [&]() {
