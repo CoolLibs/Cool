@@ -112,9 +112,7 @@ void VideoExportProcess::imgui(std::function<void()> const& extra_widgets)
 
     // Stop exporting
     if (ImGui::Button("Stop exporting"))
-    {
         _should_stop_asap = true;
-    }
 
     extra_widgets();
 }

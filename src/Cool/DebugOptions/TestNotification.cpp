@@ -8,7 +8,7 @@ void TestNotification::imgui()
     if (ImGui::Button("Send "))
         ImGuiNotify::send({.type = _type, .content = std::to_string(i++)});
     if (ImGui::Button("Error"))
-        ImGuiNotify::send({.type = ImGuiNotify::Type::Error, .content = "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"});
+        ImGuiNotify::send({.type = ImGuiNotify::Type::Error, .content = "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello", .is_closable = false});
     if (ImGui::Button("Warning"))
         ImGuiNotify::send({.type = ImGuiNotify::Type::Warning, .title = "Warning", .content = "Hello"});
     if (ImGui::Button("Success"))

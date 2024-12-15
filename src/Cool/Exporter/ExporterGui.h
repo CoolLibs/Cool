@@ -54,7 +54,8 @@ public:
 
 private:
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
-    void begin_video_export(std::optional<VideoExportProcess>&, TimeSpeed time_speed, std::function<void()> const& on_video_export_start);
+    /// Return true iff it successfully began
+    auto begin_video_export(std::optional<VideoExportProcess>&, TimeSpeed time_speed, std::function<void()> const& on_video_export_start) -> bool;
     /// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export.
     static void        end_video_export(std::optional<VideoExportProcess>&);
     void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start);

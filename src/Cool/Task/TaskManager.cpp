@@ -73,10 +73,14 @@ void TaskManager::cancel_all_tasks()
 {
     {
         auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
+        for (auto& task : _small_tasks_with_delay)
+            task.task->cancel();
         _small_tasks_with_delay.clear();
     }
     {
         auto lock = std::unique_lock{_tasks_mutex};
+        for (auto& task : _tasks_waiting)
+            task->cancel();
         _tasks_waiting.clear();
         for (auto& task : _tasks_processing)
             task->cancel();

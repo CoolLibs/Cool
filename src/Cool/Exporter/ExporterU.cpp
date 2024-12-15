@@ -34,7 +34,8 @@ public:
                         data->cancel.store(true);
                 });
             },
-            .duration = std::nullopt,
+            .is_closable = false,
+            .duration    = std::nullopt,
         });
 
         auto const result = ImageU::save(_file_path, _image, {.cancel = &_data->cancel, .progress = &_data->progress});

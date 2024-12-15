@@ -131,19 +131,21 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
     }
 }
 
-void ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed, std::function<void()> const& on_video_export_start)
+auto ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_export_process, TimeSpeed time_speed, std::function<void()> const& on_video_export_start) -> bool
 {
     if (!user_accepted_our_frames_overwrite_behaviour())
-        return;
+        return false;
 
     if (File::create_folders_if_they_dont_exist(folder_path_for_video()))
     {
         video_export_process.emplace(_video_export_params, time_speed, folder_path_for_video(), _export_size);
         on_video_export_start();
+        return true;
     }
     else
     {
         ImGuiNotify::send(ExporterU::notification_after_export_failure("Maybe you are not allowed to save files in this folder?", true));
+        return false;
     }
 }
 
@@ -180,8 +182,8 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             ImGuiExtras::before_export_button();
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))
             {
-                _video_export_window.close();
-                begin_video_export(video_export_process, time_speed, on_video_export_start);
+                if (begin_video_export(video_export_process, time_speed, on_video_export_start))
+                    _video_export_window.close();
             }
         });
     }
