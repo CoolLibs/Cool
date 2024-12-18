@@ -266,6 +266,10 @@ set(WCAM_DONT_INCLUDE_FMT ON)
 add_subdirectory(lib/wcam)
 target_link_libraries(Cool-PublicProperties INTERFACE wcam::wcam)
 
+# get_system_error
+# add_subdirectory(lib/get_system_error) # Already done by wcam
+target_link_libraries(Cool-PublicProperties INTERFACE Cool::get_system_error)
+
 # RtMidi
 add_subdirectory(lib/RtMidiWrapper)
 target_link_libraries(Cool-PublicProperties INTERFACE RtMidiW::RtMidiW)

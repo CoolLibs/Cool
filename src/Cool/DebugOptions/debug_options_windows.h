@@ -3,6 +3,6 @@
 
 namespace Cool {
 
-void debug_options_windows(TipsManager&);
+void debug_options_windows(TipsManager*);
 
 }

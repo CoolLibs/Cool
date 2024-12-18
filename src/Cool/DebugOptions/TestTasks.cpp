@@ -34,8 +34,8 @@ public:
                         data->cancel.store(true);
                 });
             },
-            .is_closable = false,
             .duration    = std::nullopt,
+            .is_closable = false,
         });
     }
 

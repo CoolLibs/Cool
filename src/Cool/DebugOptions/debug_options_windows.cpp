@@ -14,7 +14,7 @@
 
 namespace Cool {
 
-void debug_options_windows(TipsManager& tips_manager)
+void debug_options_windows(TipsManager* tips_manager)
 {
     DebugOptions::texture_library_debug_view([&] {
         ImGui::SeparatorText("Image");
@@ -53,9 +53,10 @@ void debug_options_windows(TipsManager& tips_manager)
         midi_manager().imgui_emulate_midi_keyboard();
     });
 
-    DebugOptions::test_tips([&]() {
-        test_tips(tips_manager);
-    });
+    if (tips_manager)
+        DebugOptions::test_tips([&]() {
+            test_tips(*tips_manager);
+        });
 
     DebugOptions::color_themes_advanced_config_window([]() {
         user_settings().color_themes.imgui_advanced_config();
