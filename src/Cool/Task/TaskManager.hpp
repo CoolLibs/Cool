@@ -21,6 +21,7 @@ public:
     TaskManager& operator=(TaskManager&&) noexcept = delete;
 
     void submit(std::shared_ptr<Task> const& task);
+    void submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
     /// This task will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
     /// So it must run very quickly, in order to not block the main thread
     void run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);

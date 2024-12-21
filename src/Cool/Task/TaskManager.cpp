@@ -40,6 +40,25 @@ void TaskManager::submit(std::shared_ptr<Task> const& task)
     _wake_up_thread.notify_one();
 }
 
+class Task_SubmitTask : public Task {
+public:
+    explicit Task_SubmitTask(std::shared_ptr<Task> const& task)
+        : _task{task}
+    {}
+
+    void do_work() override { task_manager().submit(_task); }
+    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return _task->needs_user_confirmation_to_cancel_when_closing_app(); }
+    void cancel() override { _task->cancel(); }
+
+private:
+    std::shared_ptr<Task> _task;
+};
+
+void TaskManager::submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
+{
+    run_small_task_in(delay, std::make_shared<Task_SubmitTask>(task));
+}
+
 void TaskManager::run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
 {
     if (_is_shutting_down.load())
