@@ -27,7 +27,7 @@ public:
     void run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
     /// Wraps the lambda in a task and calls `run_small_task_in()`
     /// ⚠ The lambda must capture everything by copy, it will be stored
-    void run_small_lambda_in(std::chrono::milliseconds delay, std::function<void()> const& lambda);
+    void run_small_lambda_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda);
     void cancel_all_tasks(reg::AnyId const& owner_id);
 
     auto tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t;
@@ -44,7 +44,7 @@ private:
 private:
     friend class AppManager;
     void update_on_main_thread();
-    auto has_tasks_that_need_user_confirmation_before_killing() const -> bool;
+    auto list_of_tasks_that_need_user_confirmation_before_killing() const -> std::string;
     void shut_down();
 
 private:

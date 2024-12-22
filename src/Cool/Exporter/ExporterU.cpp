@@ -26,7 +26,7 @@ public:
     {
         auto const notification_id = ImGuiNotify::send({
             .type                 = ImGuiNotify::Type::Info,
-            .title                = fmt::format("Exporting Image \"{}\"", Cool::File::file_name(_file_path)),
+            .title                = name(),
             .custom_imgui_content = [data = _data]() {
                 ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
                     ImGuiExtras::progress_bar(data->progress.load());
@@ -53,6 +53,7 @@ public:
     }
     void cancel() override { _data->cancel.store(true); }
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return true; }
+    auto name() const -> std::string override { return fmt::format("Exporting Image \"{}\"", Cool::File::file_name(_file_path)); }
 
 private:
     std::filesystem::path _file_path;

@@ -20,6 +20,8 @@ public:
     virtual void cancel() = 0;
     /// When the user tries to close the app, should we warn them that this task is in progress and would be canceled?
     virtual auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool = 0;
+    /// Name that will be displayed to the user, for example when they try to close the app while tasks are still in progress
+    virtual auto name() const -> std::string = 0;
 
     auto owner_id() const -> reg::AnyId const& { return _owner_id; }
 

@@ -48,6 +48,7 @@ public:
 
     void do_work() override { task_manager().submit(_task); }
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return _task->needs_user_confirmation_to_cancel_when_closing_app(); }
+    auto name() const -> std::string override { return fmt::format("Waiting to submit: {}", _task->name()); }
     void cancel() override { _task->cancel(); }
 
 private:
@@ -70,22 +71,25 @@ void TaskManager::run_small_task_in(std::chrono::milliseconds delay, std::shared
 namespace {
 class Task_Lambda : public Task {
 public:
-    explicit Task_Lambda(std::function<void()> const& lambda)
-        : _lambda{lambda}
+    explicit Task_Lambda(std::string name, std::function<void()> const& lambda)
+        : _name(std::move(name))
+        , _lambda{lambda}
     {}
 
     void do_work() override { _lambda(); }
     void cancel() override {}
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return false; }
+    auto name() const -> std::string override { return _name; }
 
 private:
+    std::string           _name;
     std::function<void()> _lambda;
 };
 } // namespace
 
-void TaskManager::run_small_lambda_in(std::chrono::milliseconds delay, std::function<void()> const& lambda)
+void TaskManager::run_small_lambda_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda)
 {
-    run_small_task_in(delay, std::make_shared<Task_Lambda>(lambda));
+    run_small_task_in(delay, std::make_shared<Task_Lambda>(std::move(name), lambda));
 }
 
 void TaskManager::cancel_all_tasks()
@@ -213,19 +217,30 @@ auto TaskManager::small_delayed_tasks_count(reg::AnyId const& owner_id) const ->
     });
 }
 
-auto TaskManager::has_tasks_that_need_user_confirmation_before_killing() const -> bool
+auto TaskManager::list_of_tasks_that_need_user_confirmation_before_killing() const -> std::string
 {
-    auto lock1 = std::shared_lock{_tasks_mutex};
-    auto lock2 = std::shared_lock{_small_tasks_with_delay_mutex};
-    return std::any_of(_tasks_processing.begin(), _tasks_processing.end(), [](std::shared_ptr<Task> const& task) {
-               return task->needs_user_confirmation_to_cancel_when_closing_app();
-           })
-           || std::any_of(_tasks_waiting.begin(), _tasks_waiting.end(), [](std::shared_ptr<Task> const& task) {
-                  return task->needs_user_confirmation_to_cancel_when_closing_app();
-              })
-           || std::any_of(_small_tasks_with_delay.begin(), _small_tasks_with_delay.end(), [](TaskAndDelay const& task) {
-                  return task.task->needs_user_confirmation_to_cancel_when_closing_app();
-              });
+    auto       list_of_tasks  = ""s;
+    auto const maybe_add_task = [&](Task const& task) {
+        if (!task.needs_user_confirmation_to_cancel_when_closing_app())
+            return;
+        if (!list_of_tasks.empty())
+            list_of_tasks += '\n';
+        list_of_tasks += fmt::format(" - {}", task.name());
+    };
+
+    {
+        auto lock1 = std::shared_lock{_tasks_mutex};
+        auto lock2 = std::shared_lock{_small_tasks_with_delay_mutex};
+
+        for (std::shared_ptr<Task> const& task : _tasks_processing)
+            maybe_add_task(*task);
+        for (std::shared_ptr<Task> const& task : _tasks_waiting)
+            maybe_add_task(*task);
+        for (TaskAndDelay const& task : _small_tasks_with_delay)
+            maybe_add_task(*task.task);
+    }
+
+    return list_of_tasks;
 }
 
 } // namespace Cool

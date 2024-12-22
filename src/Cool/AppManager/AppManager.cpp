@@ -78,11 +78,12 @@ auto AppManager::should_close_window() const -> bool
     if (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
         return false;
 
-    if (!task_manager().has_tasks_that_need_user_confirmation_before_killing())
+    auto const tasks_in_progress = task_manager().list_of_tasks_that_need_user_confirmation_before_killing();
+    if (tasks_in_progress.empty())
         return true;
 
     auto const choice = boxer::show(
-        "There are some tasks in progress, if you exit now they will not be able to complete successfully.",
+        ("There are some tasks in progress, if you exit now they will not be able to complete successfully:\n" + tasks_in_progress).c_str(),
         "Kill tasks in progress?",
         boxer::Style::Warning,
         boxer::Buttons::OKCancel
@@ -101,7 +102,7 @@ void AppManager::close_application()
 
 void AppManager::close_application_if_all_tasks_are_done()
 {
-    if (task_manager().has_tasks_that_need_user_confirmation_before_killing())
+    if (!task_manager().list_of_tasks_that_need_user_confirmation_before_killing().empty())
         return;
     close_application();
 }

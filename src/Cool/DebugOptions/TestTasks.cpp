@@ -63,6 +63,7 @@ public:
         ImGuiNotify::close_immediately(_notification_id);
     }
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return true; }
+    auto name() const -> std::string override { return "Test Task: Long Process"; }
 
 private:
     int                         _id{next_id()++};
@@ -98,10 +99,8 @@ public:
         // Nothing to do, this task runs instantly anyways
     }
 
-    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override
-    {
-        return false;
-    }
+    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return false; }
+    auto name() const -> std::string override { return "Test Task: Say Hello"; }
 
 private:
     int  _id{next_id()++};

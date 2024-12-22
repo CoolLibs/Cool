@@ -30,6 +30,18 @@ void TestNotification::imgui()
                 ImGui::Button("sdkjfh sdkfjh iuez kjdsf gsdfjh ksghdf uyzeg sdjkfg yuzeg ksdhgfyu e");
             },
         });
+    if (ImGui::Button("Slightly long title"))
+        ImGuiNotify::send({
+            .type    = ImGuiNotify::Type::Info,
+            .title   = "Aprettylongtitle Aprettylongtitle Aprettylongtitle",
+            .content = "Hello",
+        });
+    if (ImGui::Button("Long title"))
+        ImGuiNotify::send({
+            .type    = ImGuiNotify::Type::Info,
+            .title   = "jxdhfg sdfhg sufgze jxcgfh uyzey gjg yuezg jxhgdv ukezyg hv eizag jvgh ezug fxjvb uezg fsdkfbkhjzeg fusgfv jhgur gdsjfhv ezf dsufdhfgseifuzgeurfgjdsvbkxjhgfzeiugrzekhddjvfgzeyuig sjdhfgezyu gjsdf guezygr djsf gyuezg sfhj",
+            .content = "Hello",
+        });
 }
 
 } // namespace Cool
