@@ -67,7 +67,7 @@ target_sources(Cool PRIVATE ${COOL_SOURCES})
 target_include_directories(Cool-PublicProperties INTERFACE src)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib)
 target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precompiled headers: https://julesfouchy.github.io/Learn--Cpp-And-Dev-Practices/docs/lessons/precompiled-header
-    <Cool/UDL/std.h> # Make std litterals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
+    <Cool/UDL/std.h> # Make std literals available everywhere. E.g. "Hello"s will create a std::string, not a const char*.
     <vector>
     <string>
     <memory>

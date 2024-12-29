@@ -24,11 +24,11 @@ public:
     void submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
     /// This task will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
     /// So it must run very quickly, in order to not block the main thread
-    void run_small_task_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
-    /// Wraps the lambda in a task and calls `run_small_task_in()`
+    void submit_small_task_to_run_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
+    /// Wraps the lambda in a task and calls `submit_small_task_to_run_in()`
     /// ⚠ The lambda must capture everything by copy, it will be stored
-    void run_small_lambda_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda);
-    void cancel_all_tasks(reg::AnyId const& owner_id);
+    void submit_small_lambda_to_run_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda);
+    void cancel_all(reg::AnyId const& owner_id);
 
     auto tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t;
     auto tasks_processing_count(reg::AnyId const& owner_id) const -> size_t;
@@ -49,7 +49,8 @@ private:
 
 private:
     void thread_update_loop();
-    void cancel_all_tasks();
+    void cancel_all();
+    void cancel_if(std::function<bool(Task const&)> const& predicate);
 
 private:
     std::deque<std::shared_ptr<Task>> _tasks_waiting;

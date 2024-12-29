@@ -35,7 +35,7 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
     if (_should_stop_asap)
     {
         ImGuiNotify::send(ExporterU::notification_after_video_export_canceled(_folder_path));
-        task_manager().cancel_all_tasks(_tasks_owner_id);
+        task_manager().cancel_all(_tasks_owner_id);
         return true; // The export has been canceled
     }
     if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
