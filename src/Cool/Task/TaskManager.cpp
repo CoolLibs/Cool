@@ -1,6 +1,7 @@
 #include "TaskManager.hpp"
 #include <algorithm>
 #include <memory>
+#include "Condition.hpp"
 
 namespace Cool {
 
@@ -29,6 +30,13 @@ void TaskManager::shut_down()
         thread.join();
 }
 
+void TaskManager::do_task_work(Task& task)
+{
+    task.just_before_work_starts();
+    task.do_work();
+    task.on_cleanup(task._has_been_canceled_during_do_work.load());
+}
+
 void TaskManager::thread_update_loop()
 {
     while (true)
@@ -43,8 +51,7 @@ void TaskManager::thread_update_loop()
             _tasks_waiting.pop_front();
             _tasks_processing.push_back(task);
         }
-        task->do_work();
-        task->on_cleanup(task->_has_been_canceled_during_do_work.load());
+        do_task_work(*task);
         {
             auto lock = std::unique_lock{_tasks_mutex};
             std::erase_if(_tasks_processing, [&](std::shared_ptr<Task> const& t) { return t.get() == task.get(); });
@@ -59,33 +66,37 @@ void TaskManager::thread_update_loop()
 
 void TaskManager::update_on_main_thread()
 {
-    auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
-    for (auto it = _small_tasks_with_delay.begin(); it != _small_tasks_with_delay.end();)
+    auto tasks_to_submit = std::vector<std::shared_ptr<Task>>{}; // We don't submit the tasks immediately in the loop, because they might be executed immediately, and if they want to submit other tasks this would conflict with the lock
+
     {
-        if (!it->delay.has_expired())
+        auto lock = std::unique_lock{_tasks_with_condition_mutex};
+        for (auto it = _tasks_with_condition.begin(); it != _tasks_with_condition.end();)
         {
-            ++it;
-            continue;
+            if (!it->condition())
+            {
+                ++it;
+                continue;
+            }
+            tasks_to_submit.emplace_back(it->task);
+            it = _tasks_with_condition.erase(it);
         }
-        lock.unlock(); // Unlock in case the task wants to add some other tasks (this is safe because we use a std::list, so even if we push_back in the list, we can then resume iteration here)
-        it->task->do_work();
-        it->task->on_cleanup(false /*has_been_canceled*/);
-        lock.lock();
-        it = _small_tasks_with_delay.erase(it);
     }
+
+    for (auto const& task : tasks_to_submit)
+        submit(task, true /*has_already_called_on_submit*/);
 }
 
-void TaskManager::submit(std::shared_ptr<Task> const& task)
+void TaskManager::submit(std::shared_ptr<Task> const& task, bool has_already_called_on_submit)
 {
     if (_is_shutting_down.load())
         return;
 
-    task->on_submit();
+    if (!has_already_called_on_submit)
+        task->on_submit();
 
     if (task->is_quick_task())
     {
-        task->do_work();
-        task->on_cleanup(false /*has_been_canceled*/);
+        do_task_work(*task);
     }
     else
     {
@@ -97,23 +108,24 @@ void TaskManager::submit(std::shared_ptr<Task> const& task)
     }
 }
 
-void TaskManager::submit_small_task_to_run_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
+void TaskManager::submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
 {
     if (_is_shutting_down.load())
         return;
+
     task->on_submit();
     {
-        auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
-        _small_tasks_with_delay.push_back({task, Delay{delay}});
+        auto lock = std::unique_lock{_tasks_with_condition_mutex};
+        _tasks_with_condition.emplace_back(task, Condition_Delay{delay});
     }
 }
 
 void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
 {
     {
-        auto lock = std::unique_lock{_small_tasks_with_delay_mutex};
+        auto lock = std::unique_lock{_tasks_with_condition_mutex};
 
-        for (TaskAndDelay& task : _small_tasks_with_delay)
+        for (TaskAndCondition& task : _tasks_with_condition)
         {
             if (!predicate(*task.task))
                 continue;
@@ -122,7 +134,7 @@ void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
 
             task.task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
         }
-        std::erase_if(_small_tasks_with_delay, [](TaskAndDelay const& task) { return task.task == nullptr; });
+        std::erase_if(_tasks_with_condition, [](TaskAndCondition const& task) { return task.task == nullptr; });
     }
     {
         auto lock = std::unique_lock{_tasks_mutex};
@@ -163,85 +175,45 @@ void TaskManager::cancel_all(reg::AnyId const& owner_id)
     });
 }
 
-class Task_SubmitTask : public Task {
-public:
-    explicit Task_SubmitTask(std::shared_ptr<Task> const& task)
-        : _task{task}
-    {}
-
-    void do_work() override { task_manager().submit(_task); } //, false /*don't call on_submit() again*/); }
-    void on_submit() override { _task->on_submit(); }
-    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return _task->needs_user_confirmation_to_cancel_when_closing_app(); }
-    auto name() const -> std::string override { return fmt::format("Waiting to submit: {}", _task->name()); }
-    void cancel() override { _task->cancel(); }
-
-private:
-    std::shared_ptr<Task> _task;
-};
-
-void TaskManager::submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
-{
-    submit_small_task_to_run_in(delay, std::make_shared<Task_SubmitTask>(task));
-}
-
-namespace {
-class Task_Lambda : public Task {
-public:
-    explicit Task_Lambda(std::string name, std::function<void()> const& lambda)
-        : _name(std::move(name))
-        , _lambda{lambda}
-    {}
-
-    void do_work() override { _lambda(); }
-    void cancel() override {}
-    auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return false; }
-    auto name() const -> std::string override { return _name; }
-
-private:
-    std::string           _name;
-    std::function<void()> _lambda;
-};
-} // namespace
-
-void TaskManager::submit_small_lambda_to_run_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda)
-{
-    submit_small_task_to_run_in(delay, std::make_shared<Task_Lambda>(std::move(name), lambda));
-}
-
-auto TaskManager::tasks_waiting_count() const -> size_t
+auto TaskManager::num_tasks_waiting_for_thread() const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
     return _tasks_waiting.size();
 }
-auto TaskManager::tasks_processing_count() const -> size_t
+
+auto TaskManager::num_tasks_waiting_for_condition() const -> size_t
+{
+    auto lock = std::shared_lock{_tasks_with_condition_mutex};
+    return _tasks_with_condition.size();
+}
+
+auto TaskManager::num_tasks_processing() const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
     return _tasks_processing.size();
 }
-auto TaskManager::small_delayed_tasks_count() const -> size_t
-{
-    auto lock = std::shared_lock{_small_tasks_with_delay_mutex};
-    return _small_tasks_with_delay.size();
-}
-auto TaskManager::tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t
+
+auto TaskManager::num_tasks_waiting_for_thread(reg::AnyId const& owner_id) const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
     return std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
         return task->owner_id() == owner_id;
     });
 }
-auto TaskManager::tasks_processing_count(reg::AnyId const& owner_id) const -> size_t
+
+auto TaskManager::num_tasks_waiting_for_condition(reg::AnyId const& owner_id) const -> size_t
+{
+    auto lock = std::shared_lock{_tasks_with_condition_mutex};
+    return std::count_if(_tasks_with_condition.begin(), _tasks_with_condition.end(), [&](TaskAndCondition const& task) {
+        return task.task->owner_id() == owner_id;
+    });
+}
+
+auto TaskManager::num_tasks_processing(reg::AnyId const& owner_id) const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
     return std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
         return task->owner_id() == owner_id;
-    });
-}
-auto TaskManager::small_delayed_tasks_count(reg::AnyId const& owner_id) const -> size_t
-{
-    auto lock = std::shared_lock{_small_tasks_with_delay_mutex};
-    return std::count_if(_small_tasks_with_delay.begin(), _small_tasks_with_delay.end(), [&](TaskAndDelay const& task) {
-        return task.task->owner_id() == owner_id;
     });
 }
 
@@ -258,13 +230,13 @@ auto TaskManager::list_of_tasks_that_need_user_confirmation_before_killing() con
 
     {
         auto lock1 = std::shared_lock{_tasks_mutex};
-        auto lock2 = std::shared_lock{_small_tasks_with_delay_mutex};
+        auto lock2 = std::shared_lock{_tasks_with_condition_mutex};
 
         for (std::shared_ptr<Task> const& task : _tasks_processing)
             maybe_add_task(*task);
         for (std::shared_ptr<Task> const& task : _tasks_waiting)
             maybe_add_task(*task);
-        for (TaskAndDelay const& task : _small_tasks_with_delay)
+        for (TaskAndCondition const& task : _tasks_with_condition)
             maybe_add_task(*task.task);
     }
 

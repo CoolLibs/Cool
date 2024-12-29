@@ -1,7 +1,6 @@
 #include "VideoExportProcess.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtras.h"
-#include "Cool/Log/ToUser.h"
 #include "Cool/String/String.h"
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/Time/time_formatted_hms.h"
@@ -40,11 +39,11 @@ bool VideoExportProcess::update(Polaroid const& polaroid)
     }
     if (_nb_frames_which_finished_exporting.load() == _total_nb_of_frames_in_sequence)
     {
-        ImGuiNotify::send(ExporterU::notification_after_export_success(_folder_path, true));
+        ImGuiNotify::send(ExporterU::notification_after_video_export_success(_folder_path));
         return true; // The export is finished
     }
 
-    if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || task_manager().tasks_waiting_count(_tasks_owner_id) >= task_manager().threads_count())
+    if (_nb_frames_sent_to_thread_pool == _total_nb_of_frames_in_sequence || task_manager().num_tasks_waiting_for_thread(_tasks_owner_id) >= task_manager().threads_count())
         return false; // The export is not finished but we can't send work to the thread pool right now, or we have already send the last bits of work to the threads and just have to wait for them to finish
 
     // Actual export of one frame
@@ -76,7 +75,7 @@ auto VideoExportProcess::estimated_remaining_time() -> Time
 
     return Time::seconds(
         nb_frames_to_render * _average_time_between_two_renders
-        + (static_cast<double>(task_manager().tasks_waiting_count(_tasks_owner_id)) + static_cast<double>(task_manager().threads_count()) / 2.) * _average_export_time / static_cast<double>(task_manager().threads_count())
+        + (static_cast<double>(task_manager().num_tasks_waiting_for_thread(_tasks_owner_id)) + static_cast<double>(task_manager().threads_count()) / 2.) * _average_export_time / static_cast<double>(task_manager().threads_count())
         + 1.
     );
 }

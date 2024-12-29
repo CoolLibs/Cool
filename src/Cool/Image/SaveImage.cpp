@@ -6,7 +6,7 @@ namespace Cool::ImageU {
 auto save(
     std::filesystem::path const& file_path,
     img::Image const&            image,
-    img::SaveOptions const&      options
+    stbiw_SaveOptions const&     options
 ) -> tl::expected<void, std::string>
 {
     return Cool::ImageU::save(file_path, image.size().width(), image.size().height(), image.data(), image.channels_count(), image.row_order(), options);
@@ -19,7 +19,7 @@ auto save(
     const void*                  data,
     size_t                       channels_count,
     img::FirstRowIs              row_order,
-    img::SaveOptions const&      options
+    stbiw_SaveOptions const&     options
 ) -> tl::expected<void, std::string>
 {
     if (!File::create_folders_for_file_if_they_dont_exist(file_path))
@@ -38,7 +38,7 @@ auto save(
     if (!success)
     {
         return tl::make_unexpected(
-            (options.cancel && options.cancel->load())
+            (options.cancel_requested && options.cancel_requested())
                 ? "Canceled"
                 : "Maybe you are not allowed to save files in this folder?"
         );

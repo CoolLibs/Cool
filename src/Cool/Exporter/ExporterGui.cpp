@@ -144,7 +144,7 @@ auto ExporterGui::begin_video_export(std::optional<VideoExportProcess>& video_ex
     }
     else
     {
-        ImGuiNotify::send(ExporterU::notification_after_export_failure("Maybe you are not allowed to save files in this folder?", true));
+        ImGuiNotify::send(ExporterU::notification_after_video_export_failure("Maybe you are not allowed to save files in this folder?"));
         return false;
     }
 }

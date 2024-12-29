@@ -10,7 +10,7 @@ namespace Cool::ImageU {
 [[nodiscard]] auto save(
     std::filesystem::path const& file_path,
     img::Image const&            image,
-    img::SaveOptions const&      options = {}
+    stbiw_SaveOptions const&     options = {}
 ) -> tl::expected<void, std::string>;
 
 /// Saves an image, with the format specified in the extension of the file_path (.png, .jpeg, ...)
@@ -27,7 +27,7 @@ namespace Cool::ImageU {
     const void*                  data,
     size_t                       channels_count,
     img::FirstRowIs              row_order,
-    img::SaveOptions const&      options = {}
+    stbiw_SaveOptions const&     options = {}
 ) -> tl::expected<void, std::string>;
 
 } // namespace Cool::ImageU

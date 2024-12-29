@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <reg/src/AnyId.hpp>
 #include <thread>
-#include "Cool/Utils/Delay.hpp"
+#include "Condition.hpp"
 #include "Task.hpp"
 
 namespace Cool {
@@ -20,26 +20,21 @@ public:
     TaskManager(TaskManager&&) noexcept            = delete;
     TaskManager& operator=(TaskManager&&) noexcept = delete;
 
-    void submit(std::shared_ptr<Task> const& task);
-    void submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
-    /// This task will be run on the main thread (to make sure the delay is respected precisely, it avoids having all worker threads blocked by huge tasks and not being able to submit this task precisely when the timer runs out)
-    /// So it must run very quickly, in order to not block the main thread
-    void submit_small_task_to_run_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task);
-    /// Wraps the lambda in a task and calls `submit_small_task_to_run_in()`
-    /// ⚠ The lambda must capture everything by copy, it will be stored
-    void submit_small_lambda_to_run_in(std::chrono::milliseconds delay, std::string name, std::function<void()> const& lambda);
+    void submit(std::shared_ptr<Task> const& task, bool has_already_called_on_submit = false);
+    void submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task); // TODO(Launcher) do a generic submit, with optional condition, because submit_in sounds like we won't submit immediately, altough on_submit will be called immediately
+
     void cancel_all(reg::AnyId const& owner_id);
 
-    auto tasks_waiting_count(reg::AnyId const& owner_id) const -> size_t;
-    auto tasks_processing_count(reg::AnyId const& owner_id) const -> size_t;
-    auto small_delayed_tasks_count(reg::AnyId const& owner_id) const -> size_t;
+    auto num_tasks_waiting_for_thread(reg::AnyId const& owner_id) const -> size_t;
+    auto num_tasks_waiting_for_condition(reg::AnyId const& owner_id) const -> size_t;
+    auto num_tasks_processing(reg::AnyId const& owner_id) const -> size_t;
     auto threads_count() const -> size_t { return _threads.size(); }
 
 private:
     friend class TestTasks;
-    auto tasks_waiting_count() const -> size_t;
-    auto tasks_processing_count() const -> size_t;
-    auto small_delayed_tasks_count() const -> size_t;
+    auto num_tasks_waiting_for_thread() const -> size_t;
+    auto num_tasks_waiting_for_condition() const -> size_t;
+    auto num_tasks_processing() const -> size_t;
 
 private:
     friend class AppManager;
@@ -52,6 +47,8 @@ private:
     void cancel_all();
     void cancel_if(std::function<bool(Task const&)> const& predicate);
 
+    static void do_task_work(Task&);
+
 private:
     std::deque<std::shared_ptr<Task>> _tasks_waiting;
     std::list<std::shared_ptr<Task>>  _tasks_processing;
@@ -62,12 +59,12 @@ private:
     std::condition_variable_any _wait_for_threads_to_finish;
     std::atomic<bool>           _is_shutting_down{false};
 
-    struct TaskAndDelay {
+    struct TaskAndCondition {
         std::shared_ptr<Task> task;
-        Delay                 delay;
+        Condition             condition;
     };
-    std::list<TaskAndDelay>   _small_tasks_with_delay;
-    mutable std::shared_mutex _small_tasks_with_delay_mutex;
+    std::list<TaskAndCondition> _tasks_with_condition;
+    mutable std::shared_mutex   _tasks_with_condition_mutex;
 };
 
 inline auto task_manager() -> TaskManager&
