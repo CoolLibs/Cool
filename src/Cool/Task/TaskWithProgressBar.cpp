@@ -13,11 +13,11 @@ void TaskWithProgressBar::on_submit()
     _notification_id = ImGuiNotify::send({
         .type                 = ImGuiNotify::Type::Info,
         .title                = name(),
-        .custom_imgui_content = [&]() { // We can capture This be reference because the Task is stored in a shared_ptr, and on_cleanup we will change the Notification so that it doesn't have to reference the task anymore
-            ImGuiExtras::disabled_if(_data.cancel.load(), "", [&]() {
-                ImGui::TextUnformatted("Waiting for other tasks to finish before we can start this one");
+        .content              = text_in_notification_while_waiting_to_execute(),
+        .custom_imgui_content = [data = _data, task_id = owner_id()]() {
+            ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
                 if (ImGui::Button("Cancel"))
-                    task_manager().cancel_all(owner_id());
+                    task_manager().cancel_all(task_id);
             });
         },
         .duration    = std::nullopt,
@@ -25,18 +25,18 @@ void TaskWithProgressBar::on_submit()
     });
 }
 
-void TaskWithProgressBar::just_before_work_starts()
+void TaskWithProgressBar::just_before_execution_starts()
 {
     ImGuiNotify::change(
         _notification_id,
         {
             .type                 = ImGuiNotify::Type::Info,
             .title                = name(),
-            .custom_imgui_content = [&]() { // We can capture This be reference because the Task is stored in a shared_ptr, and on_cleanup we will change the Notification so that it doesn't have to reference the task anymore
-                ImGuiExtras::disabled_if(_data.cancel.load(), "", [&]() {
-                    ImGuiExtras::progress_bar(_data.progress.load());
+            .custom_imgui_content = [data = _data, task_id = owner_id()]() {
+                ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
+                    ImGuiExtras::progress_bar(data->progress.load());
                     if (ImGui::Button("Cancel"))
-                        task_manager().cancel_all(owner_id());
+                        task_manager().cancel_all(task_id);
                 });
             },
             .duration    = std::nullopt,
@@ -45,7 +45,12 @@ void TaskWithProgressBar::just_before_work_starts()
     );
 }
 
-auto TaskWithProgressBar::notification_after_do_work_completes() const -> ImGuiNotify::Notification
+auto TaskWithProgressBar::text_in_notification_while_waiting_to_execute() const -> std::string
+{
+    return "Waiting for other tasks to finish before we can start this one";
+}
+
+auto TaskWithProgressBar::notification_after_execution_completes() const -> ImGuiNotify::Notification
 {
     return {
         .type    = ImGuiNotify::Type::Success,
@@ -54,12 +59,12 @@ auto TaskWithProgressBar::notification_after_do_work_completes() const -> ImGuiN
     };
 }
 
-void TaskWithProgressBar::on_cleanup(bool has_been_canceled)
+void TaskWithProgressBar::cleanup(bool has_been_canceled)
 {
     if (has_been_canceled)
         ImGuiNotify::close_immediately(_notification_id);
     else
-        ImGuiNotify::change(_notification_id, notification_after_do_work_completes());
+        ImGuiNotify::change(_notification_id, notification_after_execution_completes());
 }
 
 } // namespace Cool

@@ -5,7 +5,7 @@
 
 namespace Cool {
 
-void Task_SaveVideoFrame::do_work()
+void Task_SaveVideoFrame::execute()
 {
     auto const begin = std::chrono::steady_clock::now();
 

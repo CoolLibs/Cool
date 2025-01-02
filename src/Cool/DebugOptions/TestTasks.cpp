@@ -30,7 +30,7 @@ public:
     auto name() const -> std::string override { return fmt::format("Long Process {}", _id); }
 
 private:
-    void do_work() override
+    void execute() override
     {
         int count{0};
         for (int _ = 0; _ < _count_max; ++_)
@@ -59,7 +59,7 @@ public:
     auto name() const -> std::string override { return fmt::format("Say Hello {}", _id); }
 
 private:
-    void do_work() override
+    void execute() override
     {
         ImGuiNotify::send({
             .type    = _loop ? ImGuiNotify::Type::Warning : ImGuiNotify::Type::Success,
@@ -67,7 +67,7 @@ private:
             .content = fmt::format("Hello from {} ago", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - _start_time)),
         });
         if (_loop)
-            task_manager().submit_in(2s, std::make_shared<Task_SayHello>(true));
+            task_manager().submit(after(2s), std::make_shared<Task_SayHello>(true));
     }
 
     auto is_quick_task() const -> bool override { return true; }
@@ -96,7 +96,7 @@ void TestTasks::imgui()
     if (ImGui::Button("Short Task"))
         task_manager().submit(std::make_shared<Task_LongProcess>(10000000));
     if (ImGui::Button("Run in 2 seconds"))
-        task_manager().submit_in(2s, std::make_shared<Task_SayHello>());
+        task_manager().submit(after(2s), std::make_shared<Task_SayHello>());
     if (ImGui::Button("Loop every 2 seconds"))
         task_manager().submit(std::make_shared<Task_SayHello>(true));
 

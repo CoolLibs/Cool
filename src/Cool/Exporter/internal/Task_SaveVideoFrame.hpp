@@ -21,7 +21,7 @@ public:
     auto name() const -> std::string override { return fmt::format("Exporting video frame \"{}\"", Cool::File::file_name(_file_path)); }
 
 private:
-    void do_work() override;
+    void execute() override;
     auto is_quick_task() const -> bool override { return false; }
     void cancel() override { _cancel.store(true); }
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return true; }

@@ -1,10 +1,9 @@
 #pragma once
-#include <chrono>
 #include <condition_variable>
 #include <reg/src/AnyId.hpp>
 #include <thread>
-#include "Condition.hpp"
 #include "Task.hpp"
+#include "WaitToExecuteTask.hpp"
 
 namespace Cool {
 
@@ -20,8 +19,8 @@ public:
     TaskManager(TaskManager&&) noexcept            = delete;
     TaskManager& operator=(TaskManager&&) noexcept = delete;
 
-    void submit(std::shared_ptr<Task> const& task, bool has_already_called_on_submit = false);
-    void submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task); // TODO(Launcher) do a generic submit, with optional condition, because submit_in sounds like we won't submit immediately, altough on_submit will be called immediately
+    void submit(std::shared_ptr<Task> const& task);
+    void submit(std::shared_ptr<WaitToExecuteTask> const& condition, std::shared_ptr<Task> const& task);
 
     void cancel_all(reg::AnyId const& owner_id);
 
@@ -46,22 +45,25 @@ private:
     void thread_update_loop();
     void cancel_all();
     void cancel_if(std::function<bool(Task const&)> const& predicate);
+    void execute_task_asap(std::shared_ptr<Task> const& task);
 
-    static void do_task_work(Task&);
+    static void execute_task(Task&);
+    static void cancel_task_that_is_waiting(Task&);
+    static void cancel_task_that_is_executing(Task&);
 
 private:
-    std::deque<std::shared_ptr<Task>> _tasks_waiting;
-    std::list<std::shared_ptr<Task>>  _tasks_processing;
-    mutable std::shared_mutex         _tasks_mutex;
+    std::deque<std::shared_ptr<Task>> _tasks_waiting{};
+    std::list<std::shared_ptr<Task>>  _tasks_processing{};
+    mutable std::shared_mutex         _tasks_mutex{};
 
-    std::vector<std::thread>    _threads;
-    std::condition_variable_any _wake_up_thread;
-    std::condition_variable_any _wait_for_threads_to_finish;
+    std::vector<std::thread>    _threads{};
+    std::condition_variable_any _wake_up_thread{};
+    std::condition_variable_any _wait_for_threads_to_finish{};
     std::atomic<bool>           _is_shutting_down{false};
 
     struct TaskAndCondition {
-        std::shared_ptr<Task> task;
-        Condition             condition;
+        std::shared_ptr<Task>              task;
+        std::shared_ptr<WaitToExecuteTask> condition;
     };
     std::list<TaskAndCondition> _tasks_with_condition;
     mutable std::shared_mutex   _tasks_with_condition_mutex;

@@ -1,7 +1,6 @@
 #include "TaskManager.hpp"
 #include <algorithm>
 #include <memory>
-#include "Condition.hpp"
 
 namespace Cool {
 
@@ -30,11 +29,27 @@ void TaskManager::shut_down()
         thread.join();
 }
 
-void TaskManager::do_task_work(Task& task)
+void TaskManager::execute_task(Task& task)
 {
-    task.just_before_work_starts();
-    task.do_work();
-    task.on_cleanup(task._has_been_canceled_during_do_work.load());
+    task.just_before_execution_starts();
+    task.execute();
+    if (!task.has_been_canceled())
+        task._completion.store(Task::Completion::FinishedExecuting);
+    task.cleanup(task.has_been_canceled());
+}
+
+void TaskManager::cancel_task_that_is_waiting(Task& task)
+{
+    // Task has not started execute(), so there is no need to call cancel()
+    task._completion.store(Task::Completion::Canceled);
+    task.cleanup(true /*has_been_canceled*/);
+}
+
+void TaskManager::cancel_task_that_is_executing(Task& task)
+{
+    task.cancel();
+    task._completion.store(Task::Completion::Canceled);
+    // cleanup() will be called by the thread that is running the task once execute() finishes
 }
 
 void TaskManager::thread_update_loop()
@@ -51,7 +66,7 @@ void TaskManager::thread_update_loop()
             _tasks_waiting.pop_front();
             _tasks_processing.push_back(task);
         }
-        do_task_work(*task);
+        execute_task(*task);
         {
             auto lock = std::unique_lock{_tasks_mutex};
             std::erase_if(_tasks_processing, [&](std::shared_ptr<Task> const& t) { return t.get() == task.get(); });
@@ -67,36 +82,69 @@ void TaskManager::thread_update_loop()
 void TaskManager::update_on_main_thread()
 {
     auto tasks_to_submit = std::vector<std::shared_ptr<Task>>{}; // We don't submit the tasks immediately in the loop, because they might be executed immediately, and if they want to submit other tasks this would conflict with the lock
+    auto tasks_to_cancel = std::vector<std::shared_ptr<Task>>{}; // We don't cancel the tasks immediately in the loop, because the custom code in their cleanup() might conflict with the lock
 
     {
         auto lock = std::unique_lock{_tasks_with_condition_mutex};
         for (auto it = _tasks_with_condition.begin(); it != _tasks_with_condition.end();)
         {
-            if (!it->condition())
+            if (it->condition->wants_to_cancel())
+            {
+                tasks_to_cancel.emplace_back(it->task);
+                it = _tasks_with_condition.erase(it);
+            }
+            else if (it->condition->wants_to_execute())
+            {
+                tasks_to_submit.emplace_back(it->task);
+                it = _tasks_with_condition.erase(it);
+            }
+            else
             {
                 ++it;
-                continue;
             }
-            tasks_to_submit.emplace_back(it->task);
-            it = _tasks_with_condition.erase(it);
         }
     }
 
     for (auto const& task : tasks_to_submit)
-        submit(task, true /*has_already_called_on_submit*/);
+        execute_task_asap(task); // Don't call submit() because it would call task->on_submit() a second time
+    for (auto const& task : tasks_to_cancel)
+        cancel_task_that_is_waiting(*task);
 }
 
-void TaskManager::submit(std::shared_ptr<Task> const& task, bool has_already_called_on_submit)
+void TaskManager::submit(std::shared_ptr<Task> const& task)
+{
+    if (_is_shutting_down.load())
+        return;
+    task->on_submit();
+
+    execute_task_asap(task);
+}
+
+void TaskManager::submit(std::shared_ptr<WaitToExecuteTask> const& condition, std::shared_ptr<Task> const& task)
+{
+    if (_is_shutting_down.load())
+        return;
+    task->on_submit();
+
+    if (condition->wants_to_execute())
+    {
+        execute_task_asap(task);
+    }
+    else
+    {
+        auto lock = std::unique_lock{_tasks_with_condition_mutex};
+        _tasks_with_condition.emplace_back(task, condition);
+    }
+}
+
+void TaskManager::execute_task_asap(std::shared_ptr<Task> const& task)
 {
     if (_is_shutting_down.load())
         return;
 
-    if (!has_already_called_on_submit)
-        task->on_submit();
-
     if (task->is_quick_task())
     {
-        do_task_work(*task);
+        execute_task(*task);
     }
     else
     {
@@ -105,18 +153,6 @@ void TaskManager::submit(std::shared_ptr<Task> const& task, bool has_already_cal
             _tasks_waiting.push_back(task);
         }
         _wake_up_thread.notify_one();
-    }
-}
-
-void TaskManager::submit_in(std::chrono::milliseconds delay, std::shared_ptr<Task> const& task)
-{
-    if (_is_shutting_down.load())
-        return;
-
-    task->on_submit();
-    {
-        auto lock = std::unique_lock{_tasks_with_condition_mutex};
-        _tasks_with_condition.emplace_back(task, Condition_Delay{delay});
     }
 }
 
@@ -130,8 +166,7 @@ void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
             if (!predicate(*task.task))
                 continue;
 
-            task.task->on_cleanup(true /*has_been_canceled*/); // Task has not started do_work(), so there is no need to call cancel()
-
+            cancel_task_that_is_waiting(*task.task);
             task.task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
         }
         std::erase_if(_tasks_with_condition, [](TaskAndCondition const& task) { return task.task == nullptr; });
@@ -144,8 +179,7 @@ void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
             if (!predicate(*task))
                 continue;
 
-            task->on_cleanup(true /*has_been_canceled*/); // Task has not started do_work(), so there is no need to call cancel()
-
+            cancel_task_that_is_waiting(*task);
             task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
         };
         std::erase_if(_tasks_waiting, [](std::shared_ptr<Task> const& task) { return task == nullptr; });
@@ -155,8 +189,7 @@ void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
         {
             if (!predicate(*task))
                 continue;
-            task->cancel(); // on_cleanup() will be called by the thread that is running the task once do_work() finishes
-            task->_has_been_canceled_during_do_work.store(true);
+            cancel_task_that_is_executing(*task);
         }
     }
 }
