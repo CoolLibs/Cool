@@ -138,9 +138,19 @@ auto colored_button(const char* label, float hue, const ImVec2& size) -> bool
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
-    const auto is_clicked = ImGui::Button(label, size);
+    auto const is_pressed = ImGui::Button(label, size);
     ImGui::PopStyleColor(3);
-    return is_clicked;
+    return is_pressed;
+}
+
+auto colored_button(const char* label, Color color, const ImVec2& size) -> bool
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, color.as_ImColor().Value);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color.brighter().as_ImColor().Value);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color.brighter().brighter().as_ImColor().Value);
+    auto const is_pressed = ImGui::Button(label, size);
+    ImGui::PopStyleColor(3);
+    return is_pressed;
 }
 
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)

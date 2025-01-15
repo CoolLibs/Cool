@@ -32,6 +32,7 @@ void button_disabled(const char* label, const char* reason_for_disabling = "Curr
 
 /// A button colored with the given `hue` (a number between 0 and 1).
 auto colored_button(const char* label, float hue, const ImVec2& size = ImVec2(0, 0)) -> bool;
+auto colored_button(const char* label, Color color, const ImVec2& size = ImVec2(0, 0)) -> bool;
 
 /**
  * @brief A button that uses an image instead of text

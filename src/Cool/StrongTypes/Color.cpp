@@ -1,8 +1,13 @@
 #include "Color.h"
 #include "Cool/ColorSpaces/conversions.h"
 #include "Cool/UserSettings/UserSettings.h"
+#include "ImGui_StyleEditor/src/Color.hpp"
 
 namespace Cool {
+
+Color::Color(ImStyleEd::Color const& color)
+    : _srgb{color.r, color.g, color.b}
+{}
 
 auto Color::from_srgb(glm::vec3 const& srgb) -> Color
 {
