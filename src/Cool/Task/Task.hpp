@@ -1,5 +1,6 @@
 #pragma once
 #include <reg/src/AnyId.hpp>
+#include "TaskCoroutine.hpp"
 
 namespace Cool {
 
@@ -26,7 +27,7 @@ private:
     friend class TaskManager;
 
     /// Do the actual work of the task
-    virtual void execute() = 0;
+    virtual auto execute() -> TaskCoroutine = 0;
 
     /// Called as soon as the task is given to task_manager().submit()
     virtual void on_submit() {}

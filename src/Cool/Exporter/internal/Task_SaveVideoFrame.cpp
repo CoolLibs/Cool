@@ -1,11 +1,12 @@
 #include "Task_SaveVideoFrame.hpp"
 #include "../ExporterU.h"
 #include "Cool/Image/SaveImage.h"
+#include "Cool/Task/TaskCoroutine.hpp"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool {
 
-void Task_SaveVideoFrame::execute()
+auto Task_SaveVideoFrame::execute() -> TaskCoroutine
 {
     auto const begin = std::chrono::steady_clock::now();
 
@@ -20,11 +21,11 @@ void Task_SaveVideoFrame::execute()
     if (!result.has_value())
     {
         if (_cancel.load())
-            return; // Don't log any error if we were just canceled
+            co_return; // Don't log any error if we were just canceled
         bool const has_already_been_reported = _report_failure->exchange(true);
         if (!has_already_been_reported)
             ImGuiNotify::send(ExporterU::notification_after_video_export_failure(result.error()));
-        return;
+        co_return;
     }
 
     auto const end        = std::chrono::steady_clock::now();

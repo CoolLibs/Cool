@@ -3,6 +3,7 @@
 #include <reg/src/AnyId.hpp>
 #include <thread>
 #include "Task.hpp"
+#include "TaskCoroutine.hpp"
 #include "WaitToExecuteTask.hpp"
 
 namespace Cool {
@@ -31,8 +32,7 @@ public:
 
 private:
     friend class TestTasks;
-    auto num_tasks_waiting_for_thread() const -> size_t;
-    auto num_tasks_waiting_for_condition() const -> size_t;
+    auto num_tasks_waiting() const -> size_t;
     auto num_tasks_processing() const -> size_t;
 
 private:
@@ -45,28 +45,32 @@ private:
     void thread_update_loop();
     void cancel_all();
     void cancel_if(std::function<bool(Task const&)> const& predicate);
-    void execute_task_asap(std::shared_ptr<Task> const& task);
 
     static void execute_task(Task&);
     static void cancel_task_that_is_waiting(Task&);
     static void cancel_task_that_is_executing(Task&);
 
 private:
-    std::deque<std::shared_ptr<Task>> _tasks_waiting{};
-    std::list<std::shared_ptr<Task>>  _tasks_processing{};
-    mutable std::shared_mutex         _tasks_mutex{};
+    struct TaskAndCondition {
+        std::shared_ptr<Task>              task;
+        std::shared_ptr<WaitToExecuteTask> condition;
+    };
+    struct TaskAndCoroutine {
+        std::shared_ptr<Task> task;
+        TaskCoroutine         coroutine;
+    };
+
+    std::list<TaskAndCondition> _tasks_waiting{};
+    mutable std::shared_mutex   _tasks_waiting_mutex{};
+    std::list<TaskAndCoroutine> _tasks_processing{};
+    mutable std::shared_mutex   _tasks_processing_mutex{};
 
     std::vector<std::thread>    _threads{};
     std::condition_variable_any _wake_up_thread{};
     std::condition_variable_any _wait_for_threads_to_finish{};
     std::atomic<bool>           _is_shutting_down{false};
 
-    struct TaskAndCondition {
-        std::shared_ptr<Task>              task;
-        std::shared_ptr<WaitToExecuteTask> condition;
-    };
-    std::list<TaskAndCondition> _tasks_with_condition;
-    mutable std::shared_mutex   _tasks_with_condition_mutex;
+    std::atomic<int> _nb_tasks_processed_by_thread{0};
 };
 
 inline auto task_manager() -> TaskManager&

@@ -12,7 +12,7 @@ public:
     auto name() const -> std::string override { return fmt::format("Exporting image \"{}\"", Cool::File::file_name(_file_path)); }
 
 private:
-    void execute() override;
+    auto execute() -> TaskCoroutine override;
     auto needs_user_confirmation_to_cancel_when_closing_app() const -> bool override { return true; }
     auto notification_after_execution_completes() const -> ImGuiNotify::Notification override;
 

@@ -14,7 +14,7 @@ Task_SaveImage::Task_SaveImage(std::filesystem::path const& file_path, img::Imag
     File::mark_file_path_unavailable(file_path); // The file will not be created immediately, but we must know that it is already taken so that we don't try to create another image with the same path
 }
 
-void Task_SaveImage::execute()
+auto Task_SaveImage::execute() -> TaskCoroutine
 {
     _result = ImageU::save(
         _file_path, _image,
@@ -23,6 +23,7 @@ void Task_SaveImage::execute()
             .set_progress     = [&](float progress) { set_progress(progress); },
         }
     );
+    co_return;
 }
 
 auto Task_SaveImage::notification_after_execution_completes() const -> ImGuiNotify::Notification

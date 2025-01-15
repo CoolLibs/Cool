@@ -1,6 +1,8 @@
 #include "TaskManager.hpp"
 #include <algorithm>
+#include <chrono>
 #include <memory>
+#include "TaskCoroutine.hpp"
 
 namespace Cool {
 
@@ -19,7 +21,7 @@ void TaskManager::shut_down()
     // Remove waiting tasks, tell processing tasks to finish asap
     cancel_all();
     { // Wait for threads that are processing a task to finish
-        auto lock = std::unique_lock{_tasks_mutex};
+        auto lock = std::unique_lock{_tasks_processing_mutex};
         _wait_for_threads_to_finish.wait(lock, [&] { return _tasks_processing.empty(); });
     }
     // Wake up all threads that were not processing a task and let them realize that _is_shutting_down == true
@@ -56,21 +58,35 @@ void TaskManager::thread_update_loop()
 {
     while (true)
     {
-        auto task = std::shared_ptr<Task>{};
+        auto task = std::optional<TaskAndCoroutine>{};
         { // Grab a task from the queue
-            auto lock = std::unique_lock{_tasks_mutex};
-            _wake_up_thread.wait(lock, [&] { return !_tasks_waiting.empty() || _is_shutting_down.load(); });
+            auto lock = std::unique_lock{_tasks_processing_mutex};
+            _wake_up_thread.wait(lock, [&] { return !_tasks_processing.empty() || _is_shutting_down.load(); });
+            if (_tasks_processing.empty())
+                continue;
             if (_is_shutting_down.load())
                 break;
-            task = std::move(_tasks_waiting.front());
-            _tasks_waiting.pop_front();
-            _tasks_processing.push_back(task);
+            task = std::move(_tasks_processing.front());
+            _tasks_processing.pop_front();
+            _nb_tasks_processed_by_thread.fetch_add(1);
         }
-        execute_task(*task);
+
+        // auto const start = std::chrono::steady_clock::now();
+        // while (!task->coroutine.has_finished() && std::chrono::steady_clock::now() - start < 1000ms)
+        // while (!task->coroutine.has_finished())
+        task->coroutine.do_some_work();
+        _nb_tasks_processed_by_thread.fetch_add(-1);
+        if (task->coroutine.has_finished())
         {
-            auto lock = std::unique_lock{_tasks_mutex};
-            std::erase_if(_tasks_processing, [&](std::shared_ptr<Task> const& t) { return t.get() == task.get(); });
+            task->task->cleanup(false /*has_been_canceled*/);
         }
+        else
+        {
+            auto lock = std::unique_lock{_tasks_processing_mutex};
+            _tasks_processing.emplace_back(std::move(*task));
+            _wake_up_thread.notify_one();
+        }
+
         if (_is_shutting_down.load())
         {
             _wait_for_threads_to_finish.notify_one();
@@ -81,22 +97,22 @@ void TaskManager::thread_update_loop()
 
 void TaskManager::update_on_main_thread()
 {
-    auto tasks_to_submit = std::vector<std::shared_ptr<Task>>{}; // We don't submit the tasks immediately in the loop, because they might be executed immediately, and if they want to submit other tasks this would conflict with the lock
+    auto tasks_to_start  = std::vector<std::shared_ptr<Task>>{}; // We don't submit the tasks immediately in the loop, because they might be executed immediately, and if they want to submit other tasks this would conflict with the lock
     auto tasks_to_cancel = std::vector<std::shared_ptr<Task>>{}; // We don't cancel the tasks immediately in the loop, because the custom code in their cleanup() might conflict with the lock
 
     {
-        auto lock = std::unique_lock{_tasks_with_condition_mutex};
-        for (auto it = _tasks_with_condition.begin(); it != _tasks_with_condition.end();)
+        auto lock = std::unique_lock{_tasks_waiting_mutex};
+        for (auto it = _tasks_waiting.begin(); it != _tasks_waiting.end();)
         {
-            if (it->condition->wants_to_cancel())
+            if (!it->condition || it->condition->wants_to_execute())
+            {
+                tasks_to_start.emplace_back(it->task);
+                it = _tasks_waiting.erase(it);
+            }
+            else if (it->condition->wants_to_cancel())
             {
                 tasks_to_cancel.emplace_back(it->task);
-                it = _tasks_with_condition.erase(it);
-            }
-            else if (it->condition->wants_to_execute())
-            {
-                tasks_to_submit.emplace_back(it->task);
-                it = _tasks_with_condition.erase(it);
+                it = _tasks_waiting.erase(it);
             }
             else
             {
@@ -105,93 +121,71 @@ void TaskManager::update_on_main_thread()
         }
     }
 
-    for (auto const& task : tasks_to_submit)
-        execute_task_asap(task); // Don't call submit() because it would call task->on_submit() a second time
+    {
+        auto lock = std::unique_lock{_tasks_processing_mutex};
+        for (auto const& task : tasks_to_start)
+        {
+            task->just_before_execution_starts();
+            _tasks_processing.emplace_back(task, task->execute());
+            _wake_up_thread.notify_one();
+        }
+    }
     for (auto const& task : tasks_to_cancel)
         cancel_task_that_is_waiting(*task);
 }
 
 void TaskManager::submit(std::shared_ptr<Task> const& task)
 {
-    if (_is_shutting_down.load())
-        return;
-    task->on_submit();
-
-    execute_task_asap(task);
+    submit(nullptr /*condition*/, task);
 }
 
 void TaskManager::submit(std::shared_ptr<WaitToExecuteTask> const& condition, std::shared_ptr<Task> const& task)
 {
     if (_is_shutting_down.load())
         return;
+
     task->on_submit();
 
-    if (condition->wants_to_execute())
-    {
-        execute_task_asap(task);
-    }
-    else
-    {
-        auto lock = std::unique_lock{_tasks_with_condition_mutex};
-        _tasks_with_condition.emplace_back(task, condition);
-    }
-}
-
-void TaskManager::execute_task_asap(std::shared_ptr<Task> const& task)
-{
-    if (_is_shutting_down.load())
-        return;
-
-    if (task->is_quick_task())
-    {
-        execute_task(*task);
-    }
-    else
-    {
-        {
-            auto lock = std::unique_lock{_tasks_mutex};
-            _tasks_waiting.push_back(task);
-        }
-        _wake_up_thread.notify_one();
-    }
+    auto lock = std::unique_lock{_tasks_waiting_mutex};
+    _tasks_waiting.emplace_back(task, condition);
 }
 
 void TaskManager::cancel_if(std::function<bool(Task const&)> const& predicate)
 {
-    {
-        auto lock = std::unique_lock{_tasks_with_condition_mutex};
+    // {
+    //     auto lock = std::unique_lock{_tasks_with_condition_mutex};
 
-        for (TaskAndCondition& task : _tasks_with_condition)
-        {
-            if (!predicate(*task.task))
-                continue;
+    //     for (TaskAndCondition& task : _tasks_with_condition)
+    //     {
+    //         if (!predicate(*task.task))
+    //             continue;
 
-            cancel_task_that_is_waiting(*task.task);
-            task.task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
-        }
-        std::erase_if(_tasks_with_condition, [](TaskAndCondition const& task) { return task.task == nullptr; });
-    }
-    {
-        auto lock = std::unique_lock{_tasks_mutex};
+    //         cancel_task_that_is_waiting(*task.task);
+    //         task.task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
+    //     }
+    //     std::erase_if(_tasks_with_condition, [](TaskAndCondition const& task) { return task.task == nullptr; });
+    // }
+    // {
+    //     auto lock = std::unique_lock{_tasks_mutex};
 
-        for (std::shared_ptr<Task>& task : _tasks_waiting)
-        {
-            if (!predicate(*task))
-                continue;
+    //     for (std::shared_ptr<Task>& task : _tasks_waiting)
+    //     {
+    //         if (!predicate(*task))
+    //             continue;
 
-            cancel_task_that_is_waiting(*task);
-            task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
-        };
-        std::erase_if(_tasks_waiting, [](std::shared_ptr<Task> const& task) { return task == nullptr; });
+    //         cancel_task_that_is_waiting(*task);
+    //         task = nullptr; // Mark them as nullptr so that we can erase_if afterwards without having to check the predicate again
+    //     };
+    //     std::erase_if(_tasks_waiting, [](std::shared_ptr<Task> const& task) { return task == nullptr; });
 
-        // Cancel the tasks that are already in progress
-        for (auto& task : _tasks_processing)
-        {
-            if (!predicate(*task))
-                continue;
-            cancel_task_that_is_executing(*task);
-        }
-    }
+    //     // Cancel the tasks that are already in progress
+    //     for (auto& task : _tasks_processing)
+    //     {
+    //         if (!predicate(*task))
+    //             continue;
+    //         cancel_task_that_is_executing(*task);
+    //     }
+    // }
 }
 
 void TaskManager::cancel_all()
@@ -208,70 +202,67 @@ void TaskManager::cancel_all(reg::AnyId const& owner_id)
     });
 }
 
-auto TaskManager::num_tasks_waiting_for_thread() const -> size_t
+auto TaskManager::num_tasks_waiting() const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_mutex};
+    auto lock = std::shared_lock{_tasks_waiting_mutex};
     return _tasks_waiting.size();
-}
-
-auto TaskManager::num_tasks_waiting_for_condition() const -> size_t
-{
-    auto lock = std::shared_lock{_tasks_with_condition_mutex};
-    return _tasks_with_condition.size();
 }
 
 auto TaskManager::num_tasks_processing() const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_mutex};
-    return _tasks_processing.size();
+    auto lock = std::shared_lock{_tasks_processing_mutex};
+    return _tasks_processing.size() + _nb_tasks_processed_by_thread.load();
 }
 
 auto TaskManager::num_tasks_waiting_for_thread(reg::AnyId const& owner_id) const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_mutex};
-    return std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
-        return task->owner_id() == owner_id;
-    });
+    return 1;
+    // auto lock = std::shared_lock{_tasks_mutex};
+    // return std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
+    //     return task->owner_id() == owner_id;
+    // });
 }
 
 auto TaskManager::num_tasks_waiting_for_condition(reg::AnyId const& owner_id) const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_with_condition_mutex};
-    return std::count_if(_tasks_with_condition.begin(), _tasks_with_condition.end(), [&](TaskAndCondition const& task) {
-        return task.task->owner_id() == owner_id;
-    });
+    return 1;
+    // auto lock = std::shared_lock{_tasks_with_condition_mutex};
+    // return std::count_if(_tasks_with_condition.begin(), _tasks_with_condition.end(), [&](TaskAndCondition const& task) {
+    //     return task.task->owner_id() == owner_id;
+    // });
 }
 
 auto TaskManager::num_tasks_processing(reg::AnyId const& owner_id) const -> size_t
 {
-    auto lock = std::shared_lock{_tasks_mutex};
-    return std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
-        return task->owner_id() == owner_id;
-    });
+    return 1;
+    // auto lock = std::shared_lock{_tasks_mutex};
+    // return std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
+    //     return task->owner_id() == owner_id;
+    // });
 }
 
 auto TaskManager::list_of_tasks_that_need_user_confirmation_before_killing() const -> std::string
 {
-    auto       list_of_tasks  = ""s;
-    auto const maybe_add_task = [&](Task const& task) {
-        if (!task.needs_user_confirmation_to_cancel_when_closing_app())
-            return;
-        if (!list_of_tasks.empty())
-            list_of_tasks += '\n';
-        list_of_tasks += fmt::format(" - {}", task.name());
-    };
+    auto list_of_tasks = ""s;
+    // auto const maybe_add_task = [&](Task const& task) {
+    //     if (!task.needs_user_confirmation_to_cancel_when_closing_app())
+    //         return;
+    //     if (!list_of_tasks.empty())
+    //         list_of_tasks += '\n';
+    //     list_of_tasks += fmt::format(" - {}", task.name());
+    // };
 
-    {
-        auto lock1 = std::shared_lock{_tasks_mutex};
-        auto lock2 = std::shared_lock{_tasks_with_condition_mutex};
+    // {
+    //     auto lock1 = std::shared_lock{_tasks_mutex};
+    //     auto lock2 = std::shared_lock{_tasks_with_condition_mutex};
 
-        for (std::shared_ptr<Task> const& task : _tasks_processing)
-            maybe_add_task(*task);
-        for (std::shared_ptr<Task> const& task : _tasks_waiting)
-            maybe_add_task(*task);
-        for (TaskAndCondition const& task : _tasks_with_condition)
-            maybe_add_task(*task.task);
-    }
+    //     for (std::shared_ptr<Task> const& task : _tasks_processing)
+    //         maybe_add_task(*task);
+    //     for (std::shared_ptr<Task> const& task : _tasks_waiting)
+    //         maybe_add_task(*task);
+    //     for (TaskAndCondition const& task : _tasks_with_condition)
+    //         maybe_add_task(*task.task);
+    // }
 
     return list_of_tasks;
 }
