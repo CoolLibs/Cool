@@ -181,6 +181,20 @@ auto is_absolute(std::filesystem::path const& path) -> bool
     }
 }
 
+auto is_relative(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return path.is_relative();
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_debug_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a relative path:\n{}", path, e.what()));
+        return true;
+    }
+}
+
 auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type
 {
     try

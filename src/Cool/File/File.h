@@ -36,6 +36,7 @@ auto relative(std::filesystem::path const& path, std::filesystem::path const& ba
 auto is_regular_file(std::filesystem::path const& path) -> bool;
 auto is_empty(std::filesystem::path const& path) -> bool;
 auto is_absolute(std::filesystem::path const& path) -> bool;
+auto is_relative(std::filesystem::path const& path) -> bool;
 auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type;
 
 /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.

@@ -332,8 +332,9 @@ template<typename Callable>
 static auto folder_file_impl(const char* label, std::filesystem::path* path, bool show_dialog_button, Callable&& dialog_button) -> bool
 {
     ImGui::PushID(path);
+    ImGui::BeginGroup(); // This allows users to treat all these widgets as a single widget (when checking for hovering, activation, and stuff)
     bool b              = false;
-    auto path_as_string = path->string();
+    auto path_as_string = Cool::File::weakly_canonical(*path).string();
     ImGui::TextUnformatted(label);
     if (show_dialog_button)
     {
@@ -346,6 +347,7 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
         b     = true;
         *path = std::filesystem::path{path_as_string};
     }
+    ImGui::EndGroup();
     ImGui::PopID();
     return b;
 }

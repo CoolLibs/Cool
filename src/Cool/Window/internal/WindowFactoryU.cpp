@@ -1,6 +1,6 @@
 #include "WindowFactoryU.h"
 #include <Cool/Path/Path.h>
-#include <wcam/src/overloaded.hpp>
+#include "Cool/Utils/overloaded.hpp"
 #include "img/src/Load.h"
 
 namespace Cool::WindowFactoryU {
@@ -8,7 +8,7 @@ namespace Cool::WindowFactoryU {
 static auto size_in_pixels(WindowSize size, int screen_size) -> int
 {
     return std::visit(
-        wcam::overloaded{
+        Cool::overloaded{
             [&](SizeProportionalToScreen sz) {
                 return static_cast<int>(static_cast<float>(screen_size) * sz.proportion);
             },
