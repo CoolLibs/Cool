@@ -24,8 +24,12 @@ auto UserSettings::imgui() -> bool
 auto UserSettings::imgui_autosave() -> bool
 {
     return ImGuiExtras::toggle_with_submenu("Autosave", &autosave_enabled, [&]() {
-        bool b                    = ImGui::InputFloat("Delay (in seconds)", &autosave_delay_in_seconds);
-        autosave_delay_in_seconds = smart::keep_above(1.f, autosave_delay_in_seconds); // Make sure the delay is at least 1 second
+        bool b = imgui_drag_time("Delay", &autosave_delay, imgui_drag_time_params{
+                                                               .show_milliseconds = false,
+                                                               .min               = 1.,
+                                                           });
+        // Make sure the delay is at least 1 second, to avoid lagging
+        autosave_delay = Time::seconds(smart::keep_above(1., autosave_delay.as_seconds_double()));
 
         return b;
     });

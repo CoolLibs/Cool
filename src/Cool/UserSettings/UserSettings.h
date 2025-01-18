@@ -1,14 +1,15 @@
 #pragma once
 #include "Cool/Exporter/VideoExportOverwriteBehaviour.h"
 #include "Cool/ImGui/ColorThemes.h"
+#include "Cool/Time/Time.hpp"
 
 namespace Cool {
 
 auto should_enable_multi_viewport_by_default() -> bool;
 
 struct UserSettings {
-    bool  autosave_enabled{true};
-    float autosave_delay_in_seconds{5.f};
+    bool autosave_enabled{true};
+    Time autosave_delay{5s};
 
     bool extra_icons{true};
 
@@ -39,7 +40,7 @@ private:
     {
         archive(
             ser20::make_nvp("Autosave enabled", autosave_enabled),
-            ser20::make_nvp("Autosave delay in seconds", autosave_delay_in_seconds),
+            ser20::make_nvp("Autosave delay", autosave_delay),
             ser20::make_nvp("Extra icons", extra_icons),
             ser20::make_nvp("Camera 2D zoom sensitivity", camera2D_zoom_sensitivity),
             ser20::make_nvp("Single click to input in drag widgets", single_click_to_input_in_drag_widgets),

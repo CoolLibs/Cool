@@ -46,7 +46,7 @@ auto create_autosaver(std::function<void()> const& save) -> std::function<void()
 
         static auto last_time = std::chrono::steady_clock::now();
         const auto  now       = std::chrono::steady_clock::now();
-        if (now - last_time > std::chrono::duration<float>{user_settings().autosave_delay_in_seconds})
+        if (Time{now - last_time} > user_settings().autosave_delay)
         {
             save();
             last_time = now;
