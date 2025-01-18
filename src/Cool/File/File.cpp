@@ -293,11 +293,9 @@ auto find_available_name(std::filesystem::path const& folder_path, std::filesyst
 
     // Find an available name
     auto out_name = file_name;
-    out_name.replace_extension(extension);
-    while (File::exists(folder_path / out_name))
+    while (File::exists(File::with_extension(folder_path / out_name, extension)))
     {
         out_name = base_name + "(" + std::to_string(k) + ")";
-        out_name.replace_extension(extension);
         k++;
     }
     return out_name;
@@ -308,7 +306,7 @@ auto find_available_path(std::filesystem::path const& path) -> std::filesystem::
     auto const folder    = without_file_name(path);
     auto const file      = file_name_without_extension(path);
     auto const extension = File::extension(path);
-    return folder / find_available_name(folder, file, extension);
+    return with_extension(folder / find_available_name(folder, file, extension), extension);
 }
 
 void mark_file_path_unavailable(std::filesystem::path const& path)

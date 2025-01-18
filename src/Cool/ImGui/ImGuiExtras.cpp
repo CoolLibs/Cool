@@ -410,7 +410,7 @@ auto file_and_folder_saving(
     if (ImGuiExtras::folder("Folder", &folder))
     {
         b                   = true;
-        file_with_extension = File::find_available_name(folder, File::file_name_without_extension(path), extension);
+        file_with_extension = File::with_extension(File::find_available_name(folder, File::file_name_without_extension(path), extension), extension);
     }
 
     const char* best_matching_extension = wafl::find_best_match(extensions, extension.string());

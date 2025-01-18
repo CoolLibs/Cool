@@ -8,7 +8,6 @@
 #include <Cool/Window/internal/WindowFactory.h>
 #include <exception>
 #include <filesystem>
-#include <fstream>
 #include <memory>
 #include <scope_guard/scope_guard.hpp>
 #include "Audio/Audio.hpp"
@@ -20,9 +19,7 @@
 #include "Cool/File/File.h"
 #include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Path/Path.h"
-#include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
-#include "Cool/TextureSource/TextureSamplerLibrary.h"
 #include "Cool/View/ViewsManager.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 #if defined(COOL_VULKAN)
