@@ -12,6 +12,7 @@ auto exists(std::filesystem::path const& file_path) -> bool;
 
 void remove_file(std::filesystem::path const& file_path);
 void remove_folder(std::filesystem::path const& folder_path);
+void rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path);
 
 /// Returns the name of the file + its extension (removes parent folders)
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
@@ -24,6 +25,8 @@ auto extension(std::filesystem::path const& file_path) -> std::filesystem::path;
 
 /// Returns the file_path without its extension
 auto without_extension(std::filesystem::path file_path) -> std::filesystem::path;
+/// Returns the file_path with a new extension
+auto with_extension(std::filesystem::path file_path, std::filesystem::path const& extension) -> std::filesystem::path;
 
 /// Returns the folders in the path, removes the file name if there is one at the end
 auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path;
@@ -33,6 +36,7 @@ auto relative(std::filesystem::path const& path, std::filesystem::path const& ba
 auto is_regular_file(std::filesystem::path const& path) -> bool;
 auto is_empty(std::filesystem::path const& path) -> bool;
 auto is_absolute(std::filesystem::path const& path) -> bool;
+auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type;
 
 /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode = std::ios_base::in) -> tl::expected<std::string, std::string>;

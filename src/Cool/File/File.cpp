@@ -65,6 +65,19 @@ void remove_folder(std::filesystem::path const& folder_path)
     }
 }
 
+void rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path)
+{
+    try
+    {
+        std::filesystem::rename(old_path, new_path);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_debug_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to rename \"{}\" as \"{}\":\n{}", old_path, new_path, e.what()));
+    }
+}
+
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     return file_path.filename();
@@ -83,6 +96,12 @@ auto extension(std::filesystem::path const& file_path) -> std::filesystem::path
 auto without_extension(std::filesystem::path file_path) -> std::filesystem::path
 {
     return file_path.replace_extension();
+}
+
+auto with_extension(std::filesystem::path file_path, std::filesystem::path const& extension) -> std::filesystem::path
+{
+    file_path.replace_extension(extension);
+    return file_path;
 }
 
 auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path
@@ -159,6 +178,20 @@ auto is_absolute(std::filesystem::path const& path) -> bool
         if (DebugOptions::log_debug_warnings())
             Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is an absolute path:\n{}", path, e.what()));
         return true;
+    }
+}
+
+auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type
+{
+    try
+    {
+        return std::filesystem::last_write_time(path);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_debug_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to get last write time for \"{}\":\n{}", path, e.what()));
+        return {};
     }
 }
 

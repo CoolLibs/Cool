@@ -4,11 +4,14 @@
 #include <Cool/Serialization/AutoSerializer.h>
 #include <Cool/UserSettings/UserSettings.h>
 #include <Cool/Window/internal/WindowFactory.h>
+#include <scope_guard/scope_guard.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/AppManager/internal/get_app_manager.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
 #include "Cool/Core/set_utf8_locale.hpp"
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/StyleEditor.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 #include "hide_console_in_release.h"
 
 #if defined(COOL_VULKAN)
@@ -23,7 +26,7 @@ namespace Cool {
 namespace internal {
 class PreviousSessionLoadingFailed_Exception : public std::exception {};
 void shut_down();
-auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>;
+auto create_autosaver(std::function<void()> const& save) -> std::function<void()>;
 void copy_default_user_data_ifn();
 } // namespace internal
 
@@ -76,60 +79,48 @@ void run(int argc, char** argv, RunConfig const& config)
         );
         user_settings().apply_multi_viewport_setting();
 
-        // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
-        Icons::close_button();
+        Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
 
         // Init error callbacks
         Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
-            Cool::Log::ToUser::warning("Audio", error_message);
+            if (DebugOptions::log_debug_warnings())
+                Cool::Log::ToUser::warning("Audio", error_message);
         });
 
-        // Create and run the App
-        const auto run_loop = [&](bool load_from_file) {
-            auto views = ViewsManager{};
-            auto app   = App{window_factory.window_manager(), views};
-            // Auto serialize the App
-            Cool::AutoSerializer auto_serializer;
-            auto_serializer.init<App, ser20::JSONInputArchive>(
-                Cool::Path::user_data() / "last-session.json", app,
-                [&](OptionalErrorMessage const& error) {
-                    if (ignore_invalid_user_data_file)
-                        return;
-                    error.send_error_if_any(
-                        [&](std::string const& message) {
-                            return Cool::Message{
-                                .category = "Loading App",
-                                .message  = message,
-                                .severity = Cool::MessageSeverity::Warning,
-                            };
-                        },
-                        Cool::Log::ToUser::console()
-                    );
-                    throw internal::PreviousSessionLoadingFailed_Exception{}; // Make sure to start with a clean default App if deserialization fails
-                },
-                [&](std::filesystem::path const& path) {
-                    Serialization::save<App, ser20::JSONOutputArchive>(app, path, "App");
-                },
-                load_from_file
-            );
-            // Run the app
-            auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, app, config.app_manager_config};
-            internal::get_app_manager() = &app_manager;
-            app_manager.run(internal::create_autosaver(auto_serializer));
-            internal::get_app_manager() = nullptr;
-            app.on_shutdown();
+        // Create the App
+        auto views = ViewsManager{};
+        auto app   = std::make_unique<App>(window_factory.window_manager(), views); // Stored in a unique_ptr because we don't require App to be copy-assignable
+
+        auto const app_serialization_path = Cool::Path::user_data() / "last-session.json";
+
+        auto const error = Serialization::load<App, ser20::JSONInputArchive>(*app, app_serialization_path);
+        if (error)
+        {
+            app = std::make_unique<App>(window_factory.window_manager(), views); // Make sure to start with a clean default App if deserialization fails, otherwise some fields would have been deserialized and others have their default values, and there could be a mismatch
+            if (!ignore_invalid_user_data_file)
+            {
+                ImGuiNotify::send({
+                    .type     = ImGuiNotify::Type::Warning,
+                    .title    = "Failed to restore last session's state",
+                    .content  = *error.error_message(),
+                    .duration = 15s,
+                });
+            }
+        }
+        auto const save_on_exit = sg::make_scope_guard([&]() {
+            Serialization::save<App, ser20::JSONOutputArchive>(*app, app_serialization_path, "App");
+        });
+        // Run the app
+        auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
+        internal::get_app_manager() = &app_manager;
+        app_manager.run(internal::create_autosaver([&]() {
+            Serialization::save<App, ser20::JSONOutputArchive>(*app, app_serialization_path, "App");
+        }));
+        internal::get_app_manager() = nullptr;
+        app->on_shutdown();
 #if defined(COOL_VULKAN)
-            vkDeviceWaitIdle(Vulkan::context().g_Device);
+        vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-        };
-        try
-        {
-            run_loop(true);
-        }
-        catch (const internal::PreviousSessionLoadingFailed_Exception&) // Make sure to start with a clean default App if deserialization fails
-        {
-            run_loop(false);
-        }
     }
     Cool::internal::shut_down();
 }

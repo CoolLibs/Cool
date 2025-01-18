@@ -26,9 +26,10 @@ void shut_down()
     TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
 }
 
-auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>
+auto create_autosaver(std::function<void()> const& save) -> std::function<void()>
 {
-    return [&auto_serializer]() {
+    // This function will be run every frame
+    return [save]() {
         if (!user_settings().autosave_enabled)
             return;
 
@@ -36,7 +37,7 @@ auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::funct
         const auto  now       = std::chrono::steady_clock::now();
         if (now - last_time > std::chrono::duration<float>{user_settings().autosave_delay_in_seconds})
         {
-            auto_serializer.save();
+            save();
             last_time = now;
             if (DebugOptions::log_when_autosaving())
                 Log::ToUser::info("Autosave", "The application was just saved.");
