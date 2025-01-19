@@ -209,6 +209,20 @@ auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file
     }
 }
 
+auto equivalent(std::filesystem::path const& path1, std::filesystem::path const& path2) -> bool
+{
+    try
+    {
+        return std::filesystem::equivalent(path1, path2);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_debug_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if paths are equivalent \"{}\" and \"{}\":\n{}", path1, path2, e.what()));
+        return false;
+    }
+}
+
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode) -> tl::expected<std::string, std::string>
 {
     // Thanks to https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring

@@ -38,6 +38,7 @@ auto is_empty(std::filesystem::path const& path) -> bool;
 auto is_absolute(std::filesystem::path const& path) -> bool;
 auto is_relative(std::filesystem::path const& path) -> bool;
 auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type;
+auto equivalent(std::filesystem::path const& path1, std::filesystem::path const& path2) -> bool;
 
 /// Returns either an expected string that contains the content of the file, or an error string containing an error message explaining why the file couldn't be read.
 auto to_string(std::filesystem::path const& file_path, std::ios_base::openmode mode = std::ios_base::in) -> tl::expected<std::string, std::string>;
