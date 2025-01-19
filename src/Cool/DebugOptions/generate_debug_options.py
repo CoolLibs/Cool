@@ -58,8 +58,8 @@ def all_debug_options():
             available_in_release=False,
         ),
         DebugOption(
-            name_in_code="log_debug_warnings",
-            name_in_ui="Log debug warnings",
+            name_in_code="log_internal_warnings",
+            name_in_ui="Log internal warnings",
             available_in_release=True,
             default_value_in_debug=True,
             default_value_in_release=False,

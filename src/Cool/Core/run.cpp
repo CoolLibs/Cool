@@ -139,7 +139,7 @@ void run_impl(
 
         // Init error callbacks
         Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
-            if (DebugOptions::log_debug_warnings())
+            if (DebugOptions::log_internal_warnings())
                 Cool::Log::ToUser::warning("Audio", error_message);
         });
 
