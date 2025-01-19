@@ -14,6 +14,10 @@ public:
     IApp(IApp&&) noexcept            = delete;
     IApp& operator=(IApp&&) noexcept = delete;
 
+    /// You shouldn't do your logic in the constructor of App because it might be called twice during the initialisation process (if the deserialization fails, we recreate an App from scratch)
+    /// Instead, do your init here. Also, this is guaranteed to be called a bit later, once all Cool systems are properly initialized, and the App has been deserialized.
+    virtual void init() {}
+
     /// Update function that will be called repeatedly
     virtual void update() {}
 

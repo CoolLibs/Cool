@@ -21,7 +21,7 @@ public:
 
     /// Runs the app's update loop continuously, until the user closes the main window.
     /// Also calls `on_update()` after every update.
-    void run(std::function<void()> on_update);
+    void run(std::function<void()> const& on_update);
 
     /// Equivalent to the user clicking the close button or pressing ALT+F4
     void close_application();

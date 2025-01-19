@@ -107,8 +107,9 @@ void AppManager::close_application_if_all_tasks_are_done()
     close_application();
 }
 
-void AppManager::run(std::function<void()> on_update)
+void AppManager::run(std::function<void()> const& on_update)
 {
+    _app.init();
     auto const do_update = [&]() {
 #if !DEBUG
         try
