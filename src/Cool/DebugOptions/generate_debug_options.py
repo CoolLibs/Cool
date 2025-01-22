@@ -143,6 +143,7 @@ if __name__ == "__main__":
     generate_debug_options(
         output_folder="generated",
         namespace="Cool",
-        cache_file_name="debug-options-cool",
+        cache_file_name="debug_options_cool",
         debug_options=all_debug_options(),
+        always_show_warnings=True,  # Makes sure the JSON will skip checking for Cool::DebugOptions to know if it needs to log warnings or not. Otherwise this creates a deadlock if the deserialization of DebugOption's json when it tries to log a warning (when the file is corrupted)
     )

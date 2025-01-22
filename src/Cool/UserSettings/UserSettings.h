@@ -31,7 +31,7 @@ struct UserSettings {
     void update() { _json.update(); }
 
 private:
-    JsonAutoSerializer _json{Cool::Path::user_data() / "user_settings.json"};
+    JsonAutoSerializer<bool, float, Time, VideoExportOverwriteBehaviour> _json{Cool::Path::user_data() / "user_settings.json"};
 };
 
 inline auto user_settings() -> UserSettings&

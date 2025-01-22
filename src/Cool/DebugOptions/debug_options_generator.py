@@ -48,18 +48,6 @@ def default_value(debug_option: DebugOption):
 """
 
 
-def debug_options_variables(debug_options: list[DebugOption]):
-    return "\n".join(
-        map(
-            lambda debug_option: build_type(
-                f"bool {debug_option.name_in_code}{{{default_value(debug_option)}}};",
-                debug_option,
-            ),
-            debug_options,
-        )
-    )
-
-
 def window_name(debug_option: DebugOption):
     return (
         debug_option.window_name
@@ -72,15 +60,18 @@ def option_implementation(debug_option: DebugOption):
     def code():
         match debug_option.kind:
             case Kind.CHECKBOX | Kind.BUTTON:
-                return f"[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return instance().{debug_option.name_in_code}; }}"
+                return f'[[nodiscard]] static auto {debug_option.name_in_code}() -> bool& {{ return json().get<bool>("{debug_option.name_in_ui}", {default_value(debug_option)}); }}'
             case Kind.WINDOW:
                 return f"""static void {debug_option.name_in_code}(std::function<void()> callback)
                 {{
-                    if (instance().{debug_option.name_in_code}) 
+                    bool& val = json().get<bool>("{debug_option.name_in_ui}", {default_value(debug_option)});
+                    if (val) 
                     {{
-                        ImGui::Begin(Cool::icon_fmt("{window_name(debug_option)}", ICOMOON_WRENCH).c_str(), &instance().{debug_option.name_in_code}, ImGuiWindowFlags_NoFocusOnAppearing);
+                        ImGui::Begin(Cool::icon_fmt("{window_name(debug_option)}", ICOMOON_WRENCH).c_str(), &val, ImGuiWindowFlags_NoFocusOnAppearing);
                         callback();
                         ImGui::End();
+                        if (!val) // Window has just been closed manually by the user
+                            json().save();
                     }}
                 }}"""
             case _:
@@ -92,14 +83,18 @@ def option_implementation(debug_option: DebugOption):
 def imgui_widget(debug_option: DebugOption):
     match debug_option.kind:
         case Kind.CHECKBOX | Kind.WINDOW:
-            return f'Cool::ImGuiExtras::toggle("{debug_option.name_in_ui}", &instance().{debug_option.name_in_code});'
+            return f"""
+            bool& val = json().get<bool>("{debug_option.name_in_ui}", {default_value(debug_option)});
+            if(Cool::ImGuiExtras::toggle("{debug_option.name_in_ui}", &val))
+                json().save();
+            """
         case Kind.BUTTON:
             return f"""
-            instance().{debug_option.name_in_code} = ImGui::Button("##{debug_option.name_in_ui}", {{ImGui::GetFrameHeight(), ImGui::GetFrameHeight()}});
+            json().get<bool>("{debug_option.name_in_ui}", false) = ImGui::Button("##{debug_option.name_in_ui}", {{ImGui::GetFrameHeight(), ImGui::GetFrameHeight()}});
             ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
             ImGui::Text("{debug_option.name_in_ui}");
             if (ImGui::IsItemClicked())
-                instance().{debug_option.name_in_code} = true;
+                json().get<bool>("{debug_option.name_in_ui}", true) = true;
             """
 
 
@@ -136,7 +131,8 @@ def toggle_first_option(debug_options: list[DebugOption]):
                 f"""
                         if ({passes_the_filter(debug_option)})
                         {{
-                            instance().{debug_option.name_in_code} = !instance().{debug_option.name_in_code};
+                            bool& val = json().get<bool>("{debug_option.name_in_ui}", {default_value(debug_option)});
+                            val = !val;
                             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
                         }}
                         """,
@@ -151,31 +147,11 @@ def filter_out_buttons(debug_options: list[DebugOption]):
     return filter(lambda dbg: dbg.kind != Kind.BUTTON, debug_options)
 
 
-def ser20_make_nvp(debug_options: list[DebugOption]):
-    def code(options):
-        return ",\n".join(
-            map(
-                lambda debug_option: f'ser20::make_nvp("{debug_option.name_in_ui}", {debug_option.name_in_code})',
-                filter_out_buttons(options),
-            )
-        )
-
-    debug = code(debug_options)
-    release = code(filter(lambda dbg: dbg.available_in_release, debug_options))
-
-    return f"""#if DEBUG
-{debug}
-#else
-{release}
-#endif
-"""
-
-
 def reset_all(debug_options: list[DebugOption]):
     return "\n".join(
         map(
             lambda debug_option: build_type(
-                f"instance().{debug_option.name_in_code} = {default_value(debug_option)};",
+                f'json().get<bool>("{debug_option.name_in_ui}", false) = {default_value(debug_option)};',
                 debug_option,
             ),
             filter_out_buttons(debug_options),
@@ -184,12 +160,17 @@ def reset_all(debug_options: list[DebugOption]):
 
 
 def DebugOptions(
-    debug_options: list[DebugOption], namespace: str, cache_file_name: str
+    debug_options: list[DebugOption],
+    namespace: str,
+    cache_file_name: str,
+    always_show_warnings: bool,
 ):
     backslash = "\\"
     return f"""
-#include <Cool/ImGui/ImGuiExtras.h>
-#include <wafl/wafl.hpp>
+#include "Cool/ImGui/ImGuiExtras.h"
+#include "wafl/wafl.hpp"
+#include "Cool/Serialization/JsonAutoSerializer.hpp"
+#include "Cool/Path/Path.h"
 
 namespace Cool {{
     template<typename... Ts>
@@ -203,33 +184,21 @@ public:
     {options_implementations(debug_options)}
 
 private:
-    struct Instance {{
-        {debug_options_variables(debug_options)}
-
-    private:
-        // Serialization
-        friend class ser20::access;
-        template<class Archive>
-        void serialize(Archive& archive)
-        {{
-            archive(
-                {ser20_make_nvp(debug_options)}
-            );
-        }}
-    }};
+    static auto json() -> Cool::JsonAutoSerializer<bool>&
+    {{
+        static auto the_json = Cool::JsonAutoSerializer<bool>{{Cool::Path::user_data() / "{cache_file_name}.json", {"true" if always_show_warnings else "false"}}};
+        return the_json;
+    }}
 
     static void reset_all()
     {{
         {reset_all(debug_options)}
+        json().save();
     }}
 
-    static void save_to_file();
-    static auto load_debug_options() -> Instance;
-
-    static auto instance() -> Instance&
+    static void update()
     {{
-        static auto the_instance = Instance{{load_debug_options()}};
-        return the_instance;
+        json().update();
     }}
 
     template<typename... Ts>
@@ -250,43 +219,12 @@ private:
 """
 
 
-def DebugOptionsCpp(
-    debug_options: list[DebugOption], namespace: str, cache_file_name: str
-):
-    backslash = "\\"
-    return f"""
-#include <Cool/Path/Path.h>
-#include <Cool/Serialization/Serialization.h>
-#include <ser20/archives/json.hpp>
-
-namespace {namespace} {{
-
-void DebugOptions::save_to_file()
-{{
-    Cool::Serialization::save<DebugOptions::Instance, ser20::JSONOutputArchive>(
-        instance(),
-        Cool::Path::user_data() / "{cache_file_name}.json",
-        "Debug Options"
-    );
-}}
-
-auto DebugOptions::load_debug_options() -> Instance
-{{
-    auto the_instance = Instance{{}};
-    auto const err = Cool::Serialization::load<DebugOptions::Instance, ser20::JSONInputArchive>(the_instance, Cool::Path::user_data() / "{cache_file_name}.json");
-    std::ignore = err; // We don't care about preserving the backward compatibility of debug options. If we break it, we can ignore it.
-    return the_instance;
-}}
-
-}} // namespace {namespace}
-"""
-
-
 def generate_debug_options(
     output_folder: str,
     namespace: str,
     cache_file_name: str,
     debug_options: list[DebugOption],
+    always_show_warnings: bool = False,
 ):
     import os
     from pathlib import Path
@@ -306,22 +244,14 @@ def generate_debug_options(
             debug_options=debug_options,
             namespace=namespace,
             cache_file_name=cache_file_name,
+            always_show_warnings=always_show_warnings,
         )
 
     fn.__name__ = "DebugOptions"
 
-    def fn2():
-        return DebugOptionsCpp(
-            debug_options=debug_options,
-            namespace=namespace,
-            cache_file_name=cache_file_name,
-        )
-
-    fn2.__name__ = "DebugOptionsCpp"
     generate_files.generate(
         folder=output_folder,
         files=[
             fn,
-            fn2,
         ],
     )
