@@ -70,6 +70,12 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
+            name_in_code="show_command_line_arguments",
+            name_in_ui="Show command-line arguments",
+            available_in_release=True,
+            kind=Kind.BUTTON,
+        ),
+        DebugOption(
             name_in_code="test_presets__window",
             name_in_ui="Test Presets",
             available_in_release=True,

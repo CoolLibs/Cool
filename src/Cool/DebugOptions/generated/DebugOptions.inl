@@ -62,6 +62,7 @@ public:
 #endif
     [[nodiscard]] static auto log_internal_warnings() -> bool& { return instance().log_internal_warnings; }
     [[nodiscard]] static auto log_mouse_position_in_view() -> bool& { return instance().log_mouse_position_in_view; }
+    [[nodiscard]] static auto show_command_line_arguments() -> bool& { return instance().show_command_line_arguments; }
     static void               test_presets__window(std::function<void()> callback)
     {
         if (instance().test_presets__window)
@@ -163,6 +164,7 @@ private:
 #endif
         };
         bool log_mouse_position_in_view{false};
+        bool show_command_line_arguments{false};
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
         bool emulate_midi_keyboard{false};
@@ -338,6 +340,15 @@ private:
             Cool::ImGuiExtras::toggle("Log mouse position in View", &instance().log_mouse_position_in_view);
         }
 
+        if (wafl::similarity_match({filter, "Show command-line arguments"}) >= wafl::Matches::Strongly)
+        {
+            instance().show_command_line_arguments = ImGui::Button("##Show command-line arguments", {ImGui::GetFrameHeight(), ImGui::GetFrameHeight()});
+            ImGui::SameLine(0.f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::Text("Show command-line arguments");
+            if (ImGui::IsItemClicked())
+                instance().show_command_line_arguments = true;
+        }
+
         if (wafl::similarity_match({filter, "Test Presets"}) >= wafl::Matches::Strongly)
         {
             Cool::ImGuiExtras::toggle("Test Presets", &instance().test_presets__window);
@@ -472,6 +483,12 @@ private:
         if (wafl::similarity_match({filter, "Log mouse position in View"}) >= wafl::Matches::Strongly)
         {
             instance().log_mouse_position_in_view = !instance().log_mouse_position_in_view;
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Show command-line arguments"}) >= wafl::Matches::Strongly)
+        {
+            instance().show_command_line_arguments = !instance().show_command_line_arguments;
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 

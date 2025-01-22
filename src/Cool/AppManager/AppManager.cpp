@@ -7,6 +7,7 @@
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
+#include "Cool/CommandLineArgs/CommandLineArgs.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Input/MouseButtonEvent.h"
@@ -196,6 +197,11 @@ void AppManager::update()
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+    if (DebugOptions::show_command_line_arguments())
+    {
+        for (auto const& arg : command_line_args().get())
+            Cool::Log::ToUser::info("cli", arg);
+    }
     midi_manager().check_for_devices();
     Audio::player().update_device_if_necessary();
     if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
