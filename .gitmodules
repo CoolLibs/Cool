@@ -118,3 +118,6 @@
 [submodule "lib/no-sleep"]
 	path = lib/no-sleep
 	url = https://github.com/CoolLibs/no-sleep
+[submodule "lib/json"]
+	path = lib/json
+	url = https://github.com/nlohmann/json

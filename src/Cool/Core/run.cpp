@@ -41,12 +41,12 @@ auto create_autosaver(std::function<void()> const& save) -> std::function<void()
 {
     // This function will be run every frame
     return [save]() {
-        if (!user_settings().autosave_enabled)
+        if (!user_settings().autosave_enabled())
             return;
 
         static auto last_time = std::chrono::steady_clock::now();
         const auto  now       = std::chrono::steady_clock::now();
-        if (Time{now - last_time} > user_settings().autosave_delay)
+        if (Time{now - last_time} > user_settings().autosave_delay())
         {
             save();
             last_time = now;
@@ -111,29 +111,29 @@ void run_impl(
         Cool::StyleEditor style_autoserializer{};
 
         // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
-        auto auto_serializer_user_settings = Cool::AutoSerializer{};
-        auto_serializer_user_settings.init<UserSettings, ser20::JSONInputArchive>(
-            Cool::Path::user_data() / "user-settings.json",
-            user_settings(),
-            [&](OptionalErrorMessage const& error) {
-                if (ignore_invalid_user_data_file)
-                    return;
-                error.send_error_if_any(
-                    [&](std::string const& message) {
-                        return Cool::Message{
-                            .category = "Loading User Settings",
-                            .message  = message,
-                            .severity = Cool::MessageSeverity::Warning,
-                        };
-                    },
-                    Cool::Log::ToUser::console()
-                );
-            },
-            [&](std::filesystem::path const& path) {
-                Serialization::save<UserSettings, ser20::JSONOutputArchive>(user_settings(), path, "User Settings");
-            }
-        );
-        user_settings().apply_multi_viewport_setting();
+        // auto auto_serializer_user_settings = Cool::AutoSerializer{};
+        // auto_serializer_user_settings.init<UserSettings, ser20::JSONInputArchive>(
+        //     Cool::Path::user_data() / "user-settings.json",
+        //     user_settings(),
+        //     [&](OptionalErrorMessage const& error) {
+        //         if (ignore_invalid_user_data_file)
+        //             return;
+        //         error.send_error_if_any(
+        //             [&](std::string const& message) {
+        //                 return Cool::Message{
+        //                     .category = "Loading User Settings",
+        //                     .message  = message,
+        //                     .severity = Cool::MessageSeverity::Warning,
+        //                 };
+        //             },
+        //             Cool::Log::ToUser::console()
+        //         );
+        //     },
+        //     [&](std::filesystem::path const& path) {
+        //         Serialization::save<UserSettings, ser20::JSONOutputArchive>(user_settings(), path, "User Settings");
+        //     }
+        // );
+        // user_settings().apply_multi_viewport_setting();
 
         Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
 

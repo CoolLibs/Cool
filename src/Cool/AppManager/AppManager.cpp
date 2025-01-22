@@ -189,7 +189,9 @@ void AppManager::update()
     ImGuiNotify::get_style().color_info             = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
     ImGuiNotify::get_style().color_title_background = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 
-    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
+    user_settings().update();
+
+    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets();
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
