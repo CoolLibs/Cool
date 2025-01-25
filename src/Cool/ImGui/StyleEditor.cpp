@@ -177,11 +177,11 @@ namespace Cool {
 namespace ImGuiExtras {
 static void to_json(nlohmann::json& json, ImGuiExtras::Style const& style)
 {
-#include "generated_style/imgui_extras_json_set.inl"
+#include "generated_style_extras/json_set.inl"
 }
 static void from_json(nlohmann::json const& json, ImGuiExtras::Style& style)
 {
-#include "generated_style/imgui_extras_json_get.inl"
+#include "generated_style_extras/json_get.inl"
 }
 } // namespace ImGuiExtras
 

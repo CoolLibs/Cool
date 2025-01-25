@@ -205,19 +205,19 @@ def style_declaration():
     return "\n".join(map(code, all_style_settings()))
 
 
-def imgui_extras_json(get_or_set: str):
+def json(get_or_set: str):
     def code(s: StyleSetting):
         return f'json_{get_or_set}(json, "{s.name_in_json or s.name_in_ui}", style.{s.name_in_code});'
 
     return "\n".join(map(code, all_style_settings()))
 
 
-def imgui_extras_json_get():
-    return imgui_extras_json("get")
+def json_get():
+    return json("get")
 
 
-def imgui_extras_json_set():
-    return imgui_extras_json("set")
+def json_set():
+    return json("set")
 
 
 def style_imgui_declarations():
@@ -282,14 +282,14 @@ if __name__ == "__main__":
     ).load_module()
 
     generate_files.generate(
-        folder="generated_style",
+        folder="generated_style_extras",
         files=[
             style_colors,
             register_elements,
             style_declaration,
             style_imgui_definitions,
             style_imgui_declarations,
-            imgui_extras_json_get,
-            imgui_extras_json_set,
+            json_get,
+            json_set,
         ],
     )

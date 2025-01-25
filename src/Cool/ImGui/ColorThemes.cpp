@@ -46,7 +46,7 @@ void ColorThemes::imgui_advanced_config()
 
 static void register_imgui_extras_elements(ImStyleEd::Config& config)
 {
-#include "generated_style/register_elements.inl"
+#include "generated_style_extras/register_elements.inl"
 #include "generated_style_nodes/register_all_imnodes_color_elements.inl"
 }
 

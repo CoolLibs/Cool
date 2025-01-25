@@ -5,8 +5,6 @@
 
 namespace Cool {
 
-static auto should_enable_multi_viewport_by_default() -> bool;
-
 auto UserSettings::imgui() -> bool
 {
     bool b = false;
@@ -88,7 +86,7 @@ void UserSettings::apply_multi_viewport_setting()
         ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
 }
 
-static auto should_enable_multi_viewport_by_default() -> bool
+auto should_enable_multi_viewport_by_default() -> bool
 {
 #if !defined(__linux__)
     return true;
