@@ -17,6 +17,7 @@
 #include "Cool/Core/set_utf8_locale.hpp"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Path/Path.h"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
@@ -99,6 +100,7 @@ void run_impl(
         window_factory.make_secondary_window(config.windows_configs[i]);
 
     style_editor().emplace(); // Make sure we load all the ImGui style settings // Done after the creation of the windows because we need an ImGui context to set its Style
+    color_themes().emplace(); // Make sure we load all the ImGui color settings // Done after the creation of the windows because we need an ImGui context to set its Style
 
     Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
 
@@ -143,6 +145,7 @@ void run_impl(
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
     style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    color_themes().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
     Audio::shut_down();
     TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
 }

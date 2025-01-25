@@ -1,13 +1,13 @@
 #include "debug_options_windows.h"
-#include <Cool/ImGui/test_markdown_formatting.h>
-#include <Cool/Log/TestMessageConsole.h>
-#include <Cool/Midi/MidiManager.h>
-#include <Cool/TextureSource/TextureLibrary_Image.h>
-#include <Cool/TextureSource/TextureLibrary_Video.h>
-#include <Cool/Tips/test_tips.h>
-#include <Cool/UserSettings/UserSettings.h>
-#include <Cool/Variables/TestPresets.h>
+#include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/imgui_show_all_icons.hpp"
+#include "Cool/ImGui/test_markdown_formatting.h"
+#include "Cool/Log/TestMessageConsole.h"
+#include "Cool/Midi/MidiManager.h"
+#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/TextureSource/TextureLibrary_Video.h"
+#include "Cool/Tips/test_tips.h"
+#include "Cool/Variables/TestPresets.h"
 #include "DebugOptions.h"
 #include "TestNotification.hpp"
 #include "TestTasks.hpp"
@@ -59,7 +59,7 @@ void debug_options_windows(TipsManager* tips_manager)
         });
 
     DebugOptions::color_themes_advanced_config_window([]() {
-        user_settings().color_themes.imgui_advanced_config();
+        color_themes()->imgui_advanced_config();
     });
 
 #if defined(DEBUG)
@@ -69,7 +69,7 @@ void debug_options_windows(TipsManager* tips_manager)
 #endif
 
     DebugOptions::color_themes_editor([]() {
-        user_settings().color_themes.imgui_basic_theme_editor();
+        color_themes()->imgui_basic_theme_editor();
     });
 }
 

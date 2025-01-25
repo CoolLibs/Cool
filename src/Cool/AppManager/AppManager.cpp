@@ -8,6 +8,7 @@
 #include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
+#include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/StyleEditor.h"
@@ -183,12 +184,13 @@ void AppManager::restore_imgui_ini_state_ifn()
 
 void AppManager::update()
 {
+    color_themes()->update();
     // Cache these colors for the frame, because we don't want to query the Theme all the time.
     // They will be reused by a few things event outside of ImGui::Notify
-    ImGuiNotify::get_style().color_success          = user_settings().color_themes.editor().get_color("Success").as_imvec4();
-    ImGuiNotify::get_style().color_warning          = user_settings().color_themes.editor().get_color("Warning").as_imvec4();
-    ImGuiNotify::get_style().color_error            = user_settings().color_themes.editor().get_color("Error").as_imvec4();
-    ImGuiNotify::get_style().color_info             = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
+    ImGuiNotify::get_style().color_success          = color_themes()->editor().get_color("Success").as_imvec4();
+    ImGuiNotify::get_style().color_warning          = color_themes()->editor().get_color("Warning").as_imvec4();
+    ImGuiNotify::get_style().color_error            = color_themes()->editor().get_color("Error").as_imvec4();
+    ImGuiNotify::get_style().color_info             = color_themes()->editor().get_color("Accent").as_imvec4();
     ImGuiNotify::get_style().color_title_background = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 
     user_settings().update();
