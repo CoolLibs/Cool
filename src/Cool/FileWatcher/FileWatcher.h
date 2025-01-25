@@ -1,7 +1,7 @@
 #pragma once
-
 #include <Cool/Log/ToUser.h>
 #include <filesystem>
+#include "Cool/DebugOptions/DebugOptions.h"
 
 namespace Cool {
 
@@ -16,7 +16,8 @@ struct FileWatcher_Callbacks {
     };
     /// Called whenever the path becomes invalid. Receives the currently watched path as a parameter.
     std::function<void(std::filesystem::path const&)> on_path_invalid = [](std::filesystem::path const& path) {
-        Log::ToUser::error("File Watcher", fmt::format("Invalid file path: {}", path));
+        if (DebugOptions::log_internal_warnings())
+            Log::ToUser::warning("File Watcher", fmt::format("Can't open file \"{}\"", Cool::File::weakly_canonical(path)));
     };
 };
 

@@ -4,7 +4,6 @@
 #include <Cool/Window/Window.h>
 #include <Cool/Window/WindowManager.h>
 #include "AppManagerConfig.h"
-#include "Cool/ImGui/StyleEditor.h"
 #include "IApp.h"
 
 namespace Cool {
@@ -52,8 +51,6 @@ private:
     ViewsManager&    _views;
     IApp&            _app;
     AppManagerConfig _config;
-
-    Cool::StyleEditor _style_editor{};
 
     int _frames_count{0};
 

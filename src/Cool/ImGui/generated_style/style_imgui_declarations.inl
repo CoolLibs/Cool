@@ -4,8 +4,8 @@
  * Instead, go to "style_generator.py" and edit the "style_imgui_declarations" function there.
  * -----------------------------------------------------------------------------
  */
-void imgui_floating_buttons_spacing();
-void imgui_frame_padding();
-void imgui_tab_bar_padding();
-void imgui_menu_bar_spacing();
-void imgui_node_title_vertical_alignment();
+auto imgui_floating_buttons_spacing() -> bool;
+auto imgui_frame_padding() -> bool;
+auto imgui_tab_bar_padding() -> bool;
+auto imgui_menu_bar_spacing() -> bool;
+auto imgui_node_title_vertical_alignment() -> bool;

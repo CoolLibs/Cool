@@ -6,27 +6,16 @@
 ///
 
 #include <ser20/types/polymorphic.hpp>
-#include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Nodes/EditorImpl.h"
 #include "Cool/Serialization/Serialization.h"
 #include "ImStyleEd/ser20_style.hpp"
 #include "SPresetManager.h"
-#include "SStyleEditor.h"
 #include "SWebcamsConfigs.h"
 
 //
 #include "ser20/archives/json.hpp"
 
 namespace Cool {
-
-auto do_save(StyleEditor const& editor, std::filesystem::path const& path) -> bool
-{
-    return Cool::Serialization::save<StyleEditor, ser20::JSONOutputArchive>(editor, path);
-}
-auto do_load(StyleEditor& editor, std::filesystem::path const& path) -> Cool::OptionalErrorMessage
-{
-    return Cool::Serialization::load<StyleEditor, ser20::JSONInputArchive>(editor, path);
-}
 
 auto do_save(wcam::ResolutionsMap const& configs, Cool::SerializerOnDemand const& serializer) -> bool
 {

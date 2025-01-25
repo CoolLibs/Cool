@@ -10,6 +10,7 @@
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/ToUser.h"
@@ -192,7 +193,7 @@ void AppManager::update()
 
     user_settings().update();
 
-    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets();
+    ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
@@ -472,7 +473,7 @@ void AppManager::dispatch_mouse_scroll()
 void AppManager::imgui_windows()
 {
     Cool::DebugOptions::style_editor([&]() {
-        _style_editor.imgui();
+        style_editor()->imgui();
     });
 }
 

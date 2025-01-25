@@ -95,13 +95,13 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
         return true; // Nothing to do, no frame is going to be overwritten
     }
 
-    switch (user_settings().video_export_overwrite_behaviour())
+    switch (user_settings().video_export_overwrite_behaviour)
     {
     case VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder:
     case VideoExportOverwriteBehaviour::AlwaysCreateNewFolder:
     {
         auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "");
-        if (user_settings().video_export_overwrite_behaviour() == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
+        if (user_settings().video_export_overwrite_behaviour == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
         {
             if (boxer::show(fmt::format("There are already some frames in {}.\nDo you want to export in this folder instead? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)
                 != boxer::Selection::OK)
@@ -177,7 +177,7 @@ void ExporterGui::imgui_window_export_video(std::function<void()> const& widgets
             _export_size.imgui();
             ImGuiExtras::folder("Folder", &folder_path_for_video());
             _video_export_params.imgui();
-            imgui_widget(user_settings().video_export_overwrite_behaviour());
+            imgui_widget(user_settings().video_export_overwrite_behaviour);
             // Validation
             ImGuiExtras::before_export_button();
             if (ImGui::Button(icon_fmt("Start exporting", ICOMOON_UPLOAD2).c_str()))

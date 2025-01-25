@@ -5,29 +5,39 @@
  * -----------------------------------------------------------------------------
  */
 
-void Style::imgui_floating_buttons_spacing()
+auto Style::imgui_floating_buttons_spacing() -> bool
 {
-    ImGui::SliderFloat("Floating buttons spacing", (float*)&floating_buttons_spacing, 0.f, 20.f, "%.0f");
+    bool const b = ImGui::SliderFloat("Floating buttons spacing", (float*)&floating_buttons_spacing, 0.f, 20.f, "%.0f");
 
     ImGuiExtras::help_marker("Small buttons that overlap the View");
+
+    return b;
 }
 
-void Style::imgui_frame_padding()
+auto Style::imgui_frame_padding() -> bool
 {
-    ImGui::SliderFloat2("Frame padding", (float*)&frame_padding, 0.f, 20.f, "%.0f");
+    bool const b = ImGui::SliderFloat2("Frame padding", (float*)&frame_padding, 0.f, 20.f, "%.0f");
+
+    return b;
 }
 
-void Style::imgui_tab_bar_padding()
+auto Style::imgui_tab_bar_padding() -> bool
 {
-    ImGui::SliderFloat2("Tab bar padding", (float*)&tab_bar_padding, 0.f, 20.f, "%.0f");
+    bool const b = ImGui::SliderFloat2("Tab bar padding", (float*)&tab_bar_padding, 0.f, 20.f, "%.0f");
+
+    return b;
 }
 
-void Style::imgui_menu_bar_spacing()
+auto Style::imgui_menu_bar_spacing() -> bool
 {
-    ImGui::SliderFloat2("Menu bar spacing", (float*)&menu_bar_spacing, 0.f, 20.f, "%.0f");
+    bool const b = ImGui::SliderFloat2("Menu bar spacing", (float*)&menu_bar_spacing, 0.f, 20.f, "%.0f");
+
+    return b;
 }
 
-void Style::imgui_node_title_vertical_alignment()
+auto Style::imgui_node_title_vertical_alignment() -> bool
 {
-    ImGui::SliderFloat("Node title vertical alignment", (float*)&node_title_vertical_alignment, 0.f, 1.f);
+    bool const b = ImGui::SliderFloat("Node title vertical alignment", (float*)&node_title_vertical_alignment, 0.f, 1.f);
+
+    return b;
 }

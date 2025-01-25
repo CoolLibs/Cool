@@ -257,7 +257,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE os_name::os_name)
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/include)
 
 # nlohmann json
-target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/json/include)
+target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/json/single_include)
 
 # Dear ImGui
 add_subdirectory(lib/imgui)

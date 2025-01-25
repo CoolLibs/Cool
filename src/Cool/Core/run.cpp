@@ -28,25 +28,16 @@
 
 namespace Cool::internal {
 
-void shut_down()
-{
-#if defined(COOL_VULKAN)
-    vkDeviceWaitIdle(Vulkan::context().g_Device);
-#endif
-    Audio::shut_down();
-    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
-}
-
 auto create_autosaver(std::function<void()> const& save) -> std::function<void()>
 {
     // This function will be run every frame
     return [save]() {
-        if (!user_settings().autosave_enabled())
+        if (!user_settings().autosave_enabled)
             return;
 
         static auto last_time = std::chrono::steady_clock::now();
         const auto  now       = std::chrono::steady_clock::now();
-        if (Time{now - last_time} > user_settings().autosave_delay())
+        if (Time{now - last_time} > user_settings().autosave_delay)
         {
             save();
             last_time = now;
@@ -107,76 +98,53 @@ void run_impl(
     for (size_t i = 1; i < config.windows_configs.size(); ++i)
         window_factory.make_secondary_window(config.windows_configs[i]);
 
+    style_editor().emplace(); // Make sure we load all the ImGui style settings // Done after the creation of the windows because we need an ImGui context to set its Style
+
+    Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
+
+    // Init error callbacks
+    Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Audio", error_message);
+    });
+
+    // Create the App
+    auto views = ViewsManager{};
+    auto app   = make_unique_app(window_factory.window_manager(), views); // Stored in a unique_ptr because we don't require App to be copy-assignable
+
+    auto const error = load_app(*app);
+    if (error)
     {
-        Cool::StyleEditor style_autoserializer{};
-
-        // Auto serialize the UserSettings // Done after the creation of the windows because we need an ImGui context to set the color theme
-        // auto auto_serializer_user_settings = Cool::AutoSerializer{};
-        // auto_serializer_user_settings.init<UserSettings, ser20::JSONInputArchive>(
-        //     Cool::Path::user_data() / "user-settings.json",
-        //     user_settings(),
-        //     [&](OptionalErrorMessage const& error) {
-        //         if (ignore_invalid_user_data_file)
-        //             return;
-        //         error.send_error_if_any(
-        //             [&](std::string const& message) {
-        //                 return Cool::Message{
-        //                     .category = "Loading User Settings",
-        //                     .message  = message,
-        //                     .severity = Cool::MessageSeverity::Warning,
-        //                 };
-        //             },
-        //             Cool::Log::ToUser::console()
-        //         );
-        //     },
-        //     [&](std::filesystem::path const& path) {
-        //         Serialization::save<UserSettings, ser20::JSONOutputArchive>(user_settings(), path, "User Settings");
-        //     }
-        // );
-        // user_settings().apply_multi_viewport_setting();
-
-        Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
-
-        // Init error callbacks
-        Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
-            if (DebugOptions::log_internal_warnings())
-                Cool::Log::ToUser::warning("Audio", error_message);
-        });
-
-        // Create the App
-        auto views = ViewsManager{};
-        auto app   = make_unique_app(window_factory.window_manager(), views); // Stored in a unique_ptr because we don't require App to be copy-assignable
-
-        auto const error = load_app(*app);
-        if (error)
+        app = make_unique_app(window_factory.window_manager(), views); // Make sure to start with a clean default App if deserialization fails, otherwise some fields would have been deserialized and others have their default values, and there could be a mismatch
+        if (!ignore_invalid_user_data_file)
         {
-            app = make_unique_app(window_factory.window_manager(), views); // Make sure to start with a clean default App if deserialization fails, otherwise some fields would have been deserialized and others have their default values, and there could be a mismatch
-            if (!ignore_invalid_user_data_file)
-            {
-                ImGuiNotify::send({
-                    .type     = ImGuiNotify::Type::Warning,
-                    .title    = "Failed to restore last session's state",
-                    .content  = *error.error_message(),
-                    .duration = 15s,
-                });
-            }
+            ImGuiNotify::send({
+                .type     = ImGuiNotify::Type::Warning,
+                .title    = "Failed to restore last session's state",
+                .content  = *error.error_message(),
+                .duration = 15s,
+            });
         }
-        auto const save_on_exit = sg::make_scope_guard([&]() {
-            save_app(*app);
-        });
-        // Run the app
-        auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
-        internal::get_app_manager() = &app_manager;
-        app_manager.run(internal::create_autosaver([&]() {
-            save_app(*app);
-        }));
-        internal::get_app_manager() = nullptr;
-        app->on_shutdown();
-#if defined(COOL_VULKAN)
-        vkDeviceWaitIdle(Vulkan::context().g_Device);
-#endif
     }
-    Cool::internal::shut_down();
+    auto const save_on_exit = sg::make_scope_guard([&]() {
+        save_app(*app);
+    });
+    // Run the app
+    auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
+    internal::get_app_manager() = &app_manager;
+    app_manager.run(internal::create_autosaver([&]() {
+        save_app(*app);
+    }));
+
+    // Shutdown
+    internal::get_app_manager() = nullptr;
+    app->on_shutdown();
+#if defined(COOL_VULKAN)
+    vkDeviceWaitIdle(Vulkan::context().g_Device);
+#endif
+    style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    Audio::shut_down();
+    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
 }
 
 } // namespace Cool::internal

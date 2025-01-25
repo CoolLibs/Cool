@@ -134,6 +134,8 @@ def all_color_elements():
 class StyleSetting:
     name_in_code: str
     name_in_ui: str
+    # If None, this will default to `name_in_ui`. You might want to change the `name_in_ui` at some point, but keep the `name_in_json` the same so that you don't break serialization.
+    name_in_json: str | None
     description: str
     default_value: str
     cpp_type: str
@@ -146,6 +148,7 @@ def all_style_settings():
         StyleSetting(
             name_in_code="floating_buttons_spacing",
             name_in_ui="Floating buttons spacing",
+            name_in_json=None,
             description=floating_button_description,
             default_value="4.f",
             cpp_type="float",
@@ -155,6 +158,7 @@ def all_style_settings():
         StyleSetting(
             name_in_code="frame_padding",
             name_in_ui="Frame padding",
+            name_in_json=None,
             description="",
             default_value="9.f, 4.f",
             cpp_type="ImVec2",
@@ -164,6 +168,7 @@ def all_style_settings():
         StyleSetting(
             name_in_code="tab_bar_padding",
             name_in_ui="Tab bar padding",
+            name_in_json=None,
             description="",
             default_value="9.f, 6.f",
             cpp_type="ImVec2",
@@ -173,6 +178,7 @@ def all_style_settings():
         StyleSetting(
             name_in_code="menu_bar_spacing",
             name_in_ui="Menu bar spacing",
+            name_in_json=None,
             description="",
             default_value="4.f, 4.f",
             cpp_type="ImVec2",
@@ -182,6 +188,7 @@ def all_style_settings():
         StyleSetting(
             name_in_code="node_title_vertical_alignment",
             name_in_ui="Node title vertical alignment",
+            name_in_json=None,
             description="",
             default_value="0.31f",
             cpp_type="float",
@@ -198,16 +205,24 @@ def style_declaration():
     return "\n".join(map(code, all_style_settings()))
 
 
-def style_serialization():
+def imgui_extras_json(get_or_set: str):
     def code(s: StyleSetting):
-        return f'ser20::make_nvp("{s.name_in_ui}", {s.name_in_code})'
+        return f'json_{get_or_set}(json, "{s.name_in_json or s.name_in_ui}", style.{s.name_in_code});'
 
-    return ",\n".join(map(code, all_style_settings()))
+    return "\n".join(map(code, all_style_settings()))
+
+
+def imgui_extras_json_get():
+    return imgui_extras_json("get")
+
+
+def imgui_extras_json_set():
+    return imgui_extras_json("set")
 
 
 def style_imgui_declarations():
     def code(s: StyleSetting):
-        return f"""void imgui_{s.name_in_code}();"""
+        return f"""auto imgui_{s.name_in_code}() -> bool;"""
 
     return "\n".join(map(code, all_style_settings()))
 
@@ -215,13 +230,14 @@ def style_imgui_declarations():
 def style_imgui_definitions():
     def code(s: StyleSetting):
         return f'''
-void Style::imgui_{s.name_in_code}()
+auto Style::imgui_{s.name_in_code}() -> bool
 {{
-    {s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
+    bool const b = {s.widget_begin}("{s.name_in_ui}", (float*)&{s.name_in_code}, {s.widget_end});
     {f"""
     ImGuiExtras::help_marker("{s.description}");
     """ if s.description else ''
     }
+    return b;
 }}'''
 
     return "\n".join(map(code, all_style_settings()))
@@ -264,14 +280,16 @@ if __name__ == "__main__":
             "generate_files.py",
         ),
     ).load_module()
+
     generate_files.generate(
         folder="generated_style",
         files=[
             style_colors,
             register_elements,
             style_declaration,
-            style_serialization,
             style_imgui_definitions,
             style_imgui_declarations,
+            imgui_extras_json_get,
+            imgui_extras_json_set,
         ],
     )
