@@ -38,7 +38,7 @@ auto dropdown(const char* label, const char* preview, std::vector<DropdownEntry>
             }
             if (selected)
                 ImGui::SetItemDefaultFocus();
-            check_for_scroll_on_item();
+            // check_for_scroll_on_item(); // Disabled because when there are too many options we need to scroll to see them all, and we don't want that scroll to also change the currently selected item
         }
         ImGui::EndCombo();
     }
