@@ -71,105 +71,11 @@ static void from_json(nlohmann::json const& json, ax::NodeEditor::Style& style)
 
 static void to_json(nlohmann::json& json, ImGuiStyle const& style)
 {
-    Cool::json_set(json, "Alpha", style.Alpha);
-    Cool::json_set(json, "DisabledAlpha", style.DisabledAlpha);
-    Cool::json_set(json, "WindowPadding", style.WindowPadding);
-    Cool::json_set(json, "WindowRounding", style.WindowRounding);
-    Cool::json_set(json, "WindowBorderSize", style.WindowBorderSize);
-    Cool::json_set(json, "WindowMinSize", style.WindowMinSize);
-    Cool::json_set(json, "WindowTitleAlign", style.WindowTitleAlign);
-    Cool::json_set(json, "WindowMenuButtonPosition", style.WindowMenuButtonPosition);
-    Cool::json_set(json, "ChildRounding", style.ChildRounding);
-    Cool::json_set(json, "ChildBorderSize", style.ChildBorderSize);
-    Cool::json_set(json, "PopupRounding", style.PopupRounding);
-    Cool::json_set(json, "PopupBorderSize", style.PopupBorderSize);
-    Cool::json_set(json, "FramePadding", style.FramePadding);
-    Cool::json_set(json, "FrameRounding", style.FrameRounding);
-    Cool::json_set(json, "FrameBorderSize", style.FrameBorderSize);
-    Cool::json_set(json, "ItemSpacing", style.ItemSpacing);
-    Cool::json_set(json, "ItemInnerSpacing", style.ItemInnerSpacing);
-    Cool::json_set(json, "CellPadding", style.CellPadding);
-    Cool::json_set(json, "TouchExtraPadding", style.TouchExtraPadding);
-    Cool::json_set(json, "IndentSpacing", style.IndentSpacing);
-    Cool::json_set(json, "ColumnsMinSpacing", style.ColumnsMinSpacing);
-    Cool::json_set(json, "ScrollbarSize", style.ScrollbarSize);
-    Cool::json_set(json, "ScrollbarRounding", style.ScrollbarRounding);
-    Cool::json_set(json, "GrabMinSize", style.GrabMinSize);
-    Cool::json_set(json, "GrabRounding", style.GrabRounding);
-    Cool::json_set(json, "LogSliderDeadzone", style.LogSliderDeadzone);
-    Cool::json_set(json, "TabRounding", style.TabRounding);
-    Cool::json_set(json, "TabBorderSize", style.TabBorderSize);
-    Cool::json_set(json, "TabMinWidthForCloseButton", style.TabMinWidthForCloseButton);
-    Cool::json_set(json, "ColorButtonPosition", style.ColorButtonPosition);
-    Cool::json_set(json, "ButtonTextAlign", style.ButtonTextAlign);
-    Cool::json_set(json, "SelectableTextAlign", style.SelectableTextAlign);
-    Cool::json_set(json, "SeparatorTextBorderSize", style.SeparatorTextBorderSize);
-    Cool::json_set(json, "SeparatorTextAlign", style.SeparatorTextAlign);
-    Cool::json_set(json, "SeparatorTextPadding", style.SeparatorTextPadding);
-    Cool::json_set(json, "DisplayWindowPadding", style.DisplayWindowPadding);
-    Cool::json_set(json, "DisplaySafeAreaPadding", style.DisplaySafeAreaPadding);
-    Cool::json_set(json, "MouseCursorScale", style.MouseCursorScale);
-    Cool::json_set(json, "AntiAliasedLines", style.AntiAliasedLines);
-    Cool::json_set(json, "AntiAliasedLinesUseTex", style.AntiAliasedLinesUseTex);
-    Cool::json_set(json, "AntiAliasedFill", style.AntiAliasedFill);
-    Cool::json_set(json, "CurveTessellationTol", style.CurveTessellationTol);
-    Cool::json_set(json, "CircleTessellationMaxError", style.CircleTessellationMaxError);
-    Cool::json_set(json, "HoverFlagsForTooltipMouse", style.HoverFlagsForTooltipMouse);
-    Cool::json_set(json, "HoverFlagsForTooltipNav", style.HoverFlagsForTooltipNav);
-    Cool::json_set(json, "HoverDelayShort", style.HoverDelayShort);
-    Cool::json_set(json, "HoverDelayNormal", style.HoverDelayNormal);
-    Cool::json_set(json, "HoverStationaryDelay", style.HoverStationaryDelay);
+#include "generated_style/json_set.inl"
 }
 static void from_json(nlohmann::json const& json, ImGuiStyle& style)
 {
-    Cool::json_get(json, "Alpha", style.Alpha);
-    Cool::json_get(json, "DisabledAlpha", style.DisabledAlpha);
-    Cool::json_get(json, "WindowPadding", style.WindowPadding);
-    Cool::json_get(json, "WindowRounding", style.WindowRounding);
-    Cool::json_get(json, "WindowBorderSize", style.WindowBorderSize);
-    Cool::json_get(json, "WindowMinSize", style.WindowMinSize);
-    Cool::json_get(json, "WindowTitleAlign", style.WindowTitleAlign);
-    Cool::json_get(json, "WindowMenuButtonPosition", style.WindowMenuButtonPosition);
-    Cool::json_get(json, "ChildRounding", style.ChildRounding);
-    Cool::json_get(json, "ChildBorderSize", style.ChildBorderSize);
-    Cool::json_get(json, "PopupRounding", style.PopupRounding);
-    Cool::json_get(json, "PopupBorderSize", style.PopupBorderSize);
-    Cool::json_get(json, "FramePadding", style.FramePadding);
-    Cool::json_get(json, "FrameRounding", style.FrameRounding);
-    Cool::json_get(json, "FrameBorderSize", style.FrameBorderSize);
-    Cool::json_get(json, "ItemSpacing", style.ItemSpacing);
-    Cool::json_get(json, "ItemInnerSpacing", style.ItemInnerSpacing);
-    Cool::json_get(json, "CellPadding", style.CellPadding);
-    Cool::json_get(json, "TouchExtraPadding", style.TouchExtraPadding);
-    Cool::json_get(json, "IndentSpacing", style.IndentSpacing);
-    Cool::json_get(json, "ColumnsMinSpacing", style.ColumnsMinSpacing);
-    Cool::json_get(json, "ScrollbarSize", style.ScrollbarSize);
-    Cool::json_get(json, "ScrollbarRounding", style.ScrollbarRounding);
-    Cool::json_get(json, "GrabMinSize", style.GrabMinSize);
-    Cool::json_get(json, "GrabRounding", style.GrabRounding);
-    Cool::json_get(json, "LogSliderDeadzone", style.LogSliderDeadzone);
-    Cool::json_get(json, "TabRounding", style.TabRounding);
-    Cool::json_get(json, "TabBorderSize", style.TabBorderSize);
-    Cool::json_get(json, "TabMinWidthForCloseButton", style.TabMinWidthForCloseButton);
-    Cool::json_get(json, "ColorButtonPosition", style.ColorButtonPosition);
-    Cool::json_get(json, "ButtonTextAlign", style.ButtonTextAlign);
-    Cool::json_get(json, "SelectableTextAlign", style.SelectableTextAlign);
-    Cool::json_get(json, "SeparatorTextBorderSize", style.SeparatorTextBorderSize);
-    Cool::json_get(json, "SeparatorTextAlign", style.SeparatorTextAlign);
-    Cool::json_get(json, "SeparatorTextPadding", style.SeparatorTextPadding);
-    Cool::json_get(json, "DisplayWindowPadding", style.DisplayWindowPadding);
-    Cool::json_get(json, "DisplaySafeAreaPadding", style.DisplaySafeAreaPadding);
-    Cool::json_get(json, "MouseCursorScale", style.MouseCursorScale);
-    Cool::json_get(json, "AntiAliasedLines", style.AntiAliasedLines);
-    Cool::json_get(json, "AntiAliasedLinesUseTex", style.AntiAliasedLinesUseTex);
-    Cool::json_get(json, "AntiAliasedFill", style.AntiAliasedFill);
-    Cool::json_get(json, "CurveTessellationTol", style.CurveTessellationTol);
-    Cool::json_get(json, "CircleTessellationMaxError", style.CircleTessellationMaxError);
-    Cool::json_get(json, "HoverFlagsForTooltipMouse", style.HoverFlagsForTooltipMouse);
-    Cool::json_get(json, "HoverFlagsForTooltipNav", style.HoverFlagsForTooltipNav);
-    Cool::json_get(json, "HoverDelayShort", style.HoverDelayShort);
-    Cool::json_get(json, "HoverDelayNormal", style.HoverDelayNormal);
-    Cool::json_get(json, "HoverStationaryDelay", style.HoverStationaryDelay);
+#include "generated_style/json_get.inl"
 }
 
 namespace Cool {
@@ -213,7 +119,6 @@ void StyleEditor::imgui()
     b |= ImGuiExtras::GetStyle().imgui_frame_padding();
     b |= ImGuiExtras::GetStyle().imgui_tab_bar_padding();
     b |= ImGuiExtras::GetStyle().imgui_menu_bar_spacing();
-    b |= ImGui::SliderFloat2("CellPadding", (float*)&ImGui::GetStyle().CellPadding, 0.0f, 20.0f, "%.0f");
     b |= ImGui::SliderFloat2("ItemSpacing", (float*)&ImGui::GetStyle().ItemSpacing, 0.0f, 20.0f, "%.0f");
     b |= ImGui::SliderFloat2("ItemInnerSpacing", (float*)&ImGui::GetStyle().ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
     b |= ImGuiExtras::GetStyle().imgui_floating_buttons_spacing();
@@ -228,6 +133,8 @@ void StyleEditor::imgui()
     b |= ImGui::SliderFloat("PopupBorderSize", &ImGui::GetStyle().PopupBorderSize, 0.0f, 1.0f, "%.0f");
     b |= ImGui::SliderFloat("FrameBorderSize", &ImGui::GetStyle().FrameBorderSize, 0.0f, 1.0f, "%.0f");
     b |= ImGui::SliderFloat("TabBorderSize", &ImGui::GetStyle().TabBorderSize, 0.0f, 1.0f, "%.0f");
+    b |= ImGui::SliderFloat("TabBarBorderSize", &ImGui::GetStyle().TabBarBorderSize, 0.0f, 2.0f, "%.0f");
+    b |= ImGui::SliderFloat("DockingSplitterSize", &ImGui::GetStyle().DockingSeparatorSize, 0.0f, 12.0f, "%.0f");
 
     ImGuiExtras::separator_text("Rounding");
     b |= ImGui::SliderFloat("WindowRounding", &ImGui::GetStyle().WindowRounding, 0.0f, 12.0f, "%.0f");
@@ -276,6 +183,11 @@ void StyleEditor::imgui()
 
     ImGuiExtras::separator_text("Nodes");
     b |= nodes_style_editor();
+    b |= ImGui::SliderFloat("LayoutAlign", &ImGui::GetStyle().LayoutAlign, 0.0f, 1.0f);
+
+    ImGuiExtras::separator_text("Tables");
+    b |= ImGui::SliderFloat2("CellPadding", (float*)&ImGui::GetStyle().CellPadding, 0.0f, 20.0f, "%.0f");
+    b |= ImGui::SliderAngle("TableAngledHeadersAngle", &ImGui::GetStyle().TableAngledHeadersAngle, -50.0f, +50.0f);
 
     ImGuiExtras::separator_text("Misc");
     b |= ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&ImGui::GetStyle().DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f");
