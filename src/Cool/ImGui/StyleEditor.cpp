@@ -9,71 +9,23 @@
 
 namespace ax::NodeEditor {
 
-static void to_json(nlohmann::json& json, ax::NodeEditor::Style const& style)
+void to_json(nlohmann::json& json, ax::NodeEditor::Style const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
-    Cool::json_set(json, "NodePadding", style.NodePadding);
-    Cool::json_set(json, "NodeRounding", style.NodeRounding);
-    Cool::json_set(json, "NodeBorderWidth", style.NodeBorderWidth);
-    Cool::json_set(json, "HoveredNodeBorderWidth", style.HoveredNodeBorderWidth);
-    Cool::json_set(json, "SelectedNodeBorderWidth", style.SelectedNodeBorderWidth);
-    Cool::json_set(json, "PinRounding", style.PinRounding);
-    Cool::json_set(json, "PinBorderWidth", style.PinBorderWidth);
-    Cool::json_set(json, "LinkStrength", style.LinkStrength);
-    Cool::json_set(json, "SourceDirection", style.SourceDirection);
-    Cool::json_set(json, "TargetDirection", style.TargetDirection);
-    Cool::json_set(json, "ScrollDuration", style.ScrollDuration);
-    Cool::json_set(json, "FlowMarkerDistance", style.FlowMarkerDistance);
-    Cool::json_set(json, "FlowSpeed", style.FlowSpeed);
-    Cool::json_set(json, "FlowDuration", style.FlowDuration);
-    Cool::json_set(json, "PivotAlignment", style.PivotAlignment);
-    Cool::json_set(json, "PivotSize", style.PivotSize);
-    Cool::json_set(json, "PivotScale", style.PivotScale);
-    Cool::json_set(json, "PinCorners", style.PinCorners);
-    Cool::json_set(json, "PinRadius", style.PinRadius);
-    Cool::json_set(json, "PinArrowSize", style.PinArrowSize);
-    Cool::json_set(json, "PinArrowWidth", style.PinArrowWidth);
-    Cool::json_set(json, "GroupRounding", style.GroupRounding);
-    Cool::json_set(json, "GroupBorderWidth", style.GroupBorderWidth);
-    Cool::json_set(json, "HighlightConnectedLinks", style.HighlightConnectedLinks);
-    Cool::json_set(json, "SnapLinkToPinDir", style.SnapLinkToPinDir);
+#include "generated_style_nodes/json_set.inl"
 }
 
-static void from_json(nlohmann::json const& json, ax::NodeEditor::Style& style)
+void from_json(nlohmann::json const& json, ax::NodeEditor::Style& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
-    Cool::json_get(json, "NodePadding", style.NodePadding);
-    Cool::json_get(json, "NodeRounding", style.NodeRounding);
-    Cool::json_get(json, "NodeBorderWidth", style.NodeBorderWidth);
-    Cool::json_get(json, "HoveredNodeBorderWidth", style.HoveredNodeBorderWidth);
-    Cool::json_get(json, "SelectedNodeBorderWidth", style.SelectedNodeBorderWidth);
-    Cool::json_get(json, "PinRounding", style.PinRounding);
-    Cool::json_get(json, "PinBorderWidth", style.PinBorderWidth);
-    Cool::json_get(json, "LinkStrength", style.LinkStrength);
-    Cool::json_get(json, "SourceDirection", style.SourceDirection);
-    Cool::json_get(json, "TargetDirection", style.TargetDirection);
-    Cool::json_get(json, "ScrollDuration", style.ScrollDuration);
-    Cool::json_get(json, "FlowMarkerDistance", style.FlowMarkerDistance);
-    Cool::json_get(json, "FlowSpeed", style.FlowSpeed);
-    Cool::json_get(json, "FlowDuration", style.FlowDuration);
-    Cool::json_get(json, "PivotAlignment", style.PivotAlignment);
-    Cool::json_get(json, "PivotSize", style.PivotSize);
-    Cool::json_get(json, "PivotScale", style.PivotScale);
-    Cool::json_get(json, "PinCorners", style.PinCorners);
-    Cool::json_get(json, "PinRadius", style.PinRadius);
-    Cool::json_get(json, "PinArrowSize", style.PinArrowSize);
-    Cool::json_get(json, "PinArrowWidth", style.PinArrowWidth);
-    Cool::json_get(json, "GroupRounding", style.GroupRounding);
-    Cool::json_get(json, "GroupBorderWidth", style.GroupBorderWidth);
-    Cool::json_get(json, "HighlightConnectedLinks", style.HighlightConnectedLinks);
-    Cool::json_get(json, "SnapLinkToPinDir", style.SnapLinkToPinDir);
+#include "generated_style_nodes/json_get.inl"
 }
 
 } // namespace ax::NodeEditor
 
-static void to_json(nlohmann::json& json, ImGuiStyle const& style)
+void to_json(nlohmann::json& json, ImGuiStyle const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
 #include "generated_style/json_set.inl"
 }
-static void from_json(nlohmann::json const& json, ImGuiStyle& style)
+void from_json(nlohmann::json const& json, ImGuiStyle& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
 #include "generated_style/json_get.inl"
 }
@@ -81,11 +33,11 @@ static void from_json(nlohmann::json const& json, ImGuiStyle& style)
 namespace Cool {
 
 namespace ImGuiExtras {
-static void to_json(nlohmann::json& json, ImGuiExtras::Style const& style)
+void to_json(nlohmann::json& json, ImGuiExtras::Style const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
 #include "generated_style_extras/json_set.inl"
 }
-static void from_json(nlohmann::json const& json, ImGuiExtras::Style& style)
+void from_json(nlohmann::json const& json, ImGuiExtras::Style& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
 {
 #include "generated_style_extras/json_get.inl"
 }

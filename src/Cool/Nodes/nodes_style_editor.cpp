@@ -15,7 +15,9 @@ auto nodes_style_editor() -> bool
     b |= ImGui::DragFloat("Node Rounding", &style.NodeRounding, 0.1f, 0.0f, 40.0f);
     b |= ImGui::DragFloat("Node Border Width", &style.NodeBorderWidth, 0.1f, 0.0f, 15.0f);
     b |= ImGui::DragFloat("Hovered Node Border Width", &style.HoveredNodeBorderWidth, 0.1f, 0.0f, 15.0f);
+    b |= ImGui::DragFloat("Hovered Node Border Offset", &style.HoveredNodeBorderOffset, 0.1f, 0.0f, 15.0f);
     b |= ImGui::DragFloat("Selected Node Border Width", &style.SelectedNodeBorderWidth, 0.1f, 0.0f, 15.0f);
+    b |= ImGui::DragFloat("Selected Node Border Offset", &style.SelectedNodeBorderOffset, 0.1f, 0.0f, 15.0f);
     b |= ImGui::DragFloat("Pin Rounding", &style.PinRounding, 0.1f, 0.0f, 40.0f);
     b |= ImGui::DragFloat("Pin Border Width", &style.PinBorderWidth, 0.1f, 0.0f, 15.0f);
     b |= ImGui::DragFloat("Link Strength", &style.LinkStrength, 1.0f, 0.0f, 500.0f);
