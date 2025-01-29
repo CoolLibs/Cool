@@ -6,7 +6,7 @@ namespace Cool {
 template<typename T>
 void json_set(nlohmann::json& json, std::string_view key, T const& val)
 {
-    json[key] = val;
+    to_json(json[key], val); // We don't write `json[key] = val` because we don't want to overwrite values in the json that aren't used anymore, because they might be used by another version of the software.
 }
 
 template<typename T>
@@ -18,7 +18,7 @@ auto json_get(nlohmann::json const& json, std::string_view key, T& val) -> bool
 
     try
     {
-        val = it->get<T>();
+        from_json(*it, val);
         return true;
     }
     catch (...) // NOLINT(*empty-catch) Ignore the error, it is totally possible that the key is not of the right type
