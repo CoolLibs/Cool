@@ -34,7 +34,7 @@ struct UserSettings {
 private:
     // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
     JsonAutoSerializer _serializer{
-        Cool::Path::user_data() / "user_settings.json",
+        "user_settings.json",
         [&](nlohmann::json const& json) {
             json_get(json, "Autosave enabled", autosave_enabled);
             json_get(json, "Autosave delay", autosave_delay);

@@ -187,7 +187,7 @@ static void from_json(nlohmann::json const& json, ImGuiExtras::Style& style)
 
 StyleEditor::StyleEditor()
     : _serializer{
-          Cool::Path::user_data() / "style.json",
+          "style.json",
           [](nlohmann::json const& json) {
               json_get(json, "ImGui", ImGui::GetStyle());
               json_get(json, "ImGuiExtras", ImGuiExtras::GetStyle());
