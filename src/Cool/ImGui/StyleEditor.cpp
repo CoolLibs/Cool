@@ -4,28 +4,27 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/Nodes/nodes_style_editor.h"
-#include "Cool/Path/Path.h"
 #include "Cool/Serialization/Json.hpp"
 
 namespace ax::NodeEditor {
 
-void to_json(nlohmann::json& json, ax::NodeEditor::Style const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void to_json(nlohmann::json& json, ax::NodeEditor::Style const& style)
 {
 #include "generated_style_nodes/json_set.inl"
 }
 
-void from_json(nlohmann::json const& json, ax::NodeEditor::Style& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void from_json(nlohmann::json const& json, ax::NodeEditor::Style& style)
 {
 #include "generated_style_nodes/json_get.inl"
 }
 
 } // namespace ax::NodeEditor
 
-void to_json(nlohmann::json& json, ImGuiStyle const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void to_json(nlohmann::json& json, ImGuiStyle const& style)
 {
 #include "generated_style/json_set.inl"
 }
-void from_json(nlohmann::json const& json, ImGuiStyle& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void from_json(nlohmann::json const& json, ImGuiStyle& style)
 {
 #include "generated_style/json_get.inl"
 }
@@ -33,11 +32,11 @@ void from_json(nlohmann::json const& json, ImGuiStyle& style) // NOLINT(*use-int
 namespace Cool {
 
 namespace ImGuiExtras {
-void to_json(nlohmann::json& json, ImGuiExtras::Style const& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void to_json(nlohmann::json& json, ImGuiExtras::Style const& style)
 {
 #include "generated_style_extras/json_set.inl"
 }
-void from_json(nlohmann::json const& json, ImGuiExtras::Style& style) // NOLINT(*use-internal-linkage) This function is used by the JsonAutoSerializer
+[[maybe_unused]] static void from_json(nlohmann::json const& json, ImGuiExtras::Style& style)
 {
 #include "generated_style_extras/json_get.inl"
 }
@@ -46,6 +45,7 @@ void from_json(nlohmann::json const& json, ImGuiExtras::Style& style) // NOLINT(
 StyleEditor::StyleEditor()
     : _serializer{
           "style.json",
+          false /*autosave_when_destroyed*/, // If the user doesn't change the style, we don't want to save it, so that if a new version of the software comes with a new style, if the user hasn't customized the style then we will use the new style from user_data_default
           [](nlohmann::json const& json) {
               json_get(json, "ImGui", ImGui::GetStyle());
               json_get(json, "ImGuiExtras", ImGuiExtras::GetStyle());

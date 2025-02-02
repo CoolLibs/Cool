@@ -211,6 +211,7 @@ private:
         Cool::JsonAutoSerializer _serializer
         {
             "debug_options_cool.json",
+                true /*autosave_when_destroyed*/,
                 [&](nlohmann::json const& json) {
 
 #if DEBUG

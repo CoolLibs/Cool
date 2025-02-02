@@ -8,6 +8,7 @@ namespace Cool {
 
 JsonAutoSerializer::JsonAutoSerializer(
     std::filesystem::path const&               file_name,
+    bool                                       autosave_when_destroyed,
     std::function<void(nlohmann::json const&)> from_json,
     std::function<void(nlohmann::json&)>       to_json,
     WantsToLogWarnings                         wants_to_log_warnings
@@ -15,6 +16,7 @@ JsonAutoSerializer::JsonAutoSerializer(
     : _file_watcher{std::make_unique<FileWatcher>(Cool::Path::user_data() / file_name, FileWatcher_NoCallbacks() /*No callbacks because we want to ignore the initial error if the file doesn't exist*/)}
     , _from_json{std::move(from_json)}
     , _to_json{std::move(to_json)}
+    , _autosave_when_destroyed{autosave_when_destroyed}
     , _wants_to_log_warnings{wants_to_log_warnings}
 {
     // Load default user data, to get default values for fields that might not be serialized in UserData (e.g. new fields that have been added in a new version of the software that we open for the first time)
@@ -24,7 +26,8 @@ JsonAutoSerializer::JsonAutoSerializer(
 }
 JsonAutoSerializer::~JsonAutoSerializer()
 {
-    save();
+    if (_autosave_when_destroyed)
+        save();
 }
 
 void JsonAutoSerializer::save()

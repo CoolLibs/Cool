@@ -45,6 +45,11 @@ auto PathsConfig::default_user_data() const -> std::filesystem::path
     return Cool::Path::root() / "User data Default";
 }
 
+auto PathsConfig::initial_user_data() const -> std::filesystem::path
+{
+    return Cool::Path::root() / "User data Init";
+}
+
 auto PathsConfig::default_texture() const -> std::filesystem::path
 {
     return "";

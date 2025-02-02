@@ -29,7 +29,7 @@
 
 namespace Cool::internal {
 
-auto create_autosaver(std::function<void()> const& save) -> std::function<void()>
+static auto create_autosaver(std::function<void()> const& save) -> std::function<void()>
 {
     // This function will be run every frame
     return [save]() {
@@ -48,17 +48,18 @@ auto create_autosaver(std::function<void()> const& save) -> std::function<void()
     };
 }
 
-void copy_default_user_data_ifn()
+/// Makes sure the user_data() folder is populated with all the initial_user_data() files
+static void copy_initial_user_data_ifn()
 {
     try
     {
-        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
+        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::initial_user_data()))
         {
             auto const& default_path = entry.path();
             if (!Cool::File::is_regular_file(default_path))
                 continue;
 
-            auto const path = Cool::Path::user_data() / Cool::File::relative(default_path, Cool::Path::default_user_data());
+            auto const path = Cool::Path::user_data() / Cool::File::relative(default_path, Cool::Path::initial_user_data());
             if (Cool::File::exists(path))
                 continue;
 
@@ -68,13 +69,15 @@ void copy_default_user_data_ifn()
             }
             catch (std::exception const& e)
             {
-                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
+                if (DebugOptions::log_internal_warnings())
+                    Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy \"{}\" to \"{}\":\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
             }
         }
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default user data:\n{}", e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy initial user data:\n{}", e.what()));
     }
 }
 
@@ -90,8 +93,7 @@ void run_impl(
     command_line_args().init(argc, argv);
     initialize_paths_config();
     bool const ignore_invalid_user_data_file = !Cool::File::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
-    // Make sure user_data() folder is populated with all the default_user_data() files.
-    internal::copy_default_user_data_ifn();
+    copy_initial_user_data_ifn();
     // Create window.s
     assert(!config.windows_configs.empty());
     auto window_factory = Cool::WindowFactory{};
@@ -99,6 +101,17 @@ void run_impl(
     for (size_t i = 1; i < config.windows_configs.size(); ++i)
         window_factory.make_secondary_window(config.windows_configs[i]);
 
+    ImStyleEd::error_handlers().on_mandatory_warning = [](std::string_view error_message) {
+        ImGuiNotify::send({
+            .type    = ImGuiNotify::Type::Warning,
+            .title   = "Color Themes",
+            .content = std::string{error_message},
+        });
+    };
+    ImStyleEd::error_handlers().on_optional_warning = [](std::string_view error_message) {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Color Themes", std::string{error_message});
+    };
     style_editor().emplace(); // Make sure we load all the ImGui style settings // Done after the creation of the windows because we need an ImGui context to set its Style
     color_themes().emplace(); // Make sure we load all the ImGui color settings // Done after the creation of the windows because we need an ImGui context to set its Style
 
@@ -132,14 +145,14 @@ void run_impl(
         save_app(*app);
     });
     // Run the app
-    auto app_manager            = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
-    internal::get_app_manager() = &app_manager;
+    auto app_manager  = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
+    get_app_manager() = &app_manager;
     app_manager.run(internal::create_autosaver([&]() {
         save_app(*app);
     }));
 
     // Shutdown
-    internal::get_app_manager() = nullptr;
+    get_app_manager() = nullptr;
     app->on_shutdown();
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);

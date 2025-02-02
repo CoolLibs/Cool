@@ -226,6 +226,7 @@ private:
         // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
         Cool::JsonAutoSerializer _serializer{{ 
             "{cache_file_name}.json",
+            true /*autosave_when_destroyed*/,
             [&](nlohmann::json const& json) {{
                 {json_serialization(debug_options, "get")}
             }},

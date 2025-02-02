@@ -18,6 +18,7 @@ public:
     /// NB: the to_json function should not overwrite the values that are already in the JSON!!!! Otherwise we might remove information that is usefull in another version of the software.
     explicit JsonAutoSerializer(
         std::filesystem::path const&               file_name,
+        bool                                       autosave_when_destroyed,
         std::function<void(nlohmann::json const&)> from_json,
         std::function<void(nlohmann::json&)>       to_json,
         WantsToLogWarnings                         wants_to_log_warnings = WantsToLogWarnings::CheckInDebugOption /* HACK: this is for Cool::DebugOption, so it can tell the JSON to skip checking for DebugOptions to know if it needs to log warnings or not. Otherwise this creates a deadlock if the deserialization of DebugOption's json when it tries to log a warning (when the file is corrupted)*/
@@ -44,7 +45,8 @@ private:
     std::function<void(nlohmann::json const&)> _from_json;
     std::function<void(nlohmann::json&)>       _to_json;
 
-    WantsToLogWarnings _wants_to_log_warnings{};
+    bool               _autosave_when_destroyed;
+    WantsToLogWarnings _wants_to_log_warnings;
 };
 
 } // namespace Cool
