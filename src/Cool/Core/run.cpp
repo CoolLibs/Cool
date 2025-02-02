@@ -51,6 +51,8 @@ static auto create_autosaver(std::function<void()> const& save) -> std::function
 /// Makes sure the user_data() folder is populated with all the initial_user_data() files
 static void copy_initial_user_data_ifn()
 {
+    if (!Cool::File::exists(Cool::Path::initial_user_data()))
+        return;
     try
     {
         for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::initial_user_data()))
