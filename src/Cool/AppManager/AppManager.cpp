@@ -73,7 +73,6 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
     ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
     wcam::set_image_type<WebcamImage>();
-    WebcamsConfigs::instance().load();
 }
 
 auto AppManager::should_close_window() const -> bool

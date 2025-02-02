@@ -4,27 +4,14 @@
 /// compilation by A LOT. So we want to avoid recompiling
 /// this file as much as possible.
 ///
-
 #include <ser20/types/polymorphic.hpp>
 #include "Cool/Nodes/EditorImpl.h"
-#include "Cool/Serialization/Serialization.h"
-#include "ImStyleEd/ser20_style.hpp"
 #include "SPresetManager.h"
-#include "SWebcamsConfigs.h"
 
 //
 #include "ser20/archives/json.hpp"
 
 namespace Cool {
-
-auto do_save(wcam::ResolutionsMap const& configs, Cool::SerializerOnDemand const& serializer) -> bool
-{
-    return serializer.save<wcam::ResolutionsMap, ser20::JSONOutputArchive>(configs);
-}
-auto do_load(wcam::ResolutionsMap& configs, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
-{
-    return serializer.load<wcam::ResolutionsMap, ser20::JSONInputArchive>(configs);
-}
 
 auto do_save(reg::RawOrderedRegistry<Preset> const& data, Cool::SerializerOnDemand const& serializer) -> bool
 {
