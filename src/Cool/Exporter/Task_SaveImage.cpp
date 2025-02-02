@@ -36,7 +36,7 @@ auto Task_SaveImage::notification_after_execution_completes() const -> ImGuiNoti
         };
         return success_notification;
     }
-    else
+    else // NOLINT(*else-after-return)
     {
         return {
             .type    = ImGuiNotify::Type::Error,
