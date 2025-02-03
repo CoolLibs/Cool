@@ -2,6 +2,7 @@
 #include <Cool/Input/MouseButtonEvent.h>
 #include <Cool/Input/MouseMoveEvent.h>
 #include <Cool/Input/MouseScrollEvent.h>
+#include "nlohmann/json.hpp"
 
 namespace Cool {
 
@@ -37,6 +38,9 @@ public:
 
     /// All ImGui menus created inside this function will appear in the main menu bar.
     virtual void imgui_menus() {}
+
+    virtual void save_to_json(nlohmann::json&) const {}
+    virtual void load_from_json(nlohmann::json const&) {}
 
     /// This is called before everything is saved by the serialization (unlike the IApp's destructor, which is called afterward, and might also be called at startup if loading the serialization fails.).
     virtual void on_shutdown() {}

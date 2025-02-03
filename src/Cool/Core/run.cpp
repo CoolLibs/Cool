@@ -20,6 +20,7 @@
 #include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Path/Path.h"
+#include "Cool/Serialization/JsonSerializer.hpp"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
 #include "Cool/View/ViewsManager.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
@@ -86,15 +87,12 @@ static void copy_initial_user_data_ifn()
 void run_impl(
     int argc, char** argv, RunConfig const& config,
     std::function<void()> const&                                                                         initialize_paths_config,
-    std::function<std::unique_ptr<IApp>(Cool::WindowManager& windows, Cool::ViewsManager& views)> const& make_unique_app,
-    std::function<OptionalErrorMessage(IApp&)> const&                                                    load_app,
-    std::function<void(IApp const&)> const&                                                              save_app
+    std::function<std::unique_ptr<IApp>(Cool::WindowManager& windows, Cool::ViewsManager& views)> const& make_unique_app
 )
 {
     set_utf8_locale();
     command_line_args().init(argc, argv);
     initialize_paths_config();
-    bool const ignore_invalid_user_data_file = !Cool::File::exists(Cool::Path::user_data()); // If user_data() does not exist, it means this is the first time you open Coollab, so it is expected that the files will be invalid. Any other time than that, we want to warn because this means that serialization has been broken, which we want to avoid on the dev's side.
     copy_initial_user_data_ifn();
     // Create window.s
     assert(!config.windows_configs.empty());
@@ -129,28 +127,24 @@ void run_impl(
     auto views = ViewsManager{};
     auto app   = make_unique_app(window_factory.window_manager(), views); // Stored in a unique_ptr because we don't require App to be copy-assignable
 
-    auto const error = load_app(*app);
-    if (error)
-    {
-        app = make_unique_app(window_factory.window_manager(), views); // Make sure to start with a clean default App if deserialization fails, otherwise some fields would have been deserialized and others have their default values, and there could be a mismatch
-        if (!ignore_invalid_user_data_file)
-        {
-            ImGuiNotify::send({
-                .type     = ImGuiNotify::Type::Warning,
-                .title    = "Failed to restore last session's state",
-                .content  = *error.error_message(),
-                .duration = 15s,
-            });
-        }
-    }
+    auto app_serializer = JsonSerializer{
+        "last_session.json",
+        [&](nlohmann::json const& json) {
+            app->load_from_json(json);
+        },
+        [&](nlohmann::json& json) {
+            app->save_to_json(json);
+        },
+    };
+    app_serializer.load();
     auto const save_on_exit = sg::make_scope_guard([&]() {
-        save_app(*app);
+        app_serializer.save();
     });
     // Run the app
     auto app_manager  = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
     get_app_manager() = &app_manager;
     app_manager.run(internal::create_autosaver([&]() {
-        save_app(*app);
+        app_serializer.save();
     }));
 
     // Shutdown
