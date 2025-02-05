@@ -17,11 +17,11 @@ auto dropdown(const char* label, const char* preview, std::vector<DropdownEntry>
             {
                 if (select_next)
                 {
-                    entries[i].apply_value();
+                    entries[static_cast<size_t>(i)].apply_value();
                     b = true;
                     break;
                 }
-                select_next = entries[i].is_selected();
+                select_next = entries[static_cast<size_t>(i)].is_selected();
             }
         }
     };
