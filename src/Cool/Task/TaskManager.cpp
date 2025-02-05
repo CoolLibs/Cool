@@ -133,7 +133,7 @@ void TaskManager::submit(std::shared_ptr<WaitToExecuteTask> const& condition, st
     else
     {
         auto lock = std::unique_lock{_tasks_with_condition_mutex};
-        _tasks_with_condition.emplace_back(task, condition);
+        _tasks_with_condition.emplace_back(TaskAndCondition{task, condition});
     }
 }
 
