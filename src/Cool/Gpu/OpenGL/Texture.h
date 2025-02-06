@@ -39,6 +39,7 @@ public:
     void        bind();
     static void unbind();
 
+    [[nodiscard]] auto ref() const -> TextureRef { return {id(), size()}; }
     /// The native OpenGL ID of the texture.
     [[nodiscard]] auto id() const -> GLuint { return _tex.id(); }
     /// The ID that ImGui expects
