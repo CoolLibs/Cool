@@ -229,17 +229,17 @@ auto TaskManager::num_tasks_processing() const -> size_t
 auto TaskManager::num_tasks_waiting_for_thread(reg::AnyId const& owner_id) const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
-    return std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
+    return static_cast<size_t>(std::count_if(_tasks_waiting.begin(), _tasks_waiting.end(), [&](std::shared_ptr<Task> const& task) {
         return task->owner_id() == owner_id;
-    });
+    }));
 }
 
 auto TaskManager::num_tasks_waiting_for_condition(reg::AnyId const& owner_id) const -> size_t
 {
     auto lock = std::shared_lock{_tasks_with_condition_mutex};
-    return std::count_if(_tasks_with_condition.begin(), _tasks_with_condition.end(), [&](TaskAndCondition const& task) {
+    return static_cast<size_t>(std::count_if(_tasks_with_condition.begin(), _tasks_with_condition.end(), [&](TaskAndCondition const& task) {
         return task.task->owner_id() == owner_id;
-    });
+    }));
 }
 
 auto TaskManager::num_tasks_processing(reg::AnyId const& owner_id) const -> size_t
