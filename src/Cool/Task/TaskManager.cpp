@@ -245,9 +245,9 @@ auto TaskManager::num_tasks_waiting_for_condition(reg::AnyId const& owner_id) co
 auto TaskManager::num_tasks_processing(reg::AnyId const& owner_id) const -> size_t
 {
     auto lock = std::shared_lock{_tasks_mutex};
-    return std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
+    return static_cast<size_t>(std::count_if(_tasks_processing.begin(), _tasks_processing.end(), [&](std::shared_ptr<Task> const& task) {
         return task->owner_id() == owner_id;
-    });
+    }));
 }
 
 auto TaskManager::list_of_tasks_that_need_user_confirmation_before_killing() const -> std::string
