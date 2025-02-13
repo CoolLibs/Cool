@@ -6,6 +6,7 @@
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/TextureSource/default_textures.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "TextureLibrary_Image.h"
 #include "fmt/chrono.h"
@@ -84,45 +85,29 @@ auto TextureLibrary_Image::error_from(std::filesystem::path const& path) -> std:
 
 void TextureLibrary_Image::imgui_debug_view() const
 {
-    static constexpr ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame
-                                             | ImGuiTableFlags_Resizable
-                                             | ImGuiTableFlags_BordersOuter
-                                             | ImGuiTableFlags_BordersV
-                                             | ImGuiTableFlags_BordersH
-                                             | ImGuiTableFlags_ContextMenuInBody;
-
-    if (ImGui::BeginTable("tex_library", 3, flags))
+    for (auto const& kv : _textures)
     {
-        for (auto const& kv : _textures)
+        ImGuiExtras::image_framed(
+            kv.second.texture ? kv.second.texture->imgui_texture_id() : dummy_texture().imgui_texture_id(),
+            {100.f * (kv.second.texture ? kv.second.texture->aspect_ratio() : 1.f), 100.f},
+            {.frame_thickness = 2.f}
+        );
+
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+
+        ImGui::TextUnformatted(kv.first.string().c_str());
+
         {
-            ImGui::TableNextRow();
-            {
-                ImGui::TableSetColumnIndex(0);
-                if (kv.second.texture)
-                    ImGuiExtras::image_framed(kv.second.texture->imgui_texture_id(), {100.f * kv.second.texture->aspect_ratio(), 100.f}, {.frame_thickness = 2.f});
-                else
-                    ImGui::TextUnformatted("INVALID");
-            }
-            {
-                ImGui::TableSetColumnIndex(1);
-                ImGui::TextUnformatted(kv.first.string().c_str());
-            }
-            {
-                ImGui::TableSetColumnIndex(2);
-                auto const time_since_last_use = std::chrono::steady_clock::now() - kv.second.date_of_last_request;
-                auto const time_to_live        = kv.second.time_to_live;
-                if (time_since_last_use < time_to_live)
-                {
-                    auto const duration = time_to_live - time_since_last_use;
-                    ImGui::TextUnformatted(time_formatted_hms(duration).c_str());
-                }
-                else
-                {
-                    ImGui::TextUnformatted(fmt::format("Expired (Not used for {})", time_to_live).c_str());
-                }
-            }
+            auto const time_since_last_use = std::chrono::steady_clock::now() - kv.second.date_of_last_request;
+            auto const time_to_live        = kv.second.time_to_live;
+            if (time_since_last_use < time_to_live)
+                ImGui::TextUnformatted(time_formatted_hms(time_to_live - time_since_last_use).c_str());
+            else
+                ImGui::TextUnformatted(fmt::format("Expired (Not used for {})", time_to_live).c_str());
         }
-        ImGui::EndTable();
+
+        ImGui::EndGroup();
     }
 }
 
