@@ -139,6 +139,9 @@ void run_impl(
     app_serializer.load();
     auto const save_on_exit = sg::make_scope_guard([&]() {
         app_serializer.save();
+        DebugOptions::save();
+        user_settings().save(); // Even if the user doesn't change the settings, we will save the settings they have seen once, so that if a new version of the software comes with new settings, we will not change settings that the user is used to
+        // style_editor().save(); // If the user doesn't change the style, we don't want to save it, so that if a new version of the software comes with a new style, if the user hasn't customized the style then we will use the new style from user_data_default
     });
     // Run the app
     auto app_manager  = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};

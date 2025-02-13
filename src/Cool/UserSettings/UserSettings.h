@@ -30,12 +30,13 @@ struct UserSettings {
     auto imgui_video_export_overwrite_behaviour() -> bool;
 
     void update() { _serializer.update(); }
+    void save() { _serializer.save(); }
 
 private:
     // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
     JsonAutoSerializer _serializer{
         "user_settings.json",
-        true /*autosave_when_destroyed*/, // Even if the user doesn't change the settings, we will save the settings they have seen once, so that if a new version of the software comes with new settings, we will not change settings that the user is used to
+        false /*autosave_when_destroyed*/, // This is a static instance, so saving it in the destructor is dangerous because we don't know when it will happen exactly. Instead, we call save manually at the end of the run()
         [&](nlohmann::json const& json) {
             json_get(json, "Autosave enabled", autosave_enabled);
             json_get(json, "Autosave delay", autosave_delay);

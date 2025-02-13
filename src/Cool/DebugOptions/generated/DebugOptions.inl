@@ -169,6 +169,8 @@ public:
     [[nodiscard]] static auto imgui_item_picker() -> bool& { return instance().imgui_item_picker; }
 #endif
 
+    static void save() { instance()._serializer.save(); }
+
 private:
     struct Instance {
         bool test_message_console__window{false};
@@ -211,7 +213,7 @@ private:
         Cool::JsonAutoSerializer _serializer
         {
             "debug_options_cool.json",
-                true /*autosave_when_destroyed*/,
+                false /*autosave_when_destroyed*/, // This is a static instance, so saving it in the destructor is dangerous because we don't know when it will happen exactly. Instead, we call save manually at the end of the run()
                 [&](nlohmann::json const& json) {
 
 #if DEBUG
@@ -316,7 +318,6 @@ private:
         return the_instance;
     }
 
-    static void save() { instance()._serializer.save(); }
     static void load() { instance()._serializer.load(); }
     static void update() { instance()._serializer.update(); }
 
