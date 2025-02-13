@@ -8,6 +8,35 @@ from debug_options_generator import DebugOption, generate_debug_options, Kind
 def all_debug_options():
     return [
         DebugOption(
+            name_in_code="show_framerate_window",
+            name_in_ui="Framerate window",
+            name_in_json=None,
+            available_in_release=True,
+            window_name="Framerate",
+            kind=Kind.WINDOW,
+        ),
+        DebugOption(
+            name_in_code="show_imgui_demo_window",
+            name_in_ui="ImGui Demo window",
+            name_in_json=None,
+            available_in_release=True,
+        ),
+        DebugOption(
+            name_in_code="test_all_variable_widgets__window",
+            name_in_ui="Test all Variable Widgets",
+            name_in_json=None,
+            kind=Kind.WINDOW,
+            available_in_release=True,
+        ),
+        DebugOption(
+            name_in_code="empty_window",
+            name_in_ui="Open Empty Window",
+            name_in_json=None,
+            kind=Kind.WINDOW,
+            available_in_release=True,
+            detailed_description="Useful when you want some blank space in your windows layout.",
+        ),
+        DebugOption(
             name_in_code="test_message_console__window",
             name_in_ui="Test Message Console",
             name_in_json=None,

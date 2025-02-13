@@ -20,6 +20,40 @@ namespace Cool {
 
 class DebugOptions {
 public:
+    static void show_framerate_window(std::function<void()> callback)
+    {
+        if (instance().show_framerate_window)
+        {
+            ImGui::Begin(Cool::icon_fmt("Framerate", ICOMOON_WRENCH).c_str(), &instance().show_framerate_window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+            if (!instance().show_framerate_window) // Window has just been closed manually by the user
+                save();
+        }
+    }
+    [[nodiscard]] static auto show_imgui_demo_window() -> bool& { return instance().show_imgui_demo_window; }
+    static void               test_all_variable_widgets__window(std::function<void()> callback)
+    {
+        if (instance().test_all_variable_widgets__window)
+        {
+            ImGui::Begin(Cool::icon_fmt("Test all Variable Widgets", ICOMOON_WRENCH).c_str(), &instance().test_all_variable_widgets__window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+            if (!instance().test_all_variable_widgets__window) // Window has just been closed manually by the user
+                save();
+        }
+    }
+    static void empty_window(std::function<void()> callback)
+    {
+        if (instance().empty_window)
+        {
+            ImGui::Begin(Cool::icon_fmt("Open Empty Window", ICOMOON_WRENCH).c_str(), &instance().empty_window, ImGuiWindowFlags_NoFocusOnAppearing);
+            callback();
+            ImGui::End();
+            if (!instance().empty_window) // Window has just been closed manually by the user
+                save();
+        }
+    }
     static void test_message_console__window(std::function<void()> callback)
     {
         if (instance().test_message_console__window)
@@ -173,6 +207,10 @@ public:
 
 private:
     struct Instance {
+        bool show_framerate_window{false};
+        bool show_imgui_demo_window{false};
+        bool test_all_variable_widgets__window{false};
+        bool empty_window{false};
         bool test_message_console__window{false};
         bool test_notifications__window{false};
         bool test_tasks__window{false};
@@ -217,6 +255,10 @@ private:
                 [&](nlohmann::json const& json) {
 
 #if DEBUG
+                    Cool::json_get(json, "Framerate window", show_framerate_window);
+                    Cool::json_get(json, "ImGui Demo window", show_imgui_demo_window);
+                    Cool::json_get(json, "Test all Variable Widgets", test_all_variable_widgets__window);
+                    Cool::json_get(json, "Open Empty Window", empty_window);
                     Cool::json_get(json, "Test Message Console", test_message_console__window);
                     Cool::json_get(json, "Test Notifications", test_notifications__window);
                     Cool::json_get(json, "Test Tasks", test_tasks__window);
@@ -238,6 +280,10 @@ private:
                     Cool::json_get(json, "Color Themes: Advanced Config", color_themes_advanced_config_window);
                     Cool::json_get(json, "Show all icons", show_all_icons);
 #else
+                    Cool::json_get(json, "Framerate window", show_framerate_window);
+                    Cool::json_get(json, "ImGui Demo window", show_imgui_demo_window);
+                    Cool::json_get(json, "Test all Variable Widgets", test_all_variable_widgets__window);
+                    Cool::json_get(json, "Open Empty Window", empty_window);
                     Cool::json_get(json, "Test Message Console", test_message_console__window);
                     Cool::json_get(json, "Test Notifications", test_notifications__window);
                     Cool::json_get(json, "Test Tasks", test_tasks__window);
@@ -261,6 +307,10 @@ private:
                 [&](nlohmann::json& json) {
 
 #if DEBUG
+                    Cool::json_set(json, "Framerate window", show_framerate_window);
+                    Cool::json_set(json, "ImGui Demo window", show_imgui_demo_window);
+                    Cool::json_set(json, "Test all Variable Widgets", test_all_variable_widgets__window);
+                    Cool::json_set(json, "Open Empty Window", empty_window);
                     Cool::json_set(json, "Test Message Console", test_message_console__window);
                     Cool::json_set(json, "Test Notifications", test_notifications__window);
                     Cool::json_set(json, "Test Tasks", test_tasks__window);
@@ -282,6 +332,10 @@ private:
                     Cool::json_set(json, "Color Themes: Advanced Config", color_themes_advanced_config_window);
                     Cool::json_set(json, "Show all icons", show_all_icons);
 #else
+                    Cool::json_set(json, "Framerate window", show_framerate_window);
+                    Cool::json_set(json, "ImGui Demo window", show_imgui_demo_window);
+                    Cool::json_set(json, "Test all Variable Widgets", test_all_variable_widgets__window);
+                    Cool::json_set(json, "Open Empty Window", empty_window);
                     Cool::json_set(json, "Test Message Console", test_message_console__window);
                     Cool::json_set(json, "Test Notifications", test_notifications__window);
                     Cool::json_set(json, "Test Tasks", test_tasks__window);
@@ -323,6 +377,10 @@ private:
 
     static void reset_all()
     {
+        instance().show_framerate_window                            = false;
+        instance().show_imgui_demo_window                           = false;
+        instance().test_all_variable_widgets__window                = false;
+        instance().empty_window                                     = false;
         instance().test_message_console__window                     = false;
         instance().test_notifications__window                       = false;
         instance().test_tasks__window                               = false;
@@ -361,6 +419,32 @@ private:
 
     static void imgui_ui_for_all_options(std::string_view filter)
     {
+        if (wafl::similarity_match({filter, "Framerate window"}) >= wafl::Matches::Strongly)
+        {
+            if (Cool::ImGuiExtras::toggle("Framerate window", &instance().show_framerate_window))
+                save();
+        }
+
+        if (wafl::similarity_match({filter, "ImGui Demo window"}) >= wafl::Matches::Strongly)
+        {
+            if (Cool::ImGuiExtras::toggle("ImGui Demo window", &instance().show_imgui_demo_window))
+                save();
+        }
+
+        if (wafl::similarity_match({filter, "Test all Variable Widgets"}) >= wafl::Matches::Strongly)
+        {
+            if (Cool::ImGuiExtras::toggle("Test all Variable Widgets", &instance().test_all_variable_widgets__window))
+                save();
+        }
+
+        if (wafl::similarity_match({filter, "Open Empty Window"}) >= wafl::Matches::Strongly)
+        {
+            if (Cool::ImGuiExtras::toggle("Open Empty Window", &instance().empty_window))
+                save();
+
+            Cool::ImGuiExtras::help_marker("Useful when you want some blank space in your windows layout.");
+        }
+
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             if (Cool::ImGuiExtras::toggle("Test Message Console", &instance().test_message_console__window))
@@ -517,6 +601,34 @@ private:
 
     static void toggle_first_option(std::string_view filter)
     {
+        if (wafl::similarity_match({filter, "Framerate window"}) >= wafl::Matches::Strongly)
+        {
+            instance().show_framerate_window = !instance().show_framerate_window;
+            save();
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "ImGui Demo window"}) >= wafl::Matches::Strongly)
+        {
+            instance().show_imgui_demo_window = !instance().show_imgui_demo_window;
+            save();
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Test all Variable Widgets"}) >= wafl::Matches::Strongly)
+        {
+            instance().test_all_variable_widgets__window = !instance().test_all_variable_widgets__window;
+            save();
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Open Empty Window"}) >= wafl::Matches::Strongly)
+        {
+            instance().empty_window = !instance().empty_window;
+            save();
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
         if (wafl::similarity_match({filter, "Test Message Console"}) >= wafl::Matches::Strongly)
         {
             instance().test_message_console__window = !instance().test_message_console__window;
