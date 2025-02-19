@@ -31,7 +31,7 @@ auto dropdown(const char* label, const char* preview, std::vector<DropdownEntry>
         for (auto& entry : entries)
         {
             bool const selected = entry.is_selected();
-            if (ImGui::Selectable(entry.get_label(), selected))
+            if (ImGui::Selectable(std::string_view{entry.get_label()}.data(), selected)) // We build a string_view so that entry.get_label() can either return a string or a const char* // NOLINT(*suspicious-stringview-data-usage)
             {
                 entry.apply_value();
                 b = true;
