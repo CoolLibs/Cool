@@ -30,8 +30,6 @@ private:
 
     /// Called as soon as the task is given to task_manager().submit()
     virtual void on_submit() {}
-    /// Called just before execute(). This is mostly usefull for TaskWithProgressBar to inject it's thing without having to put anything in the execute() of the children classes
-    virtual void just_before_execution_starts() {}
     /// Always called (if the task has been submitted to the TaskManager), either after execute() is finished, or after canceling the task. on_submit() is guaranteed to have been called before. This is called only once
     /// You shouldn't put your cleanup logic in the destructor, because the task might be kept alive by someone referencing it long after it has been canceled / has finished executing
     virtual void cleanup(bool /* has_been_canceled */) {}

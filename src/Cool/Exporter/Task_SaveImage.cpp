@@ -16,6 +16,8 @@ Task_SaveImage::Task_SaveImage(std::filesystem::path const& file_path, img::Imag
 
 void Task_SaveImage::execute()
 {
+    TaskWithProgressBar::change_notification_when_execution_starts();
+
     _result = ImageU::save(
         _file_path, _image,
         {

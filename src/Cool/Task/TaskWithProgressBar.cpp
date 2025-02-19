@@ -25,16 +25,17 @@ void TaskWithProgressBar::on_submit()
     });
 }
 
-void TaskWithProgressBar::just_before_execution_starts()
+void TaskWithProgressBar::change_notification_when_execution_starts()
 {
     ImGuiNotify::change(
         _notification_id,
         {
             .type                 = ImGuiNotify::Type::Info,
             .title                = name(),
-            .custom_imgui_content = [data = _data, task_id = owner_id()]() {
+            .custom_imgui_content = [data = _data, task_id = owner_id(), extra_imgui = extra_imgui_below_progress_bar()]() {
                 ImGuiExtras::disabled_if(data->cancel.load(), "", [&]() {
                     ImGuiExtras::progress_bar(data->progress.load());
+                    extra_imgui();
                     if (ImGui::Button("Cancel"))
                         task_manager().cancel_all(task_id);
                 });

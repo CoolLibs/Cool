@@ -32,6 +32,8 @@ public:
 private:
     void execute() override
     {
+        TaskWithProgressBar::change_notification_when_execution_starts();
+
         int count{0};
         for (int _ = 0; _ < _count_max; ++_)
         {

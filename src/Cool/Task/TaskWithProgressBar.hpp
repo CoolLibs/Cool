@@ -14,9 +14,14 @@ protected:
 
     virtual auto text_in_notification_while_waiting_to_execute() const -> std::string;
     virtual auto notification_after_execution_completes() const -> ImGuiNotify::Notification;
+    virtual auto extra_imgui_below_progress_bar() const -> std::function<void()> // This function should capture everything by copy, it will live as long as the notification
+    {
+        return []() {
+        };
+    }
 
     void on_submit() override;
-    void just_before_execution_starts() override;
+    void change_notification_when_execution_starts(); // Needs to be called by the children classes at the beginning of their execute()
     void cleanup(bool has_been_canceled) override;
 
 private:

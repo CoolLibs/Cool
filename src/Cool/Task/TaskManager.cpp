@@ -31,7 +31,6 @@ void TaskManager::shut_down()
 
 void TaskManager::execute_task(Task& task)
 {
-    task.just_before_execution_starts();
     task.execute();
     if (!task.has_been_canceled())
         task._completion.store(Task::Completion::FinishedExecuting);
