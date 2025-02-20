@@ -18,7 +18,7 @@ class DebugOption:
     name_in_ui: str
     available_in_release: bool
     # If None, this will default to `name_in_ui`. You might want to change the `name_in_ui` at some point, but keep the `name_in_json` the same so that you don't break serialization.
-    name_in_json: str | None
+    name_in_json: str | None = None
     window_name: str = ""
     kind: Kind = Kind.CHECKBOX
     default_value_in_debug: bool = False
