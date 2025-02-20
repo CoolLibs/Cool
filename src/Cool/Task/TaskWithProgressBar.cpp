@@ -54,9 +54,10 @@ auto TaskWithProgressBar::text_in_notification_while_waiting_to_execute() const 
 auto TaskWithProgressBar::notification_after_execution_completes() const -> ImGuiNotify::Notification
 {
     return {
-        .type    = ImGuiNotify::Type::Success,
-        .title   = name(),
-        .content = "Completed",
+        .type     = ImGuiNotify::Type::Success,
+        .title    = name(),
+        .content  = "Completed",
+        .duration = 2s,
     };
 }
 
