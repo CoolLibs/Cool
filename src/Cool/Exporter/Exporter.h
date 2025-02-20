@@ -36,7 +36,7 @@ public:
 
     /// Returns the path where the image will be exported
     /// (Note that by the time the function returns, the image will not have been exported yet since this is done in a task)
-    auto export_image_with_current_settings_using_a_task(Time time, Time delta_time, Polaroid const& polaroid) -> std::filesystem::path;
+    auto export_image_with_current_settings_using_a_task(Time time, Time delta_time, Polaroid const& polaroid, std::function<bool(std::filesystem::path const&)> const& extra_conditions_to_consider_image_path_valid = [](auto&&) { return true; }) -> std::filesystem::path;
 
 private:
     ExporterGui                       _gui{};
