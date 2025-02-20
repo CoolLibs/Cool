@@ -40,7 +40,7 @@ auto UserSettings::imgui_autosave() -> bool
 auto UserSettings::imgui_extra_icons() -> bool
 {
     bool const b = ImGuiExtras::toggle("Extra Icons", &extra_icons);
-    ImGui::SetItemTooltip("%s", "Adds additional icons for some menus, buttons, etc.");
+    ImGuiExtras::help_marker("Adds additional icons for some menus, buttons, etc.");
     return b;
 }
 
