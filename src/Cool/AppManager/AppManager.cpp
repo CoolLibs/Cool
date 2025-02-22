@@ -7,12 +7,16 @@
 #include <fix_tdr_delay/fix_tdr_delay.hpp>
 #include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
+#include "Cool/CommandLineArgs/CommandLineArgs.h"
+#include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
+#include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Log/ToUser.h"
 #include "Cool/Midi/MidiManager.h"
+#include "Cool/Task/TaskManager.hpp"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
@@ -69,11 +73,45 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
     ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
     wcam::set_image_type<WebcamImage>();
-    WebcamsConfigs::instance().load();
 }
 
-void AppManager::run(std::function<void()> on_update)
+auto AppManager::should_close_window() const -> bool
 {
+    if (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+        return false;
+
+    auto const tasks_in_progress = task_manager().list_of_tasks_that_need_user_confirmation_before_killing();
+    if (tasks_in_progress.empty())
+        return true;
+
+    auto const choice = boxer::show(
+        ("There are some tasks in progress, if you exit now they will not be able to complete successfully:\n" + tasks_in_progress).c_str(),
+        "Kill tasks in progress?",
+        boxer::Style::Warning,
+        boxer::Buttons::OKCancel
+    );
+    if (choice == boxer::Selection::OK)
+        return true;
+
+    glfwSetWindowShouldClose(_window_manager.main_window().glfw(), false);
+    return false;
+}
+
+void AppManager::close_application()
+{
+    _window_manager.main_window().close();
+}
+
+void AppManager::close_application_if_all_tasks_are_done()
+{
+    if (!task_manager().list_of_tasks_that_need_user_confirmation_before_killing().empty())
+        return;
+    close_application();
+}
+
+void AppManager::run(std::function<void()> const& on_update)
+{
+    _app.init();
     auto const do_update = [&]() {
 #if !DEBUG
         try
@@ -93,7 +131,7 @@ void AppManager::run(std::function<void()> on_update)
     auto should_stop   = false;
     auto update_thread = std::jthread{[&]() {
         NFD::Guard nfd_guard{};
-        while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+        while (!should_close_window())
         {
             do_update();
         }
@@ -105,7 +143,7 @@ void AppManager::run(std::function<void()> on_update)
     }
 #else
     NFD::Guard nfd_guard{};
-    while (!glfwWindowShouldClose(_window_manager.main_window().glfw()))
+    while (!should_close_window())
     {
         glfwPollEvents();
         do_update();
@@ -114,6 +152,8 @@ void AppManager::run(std::function<void()> on_update)
     // Restore any ImGui ini state that might have been stored
     _app._wants_to_restore_ini_state = true;
     restore_imgui_ini_state_ifn();
+    // Make sure no tasks are running, as they might need things to still be alive in order to finish their job
+    task_manager().shut_down();
 }
 
 static void check_for_imgui_item_picker_request()
@@ -143,19 +183,27 @@ void AppManager::restore_imgui_ini_state_ifn()
 
 void AppManager::update()
 {
+    color_themes()->update();
     // Cache these colors for the frame, because we don't want to query the Theme all the time.
     // They will be reused by a few things event outside of ImGui::Notify
-    ImGuiNotify::get_style().color_success          = user_settings().color_themes.editor().get_color("Success").as_imvec4();
-    ImGuiNotify::get_style().color_warning          = user_settings().color_themes.editor().get_color("Warning").as_imvec4();
-    ImGuiNotify::get_style().color_error            = user_settings().color_themes.editor().get_color("Error").as_imvec4();
-    ImGuiNotify::get_style().color_info             = user_settings().color_themes.editor().get_color("Accent").as_imvec4();
+    ImGuiNotify::get_style().color_success          = color_themes()->editor().get_color("Success").as_imvec4();
+    ImGuiNotify::get_style().color_warning          = color_themes()->editor().get_color("Warning").as_imvec4();
+    ImGuiNotify::get_style().color_error            = color_themes()->editor().get_color("Error").as_imvec4();
+    ImGuiNotify::get_style().color_info             = color_themes()->editor().get_color("Accent").as_imvec4();
     ImGuiNotify::get_style().color_title_background = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
+
+    user_settings().update();
 
     ImGui::GetIO().ConfigDragClickToInputText = user_settings().single_click_to_input_in_drag_widgets;
     prepare_windows(_window_manager);
 #if defined(COOL_VULKAN)
     vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
+    if (DebugOptions::show_command_line_arguments())
+    {
+        for (auto const& arg : command_line_args().get())
+            Cool::Log::ToUser::info("cli", arg);
+    }
     midi_manager().check_for_devices();
     Audio::player().update_device_if_necessary();
     if (TextureLibrary_Image::instance().update()) // update() needs to be called because update has side effect
@@ -178,6 +226,8 @@ void AppManager::update()
         Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
     }
 #endif
+    task_manager().update_on_main_thread();
+
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_new_frame();
     check_for_imgui_item_picker_request();
@@ -424,7 +474,7 @@ void AppManager::dispatch_mouse_scroll()
 void AppManager::imgui_windows()
 {
     Cool::DebugOptions::style_editor([&]() {
-        _style_editor.imgui();
+        style_editor()->imgui();
     });
 }
 

@@ -16,6 +16,7 @@ public:
     [[nodiscard]] virtual auto cool_res() const -> std::filesystem::path;
     [[nodiscard]] virtual auto user_data() const -> std::filesystem::path;
     [[nodiscard]] virtual auto default_user_data() const -> std::filesystem::path;
+    [[nodiscard]] virtual auto initial_user_data() const -> std::filesystem::path;
     [[nodiscard]] virtual auto default_texture() const -> std::filesystem::path;
 };
 

@@ -1,6 +1,6 @@
 #include "UserSettings.h"
 #include <Cool/ImGui/ImGuiExtras.h>
-#include <smart/smart.hpp>
+#include "Cool/Serialization/Json.hpp"
 #include "imgui.h"
 
 namespace Cool {
@@ -8,25 +8,31 @@ namespace Cool {
 auto UserSettings::imgui() -> bool
 {
     bool b = false;
+
     ImGuiExtras::separator_text("Autosave");
     b |= imgui_autosave();
+
     ImGuiExtras::separator_text("UI");
     b |= imgui_extra_icons();
+
     ImGuiExtras::separator_text("Camera");
     b |= imgui_camera2D_zoom_sensitivity();
+
     ImGuiExtras::separator_text("Miscellaneous");
     b |= imgui_single_click_to_input_in_drag_widgets();
     b |= imgui_enable_multi_viewport();
 
+    if (b)
+        _serializer.save();
     return b;
 }
 
 auto UserSettings::imgui_autosave() -> bool
 {
     return ImGuiExtras::toggle_with_submenu("Autosave", &autosave_enabled, [&]() {
-        bool b                    = ImGui::InputFloat("Delay (in seconds)", &autosave_delay_in_seconds);
-        autosave_delay_in_seconds = smart::keep_above(1.f, autosave_delay_in_seconds); // Make sure the delay is at least 1 second
-
+        bool const b = imgui_drag_time("Delay", &autosave_delay, imgui_drag_time_params{.show_milliseconds = false, .min = 1.});
+        if (b)
+            autosave_delay = Time::seconds(smart::keep_above(1., autosave_delay.as_seconds_double())); // Make sure the delay is at least 1 second, to avoid lagging
         return b;
     });
 }
@@ -34,13 +40,13 @@ auto UserSettings::imgui_autosave() -> bool
 auto UserSettings::imgui_extra_icons() -> bool
 {
     bool const b = ImGuiExtras::toggle("Extra Icons", &extra_icons);
-    ImGui::SetItemTooltip("%s", "Adds additional icons for some menus, buttons, etc.");
+    ImGuiExtras::help_marker("Adds additional icons for some menus, buttons, etc.");
     return b;
 }
 
 auto UserSettings::imgui_camera2D_zoom_sensitivity() -> bool
 {
-    return ImGui::SliderFloat("Camera 2D zoom sensitivity", &camera2D_zoom_sensitivity, 1.0001f, 1.2f);
+    return ImGui::SliderFloat("Camera 2D zoom sensitivity", &camera2D_zoom_sensitivity, 1.001f, 1.2f);
 }
 
 auto UserSettings::imgui_single_click_to_input_in_drag_widgets() -> bool
@@ -64,7 +70,12 @@ auto UserSettings::imgui_enable_multi_viewport() -> bool
     return b;
 }
 
-void UserSettings::apply_multi_viewport_setting() const
+auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
+{
+    return imgui_widget(video_export_overwrite_behaviour);
+}
+
+void UserSettings::apply_multi_viewport_setting()
 {
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     return; // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
@@ -104,11 +115,6 @@ auto should_enable_multi_viewport_by_default() -> bool
            || vari == "MATE"
            || vari == "XFCE";
 #endif
-}
-
-auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
-{
-    return imgui_widget(video_export_overwrite_behaviour);
 }
 
 } // namespace Cool

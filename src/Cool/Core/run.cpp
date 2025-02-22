@@ -1,94 +1,68 @@
+#include "run.h"
+#include <Cool/AppManager/AppManager.h>
 #include <Cool/DebugOptions/DebugOptions.h>
 #include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/Icons/Icons.h>
 #include <Cool/Serialization/AutoSerializer.h>
-#include <Cool/Serialization/Serialization.h>
 #include <Cool/UserSettings/UserSettings.h>
+#include <Cool/Window/internal/WindowFactory.h>
 #include <exception>
 #include <filesystem>
-#include <fstream>
+#include <memory>
+#include <scope_guard/scope_guard.hpp>
 #include "Audio/Audio.hpp"
+#include "Cool/AppManager/IApp.h"
+#include "Cool/AppManager/internal/get_app_manager.hpp"
+#include "Cool/CommandLineArgs/CommandLineArgs.h"
+#include "Cool/Core/set_utf8_locale.hpp"
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/ImGui/ColorThemes.h"
+#include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Path/Path.h"
-#include "Cool/TextureSource/TextureLibrary_Image.h"
+#include "Cool/Serialization/JsonSerializer.hpp"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
-#include "Cool/TextureSource/TextureSamplerLibrary.h"
 #include "Cool/View/ViewsManager.h"
+#include "ImGuiNotify/ImGuiNotify.hpp"
+#if defined(COOL_VULKAN)
+#include <Cool/Gpu/Vulkan/Context.h>
+#endif
 
 namespace Cool::internal {
 
-void shut_down()
+static auto create_autosaver(std::function<void()> const& save) -> std::function<void()>
 {
-#if defined(COOL_VULKAN)
-    vkDeviceWaitIdle(Vulkan::context().g_Device);
-#endif
-    Audio::shut_down();
-    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
-}
-
-auto create_autosaver(Cool::AutoSerializer const& auto_serializer) -> std::function<void()>
-{
-    return [&auto_serializer]() {
+    // This function will be run every frame
+    return [save]() {
         if (!user_settings().autosave_enabled)
             return;
 
         static auto last_time = std::chrono::steady_clock::now();
         const auto  now       = std::chrono::steady_clock::now();
-        if (now - last_time > std::chrono::duration<float>{user_settings().autosave_delay_in_seconds})
+        if (Time{now - last_time} > user_settings().autosave_delay)
         {
-            auto_serializer.save();
+            save();
             last_time = now;
             if (DebugOptions::log_when_autosaving())
-            {
                 Log::ToUser::info("Autosave", "The application was just saved.");
-            }
         }
     };
 }
 
-static void erase_imgui_ini_if_old_version(int imgui_ini_version)
+/// Makes sure the user_data() folder is populated with all the initial_user_data() files
+static void copy_initial_user_data_ifn()
 {
+    if (!Cool::File::exists(Cool::Path::initial_user_data()))
+        return;
     try
     {
-        auto const version_path = Cool::Path::user_data() / "imgui_ini_version.txt";
-        auto const ini_path     = Cool::Path::user_data() / "imgui.ini";
-
-        {
-            auto input_file = std::ifstream{version_path};
-            if (!input_file.is_open())
-            {
-                Cool::File::remove_file(ini_path);
-            }
-            else
-            {
-                int user_version{-1};
-                input_file >> user_version;
-                if (user_version < imgui_ini_version)
-                    Cool::File::remove_file(ini_path);
-            }
-        }
-
-        Cool::File::remove_file(version_path);
-        auto output_file = std::ofstream{version_path};
-        output_file << imgui_ini_version;
-    }
-    catch (...)
-    {
-    }
-}
-
-void copy_default_user_data_ifn(int imgui_ini_version)
-{
-    erase_imgui_ini_if_old_version(imgui_ini_version); // When new imgui windows are added, we need to erase the user's imgui.ini so that they will get the new one that is in user_data_default().
-    try
-    {
-        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::default_user_data()))
+        for (auto const& entry : std::filesystem::recursive_directory_iterator(Cool::Path::initial_user_data()))
         {
             auto const& default_path = entry.path();
             if (!Cool::File::is_regular_file(default_path))
                 continue;
 
-            auto const path = Cool::Path::user_data() / Cool::File::relative(default_path, Cool::Path::default_user_data());
+            auto const path = Cool::Path::user_data() / Cool::File::relative(default_path, Cool::Path::initial_user_data());
             if (Cool::File::exists(path))
                 continue;
 
@@ -98,14 +72,94 @@ void copy_default_user_data_ifn(int imgui_ini_version)
             }
             catch (std::exception const& e)
             {
-                Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy {} to {}:\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
+                if (DebugOptions::log_internal_warnings())
+                    Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy \"{}\" to \"{}\":\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
             }
         }
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("Default user data", fmt::format("Failed to copy default user data:\n{}", e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy initial user data:\n{}", e.what()));
     }
+}
+
+void run_impl(
+    int argc, char** argv, RunConfig const& config,
+    std::function<void()> const&                                                                         initialize_paths_config,
+    std::function<std::unique_ptr<IApp>(Cool::WindowManager& windows, Cool::ViewsManager& views)> const& make_unique_app
+)
+{
+    set_utf8_locale();
+    command_line_args().init(argc, argv);
+    initialize_paths_config();
+    copy_initial_user_data_ifn();
+    // Create window.s
+    assert(!config.windows_configs.empty());
+    auto window_factory = Cool::WindowFactory{};
+    window_factory.make_main_window(config.windows_configs[0]);
+    for (size_t i = 1; i < config.windows_configs.size(); ++i)
+        window_factory.make_secondary_window(config.windows_configs[i]);
+
+    ImStyleEd::error_handlers().on_mandatory_warning = [](std::string_view error_message) {
+        ImGuiNotify::send({
+            .type    = ImGuiNotify::Type::Warning,
+            .title   = "Color Themes",
+            .content = std::string{error_message},
+        });
+    };
+    ImStyleEd::error_handlers().on_optional_warning = [](std::string_view error_message) {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Color Themes", std::string{error_message});
+    };
+    style_editor().emplace(); // Make sure we load all the ImGui style settings // Done after the creation of the windows because we need an ImGui context to set its Style
+    color_themes().emplace(); // Make sure we load all the ImGui color settings // Done after the creation of the windows because we need an ImGui context to set its Style
+
+    Icons::close_button(); // Make sure the MessageConsole won't deadlock at startup when the "Log when creating textures" option is enabled (because displaying the console requires the close_button, which will generate a log when its texture gets created).
+
+    // Init error callbacks
+    Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("Audio", error_message);
+    });
+
+    // Create the App
+    auto views = ViewsManager{};
+    auto app   = make_unique_app(window_factory.window_manager(), views); // Stored in a unique_ptr because we don't require App to be copy-assignable
+
+    auto app_serializer = JsonSerializer{
+        "last_session.json",
+        [&](nlohmann::json const& json) {
+            app->load_from_json(json);
+        },
+        [&](nlohmann::json& json) {
+            app->save_to_json(json);
+        },
+    };
+    app_serializer.load();
+    auto const save_on_exit = sg::make_scope_guard([&]() {
+        app_serializer.save();
+        DebugOptions::save();
+        user_settings().save(); // Even if the user doesn't change the settings, we will save the settings they have seen once, so that if a new version of the software comes with new settings, we will not change settings that the user is used to
+        // style_editor().save(); // If the user doesn't change the style, we don't want to save it, so that if a new version of the software comes with a new style, if the user hasn't customized the style then we will use the new style from user_data_default
+    });
+    // Run the app
+    auto app_manager  = Cool::AppManager{window_factory.window_manager(), views, *app, config.app_manager_config};
+    get_app_manager() = &app_manager;
+    app_manager.run(internal::create_autosaver([&]() {
+        app_serializer.save();
+    }));
+
+    // Shutdown
+    get_app_manager() = nullptr;
+    app->on_shutdown();
+#if defined(COOL_VULKAN)
+    vkDeviceWaitIdle(Vulkan::context().g_Device);
+#endif
+    style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    color_themes().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    Audio::shut_down();
+    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
 }
 
 } // namespace Cool::internal

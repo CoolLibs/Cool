@@ -1,63 +1,62 @@
 #include "ExporterU.h"
-#include <Cool/File/File.h>
 #include <Cool/Image/SaveImage.h>
 #include <Cool/Log/ToUser.h>
+#include <memory>
 #include <open/open.hpp>
+#include "Cool/File/File.h"
+#include "Cool/Task/Task.hpp"
+#include "Cool/Task/TaskManager.hpp"
 #include "ImGuiNotify/ImGuiNotify.hpp"
-#include "no_sleep/no_sleep.hpp"
+#include "Task_SaveImage.hpp"
 
 namespace Cool::ExporterU {
 
-auto export_image(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool
+void export_image_using_a_task(img::Size size, Time time, Time delta_time, Polaroid const& polaroid, std::filesystem::path const& file_path)
 {
-    no_sleep::Scoped disable_sleep{COOL_APP_NAME, COOL_APP_NAME " is exporting an image", no_sleep::Mode::ScreenCanTurnOffButKeepComputing};
     polaroid.render(size, time, delta_time);
-    bool const success = ImageU::save_png(file_path, polaroid.texture().download_pixels());
-    if (success)
-    {
-        on_image_exported(file_path);
-        notification_after_export_success(file_path, false);
-    }
-    else
-    {
-        notification_after_export_failure();
-    }
-    return success;
+    task_manager().submit(std::make_shared<Task_SaveImage>(file_path, polaroid.texture().download_pixels()));
 }
 
-void notification_after_export_success(std::filesystem::path const& path, bool is_video)
+auto user_accepted_to_overwrite_image(std::filesystem::path const& file_path) -> bool
 {
-    ImGuiNotify::send({
+    if (!Cool::File::exists(file_path))
+        return true;
+
+    return boxer::show(fmt::format("\"{}\" already exists. Are you sure you want to overwrite it?", file_path).c_str(), "Overwrite image?", boxer::Style::Warning, boxer::Buttons::OKCancel)
+           == boxer::Selection::OK;
+}
+
+auto notification_after_video_export_success(std::filesystem::path const& path) -> ImGuiNotify::Notification
+{
+    return {
         .type                 = ImGuiNotify::Type::Success,
-        .title                = "Export Success",
-        .custom_imgui_content = [=]() {
-            ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
-            if (ImGui::Button("Open folder"))
-                Cool::open(is_video ? path : Cool::File::without_file_name(path));
+        .title                = "Video Export Success",
+        .custom_imgui_content = [path]() {
+            if (ImGui::Button(fmt::format("Open \"{}\" folder", Cool::File::file_name(path)).c_str()))
+                open_folder_in_explorer(path);
         },
-    });
+    };
 }
 
-void notification_after_export_failure()
+auto notification_after_video_export_failure(std::string const& error_message) -> ImGuiNotify::Notification
 {
-    ImGuiNotify::send({
+    return {
         .type    = ImGuiNotify::Type::Error,
-        .title   = "Export Failed",
-        .content = "Maybe you are not allowed to save files in this folder?",
-    });
+        .title   = "Video Export Failed",
+        .content = error_message,
+    };
 }
 
-void notification_after_export_interrupted(std::filesystem::path const& path)
+auto notification_after_video_export_canceled(std::filesystem::path const& path) -> ImGuiNotify::Notification
 {
-    ImGuiNotify::send({
+    return {
         .type                 = ImGuiNotify::Type::Warning,
-        .title                = "Export Cancelled",
-        .custom_imgui_content = [=]() {
-            ImGui::TextUnformatted(Cool::File::file_name(path).string().c_str());
-            if (ImGui::Button("Open folder"))
-                Cool::open(path);
+        .title                = "Video Export Canceled",
+        .custom_imgui_content = [path]() {
+            if (ImGui::Button(fmt::format("Open \"{}\" folder", Cool::File::file_name(path)).c_str()))
+                open_folder_in_explorer(path);
         },
-    });
+    };
 }
 
 } // namespace Cool::ExporterU

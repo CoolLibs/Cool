@@ -4,6 +4,6 @@
 
 namespace Cool::ImGuiExtras {
 
-#include "generated_style/style_imgui_definitions.inl"
+#include "generated_style_extras/style_imgui_definitions.inl"
 
 } // namespace Cool::ImGuiExtras

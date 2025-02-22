@@ -5,8 +5,6 @@ namespace Cool {
 
 class TestNotification {
 public:
-    TestNotification();
-
     void imgui();
 
 private:

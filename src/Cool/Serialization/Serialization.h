@@ -17,26 +17,20 @@ namespace Cool::Serialization {
 template<typename T, typename InputArchive>
 auto load(T& data, std::filesystem::path const& file_path, std::string* extra_line_at_the_beginning_of_the_file = {}) -> OptionalErrorMessage
 {
-    if (File::exists(file_path))
+    if (!File::exists(file_path))
+        return fmt::format("File not found \"{}\"", Cool::File::weakly_canonical(file_path));
+
+    std::ifstream ifs{file_path};
+    if (extra_line_at_the_beginning_of_the_file != nullptr)
+        std::getline(ifs, *extra_line_at_the_beginning_of_the_file);
+    try
     {
-        std::ifstream is(file_path);
-        if (extra_line_at_the_beginning_of_the_file != nullptr)
-            std::getline(is, *extra_line_at_the_beginning_of_the_file);
-        try
-        {
-            auto archive = InputArchive{is};
-            archive(
-                data
-            );
-        }
-        catch (const std::exception& e)
-        {
-            return fmt::format("Invalid {} file.\nStarting with default values instead.\n{}", file_path, e.what());
-        }
+        auto archive = InputArchive{ifs};
+        archive(data);
     }
-    else
+    catch (std::exception const& e)
     {
-        return fmt::format("{} not found.\nStarting with default values instead.", file_path);
+        return fmt::format("Corrupted file \"{}\":\n{}", Cool::File::weakly_canonical(file_path), e.what());
     }
     return {};
 }
@@ -56,17 +50,17 @@ auto save(const T& data, std::filesystem::path const& file_path, std::string_vie
     if (!File::create_folders_for_file_if_they_dont_exist(file_path))
         return false;
 
-    auto os = std::ofstream{file_path};
-    if (!os.is_open())
+    auto ofs = std::ofstream{file_path};
+    if (!ofs.is_open())
         return false;
 
     if (extra_line_at_the_beginning_of_the_file.has_value())
     {
         assert(extra_line_at_the_beginning_of_the_file->find('\n') == std::string::npos); // extra_line_at_the_beginning_of_the_file must be a single line, with no \n at the end
-        os << extra_line_at_the_beginning_of_the_file.value() << '\n';
+        ofs << extra_line_at_the_beginning_of_the_file.value() << '\n';
     }
     {
-        auto archive = OutputArchive{os};
+        auto archive = OutputArchive{ofs};
         archive(
             ser20::make_nvp(field_name.data(), data)
         );

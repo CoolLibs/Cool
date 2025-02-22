@@ -11,6 +11,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
+#include "Fonts.h"
 #include "ImGuiExtrasStyle.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 
@@ -137,9 +138,19 @@ auto colored_button(const char* label, float hue, const ImVec2& size) -> bool
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(hue, 0.6f, 0.6f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(hue, 0.7f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(hue, 0.8f, 0.8f));
-    const auto is_clicked = ImGui::Button(label, size);
+    auto const is_pressed = ImGui::Button(label, size);
     ImGui::PopStyleColor(3);
-    return is_clicked;
+    return is_pressed;
+}
+
+auto colored_button(const char* label, Color color, const ImVec2& size) -> bool
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, color.as_ImColor().Value);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color.brighter().as_ImColor().Value);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color.brighter().brighter().as_ImColor().Value);
+    auto const is_pressed = ImGui::Button(label, size);
+    ImGui::PopStyleColor(3);
+    return is_pressed;
 }
 
 bool button_with_icon(ImTextureID tex_id, const ImVec4& tint_color, const ImVec4& background_color, float button_width, float button_height, int frame_padding)
@@ -229,6 +240,8 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, image_framed_options c
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp(ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(o.background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+    if (o.background_texture_id != nullptr)
+        window->DrawList->AddImage(o.background_texture_id, image_bb.Min, image_bb.Max);
     window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, o.flip_y ? 0.f : 1.f), ImVec2(1, o.flip_y ? 1.f : 0.f), ImGui::GetColorU32(o.tint_color));
 }
 
@@ -321,8 +334,9 @@ template<typename Callable>
 static auto folder_file_impl(const char* label, std::filesystem::path* path, bool show_dialog_button, Callable&& dialog_button) -> bool
 {
     ImGui::PushID(path);
+    ImGui::BeginGroup(); // This allows users to treat all these widgets as a single widget (when checking for hovering, activation, and stuff)
     bool b              = false;
-    auto path_as_string = path->string();
+    auto path_as_string = Cool::File::weakly_canonical(*path).string();
     ImGui::TextUnformatted(label);
     if (show_dialog_button)
     {
@@ -335,6 +349,7 @@ static auto folder_file_impl(const char* label, std::filesystem::path* path, boo
         b     = true;
         *path = std::filesystem::path{path_as_string};
     }
+    ImGui::EndGroup();
     ImGui::PopID();
     return b;
 }
@@ -399,7 +414,7 @@ auto file_and_folder_saving(
     if (ImGuiExtras::folder("Folder", &folder))
     {
         b                   = true;
-        file_with_extension = File::find_available_name(folder, File::file_name_without_extension(path), extension);
+        file_with_extension = File::with_extension(File::find_available_name(folder, File::file_name_without_extension(path), extension), extension);
     }
 
     const char* best_matching_extension = wafl::find_best_match(extensions, extension.string());
@@ -478,6 +493,11 @@ void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::
     disabled_if(condition_to_disable ? std::make_optional(reason_to_disable) : std::nullopt, widgets);
 }
 
+void disabled_if(std::optional<std::string> const& reason_to_disable, std::function<void()> const& widgets)
+{
+    disabled_if(reason_to_disable.has_value(), reason_to_disable.has_value() ? reason_to_disable->c_str() : "", widgets);
+}
+
 void disabled_if(std::optional<const char*> reason_to_disable, std::function<void()> const& widgets)
 {
     if (reason_to_disable.has_value())
@@ -489,7 +509,8 @@ void disabled_if(std::optional<const char*> reason_to_disable, std::function<voi
 
         ImGui::EndDisabled();
         ImGui::EndGroup();
-        ImGui::SetItemTooltip("%s", reason_to_disable.value());
+        if (/*!reason_to_disable.empty()*/ (*reason_to_disable)[0] != '\0')
+            ImGui::SetItemTooltip("%s", reason_to_disable.value());
     }
     else
     {
@@ -933,6 +954,13 @@ void fill_layout(const char* str_id, float item_width, std::function<void(std::f
         ImGui::EndTable();
     }
     ImGui::SameLine();
+}
+
+void progress_bar(float fraction, const ImVec2& size_arg, const char* overlay)
+{
+    ImGui::PushFont(Font::monospace());
+    ImGui::ProgressBar(fraction, size_arg, overlay);
+    ImGui::PopFont();
 }
 
 } // namespace Cool::ImGuiExtras

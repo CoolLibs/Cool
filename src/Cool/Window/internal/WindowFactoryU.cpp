@@ -1,13 +1,34 @@
 #include "WindowFactoryU.h"
 #include <Cool/Path/Path.h>
+#include "Cool/Utils/overloaded.hpp"
 #include "img/src/Load.h"
 
 namespace Cool::WindowFactoryU {
 
+static auto size_in_pixels(WindowSize size, int screen_size) -> int
+{
+    return std::visit(
+        Cool::overloaded{
+            [&](SizeProportionalToScreen sz) {
+                return static_cast<int>(static_cast<float>(screen_size) * sz.proportion);
+            },
+            [&](SizeInPixels sz) {
+                return sz.pixels;
+            }
+        },
+        size
+    );
+}
+
 auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_manager, GLFWwindow* window_to_share_opengl_context_with) -> Window&
 {
+    GLFWvidmode const* const video_mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    int const window_width  = size_in_pixels(config.initial_width, video_mode->width);
+    int const window_height = size_in_pixels(config.initial_height, video_mode->height);
+
     window_manager.windows().emplace_back(
-        glfwCreateWindow(config.initial_width, config.initial_height, config.title, nullptr, window_to_share_opengl_context_with)
+        glfwCreateWindow(window_width, window_height, config.title, nullptr, window_to_share_opengl_context_with)
     );
     auto& window = window_manager.windows().back();
     if (!window.glfw())
@@ -16,6 +37,9 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
         glfwGetError(&error_description);
         throw std::runtime_error{fmt::format("Window creation failed:\n{}", error_description)};
     }
+
+    // Center the window
+    glfwSetWindowPos(window.glfw(), (video_mode->width - window_width) / 2, (video_mode->height - window_height) / 2);
 
     set_window_icon(window.glfw());
 

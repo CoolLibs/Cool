@@ -1,5 +1,5 @@
 #pragma once
-#include <ImStyleEd/ImStyleEd.hpp>
+#include "ImStyleEd/ImStyleEd.hpp"
 
 namespace Cool {
 
@@ -18,5 +18,11 @@ public:
 private:
     ImStyleEd::Editor _editor;
 };
+
+inline auto color_themes() -> std::optional<ColorThemes>& // It is optional because we want to control its lifetime (it must be destroyed before destroying the ImGui context to make sure it can still access the ImGuiStyle to serialize it)
+{
+    static auto instance = std::optional<ColorThemes>{};
+    return instance;
+}
 
 } // namespace Cool

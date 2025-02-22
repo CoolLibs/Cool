@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Exporter/internal/Polaroid.h"
+#include "Cool/Exporter/Polaroid.hpp"
 #include "ExporterGui.h"
 #include "VideoExportProcess.h"
 
@@ -34,7 +34,9 @@ public:
 
     void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _gui.set_shared_aspect_ratio(shared_aspect_ratio); }
 
-    auto export_image_immediately(Time time, Time delta_time, Polaroid const& polaroid, std::function<void(std::filesystem::path const& exported_image_path)> const& on_image_exported) -> bool;
+    /// Returns the path where the image will be exported
+    /// (Note that by the time the function returns, the image will not have been exported yet since this is done in a task)
+    auto export_image_with_current_settings_using_a_task(Time time, Time delta_time, Polaroid const& polaroid, std::function<bool(std::filesystem::path const&)> const& extra_conditions_to_consider_image_path_valid = [](auto&&) { return true; }) -> std::filesystem::path;
 
 private:
     ExporterGui                       _gui{};

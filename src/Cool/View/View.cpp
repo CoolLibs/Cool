@@ -1,57 +1,12 @@
 #include "View.h"
-#include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/FullscreenPipeline.h>
 #include <Cool/ImGui/ImGuiExtras.h>
 #include <Cool/Image/ImageSizeU.h>
 #include <img/src/SizeU.h>
-#include <imgui.h>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Input/MouseCoordinates.h"
-#include "Cool/Log/Debug.h"
-#include "Cool/Log/Message.h"
 #include "Cool/Log/ToUser.h"
 
 namespace Cool {
-
-static auto create_alpha_checkerboard_pipeline() -> FullscreenPipeline
-{
-    auto       pipeline = FullscreenPipeline{};
-    auto const err      = pipeline.compile(R"STR(#version 410
-out vec4 out_Color;
-layout(location = 0) in vec2 _uv;
-uniform float _aspect_ratio;
-
-void main()
-{
-    vec2 uv = _uv - 0.5;
-    uv.x *= _aspect_ratio;
-    ivec2 gid = ivec2(floor(uv * 20.));
-    float grey = ((gid.x + gid.y) % 2 == 0) ? 0.25 : 0.5;
-    out_Color = vec4(vec3(grey), 1.);
-}
-)STR");
-#if DEBUG
-    err.send_error_if_any(
-        [&](std::string const& message) {
-            return Message{
-                .category = "Alpha Checkerboard Shader",
-                .message  = message,
-                .severity = MessageSeverity::Error,
-            };
-        },
-        Cool::Log::Debug::console()
-    );
-#else
-    (void)err;
-#endif
-
-    return pipeline;
-}
-
-static auto alpha_checkerboard_pipeline() -> FullscreenPipeline const&
-{
-    static auto pipeline = create_alpha_checkerboard_pipeline();
-    return pipeline;
-}
 
 void View::check_for_fullscreen_toggle() const
 {
@@ -262,22 +217,6 @@ static auto as_imvec2(img::SizeT<float> size) -> ImVec2
     return {size.width(), size.height()};
 }
 
-static void rerender_alpha_checkerboard_ifn(img::Size size, RenderTarget& render_target)
-{
-    if (size == render_target.current_size())
-        return;
-
-    render_target.set_size(size);
-    render_target.render([&]() {
-        alpha_checkerboard_pipeline().shader()->bind();
-        alpha_checkerboard_pipeline().shader()->set_uniform("_aspect_ratio", img::aspect_ratio(size));
-        alpha_checkerboard_pipeline().draw();
-    });
-
-    if (Cool::DebugOptions::log_when_rendering_alpha_checkerboard_background())
-        Cool::Log::ToUser::info("Alpha Checkerboard", "Rendered");
-}
-
 void View::display_image(ImTextureID image_texture_id, img::Size image_size)
 {
     if (!_window_size.has_value())
@@ -286,10 +225,8 @@ void View::display_image(ImTextureID image_texture_id, img::Size image_size)
     auto const size       = img::fit_into(*_window_size, image_size);
     _has_vertical_margins = img::aspect_ratio(size) <= img::aspect_ratio(*_window_size);
 
-    rerender_alpha_checkerboard_ifn(img::Size{size}, _render_target);
-
     // Alpha checkerboard background
-    ImGuiExtras::image_centered(_render_target.imgui_texture_id(), as_imvec2(size));
+    ImGuiExtras::image_centered(_checkerboard_texture.get(img::Size{size}).imgui_texture_id(), as_imvec2(size));
     // Actual image. It needs to use straight alpha as this is what ImGui expects.
     ImGuiExtras::image_centered(image_texture_id, as_imvec2(size));
 }

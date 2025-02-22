@@ -99,6 +99,11 @@ static void initialize_imgui()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     set_imgui_ini_filepath();
+    // Load default settings first. All the new windows that are not in UserData's imgui.ini will get their values from here
+    ImGui::LoadIniSettingsFromDisk((Cool::Path::default_user_data() / "imgui.ini").string().c_str());
+    // Load user-defined settings second. They will override all the windows that were already known by the user, and which they might have customized
+    ImGui::LoadIniSettingsFromDisk((Cool::Path::user_data() / "imgui.ini").string().c_str());
+
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

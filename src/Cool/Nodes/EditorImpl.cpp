@@ -1,7 +1,6 @@
 #include "EditorImpl.h"
 #include <imgui.h>
 #include <imgui/imgui_internal.h>
-#include <reg/src/internal/generate_uuid.hpp>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
@@ -39,7 +38,7 @@ auto SearchBarState::imgui_widget() -> bool
 }
 
 FrameNode::FrameNode()
-    : id{reg::internal::generate_uuid()}
+    : id{reg::generate_uuid()}
     , name{"Frame"}
 {
 }

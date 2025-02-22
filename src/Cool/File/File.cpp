@@ -5,6 +5,7 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
 #include "nfd.hpp"
 
@@ -18,7 +19,8 @@ auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to make absolute path from \"{}\":\n{}", path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to make absolute path from \"{}\":\n{}", path, e.what()));
         return path;
     }
 }
@@ -31,7 +33,8 @@ auto exists(std::filesystem::path const& file_path) -> bool
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, e.what()));
         return false;
     }
 }
@@ -44,7 +47,8 @@ void remove_file(std::filesystem::path const& file_path)
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to remove file \"{}\":\n{}", file_path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to remove file \"{}\":\n{}", file_path, e.what()));
     }
 }
 
@@ -56,7 +60,21 @@ void remove_folder(std::filesystem::path const& folder_path)
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to remove folder \"{}\":\n{}", folder_path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to remove folder \"{}\":\n{}", folder_path, e.what()));
+    }
+}
+
+void rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path)
+{
+    try
+    {
+        std::filesystem::rename(old_path, new_path);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to rename \"{}\" as \"{}\":\n{}", old_path, new_path, e.what()));
     }
 }
 
@@ -80,6 +98,12 @@ auto without_extension(std::filesystem::path file_path) -> std::filesystem::path
     return file_path.replace_extension();
 }
 
+auto with_extension(std::filesystem::path file_path, std::filesystem::path const& extension) -> std::filesystem::path
+{
+    file_path.replace_extension(extension);
+    return file_path;
+}
+
 auto without_file_name(std::filesystem::path const& file_path) -> std::filesystem::path
 {
     if (!file_path.has_filename())
@@ -95,7 +119,8 @@ auto weakly_canonical(std::filesystem::path const& path) -> std::filesystem::pat
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to get canonical path for \"{}\":\n{}", path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to get canonical path for \"{}\":\n{}", path, e.what()));
         return path;
     }
 }
@@ -108,7 +133,8 @@ auto relative(std::filesystem::path const& path, std::filesystem::path const& ba
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to make path \"{}\" relative to \"{}\":\n{}", path, base, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to make path \"{}\" relative to \"{}\":\n{}", path, base, e.what()));
         return path;
     }
 }
@@ -121,7 +147,8 @@ auto is_regular_file(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a regular file:\n{}", path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a regular file:\n{}", path, e.what()));
         return false;
     }
 }
@@ -134,7 +161,64 @@ auto is_empty(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is empty:\n{}", path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is empty:\n{}", path, e.what()));
+        return false;
+    }
+}
+
+auto is_absolute(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return path.is_absolute();
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is an absolute path:\n{}", path, e.what()));
+        return true;
+    }
+}
+
+auto is_relative(std::filesystem::path const& path) -> bool
+{
+    try
+    {
+        return path.is_relative();
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a relative path:\n{}", path, e.what()));
+        return true;
+    }
+}
+
+auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file_time_type
+{
+    try
+    {
+        return std::filesystem::last_write_time(path);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to get last write time for \"{}\":\n{}", path, e.what()));
+        return {};
+    }
+}
+
+auto equivalent(std::filesystem::path const& path1, std::filesystem::path const& path2) -> bool
+{
+    try
+    {
+        return std::filesystem::equivalent(path1, path2);
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if paths are equivalent \"{}\" and \"{}\":\n{}", path1, path2, e.what()));
         return false;
     }
 }
@@ -172,7 +256,8 @@ auto create_folders_if_they_dont_exist(std::filesystem::path const& folder_path)
     }
     catch (std::exception const& e)
     {
-        Log::ToUser::warning("File", fmt::format("Failed to create folder \"{}\":\n{}", folder_path, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Log::ToUser::warning("File", fmt::format("Failed to create folder \"{}\":\n{}", folder_path, e.what()));
         return false;
     }
 }
@@ -205,12 +290,18 @@ auto copy_file(std::filesystem::path const& from, std::filesystem::path const& t
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::warning("File", fmt::format("Failed to copy file from \"{}\" to \"{}\":\n{}", from, to, e.what()));
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to copy file from \"{}\" to \"{}\":\n{}", from, to, e.what()));
         return false;
     }
 }
 
-auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension) -> std::filesystem::path // NOLINT(*easily-swappable-parameters)
+auto find_available_name(
+    std::filesystem::path const&                             folder_path,
+    std::filesystem::path const&                             file_name,
+    std::filesystem::path const&                             extension,
+    std::function<bool(std::filesystem::path const&)> const& extra_conditions
+) -> std::filesystem::path // NOLINT(*easily-swappable-parameters)
 {
     std::string const name = Cool::File::without_extension(file_name).string();
     // Split file_name into a number in parenthesis and the base_name that is before those parenthesis
@@ -234,23 +325,29 @@ auto find_available_name(std::filesystem::path const& folder_path, std::filesyst
     }();
 
     // Find an available name
-    auto out_name = file_name;
-    out_name.replace_extension(extension);
-    while (File::exists(folder_path / out_name))
+    auto       out_name = file_name;
+    auto const is_valid = [&](std::filesystem::path const& path) {
+        return !File::exists(path) && extra_conditions(path);
+    };
+    while (!is_valid(File::with_extension(folder_path / out_name, extension)))
     {
         out_name = base_name + "(" + std::to_string(k) + ")";
-        out_name.replace_extension(extension);
         k++;
     }
     return out_name;
 }
 
-auto find_available_path(std::filesystem::path const& path) -> std::filesystem::path
+auto find_available_path(std::filesystem::path const& path, std::function<bool(std::filesystem::path const&)> const& extra_conditions) -> std::filesystem::path
 {
     auto const folder    = without_file_name(path);
     auto const file      = file_name_without_extension(path);
     auto const extension = File::extension(path);
-    return folder / find_available_name(folder, file, extension);
+    return with_extension(folder / find_available_name(folder, file, extension, extra_conditions), extension);
+}
+
+void mark_file_path_unavailable(std::filesystem::path const& path)
+{
+    create_file_if_it_doesnt_exist(path);
 }
 
 void set_content(std::filesystem::path const& file_path, std::string_view content)
