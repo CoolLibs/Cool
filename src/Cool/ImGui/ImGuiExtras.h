@@ -73,6 +73,7 @@ struct image_framed_options {
     ImVec4               background_color = ImVec4(0, 0, 0, 1);
     ImVec4               tint_color       = ImVec4(1, 1, 1, 1);
     bool                 flip_y           = false;
+    ImTextureID          background_texture_id = nullptr;
 };
 /**
  * @brief Displays an image with a frame around it

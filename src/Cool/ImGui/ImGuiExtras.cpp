@@ -240,6 +240,8 @@ void image_framed(ImTextureID tex_id, const ImVec2& size, image_framed_options c
     ImGui::RenderNavHighlight(bb, id);
     ImGui::RenderFrame(bb.Min, bb.Max, frameCol, true, ImClamp(ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
     ImGui::RenderFrame(image_bb.Min, image_bb.Max, ImGui::GetColorU32(o.background_color), true, ImClamp((float)ImMin(padding.x, padding.y), 0.0f, style.FrameRounding));
+    if (o.background_texture_id != nullptr)
+        window->DrawList->AddImage(o.background_texture_id, image_bb.Min, image_bb.Max);
     window->DrawList->AddImage(tex_id, image_bb.Min, image_bb.Max, ImVec2(0, o.flip_y ? 0.f : 1.f), ImVec2(1, o.flip_y ? 1.f : 0.f), ImGui::GetColorU32(o.tint_color));
 }
 
