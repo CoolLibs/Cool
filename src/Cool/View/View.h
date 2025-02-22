@@ -1,7 +1,7 @@
 #pragma once
-#include <Cool/Gpu/RenderTarget.h>
-#include <Cool/Input/MouseEventDispatcher.h>
+#include "Cool/CheckerboardTexture/CheckerboardTexture.hpp"
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Input/MouseEventDispatcher.h"
 #include "Cool/Log/MessageId.h"
 #include "Cool/View/GizmoManager.h"
 #include "GizmoManager.h"
@@ -107,7 +107,7 @@ private:
     std::optional<img::Size>              _window_size{std::nullopt}; // Can be nullopt when the window is closed
     ImGuiCoordinates                      _window_position{};
     MouseEventDispatcher<ViewCoordinates> _mouse_event_dispatcher;
-    RenderTarget                          _render_target;
+    CheckerboardTexture                   _checkerboard_texture{};
     bool                                  _accepts_mouse_events{true};
     GizmoManager                          _gizmos{};
 
