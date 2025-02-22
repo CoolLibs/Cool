@@ -493,6 +493,11 @@ void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::
     disabled_if(condition_to_disable ? std::make_optional(reason_to_disable) : std::nullopt, widgets);
 }
 
+void disabled_if(std::optional<std::string> const& reason_to_disable, std::function<void()> const& widgets)
+{
+    disabled_if(reason_to_disable.has_value(), reason_to_disable.has_value() ? reason_to_disable->c_str() : "", widgets);
+}
+
 void disabled_if(std::optional<const char*> reason_to_disable, std::function<void()> const& widgets)
 {
     if (reason_to_disable.has_value())

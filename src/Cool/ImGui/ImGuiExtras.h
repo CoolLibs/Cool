@@ -68,11 +68,11 @@ auto checkbox_button(const char* icon, bool* v) -> bool;
 auto close_button() -> bool;
 
 struct image_framed_options {
-    std::optional<float> frame_thickness  = std::nullopt;
-    ImVec4               frame_color      = ImVec4(0, 0, 0, 0);
-    ImVec4               background_color = ImVec4(0, 0, 0, 1);
-    ImVec4               tint_color       = ImVec4(1, 1, 1, 1);
-    bool                 flip_y           = false;
+    std::optional<float> frame_thickness       = std::nullopt;
+    ImVec4               frame_color           = ImVec4(0, 0, 0, 0);
+    ImVec4               background_color      = ImVec4(0, 0, 0, 1);
+    ImVec4               tint_color            = ImVec4(1, 1, 1, 1);
+    bool                 flip_y                = false;
     ImTextureID          background_texture_id = nullptr;
 };
 /**
@@ -200,6 +200,8 @@ bool toggle_with_submenu(const char* label, bool* bool_p, std::function<bool()> 
 void disabled_if(bool condition_to_disable, const char* reason_to_disable, std::function<void()> const& widgets);
 /// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
 void disabled_if(std::optional<const char*> reason_to_disable, std::function<void()> const& widgets);
+/// Like ImGui::BeginDisabled() + ImGui::EndDisabled(), but adds a message on hover
+void disabled_if(std::optional<std::string> const& reason_to_disable, std::function<void()> const& widgets);
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
 auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
