@@ -258,6 +258,7 @@ target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/expected/i
 
 # nlohmann json
 target_include_directories(Cool-PublicProperties SYSTEM INTERFACE lib/json/single_include)
+install(FILES "lib/json/LICENSE.MIT" DESTINATION "license/nlohmann_json")
 
 # Dear ImGui
 add_subdirectory(lib/imgui)
