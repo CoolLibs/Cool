@@ -71,6 +71,8 @@ void mark_file_path_unavailable(std::filesystem::path const& path);
 /// Overwrites the content of the file and set it to `content`.
 /// Creates the file if it doesn't exist yet.
 void set_content(std::filesystem::path const& file_path, std::string_view content);
+/// Does nothing if the file doesn't exist
+void set_time_of_last_change_to_now(std::filesystem::path const& file_path);
 
 struct folder_dialog_args {
     /// Folder that the dialog window should open at. Leave blank for default (platform-specific) behaviour.

@@ -213,7 +213,8 @@ auto equivalent(std::filesystem::path const& path1, std::filesystem::path const&
 {
     try
     {
-        return std::filesystem::equivalent(path1, path2);
+        return File::weakly_canonical(path1) == File::weakly_canonical(path2) // equivalent() throws when one of the two paths doesn't exist, so we add this check to handle the case of paths that don't exist
+               || std::filesystem::equivalent(path1, path2);
     }
     catch (std::exception const& e)
     {
@@ -360,6 +361,19 @@ void set_content(std::filesystem::path const& file_path, std::string_view conten
         return;
 
     file << content;
+}
+
+void set_time_of_last_change_to_now(std::filesystem::path const& file_path)
+{
+    try
+    {
+        std::filesystem::last_write_time(file_path, std::filesystem::file_time_type::clock::now());
+    }
+    catch (std::exception const& e)
+    {
+        if (DebugOptions::log_internal_warnings())
+            Cool::Log::ToUser::warning("File", fmt::format("Failed to set time of last change to now for \"{}\":\n{}", file_path, e.what()));
+    }
 }
 
 auto folder_dialog(folder_dialog_args const& args) -> std::optional<std::filesystem::path>
