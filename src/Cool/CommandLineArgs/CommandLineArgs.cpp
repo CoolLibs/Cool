@@ -14,7 +14,7 @@ static auto convert_to_utf8(std::string const& str) -> std::string
 
     auto const wstr = [&]() { // IIFE
         int const size = MultiByteToWideChar(CP_ACP, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
-        auto      wstr = std::wstring(size, 0);
+        auto      wstr = std::wstring(static_cast<size_t>(size), 0);
         MultiByteToWideChar(CP_ACP, 0, str.data(), static_cast<int>(str.size()), wstr.data(), size);
         return wstr;
     }();
@@ -22,7 +22,7 @@ static auto convert_to_utf8(std::string const& str) -> std::string
         return "";
 
     int const size = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
-    auto      res  = std::string(size, 0);
+    auto      res  = std::string(static_cast<size_t>(size), 0);
     WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), res.data(), size, nullptr, nullptr);
     return res;
 #else
