@@ -19,7 +19,7 @@ struct UserSettings {
     bool                          enable_multi_viewport{should_enable_multi_viewport_by_default()};
     VideoExportOverwriteBehaviour video_export_overwrite_behaviour{VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder};
 
-    void apply_multi_viewport_setting();
+    void apply_multi_viewport_setting() const;
 
     auto imgui() -> bool;
     auto imgui_autosave() -> bool;
@@ -45,6 +45,7 @@ private:
             json_get(json, "Camera 2D zoom sensitivity", camera2D_zoom_sensitivity);
             json_get(json, "Single click to input in drag widgets", single_click_to_input_in_drag_widgets);
             json_get(json, "Enable multi viewport", enable_multi_viewport);
+            apply_multi_viewport_setting();
             json_get(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
         },
         [&](nlohmann::json& json) {

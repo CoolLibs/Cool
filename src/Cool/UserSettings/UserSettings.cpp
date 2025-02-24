@@ -75,7 +75,7 @@ auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
     return imgui_widget(video_export_overwrite_behaviour);
 }
 
-void UserSettings::apply_multi_viewport_setting()
+void UserSettings::apply_multi_viewport_setting() const
 {
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     return; // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
