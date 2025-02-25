@@ -12,7 +12,7 @@ auto exists(std::filesystem::path const& file_path) -> bool;
 
 void remove_file(std::filesystem::path const& file_path);
 void remove_folder(std::filesystem::path const& folder_path);
-void rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path);
+auto rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path) -> bool;
 
 /// Returns the name of the file + its extension (removes parent folders)
 auto file_name(std::filesystem::path const& file_path) -> std::filesystem::path;

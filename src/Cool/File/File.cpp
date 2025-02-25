@@ -65,16 +65,18 @@ void remove_folder(std::filesystem::path const& folder_path)
     }
 }
 
-void rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path)
+auto rename(std::filesystem::path const& old_path, std::filesystem::path const& new_path) -> bool
 {
     try
     {
         std::filesystem::rename(old_path, new_path);
+        return true;
     }
     catch (std::exception const& e)
     {
         if (DebugOptions::log_internal_warnings())
             Cool::Log::ToUser::warning("File", fmt::format("Failed to rename \"{}\" as \"{}\":\n{}", old_path, new_path, e.what()));
+        return false;
     }
 }
 
