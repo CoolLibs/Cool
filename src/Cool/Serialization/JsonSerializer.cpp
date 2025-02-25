@@ -9,9 +9,10 @@ JsonSerializer::JsonSerializer(
     std::filesystem::path const&                      file_name,
     std::function<void(nlohmann::json const&)> const& from_json,
     std::function<void(nlohmann::json&)> const&       to_json,
+    bool                                              use_shared_user_data,
     WantsToLogWarnings                                wants_to_log_warnings
 )
-    : _file_path{Cool::Path::user_data() / file_name}
+    : _file_path{(use_shared_user_data ? Cool::Path::user_data_shared() : Cool::Path::user_data()) / file_name}
     , _from_json{from_json}
     , _to_json{to_json}
     , _wants_to_log_warnings{wants_to_log_warnings}

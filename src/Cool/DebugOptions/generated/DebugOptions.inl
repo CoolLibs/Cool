@@ -356,6 +356,7 @@ private:
                     Cool::json_set(json, "Color Themes: Advanced Config", color_themes_advanced_config_window);
 #endif
                 },
+                false /*use_shared_user_data*/,
 
 // Makes sure the JSON will skip checking for Cool::DebugOptions to know if it needs to log warnings or not. Otherwise this creates a deadlock in the deserialization of DebugOption's json when it tries to log a warning (when the file is corrupted)
 #if DEBUG

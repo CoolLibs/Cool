@@ -16,6 +16,10 @@ public:
     /// Path to the folder where all the user data are stored (imgui.ini, etc.).
     [[nodiscard]] static auto user_data() -> std::filesystem::path const&;
 
+    /// Path to the folder where all the user data are stored (imgui.ini, etc.).
+    /// This one is used for files that we want to share between Coollab and the Launcher
+    [[nodiscard]] static auto user_data_shared() -> std::filesystem::path const&;
+
     /// Path to the folder where all the default user data are stored (imgui.ini, etc.). We load things both from this default_user_data, and then from user_data. This allows us to have some default values, that can then be overriden by the user.
     [[nodiscard]] static auto default_user_data() -> std::filesystem::path const&;
 

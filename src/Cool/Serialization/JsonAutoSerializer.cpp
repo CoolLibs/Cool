@@ -1,5 +1,4 @@
 #include "JsonAutoSerializer.hpp"
-#include "Cool/File/File.h"
 #include "Cool/FileWatcher/FileWatcher.h"
 
 namespace Cool {
@@ -9,9 +8,10 @@ JsonAutoSerializer::JsonAutoSerializer(
     bool                                              autosave_when_destroyed,
     std::function<void(nlohmann::json const&)> const& from_json,
     std::function<void(nlohmann::json&)> const&       to_json,
+    bool                                              use_shared_user_data,
     WantsToLogWarnings                                wants_to_log_warnings
 )
-    : _serializer(file_name, from_json, to_json, wants_to_log_warnings)
+    : _serializer(file_name, from_json, to_json, use_shared_user_data, wants_to_log_warnings)
     , _file_watcher{std::make_unique<FileWatcher>(_serializer.file_path(), FileWatcher_NoCallbacks() /*No callbacks because we want to ignore the initial error if the file doesn't exist*/)}
     , _autosave_when_destroyed{autosave_when_destroyed}
 {

@@ -40,6 +40,11 @@ auto PathsConfig::user_data() const -> std::filesystem::path
 #endif
 }
 
+auto PathsConfig::user_data_shared() const -> std::filesystem::path
+{
+    return user_data();
+}
+
 auto PathsConfig::default_user_data() const -> std::filesystem::path
 {
     return Cool::Path::root() / "User data Default";

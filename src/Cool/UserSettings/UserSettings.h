@@ -56,7 +56,8 @@ private:
             json_set(json, "Single click to input in drag widgets", single_click_to_input_in_drag_widgets);
             json_set(json, "Enable multi viewport", enable_multi_viewport);
             json_set(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
-        }
+        },
+        true /*use_shared_user_data*/
     };
 };
 

@@ -55,7 +55,8 @@ StyleEditor::StyleEditor()
               json_set(json, "ImGui", ImGui::GetStyle());
               json_set(json, "ImGuiExtras", ImGuiExtras::GetStyle());
               json_set(json, "ImNodes", ax::NodeEditor::GetStyle());
-          }
+          },
+          true /*use_shared_user_data*/
       }
 {}
 

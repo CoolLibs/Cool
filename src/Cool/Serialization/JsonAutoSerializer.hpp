@@ -14,6 +14,7 @@ public:
         bool                                              autosave_when_destroyed,
         std::function<void(nlohmann::json const&)> const& from_json,
         std::function<void(nlohmann::json&)> const&       to_json,
+        bool                                              use_shared_user_data,
         WantsToLogWarnings                                wants_to_log_warnings = WantsToLogWarnings::CheckInDebugOption /* HACK: this is for Cool::DebugOption, so it can tell the JSON to skip checking for DebugOptions to know if it needs to log warnings or not. Otherwise this creates a deadlock if the deserialization of DebugOption's json when it tries to log a warning (when the file is corrupted)*/
     );
     ~JsonAutoSerializer();

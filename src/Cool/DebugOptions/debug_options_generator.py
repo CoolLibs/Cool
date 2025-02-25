@@ -235,6 +235,7 @@ private:
             [&](nlohmann::json& json) {{
                 {json_serialization(debug_options, "set")}
             }},
+            false /*use_shared_user_data*/,
             {wants_to_log_warnings}
         }};
     }};

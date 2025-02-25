@@ -135,6 +135,7 @@ void run_impl(
         [&](nlohmann::json& json) {
             app->save_to_json(json);
         },
+        false /*use_shared_user_data*/,
     };
     app_serializer.load();
     auto const save_on_exit = sg::make_scope_guard([&]() {

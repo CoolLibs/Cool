@@ -12,8 +12,8 @@ static void register_imgui_extras_elements(ImStyleEd::Config& config);
 ColorThemes::ColorThemes()
     : _editor{
           ImStyleEd::SerializationPaths{
-              .current_theme_file    = Cool::Path::user_data() / "current_color_theme.json",
-              .themes_folder         = Cool::Path::user_data() / "Color Themes",
+              .current_theme_file    = Cool::Path::user_data_shared() / "current_color_theme.json",
+              .themes_folder         = Cool::Path::user_data_shared() / "Color Themes",
               .themes_default_folder = Cool::Path::default_user_data() / "Color Themes",
               .config_file           = Cool::Path::default_user_data() / "color_config.json",
           },
