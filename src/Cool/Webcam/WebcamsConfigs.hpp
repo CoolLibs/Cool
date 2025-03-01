@@ -18,8 +18,8 @@ private:
     static auto gen_instance() -> WebcamsConfigs&;
 
 private:
-    wcam::KeepLibraryAlive _keep_wcam_lib_alive{};
-    ImGuiWindow            _window{icon_fmt("Webcams", ICOMOON_VIDEO_CAMERA)};
+    std::optional<wcam::KeepLibraryAlive> _keep_wcam_lib_alive{};
+    ImGuiWindow                           _window{icon_fmt("Webcams", ICOMOON_VIDEO_CAMERA)};
 
 private:
     // Serialization

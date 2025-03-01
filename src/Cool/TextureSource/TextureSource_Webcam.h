@@ -22,8 +22,8 @@ private:
     void set_device_id(wcam::DeviceId const& id) const;
 
 private:
-    mutable wcam::DeviceId _device_id{};
-    wcam::KeepLibraryAlive _keep_wcam_library_alive{};
+    mutable wcam::DeviceId                        _device_id{};
+    mutable std::optional<wcam::KeepLibraryAlive> _keep_wcam_library_alive{};
 
 private:
     // Serialization
