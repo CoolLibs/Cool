@@ -209,7 +209,7 @@ target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
 install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
 
 # spdlog
-target_include_directories(Cool-PrivateProperties INTERFACE lib/spdlog/include)
+target_include_directories(Cool-PrivateProperties SYSTEM INTERFACE lib/spdlog/include)
 install(FILES "lib/spdlog/LICENSE" DESTINATION "license/spdlog")
 
 # img
