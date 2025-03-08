@@ -59,6 +59,9 @@ endif()
 # ---Add Cool sources---
 # ----------------------
 file(GLOB_RECURSE COOL_SOURCES CONFIGURE_DEPENDS src/*)
+set(COOL_APP_VERSION_STRING "\"${COOL_APP_VERSION}\"")
+configure_file("src/Cool/Dump/app_version.cpp.in" "src/Cool/Dump/app_version.cpp")
+list(APPEND COOL_SOURCES "src/Cool/Dump/app_version.cpp")
 target_sources(Cool PRIVATE ${COOL_SOURCES})
 
 # -----------------------------

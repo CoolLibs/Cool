@@ -27,7 +27,7 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
     int const window_height = size_in_pixels(config.initial_height, video_mode->height);
 
     window_manager.windows().emplace_back(
-        glfwCreateWindow(window_width, window_height, config.title, nullptr, window_to_share_opengl_context_with)
+        glfwCreateWindow(window_width, window_height, config.title.c_str(), nullptr, window_to_share_opengl_context_with)
     );
     auto& window = window_manager.windows().back();
     if (!window.glfw())
