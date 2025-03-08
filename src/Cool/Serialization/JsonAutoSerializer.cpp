@@ -1,5 +1,6 @@
 #include "JsonAutoSerializer.hpp"
 #include "Cool/FileWatcher/FileWatcher.h"
+#include "Cool/Path/Path.h"
 
 namespace Cool {
 
@@ -46,8 +47,7 @@ void JsonAutoSerializer::update()
     _file_watcher->update(FileWatcher_Callbacks{
         .on_file_changed = [&](std::filesystem::path const& path) { load(path); },
         .on_path_invalid = [&](std::filesystem::path const& path) {
-            if (_serializer.wants_to_log_warnings())
-                Log::ToUser::warning("JSON", fmt::format("Can't open file \"{}\"", path));
+            Log::internal_warning("JSON", fmt::format("Can't open file \"{}\"", Cool::File::weakly_canonical(path)), {}, _serializer.wants_to_log_warnings());
         }
     });
 }

@@ -99,7 +99,7 @@ target_precompile_headers(Cool-PublicProperties INTERFACE # More info on precomp
     <fmt/compile.h>
     <gsl/gsl>
     <tl/expected.hpp>
-    <Cool/Log/Debug.h>
+    <Cool/Log/Log.hpp>
     <Cool/Geometry/imvec_glm_conversions.h>
     <Cool/Serialization/filesystem.h>
     <Cool/Serialization/img.h>
@@ -204,6 +204,10 @@ install(FILES "lib/nativefiledialog-extended/LICENSE" DESTINATION "license/nativ
 add_subdirectory(lib/GSL)
 target_link_libraries(Cool-PublicProperties INTERFACE Microsoft.GSL::GSL)
 install(FILES "lib/GSL/LICENSE" DESTINATION "license/GSL")
+
+# spdlog
+target_include_directories(Cool-PrivateProperties INTERFACE lib/spdlog/include)
+install(FILES "lib/spdlog/LICENSE" DESTINATION "license/spdlog")
 
 # img
 add_subdirectory(lib/img)

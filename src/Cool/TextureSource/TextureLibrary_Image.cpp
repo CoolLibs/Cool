@@ -3,13 +3,13 @@
 #include <filesystem>
 #include <optional>
 #include "Cool/DebugOptions/DebugOptions.h"
+#include "Cool/File/File.h"
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/TextureSource/default_textures.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "TextureLibrary_Image.h"
-#include "fmt/chrono.h"
 #include "imgui.h"
 
 namespace Cool {
@@ -53,7 +53,7 @@ void TextureLibrary_Image::reload_texture(std::filesystem::path const& path)
     {
         tex.texture = Texture{*image};
         if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("TextureLibrary_Image", fmt::format("Generated texture from {}", path));
+            Log::info("TextureLibrary_Image", fmt::format("Generated texture from \"{}\"", Cool::File::weakly_canonical(path)));
     }
     else
     {

@@ -14,7 +14,6 @@
 #include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
-#include "Cool/Log/ToUser.h"
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
@@ -71,7 +70,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     // clang-format on
 
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
-    ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::ToUser::warning("Video", error_message); });
+    ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::internal_warning("Video", error_message); });
     wcam::set_image_type<WebcamImage>();
 }
 
@@ -113,19 +112,15 @@ void AppManager::run(std::function<void()> const& on_update)
 {
     _app.init();
     auto const do_update = [&]() {
-#if !DEBUG
         try
-#endif
         {
             update();
             on_update();
         }
-#if !DEBUG
         catch (std::exception const& e)
         {
-            Cool::Log::ToUser::error("UNKNOWN ERROR 1", e.what());
+            Log::internal_error("UNKNOWN ERROR 1", e.what());
         }
-#endif
     };
 #if defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)
     auto should_stop   = false;
@@ -202,7 +197,7 @@ void AppManager::update()
     if (DebugOptions::show_command_line_arguments())
     {
         for (auto const& arg : command_line_args().get())
-            Cool::Log::ToUser::info("cli", arg);
+            Log::info("cli", arg);
     }
     midi_manager().check_for_devices();
     Audio::player().update_device_if_necessary();
@@ -214,18 +209,14 @@ void AppManager::update()
         _app.request_rerender();
         _wants_to_request_rerender.store(false);
     }
-#if !DEBUG
     try
-#endif
     {
         _app.update();
     }
-#if !DEBUG
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::error("UNKNOWN ERROR 2", e.what());
+        Log::internal_error("UNKNOWN ERROR 2", e.what());
     }
-#endif
     task_manager().update_on_main_thread();
 
     restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))

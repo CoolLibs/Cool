@@ -7,14 +7,13 @@
 #include <stdexcept>
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
-#include "Cool/Log/ToUser.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool {
 
 static void glfw_error_callback(int error, const char* description)
 {
-    Log::Debug::error_without_breakpoint("glfw", fmt::format("Error {}:\n{}", error, description));
+    Log::internal_error("glfw", fmt::format("Error {}: {}", error, description));
 }
 
 static void initialize_glfw()

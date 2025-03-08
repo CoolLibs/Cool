@@ -1,28 +1,27 @@
 #include "run.h"
-#include <Cool/AppManager/AppManager.h>
-#include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/FullscreenPipeline.h>
-#include <Cool/Icons/Icons.h>
-#include <Cool/Serialization/AutoSerializer.h>
-#include <Cool/UserSettings/UserSettings.h>
-#include <Cool/Window/internal/WindowFactory.h>
 #include <exception>
 #include <filesystem>
 #include <memory>
 #include <scope_guard/scope_guard.hpp>
 #include "Audio/Audio.hpp"
+#include "Cool/AppManager/AppManager.h"
 #include "Cool/AppManager/IApp.h"
 #include "Cool/AppManager/internal/get_app_manager.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
 #include "Cool/Core/set_utf8_locale.hpp"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/Icons/Icons.h"
 #include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/StyleEditor.h"
+#include "Cool/Log/redirect_cout_cerr_to_log_file.hpp"
+#include "Cool/Log/redirect_notifications_to_log_file.hpp"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/JsonSerializer.hpp"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
+#include "Cool/UserSettings/UserSettings.h"
 #include "Cool/View/ViewsManager.h"
+#include "Cool/Window/internal/WindowFactory.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 #if defined(COOL_VULKAN)
 #include <Cool/Gpu/Vulkan/Context.h>
@@ -44,7 +43,7 @@ static auto create_autosaver(std::function<void()> const& save) -> std::function
             save();
             last_time = now;
             if (DebugOptions::log_when_autosaving())
-                Log::ToUser::info("Autosave", "The application was just saved.");
+                Log::info("Autosave", "The application was just saved.");
         }
     };
 }
@@ -72,15 +71,13 @@ static void copy_initial_user_data_ifn()
             }
             catch (std::exception const& e)
             {
-                if (DebugOptions::log_internal_warnings())
-                    Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy \"{}\" to \"{}\":\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
+                Log::internal_warning("Initial user data", fmt::format("Failed to copy \"{}\" to \"{}\":\n{}", Cool::File::weakly_canonical(default_path), Cool::File::weakly_canonical(path), e.what()));
             }
         }
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("Initial user data", fmt::format("Failed to copy initial user data:\n{}", e.what()));
+        Log::internal_warning("Initial user data", fmt::format("Failed to copy initial user data:\n{}", e.what()));
     }
 }
 
@@ -90,6 +87,8 @@ void run_impl(
     std::function<std::unique_ptr<IApp>(Cool::WindowManager& windows, Cool::ViewsManager& views)> const& make_unique_app
 )
 {
+    redirect_cout_cerr_to_log_file();
+    redirect_notifications_to_log_file();
     set_utf8_locale();
     command_line_args().init(argc, argv);
     initialize_paths_config();
@@ -109,8 +108,7 @@ void run_impl(
         });
     };
     ImStyleEd::error_handlers().on_optional_warning = [](std::string_view error_message) {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("Color Themes", std::string{error_message});
+        Log::internal_warning("Color Themes", std::string{error_message});
     };
     style_editor().emplace(); // Make sure we load all the ImGui style settings // Done after the creation of the windows because we need an ImGui context to set its Style
     color_themes().emplace(); // Make sure we load all the ImGui color settings // Done after the creation of the windows because we need an ImGui context to set its Style
@@ -119,8 +117,7 @@ void run_impl(
 
     // Init error callbacks
     Audio::set_error_callback([](RtAudioErrorType /* type */, std::string const& error_message) {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("Audio", error_message);
+        Log::internal_warning("Audio", error_message);
     });
 
     // Create the App

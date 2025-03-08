@@ -1,8 +1,6 @@
 #pragma once
-#include <Cool/Serialization/Serialization.h>
 #include "Cool/AppManager/AppManagerConfig.h"
 #include "Cool/AppManager/IApp.h"
-#include "Cool/Log/OptionalErrorMessage.h"
 #include "Cool/Path/Path.h"
 #include "Cool/Path/PathsConfig.h"
 #include "Cool/View/ViewsManager.h"

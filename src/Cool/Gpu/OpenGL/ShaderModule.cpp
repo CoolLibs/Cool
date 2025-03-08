@@ -1,9 +1,9 @@
 #if defined(COOL_OPENGL)
-
 #include "ShaderModule.h"
-#include <Cool/Log/OptionalErrorMessage.h>
 #include "Cool/Exception/Exception.h"
+#include "Cool/Log/ErrorMessage.hpp"
 #include "preprocess_shader_source.h"
+#include "tl/expected.hpp"
 
 namespace Cool::OpenGL {
 
@@ -25,17 +25,17 @@ namespace Cool::OpenGL {
     return error_message.data();
 }
 
-static auto compile_shader_module(GLuint id, const ShaderDescription& desc) -> OptionalErrorMessage
+static auto compile_shader_module(GLuint id, const ShaderDescription& desc) -> tl::expected<void, ErrorMessage>
 {
     auto const preprocessed_source = preprocess_shader_source(desc.source_code);
     if (!preprocessed_source)
-        return OptionalErrorMessage{
+        return tl::make_unexpected(ErrorMessage{
             fmt::format("Preprocessing failed:\n{}\nThe source code we tried to preprocess was:\n{}", preprocessed_source.error(), desc.source_code),
             std::vector<ClipboardContent>{
                 {.title = "shader code", .content = desc.source_code},
                 {.title = "error message", .content = preprocessed_source.error()},
             }
-        };
+        });
 
     char const* src = preprocessed_source->c_str();
     GLDebug(glShaderSource(id, 1, &src, nullptr));
@@ -43,13 +43,13 @@ static auto compile_shader_module(GLuint id, const ShaderDescription& desc) -> O
     auto const err = validate_shader_module(id);
     if (err)
     {
-        return OptionalErrorMessage{
+        return tl::make_unexpected(ErrorMessage{
             fmt::format("Compilation failed:\n{}\nThe source code we tried to compile was:\n{}", *err, *preprocessed_source),
             std::vector<ClipboardContent>{
                 {.title = "shader code", .content = *preprocessed_source},
                 {.title = "error message", .content = *err},
             }
-        };
+        });
     }
     return {};
 }
@@ -57,9 +57,9 @@ static auto compile_shader_module(GLuint id, const ShaderDescription& desc) -> O
 ShaderModule::ShaderModule(const ShaderDescription& desc)
     : _shader_module{desc.kind}
 {
-    auto const err = compile_shader_module(_shader_module.id(), desc);
-    if (err)
-        throw Cool::Exception{err};
+    auto const result = compile_shader_module(_shader_module.id(), desc);
+    if (!result.has_value())
+        throw Cool::Exception{result.error()};
 }
 
 } // namespace Cool::OpenGL

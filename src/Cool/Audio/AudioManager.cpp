@@ -3,7 +3,6 @@
 #include <imgui.h>
 #include "Cool/Audio/AudioManager.h"
 #include "Cool/DebugOptions/DebugOptions.h"
-#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -33,7 +32,7 @@ auto AudioManager::volume() const -> float
 {
     return _current_volume.get_value([&]() {
         if (Cool::DebugOptions::log_when_computing_audio_features())
-            Cool::Log::ToUser::info("Audio", "Computing volume");
+            Log::info("Audio", "Computing volume");
 
         auto frames = std::vector<float>{};
         current_input().for_each_audio_frame(nb_frames_for_feature_computation(_window_size_in_seconds_for_volume), [&](float frame) {
@@ -47,7 +46,7 @@ auto AudioManager::waveform() const -> std::vector<float> const&
 {
     return _current_waveform.get_value([&]() {
         if (Cool::DebugOptions::log_when_computing_audio_features())
-            Cool::Log::ToUser::info("Audio", "Computing waveform");
+            Log::info("Audio", "Computing waveform");
 
         auto waveform = std::vector<float>{};
         current_input().for_each_audio_frame(nb_frames_for_feature_computation(_window_size_in_seconds_for_waveform), [&](float sample) {
@@ -61,7 +60,7 @@ auto AudioManager::spectrum() const -> Audio::Spectrum const&
 {
     return _current_spectrum.get_value([&]() {
         if (Cool::DebugOptions::log_when_computing_audio_features())
-            Cool::Log::ToUser::info("Audio", "Computing spectrum");
+            Log::info("Audio", "Computing spectrum");
 
         auto const N = nb_frames_for_feature_computation(_window_size_in_seconds_for_spectrum);
         return Audio::fourier_transform(

@@ -10,7 +10,7 @@
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
-#include "Cool/Log/OptionalErrorMessage.h"
+#include "Cool/Log/ErrorMessage.hpp"
 #include "Cool/OSC/OSCChannel.h"
 #include "Cool/OSC/OSCConnectionEndpoint.h"
 #include "ip/UdpSocket.h"
@@ -51,7 +51,7 @@ auto OSCManager::get_value(OSCChannel const& channel) -> float
     }
 
     _config_window.open();
-    throw Cool::Exception{OptionalErrorMessage{
+    throw Cool::Exception{ErrorMessage{
         fmt::format(
             "\"{}\" is not a valid OSC channel.\n{}",
             channel.name,

@@ -7,7 +7,6 @@
 #include <ser20/types/polymorphic.hpp>
 #include "Cool/Nodes/EditorImpl.h"
 #include "SPresetManager.h"
-
 //
 #include "ser20/archives/json.hpp"
 
@@ -17,7 +16,7 @@ auto do_save(reg::RawOrderedRegistry<Preset> const& data, Cool::SerializerOnDema
 {
     return serializer.save<reg::RawOrderedRegistry<Preset>, ser20::JSONOutputArchive>(data);
 }
-auto do_load(reg::RawOrderedRegistry<Preset>& data, Cool::SerializerOnDemand const& serializer) -> Cool::OptionalErrorMessage
+auto do_load(reg::RawOrderedRegistry<Preset>& data, Cool::SerializerOnDemand const& serializer) -> tl::expected<void, ErrorMessage>
 {
     return serializer.load<reg::RawOrderedRegistry<Preset>, ser20::JSONInputArchive>(data);
 }

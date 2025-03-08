@@ -43,9 +43,7 @@ void debug_options_windows(TipsManager* tips_manager, Window& main_window)
 
     DebugOptions::test_message_console__window([]() {
         static auto test_message_console = TestMessageConsole{};
-        test_message_console.imgui(
-            Log::ToUser::console()
-        );
+        test_message_console.imgui();
     });
 
     DebugOptions::test_notifications__window([]() {

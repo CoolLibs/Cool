@@ -1,9 +1,9 @@
 #pragma once
-
-#include <Cool/File/File.h>
-#include <Cool/Log/OptionalErrorMessage.h>
 #include <fstream>
 #include <string>
+#include "Cool/File/File.h"
+#include "Cool/Log/ErrorMessage.hpp"
+#include "tl/expected.hpp"
 
 namespace Cool::Serialization {
 
@@ -15,10 +15,10 @@ namespace Cool::Serialization {
  * @param file_path The path to the JSON file. If it doesn't exist this function will do nothing.
  */
 template<typename T, typename InputArchive>
-auto load(T& data, std::filesystem::path const& file_path, std::string* extra_line_at_the_beginning_of_the_file = {}) -> OptionalErrorMessage
+auto load(T& data, std::filesystem::path const& file_path, std::string* extra_line_at_the_beginning_of_the_file = {}) -> tl::expected<void, ErrorMessage>
 {
     if (!File::exists(file_path))
-        return fmt::format("File not found \"{}\"", Cool::File::weakly_canonical(file_path));
+        return tl::make_unexpected(ErrorMessage{fmt::format("File not found \"{}\"", Cool::File::weakly_canonical(file_path))});
 
     std::ifstream ifs{file_path};
     if (extra_line_at_the_beginning_of_the_file != nullptr)
@@ -30,7 +30,7 @@ auto load(T& data, std::filesystem::path const& file_path, std::string* extra_li
     }
     catch (std::exception const& e)
     {
-        return fmt::format("Corrupted file \"{}\":\n{}", Cool::File::weakly_canonical(file_path), e.what());
+        return tl::make_unexpected(ErrorMessage{fmt::format("Corrupted file \"{}\":\n{}", Cool::File::weakly_canonical(file_path), e.what())});
     }
     return {};
 }

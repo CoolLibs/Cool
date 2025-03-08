@@ -1,12 +1,9 @@
 #include "File.h"
-#include <Cool/Log/ToUser.h>
-#include <Cool/String/String.h>
-#include <sys/stat.h>
 #include <exception>
 #include <filesystem>
 #include <fstream>
-#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
+#include "Cool/String/String.h"
 #include "nfd.hpp"
 
 namespace Cool::File {
@@ -19,8 +16,7 @@ auto make_absolute(std::filesystem::path const& path) -> std::filesystem::path
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to make absolute path from \"{}\":\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to make absolute path from \"{}\":\n{}", path, e.what()));
         return path;
     }
 }
@@ -33,8 +29,7 @@ auto exists(std::filesystem::path const& file_path) -> bool
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if \"{}\" exists:\n{}", file_path, e.what()));
         return false;
     }
 }
@@ -47,8 +42,7 @@ void remove_file(std::filesystem::path const& file_path)
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to remove file \"{}\":\n{}", file_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to remove file \"{}\":\n{}", file_path, e.what()));
     }
 }
 
@@ -60,8 +54,7 @@ void remove_folder(std::filesystem::path const& folder_path)
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to remove folder \"{}\":\n{}", folder_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to remove folder \"{}\":\n{}", folder_path, e.what()));
     }
 }
 
@@ -74,8 +67,7 @@ auto rename(std::filesystem::path const& old_path, std::filesystem::path const& 
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to rename \"{}\" as \"{}\":\n{}", old_path, new_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to rename \"{}\" as \"{}\":\n{}", old_path, new_path, e.what()));
         return false;
     }
 }
@@ -121,8 +113,7 @@ auto weakly_canonical(std::filesystem::path const& path) -> std::filesystem::pat
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to get canonical path for \"{}\":\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to get canonical path for \"{}\":\n{}", path, e.what()));
         return path;
     }
 }
@@ -135,8 +126,7 @@ auto relative(std::filesystem::path const& path, std::filesystem::path const& ba
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to make path \"{}\" relative to \"{}\":\n{}", path, base, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to make path \"{}\" relative to \"{}\":\n{}", path, base, e.what()));
         return path;
     }
 }
@@ -149,8 +139,7 @@ auto is_regular_file(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a regular file:\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if \"{}\" is a regular file:\n{}", path, e.what()));
         return false;
     }
 }
@@ -163,8 +152,7 @@ auto is_empty(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is empty:\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if \"{}\" is empty:\n{}", path, e.what()));
         return false;
     }
 }
@@ -177,8 +165,7 @@ auto is_absolute(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is an absolute path:\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if \"{}\" is an absolute path:\n{}", path, e.what()));
         return true;
     }
 }
@@ -191,8 +178,7 @@ auto is_relative(std::filesystem::path const& path) -> bool
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if \"{}\" is a relative path:\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if \"{}\" is a relative path:\n{}", path, e.what()));
         return true;
     }
 }
@@ -205,8 +191,7 @@ auto last_write_time(std::filesystem::path const& path) -> std::filesystem::file
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to get last write time for \"{}\":\n{}", path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to get last write time for \"{}\":\n{}", path, e.what()));
         return {};
     }
 }
@@ -220,8 +205,7 @@ auto equivalent(std::filesystem::path const& path1, std::filesystem::path const&
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to check if paths are equivalent \"{}\" and \"{}\":\n{}", path1, path2, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to check if paths are equivalent \"{}\" and \"{}\":\n{}", path1, path2, e.what()));
         return false;
     }
 }
@@ -259,8 +243,7 @@ auto create_folders_if_they_dont_exist(std::filesystem::path const& folder_path)
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Log::ToUser::warning("File", fmt::format("Failed to create folder \"{}\":\n{}", folder_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to create folder \"{}\":\n{}", folder_path, e.what()));
         return false;
     }
 }
@@ -293,8 +276,7 @@ auto copy_file(std::filesystem::path const& from, std::filesystem::path const& t
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to copy file from \"{}\" to \"{}\":\n{}", from, to, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to copy file from \"{}\" to \"{}\":\n{}", from, to, e.what()));
         return false;
     }
 }
@@ -373,8 +355,7 @@ void set_time_of_last_change_to_now(std::filesystem::path const& file_path)
     }
     catch (std::exception const& e)
     {
-        if (DebugOptions::log_internal_warnings())
-            Cool::Log::ToUser::warning("File", fmt::format("Failed to set time of last change to now for \"{}\":\n{}", file_path, e.what()));
+        Log::internal_warning("File", fmt::format("Failed to set time of last change to now for \"{}\":\n{}", file_path, e.what()));
     }
 }
 

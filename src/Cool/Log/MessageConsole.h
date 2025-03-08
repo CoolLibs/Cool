@@ -20,14 +20,14 @@ public:
 
     /// If `id` is null, creates a new messages and sets `id` to reference it,
     /// otherwise refreshes the message referenced by `id`.
-    void send(MessageId&, const Message&);
+    void send(MessageId&, Message const&);
 
     /// Sends a message to the console. No `id` is returned. The message can only be cleared by the user.
     /// Such a message will always be clearable by the user.
-    void send(const Message&);
+    void send(Message const&);
 
     /// Removes the message, even if it is not supposed to be closable.
-    void remove(const MessageId&);
+    void remove(MessageId const&);
 
     /// Removes all the closable messages.
     void clear();
@@ -36,28 +36,28 @@ public:
     void clear(MessageSeverity);
 
     /// Removes all the closable messages that verify the `predicate`.
-    void clear(std::function<bool(const Message&)> predicate);
+    void clear_if(std::function<bool(const Message&)> const& predicate);
 
     /// Returns true iff the message is currently selected / hovered by the user.
     /// Allows us to focus the corresponding window / highlight the corresponding part of the UI that requires attention.
-    auto should_highlight(const MessageId&) -> bool;
+    auto should_highlight(MessageId const&) -> bool;
 
     /// Draws the imgui window with all the messages.
     void imgui_window();
 
 private:
-    void               remove(const internal::RawMessageId&);
-    void               close_window_if_empty();
-    void               close_window();
-    void               on_message_sent(const internal::RawMessageId&);
-    void               show_number_of_messages_of_given_severity(MessageSeverity);
-    void               refresh_counts_per_severity();
-    void               imgui_menu_bar();
-    void               imgui_show_all_messages();
-    [[nodiscard]] auto there_are_clearable_messages() const -> bool;
-    [[nodiscard]] auto there_are_clearable_messages(MessageSeverity) const -> bool;
-    [[nodiscard]] auto should_show(const internal::MessageWithMetadata&) const -> bool;
-    void               remove_messages_to_keep_size_below(size_t max_number_of_messages);
+    void remove(internal::RawMessageId const&);
+    void close_window_if_empty();
+    void close_window();
+    void on_message_sent(internal::RawMessageId const&, Message const&);
+    void show_number_of_messages_of_given_severity(MessageSeverity);
+    void refresh_counts_per_severity();
+    void imgui_menu_bar();
+    void imgui_show_all_messages();
+    auto there_are_clearable_messages() const -> bool;
+    auto there_are_clearable_messages(MessageSeverity) const -> bool;
+    auto should_show(internal::MessageWithMetadata const&) const -> bool;
+    void remove_messages_to_keep_size_below(size_t max_number_of_messages);
 
     class MessagesCountPerSeverity {
     public:

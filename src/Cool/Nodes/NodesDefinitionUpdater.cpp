@@ -84,12 +84,14 @@ auto NodesDefinitionUpdater::library_is_empty() const -> bool
 
 void NodesDefinitionUpdater::handle_error(std::filesystem::path const& definition_path, std::string const& message)
 {
-    Cool::Log::ToUser::console().send(
+    ImGuiNotify::send_or_change(
         _errors[definition_path], // This will create an error id if not already present in the map. This is what we want.
-        Message{
-            .category = "Nodes",
-            .message  = fmt::format("Failed to read node from file {}:\n{}", definition_path, message),
-            .severity = MessageSeverity::Error,
+        {
+            .type     = ImGuiNotify::Type::Error,
+            .title    = "Nodes",
+            .content  = fmt::format("Failed to read node \"{}\":\n{}", Cool::File::weakly_canonical(definition_path), message),
+            .duration = std::nullopt,
+            .closable = false,
         }
     );
 }

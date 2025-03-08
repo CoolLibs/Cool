@@ -1,10 +1,9 @@
 #include "View.h"
-#include <Cool/ImGui/ImGuiExtras.h>
-#include <Cool/Image/ImageSizeU.h>
-#include <img/src/SizeU.h>
 #include "Cool/DebugOptions/DebugOptions.h"
+#include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Input/MouseCoordinates.h"
-#include "Cool/Log/ToUser.h"
+#include "Cool/Log/message_console.hpp"
+#include "img/src/SizeU.h"
 
 namespace Cool {
 
@@ -147,7 +146,7 @@ void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& eve
 
     if (DebugOptions::log_mouse_position_in_view())
     {
-        Log::ToUser::console().send(
+        message_console().send(
             _log_position_message_id,
             Message{
                 .category = _name,

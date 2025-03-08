@@ -1,6 +1,5 @@
 #include <glpp-extended/src/TextureLayout.h>
 #if defined(COOL_OPENGL)
-#include <img/img.hpp>
 #include "../Texture.h"
 #include "glpp-extended/src/ImageSize.h"
 #include "glpp/Enums/Channels.h"
@@ -8,8 +7,8 @@
 #include "glpp/Enums/TexelDataType.h"
 #include "glpp/Enums/TextureKind.h"
 #include "glpp/Functions/Texture.h"
+#include "img/img.hpp"
 #include "img/src/Size.h"
-#include "img/src/SizeU.h"
 
 namespace Cool::OpenGL {
 
@@ -52,9 +51,7 @@ void Texture::set_size(img::Size const& size)
 {
     _size = size;
     _tex.resize(img_to_glpp_size(size));
-#if DEBUG
     _data_has_been_uploaded = true;
-#endif
 }
 
 void Texture::set_image(img::Image const& img, bool need_to_flip_y)
@@ -86,9 +83,7 @@ void Texture::set_image(img::Size const& size, uint8_t const* data, glpp::Textur
         data,
         layout
     );
-#if DEBUG
     _data_has_been_uploaded = true;
-#endif
 }
 
 void Texture::set_interpolation_mode(glpp::Interpolation interpolation_mode)
@@ -116,10 +111,8 @@ void Texture::unbind()
 
 void Texture::attach_to_slot(GLuint slot) const
 {
-#if DEBUG
     if (!_data_has_been_uploaded)
-        Log::Debug::error("Texture::attach_to_slot", "You must upload some data (at least a width and height) before using the texture.");
-#endif
+        Log::internal_error("Texture::attach_to_slot", "You must upload some data (at least a width and height) before using the texture.");
     _tex.bind_to_texture_unit(slot);
 }
 

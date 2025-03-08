@@ -1,6 +1,7 @@
 #pragma once
 #include <condition_variable>
 #include <reg/src/AnyId.hpp>
+#include <shared_mutex>
 #include <thread>
 #include "Task.hpp"
 #include "WaitToExecuteTask.hpp"

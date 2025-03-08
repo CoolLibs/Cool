@@ -4,7 +4,6 @@
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
-#include "Cool/Log/ToUser.h"
 #include "Cool/OSC/OSCChannel.h"
 #include "Cool/OSC/OSCManager.h"
 
@@ -62,13 +61,13 @@ void ServerManager::set_port(int port)
                         auto const name = req.get("name");
                         if (!name.has_value())
                         {
-                            Cool::Log::ToUser::error("Server", "When making a request to /set, you need to specify a name, e.g. http://localhost:1234/set?name=my_name&value=35");
+                            Log::error("Server", "When making a request to /set, you need to specify a name, e.g. http://localhost:1234/set?name=my_name&value=35");
                             return;
                         }
                         auto const value = req.get("value");
                         if (!value.has_value())
                         {
-                            Cool::Log::ToUser::error("Server", "When making a request to /set, you need to specify a value, e.g. http://localhost:1234/set?name=my_name&value=35");
+                            Log::error("Server", "When making a request to /set, you need to specify a value, e.g. http://localhost:1234/set?name=my_name&value=35");
                             return;
                         }
                         try
@@ -78,14 +77,14 @@ void ServerManager::set_port(int port)
                         }
                         catch (std::exception const&)
                         {
-                            Cool::Log::ToUser::error("Server", fmt::format("/set request had an invalid \"value\" param ({}). It must be a number.", *value));
+                            Log::error("Server", fmt::format("/set request had an invalid \"value\" param ({}). It must be a number.", *value));
                         }
                     },
                 },
                 {
                     "/",
                     [](serv::Request const& req) {
-                        Cool::Log::ToUser::error("Server", fmt::format("Invalid request ({}). Use /set instead", req.route()));
+                        Log::error("Server", fmt::format("Invalid request ({}). Use /set instead", req.route()));
                     },
                 },
             }
@@ -93,7 +92,7 @@ void ServerManager::set_port(int port)
     }
     catch (std::exception const& e)
     {
-        Cool::Log::ToUser::error("Server", fmt::format("Failed to open server: {}", e.what()));
+        Log::error("Server", fmt::format("Failed to open server: {}", e.what()));
         _server.reset();
     }
 }

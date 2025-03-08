@@ -1,7 +1,6 @@
 #include "Icons.h"
-#include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/File/File.h>
-#include <Cool/Log/ToUser.h>
+#include "Cool/DebugOptions/DebugOptions.h"
+#include "Cool/File/File.h"
 #include "Cool/TextureSource/default_textures.h"
 #include "img/src/Load.h"
 
@@ -18,7 +17,7 @@ const Texture& Icons::get(std::filesystem::path image_path)
         auto const image = img::load(path);
         _map[path]       = Texture{image.has_value() ? *image : dummy_image()};
         if (DebugOptions::log_when_creating_textures())
-            Log::ToUser::info("Icons", fmt::format("Generated texture from {}", path));
+            Log::info("Icons", fmt::format("Generated texture from \"{}\"", Cool::File::weakly_canonical(path)));
         return _map[path];
     }
     else
@@ -27,21 +26,16 @@ const Texture& Icons::get(std::filesystem::path image_path)
     }
 }
 
-void Icons::cleanup_texture(std::filesystem::path image_path)
+void Icons::cleanup_texture(std::filesystem::path const& image_path)
 {
     const auto path = File::make_absolute(image_path);
     auto       res  = _map.find(path);
     if (res == _map.end())
     {
-        Log::Debug::warning(
-            "Icons::cleanup_texture",
-            fmt::format("The texture you want to clean up doesn't exist! \"{}\"", path)
-        );
+        Log::internal_warning("Icons::cleanup_texture", fmt::format("The texture you want to clean up doesn't exist! \"{}\"", Cool::File::weakly_canonical(path)));
+        return;
     }
-    else
-    {
-        _map.erase(path);
-    }
+    _map.erase(path);
 }
 
 } // namespace Cool

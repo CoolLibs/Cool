@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "reg/reg.hpp"
 #include "reg/src/generate_uuid.hpp"
 
 namespace Cool {

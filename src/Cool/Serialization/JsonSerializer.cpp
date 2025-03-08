@@ -1,7 +1,6 @@
 #include "JsonSerializer.hpp"
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/File/File.h"
-#include "Cool/Log/ToUser.h"
 
 namespace Cool {
 
@@ -27,8 +26,7 @@ void JsonSerializer::save()
     }
     catch (std::exception const& e)
     {
-        if (wants_to_log_warnings())
-            Cool::Log::ToUser::warning("JSON", fmt::format("Failed to save file \"{}\":\n{}", Cool::File::weakly_canonical(file_path()), e.what()));
+        Log::internal_warning("JSON", fmt::format("Failed to save file \"{}\":\n{}", Cool::File::weakly_canonical(file_path()), e.what()), {}, wants_to_log_warnings());
     }
 }
 
@@ -43,8 +41,7 @@ void JsonSerializer::load(std::filesystem::path const& path)
     }
     catch (std::exception const& e)
     {
-        if (wants_to_log_warnings())
-            Cool::Log::ToUser::warning("JSON", fmt::format("Corrupted file \"{}\":\n{}", Cool::File::weakly_canonical(path), e.what()));
+        Log::internal_warning("JSON", fmt::format("Corrupted file \"{}\":\n{}", Cool::File::weakly_canonical(path), e.what()), {}, wants_to_log_warnings());
     }
 }
 

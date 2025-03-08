@@ -1,6 +1,7 @@
 #include "TaskWithProgressBar.hpp"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Task/TaskManager.hpp"
+#include "reg/reg.hpp"
 
 namespace Cool {
 
@@ -20,8 +21,8 @@ void TaskWithProgressBar::on_submit()
                     task_manager().cancel_all(task_id);
             });
         },
-        .duration    = std::nullopt,
-        .is_closable = false,
+        .duration = std::nullopt,
+        .closable = false,
     });
 }
 
@@ -40,8 +41,8 @@ void TaskWithProgressBar::change_notification_when_execution_starts()
                         task_manager().cancel_all(task_id);
                 });
             },
-            .duration    = std::nullopt,
-            .is_closable = false,
+            .duration = std::nullopt,
+            .closable = false,
         }
     );
 }

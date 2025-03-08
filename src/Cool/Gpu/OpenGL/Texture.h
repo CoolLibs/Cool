@@ -58,9 +58,7 @@ private:
     glpp::Texture2D _tex{};
     img::Size       _size{};
     bool            _need_to_flip_y{false};
-#if DEBUG
-    bool _data_has_been_uploaded{false};
-#endif
+    bool            _data_has_been_uploaded{false};
 };
 
 } // namespace Cool::OpenGL

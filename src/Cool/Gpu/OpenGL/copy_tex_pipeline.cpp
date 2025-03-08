@@ -4,8 +4,8 @@ namespace Cool {
 
 static auto make_copy_tex_pipeline() -> Cool::OpenGL::FullscreenPipeline
 {
-    auto       instance = Cool::OpenGL::FullscreenPipeline{};
-    auto const err      = instance.compile(R"GLSL(
+    auto instance = Cool::OpenGL::FullscreenPipeline{};
+    instance.compile(R"GLSL(
 #version 410
 #include "_COOL_RES_/shaders/shader-utils.glsl" 
 out vec4 out_Color;
@@ -14,17 +14,10 @@ void main()
 {
     out_Color = texture(tex_to_copy, _uv);
 }
-    )GLSL");
-    err.send_error_if_any(
-        [&](std::string const& message) {
-            return Cool::Message{
-                .category = "Internal",
-                .message  = "Failed to create shader to copy texture:\n" + message,
-                .severity = Cool::MessageSeverity::Error,
-            };
-        },
-        Cool::Log::ToUser::console()
-    );
+    )GLSL")
+        .or_else([](ErrorMessage const& err) {
+            Log::internal_error("make_copy_tex_pipeline", fmt::format("Failed to create shader to copy texture:\n{}", err.message), err.clipboard_contents);
+        });
 
     return instance;
 }

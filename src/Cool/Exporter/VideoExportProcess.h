@@ -1,9 +1,11 @@
 #pragma once
-#include <Cool/Time/Clock_FixedTimestep.h>
-#include <Cool/Utils/Averager.h>
+#include <mutex>
+#include "Cool/Time/Clock_FixedTimestep.h"
+#include "Cool/Utils/Averager.h"
 #include "Polaroid.hpp"
 #include "VideoExportParams.h"
 #include "no_sleep/no_sleep.hpp"
+#include "reg/reg.hpp"
 
 namespace Cool {
 

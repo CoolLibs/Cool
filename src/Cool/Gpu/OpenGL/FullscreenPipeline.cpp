@@ -1,22 +1,19 @@
 #if defined(COOL_OPENGL)
-
 #include "FullscreenPipeline.h"
-#include <Cool/File/File.h>
-#include <Cool/Gpu/OpenGL/preprocess_shader_source.h>
-#include <Cool/Log/ToUser.h>
-#include <Cool/Path/Path.h>
 #include "Cool/Exception/Exception.h"
-#include "Cool/Log/Message.h"
+#include "Cool/File/File.h"
+#include "Cool/Path/Path.h"
+#include "tl/expected.hpp"
 
 namespace Cool::OpenGL {
 
-std::optional<ShaderModule>& vertex_module()
+static auto vertex_module() -> std::optional<ShaderModule>&
 {
     static std::optional<ShaderModule> shader_module = ShaderModule{{
         .kind        = ShaderKind::Vertex,
         .source_code = *File::to_string(Path::cool_res() / "shaders/fullscreen.vert")
-                            .map_error([](const std::string& error_message) {
-                                Cool::Log::ToUser::error(
+                            .map_error([](std::string const& error_message) {
+                                Log::internal_error(
                                     "FullscreenPipeline::vertex_module()",
                                     "Couldn't load fullscreen shader. Please fix this and then restart the app.\n" + error_message
                                 );
@@ -26,7 +23,7 @@ std::optional<ShaderModule>& vertex_module()
     return shader_module;
 }
 
-auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -> OptionalErrorMessage
+auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -> tl::expected<void, ErrorMessage>
 {
     const auto on_error = [&]() {
         _shader.reset();
@@ -35,7 +32,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
     if (fragment_shader_source_code.empty())
     {
         on_error();
-        return OptionalErrorMessage{"Shader is empty."};
+        return tl::make_unexpected(ErrorMessage{"Shader is empty."});
     }
 
     try
@@ -52,7 +49,7 @@ auto FullscreenPipeline::compile(std::string_view fragment_shader_source_code) -
     catch (Cool::Exception const& e)
     {
         on_error();
-        return e.error_message();
+        return tl::make_unexpected(ErrorMessage{e.error_message()});
     }
 }
 

@@ -3,11 +3,8 @@
 #include <ImGuiNotify/ImGuiNotify.hpp>
 #include <chrono>
 #include <memory>
-#include <optional>
 #include <reg/src/generate_uuid.hpp>
 #include <string>
-#include "Cool/ImGui/ImGuiExtras.h"
-#include "Cool/Log/ToUser.h"
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/Task/TaskWithProgressBar.hpp"
 
