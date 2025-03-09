@@ -34,7 +34,6 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
     {
         const char* error_description; // NOLINT(*-init-variables)
         glfwGetError(&error_description);
-        Log::internal_error("Window creation failed", error_description);
         throw std::runtime_error{fmt::format("Window creation failed:\n{}", error_description)};
     }
 

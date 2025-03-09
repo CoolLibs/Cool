@@ -89,7 +89,7 @@ auto WindowFactory_ImplOpenGL::make_window(WindowConfig const& config, WindowMan
     glfwMakeContextCurrent(window.glfw());
     WindowFactoryU::apply_config(config, window);
     // Load Glad
-    if (!gladLoadGL(glfwGetProcAddress)) // NOLINT
+    if (!gladLoadGL(glfwGetProcAddress))
         throw std::runtime_error{"Failed to load OpenGL functions"};
     //
     return window;
