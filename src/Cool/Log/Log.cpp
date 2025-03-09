@@ -35,13 +35,10 @@ void error(std::string title, std::string content, std::vector<ClipboardContent>
     });
 }
 
-// TODO(Logs) mettre log Coollab et Launcher au m^me endroit ?
-// TODO(Logs) disable logging in Perform mode
 // TODO(Logs) launcher command "reveal log file in explorer"
+// TODO(Logs) disable logging in Perform mode
 // TODO(Logs) In Github issues tell people to send the log file (no need to specify version anymore since it is in the log file (+ no need for devs to give their commit number))
 // TODO(Logs) In Github issues tell people to send the project file
-
-// TODO(Logs) also check where i throw exceptions (eg when creating a Window fails)
 
 void internal_info(std::string title, std::string content, std::vector<ClipboardContent> clipboard_contents, std::optional<bool> should_log_to_user)
 {

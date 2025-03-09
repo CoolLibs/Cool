@@ -8,7 +8,7 @@ namespace Cool {
 
 static auto make_logger()
 {
-    auto const path = Cool::Path::user_data() / COOL_APP_NAME " logs.txt";
+    auto const path = Cool::Path::user_data_shared() / "LOGS " COOL_APP_NAME ".txt"; // Make file name start with LOG so that all log files of all apps will be next to each other in the folder
 
     Cool::File::set_content(path, Cool::gen_dump_string() + "\n\n");
 
