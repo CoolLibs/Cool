@@ -38,10 +38,8 @@ void error(std::string category, std::string message, std::vector<ClipboardConte
 // TODO(Logs) mettre log Coollab et Launcher au m^me endroit ?
 // TODO(Logs) disable logging in Perform mode
 // TODO(Logs) launcher command "reveal log file in explorer"
-// TODO(Logs) Dump the system info at the beginning of the log file
 // TODO(Logs) In Github issues tell people to send the log file (no need to specify version anymore since it is in the log file (+ no need for devs to give their commit number))
 // TODO(Logs) In Github issues tell people to send the project file
-// TODO(Logs) In webgpu check that the info dump shows the underlying chosen API
 // TODO(Logs) Remove debug option to gen info dump since it is in log now
 // TODO(Logs) replace many logs to console with sending a notification
 

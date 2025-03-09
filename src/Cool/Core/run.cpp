@@ -16,6 +16,7 @@
 #include "Cool/ImGui/StyleEditor.h"
 #include "Cool/Log/redirect_cout_cerr_to_log_file.hpp"
 #include "Cool/Log/redirect_notifications_to_log_file.hpp"
+#include "Cool/Log/reset_log_file_if_not_already_reset.hpp"
 #include "Cool/Path/Path.h"
 #include "Cool/Serialization/JsonSerializer.hpp"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
@@ -92,6 +93,7 @@ void run_impl(
     set_utf8_locale();
     command_line_args().init(argc, argv);
     initialize_paths_config();
+    reset_log_file_if_not_already_reset();
     copy_initial_user_data_ifn();
     // Create window.s
     assert(!config.windows_configs.empty());

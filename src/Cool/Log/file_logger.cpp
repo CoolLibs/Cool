@@ -8,7 +8,7 @@ namespace Cool {
 
 static auto make_logger()
 {
-    auto const path = Cool::Path::user_data() / COOL_APP_NAME " Logs.txt";
+    auto const path = Cool::Path::user_data() / COOL_APP_NAME " logs.txt";
 
     Cool::File::set_content(path, Cool::gen_dump_string() + "\n\n");
 
