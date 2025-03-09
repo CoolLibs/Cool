@@ -33,13 +33,13 @@ OSCManager::~OSCManager()
     stop_listening();
 }
 
-static auto list_channel_names(std::vector<std::pair<OSCChannel, float>> const& values) -> std::string
-{
-    std::stringstream ss;
-    for (auto const& [channel, _] : values)
-        ss << "- \"" << channel.name << "\"\n";
-    return ss.str();
-}
+// static auto list_channel_names(std::vector<std::pair<OSCChannel, float>> const& values) -> std::string
+// {
+//     std::stringstream ss;
+//     for (auto const& [channel, _] : values)
+//         ss << "- \"" << channel.name << "\"\n";
+//     return ss.str();
+// }
 
 auto OSCManager::get_value(OSCChannel const& channel) -> float
 {
@@ -53,11 +53,8 @@ auto OSCManager::get_value(OSCChannel const& channel) -> float
     _config_window.open();
     throw Cool::Exception{ErrorMessage{
         fmt::format(
-            "\"{}\" is not a valid OSC channel.\n{}",
-            channel.name,
-            _s.values.empty()
-                ? "We haven't received any OSC messages yet. " + _error_message_for_endpoint_creation
-                : "The OSC channels that we have received are:\n" + list_channel_names(_s.values)
+            "We haven't received any OSC value named \"{}\"",
+            channel.name
         )
     }};
 }
