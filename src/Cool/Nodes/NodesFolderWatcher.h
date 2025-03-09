@@ -1,7 +1,7 @@
 #pragma once
 #include <map>
+#include "Cool/Log/MessageId.h"
 #include "INodesDefinitionUpdater.h"
-#include "ImGuiNotify/ImGuiNotify.hpp"
 #include "folder_watcher/folder_watcher.hpp"
 
 namespace Cool {
@@ -19,9 +19,9 @@ public:
     auto errors_map() -> auto& { return _node_parsing_errors; }
 
 private:
-    folder_watcher::FolderWatcher                                _folder_watcher{};
-    std::string                                                  _extension;
-    std::map<std::filesystem::path, ImGuiNotify::NotificationId> _node_parsing_errors{};
+    folder_watcher::FolderWatcher              _folder_watcher{};
+    std::string                                _extension;
+    std::map<std::filesystem::path, MessageId> _node_parsing_errors{};
 };
 
 } // namespace Cool

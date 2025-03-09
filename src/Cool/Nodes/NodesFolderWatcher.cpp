@@ -1,6 +1,7 @@
 #include "NodesFolderWatcher.h"
 #include <utility>
 #include "Cool/File/File.h"
+#include "Cool/Log/message_console.hpp"
 
 namespace Cool {
 
@@ -19,7 +20,7 @@ auto NodesFolderWatcher::update(
         if (path.extension() != _extension)
             return false;
 
-        ImGuiNotify::close_immediately(_node_parsing_errors[path]);
+        message_console().remove(_node_parsing_errors[path]);
         has_changed = true;
         return true;
     };

@@ -8,13 +8,15 @@
 
 namespace Cool {
 
+// TODO make all the dumps align
+
 auto gen_dump_string() -> std::string
 {
     return fmt::format(
         R"STR(---INFO---
 {} version : {}
-OS                : {}
-GPU API           : {}
+OS              : {}
+GPU API         : {}
 ----------)STR",
         COOL_APP_NAME, app_version(),
         os_name(),
