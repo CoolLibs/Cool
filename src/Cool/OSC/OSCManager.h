@@ -75,7 +75,7 @@ private:
     // Serialization
     friend class ser20::access;
     template<class Archive>
-    void serialize(Archive& archive)
+    void save(Archive& archive) const
     {
         std::lock_guard lock{_s.values_mutex};
         archive(
@@ -83,6 +83,18 @@ private:
             ser20::make_nvp("Endpoint", _endpoint),
             ser20::make_nvp("Values", _s.values)
         );
+    }
+    template<class Archive>
+    void load(Archive& archive)
+    {
+        std::lock_guard lock{_s.values_mutex};
+        auto            endpoint = OSCConnectionEndpoint{};
+        archive(
+            ser20::make_nvp("Window", _config_window),
+            ser20::make_nvp("Endpoint", endpoint),
+            ser20::make_nvp("Values", _s.values)
+        );
+        set_connection_endpoint(endpoint); // This will (re)start the server
     }
 };
 
