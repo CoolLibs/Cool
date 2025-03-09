@@ -149,9 +149,9 @@ void View::dispatch_mouse_move_event(MouseMoveEvent<ImGuiCoordinates> const& eve
         message_console().send(
             _log_position_message_id,
             Message{
-                .category = _name,
-                .message  = fmt::format("Mouse at ({:.2f}, {:.2f})", pos.x, pos.y),
-                .severity = MessageSeverity::Info,
+                .type    = MessageType::Info,
+                .title   = _name,
+                .content = fmt::format("Mouse at ({:.2f}, {:.2f})", pos.x, pos.y),
             }
         );
     }

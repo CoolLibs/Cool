@@ -13,19 +13,19 @@ public:
 
 private:
     struct Message {
-        std::string           category{"Test"};
-        std::string           message{"Hello!"};
-        Cool::MessageSeverity severity{Cool::MessageSeverity::Error};
-        Cool::MessageId       id{};
+        Cool::MessageType type{Cool::MessageType::Error};
+        std::string       title{"Test"};
+        std::string       content{"Hello!"};
+        Cool::MessageId   id{};
 
         void send()
         {
             message_console().send(
                 id,
                 {
-                    .category = category,
-                    .message  = message,
-                    .severity = severity,
+                    .type    = type,
+                    .title   = title,
+                    .content = content,
                 }
             );
         }

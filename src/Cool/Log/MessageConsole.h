@@ -32,8 +32,8 @@ public:
     /// Removes all the closable messages.
     void clear();
 
-    /// Removes all the closable messages of the given severity.
-    void clear(MessageSeverity);
+    /// Removes all the closable messages of the given type.
+    void clear(MessageType);
 
     /// Removes all the closable messages that verify the `predicate`.
     void clear_if(std::function<bool(const Message&)> const& predicate);
@@ -50,31 +50,31 @@ private:
     void close_window_if_empty();
     void close_window();
     void on_message_sent(internal::RawMessageId const&, Message const&);
-    void show_number_of_messages_of_given_severity(MessageSeverity);
-    void refresh_counts_per_severity();
+    void show_number_of_messages_of_given_type(MessageType);
+    void refresh_counts_per_type();
     void imgui_menu_bar();
     void imgui_show_all_messages();
     auto there_are_clearable_messages() const -> bool;
-    auto there_are_clearable_messages(MessageSeverity) const -> bool;
+    auto there_are_clearable_messages(MessageType) const -> bool;
     auto should_show(internal::MessageWithMetadata const&) const -> bool;
     void remove_messages_to_keep_size_below(size_t max_number_of_messages);
 
-    class MessagesCountPerSeverity {
+    class MessagesCountPerType {
     public:
-        MessagesCountPerSeverity();
-        void increment(MessageSeverity);
+        MessagesCountPerType();
+        void increment(MessageType);
         void reset_to_zero();
-        auto get(MessageSeverity) const -> size_t;
+        auto get(MessageType) const -> size_t;
 
     private:
-        std::array<size_t, 3> _counts_per_severity{};
+        std::array<size_t, 3> _counts_per_type{};
     };
 
-    class IsSeverityHidden {
+    class IsTypeHidden {
     public:
-        auto get(MessageSeverity) const -> bool;
-        void set(MessageSeverity, bool);
-        void toggle(MessageSeverity);
+        auto get(MessageType) const -> bool;
+        void set(MessageType, bool);
+        void toggle(MessageType);
 
     private:
         std::array<bool, 3> _is_hidden{false};
@@ -86,8 +86,8 @@ private:
     bool                                                _is_open{false};
     internal::RawMessageId                              _message_just_sent{};
     std::string                                         _name;
-    MessagesCountPerSeverity                            _counts_per_severity{};
-    IsSeverityHidden                                    _is_severity_hidden{};
+    MessagesCountPerType                                _counts_per_type{};
+    IsTypeHidden                                        _is_type_hidden{};
 };
 
 } // namespace Cool

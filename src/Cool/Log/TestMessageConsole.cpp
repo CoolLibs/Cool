@@ -8,9 +8,9 @@ TestMessageConsole::TestMessageConsole()
 {
     _messages.push_back({}); // We can't use an initializer list to fill a container of move-only types, so we have to push_back manually
     _messages.push_back({
-        "Test 2",
-        "Hello! 2\nmulti\nline",
-        Cool::MessageSeverity::Warning,
+        .type    = Cool::MessageType::Warning,
+        .title   = "Test 2",
+        .content = "Hello! 2\nmulti\nline",
     });
 }
 
@@ -26,7 +26,7 @@ void TestMessageConsole::imgui()
     }
     if (ImGui::Button("Add a new message ID"))
     {
-        _messages.push_back({.message = std::to_string(_next_message_number++)});
+        _messages.push_back({.content = std::to_string(_next_message_number++)});
         _messages.back().send();
     }
     if (ImGui::Button("Remove last message ID"))
@@ -41,7 +41,14 @@ void TestMessageConsole::imgui()
     if (ImGui::Button("Send a scoped message"))
     {
         _scoped_message_id.emplace();
-        message_console().send(*_scoped_message_id, Cool::Message{.category = "Scoped", .message = "This is a scoped message", .severity = Cool::MessageSeverity::Error});
+        message_console().send(
+            *_scoped_message_id,
+            Cool::Message{
+                .type    = Cool::MessageType::Error,
+                .title   = "Scoped",
+                .content = "This is a scoped message",
+            }
+        );
     }
     if (ImGui::Button("Destroy the scoped message id"))
     {
@@ -65,9 +72,9 @@ void TestMessageConsole::imgui(TestMessageConsole::Message& message)
     {
         message.send();
     }
-    ImGui::InputText("Category", &message.category);
-    ImGui::InputText("Message", &message.message);
-    ImGui::Combo("Severity", (int*)&message.severity, "Info\0Warning\0Error\0\0");
+    ImGui::InputText("Title", &message.title);
+    ImGui::InputText("Content", &message.content);
+    ImGui::Combo("Type", (int*)&message.type, "Info\0Warning\0Error\0\0");
 
     ImGui::PopID();
 }
