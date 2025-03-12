@@ -1,14 +1,14 @@
 #include "file_logger.hpp"
 #include "Cool/Dump/gen_dump_string.h"
 #include "Cool/File/File.h"
-#include "Cool/Path/Path.h"
+#include "file_logger_path.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 
 namespace Cool {
 
 static auto make_logger()
 {
-    auto const path = Cool::Path::user_data_shared() / "LOGS " COOL_APP_NAME ".txt"; // Make file name start with LOG so that all log files of all apps will be next to each other in the folder
+    auto const path = file_logger_path();
 
     Cool::File::set_content(path, Cool::gen_dump_string() + "\n\n");
 
