@@ -11,8 +11,7 @@ struct FileWatcher_Config {
 
 struct FileWatcher_Callbacks {
     /// Called whenever the file changes. Receives the currently watched path as a parameter.
-    std::function<void(std::filesystem::path const&)> on_file_changed = [](std::filesystem::path const&) {
-    };
+    std::function<void(std::filesystem::path const&)> on_file_changed = [](std::filesystem::path const&) {};
     /// Called whenever the path becomes invalid. Receives the currently watched path as a parameter.
     std::function<void(std::filesystem::path const&)> on_path_invalid = [](std::filesystem::path const& path) {
         Log::internal_warning("File Watcher", fmt::format("Can't open file \"{}\"", Cool::File::weakly_canonical(path)));

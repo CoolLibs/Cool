@@ -350,8 +350,7 @@ void OSCManager::stop_listening()
     if (!_thread.has_value())
         return;
     _stop_thread();
-    _stop_thread = []() {
-    };
+    _stop_thread = []() {};
     if (_thread->joinable())
         _thread->join();
     _thread.reset();

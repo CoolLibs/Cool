@@ -23,12 +23,9 @@ struct exporter_imgui_windows_Params {
     Time      delta_time;
     TimeSpeed time_speed;
     /// Note that by the time this function is called, the image will not have been exported yet since this is done in a task
-    std::function<void(std::filesystem::path const&)> on_image_export_start = [](std::filesystem::path const&) {
-    };
-    std::function<void()> on_video_export_start = []() {
-    };
-    std::function<void()> widgets_in_window_video_export_in_progress = []() {
-    };
+    std::function<void(std::filesystem::path const&)> on_image_export_start                      = [](std::filesystem::path const&) {};
+    std::function<void()>                             on_video_export_start                      = []() {};
+    std::function<void()>                             widgets_in_window_video_export_in_progress = []() {};
 };
 
 class ExporterGui {
