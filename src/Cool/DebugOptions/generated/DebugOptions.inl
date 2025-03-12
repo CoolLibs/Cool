@@ -91,6 +91,7 @@ public:
     [[nodiscard]] static auto log_when_rendering_alpha_checkerboard_background() -> bool& { return instance().log_when_rendering_alpha_checkerboard_background; }
     [[nodiscard]] static auto log_when_creating_textures() -> bool& { return instance().log_when_creating_textures; }
     [[nodiscard]] static auto log_when_computing_audio_features() -> bool& { return instance().log_when_computing_audio_features; }
+    [[nodiscard]] static auto log_tasks() -> bool& { return instance().log_tasks; }
     static void               texture_library_debug_view(std::function<void()> callback)
     {
         if (instance().texture_library_debug_view)
@@ -218,6 +219,7 @@ private:
         bool log_when_rendering_alpha_checkerboard_background{false};
         bool log_when_creating_textures{false};
         bool log_when_computing_audio_features{false};
+        bool log_tasks{false};
         bool texture_library_debug_view{false};
 #if DEBUG
         bool log_opengl_info{false};
@@ -266,6 +268,7 @@ private:
                     Cool::json_get(json, "Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background);
                     Cool::json_get(json, "Log when creating textures", log_when_creating_textures);
                     Cool::json_get(json, "Log when computing audio features", log_when_computing_audio_features);
+                    Cool::json_get(json, "Log tasks", log_tasks);
                     Cool::json_get(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_get(json, "Log OpenGL info", log_opengl_info);
                     Cool::json_get(json, "Log internal warnings", log_internal_warnings);
@@ -291,6 +294,7 @@ private:
                     Cool::json_get(json, "Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background);
                     Cool::json_get(json, "Log when creating textures", log_when_creating_textures);
                     Cool::json_get(json, "Log when computing audio features", log_when_computing_audio_features);
+                    Cool::json_get(json, "Log tasks", log_tasks);
                     Cool::json_get(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_get(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_get(json, "Log mouse position in View", log_mouse_position_in_view);
@@ -318,6 +322,7 @@ private:
                     Cool::json_set(json, "Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background);
                     Cool::json_set(json, "Log when creating textures", log_when_creating_textures);
                     Cool::json_set(json, "Log when computing audio features", log_when_computing_audio_features);
+                    Cool::json_set(json, "Log tasks", log_tasks);
                     Cool::json_set(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_set(json, "Log OpenGL info", log_opengl_info);
                     Cool::json_set(json, "Log internal warnings", log_internal_warnings);
@@ -343,6 +348,7 @@ private:
                     Cool::json_set(json, "Log when rendering alpha checkerboard background", log_when_rendering_alpha_checkerboard_background);
                     Cool::json_set(json, "Log when creating textures", log_when_creating_textures);
                     Cool::json_set(json, "Log when computing audio features", log_when_computing_audio_features);
+                    Cool::json_set(json, "Log tasks", log_tasks);
                     Cool::json_set(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_set(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_set(json, "Log mouse position in View", log_mouse_position_in_view);
@@ -389,6 +395,7 @@ private:
         instance().log_when_rendering_alpha_checkerboard_background = false;
         instance().log_when_creating_textures                       = false;
         instance().log_when_computing_audio_features                = false;
+        instance().log_tasks                                        = false;
         instance().texture_library_debug_view                       = false;
 #if DEBUG
         instance().log_opengl_info = false;
@@ -485,6 +492,12 @@ private:
         if (wafl::similarity_match({filter, "Log when computing audio features"}) >= wafl::Matches::Strongly)
         {
             if (Cool::ImGuiExtras::toggle("Log when computing audio features", &instance().log_when_computing_audio_features))
+                save();
+        }
+
+        if (wafl::similarity_match({filter, "Log tasks"}) >= wafl::Matches::Strongly)
+        {
+            if (Cool::ImGuiExtras::toggle("Log tasks", &instance().log_tasks))
                 save();
         }
 
@@ -675,6 +688,13 @@ private:
         if (wafl::similarity_match({filter, "Log when computing audio features"}) >= wafl::Matches::Strongly)
         {
             instance().log_when_computing_audio_features = !instance().log_when_computing_audio_features;
+            save();
+            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
+        }
+
+        if (wafl::similarity_match({filter, "Log tasks"}) >= wafl::Matches::Strongly)
+        {
+            instance().log_tasks = !instance().log_tasks;
             save();
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }

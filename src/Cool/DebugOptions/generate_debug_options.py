@@ -71,6 +71,11 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
+            name_in_code="log_tasks",
+            name_in_ui="Log tasks",
+            available_in_release=True,
+        ),
+        DebugOption(
             name_in_code="texture_library_debug_view",
             name_in_ui="View Texture Library",
             available_in_release=True,

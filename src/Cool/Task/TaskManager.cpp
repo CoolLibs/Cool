@@ -1,6 +1,8 @@
 #include "TaskManager.hpp"
 #include <algorithm>
 #include <memory>
+#include "Cool/DebugOptions/DebugOptions.h"
+#include "Cool/Log/Log.hpp"
 
 namespace Cool {
 
@@ -31,14 +33,23 @@ void TaskManager::shut_down()
 
 void TaskManager::execute_task(Task& task)
 {
+    if (Cool::DebugOptions::log_tasks())
+        Cool::Log::info("Task Start", task.name());
+
     task.execute();
     if (!task.has_been_canceled())
         task._completion.store(Task::Completion::FinishedExecuting);
     task.cleanup(task.has_been_canceled());
+
+    if (Cool::DebugOptions::log_tasks())
+        Cool::Log::info("Task End"s + (task.has_been_canceled() ? " (Cancelled)"s : ""s), task.name());
 }
 
 void TaskManager::cancel_task_that_is_waiting(Task& task)
 {
+    if (Cool::DebugOptions::log_tasks())
+        Cool::Log::info("Task Cancelled", task.name());
+
     // Task has not started execute(), so there is no need to call cancel()
     task._completion.store(Task::Completion::Canceled);
     task.cleanup(true /*has_been_canceled*/);
@@ -46,6 +57,9 @@ void TaskManager::cancel_task_that_is_waiting(Task& task)
 
 void TaskManager::cancel_task_that_is_executing(Task& task)
 {
+    if (Cool::DebugOptions::log_tasks())
+        Cool::Log::info("Task Cancelled", task.name());
+
     task.cancel();
     task._completion.store(Task::Completion::Canceled);
     // cleanup() will be called by the thread that is running the task once execute() finishes
