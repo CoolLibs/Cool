@@ -35,8 +35,6 @@ void error(std::string title, std::string content, std::vector<ClipboardContent>
     });
 }
 
-// TODO(Logs) launcher command "reveal log file in explorer"
-// TODO(Logs) disable logging in Perform mode
 // TODO(Logs) In Github issues tell people to send the log file (no need to specify version anymore since it is in the log file (+ no need for devs to give their commit number))
 // TODO(Logs) In Github issues tell people to send the project file
 

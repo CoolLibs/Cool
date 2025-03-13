@@ -8,6 +8,7 @@
 #include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
+#include "Cool/DebugOptions/frame_time_stopwatch.hpp"
 #include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -140,6 +141,11 @@ void AppManager::run(std::function<void()> const& on_update)
     NFD::Guard nfd_guard{};
     while (!should_close_window())
     {
+        if (_frames_count > 1) // Skip first frame which is very slow and messes up the initial plot
+        {
+            frame_time_stopwatch().stop();
+            frame_time_stopwatch().start();
+        }
         glfwPollEvents();
         do_update();
     }

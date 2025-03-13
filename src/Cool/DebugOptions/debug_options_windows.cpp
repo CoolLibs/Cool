@@ -1,6 +1,5 @@
 #include "debug_options_windows.h"
 #include "Cool/ImGui/ColorThemes.h"
-#include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/imgui_show_all_icons.hpp"
 #include "Cool/ImGui/test_markdown_formatting.h"
 #include "Cool/Log/TestMessageConsole.h"
@@ -13,18 +12,15 @@
 #include "DebugOptions.h"
 #include "TestNotification.hpp"
 #include "TestTasks.hpp"
+#include "frame_time_stopwatch.hpp"
 
 namespace Cool {
 
 void debug_options_windows(TipsManager* tips_manager, Window& main_window)
 {
     DebugOptions::show_framerate_window([&] {
-        ImGui::PushFont(Cool::Font::monospace());
-        ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
-        auto const ms = 1000.f / ImGui::GetIO().Framerate;
-        ImGui::Text(ms >= 10.f ? "%.2f ms" : "0%.2f ms", ms);
-        ImGui::PopFont();
         main_window.imgui_cap_framerate();
+        frame_time_stopwatch().imgui_plot();
     });
 
     if (DebugOptions::show_imgui_demo_window())                         // Show the big demo window (Most of the sample code is
