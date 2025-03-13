@@ -105,6 +105,16 @@ auto without_file_name(std::filesystem::path const& file_path) -> std::filesyste
     return file_path.parent_path();
 }
 
+auto find_closest_existing_folder(std::filesystem::path const& file_path) -> std::filesystem::path
+{
+    auto previous_length = file_path.string().size();
+
+    auto path = Cool::File::without_file_name(file_path);
+    while (!Cool::File::exists(path) && previous_length > path.string().size())
+        path = path.parent_path();
+    return path;
+}
+
 auto weakly_canonical(std::filesystem::path const& path) -> std::filesystem::path
 {
     try
