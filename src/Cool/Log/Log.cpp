@@ -35,9 +35,6 @@ void error(std::string title, std::string content, std::vector<ClipboardContent>
     });
 }
 
-// TODO(Logs) In Github issues tell people to send the log file (no need to specify version anymore since it is in the log file (+ no need for devs to give their commit number))
-// TODO(Logs) In Github issues tell people to send the project file
-
 void internal_info(std::string title, std::string content, std::vector<ClipboardContent> clipboard_contents, std::optional<bool> should_log_to_user)
 {
     if ((should_log_to_user.has_value() && *should_log_to_user) || DebugOptions::log_internal_warnings())
