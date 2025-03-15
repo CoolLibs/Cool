@@ -20,9 +20,12 @@
 #include "Cool/TextureSource/TextureLibrary_Image.h"
 #include "Cool/TextureSource/TextureLibrary_Video.h"
 #include "Cool/TextureSource/TextureLibrary_Webcam.hpp"
+#include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
+#include "Cool/UI Scale/screen_dpi_scale.hpp"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/WebcamImage.hpp"
 #include "Cool/Webcam/WebcamsConfigs.hpp"
+#include "Cool/Window/internal/imgui_build_fonts_ifn.hpp"
 #include "GLFW/glfw3.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 #include "easy_ffmpeg/callbacks.hpp"
@@ -40,6 +43,24 @@ namespace Cool {
 static void prepare_windows(WindowManager& window_manager);
 static void imgui_dockspace();
 static void imgui_new_frame();
+
+static void window_content_scale_callback(GLFWwindow* /* window */, float x_scale, float y_scale)
+{
+    if (Cool::DebugOptions::log_screen_dpi_scale())
+        Cool::Log::info("DPI Scale", fmt::format("{} x {}", x_scale, y_scale));
+
+    assert(x_scale == y_scale);
+    screen_dpi_scale()      = y_scale;
+    need_to_rebuild_fonts() = true;
+}
+
+static void register_initial_window_content_scale(GLFWwindow* window)
+{
+    float x_scale{1.f};
+    float y_scale{1.f};
+    glfwGetWindowContentScale(window, &x_scale, &y_scale);
+    window_content_scale_callback(window, x_scale, y_scale);
+}
 
 AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp& app, AppManagerConfig config)
     : _window_manager{window_manager}
@@ -60,16 +81,17 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
         }
     }
     // clang-format off
-    glfwSetKeyCallback        (_window_manager.main_window().glfw(), AppManager::key_callback);
-    glfwSetMouseButtonCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
-    glfwSetScrollCallback     (_window_manager.main_window().glfw(), ImGui_ImplGlfw_ScrollCallback);
-    glfwSetCursorPosCallback  (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
-    glfwSetCharCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
-    glfwSetWindowFocusCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
-    glfwSetCursorEnterCallback(_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
-    glfwSetMonitorCallback    (                                      ImGui_ImplGlfw_MonitorCallback);
+    glfwSetKeyCallback               (_window_manager.main_window().glfw(), AppManager::key_callback);
+    glfwSetMouseButtonCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_MouseButtonCallback);
+    glfwSetScrollCallback            (_window_manager.main_window().glfw(), ImGui_ImplGlfw_ScrollCallback);
+    glfwSetCursorPosCallback         (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorPosCallback);
+    glfwSetCharCallback              (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CharCallback);
+    glfwSetWindowFocusCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_WindowFocusCallback);
+    glfwSetCursorEnterCallback       (_window_manager.main_window().glfw(), ImGui_ImplGlfw_CursorEnterCallback);
+    glfwSetWindowContentScaleCallback(_window_manager.main_window().glfw(), window_content_scale_callback);
+    glfwSetMonitorCallback           (                                      ImGui_ImplGlfw_MonitorCallback);
     // clang-format on
-
+    register_initial_window_content_scale(_window_manager.main_window().glfw());
     ffmpeg::set_fast_seeking_callback([&]() { request_rerender_thread_safe(); });
     ffmpeg::set_frame_decoding_error_callback([&](std::string const& error_message) { Log::internal_warning("Video", error_message); });
     wcam::set_image_type<WebcamImage>();
@@ -225,7 +247,9 @@ void AppManager::update()
     }
     task_manager().update_on_main_thread();
 
-    restore_imgui_ini_state_ifn(); // Must be before `imgui_new_frame()` (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
+    restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
+    imgui_build_fonts_ifn();       // Must be done before imgui_new_frame()
+
     imgui_new_frame();
     check_for_imgui_item_picker_request();
     imgui_render(_app);

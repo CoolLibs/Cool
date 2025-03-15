@@ -1,6 +1,7 @@
 #include "UserSettings.h"
-#include <Cool/ImGui/ImGuiExtras.h>
-#include "Cool/Serialization/Json.hpp"
+#include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
+#include "Cool/UI Scale/ui_scale.hpp"
 #include "imgui.h"
 
 namespace Cool {
@@ -13,6 +14,7 @@ auto UserSettings::imgui() -> bool
     b |= imgui_autosave();
 
     ImGuiExtras::separator_text("UI");
+    b |= imgui_ui_scale();
     b |= imgui_extra_icons();
 
     ImGuiExtras::separator_text("Camera");
@@ -73,6 +75,30 @@ auto UserSettings::imgui_enable_multi_viewport() -> bool
 auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
 {
     return imgui_widget(video_export_overwrite_behaviour);
+}
+
+auto UserSettings::imgui_ui_scale() -> bool
+{
+    auto const b = ImGui::DragFloat("UI Scale", &ui_scale, 0.001f, 0.5f, 2.f, "%.3f", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
+    if (ImGui::IsItemActivated())
+        ui_scale_at_the_beginning_of_preview = Cool::ui_scale();
+    if (ImGui::IsItemDeactivatedAfterEdit())
+        apply_ui_scale();
+    else if (b)
+        apply_ui_scale_preview();
+    return b;
+}
+
+void UserSettings::apply_ui_scale() const
+{
+    ImGui::GetIO().FontGlobalScale = 1.f;
+
+    need_to_rebuild_fonts() = true;
+}
+
+void UserSettings::apply_ui_scale_preview() const
+{
+    ImGui::GetIO().FontGlobalScale = Cool::ui_scale() / ui_scale_at_the_beginning_of_preview;
 }
 
 void UserSettings::apply_multi_viewport_setting() const

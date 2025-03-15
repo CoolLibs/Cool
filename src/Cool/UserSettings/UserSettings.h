@@ -1,10 +1,10 @@
 #pragma once
 #include <smart/smart.hpp>
 #include "Cool/Exporter/VideoExportOverwriteBehaviour.h"
-#include "Cool/Path/Path.h"
 #include "Cool/Serialization/Json.hpp"
 #include "Cool/Serialization/JsonAutoSerializer.hpp"
 #include "Cool/Time/Time.hpp"
+#include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
 
 namespace Cool {
 
@@ -18,7 +18,10 @@ struct UserSettings {
     bool                          single_click_to_input_in_drag_widgets{true};
     bool                          enable_multi_viewport{should_enable_multi_viewport_by_default()};
     VideoExportOverwriteBehaviour video_export_overwrite_behaviour{VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder};
+    float                         ui_scale{1.f};
 
+    void apply_ui_scale() const;
+    void apply_ui_scale_preview() const;
     void apply_multi_viewport_setting() const;
 
     auto imgui() -> bool;
@@ -28,9 +31,13 @@ struct UserSettings {
     auto imgui_single_click_to_input_in_drag_widgets() -> bool;
     auto imgui_enable_multi_viewport() -> bool;
     auto imgui_video_export_overwrite_behaviour() -> bool;
+    auto imgui_ui_scale() -> bool;
 
     void update() { _serializer.update(); }
     void save() { _serializer.save(); }
+
+private:
+    float ui_scale_at_the_beginning_of_preview{};
 
 private:
     // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
@@ -47,6 +54,8 @@ private:
             json_get(json, "Enable multi viewport", enable_multi_viewport);
             apply_multi_viewport_setting();
             json_get(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
+            json_get(json, "UI Scale", ui_scale);
+            need_to_rebuild_fonts() = true;
         },
         [&](nlohmann::json& json) {
             json_set(json, "Autosave enabled", autosave_enabled);
@@ -56,6 +65,7 @@ private:
             json_set(json, "Single click to input in drag widgets", single_click_to_input_in_drag_widgets);
             json_set(json, "Enable multi viewport", enable_multi_viewport);
             json_set(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
+            json_set(json, "UI Scale", ui_scale);
         },
         true /*use_shared_user_data*/
     };

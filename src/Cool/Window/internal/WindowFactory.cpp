@@ -1,13 +1,17 @@
 #include "WindowFactory.h"
-#include <Cool/AppManager/should_we_use_a_separate_thread_for_update.h>
-#include <Cool/Path/Path.h>
-#include <GLFW/glfw3.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/imgui.h>
 #include <stdexcept>
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
+#include "Cool/Log/Log.hpp"
+#include "Cool/Path/Path.h"
+#include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
+#include "Cool/UI Scale/ui_scale.hpp"
+#include "Cool/UserSettings/UserSettings.h"
+#include "GLFW/glfw3.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
 
 namespace Cool {
 
@@ -33,13 +37,27 @@ static void set_imgui_ini_filepath()
     ImGui::GetIO().IniFilename    = path.c_str();
 }
 
-static void imgui_load_fonts()
+void imgui_build_fonts_ifn()
 {
-    ImGuiIO&               io                     = ImGui::GetIO();
-    static constexpr float font_size              = 18.0f;
-    static constexpr float window_title_font_size = 18.0f;
-    static constexpr float icons_size             = 16.0f; // Our icons font (IcoMoon) renders best at a multiple of 16px
-    static constexpr float info_icon_size         = 14.0f;
+    if (!need_to_rebuild_fonts())
+        return;
+    need_to_rebuild_fonts() = false;
+
+    static auto previous_ui_scale{0.f};
+    if (previous_ui_scale == ui_scale()) // Each time we reload the user_settings we set need_to_rebuild_fonts() to true, even if the ui scale hasn't actually changed. So we check this here, because rebuilding the fonts is very slow and we don't want to do it unless absolutely necessary
+        return;
+    previous_ui_scale = ui_scale();
+
+    if (Cool::DebugOptions::log_when_building_font_atlas())
+        Cool::Log::info("Font", "(Re)built font atlas");
+
+    float const font_size              = std::round(16.0f * ui_scale());
+    float const window_title_font_size = std::round(16.0f * ui_scale());
+    float const icons_size             = std::round(13.0f * ui_scale()); // NB: Our icons font (IcoMoon) renders best at a multiple of 16px. But we cannot guarantee that size because users can scale the fonts to whatever they want
+    float const info_icon_size         = std::round(13.0f * ui_scale());
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->Clear();
 
     auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;
@@ -61,7 +79,6 @@ static void imgui_load_fonts()
     };
 
     { // Window title font // Must be first so that it is the default font. This is mandatory because window titles can only use the default font.
-
         auto const path      = Cool::Path::cool_res() / "fonts/Satoshi/Fonts/Satoshi-Bold.otf";
         Font::window_title() = io.Fonts->AddFontFromFileTTF(path.string().c_str(), window_title_font_size);
         merge_icons_into_current_font();
@@ -91,6 +108,8 @@ static void imgui_load_fonts()
     }
 
     io.Fonts->Build();
+    ImGui_ImplOpenGL3_DestroyFontsTexture();
+    ImGui_ImplOpenGL3_CreateFontsTexture();
 }
 
 static void initialize_imgui()
@@ -111,7 +130,6 @@ static void initialize_imgui()
 #if !defined(COOL_UPDATE_APP_ON_SEPARATE_THREAD)        // Platform windows freeze if we are not rendering on the main thread (TODO(JF) : need to investigate that bug ; it is probably coming directly from ImGui)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Must be done here at creation of the App, otherwise we can't toggle it at runtime.
 #endif
-    imgui_load_fonts();
 }
 
 WindowFactory::WindowFactory()
