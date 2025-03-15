@@ -30,6 +30,7 @@ void imgui_build_fonts_ifn()
 
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
+    ImGui::GetIO().FontGlobalScale = 1.f;
 
     auto const merge_icons_into_current_font = [&]() { // Merge icons into default font
         ImFontConfig config;

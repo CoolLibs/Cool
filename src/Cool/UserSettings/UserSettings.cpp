@@ -91,8 +91,6 @@ auto UserSettings::imgui_ui_scale() -> bool
 
 void UserSettings::apply_ui_scale() const
 {
-    ImGui::GetIO().FontGlobalScale = 1.f;
-
     need_to_rebuild_fonts() = true;
 }
 
