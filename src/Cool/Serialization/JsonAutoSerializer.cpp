@@ -30,6 +30,7 @@ JsonAutoSerializer::~JsonAutoSerializer()
 void JsonAutoSerializer::save()
 {
     _serializer.save();
+    _file_watcher->ignore_change_that_we_just_made_to_the_file();
 }
 
 void JsonAutoSerializer::load(std::filesystem::path const& path)
@@ -46,9 +47,7 @@ void JsonAutoSerializer::update()
 {
     _file_watcher->update(FileWatcher_Callbacks{
         .on_file_changed = [&](std::filesystem::path const& path) { load(path); },
-        .on_path_invalid = [&](std::filesystem::path const& path) {
-            Log::internal_warning("JSON", fmt::format("Can't open file \"{}\"", Cool::File::weakly_canonical(path)), {}, _serializer.wants_to_log_warnings());
-        }
+        .on_path_invalid = [&](std::filesystem::path const& path) { Log::internal_warning("JSON", fmt::format("Can't open file \"{}\"", Cool::File::weakly_canonical(path)), {}, _serializer.wants_to_log_warnings()); }
     });
 }
 

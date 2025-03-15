@@ -32,6 +32,11 @@ void FileWatcher::set_path(std::filesystem::path path, FileWatcher_Callbacks con
     call_appropriate_callback(callbacks);
 }
 
+void FileWatcher::ignore_change_that_we_just_made_to_the_file()
+{
+    _time_of_last_change = time_of_last_change(_path);
+}
+
 void FileWatcher::update(FileWatcher_Callbacks const& callbacks) const
 {
     { // Wait for the delay between checks

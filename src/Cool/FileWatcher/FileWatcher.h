@@ -47,6 +47,9 @@ public:
     /// The appropriate callback will also be called (either on_file_changed() or on_path_invalid())
     void set_path(std::filesystem::path, FileWatcher_Callbacks const&);
 
+    /// Call this after changing the file that is watched, and we will ignore the change and not call any file_changed callback
+    void ignore_change_that_we_just_made_to_the_file();
+
 private:
     void call_appropriate_callback(FileWatcher_Callbacks const& callbacks) const;
 
