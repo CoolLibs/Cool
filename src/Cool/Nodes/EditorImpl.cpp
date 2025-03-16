@@ -1,24 +1,20 @@
 #include "EditorImpl.h"
-#include <imgui.h>
-#include <imgui/imgui_internal.h>
-#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/icon_fmt.h"
-#include "Cool/Nodes/EditorImpl.h"
-#include "Cool/Nodes/as_ed_id.h"
-#include "Cool/Nodes/utilities/drawing.h"
 #include "Cool/StrongTypes/Color.h"
-#include "EditorImpl.h"
 #include "NodesConfig.h"
 #include "NodesGraph.h"
 #include "NodesLibrary.h"
 #include "as_ed_id.h"
 #include "as_reg_id.h"
 #include "imgui-node-editor/imgui_node_editor.h"
+#include "imgui.h"
+#include "imgui/imgui_internal.h"
 #include "reg/src/AnyId.hpp"
+#include "utilities/drawing.h"
 
 namespace Cool {
 
@@ -306,7 +302,7 @@ static auto is_allowed_connection(Pin const& a, Pin const& b, NodesGraph const& 
 static void render_pin_icon(ax::Drawing::IconType icon, float alpha, Cool::Color color)
 {
     auto const col = color.as_sRGB();
-    ax::Widgets::Icon(ImVec2(24.f, 24.f), icon, true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
+    ax::Widgets::Icon(ImVec2(1.2f, 1.2f) * ImGui::GetFontSize(), icon, true, {col.x, col.y, col.z, alpha}, ImColor(0.125f, 0.125f, 0.125f, alpha));
 };
 
 static auto input_pin_icon(size_t pin_index, Cool::NodesCategory const* category) -> ax::Drawing::IconType
@@ -349,14 +345,14 @@ void NodesEditorImpl::render_node(Node& node, NodeId const& id, NodesConfig& nod
     ImGui::PopStyleColor();
     ImGui::PopFont();
     ImGui::Spring(1);
-    ImGui::Dummy(ImVec2(0, 28));
+    ImGui::Dummy(ImVec2(0.f, 1.4f) * ImGui::GetFontSize());
     ImGui::Spring(0);
     builder.EndHeader();
 
     nodes_cfg.imgui_above_node_pins(node, id);
 
     // Begin pins
-    ImGui::BeginHorizontal("pins");
+    ImGui::BeginHorizontal("##pins");
     ImGui::Spring(0, 0);
 
     auto const pin_alpha = [&](Pin const& pin) {
@@ -456,7 +452,7 @@ static void render_frame_node(internal::FrameNode const& node)
     ImGui::TextUnformatted(node.name.c_str());
     ImGui::Spring(1);
     ImGui::EndHorizontal();
-    ed::Group({300.f, 200.f});
+    ed::Group(ImVec2{15.f, 10.f} * ImGui::GetFontSize());
     ImGui::EndVertical();
     ImGui::PopID();
     ed::EndNode();
@@ -472,7 +468,7 @@ static void render_frame_node(internal::FrameNode const& node)
         auto min = ed::GetGroupMin();
         // auto max = ed::GetGroupMax();
 
-        ImGui::SetCursorScreenPos(min - ImVec2(-8, ImGui::GetTextLineHeightWithSpacing() + 4));
+        ImGui::SetCursorScreenPos(min - ImVec2(-0.4f * ImGui::GetFontSize(), ImGui::GetTextLineHeightWithSpacing() + 0.2f * ImGui::GetFontSize()));
         ImGui::BeginGroup();
         ImGui::TextUnformatted(node.name.c_str());
         ImGui::EndGroup();
@@ -480,7 +476,7 @@ static void render_frame_node(internal::FrameNode const& node)
         auto drawList = ed::GetHintBackgroundDrawList();
 
         auto hintBounds      = ImGui_GetItemRect();
-        auto hintFrameBounds = ImRect_Expanded(hintBounds, 8, 4);
+        auto hintFrameBounds = ImRect_Expanded(hintBounds, 0.4f * ImGui::GetFontSize(), 0.2f * ImGui::GetFontSize());
 
         auto       frame_color = ImGuiExtras::GetStyle().frame_node_color;
         auto const bg_alpha    = ImGui::GetStyle().Alpha;
@@ -489,14 +485,14 @@ static void render_frame_node(internal::FrameNode const& node)
         drawList->AddRectFilled(
             hintFrameBounds.GetTL(),
             hintFrameBounds.GetBR(),
-            ImColor{frame_color}, 4.0f
+            ImColor{frame_color}, 0.2f * ImGui::GetFontSize()
         );
 
         frame_color.w = 128.f * bg_alpha / 255.f;
         drawList->AddRect(
             hintFrameBounds.GetTL(),
             hintFrameBounds.GetBR(),
-            ImColor{frame_color}, 4.0f
+            ImColor{frame_color}, 0.2f * ImGui::GetFontSize()
         );
 
         // ImGui::PopStyleVar();
@@ -534,26 +530,26 @@ auto NodesEditorImpl::process_link_creation(NodesConfig& nodes_cfg) -> bool
 
     if (end_pin == begin_pin)
     {
-        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+        ed::RejectNewItem(ImColor(255, 0, 0), 0.1f * ImGui::GetFontSize());
         return false;
     }
     if (end_pin->kind() == begin_pin->kind())
     {
-        ed::RejectNewItem(ImColor(255, 0, 0), 2.0f);
+        ed::RejectNewItem(ImColor(255, 0, 0), 0.1f * ImGui::GetFontSize());
         return false;
     }
     // else if (end_pin->Node == startPin->Node)
     // {
-    //     ed::RejectNewItem(ImColor(255, 0, 0), 1.0f);
+    //     ed::RejectNewItem(ImColor(255, 0, 0), 0.05f* ImGui::GetFontSize());
     // return false;
     // }
     // else if (end_pin->Type != startPin->Type)
     // {
-    //     ed::RejectNewItem(ImColor(255, 128, 128), 1.0f);
+    //     ed::RejectNewItem(ImColor(255, 128, 128), 0.05f* ImGui::GetFontSize());
     // return false;
     // }
 
-    if (!ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f))
+    if (!ed::AcceptNewItem(ImColor(128, 255, 128), 0.2f * ImGui::GetFontSize()))
         return false;
 
     auto const link = Link{
@@ -586,7 +582,7 @@ auto NodesEditorImpl::process_creations(NodesConfig& nodes_cfg) -> bool
 {
     bool graph_has_changed = false;
 
-    if (ed::BeginCreate(ImColor(255, 255, 255), 2.0f))
+    if (ed::BeginCreate(ImColor(255, 255, 255), 0.1f * ImGui::GetFontSize()))
     {
         graph_has_changed |= process_link_creation(nodes_cfg);
         process_link_released();
@@ -711,7 +707,7 @@ void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& 
         render_frame_node(frame_node);
 
     for (auto const& [id, link] : _graph.links())
-        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImGuiExtras::GetStyle().link, 2.0f);
+        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImGuiExtras::GetStyle().link, 0.1f * ImGui::GetFontSize());
 }
 
 auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool

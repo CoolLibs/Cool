@@ -1,5 +1,6 @@
 #include "UserSettings.h"
 #include "Cool/ImGui/ImGuiExtras.h"
+#include "Cool/ImGui/need_to_apply_imgui_style_scale.hpp"
 #include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
 #include "Cool/UI Scale/ui_scale.hpp"
 #include "imgui.h"
@@ -91,12 +92,14 @@ auto UserSettings::imgui_ui_scale() -> bool
 
 void UserSettings::apply_ui_scale() const
 {
-    need_to_rebuild_fonts() = true;
+    need_to_rebuild_fonts()           = true;
+    need_to_apply_imgui_style_scale() = true;
 }
 
 void UserSettings::apply_ui_scale_preview() const
 {
-    ImGui::GetIO().FontGlobalScale = Cool::ui_scale() / ui_scale_at_the_beginning_of_preview;
+    ImGui::GetIO().FontGlobalScale    = Cool::ui_scale() / ui_scale_at_the_beginning_of_preview;
+    need_to_apply_imgui_style_scale() = true;
 }
 
 void UserSettings::apply_multi_viewport_setting() const

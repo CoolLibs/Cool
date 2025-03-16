@@ -204,7 +204,7 @@ void disabled_if(std::optional<const char*> reason_to_disable, std::function<voi
 void disabled_if(std::optional<std::string> const& reason_to_disable, std::function<void()> const& widgets);
 
 /// Hues are numbers from 0 to 1. 0 and 1 correspond to red.
-auto hue_wheel(const char* label, float* hue, float radius = 25.f) -> bool;
+auto hue_wheel(const char* label, float* hue) -> bool;
 
 /// Renders `widget` with a colored background.
 /// `widget` must be a function that draws some ImGui widgets.

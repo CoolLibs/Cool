@@ -1,18 +1,15 @@
 #include "AppManager.h"
-#include <Cool/DebugOptions/DebugOptions.h>
-#include <Cool/Gpu/Vulkan/Context.h>
-#include <imgui.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/imgui_internal.h>
-#include <fix_tdr_delay/fix_tdr_delay.hpp>
-#include <wcam/wcam.hpp>
 #include "Audio/Audio.hpp"
 #include "Cool/CommandLineArgs/CommandLineArgs.h"
+#include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/DebugOptions/frame_time_stopwatch.hpp"
+#include "Cool/Gpu/Vulkan/Context.h"
 #include "Cool/ImGui/ColorThemes.h"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
 #include "Cool/ImGui/StyleEditor.h"
+#include "Cool/ImGui/apply_imgui_style_scale_ifn.hpp"
+#include "Cool/ImGui/need_to_apply_imgui_style_scale.hpp"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
 #include "Cool/Midi/MidiManager.h"
@@ -24,14 +21,16 @@
 #include "Cool/UI Scale/screen_dpi_scale.hpp"
 #include "Cool/UserSettings/UserSettings.h"
 #include "Cool/Webcam/WebcamImage.hpp"
-#include "Cool/Webcam/WebcamsConfigs.hpp"
 #include "Cool/Window/internal/imgui_build_fonts_ifn.hpp"
 #include "GLFW/glfw3.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
 #include "easy_ffmpeg/callbacks.hpp"
+#include "fix_tdr_delay/fix_tdr_delay.hpp"
+#include "imgui.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/imgui_internal.h"
 #include "nfd.hpp"
-#include "should_we_use_a_separate_thread_for_update.h"
-
+#include "wcam/wcam.hpp"
 #if defined(COOL_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(COOL_OPENGL)
@@ -50,8 +49,9 @@ static void window_content_scale_callback(GLFWwindow* /* window */, float x_scal
         Cool::Log::info("DPI Scale", fmt::format("{} x {}", x_scale, y_scale));
 
     assert(x_scale == y_scale);
-    screen_dpi_scale()      = y_scale;
-    need_to_rebuild_fonts() = true;
+    screen_dpi_scale()                = y_scale;
+    need_to_rebuild_fonts()           = true;
+    need_to_apply_imgui_style_scale() = true;
 }
 
 static void register_initial_window_content_scale(GLFWwindow* window)
@@ -249,6 +249,7 @@ void AppManager::update()
 
     restore_imgui_ini_state_ifn(); // Must be done before imgui_new_frame() (this is a constraint from Dear ImGui (https://github.com/ocornut/imgui/issues/6263#issuecomment-1479727227))
     imgui_build_fonts_ifn();       // Must be done before imgui_new_frame()
+    apply_imgui_style_scale_ifn(); // Must be done before imgui_new_frame()
 
     imgui_new_frame();
     check_for_imgui_item_picker_request();

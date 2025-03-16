@@ -42,8 +42,8 @@ void help_marker_tooltip_content(const char* text)
 
 bool angle_wheel(const char* label, float* value_p, int number_of_snaps, float snaps_offset, bool always_snap)
 {
-    static constexpr float thickness = 2.0f;
-    static constexpr float radius    = 25.0f;
+    float const thickness = 0.1f * ImGui::GetFontSize();
+    float const radius    = 1.25f * ImGui::GetFontSize();
 
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -522,14 +522,12 @@ void disabled_if(std::optional<const char*> reason_to_disable, std::function<voi
     }
 }
 
-auto hue_wheel(const char* label, float* hue, float radius) -> bool
+auto hue_wheel(const char* label, float* hue) -> bool
 {
     ImGuiContext&      g      = *GImGui;
     const ImGuiWindow& window = *ImGui::GetCurrentWindow();
     if (window.SkipItems)
-    {
         return false;
-    }
 
     ImDrawList&       draw_list = *window.DrawList;
     const ImGuiStyle& style     = g.Style;
@@ -542,9 +540,10 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
     // Setup
     const ImVec2 widget_pos = ImGui::GetCursorScreenPos();
 
-    const float wheel_thickness = radius * .5f;
-    const float wheel_r_outer   = radius;
-    const float wheel_r_inner   = wheel_r_outer - wheel_thickness;
+    float const radius          = 1.25f * ImGui::GetFontSize();
+    float const wheel_thickness = radius * .5f;
+    float const wheel_r_outer   = radius;
+    float const wheel_r_inner   = wheel_r_outer - wheel_thickness;
     const auto  wheel_center    = ImVec2{
         widget_pos.x + wheel_r_outer,
         widget_pos.y + wheel_r_outer
@@ -580,7 +579,7 @@ auto hue_wheel(const char* label, float* hue, float radius) -> bool
 
     // Render Hue Wheel
     const float aeps            = 0.5f / wheel_r_outer; // Half a pixel arc length in radians (2pi cancels out).
-    const int   segment_per_arc = ImMax(4, static_cast<int>(wheel_r_outer) / 12);
+    const int   segment_per_arc = ImMax(4, static_cast<int>(wheel_r_outer) / 3);
     for (int n = 0; n < 6; n++)
     {
         const auto  nn             = static_cast<float>(n);
@@ -782,8 +781,9 @@ auto toggle(const char* label, bool* v) -> bool
     const ImRect check_bb(pos, pos + ImVec2(width, height));
     ImGui::RenderNavHighlight(total_bb, id);
 
-    const float radius = height * 0.5f;
-    float       t      = *v ? 1.f : 0.f;
+    float const radius  = height * 0.5f;
+    float const outline = 0.125f * ImGui::GetFontSize();
+    float       t       = *v ? 1.f : 0.f;
 
     static constexpr float ANIM_SPEED = 0.08f;
     if (g.LastActiveId == id && g.LastActiveIdTimer < ANIM_SPEED)
@@ -799,7 +799,7 @@ auto toggle(const char* label, bool* v) -> bool
     ImDrawList* const draw_list = ImGui::GetWindowDrawList();
     draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
     draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius, ImGui::GetColorU32(hovered ? GetStyle().toggle_hovered : GetStyle().toggle));
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 2.5f, ImGui::GetColorU32(hovered ? GetStyle().toggle_bg_hovered : GetStyle().toggle_bg));
+    draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - outline, ImGui::GetColorU32(hovered ? GetStyle().toggle_bg_hovered : GetStyle().toggle_bg));
 
     ImVec2 const label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (label_size.x > 0.0f)
