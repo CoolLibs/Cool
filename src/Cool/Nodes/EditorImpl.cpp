@@ -140,8 +140,8 @@ auto NodesEditorImpl::imgui_window_workspace(
     NodesLibrary const& library
 ) -> bool
 {
-    ed::PushStyleColor(ed::StyleColor_SelLinkBorder, ImGuiExtras::GetStyle().link_hovered);
-    ed::PushStyleColor(ed::StyleColor_HovLinkBorder, ImGuiExtras::GetStyle().link_hovered);
+    ed::PushStyleColor(ed::StyleColor_SelLinkBorder, ImGuiExtras::GetStyle().node_link_hovered);
+    ed::PushStyleColor(ed::StyleColor_HovLinkBorder, ImGuiExtras::GetStyle().node_link_hovered);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
     ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
     bool const should_render_window = ImGui::Begin(icon_fmt("Nodes", ICOMOON_TREE).c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
@@ -707,7 +707,7 @@ void NodesEditorImpl::render_editor(NodesConfig& nodes_cfg, NodesLibrary const& 
         render_frame_node(frame_node);
 
     for (auto const& [id, link] : _graph.links())
-        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImGuiExtras::GetStyle().link, 0.1f * ImGui::GetFontSize());
+        ed::Link(as_ed_id(id), as_ed_id(link.from_pin_id), as_ed_id(link.to_pin_id), ImGuiExtras::GetStyle().node_link, 0.1f * ImGui::GetFontSize());
 }
 
 auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const& library) -> bool

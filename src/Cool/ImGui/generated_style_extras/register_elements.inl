@@ -139,16 +139,30 @@ config.register_element(ImStyleEd::Element{
 });
 
 config.register_element(ImStyleEd::Element{
-    .name        = "Link",
-    .get_color   = []() { return ImGuiExtras::GetStyle().link; },
-    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link = color; },
+    .name        = "NodeLink",
+    .get_color   = []() { return ImGuiExtras::GetStyle().node_link; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().node_link = color; },
     .description = "",
 });
 
 config.register_element(ImStyleEd::Element{
-    .name        = "LinkHovered",
-    .get_color   = []() { return ImGuiExtras::GetStyle().link_hovered; },
-    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().link_hovered = color; },
+    .name        = "NodeLinkHovered",
+    .get_color   = []() { return ImGuiExtras::GetStyle().node_link_hovered; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().node_link_hovered = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "UrlLink",
+    .get_color   = []() { return ImGuiExtras::GetStyle().url_link; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().url_link = color; },
+    .description = "",
+});
+
+config.register_element(ImStyleEd::Element{
+    .name        = "UrlLinkHovered",
+    .get_color   = []() { return ImGuiExtras::GetStyle().url_link_hovered; },
+    .set_color   = [](ImVec4 const& color) { ImGuiExtras::GetStyle().url_link_hovered = color; },
     .description = "",
 });
 

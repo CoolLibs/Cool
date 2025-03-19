@@ -113,13 +113,23 @@ def all_color_elements():
             description="",
         ),
         ColorElement(
-            name_in_code="link",
-            name_in_ui="Link",
+            name_in_code="node_link",
+            name_in_ui="NodeLink",
             description="",
         ),
         ColorElement(
-            name_in_code="link_hovered",
-            name_in_ui="LinkHovered",
+            name_in_code="node_link_hovered",
+            name_in_ui="NodeLinkHovered",
+            description="",
+        ),
+        ColorElement(
+            name_in_code="url_link",
+            name_in_ui="UrlLink",
+            description="",
+        ),
+        ColorElement(
+            name_in_code="url_link_hovered",
+            name_in_ui="UrlLinkHovered",
             description="",
         ),
         ColorElement(

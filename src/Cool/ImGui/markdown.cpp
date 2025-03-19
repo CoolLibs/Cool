@@ -58,7 +58,7 @@ static void format_heading(ImGui::MarkdownFormatInfo const& info, bool is_beginn
 
 static void format_link(ImGui::MarkdownFormatInfo const& info, bool is_beginning)
 {
-    auto const color = info.itemHovered ? ImGuiExtras::GetStyle().link_hovered : ImGuiExtras::GetStyle().link;
+    auto const color = info.itemHovered ? ImGuiExtras::GetStyle().url_link_hovered : ImGuiExtras::GetStyle().url_link;
     if (is_beginning)
     {
         ImGui::PushStyleColor(ImGuiCol_Text, color);
