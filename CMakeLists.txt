@@ -19,6 +19,11 @@ target_link_libraries(Cool PRIVATE Cool-PrivateProperties)
 # Choose C++ version
 target_compile_features(Cool-PublicProperties INTERFACE cxx_std_20)
 
+if(APPLE)
+    enable_language(OBJC)
+    enable_language(OBJCXX)
+endif()
+
 # Set warning level
 if(MSVC)
     target_compile_options(Cool-PrivateProperties INTERFACE /W4)
