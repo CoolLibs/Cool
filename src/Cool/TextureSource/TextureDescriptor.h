@@ -33,6 +33,11 @@ struct TextureDescriptor_Image : public TextureDescriptor {
         : TextureDescriptor{TextureSource_Image{}, {}}
     {}
 };
+struct TextureDescriptor_ImageSequence : public TextureDescriptor {
+    TextureDescriptor_ImageSequence()
+        : TextureDescriptor{TextureSource_ImageSequence{}, {}}
+    {}
+};
 struct TextureDescriptor_Webcam : public TextureDescriptor {
     TextureDescriptor_Webcam()
         : TextureDescriptor{TextureSource_Webcam{}, {}}

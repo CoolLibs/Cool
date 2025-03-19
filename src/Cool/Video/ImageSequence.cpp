@@ -7,10 +7,15 @@ namespace Cool {
 // TODO rerender when frame changes
 // TODO lo  d images when opening project file
 // TODO gui for framerate
-// TODO handlle looping options (like video player)
+// TODO handlle looping options (like video player) :
+//      add a VideoPlayerSettings (and show it in the gui)
+//      take the code from internal::CaptureState::get_texture that applies the Settings to the Time; move it to a separate function, and reuse it in image sequence
+//      for the case where we return transparent texture, return a time of -1, and then check (in video player and image sequence, if the time is < 0 tehen return transparent texture)
 // TODO improve perf
 // TODO log error
 // TODO move to its own texture source
+
+// TODO(Jules) addig a variable broke serialization
 
 auto ImageSequence::get_texture(Time const& time) const -> Texture const*
 {

@@ -78,6 +78,10 @@ void test_variables()
         var.imgui();
     }
     {
+        static auto var = Cool::Variable<Cool::TextureDescriptor_ImageSequence>{{"Image Sequence"}};
+        var.imgui();
+    }
+    {
         static auto var = Cool::Variable<Cool::TextureDescriptor_Webcam>{{"Webcam"}};
         var.imgui();
     }

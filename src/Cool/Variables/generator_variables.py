@@ -73,7 +73,7 @@ def float_metadatas(is_double = False):
         VariableMetadata(
             field_name="bounds",
             pretty_name="Bounds",
-            type=f"internal::BoundsMetadata<{"double" if is_double else "float"}>",
+            type=f'internal::BoundsMetadata<{"double" if is_double else "float"}>',
             default_value=f"""
                 .min = 0.{"" if is_double else "f"},
                 .max = 1.{"" if is_double else "f"},
@@ -417,6 +417,14 @@ def all_variable_descriptions():
                     default_value="true",
                 ),
             ],
+            always_requires_shader_code_generation=False,
+        ),
+        VariableDescription(
+            input_type=["ImageSequence"],
+            cpp_type="Cool::TextureDescriptor_ImageSequence",
+            glsl_type="Cool_Texture",
+            include="<Cool/TextureSource/TextureDescriptor.h>",
+            metadatas=[],
             always_requires_shader_code_generation=False,
         ),
     ]

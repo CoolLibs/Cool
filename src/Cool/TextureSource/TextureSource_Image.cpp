@@ -3,22 +3,19 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
-#include "Cool/Video/hack_get_global_time_in_seconds.h"
 
 namespace Cool {
 
 auto TextureSource_Image::imgui_widget() -> bool
 {
     bool b = false;
-    b |= ImGuiExtras::folder("Image Path", &absolute_path);
-    if (b)
-        image_sequence.set_folder(absolute_path);
+    b |= ImGuiExtras::file_and_folder_opening("Image Path", &absolute_path, NfdFileFilter::ImageLoad);
     return b;
 }
 
 [[nodiscard]] auto TextureSource_Image::get_texture() const -> Texture const*
 {
-    return image_sequence.get_texture(hack_get_global_time_in_seconds());
+    return TextureLibrary_Image::instance().get(absolute_path);
 }
 
 auto TextureSource_Image::get_error() const -> std::optional<std::string>
