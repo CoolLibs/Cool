@@ -45,8 +45,8 @@ static void imgui_new_frame();
 
 static void window_content_scale_callback(GLFWwindow* /* window */, float x_scale, float y_scale)
 {
-    if (Cool::DebugOptions::log_screen_dpi_scale())
-        Cool::Log::info("DPI Scale", fmt::format("{} x {}", x_scale, y_scale));
+    if (Cool::DebugOptions::log_ui_scale_changes())
+        Cool::Log::info("UI Scale", fmt::format("DPI Scale: {} x {}", x_scale, y_scale));
 
     assert(x_scale == y_scale);
     screen_dpi_scale()                = y_scale;

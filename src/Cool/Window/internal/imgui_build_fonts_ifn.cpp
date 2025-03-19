@@ -20,8 +20,8 @@ void imgui_build_fonts_ifn()
         return;
     previous_ui_scale = ui_scale();
 
-    if (Cool::DebugOptions::log_when_building_font_atlas())
-        Cool::Log::info("Font", "(Re)built font atlas");
+    if (Cool::DebugOptions::log_ui_scale_changes())
+        Cool::Log::info("UI Scale", "(Re)built font atlas");
 
     float const font_size              = std::round(16.0f * ui_scale());
     float const window_title_font_size = std::round(16.0f * ui_scale());

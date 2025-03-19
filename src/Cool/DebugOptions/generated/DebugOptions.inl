@@ -108,8 +108,7 @@ public:
 #endif
     [[nodiscard]] static auto log_internal_warnings() -> bool& { return instance().log_internal_warnings; }
     [[nodiscard]] static auto log_mouse_position_in_view() -> bool& { return instance().log_mouse_position_in_view; }
-    [[nodiscard]] static auto log_screen_dpi_scale() -> bool& { return instance().log_screen_dpi_scale; }
-    [[nodiscard]] static auto log_when_building_font_atlas() -> bool& { return instance().log_when_building_font_atlas; }
+    [[nodiscard]] static auto log_ui_scale_changes() -> bool& { return instance().log_ui_scale_changes; }
     [[nodiscard]] static auto show_command_line_arguments() -> bool& { return instance().show_command_line_arguments; }
     static void               test_presets__window(std::function<void()> callback)
     {
@@ -235,8 +234,7 @@ private:
 #endif
         };
         bool log_mouse_position_in_view{false};
-        bool log_screen_dpi_scale{false};
-        bool log_when_building_font_atlas{false};
+        bool log_ui_scale_changes{false};
         bool show_command_line_arguments{false};
         bool test_presets__window{false};
         bool test_markdown_formatting_window{false};
@@ -277,8 +275,7 @@ private:
                     Cool::json_get(json, "Log OpenGL info", log_opengl_info);
                     Cool::json_get(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_get(json, "Log mouse position in View", log_mouse_position_in_view);
-                    Cool::json_get(json, "Log screen dpi scale", log_screen_dpi_scale);
-                    Cool::json_get(json, "Log when (re)building font atlas", log_when_building_font_atlas);
+                    Cool::json_get(json, "Log UI scale changes", log_ui_scale_changes);
                     Cool::json_get(json, "Test Presets", test_presets__window);
                     Cool::json_get(json, "Test Markdown Formatting", test_markdown_formatting_window);
                     Cool::json_get(json, "Emulate midi keyboard", emulate_midi_keyboard);
@@ -304,8 +301,7 @@ private:
                     Cool::json_get(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_get(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_get(json, "Log mouse position in View", log_mouse_position_in_view);
-                    Cool::json_get(json, "Log screen dpi scale", log_screen_dpi_scale);
-                    Cool::json_get(json, "Log when (re)building font atlas", log_when_building_font_atlas);
+                    Cool::json_get(json, "Log UI scale changes", log_ui_scale_changes);
                     Cool::json_get(json, "Test Presets", test_presets__window);
                     Cool::json_get(json, "Test Markdown Formatting", test_markdown_formatting_window);
                     Cool::json_get(json, "Emulate midi keyboard", emulate_midi_keyboard);
@@ -335,8 +331,7 @@ private:
                     Cool::json_set(json, "Log OpenGL info", log_opengl_info);
                     Cool::json_set(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_set(json, "Log mouse position in View", log_mouse_position_in_view);
-                    Cool::json_set(json, "Log screen dpi scale", log_screen_dpi_scale);
-                    Cool::json_set(json, "Log when (re)building font atlas", log_when_building_font_atlas);
+                    Cool::json_set(json, "Log UI scale changes", log_ui_scale_changes);
                     Cool::json_set(json, "Test Presets", test_presets__window);
                     Cool::json_set(json, "Test Markdown Formatting", test_markdown_formatting_window);
                     Cool::json_set(json, "Emulate midi keyboard", emulate_midi_keyboard);
@@ -362,8 +357,7 @@ private:
                     Cool::json_set(json, "View Texture Library", texture_library_debug_view);
                     Cool::json_set(json, "Log internal warnings", log_internal_warnings);
                     Cool::json_set(json, "Log mouse position in View", log_mouse_position_in_view);
-                    Cool::json_set(json, "Log screen dpi scale", log_screen_dpi_scale);
-                    Cool::json_set(json, "Log when (re)building font atlas", log_when_building_font_atlas);
+                    Cool::json_set(json, "Log UI scale changes", log_ui_scale_changes);
                     Cool::json_set(json, "Test Presets", test_presets__window);
                     Cool::json_set(json, "Test Markdown Formatting", test_markdown_formatting_window);
                     Cool::json_set(json, "Emulate midi keyboard", emulate_midi_keyboard);
@@ -420,8 +414,7 @@ private:
 #endif
             ;
         instance().log_mouse_position_in_view          = false;
-        instance().log_screen_dpi_scale                = false;
-        instance().log_when_building_font_atlas        = false;
+        instance().log_ui_scale_changes                = false;
         instance().test_presets__window                = false;
         instance().test_markdown_formatting_window     = false;
         instance().emulate_midi_keyboard               = false;
@@ -543,15 +536,9 @@ private:
                 save();
         }
 
-        if (wafl::similarity_match({filter, "Log screen dpi scale"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Log UI scale changes"}) >= wafl::Matches::Strongly)
         {
-            if (Cool::ImGuiExtras::toggle("Log screen dpi scale", &instance().log_screen_dpi_scale))
-                save();
-        }
-
-        if (wafl::similarity_match({filter, "Log when (re)building font atlas"}) >= wafl::Matches::Strongly)
-        {
-            if (Cool::ImGuiExtras::toggle("Log when (re)building font atlas", &instance().log_when_building_font_atlas))
+            if (Cool::ImGuiExtras::toggle("Log UI scale changes", &instance().log_ui_scale_changes))
                 save();
         }
 
@@ -757,16 +744,9 @@ private:
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }
 
-        if (wafl::similarity_match({filter, "Log screen dpi scale"}) >= wafl::Matches::Strongly)
+        if (wafl::similarity_match({filter, "Log UI scale changes"}) >= wafl::Matches::Strongly)
         {
-            instance().log_screen_dpi_scale = !instance().log_screen_dpi_scale;
-            save();
-            throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
-        }
-
-        if (wafl::similarity_match({filter, "Log when (re)building font atlas"}) >= wafl::Matches::Strongly)
-        {
-            instance().log_when_building_font_atlas = !instance().log_when_building_font_atlas;
+            instance().log_ui_scale_changes = !instance().log_ui_scale_changes;
             save();
             throw 0.f; // To understand why we need to throw, see `toggle_first_option()` in <Cool/DebugOptions/DebugOptionsManager.h>
         }

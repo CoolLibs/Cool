@@ -100,13 +100,8 @@ def all_debug_options():
             available_in_release=True,
         ),
         DebugOption(
-            name_in_code="log_screen_dpi_scale",
-            name_in_ui="Log screen dpi scale",
-            available_in_release=True,
-        ),
-        DebugOption(
-            name_in_code="log_when_building_font_atlas",
-            name_in_ui="Log when (re)building font atlas",
+            name_in_code="log_ui_scale_changes",
+            name_in_ui="Log UI scale changes",
             available_in_release=True,
         ),
         DebugOption(
