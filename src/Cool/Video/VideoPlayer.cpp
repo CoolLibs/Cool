@@ -86,24 +86,9 @@ auto internal::CaptureState::get_texture(Time time, VideoPlayerSettings const& s
 {
     // TODO(Video) Implement this to improve performance when playing video backward: https://www.opencv-srf.com/2017/12/play-video-file-backwards.html
     double time_in_seconds = (time - settings.start_time).as_seconds_double() * settings.playback_speed.value;
-    switch (settings.loop_mode)
+    if (settings.apply(time, _capture->duration_in_seconds()) < Time{0s})
     {
-    case VideoPlayerLoopMode::None:
-    {
-        if (time_in_seconds < 0. || time_in_seconds >= _capture->duration_in_seconds())
-            return &transparent_texture();
-        break;
-    }
-    case VideoPlayerLoopMode::Loop:
-    {
-        time_in_seconds = smart::mod(time_in_seconds, _capture->duration_in_seconds());
-        break;
-    }
-    case VideoPlayerLoopMode::Hold:
-    {
-        time_in_seconds = std::clamp(time_in_seconds, 0., _capture->duration_in_seconds());
-        break;
-    }
+        return &transparent_texture();
     }
     // TODO(Video) debug option to log when seeking
 

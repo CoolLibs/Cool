@@ -2,6 +2,7 @@
 #include "Cool/File/File.h"
 #include "Cool/Gpu/Texture.h"
 #include "Cool/Time/Time.hpp"
+#include "VideoPlayerSettings.hpp"
 
 namespace Cool {
 
@@ -20,6 +21,8 @@ public:
 private:
     std::filesystem::path              _folder_path{};
     std::vector<std::filesystem::path> _images_paths{};
+
+    VideoPlayerSettings _video_player_settings{};
 
     float framerate{30.f}; // fps
 };

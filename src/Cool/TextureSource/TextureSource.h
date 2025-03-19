@@ -9,9 +9,11 @@ namespace Cool {
 
 using TextureSource = std::variant<
     TextureSource_Image,
-    TextureSource_ImageSequence,
     TextureSource_Webcam,
-    TextureSource_Video>;
+    TextureSource_Video,
+    TextureSource_ImageSequence
+    // when adding a new, must be at the end otherwise breaks serialization
+    >;
 
 auto get_texture(TextureSource const&) -> Texture const&;
 auto imgui_widget(TextureSource&) -> bool;
