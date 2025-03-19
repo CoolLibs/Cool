@@ -6,16 +6,11 @@
 namespace Cool {
 
 struct TextureSource_ImageSequence {
-    std::filesystem::path absolute_path{Cool::Path::default_texture()};
-
     auto               imgui_widget() -> bool;
     [[nodiscard]] auto get_texture() const -> Texture const*;
     [[nodiscard]] auto get_error() const -> std::optional<std::string>;
 
-    friend auto operator==(TextureSource_ImageSequence const& a, TextureSource_ImageSequence const& b) -> bool
-    {
-        return a.absolute_path == b.absolute_path;
-    }
+    friend auto operator==(TextureSource_ImageSequence const& a, TextureSource_ImageSequence const& b) -> bool = default;
 
 private:
     ImageSequence image_sequence;
@@ -27,7 +22,7 @@ private:
     void serialize(Archive& archive)
     {
         archive(
-            ser20::make_nvp("Path", absolute_path)
+            // ser20::make_nvp("Path", absolute_path)
         );
     }
 };

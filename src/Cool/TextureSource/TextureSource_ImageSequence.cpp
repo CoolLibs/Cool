@@ -9,11 +9,7 @@ namespace Cool {
 
 auto TextureSource_ImageSequence::imgui_widget() -> bool
 {
-    bool b = false;
-    b |= ImGuiExtras::folder("Image Path", &absolute_path);
-    if (b)
-        image_sequence.set_folder(absolute_path);
-    return b;
+    return image_sequence.imgui();
 }
 
 [[nodiscard]] auto TextureSource_ImageSequence::get_texture() const -> Texture const*
@@ -23,7 +19,8 @@ auto TextureSource_ImageSequence::imgui_widget() -> bool
 
 auto TextureSource_ImageSequence::get_error() const -> std::optional<std::string>
 {
-    return TextureLibrary_Image::instance().error_from(absolute_path);
+    return {};
+    // return TextureLibrary_Image::instance().error_from(absolute_path);
 }
 
 } // namespace Cool
