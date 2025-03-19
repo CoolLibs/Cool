@@ -137,6 +137,7 @@ class StyleSetting:
     # If None, this will default to `name_in_ui`. You might want to change the `name_in_ui` at some point, but keep the `name_in_json` the same so that you don't break serialization.
     name_in_json: str | None
     description: str
+    should_scale_with_ui: bool
     default_value: str
     cpp_type: str
     widget_begin: str
@@ -150,6 +151,7 @@ def all_style_settings():
             name_in_ui="Floating buttons spacing",
             name_in_json=None,
             description=floating_button_description,
+            should_scale_with_ui=True,
             default_value="4.f",
             cpp_type="float",
             widget_begin="ImGui::SliderFloat",
@@ -160,6 +162,7 @@ def all_style_settings():
             name_in_ui="Frame padding",
             name_in_json=None,
             description="",
+            should_scale_with_ui=True,
             default_value="9.f, 4.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
@@ -170,6 +173,7 @@ def all_style_settings():
             name_in_ui="Tab bar padding",
             name_in_json=None,
             description="",
+            should_scale_with_ui=True,
             default_value="9.f, 6.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
@@ -180,6 +184,7 @@ def all_style_settings():
             name_in_ui="Menu bar spacing",
             name_in_json=None,
             description="",
+            should_scale_with_ui=True,
             default_value="4.f, 4.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
@@ -190,6 +195,7 @@ def all_style_settings():
             name_in_ui="Node title vertical alignment",
             name_in_json=None,
             description="",
+            should_scale_with_ui=False,
             default_value="0.31f",
             cpp_type="float",
             widget_begin="ImGui::SliderFloat",
@@ -203,6 +209,28 @@ def style_declaration():
         return f"{s.cpp_type} {s.name_in_code}{{{s.default_value}}};"
 
     return "\n".join(map(code, all_style_settings()))
+
+
+def style_copy_all_sizes_to():
+    def code(s: StyleSetting):
+        return (
+            f"style.{s.name_in_code} = {s.name_in_code};\n"
+            if s.should_scale_with_ui
+            else ""
+        )
+
+    return "".join(map(code, all_style_settings()))
+
+
+def style_scale_all_sizes():
+    def code(s: StyleSetting):
+        return (
+            f"{s.name_in_code} = ImTrunc({s.name_in_code} * scale);\n"
+            if s.should_scale_with_ui
+            else ""
+        )
+
+    return "".join(map(code, all_style_settings()))
 
 
 def json(get_or_set: str):
@@ -289,6 +317,8 @@ if __name__ == "__main__":
             style_declaration,
             style_imgui_definitions,
             style_imgui_declarations,
+            style_copy_all_sizes_to,
+            style_scale_all_sizes,
             json_get,
             json_set,
         ],

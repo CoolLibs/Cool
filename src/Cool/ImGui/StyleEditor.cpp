@@ -50,22 +50,26 @@ StyleEditor::StyleEditor()
           false /*autosave_when_destroyed*/, // If the user doesn't change the style, we don't want to save it, so that if a new version of the software comes with a new style, if the user hasn't customized the style then we will use the new style from user_data_default
           [](nlohmann::json const& json) {
               json_get(json, "ImGui", imgui_style_unscaled());
-              json_get(json, "ImGuiExtras", ImGuiExtras::GetStyle());
+              json_get(json, "ImGuiExtras", imgui_extras_style_unscaled());
               json_get(json, "ImNodes", imgui_nodes_style_unscaled());
               need_to_apply_imgui_style_scale() = true;
           },
           [](nlohmann::json& json) {
               json_set(json, "ImGui", imgui_style_unscaled());
-              json_set(json, "ImGuiExtras", ImGuiExtras::GetStyle());
+              json_set(json, "ImGuiExtras", imgui_extras_style_unscaled());
               json_set(json, "ImNodes", imgui_nodes_style_unscaled());
           },
           true /*use_shared_user_data*/
       }
-{}
+{
+    // imgui_nodes_style_before_applying_ui_scale().ScaleAllSizes(1.f / 1.25f);
+    // _serializer.save();
+}
 
 void StyleEditor::imgui()
 {
-    auto& style = imgui_style_unscaled();
+    auto& style        = imgui_style_unscaled();
+    auto& extras_style = imgui_extras_style_unscaled();
 
     bool b = false;
     ImGuiExtras::separator_text("Rendering");
@@ -74,12 +78,12 @@ void StyleEditor::imgui()
 
     ImGuiExtras::separator_text("Main");
     b |= ImGui::SliderFloat2("WindowPadding", (float*)&style.WindowPadding, 0.0f, 20.0f, "%.0f");
-    b |= ImGuiExtras::GetStyle().imgui_frame_padding();
-    b |= ImGuiExtras::GetStyle().imgui_tab_bar_padding();
-    b |= ImGuiExtras::GetStyle().imgui_menu_bar_spacing();
+    b |= extras_style.imgui_frame_padding();
+    b |= extras_style.imgui_tab_bar_padding();
+    b |= extras_style.imgui_menu_bar_spacing();
     b |= ImGui::SliderFloat2("ItemSpacing", (float*)&style.ItemSpacing, 0.0f, 20.0f, "%.0f");
     b |= ImGui::SliderFloat2("ItemInnerSpacing", (float*)&style.ItemInnerSpacing, 0.0f, 20.0f, "%.0f");
-    b |= ImGuiExtras::GetStyle().imgui_floating_buttons_spacing();
+    b |= extras_style.imgui_floating_buttons_spacing();
     b |= ImGui::SliderFloat2("TouchExtraPadding", (float*)&style.TouchExtraPadding, 0.0f, 10.0f, "%.0f");
     b |= ImGui::SliderFloat("IndentSpacing", &style.IndentSpacing, 0.0f, 30.0f, "%.0f");
     b |= ImGui::SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");

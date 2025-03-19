@@ -21,6 +21,11 @@ void apply_imgui_style_scale_ifn()
     }
 
     {
+        imgui_extras_style_unscaled().copy_all_sizes_to(ImGuiExtras::GetStyle());
+        ImGuiExtras::GetStyle().scale_all_sizes(ui_scale());
+    }
+
+    {
         auto const old_colors      = ax::NodeEditor::GetStyle().Colors;
         ax::NodeEditor::GetStyle() = imgui_nodes_style_unscaled();
         ax::NodeEditor::GetStyle().ScaleAllSizes(ui_scale());
