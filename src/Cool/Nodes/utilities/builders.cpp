@@ -25,7 +25,7 @@ void util::BlueprintNodeBuilder::Begin(ed::NodeId id)
     HasHeader = false;
     HeaderMin = HeaderMax = ImVec2();
 
-    ed::PushStyleVar(StyleVar_NodePadding, ImVec4(0.4f, 0.2f, 0.4f, 0.4f) * (ImGui::GetFontSize()));
+    ed::PushStyleVar(StyleVar_NodePadding, ImVec4(0.4f, 0.2f, 0.4f, 0.4f) * ImGui::GetFontSize());
 
     ed::BeginNode(id);
 

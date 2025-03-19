@@ -11,6 +11,7 @@
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/ImGui/markdown.h"
 #include "Cool/Math/constants.h"
+#include "Cool/UI Scale/ui_scale.hpp"
 #include "Fonts.h"
 #include "ImGuiExtrasStyle.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
@@ -168,7 +169,7 @@ void button_with_icon_disabled(ImTextureID tex_id, const char* reason_for_disabl
 auto button_with_text_icon(const char* icon, ImDrawFlags flags) -> bool
 {
     auto const size = ImGui::GetFrameHeight();
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2.4f * ui_scale());
     bool const b = ImGui::Button(icon, {size, size}, flags);
     ImGui::PopStyleVar();
     return b;
@@ -854,7 +855,7 @@ auto floating_button(const char* label, int index, bool align_vertically, bool i
     auto const prev_pos = ImGui::GetCursorScreenPos();
     ImGui::SetCursorPos(ImGui::GetWindowSize() - spacing);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.8f * ui_scale());
     // clang-format off
     ImGui::PushStyleColor(ImGuiCol_Button,        is_enabled ? GetStyle().floating_button_enabled         : GetStyle().floating_button);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, is_enabled ? GetStyle().floating_button_hovered_enabled : GetStyle().floating_button_hovered);
