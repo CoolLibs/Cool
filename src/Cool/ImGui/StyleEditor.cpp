@@ -61,10 +61,7 @@ StyleEditor::StyleEditor()
           },
           true /*use_shared_user_data*/
       }
-{
-    // imgui_nodes_style_before_applying_ui_scale().ScaleAllSizes(1.f / 1.25f);
-    // _serializer.save();
-}
+{}
 
 void StyleEditor::imgui()
 {
