@@ -11,15 +11,6 @@
 
 namespace Cool {
 
-// TODO(Video):
-// cv::redirectError([](int status, const char* func_name,
-//                      const char* err_msg, const char* file_name,
-//                      int line, void* userdata) {
-//     Cool::Log::ToUser::warning("OpenCV", err_msg);
-//     return 1;
-// });
-// cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
-
 VideoPlayer::VideoPlayer(VideoDescriptor desc)
     : _desc{std::move(desc)}
 {
