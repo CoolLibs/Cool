@@ -39,7 +39,8 @@ auto AudioInput_Device::is_playing() const -> bool
 
 static auto get_device_name_impl(Audio::UseDefaultDevice) -> std::string
 {
-    return fmt::format("Use default device: {}", input_stream().device_info(input_stream().default_device_id()).name);
+    auto const name = input_stream().device_info(input_stream().default_device_id()).name;
+    return fmt::format("Default device: {}", name.empty() ? "NO DEFAULT DEVICE AVAILABLE" : name);
 }
 static auto get_device_name_impl(Audio::UseGivenDevice const& device) -> std::string
 {
