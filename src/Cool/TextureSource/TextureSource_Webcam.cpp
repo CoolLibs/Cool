@@ -14,9 +14,6 @@ void TextureSource_Webcam::set_device_id(wcam::DeviceId const& id) const
 
 auto TextureSource_Webcam::imgui_widget() -> bool
 {
-    if (!_keep_wcam_library_alive.has_value())
-        _keep_wcam_library_alive.emplace();
-
     bool b = false;
 
     auto const webcam_infos = wcam::all_webcams_info();
@@ -53,9 +50,6 @@ auto TextureSource_Webcam::imgui_widget() -> bool
 
 auto TextureSource_Webcam::get_texture() const -> Texture const*
 {
-    if (!_keep_wcam_library_alive.has_value())
-        _keep_wcam_library_alive.emplace();
-
     if (_device_id == wcam::DeviceId{}) // When creating a new webcam we want it to use the default webcam, but we might not know what the available webcams are at that point (if the wcam library has just been initialized). So we defer that to here
     {
         auto const webcam_infos = wcam::all_webcams_info();
@@ -67,9 +61,6 @@ auto TextureSource_Webcam::get_texture() const -> Texture const*
 
 auto TextureSource_Webcam::get_error() const -> std::optional<std::string>
 {
-    if (!_keep_wcam_library_alive.has_value())
-        _keep_wcam_library_alive.emplace();
-
     return TextureLibrary_Webcam::instance().get_error(_device_id);
 }
 

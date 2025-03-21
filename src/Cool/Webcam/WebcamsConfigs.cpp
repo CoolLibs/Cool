@@ -16,10 +16,7 @@ void WebcamsConfigs::open_imgui_window()
 
 void WebcamsConfigs::imgui_window()
 {
-    _window.show([&](bool /* is_opening */) {
-        if (!_keep_wcam_lib_alive.has_value())
-            _keep_wcam_lib_alive.emplace();
-
+    _window.show([&](bool /*is_opening*/) {
         auto const webcam_infos = wcam::all_webcams_info();
         for (auto const& info : webcam_infos)
         {

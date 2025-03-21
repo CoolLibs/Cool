@@ -139,6 +139,7 @@ void AppManager::run(std::function<void()> const& on_update)
         {
             update();
             on_update();
+            wcam::update();
         }
         catch (std::exception const& e)
         {
