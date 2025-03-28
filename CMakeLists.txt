@@ -7,7 +7,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-option(COOL_USE_INSTALLER "Turn this on if you are using an installer for your application (NB: you still need to generate the installer yourself)" OFF)
+option(COOL_USE_MACOS_BUNDLE "Turn this on if you are using an App Bundle on MacOS (this option does nothing if you are not building for MacOS)" OFF)
 
 add_library(Cool)
 add_library(Cool::Core ALIAS Cool)
@@ -54,10 +54,10 @@ target_compile_definitions(Cool-PublicProperties INTERFACE
     COOL_APP_NAME=\"${COOL_APP_NAME}\"
 )
 
-if(COOL_USE_INSTALLER)
-    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_INSTALLER=1)
+if(COOL_USE_MACOS_BUNDLE)
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_MACOS_BUNDLE=1)
 else()
-    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_INSTALLER=0)
+    target_compile_definitions(Cool-PrivateProperties INTERFACE COOL_USE_MACOS_BUNDLE=0)
 endif()
 
 # ----------------------

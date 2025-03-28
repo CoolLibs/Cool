@@ -18,7 +18,7 @@ auto PathsConfig::root() const -> std::filesystem::path
     // This is important because only the ones at the root are tracked in Git.
     return COOL_DEBUG_ONLY__CMAKE_SOURCE_DIR;
 #else
-#if COOL_USE_INSTALLER && defined(__APPLE__)
+#if COOL_USE_MACOS_BUNDLE && defined(__APPLE__)
     return exe_path::dir() / "../Resources/bin"; // This is how a MacOS bundle is structured: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators#bundle-layout
 #else
     return exe_path::dir();
