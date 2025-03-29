@@ -15,7 +15,7 @@ auto UserSettings::imgui() -> bool
     b |= imgui_autosave();
 
     ImGuiExtras::separator_text("UI");
-    b |= imgui_ui_scale();
+    b |= imgui_ui_zoom();
     b |= imgui_extra_icons();
 
     ImGuiExtras::separator_text("Camera");
@@ -78,35 +78,35 @@ auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
     return imgui_widget(video_export_overwrite_behaviour);
 }
 
-static constexpr float min_ui_scale = 0.5f;
-static constexpr float max_ui_scale = 2.f;
+static constexpr float min_ui_zoom = 0.5f;
+static constexpr float max_ui_zoom = 2.f;
 
-auto UserSettings::imgui_ui_scale() -> bool
+auto UserSettings::imgui_ui_zoom() -> bool
 {
-    auto const b = ImGui::DragFloat("UI Scale", &ui_scale, 0.001f, min_ui_scale, max_ui_scale, "%.3f", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
+    auto const b = ImGui::DragFloat("UI Zoom", &ui_zoom, 0.001f, min_ui_zoom, max_ui_zoom, "%.3f", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
     if (ImGui::IsItemActivated())
         _ui_scale_at_the_beginning_of_preview = Cool::ui_scale();
     if (ImGui::IsItemDeactivatedAfterEdit())
-        apply_ui_scale();
+        apply_ui_zoom();
     else if (b)
-        apply_ui_scale_preview();
+        apply_ui_zoom_preview();
     return b;
 }
 
-void UserSettings::change_ui_scale(float delta)
+void UserSettings::change_ui_zoom(float delta)
 {
-    static float const scale_factor = std::pow(max_ui_scale, 1.f / 4.f); // So that applying it 4 times gives us the max ui scale
-    set_ui_scale(ui_scale * std::pow(scale_factor, delta));
+    static float const zoom_factor = std::pow(max_ui_zoom, 1.f / 4.f); // So that applying it 4 times gives us the max ui zoom
+    set_ui_zoom(ui_zoom * std::pow(zoom_factor, delta));
     ImGuiNotify::send_or_change(
-        _notif_ui_scale,
+        _notif_ui_zoom,
         {
             .type                 = ImGuiNotify::Type::Info,
-            .title                = "UI Scale",
-            .custom_imgui_content = [&id = _notif_ui_scale]() {
-                ImGui::TextUnformatted(fmt::format("{:.3f}", Cool::user_settings().ui_scale).c_str());
+            .title                = "UI Zoom",
+            .custom_imgui_content = [&id = _notif_ui_zoom]() {
+                ImGui::TextUnformatted(fmt::format("{:.3f}", Cool::user_settings().ui_zoom).c_str());
                 if (ImGui::Button("Reset"))
                 {
-                    Cool::user_settings().set_ui_scale(1.f);
+                    Cool::user_settings().set_ui_zoom(1.f);
                     ImGuiNotify::close_immediately(id);
                 }
             },
@@ -115,19 +115,19 @@ void UserSettings::change_ui_scale(float delta)
     );
 }
 
-void UserSettings::set_ui_scale(float scale)
+void UserSettings::set_ui_zoom(float zoom)
 {
-    ui_scale = std::clamp(scale, min_ui_scale, max_ui_scale);
-    apply_ui_scale();
+    ui_zoom = std::clamp(zoom, min_ui_zoom, max_ui_zoom);
+    apply_ui_zoom();
 }
 
-void UserSettings::apply_ui_scale() const
+void UserSettings::apply_ui_zoom() const
 {
     need_to_rebuild_fonts()           = true;
     need_to_apply_imgui_style_scale() = true;
 }
 
-void UserSettings::apply_ui_scale_preview() const
+void UserSettings::apply_ui_zoom_preview() const
 {
     ImGui::GetIO().FontGlobalScale    = Cool::ui_scale() / _ui_scale_at_the_beginning_of_preview;
     need_to_apply_imgui_style_scale() = true;

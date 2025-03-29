@@ -19,12 +19,12 @@ struct UserSettings {
     bool                          single_click_to_input_in_drag_widgets{true};
     bool                          enable_multi_viewport{should_enable_multi_viewport_by_default()};
     VideoExportOverwriteBehaviour video_export_overwrite_behaviour{VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder};
-    float                         ui_scale{1.f};
+    float                         ui_zoom{1.f};
 
-    void change_ui_scale(float delta);
-    void set_ui_scale(float scale);
-    void apply_ui_scale() const;
-    void apply_ui_scale_preview() const;
+    void change_ui_zoom(float delta);
+    void set_ui_zoom(float zoom);
+    void apply_ui_zoom() const;
+    void apply_ui_zoom_preview() const;
     void apply_multi_viewport_setting() const;
 
     auto imgui() -> bool;
@@ -34,14 +34,14 @@ struct UserSettings {
     auto imgui_single_click_to_input_in_drag_widgets() -> bool;
     auto imgui_enable_multi_viewport() -> bool;
     auto imgui_video_export_overwrite_behaviour() -> bool;
-    auto imgui_ui_scale() -> bool;
+    auto imgui_ui_zoom() -> bool;
 
     void update() { _serializer.update(); }
     void save() { _serializer.save(); }
 
 private:
     float                       _ui_scale_at_the_beginning_of_preview{};
-    ImGuiNotify::NotificationId _notif_ui_scale{};
+    ImGuiNotify::NotificationId _notif_ui_zoom{};
 
 private:
     // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
@@ -58,7 +58,8 @@ private:
             json_get(json, "Enable multi viewport", enable_multi_viewport);
             apply_multi_viewport_setting();
             json_get(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
-            json_get(json, "UI Scale", ui_scale);
+            json_get(json, "UI Scale", ui_zoom); // Backward compatibility
+            json_get(json, "UI Zoom", ui_zoom);
             need_to_rebuild_fonts() = true;
         },
         [&](nlohmann::json& json) {
@@ -69,7 +70,7 @@ private:
             json_set(json, "Single click to input in drag widgets", single_click_to_input_in_drag_widgets);
             json_set(json, "Enable multi viewport", enable_multi_viewport);
             json_set(json, "Video export overwrite behaviour", video_export_overwrite_behaviour);
-            json_set(json, "UI Scale", ui_scale);
+            json_set(json, "UI Zoom", ui_zoom);
         },
         true /*use_shared_user_data*/
     };

@@ -6,7 +6,7 @@ namespace Cool {
 
 auto ui_scale() -> float
 {
-    return user_settings().ui_scale * screen_dpi_scale();
+    return user_settings().ui_zoom * screen_dpi_scale();
 }
 
 } // namespace Cool
