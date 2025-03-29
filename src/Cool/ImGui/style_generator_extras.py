@@ -165,7 +165,7 @@ def all_style_settings():
             default_value="4.f",
             cpp_type="float",
             widget_begin="ImGui::SliderFloat",
-            widget_end=' 0.f, 20.f, "%.0f"',
+            widget_end=' 0.f, 20.f, "%.3f"',
         ),
         StyleSetting(
             name_in_code="frame_padding",
@@ -176,7 +176,7 @@ def all_style_settings():
             default_value="9.f, 4.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
-            widget_end=' 0.f, 20.f, "%.0f"',
+            widget_end=' 0.f, 20.f, "%.3f"',
         ),
         StyleSetting(
             name_in_code="tab_bar_padding",
@@ -187,7 +187,7 @@ def all_style_settings():
             default_value="9.f, 6.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
-            widget_end=' 0.f, 20.f, "%.0f"',
+            widget_end=' 0.f, 20.f, "%.3f"',
         ),
         StyleSetting(
             name_in_code="menu_bar_spacing",
@@ -198,7 +198,7 @@ def all_style_settings():
             default_value="4.f, 4.f",
             cpp_type="ImVec2",
             widget_begin="ImGui::SliderFloat2",
-            widget_end=' 0.f, 20.f, "%.0f"',
+            widget_end=' 0.f, 20.f, "%.3f"',
         ),
         StyleSetting(
             name_in_code="node_title_vertical_alignment",
