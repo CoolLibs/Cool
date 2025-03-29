@@ -52,10 +52,11 @@ auto ExportSize::imgui() -> bool
     });
     ImGui::SameLine();
     b |= ImGuiExtras::checkbox_button(ICOMOON_LINK, &_aspect_ratio_is_locked);
-    ImGuiExtras::help_marker(
+    ImGui::SetItemTooltip(
+        "%s",
         _aspect_ratio_is_locked
-            ? "Unlock the ratio to edit the width and the height independently."
-            : "Lock the ratio to tie the width and the height together and always keep the given ratio."
+            ? "The aspect ratio is locked. Changing the width will automatically change the height (and vice versa) to keep the same ratio."
+            : "The aspect ratio is unlocked. The width and the height can be changed independently."
     );
 
     return b;
