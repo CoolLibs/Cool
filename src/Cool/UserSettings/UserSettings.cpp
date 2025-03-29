@@ -78,16 +78,47 @@ auto UserSettings::imgui_video_export_overwrite_behaviour() -> bool
     return imgui_widget(video_export_overwrite_behaviour);
 }
 
+static constexpr float min_ui_scale = 0.5f;
+static constexpr float max_ui_scale = 2.f;
+
 auto UserSettings::imgui_ui_scale() -> bool
 {
-    auto const b = ImGui::DragFloat("UI Scale", &ui_scale, 0.001f, 0.5f, 2.f, "%.3f", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
+    auto const b = ImGui::DragFloat("UI Scale", &ui_scale, 0.001f, min_ui_scale, max_ui_scale, "%.3f", ImGuiSliderFlags_Logarithmic | ImGuiSliderFlags_AlwaysClamp);
     if (ImGui::IsItemActivated())
-        ui_scale_at_the_beginning_of_preview = Cool::ui_scale();
+        _ui_scale_at_the_beginning_of_preview = Cool::ui_scale();
     if (ImGui::IsItemDeactivatedAfterEdit())
         apply_ui_scale();
     else if (b)
         apply_ui_scale_preview();
     return b;
+}
+
+void UserSettings::change_ui_scale(float delta)
+{
+    static float const scale_factor = std::pow(max_ui_scale, 1.f / 4.f); // So that applying it 4 times gives us the max ui scale
+    set_ui_scale(ui_scale * std::pow(scale_factor, delta));
+    ImGuiNotify::send_or_change(
+        _notif_ui_scale,
+        {
+            .type                 = ImGuiNotify::Type::Info,
+            .title                = "UI Scale",
+            .custom_imgui_content = [&id = _notif_ui_scale]() {
+                ImGui::TextUnformatted(fmt::format("{:.3f}", Cool::user_settings().ui_scale).c_str());
+                if (ImGui::Button("Reset"))
+                {
+                    Cool::user_settings().set_ui_scale(1.f);
+                    ImGuiNotify::close_immediately(id);
+                }
+            },
+            .duration = 1s,
+        }
+    );
+}
+
+void UserSettings::set_ui_scale(float scale)
+{
+    ui_scale = std::clamp(scale, min_ui_scale, max_ui_scale);
+    apply_ui_scale();
 }
 
 void UserSettings::apply_ui_scale() const
@@ -98,7 +129,7 @@ void UserSettings::apply_ui_scale() const
 
 void UserSettings::apply_ui_scale_preview() const
 {
-    ImGui::GetIO().FontGlobalScale    = Cool::ui_scale() / ui_scale_at_the_beginning_of_preview;
+    ImGui::GetIO().FontGlobalScale    = Cool::ui_scale() / _ui_scale_at_the_beginning_of_preview;
     need_to_apply_imgui_style_scale() = true;
 }
 

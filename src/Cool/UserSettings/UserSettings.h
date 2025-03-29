@@ -5,6 +5,7 @@
 #include "Cool/Serialization/JsonAutoSerializer.hpp"
 #include "Cool/Time/Time.hpp"
 #include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
+#include "ImGuiNotify/ImGuiNotify.hpp"
 
 namespace Cool {
 
@@ -20,6 +21,8 @@ struct UserSettings {
     VideoExportOverwriteBehaviour video_export_overwrite_behaviour{VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder};
     float                         ui_scale{1.f};
 
+    void change_ui_scale(float delta);
+    void set_ui_scale(float scale);
     void apply_ui_scale() const;
     void apply_ui_scale_preview() const;
     void apply_multi_viewport_setting() const;
@@ -37,7 +40,8 @@ struct UserSettings {
     void save() { _serializer.save(); }
 
 private:
-    float ui_scale_at_the_beginning_of_preview{};
+    float                       _ui_scale_at_the_beginning_of_preview{};
+    ImGuiNotify::NotificationId _notif_ui_scale{};
 
 private:
     // Must be declared last, after all the variables it serializes, so that the values it loads overwrite the default values, and not the other way around
