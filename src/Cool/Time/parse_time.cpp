@@ -1,4 +1,5 @@
 #include "parse_time.h"
+#include "Cool/String/String.h"
 
 namespace Cool {
 
@@ -17,55 +18,53 @@ static auto is_whitespace(char c) -> bool
            || c == '\r';
 }
 
-static auto seconds_multiplier(std::string const& str) -> float
+static auto seconds_multiplier(std::string str) -> float
 {
-    if (false // NOLINT(*simplify-boolean-expr)
-        || str == "ms"
+    str = Cool::String::to_lower(str);
+
+    if (str == "ms"
         || str == "milli"
         || str == "millis"
         || str == "millisecond"
-        || str == "milliseconds"
-        //
-    )
+        || str == "milliseconds")
     {
         return 1.f / 1000.f;
     }
-    if (false // NOLINT(*simplify-boolean-expr)
-        || str == "m"
+    if (str == "m"
         || str == "min"
         || str == "minute"
-        || str == "minutes"
-        //
-    )
+        || str == "minutes")
     {
         return 60.f;
     }
-    if (false // NOLINT(*simplify-boolean-expr)
-        || str == "h"
+    if (str == "h"
         || str == "hour"
-        || str == "hours"
-        //
-    )
+        || str == "hours")
     {
         return 3600.f;
     }
-    if (false // NOLINT(*simplify-boolean-expr)
-        || str == "d"
+    if (str == "d"
         || str == "day"
-        || str == "days"
-        //
-    )
+        || str == "days")
     {
         return 24.f * 3600.f;
     }
-    if (false // NOLINT(*simplify-boolean-expr)
-        || str == "w"
+    if (str == "w"
         || str == "week"
-        || str == "weeks"
-        //
-    )
+        || str == "weeks")
     {
         return 7.f * 24.f * 3600.f;
+    }
+    if (str == "month"
+        || str == "months")
+    {
+        return 365.25f / 12.f * 24.f * 3600.f;
+    }
+    if (str == "y"
+        || str == "year"
+        || str == "years")
+    {
+        return 365.25f * 24.f * 3600.f;
     }
 
     return 1.f;
