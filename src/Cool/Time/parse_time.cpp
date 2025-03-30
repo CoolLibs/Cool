@@ -18,7 +18,49 @@ static auto is_whitespace(char c) -> bool
            || c == '\r';
 }
 
-static auto seconds_multiplier(std::string str) -> float
+namespace {
+enum class Duration : std::uint8_t {
+    Microsecond,
+    Millisecond,
+    Second,
+    Minute,
+    Hour,
+    Day,
+    Week,
+    Month,
+    Year,
+};
+} // namespace
+
+static auto seconds_in(Duration duration) -> float
+{
+    using enum Duration;
+    switch (duration)
+    {
+    case Microsecond:
+        return 1.f / 1000.f / 1000.f;
+    case Millisecond:
+        return 1.f / 1000.f;
+    case Second:
+        return 1.f;
+    case Minute:
+        return 60.f;
+    case Hour:
+        return 3600.f;
+    case Day:
+        return 24.f * 3600.f;
+    case Week:
+        return 7.f * 24.f * 3600.f;
+    case Month:
+        return seconds_in(Year) / 12.f;
+    case Year:
+        return 365.25f * 24.f * 3600.f;
+    }
+    assert(false);
+    return 1.f;
+}
+
+static auto seconds_in(std::string str, Duration& implicit_duration) -> float
 {
     str = Cool::String::to_lower(str);
 
@@ -28,52 +70,66 @@ static auto seconds_multiplier(std::string str) -> float
         || str == "millisecond"
         || str == "milliseconds")
     {
-        return 1.f / 1000.f;
+        implicit_duration = Duration::Microsecond;
+        return seconds_in(Duration::Millisecond);
+    }
+    if (str == "s"
+        || str == "second"
+        || str == "seconds")
+    {
+        implicit_duration = Duration::Millisecond;
+        return seconds_in(Duration::Second);
     }
     if (str == "m"
         || str == "min"
         || str == "minute"
         || str == "minutes")
     {
-        return 60.f;
+        implicit_duration = Duration::Second;
+        return seconds_in(Duration::Minute);
     }
     if (str == "h"
         || str == "hour"
         || str == "hours")
     {
-        return 3600.f;
+        implicit_duration = Duration::Minute;
+        return seconds_in(Duration::Hour);
     }
     if (str == "d"
         || str == "day"
         || str == "days")
     {
-        return 24.f * 3600.f;
+        implicit_duration = Duration::Hour;
+        return seconds_in(Duration::Day);
     }
     if (str == "w"
         || str == "week"
         || str == "weeks")
     {
-        return 7.f * 24.f * 3600.f;
+        implicit_duration = Duration::Day;
+        return seconds_in(Duration::Week);
     }
     if (str == "month"
         || str == "months")
     {
-        return 365.25f / 12.f * 24.f * 3600.f;
+        implicit_duration = Duration::Day;
+        return seconds_in(Duration::Month);
     }
     if (str == "y"
         || str == "year"
         || str == "years")
     {
-        return 365.25f * 24.f * 3600.f;
+        implicit_duration = Duration::Month;
+        return seconds_in(Duration::Year);
     }
-
-    return 1.f;
+    return seconds_in(implicit_duration);
 }
 
 /// Returns time in seconds
 auto parse_time(const char* str) -> float
 {
-    float total_time{0.f};
+    float    total_time{0.f};
+    Duration implicit_duration{Duration::Second};
     while (*str != 0)
     {
         // First, read the string to get a number
@@ -97,7 +153,7 @@ auto parse_time(const char* str) -> float
                 if (!is_whitespace(*str))
                     work_token += *str;
             }
-            total_time += current_val * seconds_multiplier(work_token);
+            total_time += current_val * seconds_in(work_token, implicit_duration);
         }
     }
     return total_time;
