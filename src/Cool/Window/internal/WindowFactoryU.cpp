@@ -47,7 +47,7 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
 
 void set_window_icon(GLFWwindow* window)
 {
-#if defined(COOL_APP_ICON_FILE) && !defined(__APPLE__) // Don't do anything if no icon has been set. Don't call this on MacOS because it crashes because "Regular windows do not have icons on macOS"
+#if defined(COOL_APP_ICON_FILE) // Don't do anything if no icon has been set
     auto icon  = *img::load(Cool::Path::root() / COOL_APP_ICON_FILE, 4, img::FirstRowIs::Top);
     auto image = GLFWimage{
         .width  = static_cast<int>(icon.width()),
