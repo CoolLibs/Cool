@@ -12,6 +12,7 @@
 #include "Cool/ImGui/need_to_apply_imgui_style_scale.hpp"
 #include "Cool/Input/MouseButtonEvent.h"
 #include "Cool/Input/MouseCoordinates.h"
+#include "Cool/Log/boxer_show.hpp"
 #include "Cool/Midi/MidiManager.h"
 #include "Cool/Task/TaskManager.hpp"
 #include "Cool/TextureSource/TextureLibrary_Image.h"
@@ -31,6 +32,7 @@
 #include "imgui/imgui_internal.h"
 #include "nfd.hpp"
 #include "wcam/wcam.hpp"
+
 #if defined(COOL_VULKAN)
 #include <imgui/backends/imgui_impl_vulkan.h>
 #elif defined(COOL_OPENGL)
@@ -106,7 +108,7 @@ auto AppManager::should_close_window() const -> bool
     if (tasks_in_progress.empty())
         return true;
 
-    auto const choice = boxer::show(
+    auto const choice = boxer_show(
         ("There are some tasks in progress, if you exit now they will not be able to complete successfully:\n" + tasks_in_progress).c_str(),
         "Kill tasks in progress?",
         boxer::Style::Warning,

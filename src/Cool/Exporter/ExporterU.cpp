@@ -3,6 +3,7 @@
 #include <open/open.hpp>
 #include "Cool/File/File.h"
 #include "Cool/Image/SaveImage.h"
+#include "Cool/Log/boxer_show.hpp"
 #include "Cool/Task/Task.hpp"
 #include "Cool/Task/TaskManager.hpp"
 #include "ImGuiNotify/ImGuiNotify.hpp"
@@ -21,7 +22,7 @@ auto user_accepted_to_overwrite_image(std::filesystem::path const& file_path) ->
     if (!Cool::File::exists(file_path))
         return true;
 
-    return boxer::show(fmt::format("\"{}\" already exists. Are you sure you want to overwrite it?", file_path).c_str(), "Overwrite image?", boxer::Style::Warning, boxer::Buttons::OKCancel)
+    return boxer_show(fmt::format("\"{}\" already exists. Are you sure you want to overwrite it?", file_path).c_str(), "Overwrite image?", boxer::Style::Warning, boxer::Buttons::OKCancel)
            == boxer::Selection::OK;
 }
 
