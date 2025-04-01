@@ -1,8 +1,10 @@
 #include "TaskManager.hpp"
 #include <algorithm>
+#include <chrono>
 #include <memory>
 #include "Cool/DebugOptions/DebugOptions.h"
 #include "Cool/Log/Log.hpp"
+#include "Cool/Time/time_formatted_hms.h"
 
 namespace Cool {
 
@@ -34,7 +36,11 @@ void TaskManager::shut_down()
 void TaskManager::execute_task(Task& task)
 {
     if (Cool::DebugOptions::log_tasks())
-        Cool::Log::info("Task Start", task.name());
+        Cool::Log::info(task.name(), "Task Start");
+
+    auto start_time = std::optional<std::chrono::steady_clock::time_point>{};
+    if (Cool::DebugOptions::log_tasks())
+        start_time = std::chrono::steady_clock::now(); // Only query the time if we actually want to display it, to save performance
 
     task.execute();
     if (!task.has_been_canceled())
@@ -42,13 +48,13 @@ void TaskManager::execute_task(Task& task)
     task.cleanup(task.has_been_canceled());
 
     if (Cool::DebugOptions::log_tasks())
-        Cool::Log::info("Task End"s + (task.has_been_canceled() ? " (Cancelled)"s : ""s), task.name());
+        Cool::Log::info(task.name(), fmt::format("Task End{} ({})", task.has_been_canceled() ? " (Cancelled)" : "", start_time.has_value() ? time_formatted_hms(std::chrono::steady_clock::now() - *start_time, true) : "Failed to measure time"));
 }
 
 void TaskManager::cancel_task_that_is_waiting(Task& task)
 {
     if (Cool::DebugOptions::log_tasks())
-        Cool::Log::info("Task Cancelled", task.name());
+        Cool::Log::info(task.name(), "Task Cancelled");
 
     // Task has not started execute(), so there is no need to call cancel()
     task._completion.store(Task::Completion::Canceled);
@@ -57,9 +63,6 @@ void TaskManager::cancel_task_that_is_waiting(Task& task)
 
 void TaskManager::cancel_task_that_is_executing(Task& task)
 {
-    if (Cool::DebugOptions::log_tasks())
-        Cool::Log::info("Task Cancelled", task.name());
-
     task.cancel();
     task._completion.store(Task::Completion::Canceled);
     // cleanup() will be called by the thread that is running the task once execute() finishes
