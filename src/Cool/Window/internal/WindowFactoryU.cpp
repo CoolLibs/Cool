@@ -34,7 +34,7 @@ auto make_window_with_glfw(WindowConfig const& config, WindowManager& window_man
     {
         const char* error_description; // NOLINT(*-init-variables)
         glfwGetError(&error_description);
-        throw std::runtime_error{fmt::format("Window creation failed:\n{}", error_description)};
+        throw std::runtime_error{fmt::format("Updating your graphics card drivers might solve the issue.\n\n(Window creation failed:\n{})", error_description)};
     }
 
     // Center the window
