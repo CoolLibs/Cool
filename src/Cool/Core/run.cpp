@@ -25,6 +25,7 @@
 #include "Cool/View/ViewsManager.h"
 #include "Cool/Window/internal/WindowFactory.h"
 #include "ImGuiNotify/ImGuiNotify.hpp"
+#include "boxer/boxer.h"
 #if defined(COOL_VULKAN)
 #include <Cool/Gpu/Vulkan/Context.h>
 #endif
@@ -168,6 +169,7 @@ void run_impl(
     catch (std::exception const& e)
     {
         file_logger().error(fmt::format("[Main exception] {}", e.what()));
+        boxer::show(e.what(), "Coollab Error", boxer::Style::Error);
     }
 }
 
