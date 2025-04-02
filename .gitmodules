@@ -1,12 +1,6 @@
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw
-[submodule "lib/Boxer"]
-	path = lib/Boxer
-	url = https://github.com/aaronmjacobs/Boxer
-[submodule "lib/doctest"]
-	path = lib/doctest
-	url = https://github.com/onqtam/doctest
 [submodule "lib/Vookoo"]
 	path = lib/Vookoo
 	url = https://github.com/CoolLibs/Vookoo
@@ -124,3 +118,9 @@
 [submodule "lib/spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "lib/doctest"]
+	path = lib/doctest
+	url = https://github.com/CoolLibs/doctest
+[submodule "lib/Boxer"]
+	path = lib/Boxer
+	url = https://github.com/CoolLibs/Boxer
