@@ -181,7 +181,7 @@ auto file_and_folder_opening(
 
 auto file_and_folder_saving(
     std::filesystem::path&              path,
-    std::vector<const char*> const&     extensions,
+    std::span<const char* const>        extensions,
     std::vector<nfdfilteritem_t> const& file_filters = {}
 ) -> bool;
 

@@ -47,7 +47,7 @@ public:
     void set_shared_aspect_ratio(SharedAspectRatio& shared_aspect_ratio) { _export_size.set_shared_aspect_ratio(shared_aspect_ratio); }
 
     auto export_size() const -> img::Size { return _export_size; }
-    auto image_export_path() -> std::filesystem::path const&;
+    auto image_export_path() -> std::filesystem::path;
 
 private:
     /// Starts the export of the image sequence. You must then call update() on every frame after your rendering code.
@@ -60,11 +60,11 @@ private:
     [[nodiscard]] auto user_accepted_our_frames_overwrite_behaviour() -> bool;
 
     [[nodiscard]] auto folder_path_for_video() -> std::filesystem::path&;
-    [[nodiscard]] auto file_path_for_image() -> std::filesystem::path&;
+    [[nodiscard]] auto image_file_path_beeing_edited_in_ui() -> std::filesystem::path&;
 
 private:
     ExportSize                           _export_size{};
-    std::optional<std::filesystem::path> _image_file_path{}; // We delay the initialisation to give users time to save their project. If they do so before trying to export we will use the project folder as the default folder. Otherwise we will fall back to the user data folder.
+    std::optional<std::filesystem::path> _image_file_path_beeing_edited_in_ui{}; // We delay the initialisation to give users time to save their project. If they do so before trying to export we will use the project folder as the default folder. Otherwise we will fall back to the user data folder.
     ImGuiWindow                          _image_export_window{icon_fmt("Export an Image", ICOMOON_IMAGE), ImGuiWindowConfig{.is_modal = true}};
 
     std::optional<std::filesystem::path> _folder_path_for_video{}; // We delay the initialisation to give users time to save their project. If they do so before trying to export we will use the project folder as the default folder. Otherwise we will fall back to the user data folder.
@@ -80,7 +80,7 @@ private:
         archive(
             ser20::make_nvp("Video Settings", _video_export_params),
             ser20::make_nvp("Image Size", _export_size),
-            ser20::make_nvp("Image Output File", _image_file_path),
+            ser20::make_nvp("Image Output File", _image_file_path_beeing_edited_in_ui),
             ser20::make_nvp("Video Output Folder", _folder_path_for_video)
         );
     }

@@ -10,8 +10,11 @@
 #include "ImGuiNotify/ImGuiNotify.hpp"
 #include "VideoExportOverwriteBehaviour.h"
 #include "imgui.h"
+#include "wafl/wafl.hpp"
 
 namespace Cool {
+
+static const auto image_extensions = std::array<const char*, 2>{".png", ".jpeg"};
 
 auto ExporterGui::folder_path_for_video() -> std::filesystem::path&
 {
@@ -20,16 +23,18 @@ auto ExporterGui::folder_path_for_video() -> std::filesystem::path&
         _folder_path_for_video = Cool::File::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / "video frames");
     return *_folder_path_for_video;
 }
-auto ExporterGui::file_path_for_image() -> std::filesystem::path&
+auto ExporterGui::image_file_path_beeing_edited_in_ui() -> std::filesystem::path&
 {
     /// We delay the initialisation to give users time to save their project. If they do so before trying to export we will use the project folder as the default folder. Otherwise we will fall back to the user data folder.
-    if (!_image_file_path.has_value())
-        _image_file_path = Cool::File::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / "images/img(0).png");
-    return *_image_file_path;
+    if (!_image_file_path_beeing_edited_in_ui.has_value())
+        _image_file_path_beeing_edited_in_ui = Cool::File::weakly_canonical(Path::project_folder().value_or(Path::user_data()) / "images/img(0).png");
+    return *_image_file_path_beeing_edited_in_ui;
 }
-auto ExporterGui::image_export_path() -> std::filesystem::path const&
+
+auto ExporterGui::image_export_path() -> std::filesystem::path
 {
-    return file_path_for_image();
+    auto const path = image_file_path_beeing_edited_in_ui();
+    return Cool::File::with_extension(path, wafl::find_best_match(image_extensions, File::extension(path).string()));
 }
 
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
@@ -69,20 +74,22 @@ void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time d
 {
     _image_export_window.show([&](bool is_opening) {
         if (is_opening)
-            _image_file_path = File::find_available_path(file_path_for_image());
+            _image_file_path_beeing_edited_in_ui = File::find_available_path(image_export_path());
 
         _export_size.imgui();
         // File and Folder
-        ImGuiExtras::file_and_folder_saving(file_path_for_image(), {".png", ".jpeg"}, NfdFileFilter::ImageSave);
+        ImGuiExtras::file_and_folder_saving(image_file_path_beeing_edited_in_ui(), image_extensions, NfdFileFilter::ImageSave);
         // Validation
-        ImGuiExtras::before_export_button(file_path_for_image());
+        ImGuiExtras::before_export_button(image_export_path());
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
-            if (ExporterU::user_accepted_to_overwrite_image(file_path_for_image()))
+            auto const path = image_export_path();
+            if (ExporterU::user_accepted_to_overwrite_image(path))
             {
                 _image_export_window.close();
-                on_image_export_start(file_path_for_image());
-                ExporterU::export_image_using_a_task(_export_size, time, delta_time, polaroid, file_path_for_image());
+
+                on_image_export_start(path);
+                ExporterU::export_image_using_a_task(_export_size, time, delta_time, polaroid, path);
             }
         }
     });
