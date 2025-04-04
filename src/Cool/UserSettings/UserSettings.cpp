@@ -1,6 +1,7 @@
 #include "UserSettings.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/need_to_apply_imgui_style_scale.hpp"
+#include "Cool/Input/CTRL_OR_CMD.hpp"
 #include "Cool/UI Scale/need_to_rebuild_fonts.hpp"
 #include "Cool/UI Scale/ui_scale.hpp"
 #include "imgui.h"
@@ -55,7 +56,7 @@ auto UserSettings::imgui_camera2D_zoom_sensitivity() -> bool
 auto UserSettings::imgui_single_click_to_input_in_drag_widgets() -> bool
 {
     bool const b = ImGuiExtras::toggle("Single-click to input in \"Drag number\" widgets.", &single_click_to_input_in_drag_widgets);
-    ImGuiExtras::help_marker("When disabled, you need to double-click or CTRL+click on a \"Drag number\" widget to be able to write down a specific value.");
+    ImGuiExtras::help_marker("When disabled, you need to double-click or " CTRL_OR_CMD "+click on a \"Drag number\" widget to be able to write down a specific value.");
     return b;
 }
 

@@ -620,7 +620,7 @@ private:
             if (ImGui::IsItemClicked())
                 instance().imgui_item_picker = true;
 
-            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\nShortcut: CTRL + SHIFT + I");
+            Cool::ImGuiExtras::help_marker("Allows you to click on any ImGui widget and have your IDE break on it, allowing you to find the source code that generated it.\nShortcut: " CTRL_OR_CMD " + SHIFT + I");
         }
 
 #endif

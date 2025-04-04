@@ -16,7 +16,7 @@ void ImGuiWindow::show(std::function<void(bool is_opening)> const& widgets)
         if (ImGui::BeginPopupModal(_title.c_str(), &_is_open))
         {
             widgets(_just_opened);
-            if (ImGui::IsKeyReleased(ImGuiKey_Escape))
+            if (ImGui::IsKeyChordPressed(ImGuiKey_Escape))
                 _is_open = false;
             if (!_is_open)
                 ImGui::CloseCurrentPopup();

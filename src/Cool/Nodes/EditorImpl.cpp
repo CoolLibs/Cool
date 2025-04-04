@@ -88,32 +88,28 @@ static auto imgui_all_definitions_selectables(NodeId const& node_id, Node& node,
 [[nodiscard]] static auto wants_to_copy() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::GetIO().KeyCtrl
-           && ImGui::IsKeyReleased(ImGuiKey_C);
+           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_C);
 }
 [[nodiscard]] static auto wants_to_cut() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::GetIO().KeyCtrl
-           && ImGui::IsKeyReleased(ImGuiKey_X);
+           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_X);
 }
 [[nodiscard]] static auto wants_to_paste() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::GetIO().KeyCtrl
-           && ImGui::IsKeyReleased(ImGuiKey_V);
+           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_V);
 }
 [[nodiscard]] static auto wants_to_duplicate() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::GetIO().KeyCtrl
-           && ImGui::IsKeyReleased(ImGuiKey_D);
+           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_D);
 }
 [[nodiscard]] static auto wants_to_delete_selection() -> bool
 {
     return (is_listening_to_keyboard_shortcuts()
-            && (ImGui::IsKeyReleased(ImGuiKey_Delete)
-                || ImGui::IsKeyReleased(ImGuiKey_Backspace)
+            && (ImGui::IsKeyChordPressed(ImGuiKey_Delete)
+                || ImGui::IsKeyChordPressed(ImGuiKey_Backspace)
             ))
            || wants_to_cut();
 }
@@ -122,7 +118,7 @@ auto NodesEditorImpl::wants_to_open_nodes_menu() const -> bool
 {
     return _workspace_is_hovered
            && (ed::ShowBackgroundContextMenu()
-               || (ImGui::IsKeyReleased(ImGuiKey_A) && !ImGui::GetIO().WantTextInput)
+               || (ImGui::IsKeyChordPressed(ImGuiKey_A) && !ImGui::GetIO().WantTextInput)
            );
 }
 
@@ -742,7 +738,7 @@ auto NodesEditorImpl::imgui_workspace(NodesConfig& nodes_cfg, NodesLibrary const
         _link_has_just_been_released = false;
     }
 
-    bool const has_pressed_F2_on_node = ImGui::IsKeyPressed(ImGuiKey_F2) && ed::GetSelectedObjectCount() > 0;
+    bool const has_pressed_F2_on_node = ImGui::IsKeyChordPressed(ImGuiKey_F2) && ed::GetSelectedObjectCount() > 0;
     if (has_pressed_F2_on_node)
         ed::GetSelectedNodes(&_id_of_node_whose_context_menu_is_open, 1); // Need to set the selected node as the one whose context menu should be open
 

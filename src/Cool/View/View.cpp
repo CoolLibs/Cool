@@ -14,9 +14,9 @@ void View::check_for_fullscreen_toggle() const
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
         return;
 
-    if (ImGui::IsKeyPressed(ImGuiKey_F10))
+    if (ImGui::IsKeyChordPressed(ImGuiKey_F10))
         ImGui::ToggleWindowFullscreen();
-    if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+    if (ImGui::IsKeyChordPressed(ImGuiKey_Escape))
         ImGui::ExitWindowFullscreen();
 }
 

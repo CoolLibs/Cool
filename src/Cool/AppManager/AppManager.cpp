@@ -186,10 +186,7 @@ static void check_for_imgui_item_picker_request()
 {
 #if DEBUG
     if (DebugOptions::imgui_item_picker()
-        || (ImGui::GetIO().KeyCtrl
-            && ImGui::GetIO().KeyShift
-            && ImGui::IsKeyPressed(ImGuiKey_I)
-        ))
+        || ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiMod_Shift | ImGuiKey_I))
     {
         ImGui::DebugStartItemPicker();
     }
