@@ -88,22 +88,26 @@ static auto imgui_all_definitions_selectables(NodeId const& node_id, Node& node,
 [[nodiscard]] static auto wants_to_copy() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_C);
+           && (ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_C)
+               || ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiMod_Shift | ImGuiKey_C)); // Allow both CTRL+C and CTRL+SHIFT+C because they do two different things in the nodes config (CTRL+SHIFT+C copies links coming from nodes not copied, whereas CTRL+C does not)
 }
 [[nodiscard]] static auto wants_to_cut() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_X);
-}
-[[nodiscard]] static auto wants_to_paste() -> bool
-{
-    return is_listening_to_keyboard_shortcuts()
-           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_V);
+           && (ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_X)
+               || ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiMod_Shift | ImGuiKey_X)); // Allow both CTRL+X and CTRL+SHIFT+X because they do two different things in the nodes config (CTRL+SHIFT+X copies links coming from nodes not copied, whereas CTRL+X does not)
 }
 [[nodiscard]] static auto wants_to_duplicate() -> bool
 {
     return is_listening_to_keyboard_shortcuts()
-           && ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_D);
+           && (ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_D)
+               || ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiMod_Shift | ImGuiKey_D)); // Allow both CTRL+D and CTRL+SHIFT+D because they do two different things in the nodes config (CTRL+SHIFT+D copies links coming from nodes not copied, whereas CTRL+D does not)
+}
+[[nodiscard]] static auto wants_to_paste() -> bool
+{
+    return is_listening_to_keyboard_shortcuts()
+           && (ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiKey_V)
+               || ImGui::IsKeyChordPressed(ImGuiMod_Shortcut | ImGuiMod_Shift | ImGuiKey_V)); // Allow CTRL+SHIFT+V just in case people expect it to work, just like it works for CTRL+C and CTRL+V and CTRL+D
 }
 [[nodiscard]] static auto wants_to_delete_selection() -> bool
 {
