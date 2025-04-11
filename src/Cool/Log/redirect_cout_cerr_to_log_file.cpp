@@ -1,4 +1,5 @@
 #include "redirect_cout_cerr_to_log_file.hpp"
+#include <optional>
 #include "Log.hpp"
 
 namespace Cool {
@@ -15,9 +16,14 @@ public:
         sync();
     }
 
+    Stringbuf_LogInternal(Stringbuf_LogInternal const&)                = delete;
+    Stringbuf_LogInternal& operator=(Stringbuf_LogInternal const&)     = delete;
+    Stringbuf_LogInternal(Stringbuf_LogInternal&&) noexcept            = delete;
+    Stringbuf_LogInternal& operator=(Stringbuf_LogInternal&&) noexcept = delete;
+
     int sync() override
     {
-        std::string msg = str();
+        std::string const msg = str();
         if (!msg.empty())
         {
             if (_is_cout)
@@ -32,20 +38,55 @@ public:
 private:
     bool _is_cout{};
 };
+
+class StreamRedirectionRAII {
+public:
+    explicit StreamRedirectionRAII(bool is_cout)
+        : _buffer{is_cout}
+        , _stream{is_cout ? std::cout : std::cerr}
+        , _original_buffer{_stream.rdbuf()}
+    {
+        _stream.rdbuf(&_buffer);
+    }
+
+    ~StreamRedirectionRAII()
+    {
+        _stream.rdbuf(_original_buffer);
+    }
+
+    StreamRedirectionRAII(StreamRedirectionRAII const&)                = delete;
+    StreamRedirectionRAII& operator=(StreamRedirectionRAII const&)     = delete;
+    StreamRedirectionRAII(StreamRedirectionRAII&&) noexcept            = delete;
+    StreamRedirectionRAII& operator=(StreamRedirectionRAII&&) noexcept = delete;
+
+public:
+    Stringbuf_LogInternal _buffer;
+    std::ostream&         _stream;
+    std::streambuf*       _original_buffer;
+};
 } // namespace
 
-void redirect_cout_cerr_to_log_file()
+static auto cout_redirection_raii() -> std::optional<StreamRedirectionRAII>&
 {
-    {
-        static auto buff   = Stringbuf_LogInternal{true /*is_cout*/};
-        static auto stream = std::ostream{&buff};
-        std::cout.rdbuf(stream.rdbuf());
-    }
-    {
-        static auto buff   = Stringbuf_LogInternal{false /*is_cout*/};
-        static auto stream = std::ostream{&buff};
-        std::cerr.rdbuf(stream.rdbuf());
-    }
+    static auto instance = std::optional<StreamRedirectionRAII>{};
+    return instance;
+}
+static auto cerr_redirection_raii() -> std::optional<StreamRedirectionRAII>&
+{
+    static auto instance = std::optional<StreamRedirectionRAII>{};
+    return instance;
+}
+
+void start_redirecting_cout_cerr_to_log_file()
+{
+    cout_redirection_raii().emplace(true /*is_cout*/);
+    cerr_redirection_raii().emplace(false /*is_cout*/);
+}
+
+void stop_redirecting_cout_cerr_to_log_file()
+{
+    cout_redirection_raii().reset();
+    cerr_redirection_raii().reset();
 }
 
 } // namespace Cool

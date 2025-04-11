@@ -2,6 +2,7 @@
 
 namespace Cool {
 
-void redirect_cout_cerr_to_log_file();
+void start_redirecting_cout_cerr_to_log_file();
+void stop_redirecting_cout_cerr_to_log_file();
 
-}
+} // namespace Cool

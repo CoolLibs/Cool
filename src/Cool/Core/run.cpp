@@ -93,11 +93,11 @@ void run_impl(
 {
     try
     {
-        redirect_cout_cerr_to_log_file();
-        redirect_notifications_to_log_file();
         set_utf8_locale();
         command_line_args().init(argc, argv);
         initialize_paths_config();
+        start_redirecting_cout_cerr_to_log_file(); // Can only be done once the paths config is initialized, otherwise we won't know where to create the log file
+        redirect_notifications_to_log_file();
         reset_log_file_if_not_already_reset();
         copy_initial_user_data_ifn();
         // Create window.s
@@ -162,15 +162,17 @@ void run_impl(
 #if defined(COOL_VULKAN)
         vkDeviceWaitIdle(Vulkan::context().g_Device);
 #endif
-        style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
-        color_themes().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
-        Audio::shut_down();
-        TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
     }
     catch (std::exception const& e)
     {
         boxer_show(e.what(), "Coollab Error", boxer::Style::Error);
     }
+    // Global Shutdown
+    style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    color_themes().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
+    Audio::shut_down();
+    TextureLibrary_Webcam::instance().shut_down(); // We must destroy the textures in the WebcamImages before the texture_pool() gets destroyed
+    stop_redirecting_cout_cerr_to_log_file();      // Need to do this explicitly, otherwise we will sync the cout buffers during static deinitialization, and the file_logger might have already been destroyed
 }
 
 } // namespace Cool::internal
