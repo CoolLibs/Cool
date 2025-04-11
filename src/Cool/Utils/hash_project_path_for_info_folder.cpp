@@ -18,8 +18,9 @@ static auto fnv128_hash(std::string const& path) -> std::string
     std::uint64_t hashHigh = FNV_OFFSET_BASIS_HIGH;
     std::uint64_t hashLow  = FNV_OFFSET_BASIS_LOW;
 
-    for (unsigned char byte : path)
+    for (char const character : path)
     {
+        auto const byte = static_cast<uint8_t>(character);
         hashLow ^= byte;
         hashLow *= FNV_PRIME;
         if (hashLow < FNV_PRIME)
