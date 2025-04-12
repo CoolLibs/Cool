@@ -26,7 +26,7 @@ struct exporter_imgui_windows_Params {
     std::function<void(std::filesystem::path const&)> on_image_export_start                      = [](std::filesystem::path const&) {};
     std::function<void()>                             on_video_export_start                      = []() {};
     std::function<void()>                             widgets_in_window_video_export_in_progress = []() {};
-    ExportPathChecks                                  image_path_checks                          = {};
+    PathChecks                                        image_path_checks                          = {};
 };
 
 class ExporterGui {
@@ -56,7 +56,7 @@ private:
     auto begin_video_export(std::optional<VideoExportProcess>&, TimeSpeed time_speed, std::function<void()> const& on_video_export_start) -> bool;
     /// Ends the export of the image sequence. It will be called automatically by update() once the end timestamp is reached. You can also call it yourself to early exit of the export.
     static void        end_video_export(std::optional<VideoExportProcess>&);
-    void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start, ExportPathChecks const& path_checks);
+    void               imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start, PathChecks const& path_checks);
     void               imgui_window_export_video(std::function<void()> const& widgets_in_window_video_export_in_progress, std::function<void()> const& on_video_export_start, std::optional<VideoExportProcess>&, TimeSpeed time_speed);
     [[nodiscard]] auto user_accepted_our_frames_overwrite_behaviour() -> bool;
 

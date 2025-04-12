@@ -5,7 +5,7 @@
 #include <imgui/imgui_internal.h>
 #include <smart/smart.hpp>
 #include <wafl/wafl.hpp>
-#include "Cool/ImGui/ExportPathChecks.hpp"
+#include "Cool/File/PathChecks.hpp"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -398,7 +398,7 @@ auto file_and_folder_opening(
 auto file_and_folder_saving(
     std::filesystem::path&              path,
     std::span<const char* const>        extensions,
-    ExportPathChecks const&             path_checks,
+    PathChecks const&                   path_checks,
     std::vector<nfdfilteritem_t> const& file_filters
 ) -> bool
 {
@@ -447,7 +447,7 @@ void before_export_button()
     ImGui::SeparatorText("");
 }
 
-void before_export_button(std::filesystem::path const& file_to_be_exported, ExportPathChecks const& path_checks)
+void before_export_button(std::filesystem::path const& file_to_be_exported, PathChecks const& path_checks)
 {
     before_export_button();
 

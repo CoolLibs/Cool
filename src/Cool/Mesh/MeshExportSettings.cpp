@@ -1,6 +1,6 @@
 #include "MeshExportSettings.hpp"
 #include "Cool/File/File.h"
-#include "Cool/ImGui/ExportPathChecks.hpp"
+#include "Cool/File/PathChecks.hpp"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Mesh/MeshExportFormat.hpp"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
@@ -24,13 +24,13 @@ auto MeshExportSettings::format() const -> MeshExportFormat
 
 void MeshExportSettings::set_file_name_to_an_unused_name()
 {
-    path = File::find_available_path(path, Cool::ExportPathChecks{});
+    path = File::find_available_path(path, Cool::PathChecks{});
 }
 
 auto MeshExportSettings::imgui() -> bool
 {
     bool b = false;
-    ImGuiExtras::file_and_folder_saving(path, extensions(), Cool::ExportPathChecks{}, NfdFileFilter::Mesh);
+    ImGuiExtras::file_and_folder_saving(path, extensions(), Cool::PathChecks{}, NfdFileFilter::Mesh);
     return b;
 }
 

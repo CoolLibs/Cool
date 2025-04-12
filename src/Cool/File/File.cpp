@@ -295,7 +295,7 @@ auto find_available_name(
     std::filesystem::path const& folder_path,
     std::filesystem::path const& file_name,
     std::filesystem::path const& extension,
-    ExportPathChecks const&      path_checks
+    PathChecks const&            path_checks
 ) -> std::filesystem::path // NOLINT(*easily-swappable-parameters)
 {
     std::string const name = Cool::File::without_extension(file_name).string();
@@ -329,7 +329,7 @@ auto find_available_name(
     return out_name;
 }
 
-auto find_available_path(std::filesystem::path const& path, ExportPathChecks const& path_checks) -> std::filesystem::path
+auto find_available_path(std::filesystem::path const& path, PathChecks const& path_checks) -> std::filesystem::path
 {
     auto const folder    = without_file_name(path);
     auto const file      = file_name_without_extension(path);

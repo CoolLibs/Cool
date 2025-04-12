@@ -22,7 +22,7 @@ auto Exporter::clock() const -> Clock const&
     return _video_export_process->clock(); // NOLINT(bugprone-unchecked-optional-access)
 }
 
-auto Exporter::export_image_with_current_settings_using_a_task(Time time, Time delta_time, Polaroid const& polaroid, ExportPathChecks const& path_checks) -> std::filesystem::path
+auto Exporter::export_image_with_current_settings_using_a_task(Time time, Time delta_time, Polaroid const& polaroid, PathChecks const& path_checks) -> std::filesystem::path
 {
     auto path = File::find_available_path(_gui.image_export_path(), path_checks);
     ExporterU::export_image_using_a_task(_gui.export_size(), time, delta_time, polaroid, path);

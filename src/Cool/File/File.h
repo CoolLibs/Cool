@@ -2,7 +2,7 @@
 
 #include <filesystem>
 #include <string_view>
-#include "Cool/ImGui/ExportPathChecks.hpp"
+#include "Cool/File/PathChecks.hpp"
 
 namespace Cool::File {
 
@@ -66,8 +66,8 @@ auto copy_file(std::filesystem::path const& from, std::filesystem::path const& t
 /// folder_path: The folder where you want the file to be created
 /// file_name: The name you would like to give to the file
 /// extension: The extension of the file, e.g. ".png"
-auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension, ExportPathChecks const& path_checks) -> std::filesystem::path;
-auto find_available_path(std::filesystem::path const& path, ExportPathChecks const& path_checks) -> std::filesystem::path;
+auto find_available_name(std::filesystem::path const& folder_path, std::filesystem::path const& file_name, std::filesystem::path const& extension, PathChecks const& path_checks) -> std::filesystem::path;
+auto find_available_path(std::filesystem::path const& path, PathChecks const& path_checks) -> std::filesystem::path;
 /// Usefull when you know that a file will be created soon (e.g. by a Task in 1 or 2 seconds) and want to prevent others from trying to create a file with the same path
 void mark_file_path_unavailable(std::filesystem::path const& path);
 

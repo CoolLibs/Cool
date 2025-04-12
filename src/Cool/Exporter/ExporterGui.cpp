@@ -1,6 +1,6 @@
 #include "ExporterGui.h"
 #include "Cool/File/File.h"
-#include "Cool/ImGui/ExportPathChecks.hpp"
+#include "Cool/File/PathChecks.hpp"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/boxer_show.hpp"
@@ -71,7 +71,7 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start, ExportPathChecks const& path_checks)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start, PathChecks const& path_checks)
 {
     _image_export_window.show([&](bool is_opening) {
         if (is_opening)
@@ -109,7 +109,7 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
     case VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder:
     case VideoExportOverwriteBehaviour::AlwaysCreateNewFolder:
     {
-        auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "", ExportPathChecks{});
+        auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "", PathChecks{});
         if (user_settings().video_export_overwrite_behaviour == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
         {
             if (boxer_show(fmt::format("There are already some frames in {}.\nDo you want to export in this folder instead? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)

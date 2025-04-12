@@ -17,7 +17,7 @@ void export_image_using_a_task(img::Size size, Time time, Time delta_time, Polar
     task_manager().submit(std::make_shared<Task_SaveImage>(file_path, polaroid.texture().download_pixels()));
 }
 
-auto user_accepted_to_ignore_warnings(std::filesystem::path const& file_path, ExportPathChecks const& path_checks) -> bool
+auto user_accepted_to_ignore_warnings(std::filesystem::path const& file_path, PathChecks const& path_checks) -> bool
 {
     auto const warnings = path_checks.compute_all_warnings(file_path);
     if (warnings.empty())
