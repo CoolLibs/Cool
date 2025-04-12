@@ -5,6 +5,7 @@
 #include <imgui/imgui_internal.h>
 #include <smart/smart.hpp>
 #include <wafl/wafl.hpp>
+#include "Cool/ImGui/ExportPathChecks.hpp"
 #include "Cool/ImGui/Fonts.h"
 #include "Cool/ImGui/IcoMoonCodepoints.h"
 #include "Cool/ImGui/ImGuiExtrasStyle.h"
@@ -397,6 +398,7 @@ auto file_and_folder_opening(
 auto file_and_folder_saving(
     std::filesystem::path&              path,
     std::span<const char* const>        extensions,
+    ExportPathChecks const&             path_checks,
     std::vector<nfdfilteritem_t> const& file_filters
 ) -> bool
 {
@@ -415,7 +417,7 @@ auto file_and_folder_saving(
     if (ImGuiExtras::folder("Folder", &folder))
     {
         b                   = true;
-        file_with_extension = File::with_extension(File::find_available_name(folder, File::file_name_without_extension(path), extension), extension);
+        file_with_extension = File::with_extension(File::find_available_name(folder, File::file_name_without_extension(path), extension, path_checks), extension);
     }
 
     const char* best_matching_extension = wafl::find_best_match(extensions, extension.string());
@@ -445,11 +447,15 @@ void before_export_button()
     ImGui::SeparatorText("");
 }
 
-void before_export_button(std::filesystem::path const& file_to_be_exported)
+void before_export_button(std::filesystem::path const& file_to_be_exported, ExportPathChecks const& path_checks)
 {
     before_export_button();
-    if (File::exists(file_to_be_exported))
-        ImGuiExtras::warning_text(Cool::icon_fmt("This file already exists. Are you sure you want to overwrite it?", ICOMOON_WARNING).c_str());
+
+    auto const warnings = path_checks.compute_all_warnings(file_to_be_exported);
+    ImGui::PushTextWrapPos();
+    for (auto const& warning : warnings)
+        ImGuiExtras::warning_text(Cool::icon_fmt(warning, ICOMOON_WARNING).c_str());
+    ImGui::PopTextWrapPos();
 }
 
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)

@@ -17,12 +17,22 @@ void export_image_using_a_task(img::Size size, Time time, Time delta_time, Polar
     task_manager().submit(std::make_shared<Task_SaveImage>(file_path, polaroid.texture().download_pixels()));
 }
 
-auto user_accepted_to_overwrite_image(std::filesystem::path const& file_path) -> bool
+auto user_accepted_to_ignore_warnings(std::filesystem::path const& file_path, ExportPathChecks const& path_checks) -> bool
 {
-    if (!Cool::File::exists(file_path))
+    auto const warnings = path_checks.compute_all_warnings(file_path);
+    if (warnings.empty())
         return true;
 
-    return boxer_show(fmt::format("\"{}\" already exists. Are you sure you want to overwrite it?", file_path).c_str(), "Overwrite image?", boxer::Style::Warning, boxer::Buttons::OKCancel)
+    auto message = ""s;
+    for (auto const& warning : warnings)
+    {
+        if (!message.empty())
+            message += '\n';
+        message += "- ";
+        message += warning;
+    }
+
+    return boxer_show(message.c_str(), "Ignore warnings?", boxer::Style::Warning, boxer::Buttons::OKCancel)
            == boxer::Selection::OK;
 }
 

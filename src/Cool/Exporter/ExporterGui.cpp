@@ -1,5 +1,6 @@
 #include "ExporterGui.h"
 #include "Cool/File/File.h"
+#include "Cool/ImGui/ExportPathChecks.hpp"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/ImGui/icon_fmt.h"
 #include "Cool/Log/boxer_show.hpp"
@@ -39,7 +40,7 @@ auto ExporterGui::image_export_path() -> std::filesystem::path
 
 void ExporterGui::imgui_windows(exporter_imgui_windows_Params const& p, std::optional<VideoExportProcess>& video_export_process)
 {
-    imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_export_start);
+    imgui_window_export_image(p.polaroid, p.time, p.delta_time, p.on_image_export_start, p.image_path_checks);
     imgui_window_export_video(p.widgets_in_window_video_export_in_progress, p.on_video_export_start, video_export_process, p.time_speed);
 }
 
@@ -70,21 +71,21 @@ void ExporterGui::imgui_menu_items(exporter_imgui_menu_items_Params const& p, st
     }
 }
 
-void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start)
+void ExporterGui::imgui_window_export_image(Polaroid polaroid, Time time, Time delta_time, std::function<void(std::filesystem::path const&)> const& on_image_export_start, ExportPathChecks const& path_checks)
 {
     _image_export_window.show([&](bool is_opening) {
         if (is_opening)
-            _image_file_path_beeing_edited_in_ui = File::find_available_path(image_export_path());
+            _image_file_path_beeing_edited_in_ui = File::find_available_path(image_export_path(), path_checks);
 
         _export_size.imgui();
         // File and Folder
-        ImGuiExtras::file_and_folder_saving(image_file_path_beeing_edited_in_ui(), image_extensions, NfdFileFilter::ImageSave);
+        ImGuiExtras::file_and_folder_saving(image_file_path_beeing_edited_in_ui(), image_extensions, path_checks, NfdFileFilter::ImageSave);
         // Validation
-        ImGuiExtras::before_export_button(image_export_path());
+        ImGuiExtras::before_export_button(image_export_path(), path_checks);
         if (ImGui::Button(icon_fmt("Export", ICOMOON_UPLOAD2).c_str()))
         {
             auto const path = image_export_path();
-            if (ExporterU::user_accepted_to_overwrite_image(path))
+            if (ExporterU::user_accepted_to_ignore_warnings(path, path_checks))
             {
                 _image_export_window.close();
 
@@ -108,7 +109,7 @@ auto ExporterGui::user_accepted_our_frames_overwrite_behaviour() -> bool
     case VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder:
     case VideoExportOverwriteBehaviour::AlwaysCreateNewFolder:
     {
-        auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "");
+        auto const new_folder_name = File::find_available_name("", folder_path_for_video(), "", ExportPathChecks{});
         if (user_settings().video_export_overwrite_behaviour == VideoExportOverwriteBehaviour::AskBeforeCreatingNewFolder)
         {
             if (boxer_show(fmt::format("There are already some frames in {}.\nDo you want to export in this folder instead? {}", folder_path_for_video(), new_folder_name).c_str(), "Creating a new export folder", boxer::Style::Warning, boxer::Buttons::OKCancel)

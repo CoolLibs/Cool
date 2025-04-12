@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "Cool/File/File.h"
 #include "Cool/StrongTypes/Color.h"
+#include "ExportPathChecks.hpp"
 
 namespace Cool::ImGuiExtras {
 
@@ -182,11 +183,12 @@ auto file_and_folder_opening(
 auto file_and_folder_saving(
     std::filesystem::path&              path,
     std::span<const char* const>        extensions,
+    ExportPathChecks const&             path_checks,
     std::vector<nfdfilteritem_t> const& file_filters = {}
 ) -> bool;
 
 void before_export_button();
-void before_export_button(std::filesystem::path const& file_to_be_exported);
+void before_export_button(std::filesystem::path const& file_to_be_exported, ExportPathChecks const& path_checks);
 
 /// Equivalent to ImGui::Image except the image will be centered in the window
 void image_centered(ImTextureID texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 1), const ImVec2& uv1 = ImVec2(1, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));

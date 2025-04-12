@@ -292,10 +292,10 @@ auto copy_file(std::filesystem::path const& from, std::filesystem::path const& t
 }
 
 auto find_available_name(
-    std::filesystem::path const&                             folder_path,
-    std::filesystem::path const&                             file_name,
-    std::filesystem::path const&                             extension,
-    std::function<bool(std::filesystem::path const&)> const& extra_conditions
+    std::filesystem::path const& folder_path,
+    std::filesystem::path const& file_name,
+    std::filesystem::path const& extension,
+    ExportPathChecks const&      path_checks
 ) -> std::filesystem::path // NOLINT(*easily-swappable-parameters)
 {
     std::string const name = Cool::File::without_extension(file_name).string();
@@ -320,11 +320,8 @@ auto find_available_name(
     }();
 
     // Find an available name
-    auto       out_name = file_name;
-    auto const is_valid = [&](std::filesystem::path const& path) {
-        return !File::exists(path) && extra_conditions(path);
-    };
-    while (!is_valid(File::with_extension(folder_path / out_name, extension)))
+    auto out_name = file_name;
+    while (!path_checks.is_valid(File::with_extension(folder_path / out_name, extension)))
     {
         out_name = base_name + "(" + std::to_string(k) + ")";
         k++;
@@ -332,12 +329,12 @@ auto find_available_name(
     return out_name;
 }
 
-auto find_available_path(std::filesystem::path const& path, std::function<bool(std::filesystem::path const&)> const& extra_conditions) -> std::filesystem::path
+auto find_available_path(std::filesystem::path const& path, ExportPathChecks const& path_checks) -> std::filesystem::path
 {
     auto const folder    = without_file_name(path);
     auto const file      = file_name_without_extension(path);
     auto const extension = File::extension(path);
-    return with_extension(folder / find_available_name(folder, file, extension, extra_conditions), extension);
+    return with_extension(folder / find_available_name(folder, file, extension, path_checks), extension);
 }
 
 void mark_file_path_unavailable(std::filesystem::path const& path)
