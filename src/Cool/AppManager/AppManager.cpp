@@ -47,6 +47,11 @@ static void imgui_new_frame();
 
 static void window_content_scale_callback(GLFWwindow* /* window */, float x_scale, float y_scale)
 {
+#if defined(__APPLE__)
+    // HACK: on MacOS we detect a scale of 2 for retina screens, but it seems like ImGui already takes it into account because if we apply that scale of 2 ourselves the UI appears too big.
+    x_scale = 1.f;
+    y_scale = 1.f;
+#endif
     if (Cool::DebugOptions::log_ui_scale_changes())
         Cool::Log::info("UI Scale", fmt::format("DPI Scale: {} x {}", x_scale, y_scale));
 
