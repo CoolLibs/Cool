@@ -165,7 +165,7 @@ void run_impl(
     }
     catch (std::exception const& e)
     {
-        boxer_show(e.what(), "Coollab Error", boxer::Style::Error);
+        boxer_show(e.what(), COOL_APP_NAME " Error", boxer::Style::Error);
     }
     // Global Shutdown
     style_editor().reset(); // Destroy it to make sure it saves now, before the ImGui context is destroyed, otherwise it wouldn't be able to access the ImGuiStyle anymore
