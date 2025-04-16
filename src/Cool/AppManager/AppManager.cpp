@@ -48,7 +48,7 @@ static void imgui_new_frame();
 static void window_content_scale_callback(GLFWwindow* /* window */, float x_scale, float y_scale)
 {
 #if defined(__APPLE__)
-    // HACK: on MacOS we detect a scale of 2 for retina screens, but it seems like ImGui already takes it into account because if we apply that scale of 2 ourselves the UI appears too big.
+    // HACK: on MacOS we detect a scale of 2 for retina screens, but it seems like ImGui already takes it into account because if we apply that scale of 2 ourselves the UI appears too big by a factor of 2.
     x_scale = 1.f;
     y_scale = 1.f;
 #endif
