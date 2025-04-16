@@ -17,6 +17,7 @@ ColorThemes::ColorThemes()
               .themes_default_folder = Cool::Path::default_user_data() / "Color Themes",
               .config_file           = Cool::Path::default_user_data() / "color_config.json",
           },
+          ImStyleEd::CurrentTheme{"Dark"}, // Start with Dark theme by default (using "Use OS Theme" means most people will have the Light theme, which is not quite as good as the Dark one)
           [](ImStyleEd::Config& config) {
               ImStyleEd::register_all_imgui_color_elements(config);
               register_imgui_extras_elements(config);
