@@ -75,7 +75,7 @@ AppManager::AppManager(WindowManager& window_manager, ViewsManager& views, IApp&
     , _app{app}
     , _config{config}
 {
-    fix_tdr_delay::set_minimum_delay(60); // Fixes a GPU crash on Windows. See the documentation of the library: https://github.com/CoolLibs/fix-tdr-delay
+    fix_tdr_delay::set_minimum_delay(60); // Fixes a GPU crash on Windows. See the documentation of the library: https://github.com/Coollab-Art/fix-tdr-delay
     // Set callbacks
     for (auto& window : _window_manager.windows())
     {
