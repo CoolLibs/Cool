@@ -48,6 +48,8 @@ void ParticleSystem::render()
 {
 #if !defined(COOL_PARTICLES_DISABLED_REASON)
     bind_SSBOs();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
     _render_shader.bind();
     glpp::bind_vertex_array(_render_vao);
     glpp::draw_arrays_instanced(_render_vao, glpp::PrimitiveDrawMode::Triangles, 0, 6, static_cast<GLsizei>(_particles_count));
