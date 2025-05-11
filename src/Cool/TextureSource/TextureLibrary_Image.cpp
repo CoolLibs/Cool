@@ -6,7 +6,7 @@
 #include "Cool/FileWatcher/FileWatcher.h"
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Time/time_formatted_hms.h"
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "fmt/chrono.h"
 #include "imgui.h"
 

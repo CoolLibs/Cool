@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "VideoDescriptor.h"
 #include "easy_ffmpeg/easy_ffmpeg.hpp"
 

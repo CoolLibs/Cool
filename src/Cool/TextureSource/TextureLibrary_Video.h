@@ -5,7 +5,7 @@
 #include <optional>
 #include "Cool/Video/VideoDescriptor.h"
 #include "Cool/Video/VideoPlayer.h"
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 

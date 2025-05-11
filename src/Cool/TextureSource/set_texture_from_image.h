@@ -1,5 +1,5 @@
 #pragma once
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace cv {
 class Mat;

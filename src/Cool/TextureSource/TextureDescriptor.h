@@ -1,8 +1,8 @@
 #pragma once
 #include <compare>
 #include "Cool/Path/Path.h"
-#include "Cool/Webgpu/Texture.h"
-#include "Cool/Webgpu/TextureSamplerDescriptor.hpp"
+#include "Cool/WebGPU/Texture.h"
+#include "Cool/WebGPU/TextureSamplerDescriptor.hpp"
 #include "TextureSource.h"
 
 namespace Cool {

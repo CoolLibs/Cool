@@ -2,7 +2,7 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/NfdFileFilter/NfdFileFilter.h"
 #include "Cool/TextureSource/TextureLibrary_Image.hpp"
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 
 namespace Cool {
 

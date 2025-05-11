@@ -6,9 +6,8 @@
 #include "Cool/ImGui/ImGuiExtras.h"
 #include "Cool/Time/time_formatted_hms.h"
 #include "Cool/Video/hack_get_global_time_in_seconds.h"
-#include "Cool/Webgpu/Texture.h"
+#include "Cool/WebGPU/Texture.h"
 #include "imgui.h"
-
 
 namespace Cool {
 
