@@ -12,6 +12,7 @@ struct Camera2D {
     auto transform_matrix() const -> glm::mat3;
     /// Inverse of transform_matrix().
     auto view_matrix() const -> glm::mat3;
+    auto projection_matrix(float inverse_aspect_ratio) const -> glm::mat3;
     auto view_projection_matrix(float inverse_aspect_ratio) const -> glm::mat3;
 
     friend auto operator==(Camera2D const& a, Camera2D const& b) -> bool = default;

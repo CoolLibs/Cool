@@ -32,9 +32,14 @@ auto Camera2D::view_matrix() const -> glm::mat3
     return res;
 }
 
+auto Camera2D::projection_matrix(float inverse_aspect_ratio) const -> glm::mat3
+{
+    return glm::scale(glm::mat3{1.f}, glm::vec2{inverse_aspect_ratio, 1.f});
+}
+
 auto Camera2D::view_projection_matrix(float inverse_aspect_ratio) const -> glm::mat3
 {
-    return glm::scale(glm::mat3{1.f}, glm::vec2{inverse_aspect_ratio, 1.f}) * view_matrix();
+    return projection_matrix(inverse_aspect_ratio) * view_matrix();
 }
 
 auto to_string(Camera2D const& cam) -> std::string
